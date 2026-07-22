@@ -11,5 +11,7 @@ All notable Vitheim changes are documented here. The format follows
 - Initialized the dependency-free Rust workspace and security baseline.
 - Added private `no_std` foundation crates and the `vitheim` facade.
 - Added architecture, implementation, release, security, and tooling policy.
+- Expanded every planned milestone from `0.1.0` through `0.150.0` and `1.0.0`
+  into a version-specific implementation handoff with mechanically checked
+  setup, goal, deliverables, verification, and pentest exit criteria.
 - Added local and GitHub verification gates without a crate publication path.
-

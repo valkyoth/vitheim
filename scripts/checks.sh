@@ -11,6 +11,6 @@ cargo doc --workspace --all-features --no-deps --locked
 
 scripts/check_workspace_policy.sh
 scripts/check_doc_links.sh
+scripts/check_implementation_plan.sh
 cargo deny check
 cargo audit
-

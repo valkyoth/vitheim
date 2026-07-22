@@ -11,6 +11,10 @@ Tags use `v0.N.0` for capability milestones, `v0.N.P` for corrections,
 serious production release. No tag or artifact publication is authorized by
 this plan.
 
+The version-by-version implementation handoffs live in the
+[Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
+replace their required setup, deliverables, verification, or pentest stops.
+
 ## Required Format And Setup
 
 The detailed handoff for every active version must name:
@@ -390,4 +394,3 @@ review; any code or artifact change creates a new candidate. Only then may the
 final unchanged candidate be considered for `v1.0.0` promotion after explicit
 maintainer authorization. Run final pentest for the exact candidate commit and
 artifacts before any tag is created.
-

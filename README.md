@@ -101,7 +101,7 @@ and licensing decision. See [Publication Policy](docs/PUBLICATION_POLICY.md).
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
-- [Implementation Plan](docs/IMPLEMENTATION_PLAN.md)
+- [Implementation Plan — all 151 milestones](docs/IMPLEMENTATION_PLAN.md)
 - [Release Plan](docs/RELEASE_PLAN.md)
 - [Modularity Policy](docs/MODULARITY_POLICY.md)
 - [Security Controls](docs/SECURITY_CONTROLS.md)

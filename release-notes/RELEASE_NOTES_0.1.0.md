@@ -13,6 +13,8 @@ baseline. This is not a production release.
 - Pinned Rust 1.97.1 with Rust 2024 edition and resolver 3.
 - Added private `no_std` foundation crates and a private facade.
 - Added repository policy, CI, documentation, release, and pentest gates.
+- Added detailed implementation handoffs for all 151 planned milestones and a
+  completeness check that prevents missing version plans or pentest stops.
 - Enforced the 500-line Rust source limit and no-third-party baseline.
 
 ## Security
@@ -35,4 +37,3 @@ None. All APIs are pre-production.
 
 - No hosted runtime, persistence, API, workflow, or application capability.
 - The pentest report is not yet complete; release is blocked until it passes.
-
