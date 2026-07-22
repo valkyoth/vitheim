@@ -1,0 +1,58 @@
+# Security Controls
+
+## Repository Baseline
+
+- Rust `1.97.1`, edition 2024, resolver 3, warnings denied.
+- Unsafe Rust forbidden workspace-wide.
+- Panics, unwraps, expects, unreachable paths, TODOs, and debug macros denied
+  by Clippy in production code.
+- No third-party Cargo sources and no crate publication.
+- Every Rust library currently `no_std`; every Rust source file at most 500
+  lines.
+- Locked builds, full action SHA pins, read-only CI permissions, and no
+  persisted checkout credentials.
+- Format, check, unit, documentation, Clippy, source-policy, link, license,
+  advisory, and SBOM gates.
+
+## Development Controls
+
+Every change needs:
+
+- a release-plan assignment and bounded scope;
+- threat-model and attack-surface delta;
+- positive, negative, boundary, and regression tests;
+- property tests for state or algebraic invariants;
+- fuzzing for untrusted syntax and decoders;
+- authorization and tenant-isolation cases for affected reads/actions;
+- failure-injection for persistence and distributed behavior;
+- documentation, changelog, and release-note updates;
+- exact-commit pentest and clean retest before tagging.
+
+Tests must prove both acceptance and rejection. A rejected operation must not
+partially mutate state, consume authority, expose hidden fields, or omit an
+audit decision.
+
+## Runtime Controls Planned Before Production
+
+- Secure configuration defaults and startup validation.
+- Strong tenant partitions in storage, search, queues, caches, blobs, logs,
+  exports, metrics labels, and backups.
+- Authentication independent from authorization; deny-by-default policy.
+- Field-level redaction preserved through API, search, reports, notifications,
+  AI context, audit, and exports.
+- Transactional event/outbox append, inbox deduplication, expected versions,
+  leases, poison handling, bounded retries, and backpressure.
+- Capability-limited plugins and integrations; opaque secret handles.
+- Tamper-evident event and evidence history with independently stored signed
+  checkpoints.
+- Tested backup/restore, projection/search rebuild, workflow continuation,
+  migration rollback, and disaster recovery.
+- Complete audit provenance without recording plaintext secrets.
+
+## Release Decision
+
+Critical and high findings block release. Medium and lower findings require
+remediation or an explicit, scoped, time-bounded acceptance with owner,
+compensating controls, review date, and expiry. No acceptance may waive tenant
+isolation, audit immutability, or legal obligations.
+

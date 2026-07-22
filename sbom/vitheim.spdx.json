@@ -1,0 +1,209 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "creationInfo": {
+    "created": "2026-07-22T17:49:21Z",
+    "creators": [
+      "Tool: cargo-sbom-v0.10.0"
+    ]
+  },
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://spdx.org/spdxdocs/vitheim-9cc9bf7b-6641-45b9-a7be-b9bd80e20636",
+  "files": [
+    {
+      "SPDXID": "SPDXRef-File-vitheim",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ba99f77664ba190e08177e29431b194740d36be1"
+        }
+      ],
+      "fileName": "./Cargo.lock",
+      "fileTypes": [
+        "SOURCE",
+        "TEXT"
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-vitheim_budget",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ba99f77664ba190e08177e29431b194740d36be1"
+        }
+      ],
+      "fileName": "./Cargo.lock",
+      "fileTypes": [
+        "SOURCE",
+        "TEXT"
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-vitheim_error",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ba99f77664ba190e08177e29431b194740d36be1"
+        }
+      ],
+      "fileName": "./Cargo.lock",
+      "fileTypes": [
+        "SOURCE",
+        "TEXT"
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-vitheim_id",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ba99f77664ba190e08177e29431b194740d36be1"
+        }
+      ],
+      "fileName": "./Cargo.lock",
+      "fileTypes": [
+        "SOURCE",
+        "TEXT"
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-File-vitheim_time",
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "ba99f77664ba190e08177e29431b194740d36be1"
+        }
+      ],
+      "fileName": "./Cargo.lock",
+      "fileTypes": [
+        "SOURCE",
+        "TEXT"
+      ]
+    }
+  ],
+  "name": "vitheim",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Package-vitheim-error-0.1.0",
+      "description": "Private stable error taxonomy for Vitheim",
+      "downloadLocation": "NONE",
+      "homepage": "https://github.com/valkyoth/vitheim",
+      "licenseConcluded": "EUPL-1.2",
+      "licenseDeclared": "EUPL-1.2",
+      "name": "vitheim-error",
+      "versionInfo": "0.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-vitheim-id-0.1.0",
+      "description": "Private typed identifier foundation for Vitheim",
+      "downloadLocation": "NONE",
+      "homepage": "https://github.com/valkyoth/vitheim",
+      "licenseConcluded": "EUPL-1.2",
+      "licenseDeclared": "EUPL-1.2",
+      "name": "vitheim-id",
+      "versionInfo": "0.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-vitheim-time-0.1.0",
+      "description": "Private deterministic time primitives for Vitheim",
+      "downloadLocation": "NONE",
+      "homepage": "https://github.com/valkyoth/vitheim",
+      "licenseConcluded": "EUPL-1.2",
+      "licenseDeclared": "EUPL-1.2",
+      "name": "vitheim-time",
+      "versionInfo": "0.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-vitheim-budget-0.1.0",
+      "description": "Private bounded-work primitives for Vitheim",
+      "downloadLocation": "NONE",
+      "homepage": "https://github.com/valkyoth/vitheim",
+      "licenseConcluded": "EUPL-1.2",
+      "licenseDeclared": "EUPL-1.2",
+      "name": "vitheim-budget",
+      "versionInfo": "0.1.0"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-vitheim-0.1.0",
+      "description": "Private facade for Vitheim's deterministic service-operations core",
+      "downloadLocation": "NONE",
+      "homepage": "https://github.com/valkyoth/vitheim",
+      "licenseConcluded": "EUPL-1.2",
+      "licenseDeclared": "EUPL-1.2",
+      "name": "vitheim",
+      "versionInfo": "0.1.0"
+    }
+  ],
+  "relationships": [
+    {
+      "relatedSpdxElement": "SPDXRef-Package-vitheim-time-0.1.0",
+      "relationshipType": "GENERATED_FROM",
+      "spdxElementId": "SPDXRef-File-vitheim_time"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-File-vitheim_budget",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-vitheim-id-0.1.0",
+      "relationshipType": "GENERATED_FROM",
+      "spdxElementId": "SPDXRef-File-vitheim_id"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-File-vitheim_time",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-vitheim-error-0.1.0",
+      "relationshipType": "GENERATED_FROM",
+      "spdxElementId": "SPDXRef-File-vitheim_error"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-File-vitheim_id",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-vitheim-budget-0.1.0",
+      "relationshipType": "GENERATED_FROM",
+      "spdxElementId": "SPDXRef-File-vitheim_budget"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-vitheim-id-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-vitheim-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-vitheim-time-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-vitheim-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-vitheim-error-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-vitheim-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-vitheim-budget-0.1.0",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-Package-vitheim-0.1.0"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Package-vitheim-0.1.0",
+      "relationshipType": "GENERATED_FROM",
+      "spdxElementId": "SPDXRef-File-vitheim"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-File-vitheim",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-File-vitheim_error",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    }
+  ],
+  "spdxVersion": "SPDX-2.3"
+}

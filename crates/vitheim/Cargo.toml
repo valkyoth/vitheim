@@ -1,0 +1,20 @@
+[package]
+name = "vitheim"
+description = "Private facade for Vitheim's deterministic service-operations core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+publish = false
+
+[dependencies]
+vitheim-budget.workspace = true
+vitheim-error.workspace = true
+vitheim-id.workspace = true
+vitheim-time.workspace = true
+
+[lints]
+workspace = true
+
