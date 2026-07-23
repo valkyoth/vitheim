@@ -17,8 +17,15 @@ content digest has conformance evidence for the selected profiles. Every
 compiled/signed catalog trust profile is independently anchored and bound into
 artifacts, checkpoints, backups, restore, and failover evidence. Every semantic
 ID exhaustively resolves to compiled Rust transitions, typed outcomes, recovery
-logic, and concrete P/M/F tests. No unknown, prose-interpreted, or unresolved
+logic, and concrete P/N/M/F tests. No unknown, prose-interpreted, or unresolved
 realization ships.
+The planning superset is absent from runtime authority. `VIT-INV-057` has one
+evidenced owner and monotonic local ratchets; `VIT-LAW-007` proves its
+safety-floor, dispatch, and transmission-start composition. Every active
+catalog is milestone-scoped, excludes future tuples, serializes exactly
+`CompiledCatalog` or `SignedCatalog`, and content-binds its complete payload,
+predecessor, version floor/ceiling, scope, validity, signer/root epoch,
+revocation, and successor envelope.
 
 Goal: release the first production-supported Vitheim platform with claims no
 broader than its evidence.
@@ -411,8 +418,12 @@ Verification:
   proof/activation fence, migration, and rollback floor.
   Every generation tuple is in the independently trusted active admission
   catalog, every terminal generation includes its complete admitted ancestry,
-  and every semantic contract has executable transition/recovery/P-M-F
+  and every semantic contract has executable transition/recovery/P/N/M/F
   evidence. Database authority cannot mint or replace law trust.
+  The report proves the planning superset was never loaded as runtime
+  authority, every active-catalog transition was owned/CAS-fenced and locally
+  ratcheted, each payload/envelope field was content-bound, and every semantic
+  realization passed stage-aware P/N/M/F file/symbol/test resolution.
   `VIT-LAW-006` evidence distinguishes `DefinitelyNotStarted`,
   `OutcomeUnknown`, and `StartClaimedReconciling`; possible or claimed start
   never permits ordinary retransmission. Invariant and law supersession are
@@ -432,7 +443,9 @@ authority-review report proves exactly one resolved disposition per later
 milestone with zero proposals, and the law-generation report proves zero
 future-effective dependency, future-generation claim, semantic drift,
 noncanonical manifest, digest mismatch, untrusted catalog tuple, incomplete
-ancestry, or unknown/unrealized semantic contract, the
+ancestry, future active tuple, planning/active confusion, ownerless or
+rollbackable catalog lineage, ambiguous profile, incomplete envelope, or
+unknown/unrealized semantic contract, the
 final exact commit and artifacts pass the final independent pentest, stop for
 explicit maintainer authorization before creating `v1.0.0`; publishing crates
 remains forbidden except for a separately approved SDK. `v1.0.0 implementation

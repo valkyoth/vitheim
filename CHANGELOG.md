@@ -8,6 +8,19 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added `VIT-INV-057` and `VIT-LAW-007` so the active platform-law catalog has
+  one lifecycle owner, expected-version activation, succession/revocation/
+  emergency-distrust commands, local rollback ratchets, and explicit
+  safety-floor/dispatch/transmission-start composition.
+- Separated the future-inclusive planning admission superset from immutable
+  milestone-scoped active catalogs, with a checked successor schedule that
+  excludes future tuples and requires complete effective ancestry.
+- Defined fully content-bound active-catalog payload and trust envelopes with
+  exact `CompiledCatalog`/`SignedCatalog` profiles and version, scope, validity,
+  signer/root, revocation, and successor fields.
+- Made semantic realization enforcement stage-aware and added explicit
+  positive/negative/model/fault contracts plus concrete file, enum/dispatch,
+  symbol, recovery, and test-ID gates.
 - Added an independently trusted law-manifest admission catalog so a canonical
   digest proves content but cannot authorize an attacker-authored generation;
   compiled or dedicated-platform-law-signed tuples now flow through

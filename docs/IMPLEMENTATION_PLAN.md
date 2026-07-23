@@ -72,15 +72,29 @@ migration, import, restore, failover, and recovery admit only exact
 [Law Manifest Admission Set](LAW_MANIFEST_ADMISSIONS.md), whose compiled or
 platform-law-signed catalog identity, epoch, digest, and trust profile are
 bound into checkpoints, backups, and release evidence. Database access alone
-cannot extend this set.
+cannot extend this set. That registry is a planning superset only. Runtime uses
+the immutable milestone-scoped payloads and fully content-bound envelopes in
+[Active Law Catalogs](LAW_ACTIVE_CATALOGS.md): each exact
+`CompiledCatalog` or `SignedCatalog` contains complete effective ancestry, no
+future tuple, and an activation/max-version fence.
+`VIT-INV-057` owns the active catalog lineage, expected-version activation,
+succession, revocation, emergency distrust, epoch/digest, and local monotonic
+high-watermarks. `VIT-LAW-007` composes it with platform safety-floor,
+dispatch, and transmission-start roots. No startup, restore, migration,
+failover, import, law activation, dispatch, or transmission start may infer
+trust from mutable storage.
 Canonical semantic prose is review evidence, not executable input. The
 [Law Semantic Realization Registry](LAW_SEMANTIC_REALIZATIONS.md) exhaustively
 binds every `VIT-LSEM-*` to compiled Rust transitions, typed outcomes, recovery
-logic, and exact positive/model/fault test contracts. Unknown or mismatched
+logic, and exact positive/negative/model/fault test contracts. Unknown or mismatched
 semantic IDs fail closed; no prose interpreter, reflection path, or plugin may
 create authority. A reference to `VIT-LAW-NNN@gNN` claims the complete
 predecessor closure `g01..gNN`, and conformance evidence enumerates and admits
-every tuple and realization in that closure.
+every tuple and realization in that closure. Every realization binds
+positive/negative/model/fault contracts. Once the later of its effective
+milestone and `0.18.3` leaves planned status, CI requires its Rust
+transition/recovery files, closed enum/dispatch entry, typed symbols, and
+concrete test IDs.
 The [Milestone Authority Reviews](AUTHORITY_REVIEWS.md) registry gives every
 milestone after `0.18.3` exactly one `declares`, `extends`, `none`, or
 conservative `proposed` disposition. Before implementation begins, `proposed`

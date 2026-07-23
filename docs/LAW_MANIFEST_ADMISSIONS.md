@@ -1,18 +1,21 @@
 # Law Manifest Admission Set
 
-Status: normative planning trust-anchor registry introduced by `0.18.3`
+Status: normative planning-superset registry introduced by `0.18.3`
 
-A valid manifest digest proves content integrity, not trust. Runtime code admits
-a `LawGenerationManifestV1` only when its exact `(LawId, Generation, Digest)`
-tuple occurs in the active `LawManifestAdmissionSetV1` and that set is anchored
-by one selected production profile:
+This file is the append-only planning superset of every reviewed
+`(LawId, Generation, Digest)` tuple, including future generations. It is input
+to release tooling and is never an active runtime catalog. Presence here proves
+reviewed planning identity, not effectiveness, implementation, or activation.
+Runtime admits only an immutable milestone-scoped catalog from
+[Active Law Catalogs](LAW_ACTIVE_CATALOGS.md), whose tuple closure contains no
+generation effective after that catalog's maximum platform version.
 
-- `CompiledCatalog`: the exact catalog ID, epoch, digest, and tuples are embedded
-  in the reviewed binary and covered by artifact provenance; or
-- `SignedCatalog`: a dedicated platform-law authority signs the catalog ID,
-  epoch, digest, validity window, product/release scope, and predecessor catalog
-  digest. Trust roots are compiled or provisioned through a separate authenticated
-  ceremony and are not stored beside mutable manifests.
+A valid manifest or planning-superset digest proves content integrity, not
+runtime trust. Active catalogs use exactly one profile enum:
+`CompiledCatalog` or `SignedCatalog`. The combined phrase “compiled or signed”
+is a design choice description and is never serialized as an active profile.
+`VIT-INV-057` owns proposal, activation, succession, revocation, emergency
+distrust, active epoch/digest, and local high-watermark ratchets.
 
 Database access alone must never authorize either profile. Startup, adapter
 admission, migration, restore, failover, import, and recovery reject a
@@ -21,20 +24,21 @@ backup manifests, release evidence, and restore reports bind the active catalog
 ID, epoch, digest, and trust profile. Rollback cannot select an older catalog
 unless its release and generation rollback floors explicitly permit it.
 
-Catalog ID: `VIT-LAWCAT-001-v1`
+Planning catalog ID: `VIT-LAWCAT-PLAN-001-v1`
 
-Catalog epoch: `1`
+Planning catalog revision: `1`
 
-Trust profile: `compiled-or-signed-platform-law-authority-v1`
+Trust profile: `planning-superset-not-runtime-v1`
 
-Catalog digest: `sha256:2f9749b5af0a2e88a13c4a6e0f9b314fdf8c34e776469b35190f86910aab9145`
+Planning catalog digest: `sha256:63a74bc688414c1b5220e0399279f1c8759fc5473eec6b39cfc945255964f758`
 
-The catalog digest uses the length-prefixed encoding defined by
+The planning-catalog digest uses the length-prefixed encoding defined by
 `docs/LAW_GENERATION_MANIFEST.md`. Encode, in order, the ASCII format literal
-`vitheim-law-manifest-admission-set-v1`, catalog ID, epoch, trust profile, and
-decimal tuple count. Then encode each reference and manifest digest in the table
-order. Rows are sorted by numeric law ID then generation, unique, and complete.
-The catalog digest field and Markdown presentation are excluded.
+`vitheim-law-manifest-planning-superset-v1`, planning catalog ID, revision,
+the exact non-runtime trust-profile literal, and decimal tuple count. Then
+encode each reference and manifest digest in table order. Rows are sorted by
+numeric law ID then generation, unique, and complete. The digest field and
+Markdown presentation are excluded.
 
 | Law generation | Admitted manifest digest |
 | --- | --- |
@@ -66,12 +70,14 @@ The catalog digest field and Markdown presentation are excluded.
 | VIT-LAW-006@g08 | sha256:1831ab3a258cc5cc6cbc50a579cae326973bd4406749c6cb3ed9e665be27e095 |
 | VIT-LAW-006@g09 | sha256:44b4e01d4de263d630fbf5ea97e52fcfa1a06f0d63056ba4a9af0aeb2e0cc12f |
 | VIT-LAW-006@g10 | sha256:54280761c256d867005a953f5c2f46d6e0d0ed018ac4b3ad47326d859f47d338 |
+| VIT-LAW-007@g01 | sha256:b688c69e958c3d2a4296e30280d8a1228f962ea1613aefdccf3869a5bdc7198c |
 
-`0.18.3` implements the N1 admission-set type, exhaustive lookup, compiled-set
-profile, signed-set verification port, catalog successor/revocation rules, and
-unknown/self-consistent-but-untrusted rejection fixtures. `0.19.0` binds the
-active catalog into signed checkpoints. `0.21.0–0.22.0` negotiate and conform
-catalog persistence/admission; `0.29.0–0.30.0` preserve it through migration,
-export, and import. `0.140.1`, `0.140.2`, and `0.140.6` freeze the signing,
-storage, and deployment profiles. Phase O and `1.0.0` require catalog-bound
-backup/restore/failover evidence and an exact-commit pentest.
+`0.18.3` implements planning-superset validation and generation of the first
+active catalog, which stops exactly at `0.18.3`. Each later law-effective
+milestone generates one immutable successor containing the complete effective
+ancestry and no planned future tuple. `0.19.0` binds the active envelope into
+signed checkpoints. `0.21.0–0.22.0` negotiate and conform catalog ownership,
+ratchets, persistence, and admission; `0.29.0–0.30.0` preserve them through
+migration, export, and import. `0.140.1`, `0.140.2`, and `0.140.6` freeze the
+exact trust, storage, and deployment profiles. Phase O and `1.0.0` require
+catalog-bound backup/restore/failover evidence and an exact-commit pentest.

@@ -1830,6 +1830,8 @@ and fail conservatively.
 ## `0.18.3` — Machine-Checkable Invariant Ownership Registry
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-057 0.18.3 -->
+<!-- vitheim-law VIT-LAW-007 0.18.3 -->
 
 Setup: adopt `docs/INVARIANT_OWNERSHIP.md` as the canonical registry for every
 authority-bearing invariant and formally backfill all authority declared from
@@ -1893,30 +1895,50 @@ implementation is blocked until its exact digest implementation passes the
 fixtures verify canonical byte/digest stability. The latest ownership view must
 normalize to the latest resolved semantics and manifest digest.
 
-Implement `LawManifestAdmissionSetV1` from
-`docs/LAW_MANIFEST_ADMISSIONS.md` as a trust decision distinct from digest
-verification. It admits only exact `(LawId, Generation, Digest)` tuples through
-an artifact-provenance-bound compiled catalog or a catalog signed by a
-dedicated platform-law authority whose trust root is not mutable beside stored
-manifests. Database write access cannot mint law authority. Startup, in-memory
-persistence, export, restore, and every later adapter/migration path reject an
-otherwise canonical, self-consistent manifest outside the active set. Catalog
-successor, revocation, validity, release scope, predecessor digest, ID, epoch,
-digest, and trust profile are typed and monotonic. Checkpoint and backup binding
-is completed at `0.19.0` and `0.145.0`; profile selection is frozen before
-production at `0.140.1`, storage at `0.140.2`, and HA distribution/recovery at
-`0.140.6`.
+Treat `docs/LAW_MANIFEST_ADMISSIONS.md` only as a planning superset. Implement
+the milestone-scoped `LawManifestAdmissionSetV1` payload and envelope from
+`docs/LAW_ACTIVE_CATALOGS.md`; the initial active catalog stops exactly at
+`0.18.3`, contains complete effective ancestry, and excludes every future
+tuple even when that tuple is reviewed in the planning superset.
+
+`VIT-INV-057` gives `PlatformLawCatalogLineage` exactly one authority owner.
+Typed `ProposeLawCatalog`, `ActivateLawCatalog`, `SupersedeLawCatalog`,
+`RevokeLawCatalog`, and `EmergencyDistrustLawCatalog` commands/events govern
+the active epoch/digest, predecessor/successor/revocation state, expected-
+version activation CAS, and local monotonic admission high-watermarks.
+`VIT-LAW-007` connects that owner to the platform safety-floor/local-ratchet,
+dispatch-receipt, and transmission-start roots. Startup, restore, migration,
+failover, import, law activation, dispatch, and transmission start bind and
+recheck the active catalog epoch/digest. Recovery obtains trust only from
+compiled artifact provenance or a separately authenticated dedicated
+platform-law signature root; database content can never reconstruct it.
+The first reviewed `CompiledCatalog` and `VIT-LAW-007@g01` realization seed the
+owner from artifact provenance; only successors use the newly established
+lineage, avoiding self-admission from mutable state.
+
+Each active envelope serializes exactly `CompiledCatalog` or `SignedCatalog`
+and content-binds payload/predecessor digests, epoch, activation floor,
+maximum platform version, product/edition/compatibility scope, validity policy
+and times, signer/key/signature profile, trust-root epoch, revocation policy,
+and successor policy. A combined profile is invalid. Every law-effective
+milestone creates the next immutable catalog in the checked schedule.
+Checkpoint and backup binding is completed at `0.19.0` and `0.145.0`; exact
+profile selection is frozen before production at `0.140.1`, storage at
+`0.140.2`, and HA distribution/recovery at `0.140.6`.
 
 Implement the closed `LawSemanticId` enum and exhaustive
 `LawSemanticRealization` dispatch table from
 `docs/LAW_SEMANTIC_REALIZATIONS.md`. Canonical semantics remain human review
 evidence, never a prose interpreter, string-reflection command source, or
 plugin extension point. Each semantic ID resolves to compiled Rust
-transitions, typed outcomes, recovery logic, and its exact positive/model/fault
-contracts; unknown, unsupported, or manifest-mismatched IDs fail startup and
+transitions, typed outcomes, recovery logic, and its exact positive/negative/
+model/fault contracts; unknown, unsupported, or manifest-mismatched IDs fail startup and
 restore. In particular, every `VIT-LAW-006` realization preserves
 `DefinitelyNotStarted`, `OutcomeUnknown`, and `StartClaimedReconciling` as
-distinct typed states.
+distinct typed states. Each row has P/N/M/F contracts. The realization gate is
+the later of its effective milestone and `0.18.3`; as soon as that gate leaves
+planned status, CI requires the Rust transition/recovery files, closed enum and
+dispatch-table entry, typed symbols, and every concrete test ID to exist.
 
 Generation one supplies dependencies and complete semantics. A later
 generation requires at least one real addition, removal, coordinator change, or
@@ -1944,7 +1966,7 @@ resolution occur in the same commit. Law extensions name
 `VIT-LAW-NNN@gNN`, and the checker deterministically requires the latest
 generation effective at that milestone. The reference asserts the complete
 `g01..gNN` ancestry: evidence enumerates each manifest digest, trusted catalog
-tuple, semantic realization, and P/M/F contract rather than checking only the
+tuple, semantic realization, and P/N/M/F contract rather than checking only the
 terminal row. CI derives the milestone set from all
 implementation documents, rejects
 missing/duplicate/orphan reviews, and requires a `declares` disposition to match
@@ -1978,8 +2000,9 @@ declarations, owner-transfer/supersession procedure, storage-capability
 cross-check contract, test-contract realization index, and generated restore/
 migration monotonic-state manifest contract; canonical law-manifest schema,
 codec/API contract, semantic IDs, content digests, strict canonical parser,
-golden fixtures, independently trusted compiled/signed admission-set ports,
-catalog lifecycle, exhaustive semantic-realization table, and digest/admission-
+golden fixtures, planning-superset validator, owned milestone-scoped active
+catalog lineage, complete envelope codecs, compiled/signed admission ports,
+catalog lifecycle/ratchets, exhaustive semantic-realization table, and digest/admission-
 verifying in-memory persistence. The checker rejects unregistered
 declarations or rows, duplicate IDs, mismatched introduction versions, absent
 or alternative authoritative owners, guards without an owner-maintained update
@@ -2000,7 +2023,9 @@ rollback below activation while accepting valid removal-only and semantics-only
 generations. It also rejects generation-one removal, overlapping or no-effect
 dependency deltas, coordinator absence, fewer than two resolved roots,
 malformed canonical fields, self-consistent-but-untrusted manifests, catalog
-tamper/rollback, unknown semantic realizations, and ancestry omission. Later
+tamper/rollback, planning-superset use at runtime, future tuple activation,
+combined profiles, unsigned envelope-field mutation, missing active-catalog
+owner/ratchet, unknown semantic realizations, and ancestry omission. Later
 milestones must declare and
 register new invariants and the corresponding law generation in the same
 commit. The authority-review checker rejects any post-`0.18.3` milestone
@@ -2030,8 +2055,14 @@ than two roots or remove the coordinator; claim a neutral dependency delta; use
 normalization alternative, embedded pipe, or irregular cell spaces; recompute
 a modified manifest digest while leaving it absent from the trusted catalog;
 forge, roll back, truncate, or substitute a catalog; omit one ancestor tuple or
-semantic realization; add an unknown semantic ID; remove a typed
-transition/outcome, recovery path, or P/M/F contract; change a planned proposed
+semantic realization; trust the planning superset directly; place a reviewed
+future tuple in the `0.18.3` active catalog; omit or mutate any payload/envelope
+scope, validity, signer, root-epoch, revocation, successor, or predecessor field;
+serialize a combined profile; race activation/supersession/revocation/emergency
+distrust; restore below a local high-watermark; add an unknown semantic ID;
+remove a typed transition/outcome, recovery path, or P/N/M/F contract; mark a
+realization gate implemented while its file, enum/dispatch entry, symbol, or
+test ID is missing; change a planned proposed
 milestone to implementing/implemented without
 resolving it; cite a bare, stale, or future generation; omit or
 duplicate a later milestone authority review; misclassify declarations as
@@ -2048,9 +2079,11 @@ disposition; declaration/review coverage is derived rather than counted
 manually; no unresolved proposal survives a milestone status transition; no
 phase, adapter, test suite, restore, migration, mixed-version deployment, or
 owner transfer can silently omit the invariant, select a second owner, or lose
-required monotonic state. Every manifest is both self-consistent and trusted,
-every shipped semantic ID resolves exhaustively to code/recovery/P-M-F tests,
-and every generation claim proves its admitted predecessor closure.
+required monotonic state. Every manifest is self-consistent, effective,
+realized, and trusted by the one owned active lineage; every shipped semantic
+ID resolves exhaustively to code/recovery/P-N-M-F tests; every generation claim
+proves its admitted predecessor closure; and future planning tuples remain
+inert.
 `v0.18.3 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.18.4` — Bounded Evaluator Re-evaluation Scheduler
@@ -2272,7 +2305,9 @@ admission record for every hash, signing, KMS, and timestamp implementation.
 
 Setup: bind tenant, partition, stream, sequence, event/schema IDs, payload digest,
 the `0.18.2` work-variant/audit-intent/receipt/commit digests, predecessor, and
-key ID, plus active law-catalog ID, epoch, digest, and trust profile; define
+key ID, plus active law-catalog ID, epoch, payload/envelope digests, exact
+profile, activation/max versions, predecessor digest, scope, validity,
+signer/root epoch, and revocation/successor policy; define
 domain-stream and denial-only audit sequences, partition Merkle
 commitments, external signed anchors, checkpoint cadence, rotation, independent
 timestamp option, and limits.
@@ -2289,9 +2324,9 @@ Verification: deletion of an entire stream or denial sequence, removal of an
 audit intent or receipt while leaving domain events intact, reorder/substitution/
 splice, wrong stream/tenant/key, anchor loss, rotation, timestamp semantics,
 truncated chain, recovery verification, digest collision fixture, and bounded
-verify pass; catalog substitution, rollback, missing ancestry tuple, and a
-self-consistent untrusted manifest are rejected even when event hashes remain
-valid.
+verify pass; catalog substitution, rollback, missing ancestry tuple, future
+tuple, envelope-field mutation, profile ambiguity, and a self-consistent
+untrusted manifest are rejected even when event hashes remain valid.
 
 Exit criteria: tamper evidence is deterministic without inventing cryptography.
 `v0.19.0 implementation stop reached. Run pentest for this exact commit.`

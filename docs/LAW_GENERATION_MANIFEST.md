@@ -59,7 +59,9 @@ The Rust artifact uses the same field values and ordering through the canonical
 `0.6.0` codec and stores a typed `Digest32` plus the admitted digest-profile
 identifier. Digest self-consistency is not authority: the exact
 `(LawId, Generation, Digest)` must also occur in the trusted
-[Law Manifest Admission Set](LAW_MANIFEST_ADMISSIONS.md). The `0.18.3`
+[Law Manifest Admission Set](LAW_MANIFEST_ADMISSIONS.md) planning superset and
+the exact generation must be effective, realized, and present in a
+milestone-scoped [Active Law Catalog](LAW_ACTIVE_CATALOGS.md). The `0.18.3`
 implementation-admission record must approve the digest implementation before
 production code uses it; `0.140.1` revalidates that choice. Planning SHA-256
 verification does not authorize a casual first-party cryptographic
@@ -95,8 +97,9 @@ released meaning requires a successor generation, not an in-place edit.
 
 - `0.18.3`: implement the `no_std`/N1 manifest type, canonical codec, digest
   verification, strict field/parser and composite-structure checks, trusted
-  admission set, closed semantic-realization registry, and in-memory
-  round-trip/golden fixtures.
+  `VIT-INV-057` catalog lineage, planning/active separation, fully bound
+  payload/envelope, closed stage-aware P/N/M/F semantic-realization registry,
+  and in-memory round-trip/golden fixtures.
 - `0.19.0`: signed checkpoints bind the active admission-catalog identity,
   epoch, digest, and trust profile.
 - `0.21.0`: storage capability negotiation declares manifest, digest,

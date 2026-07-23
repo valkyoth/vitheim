@@ -37,12 +37,16 @@ audit decision.
 - Secure configuration defaults and startup validation.
 - Law-manifest trust independent from mutable storage: exact admitted
   `(LawId, Generation, Digest)` tuples, compiled or dedicated-platform-law
-  signed catalogs, strict canonical parsing, catalog-bound checkpoint/backup/
-  restore evidence, and rollback/revocation handling.
+  signed milestone-scoped active catalogs, planning-superset separation, one
+  owned lineage, expected-version activation, local epoch/digest ratchets,
+  strict canonical payload/envelope parsing, complete scope/validity/signer/
+  root/revocation/successor digest binding, catalog-bound checkpoint/backup/
+  restore evidence, and rollback/emergency-distrust handling.
 - Closed law-semantic dispatch: prose is evidence only; supported IDs
   exhaustively resolve to compiled transitions, typed outcomes, recovery, and
-  positive/model/fault tests, with unknown IDs and incomplete predecessor
-  closures rejected before readiness.
+  positive/negative/model/fault tests, with stage-aware file/symbol/test
+  realization and unknown IDs or incomplete predecessor closures rejected
+  before readiness.
 - Strong tenant partitions in storage, search, queues, caches, blobs, logs,
   exports, metrics labels, and backups.
 - Authentication independent from authorization; sender-constrained privileged

@@ -23,8 +23,9 @@ Every row is a [Law Generation Manifest](LAW_GENERATION_MANIFEST.md) source
 record. Its semantic-contract ID and SHA-256 manifest digest bind the resolved
 dependency set and all security-relevant fields. Runtime trust additionally
 requires the exact tuple in
-[Law Manifest Admission Set](LAW_MANIFEST_ADMISSIONS.md), while executable
-meaning is closed over the
+[Law Manifest Admission Set](LAW_MANIFEST_ADMISSIONS.md) planning superset and
+the milestone-scoped [Active Law Catalogs](LAW_ACTIVE_CATALOGS.md), while
+executable meaning is closed over the
 [Law Semantic Realization Registry](LAW_SEMANTIC_REALIZATIONS.md). A
 `VIT-LAW-NNN@gNN` claim includes and enumerates all generations `g01..gNN`.
 
@@ -58,3 +59,4 @@ meaning is closed over the
 | VIT-LAW-006 | 8 | `0.56.0` | 7 | VIT-INV-006 | VIT-INV-042 | none | unchanged | predecessor/successor intersection; missing policy root denies start | VIT-LGFEN-006-g08 | VIT-LGMIG-006-g08-v1 | `0.56.0` | VIT-LDEP-006-g08-v1 | VIT-LSEM-006-g08-v1 | VIT-LRCV-006-g08-v1 | sha256:1831ab3a258cc5cc6cbc50a579cae326973bd4406749c6cb3ed9e665be27e095 |
 | VIT-LAW-006 | 9 | `0.57.0` | 8 | VIT-INV-006 | VIT-INV-041 | none | unchanged | predecessor/successor intersection; missing relationship root denies start | VIT-LGFEN-006-g09 | VIT-LGMIG-006-g09-v1 | `0.57.0` | VIT-LDEP-006-g09-v1 | VIT-LSEM-006-g09-v1 | VIT-LRCV-006-g09-v1 | sha256:44b4e01d4de263d630fbf5ea97e52fcfa1a06f0d63056ba4a9af0aeb2e0cc12f |
 | VIT-LAW-006 | 10 | `0.59.0` | 9 | VIT-INV-006 | VIT-INV-039 | none | unchanged | predecessor/successor intersection; missing delegation root denies start | VIT-LGFEN-006-g10 | VIT-LGMIG-006-g10-v1 | `0.59.0` | VIT-LDEP-006-g10-v1 | VIT-LSEM-006-g10-v1 | VIT-LRCV-006-g10-v1 | sha256:54280761c256d867005a953f5c2f46d6e0d0ed018ac4b3ad47326d859f47d338 |
+| VIT-LAW-007 | 1 | `0.18.3` | none | VIT-INV-057 | VIT-INV-006, VIT-INV-021, VIT-INV-030, VIT-INV-043, VIT-INV-057 | none | linearize: platform-law authority validates one complete milestone-scoped catalog; expected-version activation advances the lineage and local admission ratchets; readiness, dispatch, and transmission start bind and recheck its exact epoch and digest; failure: `LawCatalogAdmissionBlocked`; recovery: recover only compiled artifact provenance or an externally verified signed envelope, active lineage, and local high-watermarks; verify complete effective law ancestry and semantic realizations; never infer trust from mutable storage | initial generation only | VIT-LGFEN-007-g01 | VIT-LGMIG-007-g01-v1 | `0.18.3` | VIT-LDEP-007-g01-v1 | VIT-LSEM-007-g01-v1 | VIT-LRCV-007-g01-v1 | sha256:b688c69e958c3d2a4296e30280d8a1228f962ea1613aefdccf3869a5bdc7198c |

@@ -103,7 +103,13 @@ capabilities for every law generation effective at the adapter milestone.
 Also require `LawManifestAdmissionSetV1` catalog ID/epoch/digest/trust-profile
 persistence and independent admission, plus exhaustive
 `LawSemanticRealization` support for every tuple in each claimed generation's
-predecessor closure,
+predecessor closure. Require `VIT-CAP-057` for the one catalog-lineage owner,
+expected-version activation CAS, predecessor/successor/revocation/emergency-
+distrust state, and local monotonic high-watermarks. Negotiate the planning
+superset separately from immutable active payload/envelope support. Exact
+`CompiledCatalog` and `SignedCatalog` capabilities report independently; no
+combined capability is valid. Payload/envelope codecs cover every scope,
+validity, signer/root-epoch, revocation, and successor field,
 evidence version, startup
 probe, downgrade policy, transaction-domain placement/topology compatibility,
 authority-fence and target-fence freshness/co-location, capacity-transfer
@@ -212,7 +218,7 @@ recheck,
 cross-partition transaction requirement; self-consistent manifest absent from
 the trusted catalog, catalog signer/root substitution, stale/revoked catalog,
 missing ancestor tuple, unknown semantic ID, or missing compiled
-transition/outcome/recovery/P-M-F realization;
+transition/outcome/recovery/P/N/M/F realization;
 distributed-exactly-once capacity-transfer claim, unbounded or identity-changing
 deadlock retry, and optional-performance fallback tests pass.
 
@@ -233,8 +239,9 @@ digest rather than only the latest law view. Expand every cited `@gNN` into
 `g01..gNN` and verify every exact admitted tuple and semantic realization. The
 authority disposition cites
 exactly `VIT-LAW-001@g02`, `VIT-LAW-002@g01`, `VIT-LAW-003@g01`,
-`VIT-LAW-004@g01`, `VIT-LAW-005@g04`, and `VIT-LAW-006@g01`; later Phase F
-generations are not valid `0.22.0` conformance claims. Define
+`VIT-LAW-004@g01`, `VIT-LAW-005@g04`, `VIT-LAW-006@g01`, and
+`VIT-LAW-007@g01`; later Phase F generations are not valid `0.22.0`
+conformance claims. Define
 fault injection, concurrency
 schedule, adversarial twin tenants with colliding local IDs, connection-session
 state reuse, cleanup, administrator threat boundary, and evidence format.
@@ -246,7 +253,10 @@ state machine, machine-readable declaration/enforcement/test/recovery/lifecycle
 and law-generation coverage and conformance report; manifest/digest round-trip,
 trusted-catalog round-trip/admission, ancestry enumeration, realization
 dispatch, tamper, self-consistent-untrusted, noncanonical encoding,
-semantic-drift, unknown-semantic, and future-generation fixtures;
+semantic-drift, unknown-semantic, future-generation, planning-superset-as-
+runtime, future-planning-tuple-in-active-catalog, combined-profile, omitted-
+envelope-field, signer/root-substitution, activation-CAS, revocation-versus-
+readiness/dispatch/start, and local-ratchet-rollback fixtures;
 and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
@@ -796,8 +806,10 @@ rolling deployment, and prevent rollback below the generation floor.
 Persist the canonical predecessor and successor `LawGenerationManifestV1`
 bytes/digests, verify both before each checkpoint or recovery transition, and
 never synthesize a manifest from only the flattened latest law view. Preserve
-and verify the active admission-catalog ID/epoch/digest/trust profile, every
-tuple in both ancestry closures, and each closed semantic realization.
+and verify the `VIT-INV-057` lineage/high-watermarks, active catalog ID/epoch,
+payload/envelope digests, exact profile, activation/max versions, predecessor,
+scope, validity, signer/root epoch, revocation/successor state, every tuple in
+both ancestry closures, and each closed semantic realization.
 Migration authority cannot come from a manifest or catalog stored under the
 same mutable database authority; a missing, stale, revoked, or untrusted
 catalog blocks activation and rollback.
@@ -824,8 +836,9 @@ manifest/topology/outbox sequences/high-watermarks/inbox receipts/delivery
 barrier/blocked state/membership journals/generations/high-watermarks/fenced
 moves/scan receipts/final barrier/mismatch proof/stuck state, composite-law
 generation/predecessor/coordinator/dependency/activation/migration/rollback/
-semantic/recovery lifecycle plus canonical manifest bytes and digests, explicit
-trusted catalog metadata/full ancestry, closed semantic realizations, explicit
+semantic/recovery lifecycle plus canonical manifest bytes and digests,
+planning-superset versus active-catalog separation, complete owned payload/
+envelope metadata/full ancestry and ratchets, closed semantic realizations, explicit
 per-point negative-child realization,
 and concrete `VIT-RCV-*` fields.
 
@@ -866,8 +879,11 @@ Exit criteria: interrupted migrations cannot leave unclassified partial state.
 Status: planned.
 
 Setup: freeze canonical export version, tenant scope, event/blob manifests,
-integrity checkpoints, law-catalog identity/epoch/digest/trust profile and full
-generation ancestry, encryption/signing ports, position mapping, and budgets.
+integrity checkpoints, planning-superset provenance, `VIT-INV-057` lineage/
+ratchets, active catalog identity/epoch/payload-and-envelope digests/exact
+profile/activation floor/maximum platform/predecessor/scope/validity/signer/
+root epoch/revocation/successor fields and full generation ancestry,
+encryption/signing ports, position mapping, and budgets.
 
 Goal: migrate between backends without claiming direct database interchange.
 

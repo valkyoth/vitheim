@@ -3,6 +3,7 @@ set -eu
 
 generations=${1:-docs/LAW_GENERATIONS.md}
 realizations=${2:-docs/LAW_SEMANTIC_REALIZATIONS.md}
+implementation_dir=${3:-docs/implementation}
 
 fail() {
     echo "law semantic realizations: $*" >&2
@@ -11,9 +12,26 @@ fail() {
 
 [ -f "$generations" ] || fail "missing generation registry: $generations"
 [ -f "$realizations" ] || fail "missing realization registry: $realizations"
+[ -d "$implementation_dir" ] ||
+    fail "missing implementation directory: $implementation_dir"
 
 tmp_dir=$(mktemp -d)
 trap 'rm -rf "$tmp_dir"' EXIT HUP INT TERM
+
+awk '
+/^##? `/ {
+    if (match($0, /`[0-9]+\.[0-9]+\.[0-9]+`/)) {
+        version = substr($0, RSTART + 1, RLENGTH - 2)
+    } else {
+        version = ""
+    }
+    next
+}
+version != "" && /^Status:/ {
+    print version "|" $0
+    version = ""
+}
+' "$implementation_dir"/*.md | sort >"$tmp_dir/statuses"
 
 awk -F'|' '
 function trim(value) {
@@ -99,10 +117,10 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
 
     suffix=$(printf '%s\n' "$semantic" |
         sed -n 's/^VIT-LSEM-\([0-9][0-9][0-9]-g[0-9][0-9]\)-v[1-9][0-9]*$/\1/p')
-    expected="VIT-LST-${suffix}-P, VIT-LST-${suffix}-M, VIT-LST-${suffix}-F"
+    expected="VIT-LST-${suffix}-P, VIT-LST-${suffix}-N, VIT-LST-${suffix}-M, VIT-LST-${suffix}-F"
     [ "$tests" = "$expected" ] ||
-        fail "$semantic must bind its exact P/M/F contracts"
-    [ "$gate" = "planned until \`$effective\`; then implementation and P/M/F tests required" ] ||
+        fail "$semantic must bind its exact P/N/M/F contracts"
+    [ "$gate" = "realization gate is later of effective and \`0.18.3\`; then implementation and P/N/M/F tests required" ] ||
         fail "$semantic has a noncanonical resolution gate"
 
     case "$reference" in
@@ -112,6 +130,59 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
                     *"\`$outcome\`"*) ;;
                     *) fail "$semantic omits typed transmission outcome $outcome" ;;
                 esac
+            done
+            ;;
+    esac
+
+    gate_version=$(awk -v effective="$effective" '
+        function value(version, parts) {
+            split(version, parts, ".")
+            return parts[1] * 1000000 + parts[2] * 1000 + parts[3]
+        }
+        BEGIN {
+            if (value(effective) < value("0.18.3")) print "0.18.3"
+            else print effective
+        }
+    ')
+    status=$(awk -F'|' -v target="$gate_version" '
+        $1 == target { print substr($0, index($0, "|") + 1); exit }
+    ' "$tmp_dir/statuses")
+    [ -n "$status" ] ||
+        fail "$semantic cannot resolve realization-gate status $gate_version"
+    case "$status" in
+        *planned*) ;;
+        *)
+            source_path=$(printf '%s\n' "$rust_path" | tr -d '`')
+            recovery_path=$(printf '%s\n' "$recovery" | tr -d '`')
+            semantic_path=crates/vitheim-law/src/semantic.rs
+            test_path=crates/vitheim-law/tests/semantic_contracts.rs
+            for required_path in "$source_path" "$recovery_path" \
+                "$semantic_path" "$test_path"; do
+                [ -f "$required_path" ] ||
+                    fail "$semantic requires missing $required_path"
+            done
+            grep -Fq "$semantic" "$source_path" ||
+                fail "$semantic is absent from $source_path"
+            grep -Fq "$semantic" "$recovery_path" ||
+                fail "$semantic is absent from $recovery_path"
+            grep -Fq "$semantic" "$semantic_path" ||
+                fail "$semantic is absent from the closed semantic registry"
+            grep -Fq 'enum LawSemanticId' "$semantic_path" ||
+                fail "closed LawSemanticId enum is absent"
+            grep -Fq 'LawSemanticRealization' "$semantic_path" ||
+                fail "LawSemanticRealization dispatch table is absent"
+            symbols=$(printf '%s\n' "$transitions" |
+                sed 's/`, `/ /g; s/`//g')
+            for symbol in $symbols; do
+                if ! grep -Fq "$symbol" "$source_path" &&
+                    ! grep -Fq "$symbol" "$semantic_path"; then
+                    fail "$semantic typed symbol $symbol is not realized"
+                fi
+            done
+            test_ids=$(printf '%s\n' "$tests" | tr -d ',')
+            for test_id in $test_ids; do
+                grep -Fq "$test_id" "$test_path" ||
+                    fail "$semantic test contract $test_id is not realized"
             done
             ;;
     esac

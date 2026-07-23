@@ -8,6 +8,7 @@ ownership="$tmp_dir/ownership.md"
 generations="$tmp_dir/generations.md"
 admissions="$tmp_dir/admissions.md"
 realizations="$tmp_dir/realizations.md"
+active_catalogs="$tmp_dir/active_catalogs.md"
 
 reset_law() {
     cp docs/INVARIANT_OWNERSHIP.md "$ownership"
@@ -53,6 +54,20 @@ expect_realization_failure() {
     cp docs/LAW_SEMANTIC_REALIZATIONS.md "$realizations"
 }
 
+reset_active_catalogs() {
+    cp docs/LAW_ACTIVE_CATALOGS.md "$active_catalogs"
+}
+
+expect_active_catalog_failure() {
+    label=$1
+    if scripts/check_law_active_catalogs.sh \
+        "$generations" "$active_catalogs" docs/implementation >/dev/null 2>&1; then
+        echo "adversarial law policy: unexpectedly accepted $label" >&2
+        exit 1
+    fi
+    reset_active_catalogs
+}
+
 digest_sha256() {
     if command -v sha256sum >/dev/null 2>&1; then
         hash_line=$(sha256sum)
@@ -70,6 +85,7 @@ digest_sha256() {
 
 reset_law
 cp docs/LAW_SEMANTIC_REALIZATIONS.md "$realizations"
+reset_active_catalogs
 
 sed -i 's/| VIT-LAW-001 | 1 |/| VIT-LAW-001 | 01 |/' "$generations"
 expect_law_failure "a leading-zero generation"
@@ -158,5 +174,37 @@ expect_realization_failure "a missing semantic realization"
 
 sed -i 's/, `OutcomeUnknown`//g' "$realizations"
 expect_realization_failure "a missing typed transmission outcome"
+
+sed -i 's/, VIT-LST-001-g01-N//' "$realizations"
+expect_realization_failure "a missing negative semantic contract"
+
+sed -i '/^| 1 |/s/VIT-LAW-001@g02/VIT-LAW-001@g03/' "$active_catalogs"
+expect_active_catalog_failure "a future tuple in an active catalog"
+
+sed -i '/^| 1 |/s/CompiledCatalog/compiled-or-signed/' "$active_catalogs"
+expect_active_catalog_failure "a combined runtime trust profile"
+
+sed -i '/^| 1 |/s/, VIT-LAW-007@g01//' "$active_catalogs"
+expect_active_catalog_failure "an incomplete effective law frontier"
+
+sed -i '/^| 2 | VIT-LAWCAT-ACTIVE-/d' "$active_catalogs"
+expect_active_catalog_failure "a skipped catalog successor"
+
+implementation_copy="$tmp_dir/implementation"
+mkdir "$implementation_copy"
+cp docs/implementation/*.md "$implementation_copy/"
+sed -i \
+    '/^## `0.18.3`/,/^## `0.18.4`/s/^Status: planned/Status: implemented/' \
+    "$implementation_copy/PHASE_B.md"
+if scripts/check_law_semantic_realizations.sh \
+    "$generations" "$realizations" "$implementation_copy" >/dev/null 2>&1; then
+    echo "adversarial law policy: stage gate ignored missing realization files" >&2
+    exit 1
+fi
+if scripts/check_law_active_catalogs.sh \
+    "$generations" "$active_catalogs" "$implementation_copy" >/dev/null 2>&1; then
+    echo "adversarial law policy: stage gate ignored missing catalog artifact" >&2
+    exit 1
+fi
 
 echo "adversarial law policy checks passed"

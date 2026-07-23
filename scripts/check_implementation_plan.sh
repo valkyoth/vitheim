@@ -211,6 +211,21 @@ require_text docs/LAW_GENERATION_MANIFEST.md \
 require_text docs/LAW_MANIFEST_ADMISSIONS.md \
     '# Law Manifest Admission Set' \
     'independently trusted law-manifest admission catalog'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '# Active Law Catalogs' \
+    'milestone-scoped active law catalogs'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '`LawManifestAdmissionEnvelopeV1` content-binds these fields' \
+    'content-bound active catalog envelope'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    'exact profile enum: `CompiledCatalog` or `SignedCatalog`' \
+    'unambiguous active catalog profile'
+require_text docs/implementation/PHASE_B.md \
+    '<!-- vitheim-invariant VIT-INV-057 0.18.3 -->' \
+    'owned active law catalog lineage'
+require_text docs/implementation/PHASE_B.md \
+    '<!-- vitheim-law VIT-LAW-007 0.18.3 -->' \
+    'catalog admission composite law'
 require_text docs/LAW_SEMANTIC_REALIZATIONS.md \
     '# Law Semantic Realization Registry' \
     'executable law semantic realization registry'
@@ -277,4 +292,5 @@ scripts/check_invariant_ownership.sh
 scripts/check_law_generations.sh
 scripts/check_authority_reviews.sh
 scripts/check_law_semantic_realizations.sh
+scripts/check_law_active_catalogs.sh
 scripts/check_law_policy_adversarial.sh

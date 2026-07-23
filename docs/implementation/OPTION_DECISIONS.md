@@ -23,12 +23,16 @@ resolve any remaining zero-dependency/production-security conflict explicitly.
 Deliverables: revalidated admission-record inventory, approved production
 dependency allowlist or blocked features, crypto/KMS/key-rotation/timestamp
 profiles and adapter boundaries. Freeze the law-manifest trust profile here:
-compiled catalog, signed catalog, or a precisely scoped combination; dedicated
-platform-law signing roots, signer quorum/separation, validity/release scope,
-catalog successor/revocation/rollback, root rotation and compromise recovery,
-artifact binding, and the independently reviewed digest/signature
-implementations. Mutable database/configuration authority alone can neither add
-a tuple nor replace a trust root. The timestamp profile must define authoritative
+select exactly `CompiledCatalog` or `SignedCatalog` for each active runtime
+artifact; a combined serialized profile is prohibited. Freeze the canonical
+payload and envelope digest preimages, predecessor envelope digest, catalog
+epoch, activation floor/maximum platform version, product/edition/compatibility
+scope, validity policy/window, signer/key ID, signature profile, trust-root
+epoch, revocation/successor policy, dedicated platform-law roots, signer
+quorum/separation, root rotation and compromise recovery, artifact binding, and
+independently reviewed digest/signature implementations. Mutable database/
+configuration authority alone can neither add a tuple, activate a planning-
+superset entry, nor replace a trust root. The timestamp profile must define authoritative
 transaction time, persisted `redeemed_at`/`transmit_before`, monotonic
 transmission-start enforcement, maximum admission-to-transmission intervals,
 rollback/suspend behavior, and fail-closed handling when remaining time cannot
@@ -149,10 +153,16 @@ content digest. Reject a topology that supports only the
 latest flattened law view or admits an invariant before its effective version.
 Persist the exact admission-catalog ID, epoch, digest, trust profile, and full
 `g01..gNN` ancestry separately from mutable manifest rows. Map exhaustive
-semantic realizations and their transition/outcome/recovery/P-M-F evidence.
+semantic realizations and their transition/outcome/recovery/P/N/M/F evidence.
 Reject any topology where database administration can admit a new tuple,
 where restore can select an untrusted catalog, or where only a terminal
 generation is retained.
+Map the one `VIT-INV-057` owner, expected-version activation row, predecessor/
+successor/revocation/emergency-distrust lineage, local epoch/digest high-
+watermarks, and complete payload/envelope fields. Planning-superset storage is
+non-authoritative and physically/logically distinguishable from active
+catalogs. No storage topology may make active trust reconstructible from the
+database after compiled/signed provenance is lost.
 Map the evaluator invalidation-campaign root in the same transaction domain as
 evaluator epoch activation/revocation. Separately map the canonical capability-
 owner source/topology manifest, monotonic outbox sequences/cutoff high-
@@ -566,6 +576,12 @@ Failover, rollback, isolated-node startup, restore, and mixed-version operation
 reject stale, revoked, unknown, partial, or database-invented catalogs. RPO/RTO
 evidence states how the active catalog ID/epoch/digest is recovered without
 granting the backup medium signing authority.
+The HA profile names the single catalog-lineage leader/owner, expected-version
+activation and local-ratchet transactions, propagation acknowledgement,
+revocation/emergency-distrust priority, maximum tolerated staleness, and
+behavior when signer/root/validity evidence is unavailable. A node never
+continues dispatch or transmission start merely because its planned-superset
+tuple or mutable cached envelope remains self-consistent.
 Goal: select the exact profiles Phase O must certify.
 Deliverables: support matrix, trust/network boundaries, fencing/quorum model,
 dispatch-authorization consistency/failure model, quota consumption/refund

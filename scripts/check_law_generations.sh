@@ -263,15 +263,15 @@ FILENAME == generations &&
     generation_count++
     next
 }
-FILENAME == admissions && /^Catalog ID: `/ {
+FILENAME == admissions && /^Planning catalog ID: `/ {
     catalog_id = $0
-    sub(/^Catalog ID: `/, "", catalog_id)
+    sub(/^Planning catalog ID: `/, "", catalog_id)
     sub(/`$/, "", catalog_id)
     next
 }
-FILENAME == admissions && /^Catalog epoch: `/ {
+FILENAME == admissions && /^Planning catalog revision: `/ {
     catalog_epoch = $0
-    sub(/^Catalog epoch: `/, "", catalog_epoch)
+    sub(/^Planning catalog revision: `/, "", catalog_epoch)
     sub(/`$/, "", catalog_epoch)
     next
 }
@@ -281,9 +281,9 @@ FILENAME == admissions && /^Trust profile: `/ {
     sub(/`$/, "", trust_profile)
     next
 }
-FILENAME == admissions && /^Catalog digest: `/ {
+FILENAME == admissions && /^Planning catalog digest: `/ {
     catalog_digest = $0
-    sub(/^Catalog digest: `/, "", catalog_digest)
+    sub(/^Planning catalog digest: `/, "", catalog_digest)
     sub(/`$/, "", catalog_digest)
     next
 }
@@ -419,14 +419,14 @@ END {
         if (!current_law[id]) fail(id " generation has no current law view")
     }
     if (generation_count == 0) fail("no law generations found")
-    if (catalog_id !~ /^VIT-LAWCAT-[0-9][0-9][0-9]-v[1-9][0-9]*$/) {
+    if (catalog_id !~ /^VIT-LAWCAT-PLAN-[0-9][0-9][0-9]-v[1-9][0-9]*$/) {
         fail("admission catalog ID is not canonical")
     }
     if (catalog_epoch !~ /^[1-9][0-9]*$/) {
         fail("admission catalog epoch is not canonical")
     }
     if (trust_profile != \
-        "compiled-or-signed-platform-law-authority-v1") {
+        "planning-superset-not-runtime-v1") {
         fail("admission catalog trust profile is unknown")
     }
     if (catalog_digest !~ /^sha256:[0-9a-f]+$/ ||
@@ -437,7 +437,7 @@ END {
         fail("admission catalog does not cover every generation")
     }
     catalog_preimage = \
-        netstring("vitheim-law-manifest-admission-set-v1") \
+        netstring("vitheim-law-manifest-planning-superset-v1") \
         netstring(catalog_id) netstring(catalog_epoch) \
         netstring(trust_profile) netstring(generation_count "")
     for (law_number = 1; law_number <= 999; law_number++) {
