@@ -137,6 +137,12 @@ audit decision.
   cannot roll back the evaluator's signed binary/corpus-admitted lineage or
   monotonic epoch; evaluator change/revocation immediately requires
   re-evaluation and incompatible nodes reject startup. Re-evaluation uses
+  an invalidation campaign root created atomically with the evaluator epoch,
+  an authoritative evaluator-epoch/snapshot-generation index, frozen cutoff and
+  shard manifest, stable page cursors, generation-bound idempotent jobs,
+  explicit create/move/delete/quarantine/rotation dispositions, and a terminal
+  completeness reconciliation proof. A successor campaign tombstones older
+  enumeration and cannot inherit its counts. Re-evaluation then uses
   durable tenant/provider/account-partitioned jobs with stable generations,
   bounded concurrency/retry/provider-rate claims, global and tenant fairness,
   starvation bounds, privileged/near-term priority, and a non-borrowable
@@ -160,11 +166,14 @@ audit decision.
   briefly exist only there and are prohibited from upstream, plugin, general
   connector, durable, log, diagnostic, and crash surfaces.
 - Stable invariant IDs in `docs/INVARIANT_OWNERSHIP.md` bind every authority
-  owner to one owner-updated guard, transaction placement, enforcement points,
-  semantic storage requirements, P/N/M/F tests, and restore/migration duties.
-  CI rejects unowned, multiply owned, untested, unsupported, or recovery-
-  incomplete rows; adapters cannot claim support without every applicable
-  semantic capability.
+  declaration to exactly one ownership and lifecycle row. Stable enforcement,
+  capability, test, recovery-manifest, and owner-fence IDs bind the owner-updated
+  guard, transaction placement, concrete enforcement, supported storage,
+  P/N/M/F evidence, restore/migration fields, supersession, mixed-version
+  behavior, and rollback floor. CI derives coverage from phase declarations and
+  rejects unregistered, multiply owned, untested, unsupported, asymmetrically
+  superseded, or recovery-incomplete invariants; adapters cannot claim support
+  without every applicable semantic capability.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown

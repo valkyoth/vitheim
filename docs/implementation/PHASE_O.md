@@ -19,11 +19,16 @@ generation and old-work tombstones; and the independent remediation profile/
 credential lineage/audit/epoch/cleanup quota or manual-only limitation.
 Persist the `0.18.4` evaluator-job generations, tenant/provider/account queue
 partitions, durable cursors, attempts, leases, priority, freshness/refetch,
-fair-share/provider-rate/cleanup-lane accounting, and escalation. Persist the
+fair-share/provider-rate/cleanup-lane accounting, and escalation; also persist
+the atomic invalidation-campaign root, authoritative snapshot-generation index,
+cutoff/shard manifest, page cursors, materialization/disposition counts,
+completeness proof, successor tombstones, and stuck state. Persist the
 `0.18.5` remediation ceremony manifest, channel/KMS bindings, quorum receipts,
 compromise/loss/recovery epoch, expiry, exercise evidence, and manual-only
-limitation. Package a generated report proving every applicable stable
-invariant ID has its required storage capability and exactly one owner.
+limitation. Package a declaration-derived report proving every applicable stable
+invariant ID has exactly one ownership/lifecycle row and resolved enforcement,
+storage capability, test, recovery, and owner-fence contracts, including
+supersession/mixed-version/migration/rollback behavior.
 Goal: hardened repeatable single-node install.
 Deliverables: signed packages, startup floor-profile compatibility gate,
 active-evaluator binary/corpus/language compatibility gate, governed higher-
@@ -38,7 +43,9 @@ handle restore, unauthorized/stale profile activation, lost tombstone/rotation
 evidence/deadline, restored dual redemption, stale/restored capability snapshot,
 evaluator admission/epoch rollback or incompatible binary startup, partial
 reevaluation, queued old-output use, lost/duplicated evaluator job or cursor,
-tenant starvation/cleanup-lane borrowing, cleared quarantine/old-work revival,
+missing/split campaign root, index/cutoff/page/count/completeness corruption,
+premature or predecessor campaign completion, tenant starvation/cleanup-lane
+borrowing, cleared quarantine/old-work revival,
 remediation-lineage merge, self-approved/circular recovery, lost channel/KMS/
 quorum/exercise state, stale recovery epoch, or lost manual-only limitation,
 credential-operation-profile mismatch,
@@ -166,7 +173,9 @@ evaluator-lineage/epoch/reevaluation fencing, quarantine-resolution/new-
 generation/tombstone ownership, independent remediation credential-lineage/
 cleanup-quota isolation or manual-only state, bounded evaluator job/cursor/
 fairness/provider-rate/cleanup-lane scheduling, remediation bootstrap/recovery
-quorum/channel/KMS/epoch/exercise state, stable invariant-owner/guard placement,
+quorum/channel/KMS/epoch/exercise state, atomic evaluator campaign/index/cutoff/
+cursor/materialization/completeness/stuck-state ownership, declaration-derived
+invariant owner/lifecycle/contract/fence placement,
 explicit credential-operation/
 bearer-broker TCB profiles, monotonic active root
 rollout generation with permanent successor supersession, complete-successor
@@ -375,9 +384,12 @@ consistency/new-capability-generation/pre-resolution-tombstone state,
 independent remediation profile/credential-lineage/approval/audit/epoch/egress/
 cleanup-quota/manual-only limitation, evaluator re-evaluation job generations/
 queue partitions/cursors/attempts/leases/freshness/priority/fairness/provider-
-rate/cleanup-lane/escalation, remediation ceremony/channel/KMS/quorum/
+rate/cleanup-lane/escalation, invalidation-campaign root/snapshot index/cutoff/
+shard-page cursors/materialization-disposition counts/completeness proof/
+successor tombstones/stuck state, remediation ceremony/channel/KMS/quorum/
 compromise-loss-recovery epoch/expiry/exercise evidence, and the complete
-stable-invariant-ID monotonic-state manifest,
+declaration-derived stable-invariant ownership/lifecycle/contract/fence and
+monotonic-state manifest,
 whole quota claim-set digest/member restoration with partial-set
 quarantine, hierarchical capacity-lease epoch/allocation/unreserved-remainder/
 per-kind encumbrance/transfer state/receipt/acknowledgement/original-claim-and-
@@ -464,7 +476,9 @@ credential-lineage/cleanup-quota/sole-key-recovery contention,
 tenant/provider/account evaluator-queue fairness, provider-rate and
 non-borrowable cleanup-lane contention, repeated evaluator-generation
 replacement, remediation ceremony quorum/channel/KMS/recovery-epoch and
-exercise contention, invariant-owner/guard/storage-capability coverage,
+exercise contention, evaluator campaign root/enumeration/materialization/
+completeness contention, invariant declaration/owner/lifecycle/contract/fence
+coverage,
 starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
@@ -484,7 +498,8 @@ deadline oracle, profile-governance/semantic-diff/tombstone race harness,
 rotation crash/unknown/evidence/guard/orphan/count/eventual-consistency oracle,
 provider-permission semantic-evaluator/corpus/drift/capability-snapshot/
 whole-credential-quarantine observer oracle, evaluator-upgrade/mass-reevaluation
-and partitioned fair-scheduler/fresh-evidence oracle, quarantine-resolution/no-
+campaign enumeration/completeness and partitioned fair-scheduler/fresh-evidence
+oracle, quarantine-resolution/no-
 old-work-revival oracle, independent-remediation bootstrap/simultaneous-loss/
 compromise/channel/KMS/outage/manual-limit/exercise oracle, invariant-registry
 coverage oracle,

@@ -772,6 +772,8 @@ Exit criteria: the adapter is a deterministic oracle, not a production claim.
 ## `0.13.0` — Expected-Version Concurrency
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-013 0.13.0 -->
+<!-- vitheim-invariant VIT-INV-015 0.13.0 -->
 
 Setup: define absent/exact/any version policy, conflict evidence, retry limits,
 and command/idempotency interaction.
@@ -830,6 +832,7 @@ Exit criteria: projections can be erased and recreated exactly from authority.
 ## `0.15.1` — Security Audit Envelope And Durable Intent
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-014 0.15.1 -->
 
 Setup: define canonical bounded security-audit facts and authoritative intents
 before transactional mutation exists. Separate successful domain-event facts
@@ -858,6 +861,11 @@ authoritative audit intent that can commit atomically with its outcome.
 ## `0.16.0` — Transactional Outbox Model
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-016 0.16.0 -->
+<!-- vitheim-invariant VIT-INV-019 0.16.0 -->
+<!-- vitheim-invariant VIT-INV-021 0.16.0 -->
+<!-- vitheim-invariant VIT-INV-022 0.16.0 -->
+<!-- vitheim-invariant VIT-INV-023 0.16.0 -->
 
 Setup: bind exact-version CAS, consecutive events, stream head, request-digest
 receipt, authoritative `0.15.1` audit intent, outbox entries, integrity links,
@@ -919,6 +927,7 @@ binding, typed execution authority, and explicit freshness profile.
 ## `0.16.1` — Atomic Command Commit Bundle
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-012 0.16.1 -->
 
 Setup: freeze one project-owned `AtomicCommandCommitBundle` containing tenant
 and aggregate stream, exact expected stream version, consecutive domain events,
@@ -954,6 +963,7 @@ claimed by this command variant. `v0.16.1 implementation stop reached. Run pente
 ## `0.17.0` — Inbox And Idempotent Consumers
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-017 0.17.0 -->
 
 Setup: define message identity, source/destination scope, receipt lifetime,
 effect transaction boundary, duplicate response, and replay audit.
@@ -1012,6 +1022,7 @@ contract. `v0.17.1 implementation stop reached. Run pentest for this exact commi
 ## `0.18.0` — Leases, Timers, And Scheduler Primitives
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-018 0.18.0 -->
 
 Setup: specify logical/host time boundary, lease token/fencing, renewal/expiry,
 timer identity, retry/backoff limits, jitter injection, and quotas.
@@ -1030,6 +1041,13 @@ Exit criteria: expired or unfenced workers cannot commit protected work.
 ## `0.18.1` — Durable Quota Accounting
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-007 0.18.1 -->
+<!-- vitheim-invariant VIT-INV-024 0.18.1 -->
+<!-- vitheim-invariant VIT-INV-025 0.18.1 -->
+<!-- vitheim-invariant VIT-INV-026 0.18.1 -->
+<!-- vitheim-invariant VIT-INV-029 0.18.1 -->
+<!-- vitheim-invariant VIT-INV-030 0.18.1 -->
+<!-- vitheim-invariant VIT-INV-031 0.18.1 -->
 
 Setup: define tenant/resource quota identity, opaque `QuotaReservationId`,
 reservation digest, `QuotaClaimSetId`, opaque `QuotaClaimSetToken`, canonical
@@ -1261,6 +1279,14 @@ security cleanup.
 ## `0.18.2` — Atomic Timer, Activity, And Work Commit Family
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-001 0.18.2 -->
+<!-- vitheim-invariant VIT-INV-002 0.18.2 -->
+<!-- vitheim-invariant VIT-INV-003 0.18.2 -->
+<!-- vitheim-invariant VIT-INV-004 0.18.2 -->
+<!-- vitheim-invariant VIT-INV-005 0.18.2 -->
+<!-- vitheim-invariant VIT-INV-006 0.18.2 -->
+<!-- vitheim-invariant VIT-INV-020 0.18.2 -->
+<!-- vitheim-invariant VIT-INV-028 0.18.2 -->
 
 Setup: finalize a discriminated `AtomicWorkCommitBundle` family for command
 (`0.16.1`), consumer (`0.17.1`), scheduled timer, workflow activity completion,
@@ -1775,7 +1801,16 @@ and fail conservatively.
 Status: planned.
 
 Setup: adopt `docs/INVARIANT_OWNERSHIP.md` as the canonical registry for every
-authority-bearing invariant. Each stable `VIT-INV-NNN` row names exactly one
+authority-bearing invariant and formally backfill all authority declared from
+`0.1.0` through `0.18.2`, including structural tenant scope, tenant-bound event
+authority, schema/event-schema activation, sensitive-payload lifecycle, pure
+aggregate state, one-stream bundles, expected-version heads, audit intent, command
+receipts, outbox/inbox atomicity, lease fencing, execution-grant lineage and
+redemption, dispatch authority/target fences, remote-mutation exceptions, quota
+claims/capacity leases/transfers/policies/protected floors/platform admission/
+rollout roots, provider execution profiles, and the remaining provider controls.
+Each introducing milestone carries a machine-readable declaration marker. Each
+stable `VIT-INV-NNN` row names exactly one
 owning stream or state machine, its owner-maintained transactional guard or
 authority row, first milestone, local transaction-domain placement, every
 enforcement point, required semantic storage capabilities, positive/negative/
@@ -1783,38 +1818,67 @@ model/fault tests, and restore/migration obligations. Phase prose may explain a
 rule but cannot create an alternate owner. An owner change is a governed
 migration with old/new fencing and rollback rejection, never an editorial
 rename. Seed the evaluator lineage, capability snapshot, quarantine lineage,
-rotation guard, remediation authority, transmission-start guard, quota
-authority, reevaluation scheduler, and remediation-recovery ceremony entries.
+rotation guard, execution profile, remediation authority, transmission-start
+guard, quota claim/lease/transfer/policy/floor/rollout authorities, reevaluation
+scheduler, remediation-recovery ceremony, and evaluator invalidation-campaign
+entries.
+
+Give every row stable `VIT-ENF-*`, `VIT-CAP-*`, `VIT-TST-*`, and `VIT-RCV-*`
+contract IDs. The checker validates declaration-to-row and row-to-declaration
+coverage rather than a static count, verifies the introducing version, and
+requires each referenced contract class. Implementation milestones later bind
+those identifiers to real enforcement sites, storage profile capability claims,
+test modules/conformance cases, and generated recovery-manifest fields. Add a
+machine-readable lifecycle companion row for status, symmetric
+`supersedes`/`superseded_by`, effective version, `VIT-FEN-*` old/new owner fence,
+mixed-version behavior, migration contract, and rollback floor. `none` is
+explicit initial state; it cannot hide an owner transfer.
 
 Goal: turn distributed architectural laws into one executable ownership and
 storage contract before adapters implement them.
 
-Deliverables: stable invariant-ID namespace, normative ownership matrix,
-dependency-free checker, phase-document references, owner-transfer/supersession
-procedure, storage-capability cross-check contract, and generated restore/
-migration monotonic-state manifest contract. The checker rejects missing or
-duplicate IDs, absent or alternative authoritative owners, guards without an
-owner-maintained update path, empty transaction placement, enforcement points
-without negative tests, missing semantic storage requirements, absent positive/
-negative/model/fault classes, and restore or migration paths that omit their
-obligations. Later milestones must register new invariants in the same commit.
+Deliverables: stable invariant/declaration/enforcement/capability/test/recovery/
+fence ID namespaces, complete pre-`0.18.3` backfill, normative ownership and
+lifecycle matrices, dependency-free bidirectional checker, phase-document
+declarations, owner-transfer/supersession procedure, storage-capability
+cross-check contract, test-contract realization index, and generated restore/
+migration monotonic-state manifest contract. The checker rejects unregistered
+declarations or rows, duplicate IDs, mismatched introduction versions, absent
+or alternative authoritative owners, guards without an owner-maintained update
+path, empty transaction placement, enforcement points without stable contracts
+and negative tests, prose-only or missing semantic capability IDs, absent
+positive/negative/model/fault contracts, recovery obligations without stable
+manifest IDs, asymmetric/unknown supersession, active rows naming successors,
+superseded rows without successors, missing owner-transfer fences, unsafe mixed-
+version behavior, and lifecycle migration/rollback omissions. Later milestones
+must declare and register new invariants in the same commit.
 
-Verification: delete or duplicate an owner; name two owners; omit a guard update
-path, transaction domain, negative test, semantic capability, model/fault case,
-restore duty, or migration duty; add an enforcement point without its negative
-case; advertise a storage profile without a required capability; transfer an
-owner without mixed-version fencing; omit an epoch, cursor, tombstone, quota
-state, or recovery fact from restore/migration; and prove the repository gate
-fails each mutation.
+Verification: delete a declaration, ownership row, or lifecycle row in every
+direction; duplicate an ID; mismatch the introducing version; name two owners;
+omit a guard update path, transaction domain, stable enforcement/capability/
+test/recovery ID, negative test, model/fault case, restore duty, or migration
+duty; add an enforcement point without its negative case; advertise a storage
+profile without a referenced capability; leave a test ID without a concrete
+case after its implementation milestone; transfer an owner without a stable
+fence, symmetric supersession, safe mixed-version rule, migration contract, or
+rollback floor; mark an active row superseded inconsistently; omit an epoch,
+cursor, tombstone, quota state, or recovery fact from the generated manifest;
+and prove the repository gate fails each mutation. Review phase declaration
+markers systematically so the backfill cannot be reduced to a favored subset.
 
-Exit criteria: every authority-bearing invariant introduced through `0.18.5`
-has one machine-checked canonical row, and no phase, adapter, restore, or
-migration can silently select a second owner or omit required monotonic state.
+Exit criteria: every authority-bearing invariant declared through `0.18.5` has
+one machine-checked ownership row, one lifecycle row, and resolvable stable
+contract IDs; declaration coverage is derived rather than counted manually; no
+phase, adapter, test suite, restore, migration, mixed-version deployment, or
+owner transfer can silently omit the invariant, select a second owner, or lose
+required monotonic state.
 `v0.18.3 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.18.4` — Bounded Evaluator Re-evaluation Scheduler
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-008 0.18.4 -->
+<!-- vitheim-invariant VIT-INV-027 0.18.4 -->
 
 Setup: implement `VIT-INV-008` on the `0.18.0–0.18.2` lease, quota, fence, and
 atomic-work contracts. Evaluator activation, supersession, suspension, ordinary
@@ -1827,6 +1891,31 @@ never-reused job generation. Its durable state is `Pending`,
 `Escalated`. Durable partition cursors, leases, fencing, checkpoints, poison
 handling, and successor tombstones make crash, failover, repeated evaluator
 replacement, and replay deterministic.
+
+Job discovery is owned by `VIT-INV-027`, not an unbounded loop inside evaluator
+activation. The evaluator lifecycle transaction atomically advances the epoch
+and creates one durable `EvaluatorInvalidationCampaignRoot` binding the old/new
+evaluator generations and epochs, activation/revocation command and admission
+digests, enumeration cutoff, snapshot-index generation, canonical shard
+manifest, and expected/completed/materialized/escalated counts. A capability-
+snapshot index authoritative for enumeration is keyed by evaluator epoch and
+credential-capability generation. Stable shard/page cursors traverse the frozen
+cutoff after commit; each idempotent job binds campaign, shard/page, credential
+lineage/generation, and required evaluator generation.
+
+Credentials created after the cutoff bind the active evaluator before they can
+operate and do not disappear behind the campaign. A snapshot moved between
+partitions retains stable lineage identity; deletion records a terminal
+campaign disposition; quarantine remains dominant; and a credential generation
+change makes obsolete work terminal without satisfying the successor
+generation. A completeness reconciliation pass compares every non-terminal
+snapshot whose evaluator epoch differs from the active epoch against the
+campaign/job manifest. A campaign becomes `Complete` only with a verified
+manifest and zero unexplained mismatches; otherwise it is visibly
+`Enumerating`, `Materializing`, `Reconciling`, `Superseded`, or
+`StuckEscalated`. Repeated evaluator replacement atomically creates a successor
+campaign and tombstones the predecessor without treating its counts as proof
+for the new epoch.
 
 Queued or running work never authorizes use of the old evaluator output:
 `ReevaluationRequired` remains a credential-use fence until the current job
@@ -1844,14 +1933,25 @@ pending or in-flight job generations and schedules current work exactly once.
 Goal: preserve fail-closed evaluator replacement without allowing a broad
 security update to become an unbounded fleet-wide surge or starvation event.
 
-Deliverables: bounded job/state codecs, stable identity and successor rules,
+Deliverables: campaign-root/state/manifest/count/cutoff and snapshot-index
+contracts, stable shard/page cursor and disposition codecs, atomic evaluator-
+epoch-plus-campaign-root transition, completeness reconciler/proof, stuck-
+campaign monitor, bounded job/state codecs, stable identity and successor rules,
 partitioned durable queue and cursor port, memory implementation, fair scheduler
 and priority policy, provider-rate and cleanup-lane quota integration, evidence-
 freshness/refetch contract, lease/fence/retry/escalation model, backlog and
 expiry monitoring, operator controls that cannot bypass `ReevaluationRequired`,
 and deterministic scheduling/model testkit.
 
-Verification: emergency revocation across millions of snapshots; provider
+Verification: emergency revocation across millions of snapshots; crash between
+evaluator epoch advancement and campaign creation; crash or failover before,
+during, and after each shard/page cursor and job materialization; omitted,
+duplicated, reordered, or aliased shard/page; cutoff/index-generation
+substitution; credentials created, moved, deleted, quarantined, rotated, or
+regenerated during enumeration; job bound to the wrong campaign or credential
+generation; premature terminal counts; missing-snapshot reconciliation;
+successor campaign racing predecessor enumeration/completion; stuck-campaign
+visibility and recovery; provider
 outage, rate limit, and eventual consistency; one hostile or oversized tenant;
 privileged versus ordinary priority; near-term scheduled work; global and
 per-tenant starvation; cleanup-lane exhaustion or business borrowing; repeated
@@ -1861,14 +1961,18 @@ worker takeover, queue-partition failover, cursor rollback, backup/restore,
 poison escalation, and mixed-version nodes pass without old-output use,
 unbounded concurrency, duplicate capability advancement, or lost work.
 
-Exit criteria: evaluator invalidation immediately denies old snapshots while
-all affected credentials progress through bounded, durable, fair, restart-safe
-re-evaluation or visible escalation under the current generation.
+Exit criteria: evaluator invalidation atomically establishes both the fail-
+closed epoch and a durable campaign root; a verified terminal manifest accounts
+for every affected snapshot/generation through materialized work or an explicit
+terminal disposition. All credentials progress through bounded, durable, fair,
+restart-safe re-evaluation or visible escalation under the current generation,
+and no crash window can permanently omit work.
 `v0.18.4 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.18.5` — Remediation Authority Bootstrap And Recovery
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-009 0.18.5 -->
 
 Setup: complete `VIT-INV-005` and `VIT-INV-009` with a root-of-trust ceremony
 that never depends on the credential being provisioned or recovered. The first

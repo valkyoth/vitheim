@@ -234,7 +234,8 @@ revocable provider profile/account/credential/broker epochs and explicit
 profile governance, rotation-state/evidence/guard/idempotency/takeover/orphan/
 count reconciliation, credential-capability snapshot/epoch semantic-evaluator
 freshness and whole-credential quarantine, evaluator-lineage/epoch/reevaluation
-HA, quarantine-resolution/new-generation/tombstone ownership, independent
+HA plus invalidation-campaign/index/cursor/materialization/completeness
+ownership, quarantine-resolution/new-generation/tombstone ownership, independent
 remediation-authority lineage/isolation/manual-only state, credential-operation/bearer-broker TCB
 placement, cancellation-recovery
 successor semantics,
@@ -261,8 +262,9 @@ unique-claimant/trusted-executor/instruction-only/scoped-credential-egress
 handler, profile-governance lifecycle/approval/tombstone handler, credential-
 rotation process manager/evidence/deadline/guard/orphan/count reconciler,
 credential-capability snapshot/epoch/semantic-evaluator/freshness/quarantine
-observer, evaluator-lineage/reevaluation coordinator, quarantine-resolution/
-new-generation/tombstone process manager, remediation-authority-isolation
+observer, evaluator-lineage/reevaluation coordinator, invalidation-campaign
+enumeration/materialization/completeness reconciler, quarantine-resolution/new-
+generation/tombstone process manager, remediation-authority-isolation
 validator, bounded identity-preserving deadlock retry,
 fair partitioned recovery lanes, and operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
@@ -299,7 +301,8 @@ dual redemption, concurrent rotation/idempotency/takeover/orphan/count-limit
 failure, wildcard/deny/resource/condition comparison, evaluator downgrade/
 budget exhaustion, whole-credential quarantine bypass, permission/role/group/
 trust drift, evaluator activation/revocation/epoch/reevaluation split brain, incompatible-
-worker execution, quarantine-resolution double owner/partial evidence/old-work
+worker execution, evaluator campaign root split/index-page omission/premature
+completion/predecessor reuse, quarantine-resolution double owner/partial evidence/old-work
 revival, remediation-lineage split/derivation/business use/substitution/
 compromise/outage/response loss/count exhaustion/no-path automation, callback
 reorder, stale polling, wrong policy revision, restored

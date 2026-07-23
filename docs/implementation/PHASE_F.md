@@ -611,6 +611,8 @@ rotation state/guard/idempotency/takeover/orphan/count/evidence/unknown/deadline
 cases, credential-capability snapshot/epoch/freshness/raw-and-normalized-digest/
 evaluator-version/canonical-result/safe-subset/quarantine/reconciler cases,
 evaluator-lineage/admission/generation/epoch/reevaluation/startup cases,
+invalidation-campaign root/index/cutoff/shard-page/materialization/disposition/
+completeness/successor/stuck cases,
 quarantine investigation/remediation/verification/resolution/current-evidence/
 resolver/new-generation/tombstone cases, remediation-authority profile/lineage/
 approval/audit/epoch/egress/cleanup-quota/manual-limit cases, and
@@ -673,7 +675,9 @@ inventory/orphan/late-callback/count-limit failure, semantic wildcard/deny/
 resource/condition/boundary/inheritance comparison, evaluator version downgrade
 or budget exhaustion, unsafe subset admission, whole-credential quarantine
 bypass by claimed/queued/non-privileged work, evaluator activation/revocation/
-epoch/reevaluation/mixed-node failure, unsafe quarantine clear/current-evidence/
+epoch/reevaluation/mixed-node failure, split or missing invalidation campaign,
+snapshot/page/job omission, false terminal counts, predecessor campaign reuse,
+unsafe quarantine clear/current-evidence/
 resolver/consistency/new-generation/tombstone failure, remediation credential
 compromise/derivation/business use/circularity/substitution/outage/response loss/
 count exhaustion/no-independent-path automation, permission expansion/reduction,

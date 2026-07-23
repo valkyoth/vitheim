@@ -308,12 +308,20 @@ authorization semantics.
     plaintext integration is a separately isolated hosted profile outside the
     ordinary plugin claim.
 24. Every authority-bearing invariant has one stable ID and exactly one owner
-    in `docs/INVARIANT_OWNERSHIP.md`. Its guard update path, transaction domain,
-    enforcement points, semantic storage capabilities, positive/negative/model/
-    fault tests, and restore/migration monotonic state are machine checked.
-    Phase prose and projections cannot become alternate authority.
+    in `docs/INVARIANT_OWNERSHIP.md`. Introducing phase markers, ownership rows,
+    and lifecycle/supersession rows are bidirectionally checked. Stable
+    enforcement/capability/test/recovery/fence contracts bind its guard update
+    path, transaction domain, concrete enforcement and verification, supported
+    storage profiles, restore/migration monotonic state, mixed-version behavior,
+    and rollback floor. Coverage is declaration-derived, not a hand-written
+    count. Phase prose and projections cannot become alternate authority.
 25. Evaluator replacement remains immediately fail closed but re-evaluation is
-    bounded and durable. Tenant/provider/account queues, stable job generations,
+    bounded, durable, and complete. Epoch activation/revocation atomically
+    creates an invalidation-campaign root; an authoritative snapshot-generation
+    index, frozen enumeration cutoff, shard/page cursors, idempotent job
+    materialization, concurrent-credential dispositions, and terminal
+    reconciliation manifest ensure no affected credential is missed.
+    Tenant/provider/account queues, stable job generations,
     leases/cursors, provider-rate claims, global fair share, tenant ceilings,
     starvation bounds, and a non-borrowable cleanup lane prevent a fleet surge
     or hostile tenant from denying recovery. Queued work never uses old output,

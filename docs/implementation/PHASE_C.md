@@ -94,8 +94,9 @@ rechecks current local tenant/principal/policy epochs.
 
 Status: planned.
 
-Setup: derive mandatory invariant capabilities from
-`docs/INVARIANT_OWNERSHIP.md`, then classify mandatory/optional capabilities,
+Setup: derive mandatory invariant capabilities from every declaration-resolved
+ownership/lifecycle row in `docs/INVARIANT_OWNERSHIP.md`, then classify
+mandatory/optional `VIT-CAP-*` capabilities,
 evidence version, startup
 probe, downgrade policy, transaction-domain placement/topology compatibility,
 authority-fence and target-fence freshness/co-location, capacity-transfer
@@ -117,15 +118,17 @@ resolution/new-generation/tombstone evidence, independent remediation lineage/
 approval/audit/quota or manual-only recovery state, remediation bootstrap/
 recovery ceremony/quorum/channel/KMS-independence/epoch state, evaluator
 re-evaluation queue/job-generation/cursor/lease/fair-share/provider-rate/
-cleanup-lane state,
+cleanup-lane state, evaluator invalidation-campaign root/snapshot-generation
+index/cutoff/shard-page cursor/materialization/completeness-manifest/stuck-state,
 explicit credential-operation/TCB placement, cancellation-recovery
 successor semantics, bounded
 deadlock-retry semantics, and fail-closed behavior.
 
 Goal: prevent adapters from silently weakening correctness.
 
-Deliverables: capability vocabulary, signed/probed report model, compatibility
-decision engine, invariant-ID-to-capability coverage report, and operator
+Deliverables: stable capability vocabulary, signed/probed report model,
+compatibility decision engine, declaration-to-invariant-to-`VIT-CAP-*` coverage
+report, lifecycle/supersession/owner-fence placement report, and operator
 diagnostics. A claimed storage profile fails admission when any applicable
 registry `requires:` capability is missing.
 
@@ -165,7 +168,11 @@ approved bootstrap/recovery, shared channel/KMS dependency presented as
 independent, stale recovery epoch, or false automatic recovery without an
 independent provider path; missing evaluator job uniqueness, durable cursor,
 fair-share ceiling, protected cleanup lane, current generation fence, or
-fresh-evidence refetch; remote permission
+fresh-evidence refetch; non-atomic evaluator-epoch/campaign-root creation,
+missing or projection-only snapshot-generation index, unstable cutoff/shard
+manifest/page cursor, unaccounted concurrent credential lifecycle, incomplete
+materialization/count/terminal proof, or predecessor campaign satisfying a
+successor; remote permission
 discovery in dispatch, restored revoked generation
 or handle, stale queued instruction after
 suspension, credential export from signing/mTLS/HSM, bearer serialization/TLS/
@@ -196,14 +203,17 @@ Exit criteria: correctness never depends on an unverified optional capability.
 Status: planned.
 
 Setup: derive tests from every semantic port and every applicable stable
-invariant ID, define fault injection, concurrency
+invariant declaration, `VIT-ENF-*` enforcement contract, `VIT-TST-*`
+verification contract, `VIT-RCV-*` recovery field, and lifecycle row; define
+fault injection, concurrency
 schedule, adversarial twin tenants with colliding local IDs, connection-session
 state reuse, cleanup, administrator threat boundary, and evidence format.
 
 Goal: make production-support claims depend on identical observable behavior.
 
 Deliverables: reusable adapter harness, mandatory capability matrix, randomized
-state machine, machine-readable invariant coverage/conformance report, and destructive reference
+state machine, machine-readable declaration/enforcement/test/recovery/lifecycle
+coverage and conformance report, and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
 audit intent, outbox, commitment, uniqueness claim, bounded quota claim-set/
@@ -257,7 +267,12 @@ share the lost credential/KMS/channel dependency, roll back the recovery epoch,
 or claim automated recovery without an independent provider path; lose or
 duplicate evaluator jobs/cursors, use old output while queued, let one tenant
 starve others, lend the cleanup lane to business work, or complete against a
-superseded evaluator generation; rewrite an existing
+superseded evaluator generation; split evaluator epoch from campaign root,
+omit an indexed snapshot/page/job/count, change cutoff during traversal, lose a
+concurrent credential disposition, accept a false terminal manifest, or let an
+old campaign close the current epoch; omit a declared invariant, stable contract
+resolution, lifecycle row, symmetric supersession, owner fence, mixed-version
+rule, migration contract, or rollback floor; rewrite an existing
 capacity class, use a cross-class adjustment, activate capacity policy without
 its one owner or atomic co-located parent/floor transaction, let a policy lower
 its own floor, reuse floor approvers to spend released capacity, ignore
@@ -728,6 +743,13 @@ rollback, binary downgrade, interruption, and restore cannot lower or omit it.
 Every floor-profile change maps the complete canonical old/new
 `PlatformSafetyFloorKey` sets with exact unit/scale and period semantics,
 conservation proof, checked arithmetic, and no rounding or scope confusion.
+Treat every invariant owner change or split as a registered migration. The old
+and new `VIT-INV-*` lifecycle rows must contain symmetric supersession, stable
+`VIT-FEN-*` old/new owner fencing, explicit mixed-version behavior, a resolved
+`VIT-RCV-*` migration contract, and a rollback floor. A migration cannot edit
+history to make the new owner appear original, activate both owners, or remove
+the superseded row. The generated recovery manifest includes every applicable
+stable invariant field before the new owner becomes authoritative.
 
 Goal: make schema evolution auditable, interruptible, and recoverable.
 
@@ -744,7 +766,10 @@ compatibility, reduced/quarantine investigation/remediation/verification/
 resolution/new-generation/tombstone/incident/first-use state, independent
 remediation profile/credential-lineage/approval/audit/epoch/cleanup-quota or
 manual-only limitation, and cancellation-recovery
-lineage/receipts across every schema change.
+lineage/receipts across every schema change; include declaration/lifecycle/
+contract-ID coverage, supersession receipts, old/new owner fence state,
+mixed-version admission, rollback floor, evaluator campaign root/index/cutoff/
+cursors/counts/completeness proof/stuck state, and concrete `VIT-RCV-*` fields.
 
 Verification: reorder/substitution, partial failure, concurrent runner, lease loss,
 downgrade, malicious input, retry, backup restore, floor-profile conflict,
@@ -761,6 +786,10 @@ incomplete reevaluation, incompatible-node admission, cleared/partially advanced
 quarantine, missing resolution evidence or old-work tombstone, remediation
 lineage merged with business authority, lost cleanup quota/manual-only
 limitation, or affected-execution incident linkage,
+asymmetric/unknown invariant supersession, active predecessor and successor,
+missing owner fence, unsafe mixed-version admission, unresolved recovery
+contract, rollback below the declared floor, deleted superseded history,
+missing campaign snapshot/page/count/completeness state,
 missing operation-profile discriminator, cancelled-prepared recovery receipt
 loss/duplication, and restored independent-parent-release cases.
 

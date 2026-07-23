@@ -195,7 +195,16 @@ Verification:
   receive priority within those bounds. A newer evaluator permanently
   supersedes older job generations, stale evidence is authenticated and fetched
   again, crash/failover resumes safely, and queued credentials never use old
-  output.
+  output. `VIT-INV-027` additionally proves the evaluator epoch and one durable
+  invalidation-campaign root commit atomically. The root binds the authoritative
+  snapshot-generation index, frozen cutoff and complete shard manifest, stable
+  page cursors, generation-bound idempotent job materialization, concurrent
+  credential create/move/delete/quarantine/rotation dispositions, and expected/
+  materialized/completed/escalated counts. Terminal completion requires a
+  reconciliation manifest with zero unexplained epoch-mismatched snapshots.
+  Repeated evaluator replacement tombstones predecessor campaigns; their counts
+  cannot satisfy the successor. Crash, failover, restore, or stuck enumeration
+  remains resumable and visible rather than silently omitting work.
   It proves the credential-capability owner alone advances
   `CredentialCapabilityQuarantined` → `Investigating` →
   `RemediationPending` → (`ReplacementVerified` |
@@ -232,8 +241,11 @@ Verification:
   Acceptance tests cover evaluator security fixes, semantic/corpus changes,
   mixed-version and downgrade nodes, emergency revocation, millions of
   snapshots, provider outage/rate limits, hostile tenants, repeated evaluator
-  replacement, partial reevaluation, stale evidence, queue crash/failover and
-  starvation, restore; every quarantine transition, stale/weak/inconsistent evidence,
+  replacement, epoch/campaign atomicity, cutoff/index/shard/page omission,
+  concurrent credential lifecycle during enumeration, premature campaign
+  completion, missing-snapshot reconciliation, stuck/superseded campaign,
+  partial reevaluation, stale evidence, queue crash/failover and starvation,
+  restore; every quarantine transition, stale/weak/inconsistent evidence,
   resolver collusion, generic/incident-only clear, old-handle/receipt/queue/
   effect replay; sole-credential quarantine, simultaneous business/remediation
   loss, remediation credential compromise, circular dependency, self-approval,
@@ -356,11 +368,16 @@ Verification:
 - Decision-record conformance proves each shipped artifact and deployment
   matches the reviewed `0.140.1–0.140.10` choices without silent fallback.
 - The generated `docs/INVARIANT_OWNERSHIP.md` conformance report covers every
-  selected production storage/deployment profile. Every applicable stable ID
-  has exactly one owner, owner-maintained guard, local transaction placement,
-  enforcement-point negative tests, required semantic storage capabilities,
-  P/N/M/F evidence, and complete restore/migration monotonic state; no waiver or
-  prose-only alternative owner is accepted.
+  selected production storage/deployment profile. Coverage is derived
+  bidirectionally from introducing phase declarations. Every applicable stable
+  ID has exactly one ownership row, one lifecycle row, owner-maintained guard,
+  local transaction placement, resolved `VIT-ENF-*` enforcement and negative
+  cases, `VIT-CAP-*` storage support, concrete `VIT-TST-*` P/N/M/F evidence,
+  generated `VIT-RCV-*` restore/migration fields, and `VIT-FEN-*` owner-transfer
+  fencing. Supersession is symmetric and preserves history; mixed-version
+  behavior and rollback floors fail closed. No missing declaration, waiver,
+  unresolved contract, static-count assumption, or prose-only alternative
+  owner is accepted.
 - Every selected interchange, semantic-index, and embedding-generation profile
   cites its earlier implementation admission, conformance corpus, pentest, and
   operational owner; missing profiles and unselected SCIM/STIX/SIEM/CMDB

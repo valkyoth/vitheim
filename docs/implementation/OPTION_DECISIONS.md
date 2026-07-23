@@ -119,7 +119,17 @@ generation, tenant/provider/account queue, cursors, leases, provider-rate and
 fair-share counters, priority, cleanup lane, freshness/refetch state, and
 escalation. Produce a complete stable-invariant-ID coverage matrix from
 `docs/INVARIANT_OWNERSHIP.md`; a selected storage profile missing an applicable
-`requires:` capability is unsupported rather than waived.
+`VIT-CAP-*` capability is unsupported rather than waived. Coverage begins from
+phase declarations and resolves every ownership/lifecycle row, `VIT-ENF-*`
+enforcement contract, `VIT-TST-*` conformance contract, `VIT-RCV-*` recovery
+field, and `VIT-FEN-*` owner-transfer fence. Freeze symmetric supersession,
+mixed-version behavior, migration contract, and rollback floor for every
+selected invariant; zero unregistered or prose-only authority is permitted.
+Map the evaluator invalidation-campaign root in the same transaction domain as
+evaluator epoch activation/revocation, plus its authoritative snapshot-
+generation index, cutoff/shard manifest, cursors, idempotent materialization,
+concurrent-credential dispositions, counts, completeness reconciler/proof,
+successor tombstones, and stuck state.
 Map capacity-policy lineage owner/
 one-parent ledger/high-watermark, protected-floor history/reduction/separation/
 platform-floor profile/admission/ratchet rows, hierarchy-root manifest/
@@ -139,7 +149,9 @@ domain profiles from tested adapters; default candidates are SQLite single-node
 and PostgreSQL HA.
 Deliverables: supported/rejected profile matrix, capability probes, application
 and administrator threat boundaries, transaction-domain/co-location map,
-active/active rejection evidence, migration and portability consequences.
+active/active rejection evidence, declaration-derived invariant/contract/
+lifecycle coverage, evaluator-campaign placement/completeness profile, migration
+and portability consequences.
 Verification: twin-tenant collision, superuser/non-owner, pooling-state,
 constraint, non-co-located grant guard/effect bundle, cross-partition claim set,
 missing/non-co-located authority fence, stale/duplicated capacity lease,
@@ -154,11 +166,16 @@ rotation owner/state/evidence/deadline split, non-atomic local activation,
 missing/non-co-located rotation guard, two non-terminal rotations, lost orphan/
 count encumbrance, capability snapshot/epoch/quarantine/claim split, cleared
 quarantine on restore, evaluator lineage/epoch/reevaluation split, old evaluator
-output surviving activation/revocation, incompatible-node startup, partial
+output surviving activation/revocation, split epoch/campaign root, missing
+snapshot index/cutoff/shard/page/job/disposition/count/completeness state,
+predecessor campaign reuse, incompatible-node startup, partial
 quarantine transition or old-work tombstone loss, generic/incident-only clear,
 missing strong revision/consistency barrier/resolver separation, remediation
 lineage merged with business credentials or quota, stale observer state or
 dispatch-time remote discovery,
+unregistered invariant declaration/owner/lifecycle, unresolved enforcement/
+capability/test/recovery/fence ID, asymmetric supersession, unsafe mixed-version
+owner transfer, missing migration contract or rollback floor,
 ambiguous or multi-parent policy owner, non-co-located policy stream/parent
 ledger/floor row, non-atomic activation, shared floor/policy authority, missing
 operational fences/platform minimum/cross-command separation, incomplete or
@@ -442,7 +459,14 @@ the evaluator re-evaluation scheduler topology: tenant/provider/account
 partitions, stable job generations and durable cursors, global/per-tenant
 fairness and starvation bounds, provider-rate claims, bounded concurrency/retry,
 non-borrowable cleanup capacity, privileged/near-term priority, fresh-evidence
-fetch, successor cancellation, and failover/RPO/RTO. Only local credential
+fetch, successor cancellation, and failover/RPO/RTO. Freeze the crash-atomic
+evaluator-epoch-plus-invalidation-campaign-root placement, snapshot index and
+enumeration cutoff semantics, shard/page cursor ownership, concurrent credential
+lifecycle dispositions, manifest/count completeness proof, predecessor/
+successor campaign fencing, stuck-campaign escalation, and campaign RPO/RTO.
+The HA profile also resolves every declaration-derived invariant owner,
+transaction domain, stable contract ID, lifecycle/supersession fence, mixed-
+version rule, recovery field, and rollback floor. Only local credential
 activation is atomic; remote create/revoke is explicitly asynchronous.
 Signing/mTLS/HSM is non-exportable;
 bearer/API-key serialization, redirects, TLS, claim, and socket reside together
@@ -502,6 +526,8 @@ deadline/outage and atomic-local-activation profile, credential-capability
 snapshot/epoch/event-or-poll/freshness/revision profile, rotation guard/
 idempotency/takeover/orphan/count-quota profile, semantic evaluator/AST/evidence/
 complexity/evaluator-lineage/admission/epoch/reevaluation/startup profile,
+invalidation-campaign root/snapshot-index/cutoff/shard-page/materialization/
+disposition/count/completeness/successor/stuck profile,
 reduced/quarantine-resolution/consistency/resolver/new-generation/tombstone/
 incident profile, independent remediation authority/profile/lineage/audit/
 cleanup-quota or manual-only recovery profile, restore ordering,
@@ -573,10 +599,15 @@ simultaneous rotation, unknown successor, late callback, orphan/count exhaustion
 evaluator semantic/downgrade/budget failure, quarantined non-privileged or
 claimed work, safe-subset policy bypass, automatic widening, break-glass
 promotion, evaluator activation/revocation/epoch/reevaluation split brain,
-incompatible-node readiness, partial resolution/old-work revival, missing strong
+epoch/campaign-root split, index/cutoff/shard/page/job omission, concurrent
+credential disposition loss, false terminal counts, stuck/predecessor campaign
+reuse, incompatible-node readiness, partial resolution/old-work revival, missing strong
 revision/consistency/resolver separation, remediation credential/profile/tenant
 substitution, circularity/business use, sole-key outage/response loss/count
 exhaustion, false automatic recovery without an independent provider path,
+missing invariant declaration/owner/lifecycle/contract resolution, asymmetric
+supersession, owner-fence loss, unsafe mixed-version transfer, rollback below
+floor, incomplete recovery manifest,
 transfer owner/root/
 parent/period/lane/class/region/authorization substitution, emergency/security-cleanup-to-
 business conversion through adjustment, existing-class rewrite, tenant-invoked

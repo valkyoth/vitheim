@@ -8,6 +8,12 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Expanded `0.18.3` from a nine-row shape check into a complete declaration-
+  driven ownership and lifecycle registry through `0.18.2`, with stable
+  enforcement, capability, verification, recovery, and owner-fence contracts.
+- Strengthened `0.18.4` with a crash-atomic evaluator invalidation campaign,
+  authoritative snapshot-generation enumeration, idempotent materialization,
+  concurrent credential dispositions, and terminal completeness proof.
 - Added `0.18.3–0.18.5` corrective passes for a machine-checkable stable-ID
   invariant ownership registry, bounded fair evaluator re-evaluation scheduling,
   and quorum-controlled non-circular remediation-authority bootstrap/recovery.

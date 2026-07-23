@@ -40,11 +40,14 @@ Semantic index storage and embedding generation are independently replaceable
 and independently admitted.
 Authority-bearing invariants are indexed by stable IDs in
 [Invariant Ownership Registry](INVARIANT_OWNERSHIP.md). From `0.18.3` onward,
-every invariant must register exactly one owner, its owner-maintained guard,
-transaction placement, enforcement points, semantic storage requirements,
-positive/negative/model/fault tests, and restore/migration obligations before
-its milestone may exit. Phase prose supplies context but cannot establish a
-second owner.
+every invariant must have an introducing milestone declaration, exactly one
+ownership row, one lifecycle/supersession row, an owner-maintained guard,
+transaction placement, and stable enforcement/capability/test/recovery/fence
+contract IDs before its milestone may exit. Bidirectional checks derive coverage
+from declarations rather than a static expected count. Phase prose supplies
+context but cannot establish a second owner; storage profiles, concrete tests,
+recovery manifests, owner transfers, mixed-version behavior, and rollback floors
+must resolve the stable contracts instead of relying on prose.
 Before `0.51.2`, every milestone that creates or changes tenant-bearing durable,
 cached, indexed, backed-up, or external-copy state must supply the neutral
 `0.8.1` lifecycle descriptor and inventory fixture without depending outward on

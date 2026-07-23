@@ -97,6 +97,7 @@ bounded. `v0.4.0 implementation stop reached. Run pentest for this exact commit.
 ## `0.5.0` — Schemas And Field Constraints
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-032 0.5.0 -->
 
 Setup: define schema/field identity, compatibility classes, validation order,
 constraint composition, recursion limits, migration non-goals, field-level data
@@ -139,6 +140,7 @@ cause partial acceptance. `v0.6.0 implementation stop reached. Run pentest for t
 ## `0.7.0` — Context And Command Envelope
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-010 0.7.0 -->
 
 Setup: enumerate mandatory tenant, actor, authentication, target, version,
 idempotency, time, client, correlation, causation, and policy facts.
@@ -160,6 +162,8 @@ Exit criteria: incomplete or ambiguous commands are unrepresentable.
 ## `0.8.0` — Event Envelope
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-011 0.8.0 -->
+<!-- vitheim-invariant VIT-INV-033 0.8.0 -->
 
 Setup: define event authority, stream/partition ordering, valid/recorded times,
 causality, immutable schema identity/version, integrity predecessor, metadata
@@ -181,6 +185,7 @@ Exit criteria: facts are immutable, attributable, ordered, and tenant-bound.
 ## `0.8.1` — Sensitive Payload Lifecycle
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-034 0.8.1 -->
 
 Setup: separate immutable event metadata from encrypted or externally erasable
 sensitive payloads; define classification, retention, tombstone, crypto-erasure,
@@ -212,6 +217,7 @@ can describe lifecycle surfaces through an inward foundation contract.
 ## `0.9.0` — Pure Aggregate Framework
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-035 0.9.0 -->
 
 Setup: define pure decide/evolve contracts, rejection semantics, state version,
 event-batch bounds, replay limits, and corruption behavior.

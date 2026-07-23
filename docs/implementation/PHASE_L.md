@@ -74,7 +74,8 @@ reconciliation. Start claim also requires a fresh admitted credential-capability
 snapshot/epoch and reviewed semantic evaluator result; provider IAM discovery
 never occurs in a plugin dispatch transaction. A superset, incomparable, or
 unknown result quarantines the whole credential. Evaluator admission/upgrade/
-revocation, reevaluation, quarantine investigation/resolution, and remediation
+revocation, reevaluation campaign creation/enumeration/completeness, quarantine
+investigation/resolution, and remediation
 authority remain host control-plane operations; guest code cannot invoke or
 compose them. Resolution creates a new capability generation, so every plugin
 effect requires fresh authorization and no old handle or instruction revives.
@@ -101,6 +102,7 @@ Include provider-execution-profile admission, scoped credential redemption,
 lineage/epoch/profile-governance, rotation-state/evidence/deadline, credential-
 capability snapshot/semantic-evaluator/safe-subset/whole-credential-quarantine
 enforcement, evaluator-lineage/reevaluation, quarantine-resolution/tombstone,
+invalidation-campaign/index/cursor/materialization/completeness enforcement,
 remediation-authority denial, rotation-guard/orphan/count enforcement, credential-operation/TCB placement, pool-
 partition, egress, memory-canary, and residual-blast-radius evidence.
 Verification: unauthorized calls, replay, commit-to-dispatch revocation,
@@ -128,6 +130,7 @@ trust drift, concurrent rotation/idempotency/takeover/orphan/count-limit failure
 wildcard/deny/resource/condition comparison, evaluator downgrade/budget
 exhaustion, queued/claimed/non-privileged quarantine bypass, callback reorder,
 evaluator activation/revocation/epoch/mixed-node failure, partial reevaluation,
+campaign root split/snapshot omission/premature completion/predecessor reuse,
 unsafe resolution or old-effect revival, remediation authority/credential/
 operation exposure to guest code,
 stale poll, policy-revision mismatch, restored

@@ -197,8 +197,17 @@ require_text docs/implementation/PHASE_B.md \
     '## `0.18.3` — Machine-Checkable Invariant Ownership Registry' \
     'invariant ownership corrective milestone'
 require_text docs/implementation/PHASE_B.md \
+    'formally backfill all authority declared from' \
+    'complete foundational invariant backfill'
+require_text docs/INVARIANT_OWNERSHIP.md \
+    '## Lifecycle And Supersession Registry' \
+    'machine-readable invariant lifecycle'
+require_text docs/implementation/PHASE_B.md \
     '## `0.18.4` — Bounded Evaluator Re-evaluation Scheduler' \
     'bounded evaluator reevaluation milestone'
+require_text docs/implementation/PHASE_B.md \
+    '`EvaluatorInvalidationCampaignRoot`' \
+    'durable evaluator invalidation campaign root'
 require_text docs/implementation/PHASE_B.md \
     '## `0.18.5` — Remediation Authority Bootstrap And Recovery' \
     'remediation root-of-trust milestone'
