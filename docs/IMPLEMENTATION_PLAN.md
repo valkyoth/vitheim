@@ -113,7 +113,12 @@ authenticated instructions and status, never permit material. Its sealed non-
 the stored digest grants no authority. Duplicate instruction, executor failover,
 replacement worker, or ambiguous delivery/start becomes `OutcomeUnknown`.
 Restore cannot reconstruct the permit, clock rollback cannot extend the window,
-and transferable permit profiles are unsupported for `1.0.0`.
+and transferable permit profiles are unsupported for `1.0.0`. Its immutable
+`ProviderExecutionProfile` removes master-key/general database authority, binds
+opaque credential redemption to the exact claim and tenant/provider/account/
+action/request/destination, enforces least-privilege credentials and destination/
+TLS/DNS/redirect policy without a general proxy, partitions unscopable provider
+trust domains, and rejects unrestricted cross-tenant privileged credentials.
 Each effect carries a bounded atomic set of typed quota claims with independent
 amount/unit, settlement policy, and admission/lease/dispatch/transmission/
 storage boundary. Concurrency releases with the local lease; operation, rate,
@@ -151,11 +156,17 @@ one parent and atomically CAS-updates its co-located parent ledger under an
 independently governed floor-set version. Floor reduction has a separate
 capability/approval lineage, cross-command separation, operational fences,
 obligation simulation, append-only history, and a durable versioned platform-
-floor ratchet. Nodes below its per-class admitted high-watermark reject startup;
-mixed-version operation uses the stricter profile and downgrade/rollback/restore
-cannot release capacity. Multi-parent finalization CAS-validates a root-owned
-canonical parent manifest, unchanged membership epoch, complete prepared-receipt
-set, and total conservation. It only permits activation: every parent then
+floor ratchet. Nodes below an admitted high-watermark reject startup; mixed-
+version operation uses the stricter same-key profile and downgrade/rollback/
+restore cannot release capacity. Every entry has a typed canonical accounting-
+owner/root/kind/unit/scale/period/class/lane/region/residency/settlement
+`PlatformSafetyFloorKey`; migrations map the complete old/new key sets without
+loss or overflow. Multi-parent finalization CAS-validates a root-owned canonical
+parent manifest, unchanged membership epoch, one still-active rollout generation,
+complete prepared-receipt set, and total conservation. Successors atomically
+supersede predecessors; rollback is a complete successor over current manifest/
+actual limits and late or restored predecessor messages fail. It only permits
+activation: every parent then
 freshly CAS-revalidates its prepared state, ledger/unallocated capacity, floor
 ratchet/set, obligations, root generation/manifest, and current operational
 fences or remains conservatively blocked/reconciling. Delayed transfer steps
@@ -202,9 +213,11 @@ profile/provider capability/precondition outcome, remote-mutation-exception
 owner/guard/attempt, transmission-window/start-claim/time/uncertainty behavior,
 unique claimant/worker-instance/lease-fence/one-time-permit behavior, capacity-
 policy owner/parent-ledger/high-watermark, independent-floor governance/cross-
-command separation/platform-floor profile/ratchet, root-manifest membership/
-conservation/fresh parent activation/current-transition authority, transmission-
-executor/no-permit-transport behavior, canonical composite lock/retry behavior,
+command separation/platform-floor key/profile/ratchet, root-manifest membership/
+conservation/active-generation successor/fresh parent activation/current-
+transition authority, transmission-executor/provider-execution-profile/no-
+permit-transport behavior, canonical floor-key/migration behavior, canonical
+composite lock/retry behavior,
 refund/write-off evidence, and
 compensation/recovery-capacity behavior.
 

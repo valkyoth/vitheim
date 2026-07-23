@@ -109,6 +109,13 @@ audit decision.
   replacement worker, and ambiguous delivery are `OutcomeUnknown`, not retryable
   queue work. Restore cannot reconstruct the permit; failover, pause, or clock
   rollback cannot extend it. `1.0.0` supports no transferable permit profile.
+  A bound `ProviderExecutionProfile` denies master-key/general database access,
+  uses exact-claim-bound tenant/provider/account/action/request/destination
+  opaque credential operations, provider-native least privilege, short lifetime
+  where available, and destination/TLS/DNS/redirect controls with no general
+  proxy. Executor pools isolate tenant/account trust domains; unrestricted shared
+  cross-tenant privileged credentials are unsupported and unavoidable residual
+  provider blast radius is documented.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown
@@ -152,7 +159,13 @@ audit decision.
   epoch and per-class conservation constraints. It only permits activation:
   every parent freshly CAS-revalidates its ledger/unallocated capacity, floor
   ratchet/set, obligations, root generation/manifest, and current operational
-  fences or remains conservatively blocked/reconciling.
+  fences or remains conservatively blocked/reconciling. Each ratchet entry has a
+  canonical accounting owner/root, quota kind, unit/scale, period, class/lane,
+  region/residency, and settlement-policy key; profile migration is total,
+  conservation-preserving, and overflow checked. The root admits exactly one
+  active rollout generation; successors permanently supersede predecessors,
+  rollback is a complete successor over actual limits, and late or restored
+  cancelled/superseded work fails closed.
   Tenant work cannot invoke it, and every delayed transfer transition rechecks
   current local tenant/principal/policy epochs.
   Composite transactions use the canonical stream/authority-fence/target-fence/

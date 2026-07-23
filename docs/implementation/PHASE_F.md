@@ -436,16 +436,23 @@ ambiguous-claim reconciliation path. Register the trusted
 `TransmissionExecutor` that owns claim plus provider socket, immutable
 instruction issuer/binding, sealed consumed-by-value permit, explicit no-permit-
 transport boundary, digest-as-evidence-only rule, and unsupported transferable
-`1.0.0` profile.
+`1.0.0` profile. Register its `ProviderExecutionProfile`: denied key-ring/
+general-write authority, exact-claim-bound tenant/provider/account/action/
+request/destination opaque credential operations, provider credential privilege/
+lifetime, executor trust-domain partition, destination/TLS/DNS/redirect/no-
+general-proxy policy, and documented residual blast radius.
 Register the control-plane-only `QuotaCapacityPolicy` command, its exact one-
 parent lineage owner, co-located parent-ledger activation point, independently
 governed protected-floor owner/history/capability, floor-reduction receipt and
 cross-command separation, operational fences/obligation simulation/platform
-floor profile ID/version/digest/per-class admission ratchet, separation-of-
+floor profile ID/version/digest/fully typed admission ratchet and total key-set
+migration proof, separation-of-
 duties approval, simulation/delta digest, parent high-watermark, monotonic epoch,
 hierarchy-root rollout manifest/membership epoch/complete parent set/
-conservation policy, fresh post-finalization parent activation CAS and blocked/
-reconciliation states, and the current tenant/source/
+conservation policy, one active rollout generation plus successor/cancellation/
+supersession rules, fresh post-finalization active-generation parent activation
+CAS and blocked/reconciliation states, fully typed floor keys and total migration
+mapping, and the current tenant/source/
 destination-principal/policy fences required by every delayed capacity-transfer
 transition. No existing-capacity class transition is registrable.
 Classify any external-only fact by staleness bound and forbid it from privileged
@@ -483,12 +490,18 @@ receipt after revocation, unregistered start-claim fence/audience/provider
 binding, audience-only claimant, missing worker/lease/claim/permit binding,
 duplicate, persisted, or transported permit, ambiguous-claim retransmission,
 digest-as-authority, missing executor/socket co-ownership, duplicate-instruction/
-executor-failover retry, tenant-invoked capacity
+executor-failover retry, missing provider execution profile, arbitrary unclaimed
+request, master-key/general-write/plaintext credential access, scoped-handle
+substitution/reuse, cross-tenant executor compromise, unrestricted shared
+credential, destination/TLS/DNS/redirect/general-proxy bypass, missing residual-
+blast-radius record, tenant-invoked capacity
 policy, ambiguous policy owner/parent, non-atomic activation, shared floor/policy
 authority, missing cross-command separation/operational fences/platform-floor
 ratchet, lower-profile startup or mixed-version/rollback weakening, incomplete
-root manifest, stale post-finalization parent activation, missing blocked/
-reconciliation state, unsafe partial rollout, reserve-floor/simulation replay,
+or incompatible floor key/migration, incomplete root manifest, missing active
+generation/successor supersession, stale or superseded post-finalization parent
+activation, independent parent rollback, missing blocked/reconciliation state,
+unsafe partial rollout, reserve-floor/simulation replay,
 stale delayed-transfer authority, and
 revocation pass.
 Exit criteria: hidden data cannot reappear downstream, and no external effect
@@ -540,9 +553,10 @@ and canonical acquisition case; enumerate remote-target conditional/unconditiona
 profiles, immutable validators, provider capability evidence, and typed
 precondition outcomes independently of local fences; enumerate exception owner/
 guard/attempt/revocation cases, dispatch-transmission windows/start claims/
-claimants/executor/instruction-only/permits, and capacity-policy owner/parent/
-floor-governance/ratchet/root-manifest/fresh-parent-activation/current-authority
-cases. Goal: prove
+claimants/executor/instruction-only/provider-execution-profile/permits, and
+capacity-policy owner/parent/floor-governance/typed-key-ratchet/root-manifest/
+active-generation-successor/fresh-parent-activation/current-authority cases.
+Goal: prove
 equivalent deny-by-default policy independent of authentication mechanism and
 make later registration mechanically mandatory. Deliverables: generated
 matrix, negative corpus, human-versus-service-principal differential tests,
@@ -552,8 +566,9 @@ target-fence race fixtures, external-staleness classifications, and coverage/
 evidence report; include remote-validator/provider-downgrade/ABA, exception-
 guard, transmission duplicate-worker/claim-response/lease-takeover fixtures,
 executor/split-service/duplicate-instruction/no-permit-transport fixtures, and
-capacity-policy floor-governance/ratchet/root-membership/post-finalization-
-activation/delayed-transfer authority fixtures.
+provider credential/egress/executor-compromise fixtures, and capacity-policy
+floor-governance/key-migration/ratchet/root-membership/active-generation/
+successor/post-finalization-activation/delayed-transfer authority fixtures.
 Verification: mutation and read parity, tenant pairs, stale policy/credential,
 wrong audience/scope, false sender constraint, bearer-to-privileged escalation,
 replay-cache limitations, cache/index lag, commit-to-lease-to-dispatch policy/
@@ -579,7 +594,10 @@ change before transmission claim, deadline/audience/request substitution, clock
 rollback, shared-credential duplicate workers, claim/worker/lease/permit
 substitution, claim-response loss, stale-worker takeover, permit replay/restore/
 reconstruction/transport/logging, digest authorization, duplicate instruction,
-executor failover/compromise, uncertain retransmit, protected-class adjustment,
+executor failover/compromise, arbitrary unclaimed request, key-ring/general-write
+access, secret-handle substitution/reuse, cross-tenant executor compromise,
+unrestricted shared credential, egress/TLS/DNS/redirect/general-proxy bypass,
+uncertain retransmit, protected-class adjustment,
 policy owner/
 parent/floor co-location, concurrent allocation, stale high-watermark, floor
 reduction/spend cross-command identity or approval reuse, operational-fence/
@@ -588,8 +606,12 @@ race, stale manifest/root epoch, conservation mismatch, coordinator failover,
 wrong-manifest activation, allocation/reclamation/floor/obligation/incident/
 tenant/principal/policy/parent change between finalization and activation, stale
 activation instead of blocked reconciliation, floor-profile/ratchet substitution,
+floor-key/unit/period/kind/region substitution or lossy/overflowing migration,
 lower-profile startup, mixed-version/downgrade/rollback/restore weakening,
-partial rollout/rollback/restore, policy floor/simulation replay, tenant
+concurrent successor creation, partial activation rollback, late superseded
+preparation/finalization/activation, active-generation substitution, blocked-
+parent recovery, superseded restore, partial rollout/rollback/restore, policy
+floor/simulation replay, tenant
 suspension or principal/policy revocation during transfer, worker confused
 deputy, unsafe low-risk profile, break-glass, and differential adapters pass.
 Exit criteria: no principal kind or
@@ -606,11 +628,16 @@ bounded transmission-start claim, returns non-reconstructable permit authority
 once only inside the executor instance/lease generation that owns the provider
 socket, exposes only immutable instructions/status across process boundaries,
 and treats duplicate instruction, executor failover, ambiguous claim, or possible
-start as unknown rather than retryable. Capacity policy cannot rewrite existing
+start as unknown rather than retryable. It denies general key/database authority
+and permits provider authentication only through exact-claim-bound scoped
+credentials and egress policy with bounded tenant/account trust domains.
+Capacity policy cannot rewrite existing
 classes; each one-parent activation atomically updates its co-located ledger
 under independently governed floors, floor reductions cannot share authority
 with spending released capacity, the durable platform-floor ratchet survives
-upgrade/rollback/restore, multi-parent finalization proves the complete current
-root manifest but every parent still freshly CAS-revalidates or remains
-blocked/reconciling, and delayed transfer steps prove current local authority.
+complete typed-key migration/upgrade/rollback/restore, multi-parent finalization
+proves the complete current root manifest and active generation but every parent
+still freshly CAS-revalidates or remains blocked/reconciling, successor-only root
+rollback permanently rejects late/restored predecessor work, and delayed
+transfer steps prove current local authority.
 `v0.60.0 implementation stop reached. Run pentest for this exact commit.`

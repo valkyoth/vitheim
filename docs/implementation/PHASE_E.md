@@ -162,7 +162,12 @@ receive status, never permit material. The sealed process-local permit is
 consumed by value, cannot be cloned/serialized, and its digest is evidence only.
 It cannot transmit after the immutable deadline and routes duplicate instruction,
 executor failover, ambiguous claim/permit delivery, or uncertain start to
-reconciliation rather than redelivery.
+reconciliation rather than redelivery. Its channel-specific
+`ProviderExecutionProfile` denies master-key/general database access, redeems
+only an exact-claim-bound tenant/provider/account/publication-action/request/
+destination secret handle, uses least-privilege credentials, enforces destination
+allowlist/TLS/DNS/redirect rules without a general proxy, and isolates any
+unscopable account credential to a documented trust domain.
 
 Goal: turn the `0.48.1` publication port and fake into a supported hosted status
 surface without exposing the private incident or service-health authority.
@@ -186,8 +191,10 @@ expired/substituted/replayed transmission permit, clock rollback, uncertain
 start retransmission, concurrent shared-credential publishers, claim/worker/
 lease/permit substitution, claim-response loss, stale-worker takeover, permit
 transport/logging/digest authorization, duplicate instruction, executor
-failover/compromise, accessibility, load, and fake-versus-hosted differential
-tests pass.
+failover/compromise, arbitrary unclaimed publication request, credential-handle
+or provider-account substitution, cross-tenant credential reuse, egress/TLS/DNS/
+redirect bypass, unrestricted shared credential, understated residual blast
+radius, accessibility, load, and fake-versus-hosted differential tests pass.
 
 Exit criteria: at least the selected built-in hosted profile publishes and
 corrects status with reproducible approval/source/receipt history; external

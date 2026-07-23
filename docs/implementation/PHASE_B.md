@@ -216,6 +216,28 @@ split deployment it never receives permit material over RPC, IPC, or a queue.
 The executor rechecks, claims, and transmits in one process-local boundary. An
 in-process worker may embed that boundary, but the same ownership rule applies.
 
+Every executor runs under an immutable, versioned `ProviderExecutionProfile`
+bound to the instruction, receipt, claim, and audit evidence. The executor has
+no master-key-ring access and no general-purpose database-write capability.
+Provider credentials remain behind tenant/provider/account-scoped opaque secret
+handles; plaintext credentials never enter executor memory. Credential issuance,
+redemption, signing, or token attachment requires the exact successful claim and
+binds tenant, provider, account, action, receipt/effect attempt, request digest,
+destination, and expiry. Provider-native credentials are least privilege and
+short lived where supported.
+
+The profile also binds per-provider destination/port allowlists, strict TLS
+identity, DNS rebinding protection, redirect policy, and network enforcement;
+there is no general HTTP proxy or arbitrary-socket capability. Executor pools
+are partitioned by tenant/account or a documented bounded trust domain whenever
+provider credentials cannot be scoped narrowly enough. A privileged provider
+profile that requires one unrestricted credential shared across unrelated
+tenants is unsupported. Where a provider cannot issue request-level credentials,
+the admission record documents the residual account-level blast radius,
+compensating isolation, monitoring, rotation, and revocation. A compromised
+executor still cannot redeem a handle or authenticate an unclaimed/substituted
+request.
+
 The opaque permit type has a sealed constructor, implements neither `Clone` nor
 serialization, is consumed by value by the provider-write operation, and
 best-effort zeroizes its memory on drop under the `0.28.3` process-memory
@@ -341,12 +363,16 @@ never-reused monotonic epochs and cannot be rewritten by rollback or restore.
 Every change rechecks current tenant, hierarchy, incident/emergency, and policy
 fences and simulates impact against outstanding reconciliation, security-
 cleanup, incident, emergency, and other protected obligations. A selected
-production profile defines a non-configurable per-class `PlatformSafetyFloor`;
-configured floors can never fall below it. The floor has a stable profile ID,
-version, canonical digest, and exact class/unit minima. Durable
-`PlatformSafetyFloorAdmission` state records a never-reused per-class minimum
-epoch/high-watermark. The effective floor is the strictest applicable compiled
-profile, durable admitted minimum, and mixed-version cluster profile.
+production profile defines a non-configurable `PlatformSafetyFloor`; configured
+floors can never fall below it. The floor has a stable profile ID, version,
+canonical digest, and a canonical set of exact minima. Every minimum and durable
+`PlatformSafetyFloorAdmission` ratchet entry is keyed by
+`PlatformSafetyFloorKey`: accounting owner and hierarchy root, `QuotaKind`,
+canonical unit and scale, accounting-period semantics, capacity class, recovery/
+work lane, region/residency scope, and settlement-policy version. Each exact key
+has a never-reused admission epoch/high-watermark. The effective floor is the
+strictest applicable compiled profile, durable admitted minimum, and mixed-
+version cluster profile for that same key; incomparable keys are never combined.
 
 A node advertising any floor below the durable admitted minimum fails startup
 and cannot lead, allocate, activate, or reconcile quota work. Rolling upgrades
@@ -359,6 +385,12 @@ with a lower default never releases capacity or lowers the durable ratchet.
 Backup, restore, and failover preserve the profile digest and high-watermark.
 Lowering the durable platform minimum is not an ordinary configuration or floor-
 governance operation and requires a future explicit security-design milestone.
+Every profile migration provides a canonical total, conservation-preserving,
+overflow-checked mapping from every old key to the complete new key set before
+activation. Missing/duplicate keys, lossy or rounded unit/scale conversion,
+incompatible period or settlement semantics, quota-kind/lane confusion, or
+region/residency scope change fails startup and migration rather than silently
+reducing protection.
 
 A floor reduction requires its own quorum, risk owner, approval lineage, and
 separation of duties, distinct from `ActivateQuotaCapacityPolicy`. It records a
@@ -384,6 +416,15 @@ deny preparation. Parent creation, removal, reparenting, generation change, or
 reclassification increments the root membership epoch and invalidates every
 older manifest.
 
+The root also owns a monotonic `ActiveRolloutGeneration`; exactly one rollout
+generation may be active. Creating a successor atomically CAS-updates the root
+and permanently supersedes its predecessor. Root cancellation before
+finalization is a typed `CancelledBeforeFinalization` transition; supersession
+after one or more parent activations is a distinct
+`SupersededAfterPartialActivation` state with actual-parent-limit evidence.
+Late preparation, finalization, or activation for a cancelled or superseded
+generation fails closed.
+
 Each manifest member first records an idempotent prepared receipt binding
 rollout ID, manifest digest, exact parent identity/generation, old/new limits,
 current parent epoch/high-watermark, floor profile and floor-set version,
@@ -396,6 +437,7 @@ authority to apply stale prepared values.
 
 Each parent activation is a new local transaction that locks its `Prepared`
 state; validates the finalized root generation and exact manifest digest;
+validates that the rollout is still the root's `ActiveRolloutGeneration`;
 revalidates the parent ledger epoch/high-watermark and proven unallocated
 capacity; revalidates the current floor-set version, durable platform-floor
 ratchet, and protected obligations; and rechecks current tenant, hierarchy,
@@ -406,8 +448,12 @@ and records `ActivationBlocked` or `ReconciliationRequired`; it never applies
 the stale delta. Coordinator failover cannot discover, omit, alias, or add
 parents. Crash, cancellation, rollback, or blocked activation may reduce
 availability but cannot transiently over-allocate. Rollback is a new monotonic
-policy version revalidated against the current parent, independently governed
-floor set, and durable platform-floor ratchet.
+successor root rollout over the current canonical manifest and actual effective
+limits of every parent, not independent parent rollback. It revalidates the
+current parent, independently governed floor set, and durable platform-floor
+ratchet. `ActivationBlocked` parents remain at the conservative intersection
+until the active successor rollout or a newly authorized preparation resolves
+them. Restore cannot reactivate a superseded generation.
 The destination
 acknowledgement principal must be authorized for that exact tenant, hierarchy,
 parent lineage, lane, class, period, region, and destination epoch.
@@ -812,16 +858,20 @@ intents. The floor set has a distinct one-owner lineage,
 `ManageQuotaProtectedFloors` capability, quorum/approval lifecycle, current
 tenant/hierarchy/incident/emergency/policy fences, obligation-aware simulation,
 append-only epochs, and a non-configurable versioned/digested platform-minimum
-profile with durable per-class admission epochs/high-watermarks. Nodes below
-that ratchet reject startup; mixed-version operation uses the stricter profile,
-raising it is a governed capacity migration, and downgrade/rollback cannot
-release capacity. A reduction emits a `FloorReductionReceipt`; policy spending
+profile. Key every minimum and durable admission epoch/high-watermark by exact
+accounting owner/root, quota kind, canonical unit/scale, period semantics, class/
+lane, region/residency, and settlement-policy version. Nodes below that ratchet
+reject startup; mixed-version operation uses the stricter same-key profile,
+raising or changing its key set requires a total conservation-preserving,
+overflow-checked migration, and downgrade/rollback cannot release capacity. A
+reduction emits a `FloorReductionReceipt`; policy spending
 newly released capacity binds it and proves actor/approver/risk-owner/approval-
 lineage separation from the reduction.
 Model multi-parent changes as process-manager rollouts of independent commands
 under one root-owned `QuotaCapacityRolloutRoot` manifest. The canonical digest
 binds membership epoch, every unique parent ID/generation/region/class/period,
-and total conservation constraints. Each parent prepares the conservative per-
+total conservation constraints, and one monotonic `ActiveRolloutGeneration`.
+Successor creation atomically supersedes the predecessor. Each parent prepares the conservative per-
 class intersection and a receipt bound to rollout plus manifest. Finalization
 CAS-validates the unchanged root epoch and exactly one receipt for every
 manifest member. Finalization permits but does not authorize activation: each
@@ -832,8 +882,12 @@ principal/policy fences. Drift records `ActivationBlocked` or
 `ReconciliationRequired` under the conservative intersection instead of
 applying stale limits.
 Creation, removal, reparenting, generation change, or aliases cannot be omitted
-or discovered by the coordinator. Rollback is a new monotonic version, never
-epoch reuse. Require exact-destination-hierarchy
+or discovered by the coordinator. Parent activation also rechecks the currently
+active root generation. Rollback is a complete successor root rollout over the
+current manifest and actual parent limits, never an independent parent version
+or epoch reuse. Cancellation before finalization and supersession after partial
+activation are distinct typed states; late superseded messages and restored
+receipts fail closed. Require exact-destination-hierarchy
 authorization for acknowledgement and current local tenant/principal/policy
 epoch checks at every delayed transition. Require parent reserve before outbox,
 idempotent child inbox activation, conservative in-transit
@@ -864,9 +918,11 @@ lineage/state machine, parent-ledger CAS and high-watermark contract,
 independently governed protected-floor owner/history/capability, floor-reduction
 receipt/cross-command separation guard, platform-safety-floor and obligation-
 simulation contract, platform-floor profile/admission/ratchet and governed-
-migration state machine, multi-parent hierarchy-root manifest/epoch/conservation
-codec and conservative-rollout process manager with prepared/finalized/
-activation-blocked/reconciliation receipts and local activation CAS,
+migration state machine plus `PlatformSafetyFloorKey` codec and total key-set
+mapping law, multi-parent hierarchy-root manifest/epoch/conservation/
+`ActiveRolloutGeneration` codec and conservative-rollout process manager with
+cancelled/superseded/prepared/finalized/activation-blocked/reconciliation
+receipts, successor rollback, and local activation CAS,
 delayed-transition authority-fence contract, double-entry
 conservation oracle, late-settlement lineage mapping, partitioned fair control-
 plane capacity, deterministic memory adapter, recovery reconciler, leak/
@@ -916,9 +972,17 @@ obligation; platform-minimum violation; profile ID/version/digest substitution;
 node startup below the admitted minimum; mixed-version rolling upgrade,
 downgrade/rollback to a lower compiled floor, conflicting floor profiles,
 higher-floor capacity migration, lower software default, backup/restore of the
-floor ratchet; concurrent floor changes; floor-history rollback/restore;
+floor ratchet; accounting-owner/root/quota-kind/unit/scale/period/class/lane/
+region/residency/settlement-policy key substitution, omitted or duplicate key,
+lossy/rounded conversion, arithmetic overflow, daily-versus-hourly period,
+region relocation, incomplete key-set migration; concurrent floor changes;
+floor-history rollback/restore;
 rollback epoch reuse; restore of an old policy, parent ledger, floor set, or
-rollout step; late evidence against original claim/transfer lineage; accidental
+rollout step; concurrent root rollout creation, cancellation/finalization race,
+partial activation followed by rollback, delayed predecessor preparation/
+finalization/activation after successor creation, active-generation
+substitution, blocked-parent recovery, coordinator failover during supersession,
+restore of superseded receipts; late evidence against original claim/transfer lineage; accidental
 cross-shard/cross-region transaction, incompatible active/active write topology,
 provider-outage exhaustion, one-tenant reconciliation monopolization, tenant
 attempts to consume emergency reserve, global/per-tenant starvation, lease loss,
@@ -944,12 +1008,16 @@ parent rollout authenticates a complete root-owned membership manifest and can
 under-allocate but cannot omit a parent or transiently over-allocate. Root
 finalization never authorizes stale parent state: every parent activation
 freshly CAS-revalidates its ledger, floor ratchet/set, obligations, root
-generation/manifest, and operational authority or remains conservatively
-blocked/reconciling. Floor reduction has separate authority, append-only
+generation/manifest and currently active rollout generation, and operational
+authority or remains conservatively blocked/reconciling. Rollback and
+supersession are complete successor root rollouts over actual parent limits;
+late or restored predecessor messages cannot reactivate them. Floor reduction has separate authority, append-only
 history, current operational fences, obligation simulation, a durable versioned
-platform-minimum ratchet, and cross-command separation from spending released
-capacity. Mixed-version deployment, rollback, and restore cannot lower that
-ratchet or release capacity. Every delayed transfer transition rechecks current
+platform-minimum ratchet keyed by the full accounting/kind/unit/period/class/
+lane/region/settlement scope, and cross-command separation from spending
+released capacity. Mixed-version deployment, key-set migration, rollback, and
+restore cannot compare incompatible capacity, lower that ratchet, or release
+capacity. Every delayed transfer transition rechecks current
 local authority; and
 exhausted or abusive tenants cannot block fair bounded reconciliation or
 security cleanup.
@@ -1029,7 +1097,15 @@ audience, and permit digest. Opaque permit material is returned only on the
 successful first claim inside the trusted `TransmissionExecutor` that also owns
 the provider socket, and is never persisted or transported across RPC/IPC/
 queues; same-claim replay returns status. Upstream workers submit immutable
-authenticated instructions only. The sealed permit is non-`Clone`, non-
+authenticated instructions only. The executor's bound
+`ProviderExecutionProfile` denies master-key/general database authority, uses
+tenant/provider/account-scoped opaque secret handles, binds credential
+redemption to the exact claim/tenant/account/action/request/destination, and
+enforces provider destination/TLS/DNS/redirect policy without a general proxy.
+Pools partition credentials by tenant/account or documented bounded trust
+domain; unrestricted cross-tenant privileged credentials are unsupported and
+any unavoidable provider account-level residual blast radius is explicit. The
+sealed permit is non-`Clone`, non-
 serializable, consumed by value, best-effort zeroized on drop, and its stored
 digest grants no authority. Ambiguous permit delivery or claim response,
 duplicate instruction RPC, executor failover, and every replacement worker that
@@ -1078,6 +1154,9 @@ claimant/worker-instance/lease-generation binding, at-most-once permit-return
 and ambiguous-delivery contract, `TransmissionInstruction`/
 `TransmissionExecutor` ownership boundary, sealed consumed-by-value permit and
 zeroization contract, explicit no-transferable-capability production profile,
+`ProviderExecutionProfile` codec/admission rules, claim-bound opaque credential-
+handle redemption, executor database/key denial, scoped pool and residual-blast-
+radius model, destination/TLS/DNS/redirect/no-general-proxy egress contract,
 authoritative-time and monotonic-start enforcement contract, and
 exact-token bounded per-kind quota-disposition/refund/settlement/
 capacity-transfer, one-parent capacity-policy, protected-floor governance, and
@@ -1148,6 +1227,14 @@ or connector memory; duplicate an immutable instruction; fail over or compromise
 the executor; let an upstream worker or split connector claim or hold permit
 authority; treat the stored digest as authority; violate sealed construction,
 non-`Clone`/non-serialization, consumed-by-value, or zeroize-on-drop properties;
+issue an arbitrary unclaimed provider request; give the executor master-key or
+general database-write access; expose plaintext/reusable provider credentials;
+substitute tenant/provider/account/action/request/destination in a secret handle;
+reuse a handle across claims; bypass the destination/port allowlist, TLS identity,
+DNS-rebinding/redirect policy, or no-general-proxy rule; compromise one executor
+and reach another tenant/account trust domain; admit one unrestricted privileged
+credential across unrelated tenants; omit or understate unavoidable provider
+blast radius;
 lose evidence of whether a first byte was written; retransmit an uncertain
 attempt;
 reuse consumed authority after `DefinitelyNotStarted`; use worker identity as
@@ -1174,15 +1261,23 @@ policy under review; transiently over-allocate during partial multi-parent
 rollout; omit or alias a manifest parent; race parent add/remove/reparent/
 generation change; substitute root membership epoch, parent identity/region/
 class/period, conservation total, manifest digest, prepared receipt, or
-finalization receipt; activate a parent under another manifest; lower a floor
+finalization receipt; substitute or race `ActiveRolloutGeneration`; concurrently
+create successors; cancel before finalization; partially activate then roll back;
+deliver predecessor preparation/finalization/activation after supersession;
+recover a blocked parent under stale authority; fail over during supersession;
+restore a superseded receipt; activate a parent under another manifest; lower a floor
 and spend it with the same actor/approver/risk owner/approval lineage; substitute
 floor capability or approval; ignore incident/emergency/obligation fences or
 platform minimum; allocate/reclaim/change a floor or obligation, open an
 incident, suspend the tenant, revoke a principal, supersede policy, or fail over
 a parent between preparation, root finalization, and activation; apply stale
 prepared values instead of blocking; substitute platform-floor profile ID/
-version/digest or per-class admission epoch/high-watermark; start a stale/lower-
-floor node; weaken the effective floor during a mixed-version upgrade,
+version/digest or typed floor key/admission epoch/high-watermark; substitute
+accounting owner/root, quota kind, unit/scale, period, class/lane, region/
+residency, or settlement-policy version; omit/duplicate a key; round, overflow,
+or lossily convert a unit; confuse daily/hourly periods; relocate region scope
+without a total mapping; start a stale/lower-floor node; weaken the effective
+floor during a mixed-version upgrade,
 downgrade, rollback, lower-default release, or restore; roll back floor history;
 reuse an epoch on rollback; restore a stale rollout or floor ratchet;
 activate/acknowledge/reclaim after tenant suspension, principal revocation, or
@@ -1219,10 +1314,15 @@ bounded monotonic permit, and exactly one worker instance/lease generation may
 receive that non-persisted permit once inside the executor that owns the provider
 socket. Upstream and split-service callers exchange immutable instructions and
 status only; no supported production boundary serializes or transfers a permit,
-and its stored digest is never authority. Claim-response ambiguity, duplicate
-instruction delivery, executor failover, replacement workers, and uncertain
-start reconcile as `OutcomeUnknown` without ordinary retry; definitely unstarted
-work requires fresh authority.
+and its stored digest is never authority. The executor has no master-key/general
+database authority; every provider credential operation is an opaque, exact-
+claim-bound, tenant/provider/account/action/request/destination-scoped handle
+under least-privilege credential and deny-by-default egress policy. Unscopable
+cross-tenant privileged profiles are unsupported and unavoidable residual blast
+radius is explicit. Claim-response ambiguity, duplicate instruction delivery,
+executor failover, replacement workers, and uncertain start reconcile as
+`OutcomeUnknown` without ordinary retry; definitely unstarted work requires
+fresh authority.
 Every applicable authority change linearizes against dispatch through the
 complete co-located monotonic fence set; unsupported external staleness cannot
 authorize privileged effects. Every current-target dispatch also linearizes
@@ -1254,9 +1354,13 @@ future unallocated-parent policy changes are control-plane-only, fenced,
 simulated, separation-of-duties approved, and reserve-floor preserving. Every
 policy lineage owns one parent and atomically updates its co-located ledger
 under a separately governed floor version. Multi-parent rollout proves a
-complete unchanged root manifest before finalization. Floor reductions have
-separate cross-command authority and cannot bypass operational fences, protected
-obligations, or the durable versioned platform-floor ratchet. Finalization only
+complete unchanged root manifest and one active root generation before
+finalization and every parent activation. Supersession and rollback are complete
+successor root rollouts; late or restored predecessor work fails closed. Floor
+reductions have separate cross-command authority and cannot bypass operational
+fences, protected obligations, or the durable versioned, fully scope-keyed
+platform-floor ratchet. Key-set migration is total, conservation-preserving, and
+overflow checked. Finalization only
 permits an activation attempt: every parent freshly CAS-revalidates its ledger,
 floor, obligations, root generation/manifest, and current authority or remains
 under the conservative intersection as blocked/reconciling. Upgrade, downgrade,

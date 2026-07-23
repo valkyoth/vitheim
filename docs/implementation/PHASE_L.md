@@ -49,6 +49,17 @@ guest-facing broker, consumes the sealed process-local permit by value, and
 never exposes permit material or an authorizing digest to guest memory, RPC,
 IPC, or queues. A plugin cannot delay, extend, replay, select the claimant, or
 reinterpret duplicate instruction, executor failover, or uncertain transmission.
+Every executor is admitted under the exact immutable, versioned
+`ProviderExecutionProfile` for the claimed tenant/provider/account/action/
+destination. It has neither a platform master-key ring nor general database
+write authority, receives only opaque operation-specific secret handles, and
+may redeem a handle only for the exact claimed receipt, request digest,
+provider account, action, destination, and bounded lifetime. Provider network
+access is deny-by-default and binds destination allowlists, TLS identity, DNS
+rebinding/redirect rules, and socket ownership; the executor is never a general
+HTTP proxy. Executor pools are partitioned by tenant/account or another
+documented bounded trust domain, and a provider profile requiring an
+unrestricted credential shared across unrelated tenants is rejected.
 Goal:
 controlled hosted extension
 effects with truthful remote outcomes. Deliverables: host-call broker, typed
@@ -60,6 +71,8 @@ compensation accounting integration; include conditional-write broker,
 precondition outcome mapping, provider capability validation, and reviewed-
 unconditional-exception owner/guard/attempt enforcement plus transmission-
 window/unique-claimant/executor-boundary/no-permit-transport enforcement.
+Include provider-execution-profile admission, scoped credential redemption,
+pool-partition, egress, and residual-blast-radius evidence.
 Verification: unauthorized calls, replay, commit-to-dispatch revocation,
 forged/stale dispatch receipt, worker/plugin confused deputy, cross-tenant
 handles, target/request-digest substitution, unsafe freshness downgrade,
@@ -74,7 +87,10 @@ expired/substituted transmission deadline, revocation after receipt, long guest
 pause, concurrent shared-credential hosts, claim/worker/lease/permit
 substitution, claim-response loss, stale-host takeover, permit replay/
 reconstruction/transport, digest authorization, duplicate instruction, executor
-failover/compromise, clock rollback, uncertain-start retransmission, provider
+failover/compromise, arbitrary unclaimed provider socket use, secret-handle or
+provider-account substitution, cross-tenant credential redemption, unrestricted
+shared-credential admission, egress/TLS/DNS/redirect/general-proxy bypass,
+clock rollback, uncertain-start retransmission, provider
 acceptance plus lost response, idempotency expiry, forged success/
 resolution source, operator assessment presented as provider truth, late
 callback versus manual resolution, forbidden blind retry, privileged resolver
@@ -86,7 +102,9 @@ its transmission begins only through the host-owned bounded current-fence
 permit returned once to one worker instance/lease generation, and its exact
 binding/authority, execution, provider truth, knowledge source, operational
 disposition, per-kind quota state, and compensation remain independently
-attributable.
+attributable. A compromised executor is bounded to its admitted provider
+execution profile and cannot obtain platform-wide keys, general writes,
+unclaimed credentials, or arbitrary network reach.
 `v0.113.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.114.0` — Capability And Secret Handles
@@ -101,17 +119,31 @@ non-sensitive results. An integration that truly requires raw secret access
 must run as a separately isolated hosted-connector profile with its own
 milestone/admission evidence and is excluded from ordinary Wasm/plugin security
 claims.
+Each handle redemption is also bound to the immutable
+`ProviderExecutionProfile`, exact claimed receipt, tenant/provider/account/
+action/request digest/destination, and expiry. The secret broker issues the
+least privilege and shortest practical credential supported by the provider;
+it cannot return a reusable plaintext credential or authorize an unclaimed
+socket operation. Hosted connector profiles preserve the same deny-by-default
+egress/TLS/DNS/redirect controls and publish their remaining credential and
+executor-compromise blast radius.
 Define plugins as stateless by default; any state capability is explicitly
 tenant/plugin/instance namespaced, schema-versioned, quota-bound, exportable,
 erasable, migratable, and registered in `0.51.2`. Goal: least-authority plugins. Deliverables:
 manifest/evaluator, non-extractable secret-operation broker, authenticated HTTP/
-signing/token/certificate host operations, and optional plugin-state port.
+signing/token/certificate host operations, provider-execution-profile evaluator,
+scoped-handle redemption receipts, and optional plugin-state port.
 Verification: forging, scope escalation, state namespace collision, quota/
 migration/deletion failure, handle extraction/reuse, guest-memory secret
 canaries, broker confused deputy, derived-header leakage, stale/revoked handles,
-and policy change pass. Exit criteria: plaintext credentials never enter guest
+claimed-receipt/request/account/action/destination substitution, arbitrary
+unclaimed socket use, cross-tenant handle redemption, unrestricted shared
+credential, egress/TLS/DNS/redirect/general-proxy bypass, and policy change
+pass. Exit criteria: plaintext credentials never enter guest
 memory through any supported plugin API; exceptions are separate hosted
-products and cannot inherit this plugin-security claim. `v0.114.0
+products and cannot inherit this plugin-security claim; no supported profile
+turns a credential broker or executor into a general secret, database, or
+network authority. `v0.114.0
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.115.0` — Resource Metering
@@ -177,9 +209,13 @@ transport a start permit. Its testkit requires unique claim/worker/lease/permit-
 digest binding, status-only replay, ambiguous-delivery reconciliation, and no
 persisted permit representation. It models the supported split profile as
 immutable authenticated instruction/status RPC to a trusted executor that owns
-claim plus provider socket; no transferable permit API is exposed. Goal: safe integration
-development. Deliverables: private SDK/testkit, broker-operation mocks, guest-
-memory canary harness, and conformance suite. Verification: principal/tenant/
+claim plus provider socket; no transferable permit API is exposed. It also
+models immutable `ProviderExecutionProfile` admission, exact claim-bound opaque
+secret operations, pool trust-domain partitioning, and deny-by-default
+destination/TLS/DNS/redirect policy. Goal: safe integration development.
+Deliverables: private SDK/testkit, broker-operation mocks, guest-memory canary
+harness, provider-execution/egress fixtures, and conformance suite.
+Verification: principal/tenant/
 audience confusion, SSRF, token replay, impersonation, handle extraction,
 plaintext credential in guest memory, pagination loops, secret logs, and
 malformed remote data, validator/resource/account substitution, ABA recreation,
@@ -189,10 +225,15 @@ unguarded unconditional selection, long pause, expired/substituted deadline,
 revocation before start claim, clock rollback, duplicate shared-credential
 workers, claim-response loss, lease takeover, claimant/permit substitution,
 permit replay/reconstruction/transport, digest authorization, duplicate
-instruction, executor failover/compromise, and uncertain retransmission pass.
+instruction, executor failover/compromise, arbitrary unclaimed socket use,
+secret-handle/account substitution, cross-tenant credential reuse, unrestricted
+shared-credential admission, egress/TLS/DNS/redirect/general-proxy bypass, and
+uncertain retransmission pass.
 Exit criteria:
 connectors pass conformance before
-activation and cannot request plaintext credentials. `v0.117.0 implementation
+activation and cannot request plaintext credentials, arbitrary provider
+operations, unrestricted shared credentials, or general network proxying.
+`v0.117.0 implementation
 stop reached. Run pentest for this exact commit.`
 
 ## `0.118.0` — Mail, Webhook, And Collaboration Connectors
@@ -276,6 +317,14 @@ device instance, lease generation/fence, permit digest, and transmission-start
 status—but never permit material. The agent-local trusted executor owns claim
 plus private-system socket and consumes its sealed permit locally; the central
 service and spool exchange immutable authenticated instructions/status only.
+The spool pins the admitted `ProviderExecutionProfile` digest and opaque scoped
+secret-handle reference, never plaintext secret material. Agent credentials are
+tenant/provider/account/action/request/destination/claim bound, least-privilege,
+and short-lived where the provider supports it. Local egress, TLS identity,
+resolved-address/DNS-rebinding, and redirect enforcement are deny-by-default;
+the agent cannot become a general proxy. Agent executor pools are partitioned
+by the supported bounded trust domain, and each profile documents its residual
+compromise radius.
 Offline replay cannot refresh, weaken, substitute, or consume another exception,
 extend a deadline, return or transport a permit, authorize from its digest, or
 retransmit a claimed/possibly started request. Capacity-policy
@@ -292,10 +341,12 @@ substitution, clock rollback, concurrent agent instance, claim/worker/lease/
 permit substitution, claim-response loss, takeover, start-permit replay/
 restore/reconstruction/transport, digest authorization, duplicate instruction,
 executor failover/compromise, uncertain transmission retry, and offline limits
-pass.
+pass; also test arbitrary unclaimed socket use, secret-handle/account
+substitution, cross-tenant credential reuse, unrestricted shared-credential
+rejection, and egress/TLS/DNS/redirect/general-proxy bypass.
 Exit criteria: agent
 compromise is bounded and revocable without making Vitheim a general OAuth
-issuer.
+issuer, credential oracle, database writer, or network proxy.
 `v0.119.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.120.0` — Plugin Compatibility And Isolation Suite

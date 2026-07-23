@@ -20,7 +20,11 @@ exact worker instance and lease generation/fence, receipt/effect attempt,
 service audience, and permit digest, while persisting no reconstructable permit
 material. The selected production profile places claim plus provider socket in
 one trusted `TransmissionExecutor`; queues/RPC carry immutable authenticated
-instructions/status and never permit authority. Every current-target profile must also co-locate
+instructions/status and never permit authority. Its `ProviderExecutionProfile`
+must prove no master-key/general write access, claim-bound scoped secret
+operations, least-privilege credentials, bounded executor trust domains, and
+deny-by-default destination/TLS/DNS/redirect egress without a general proxy.
+Every current-target profile must also co-locate
 the target owner, authoritative `DispatchTargetFence`, and effect work bundle;
 same-aggregate targets use the expected stream version/digest, while different-
 aggregate targets use a fence row updated atomically with target events. Remote,
@@ -45,10 +49,13 @@ owns exactly one parent and must co-locate its stream head, parent-capacity
 ledger, and independently governed floor-set row for atomic activation.
 Floor management requires its own capability/history, operational fences,
 durable versioned platform-floor ratchet, and cross-command separation from
-policy activation. Multi-parent changes use a hierarchy-root-owned canonical
-membership manifest, root epoch CAS, complete prepared-receipt set, fresh local
-post-finalization parent activation CAS, and conservative process-manager
-rollout, not a distributed transaction. Each delayed transfer transition
+policy activation. Ratchet entries use the full typed accounting/kind/unit/
+period/class/lane/region/settlement key and migrations preserve complete key-set
+conservation without overflow. Multi-parent changes use a hierarchy-root-owned
+canonical membership manifest, root epoch CAS, one active rollout generation,
+complete prepared-receipt set, fresh local post-finalization parent activation
+CAS, atomic successor supersession, and conservative process-manager rollout,
+not a distributed transaction. Each delayed transfer transition
 rechecks current local tenant/principal/policy epochs.
 
 ## `0.21.0` — Storage Capability Negotiation
@@ -64,9 +71,10 @@ co-location, transmission-window/start-claim/time capability, one-parent policy-
 owner/parent-ledger/floor-set activation atomicity, unique claimant/lease-bound
 one-time permit return, floor-governance/cross-command-separation capability,
 platform-floor profile/admission/ratchet semantics, root-manifest complete-
-membership rollout plus fresh local parent activation, trusted
-`TransmissionExecutor`/instruction-only split protocol, bounded deadlock-retry
-semantics, and fail-closed behavior.
+membership rollout plus active-generation successor semantics and fresh local
+parent activation, typed floor-key migration, trusted `TransmissionExecutor`/
+instruction-only split protocol and `ProviderExecutionProfile`, bounded
+deadlock-retry semantics, and fail-closed behavior.
 
 Goal: prevent adapters from silently weakening correctness.
 
@@ -85,13 +93,18 @@ non-atomic start claim, audience-only claimant, duplicate permit return,
 persisted/reconstructable/transported permit, digest used as authority, split
 worker without an executor-owned provider socket, unsupported duplicate-
 instruction/ambiguous-delivery/executor-failover or clock-rollback behavior,
+missing executor credential/egress profile, master-key/general-write access,
+unclaimed or cross-tenant credential-handle use, unrestricted shared privileged
+credential, destination/TLS/DNS/redirect/general-proxy bypass,
 mutable existing capacity class, tenant-invokable capacity policy, multiple
 parents per policy lineage, non-co-located policy owner/parent ledger/floor set,
 policy-controlled validation floor, shared floor/policy authority, missing
 platform minimum or operational fences, coordinator-discovered/partial parent
 set, missing root epoch/manifest conservation, finalization treated as stale
-parent authority, missing local activation CAS or blocked/reconciliation state,
-unversioned floor profile/ratchet, stale/lower-floor node admission, weak mixed-
+parent authority, missing/ambiguous active generation or successor supersession,
+independent parent rollback, missing local activation CAS or blocked/
+reconciliation state, unversioned or scalar floor profile/ratchet, incomplete/
+lossy/overflowing key migration, stale/lower-floor node admission, weak mixed-
 version floor, unsafe partial rollout, missing delayed-transition authority
 recheck,
 cross-partition transaction requirement,
@@ -144,7 +157,12 @@ start permit, return a permit twice or to an audience-sharing replica, persist
 or transport permit material, expose it to an upstream/split worker, serialize
 or clone it, treat its digest as authority, separate claim from the executor-
 owned provider socket, let a replacement worker transmit, classify a lost claim
-response or post-claim crash as definitely unstarted, rewrite an existing
+response or post-claim crash as definitely unstarted, give an executor master-
+key/general database authority, expose plaintext or reusable provider
+credentials, redeem a handle without the exact claim or for another tenant/
+account/action/request/destination, bypass TLS/DNS/redirect/destination controls,
+expose a general proxy, share one unrestricted privileged credential across
+tenants, rewrite an existing
 capacity class, use a cross-class adjustment, activate capacity policy without
 its one owner or atomic co-located parent/floor transaction, let a policy lower
 its own floor, reuse floor approvers to spend released capacity, ignore
@@ -153,7 +171,11 @@ incomplete parent set, transiently over-allocate during multi-parent rollout,
 activate from historical authorization IDs without current epochs, apply
 prepared values after post-finalization ledger/floor/obligation/incident/tenant/
 principal/policy drift, admit a lower floor profile or lose its durable ratchet
-during upgrade/downgrade/restore,
+during upgrade/downgrade/restore, use a scalar/incomplete floor key, omit or
+duplicate a key, accept lossy/rounded/overflowing unit conversion or incompatible
+period/region/settlement migration, activate a historically finalized but
+superseded rollout, independently roll back one parent, or restore a superseded
+generation,
 or execute a network/provider call inside the transaction.
 
 Verification: prove every deliberately incomplete bundle adapter and adapters
@@ -182,6 +204,11 @@ claim-response loss, stale lease takeover, pre/post-start-claim crash, old-
 permit restore/reconstruction, uncertain retransmit,
 split-executor duplicate instruction, permit RPC/IPC/queue/log/crash-dump
 exposure, executor failover/compromise, digest-as-authority,
+arbitrary unclaimed socket request, credential-handle tenant/provider/account/
+action/request/destination substitution, reusable/plaintext credential, master-
+key/general-write authority, egress allowlist/TLS/DNS/redirect/general-proxy
+bypass, cross-tenant executor compromise, unrestricted shared credential, missing
+residual-blast-radius evidence,
 protected-class conversion by adjustment, capacity-policy owner ambiguity,
 non-atomic parent update, concurrent allocation, stale parent high-watermark,
 delta/simulation/floor-version substitution, floor-update race, floor reduction
@@ -193,8 +220,14 @@ manifest, allocation/reclamation/floor increase/new incident or obligation/
 tenant suspension/principal revocation/policy supersession/parent failover
 between finalization and activation, missing `ActivationBlocked`/
 `ReconciliationRequired` result, floor-profile ID/version/digest/epoch
-substitution, lower-floor startup, mixed-version/downgrade/rollback/lower-default
-weakening, policy replay/floor violation, partial rollout/rollback/restore,
+substitution, floor-key owner/root/kind/unit/scale/period/class/lane/region/
+settlement substitution, omitted/duplicate key, rounding/overflow/lossy mapping,
+lower-floor startup, mixed-version/downgrade/rollback/lower-default weakening,
+concurrent successor creation, root cancellation/finalization race, partial
+activation then rollback, late predecessor preparation/finalization/activation,
+active-generation substitution, blocked-parent recovery, coordinator failover or
+restore during supersession, policy replay/floor violation, partial rollout/
+rollback/restore,
 tenant-suspension/principal/policy change during delayed
 activation or acknowledgement, missing/substituted authority fence,
 missing/substituted target fence, target deletion/merge/migration/supersession/
@@ -254,15 +287,19 @@ capacity-policy lineage heads, parent-ledger epochs/high-watermarks, independent
 floor-set rows, exact deltas/simulation records, atomic activation constraints,
 atomic policy-event/parent-CAS/audit/outbox commit, conservative prepared/
 finalized rollout receipts, root membership manifests/digests/epochs and total-
-conservation constraints, protected-floor history/reduction receipts/platform
-floor profile/version/digest/per-class admission ratchet and cross-command
-separation records, prepared/activated/blocked/reconciliation parent states and
-fresh activation guards, delayed-transition current-epoch guards,
+conservation constraints, active-rollout-generation/successor/cancellation/
+supersession state, protected-floor history/reduction receipts/platform floor
+profile/version/digest and fully typed keyed admission ratchet, total key-set
+migration evidence, and cross-command separation records, prepared/activated/
+blocked/reconciliation parent states and fresh active-generation guards,
+delayed-transition current-epoch guards,
 co-located remote-mutation-exception guard/attempt receipts and provider-
 capability epochs, immutable transmission-window receipts and atomic start-
 claim transitions with unique claimant/worker-instance/lease-fence/permit-digest
 columns and no persisted permit material, executor/instruction audit binding and
-an enforced prohibition on permit transport,
+an enforced prohibition on permit transport, immutable provider-execution-
+profile ID/version, exact-claim secret-handle redemption receipts, denied
+executor key/database capabilities, and scoped egress/pool partition evidence,
 canonical composite lock-order/deadlock-retry implementation,
 integrity commitment, and configuration adapters; migrations, operator guide,
 backup/restore, and observability. Startup fails capability negotiation if any
@@ -292,7 +329,12 @@ obligation/authority drift, stale activation instead of blocked reconciliation,
 floor-approval/cross-command-separation/operational-fence/platform-minimum
 bypass, floor-profile/ratchet downgrade through startup, mixed-version upgrade,
 rollback or restore, permit transport/digest authorization, duplicate
-instruction/executor failover, composite lock-order inversion and bounded retry,
+instruction/executor failover, arbitrary unclaimed provider request, credential-
+handle/cross-tenant/account substitution, unrestricted shared credential,
+destination/TLS/DNS/redirect/general-proxy bypass, floor-key omission/
+substitution/unit-period-region conversion/overflow, concurrent successor
+creation, partial activation rollback, stale/superseded rollout messages/restore,
+blocked-parent successor recovery, composite lock-order inversion and bounded retry,
 cross-partition rejection, tenant bypass, pool exhaustion, migration rollback,
 restore, and conformance pass.
 
@@ -471,19 +513,24 @@ forward/rollback steps, leases, checkpoints, signatures, operator approval, and
 an explicit ban on rewriting original event bytes; event evolution uses the
 `0.8.0` registry and pure `0.14.0` upcasters. Treat
 `PlatformSafetyFloorAdmission` as monotonic security state: a migration may
-raise its per-class high-watermark through a governed capacity plan, but schema
+raise a typed-key high-watermark through a governed capacity plan, but schema
 rollback, binary downgrade, interruption, and restore cannot lower or omit it.
+Every floor-profile change maps the complete canonical old/new
+`PlatformSafetyFloorKey` sets with exact unit/scale and period semantics,
+conservation proof, checked arithmetic, and no rounding or scope confusion.
 
 Goal: make schema evolution auditable, interruptible, and recoverable.
 
 Deliverables: registry, planner, dry run, resumable executor, rollback evidence,
 adapter migration contract, and floor-profile ratchet migration/compatibility
-gate.
+gate with total key-set mapping manifest and proof.
 
 Verification: reorder/substitution, partial failure, concurrent runner, lease loss,
 downgrade, malicious input, retry, backup restore, floor-profile conflict,
 interrupted higher-floor admission, lower-default binary, and stale-node startup
-tests pass.
+tests pass; include accounting owner/root, quota-kind, unit/scale, daily/hourly
+period, class/lane, region/residency, settlement-version substitution, omitted/
+duplicate key, rounding, overflow, and lossy mapping.
 
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
 `v0.29.0 implementation stop reached. Run pentest for this exact commit.`
@@ -535,7 +582,10 @@ submits an immutable authenticated instruction to the trusted
 provider socket, and consumes the process-local permit. Queue/RPC state cannot
 carry, reconstruct, or authorize from that permit or digest; redelivery cannot
 return a second permit, extend the deadline, or retry a claimed/possibly started
-transmission. Preserve
+transmission. Preserve the immutable `ProviderExecutionProfile`, exact-claim-
+bound scoped credential-handle operation, denied master-key/general-write
+authority, executor trust-domain partition, egress policy, and residual-blast-
+radius evidence across redelivery. Preserve
 the immutable
 authorization binding and freshness profile across queues; a worker must record
 the required current dispatch decision, authenticate as itself, and redeem the
@@ -562,10 +612,12 @@ principal/policy epoch requirements for every delayed transition. Preserve
 one-parent policy lineage, parent epoch/high-watermark, exact deltas, independent
 floor-set version, and conservative multi-parent prepared/finalized rollout
 receipts. Preserve floor history/reduction authority and cross-command
-separation, floor-profile ID/version/digest and durable per-class admission
-ratchet, root manifest/digest/membership epoch, complete canonical parent
-identities, total conservation, finalization receipt, and each parent's fresh
-prepared-to-activated/blocked/reconciliation CAS evidence;
+separation, floor-profile ID/version/digest and durable fully typed admission
+ratchet plus total overflow-checked key-set migration mapping, root manifest/
+digest/membership epoch, complete canonical parent identities, total
+conservation, one active rollout generation, atomic successor/cancellation/
+supersession state, finalization receipt, and each parent's fresh active-
+generation prepared-to-activated/blocked/reconciliation CAS evidence;
 workers never reacquire individual quota members, release encumbrance on
 capacity-lease expiry, or open a cross-partition transaction. Preserve and
 atomically lock the complete
@@ -588,8 +640,9 @@ outcome handler, remote-mutation-exception guard/attempt handler, capacity-
 policy owner/parent-ledger/floor activation and conservative-rollout handler,
 protected-floor governance/cross-command separation and root-manifest complete-
 rollout handler, delayed-transfer authority gate, transmission-window/unique-
-claimant/trusted-executor/instruction-only handler, floor-ratchet and fresh
-post-finalization parent-activation handler, canonical lock-order/deadlock-retry
+claimant/trusted-executor/instruction-only/provider-execution-profile handler,
+floor-key/ratchet migration and active-generation successor/fresh post-
+finalization parent-activation handler, canonical lock-order/deadlock-retry
 implementation, capability report, and operational metrics.
 
 Verification: enqueue/commit crashes, duplicate delivery, receipt/effect split,
@@ -614,7 +667,11 @@ substitution, wall-clock rollback, concurrent shared-credential workers,
 claimant/claim/lease/permit substitution, claim-response loss, stale-worker
 takeover, same-claim replay, pre/post-start-claim crash, expired/restored/
 reconstructed permit, permit transport/logging/digest authorization, duplicate
-instruction, executor failover/compromise, uncertain retransmission, mixed
+instruction, executor failover/compromise, arbitrary unclaimed provider request,
+master-key/general-write/plaintext-credential exposure, claim-bound secret-handle
+substitution/reuse, cross-tenant executor compromise, unrestricted shared
+credential, destination/TLS/DNS/redirect/general-proxy bypass, missing residual-
+blast-radius evidence, uncertain retransmission, mixed
 quota-claim split,
 overlapping-set deadlock/livelock, partial
 reservation/recovery, token/digest/membership substitution, cross-partition set,
@@ -640,8 +697,12 @@ conservation total, coordinator failover, wrong-manifest activation, partial
 rollout/rollback/restore, allocation/reclamation/floor/obligation/incident/
 tenant/principal/policy/parent drift between root finalization and activation,
 stale prepared activation rather than blocked reconciliation, platform-floor
-profile/epoch/digest substitution, stale/lower-floor startup, mixed-version/
-downgrade/rollback/lower-default/restore ratchet weakening, policy replay, stale
+profile/epoch/digest/key substitution, omitted/duplicate key, lossy unit/period/
+region/settlement mapping or overflow, stale/lower-floor startup, mixed-version/
+downgrade/rollback/lower-default/restore ratchet weakening, concurrent successor
+creation, partial activation rollback, delayed superseded preparation/
+finalization/activation, active-generation substitution, blocked-parent recovery,
+superseded-receipt restore, policy replay, stale
 tenant/principal/policy epoch during activation/acknowledgement/reclaim, parent
 reclaim racing failover,
 target deletion/merge/migration/supersession/restore racing dispatch, stale
@@ -668,12 +729,16 @@ bounded single-use start, returns non-persisted permit material exactly once to
 one executor instance/lease generation that also owns the provider socket,
 exchanges only immutable instructions/status across process boundaries, routes
 duplicate instructions, ambiguous claims, executor failover, and uncertain
-starts to reconciliation, keeps existing capacity class-immutable, atomically
+starts to reconciliation, and permits provider authentication only through the
+exact claim-bound scoped credential/egress profile without cross-tenant reusable
+authority; keeps existing capacity class-immutable, atomically
 activates each one-parent future-allocation policy under independently governed
 floors, authenticates the complete root manifest before multi-parent
 finalization, then freshly CAS-revalidates every parent or leaves it
 blocked/reconciling; enforces floor-policy cross-command separation and the
-durable versioned platform-floor ratchet across upgrade/rollback/restore; and
+durable versioned, fully typed-key platform-floor ratchet across complete
+overflow-checked migration/upgrade/rollback/restore; enforces one active root
+generation and successor-only rollback so late/restored predecessors fail; and
 rechecks delayed-transition authority; retries composite deadlocks without
 identity drift, keeps fair recovery available under hostile tenant exhaustion,
 and has no process-local queue dependency.

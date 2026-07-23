@@ -79,7 +79,10 @@ socket. Timer workers submit immutable authenticated instructions and receive
 status only; permit material never crosses the scheduler/queue/RPC boundary and
 its digest is not authority. Duplicate instruction, replacement lease holder,
 executor failover, lost claim response, ambiguous permit delivery, or crash
-after the start claim becomes `OutcomeUnknown`, not a timer retry.
+after the start claim becomes `OutcomeUnknown`, not a timer retry. Executor
+authentication uses the exact timer-claim-bound scoped secret operation and
+provider destination/TLS/DNS/redirect profile; timer or queue possession cannot
+redeem credentials or access a general proxy.
 Remote work executes only after committed authorized dispatch and
 returns through a separate activity-result/consumer bundle. Goal: crash-safe
 time and authority behavior without a distributed exactly-once claim.
@@ -88,7 +91,8 @@ codec, redemption-guard/attempt-claim and cancellation evidence, scheduler
 bridge, authority-fence-set and target-fence evidence, canonical lock-order/deadlock-retry
 fixtures, remote-target conditional-mutation and exception-guard fixtures, and
 transmission-window/unique-claimant/executor-boundary fixtures plus atomic-
-variant integration fixtures. Verification: clock jumps,
+variant and provider credential/egress profile integration fixtures.
+Verification: clock jumps,
 retry storms, duplicate wakeups/results,
 cancellation/revocation races, not-before/expiry boundaries, grant replay and
 attempt exhaustion, concurrent final attempt, crash after claim before provider
@@ -108,7 +112,9 @@ expired/substituted deadline or audience, wall-clock rollback, pre/post-start-
 claim crash, concurrent shared-credential workers, claim/worker/lease/permit
 substitution, claim-response loss, stale-worker takeover, same-claim replay,
 restored/reconstructed/transported permit, digest authorization, duplicate
-instruction, split executor failover/compromise, uncertain retransmission,
+instruction, split executor failover/compromise, arbitrary unclaimed provider
+request, secret-handle/account substitution, cross-tenant credential reuse,
+egress/TLS/DNS/redirect/general-proxy bypass, uncertain retransmission,
 lock-order inversion, retry identity drift/exhaustion, dispatch/completion
 collapse, receipt/effect split,
 remote-call-in-transaction rejection, overflow, and replay pass.
@@ -185,9 +191,10 @@ remote-mutation-exception guards, class-immutable existing capacity, versioned
 one-parent unallocated-capacity policy with atomic parent-ledger/floor
 activation, protected-floor governance/cross-command separation, root-manifest
 complete-parent rollout with fresh post-finalization local activation, durable
-platform-floor ratchet, delayed-transition current-authority rechecks, dispatch-
-transmission windows/unique claimant/executor-owned start claims, immutable
-instruction-only split protocol, canonical composite acquisition/retry behavior,
+typed-key platform-floor ratchet, active-root-generation successor rollout,
+delayed-transition current-authority rechecks, dispatch-transmission windows/
+unique claimant/executor-owned start claims, immutable instruction-only split
+protocol and provider credential/egress profile, canonical composite acquisition/retry behavior,
 and `0.51.2`
 tenant-data-surface registry entries, Phase E workflow contract fixtures, and
 `0.39.1–0.39.3` on-call/
@@ -203,9 +210,11 @@ process manager and reconciler, remote-target conditional-mutation validator/
 outcome handler, remote-mutation-exception guard/attempt handler, capacity-
 policy-lineage/parent-ledger atomic activation and conservative-rollout process
 manager with root manifest validation and fresh prepared-to-activated/blocked
-parent CAS, protected-floor governance/cross-command separation and durable
+active-generation parent CAS plus successor/cancellation/supersession handling,
+protected-floor governance/cross-command separation and durable typed-key
 profile ratchet, delayed-transition authority rechecker, transmission-window/
-unique-claimant/trusted-executor/instruction-only handler, bounded identity-
+unique-claimant/trusted-executor/instruction-only/scoped-credential-egress
+handler, bounded identity-
 preserving deadlock retry, fair
 partitioned recovery lanes, and operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
@@ -231,7 +240,10 @@ substitution, clock rollback, concurrent shared-credential workers, claim/
 worker/lease-generation/fence/permit substitution, claim-response loss, stale-
 worker takeover, same-claim replay, expired/restored/reconstructed start permit,
 permit transport/logging or digest authorization, duplicate instruction,
-executor failover/compromise, pre/post-claim crash, uncertain retransmission,
+executor failover/compromise, arbitrary unclaimed provider request, master-key/
+general-write/plaintext credential access, scoped-handle substitution/reuse,
+cross-tenant executor compromise, unrestricted shared credential, egress/TLS/
+DNS/redirect/general-proxy bypass, pre/post-claim crash, uncertain retransmission,
 mixed quota-claim atomicity,
 overlapping-set deadlock/livelock,
 partial reservation/recovery, token/digest/membership substitution, cross-
@@ -261,8 +273,12 @@ activation, allocation/reclamation/floor increase/new obligation or incident/
 tenant suspension/principal revocation/policy supersession/parent failover
 between finalization and activation, stale activation rather than
 `ActivationBlocked`/`ReconciliationRequired`, floor-profile/digest/ratchet
-substitution, stale/lower-floor startup, mixed-version/downgrade/rollback/
-restore weakening, partial rollout/rollback/restore,
+or typed-key substitution, omitted/duplicate key, lossy/overflowing unit/period/
+region mapping, stale/lower-floor startup, mixed-version/downgrade/rollback/
+restore weakening, concurrent successor creation, partial activation rollback,
+late superseded preparation/finalization/activation, active-generation
+substitution, blocked-parent recovery, superseded restore, partial rollout/
+rollback/restore,
 tenant suspension or principal/policy revocation during delayed activation/
 acknowledgement/reclaim,
 tenant/subject/session/delegation/policy/service-principal authority changes
@@ -295,7 +311,8 @@ lease generation receives non-persisted permit material once inside the trusted
 executor that owns the provider socket; upstream/split workers receive status
 only. Duplicate instruction, executor failover, replacement worker, ambiguous
 delivery, or a possibly started request enters reconciliation instead of
-ordinary retry.
+ordinary retry. Provider authentication is exact-claim-bound and scoped; the
+executor lacks master-key/general-write authority and arbitrary egress.
 Every current-target dispatch linearizes on the target stream version/digest or
 co-located authoritative target-fence row without advancing a second stream.
 Remote provider mutation preserves its separate concurrency profile and exact
@@ -315,9 +332,12 @@ ledger under independently governed floors. A floor reduction cannot share
 actors or approval lineage with spending released capacity and cannot bypass
 operational fences, obligations, or platform minima. Multi-parent finalization
 authenticates the complete unchanged root manifest but only permits activation;
-each parent freshly CAS-revalidates ledger, floor ratchet/set, obligations, root
-generation/manifest, and current fences or stays blocked/reconciling. The floor
-ratchet survives rolling upgrade, rollback, failover, and restore. Delayed
+each parent validates the active generation and freshly CAS-revalidates ledger,
+floor ratchet/set, obligations, root generation/manifest, and current fences or
+stays blocked/reconciling. Successor creation permanently supersedes the prior
+root generation and rollback is a complete successor over actual limits. The
+fully typed-key floor ratchet survives total overflow-checked migration, rolling
+upgrade, rollback, failover, and restore. Delayed
 transitions recheck current local authority. Eligible refunds occur exactly once,
 administrative write-off remains distinct, compensation is separately
 accounted, fair recovery remains available under hostile tenant exhaustion, and

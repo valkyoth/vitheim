@@ -120,6 +120,13 @@ Verification:
   claim start are `OutcomeUnknown` and cannot be ordinarily retransmitted.
   Pause, failover, restore, or clock rollback cannot extend, reconstruct, or
   replay the permit. Transferable permit profiles are unsupported for `1.0.0`.
+  The executor proves one immutable `ProviderExecutionProfile`: no master-key or
+  general database-write access; exact-claim-bound tenant/provider/account/
+  action/request/destination opaque credential operations; provider-native least
+  privilege and short lifetime where supported; destination/port allowlists,
+  strict TLS/DNS-rebinding/redirect controls, and no general proxy; tenant/
+  account trust-domain partitioning; rejection of unrestricted shared cross-
+  tenant privileged credentials; and explicit residual blast-radius evidence.
   Quota evidence proves bounded atomic claim sets and correct settlement for
   concurrency leases, consumable operations, provider-rate tokens, estimated
   liabilities, and retained bytes across their exact boundaries. Only provider-
@@ -162,13 +169,21 @@ Verification:
   cross-command separation from spending released capacity. Nodes below the
   admitted floor reject startup; mixed versions use the stricter profile, a
   higher floor uses a governed capacity migration, and downgrade/rollback/
-  restore or lower software defaults cannot release capacity. Multi-parent
-  finalization CAS-validates a root-owned canonical manifest, unchanged
-  membership epoch, every exact parent preparation, and total per-class
-  conservation, but only permits activation. Each parent then locks its prepared
+  restore or lower software defaults cannot release capacity. Every ratchet entry
+  uses a canonical accounting owner/root, quota kind, unit/scale, period,
+  capacity class/lane, region/residency, and settlement-policy
+  `PlatformSafetyFloorKey`; profile migration is complete, conservation-
+  preserving, and overflow checked. Multi-parent finalization CAS-validates a
+  root-owned canonical manifest, unchanged membership epoch, the still-active
+  root rollout generation, every exact parent preparation, and total per-class
+  conservation, but only permits activation. Exactly one root generation is
+  active; successor creation permanently supersedes its predecessor, rollback is
+  a complete successor rollout over the current manifest and actual parent
+  limits, and cancelled/superseded late or restored work fails closed. Each
+  parent then locks its prepared
   state and freshly CAS-revalidates ledger epoch/high-watermark/unallocated
-  capacity, floor ratchet/set, protected obligations, finalized root generation/
-  manifest, and current tenant/hierarchy/incident/emergency/principal/policy
+  capacity, floor ratchet/set, protected obligations, finalized and still-active
+  root generation/manifest, and current tenant/hierarchy/incident/emergency/principal/policy
   fences. Drift remains at the conservative intersection as
   `ActivationBlocked` or `ReconciliationRequired`. Each delayed transfer
   transition rechecks current local tenant/principal/policy epochs rather than

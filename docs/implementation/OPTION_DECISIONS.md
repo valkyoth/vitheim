@@ -27,12 +27,22 @@ executor that owns the provider socket. A transferable cryptographic permit is
 unsupported; enabling one later requires a new milestone and independent design
 review for entropy, authentication, channel/audience binding, constant-time
 verification, zeroization, and durable replay prevention.
+Freeze the credential-operation mechanism used by every
+`ProviderExecutionProfile`: external KMS/secret services retain master keys;
+the executor receives only opaque tenant/provider/account/action/request/
+destination/claim-bound handles and the least-privilege, shortest-lived provider
+credential supported. Any provider that requires an unrestricted credential
+shared across unrelated tenants is unsupported for `1.0.0`; no first-party
+cryptography may be improvised to hide that limitation.
 Verification: independent supply-chain and cryptographic design review proves
 N0/N1 remain isolated and no protocol is improvised to avoid dependencies;
 deadline extension, wall-clock rollback, host suspend, restore, and monotonic-
 clock failure cannot make an expired dispatch permit usable; cloning,
 serialization, IPC/RPC/queue/log/core-dump exposure, digest authorization, or an
 unreviewed transferable-capability profile fails the decision.
+Review handle substitution, cross-tenant redemption, credential lifetime and
+scope inflation, master-key exposure, and provider-account confusion against
+the exact admitted KMS implementation.
 Exit criteria: Phase O has one approved, replaceable crypto/key profile.
 `v0.140.1 implementation stop reached. Run pentest for this exact commit.`
 
@@ -49,7 +59,9 @@ epochs, transmission-window/start-claim rows, and capacity-policy lineage owner/
 one-parent ledger/high-watermark, protected-floor history/reduction/separation/
 platform-floor profile/admission/ratchet rows, hierarchy-root manifest/
 membership/conservation/rollout rows, prepared-to-activated/blocked parent CAS,
-and current-transition-authority rows. Map target
+monotonic `ActiveRolloutGeneration`, cancellation/supersession state, successor
+root lineage, fully typed `PlatformSafetyFloorKey` rows and total key-migration
+evidence, and current-transition-authority rows. Map target
 owners and authoritative `DispatchTargetFence` rows
 with the effect bundle, including same-aggregate expected-version handling.
 Reject any profile that needs remote, cross-shard, or projection-only current-
@@ -77,7 +89,9 @@ operational fences/platform minimum/cross-command separation, incomplete or
 coordinator-discovered parent set, missing root manifest/epoch/conservation,
 root finalization used as stale parent authority, missing fresh local activation
 CAS/blocked state, lower-floor node or lost ratchet during upgrade/restore,
-unsafe partial rollout, missing transition epoch,
+unsafe partial rollout, multiple active generations, late superseded message,
+restore resurrection, incomplete/lossy/overflowing safety-floor key migration,
+unit/period/kind/lane/region/settlement-policy substitution, missing transition epoch,
 advertised active/active authoritative writes, backup/export, and fail-closed
 capability evidence is reviewed.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
@@ -167,6 +181,14 @@ retry classification. Freeze the supported split boundary: the host
 `TransmissionExecutor` owns both claim and provider socket, guest/broker traffic
 contains only immutable authenticated instruction/status, and no permit or
 authorizing digest crosses guest/RPC/IPC/queue memory.
+Freeze an immutable, versioned `ProviderExecutionProfile` for each supported
+connector: exact tenant/provider/account/action/destination and claim-bound
+secret operation, no master-key or general database-write authority,
+least-privilege/short-lived credentials, deny-by-default allowlisted egress with
+TLS identity and DNS/redirect enforcement, and tenant/account or documented
+bounded-trust-domain executor pools. Reject general HTTP proxy behavior and
+unrestricted credentials shared across unrelated tenants; publish the residual
+compromise radius for every admitted provider profile.
 Goal: revalidate and freeze a bounded plugin profile with defense in depth.
 Deliverables: runtime/version pin, disabled default imports, worker identity,
 OS limits, egress/DNS/TLS policy, capability-handle, catalog/storefront trust,
@@ -175,7 +197,8 @@ publisher/mirror, permission-diff, connector-support, effect-dispatch gate,
 grant/service-principal redemption, quota-claim/recovery-reserve isolation,
 remote-target conditional-write/precondition-outcome gate, remote-mutation-
 exception guard/attempt gate, dispatch-transmission claimant/trusted-executor/
-one-time-permit/no-transport gate, and upgrade decisions.
+one-time-permit/no-transport gate, provider-execution-profile/credential/egress/
+pool-partition gate, residual-blast-radius record, and upgrade decisions.
 Verification: sandbox escape, metering bypass, host-call amplification, DNS
 rebinding, redirect, cross-plugin/tenant, guest-memory secret canaries, broker
 confused-deputy/target substitution, stale dispatch authority, quota/refund/
@@ -189,7 +212,9 @@ substitution, shared-credential duplicate hosts, claim-response loss, lease
 takeover, persisted permit, clock rollback, permit replay/restore, and uncertain
 retransmit; include permit IPC/RPC/queue/log exposure, digest authorization,
 duplicate instruction, executor failover/compromise, and socket/claim ownership
-split.
+split; include arbitrary unclaimed socket use, secret-handle/account
+substitution, cross-tenant credential reuse, unrestricted shared credentials,
+and allowlist/TLS/DNS/redirect/general-proxy bypass.
 Exit criteria: cryptography is not claimed to enforce resource isolation.
 `v0.140.4 implementation stop reached. Run pentest for this exact commit.`
 
@@ -254,7 +279,12 @@ fences before one exact worker instance/lease generation receives non-persisted
 permit material once inside a trusted executor that also owns the provider
 socket. Other services exchange immutable authenticated instructions/status
 only; ambiguous/duplicate instruction, executor failover, and uncertain starts
-reconcile without ordinary retry. Existing capacity class is immutable. Each
+reconcile without ordinary retry. Every trusted executor runs under the exact
+immutable `ProviderExecutionProfile`, has no master-key ring or general database
+writes, redeems only claim/request/account/action/destination-bound opaque
+secret handles, and is confined by deny-by-default egress/TLS/DNS/redirect
+policy and a documented bounded pool trust domain. Existing capacity class is
+immutable. Each
 future-allocation policy lineage owns exactly one parent and atomically changes
 its co-located ledger under an independently governed floor set. Floor reduction has separate
 cross-command authority, operational fences, obligation simulation, and a
@@ -265,7 +295,13 @@ only against a complete unchanged hierarchy-root manifest and uses conservative
 intermediate limits; finalization only permits activation, after which each
 parent freshly CAS-revalidates its prepared state, ledger, floor, obligations,
 root manifest, and current operational fences or stays blocked/reconciling;
-every delayed transfer step rechecks current local authority.
+exactly one monotonic `ActiveRolloutGeneration` exists per root. A successor
+atomically and permanently supersedes the prior generation; rollback is itself
+a complete successor rollout over current actual limits, and late messages or
+restore cannot reactivate a superseded generation. The floor ratchet is keyed
+by the complete `PlatformSafetyFloorKey`; key-set changes require total,
+overflow-checked, non-lossy migration before startup.
+Every delayed transfer step rechecks current local authority.
 Global/regional limits allocate fenced hierarchical capacity leases into local
 partitions while retaining per-kind encumbrances after lease expiry. Every
 composite transaction uses the canonical acquisition order and bounded
@@ -290,6 +326,9 @@ non-persisted monotonic permit, and ambiguous-claim/uncertain-start
 reconciliation profile, trusted executor claim-plus-socket placement, immutable
 instruction/status service protocol, sealed consumed-by-value/no-transport
 permit profile,
+provider-execution-profile identity/version/digest, secret-operation binding,
+credential lifetime/privilege, executor-pool trust partition, network allowlist/
+TLS/DNS/redirect policy, and documented residual compromise radius,
 remote-target concurrency profile with exact provider/version, validator
 strength/ABA properties, conditional request mapping, precondition outcome,
 idempotency/query/reconciliation behavior, and reviewed unconditional-exception
@@ -303,10 +342,13 @@ parent lease/period/work or recovery lane/capacity class/residency/region, and
 source/destination authorization decisions, structural no-reclassification
 matrix, one-parent capacity-policy owner, co-located parent epoch/high-watermark,
 independent floor-set owner/history/reduction/cross-command separation/platform
-floor profile ID/version/digest/per-class durable admission ratchet, exact
-deltas/simulation/approval, hierarchy-root canonical parent manifest/membership
+floor profile ID/version/digest/fully typed durable admission ratchet and total
+key-migration proof, exact deltas/simulation/approval, hierarchy-root canonical
+parent manifest/membership
 epoch/conservation constraints, conservative multi-parent rollout, fresh local
-post-finalization activation CAS and blocked/reconciliation state, and delayed-
+post-finalization activation CAS and blocked/reconciliation state, one active
+rollout generation with permanent successor supersession and complete-successor
+rollback semantics, and delayed-
 transition current-authority rechecks,
 active/active rejection/capability behavior, per-tenant/
 global fair-share and starvation policy, emergency-reserve sizing/isolation,
@@ -336,7 +378,10 @@ change before start claim, deadline/audience/request substitution, clock
 rollback, shared-credential duplicate workers, claim/worker/lease/permit
 substitution, claim-response loss, stale-worker takeover, restored/reconstructed
 permit, permit transport/logging or digest authorization, duplicate instruction,
-executor failover/compromise, uncertain retransmission, transfer owner/root/
+executor failover/compromise, arbitrary unclaimed provider socket use,
+secret-handle/account substitution, cross-tenant credential reuse, unrestricted
+shared credential, egress/TLS/DNS/redirect/general-proxy bypass, uncertain
+retransmission, transfer owner/root/
 parent/period/lane/class/region/authorization substitution, emergency/security-cleanup-to-
 business conversion through adjustment, existing-class rewrite, tenant-invoked
 capacity policy, ambiguous policy owner/parent, non-atomic activation,
@@ -349,7 +394,11 @@ post-finalization parent state after allocation/reclamation/floor/obligation/
 incident/tenant/principal/policy/failover change, missing blocked/reconciliation
 state, floor-profile/ratchet substitution, lower-floor startup, mixed-version/
 downgrade/rollback/lower-default/restore weakening, partial rollout/rollback/
-restore, stale transfer-transition tenant/principal/policy authority,
+restore, concurrent successor creation, late superseded preparation/
+finalization/activation, superseded restore, cancellation/supersession
+confusion, missing/aliased/incompatible typed floor key, unit/scale/period/kind/
+lane/region/settlement-policy substitution, lossy or overflowing key migration,
+stale transfer-transition tenant/principal/policy authority,
 incompatible active/active topology,
 provider-outage tenant exhaustion, one-tenant unknown-outcome floods, per-
 tenant/global starvation, emergency-reserve borrowing, degraded dependencies,

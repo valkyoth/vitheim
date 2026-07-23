@@ -130,7 +130,13 @@ authorization semantics.
    Duplicate instructions, executor failover, replacement workers, and ambiguous
    delivery reconcile as `OutcomeUnknown`. Restore cannot reconstruct the permit,
    and clock rollback cannot extend it. Transferable start capabilities are
-   unsupported for `1.0.0`.
+   unsupported for `1.0.0`. A bound `ProviderExecutionProfile` gives the executor
+   neither master-key nor general database authority; exact-claim-bound opaque
+   credential handles, provider-native least privilege, tenant/account trust-
+   domain partitioning, destination/TLS/DNS/redirect enforcement, and no general
+   proxy prevent authenticated unclaimed egress. Unscopable cross-tenant
+   privileged credentials are unsupported; unavoidable provider residual blast
+   radius is explicit.
    Each effect carries a bounded atomic set of typed quota claims rather than
    one universal reservation. Concurrency releases with its local lease;
    consumable operations follow declared evidence rules; provider-rate tokens
@@ -171,14 +177,22 @@ authorization semantics.
    ratchet, and cross-command separation from policy spending. Nodes below the
    admitted minimum reject startup; mixed versions use the stricter profile, and
    upgrade, rollback, restore, or lower defaults cannot release capacity.
-   Multi-parent changes freeze a root-owned canonical parent manifest and
-   membership epoch; finalization requires one bound prepared receipt from every
-   exact member plus total per-class conservation. Membership change invalidates
-   preparation. Finalization only permits activation: every parent then locks
+   Each ratchet entry uses a canonical `PlatformSafetyFloorKey` over accounting
+   owner/root, quota kind, unit/scale, period, class/lane, region/residency, and
+   settlement-policy version; key-set migration is total, conservation-
+   preserving, and overflow checked. Multi-parent changes freeze a root-owned
+   canonical parent manifest and membership epoch. The root owns one
+   `ActiveRolloutGeneration`; successor creation permanently supersedes the
+   predecessor, and rollback is a complete successor over current actual limits.
+   Finalization requires one bound prepared receipt from every exact member plus
+   total per-class conservation. Membership change invalidates preparation.
+   Finalization only permits activation: every parent validates the still-active
+   generation, then locks
    its prepared state and freshly CAS-revalidates its ledger/unallocated
    capacity, floor ratchet/set, obligations, root generation/manifest, and
    current operational fences. Drift remains conservatively
-   `ActivationBlocked` or `ReconciliationRequired`. Rollout remains a
+   `ActivationBlocked` or `ReconciliationRequired`. Cancelled/superseded late or
+   restored messages fail closed. Rollout remains a
    conservative process manager, never a distributed command. Every delayed
    transfer transition rechecks its current local tenant, principal, and policy
    epochs; historical decisions are evidence, not authority.

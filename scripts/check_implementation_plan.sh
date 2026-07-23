@@ -155,8 +155,14 @@ require_text docs/implementation/PHASE_B.md \
     'Each parent activation is a new local transaction that locks its `Prepared`' \
     'fresh post-finalization parent activation'
 require_text docs/implementation/PHASE_B.md \
-    '`PlatformSafetyFloorAdmission` state records a never-reused per-class' \
-    'durable platform safety floor ratchet'
+    '`PlatformSafetyFloorKey`: accounting owner and hierarchy root' \
+    'fully typed platform safety floor ratchet'
+require_text docs/implementation/PHASE_B.md \
+    'Every executor runs under an immutable, versioned `ProviderExecutionProfile`' \
+    'scoped provider execution authority'
+require_text docs/implementation/PHASE_B.md \
+    'The root also owns a monotonic `ActiveRolloutGeneration`' \
+    'single active successor rollout generation'
 require_text docs/implementation/PHASE_B.md \
     'Each parent-side reserve/send/reclaim transition' \
     'delayed capacity transfer rechecks current authority'

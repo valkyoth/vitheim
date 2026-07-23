@@ -128,4 +128,16 @@ All notable Vitheim changes are documented here. The format follows
 - Versioned and durably ratcheted platform safety floors so stale/lower nodes,
   mixed-version rollout, downgrade, rollback, lower defaults, failover, and
   restore cannot silently release protected capacity.
+- Bounded provider execution with immutable versioned profiles: executors have
+  no master-key ring or general writes, redeem only exact claim-bound opaque
+  secret operations, use least-privilege credentials, enforce deny-by-default
+  TLS/DNS-safe egress, and run in documented tenant/account trust partitions.
+- Linearized capacity rollout replacement with one monotonic active generation,
+  permanent successor supersession, complete-successor rollback over current
+  actual limits, conservative blocked parents, typed cancellation versus
+  partial-activation supersession, and no late-message or restore reactivation.
+- Fully typed platform safety-floor keys now bind accounting hierarchy, quota
+  kind, unit/scale, period, lane/class, region/residency, and settlement-policy
+  version; every key-set change requires a total overflow-checked non-lossy
+  migration or startup fails.
 - Added local and GitHub verification gates without a crate publication path.

@@ -6,12 +6,16 @@ Scope: `0.141.0–0.150.0`. Claims require operational evidence, not schedule.
 Status: planned. Setup: supported OS/arch, packages/images, users/paths,
 permissions, secure defaults, upgrades, compiled
 `PlatformSafetyFloorProfile` identity/version/digest, and durable admitted
-per-class floor high-watermarks. Goal: hardened repeatable single-node install.
+fully typed `PlatformSafetyFloorKey` high-watermarks plus total key-migration
+evidence. Goal: hardened repeatable single-node install.
 Deliverables: signed packages, startup floor-profile compatibility gate,
-governed higher-floor migration/drain tooling, and runbook. Verification: clean
+governed higher-floor and key-set migration/drain tooling, and runbook.
+Verification: clean
 install, permissions, rootless/non-root, secrets, restart, rolling upgrade,
 downgrade/rollback to a lower compiled floor, lower-default release, conflicting
-profile, interrupted floor migration, and restore pass. Exit criteria: the
+profile, missing/duplicate/incompatible key, unit/scale/period/kind/lane/region/
+settlement-policy substitution, lossy/overflowing/interrupted floor migration,
+and restore pass. Exit criteria: the
 documented profile is operable securely and no package change can start below or
 lower the durable admitted platform-floor ratchet. `v0.141.0 implementation stop
 reached. Run pentest for this exact commit.`
@@ -23,17 +27,27 @@ version compatibility, and the immutable authenticated
 `TransmissionInstruction`/status protocol. The executor owns both
 `ClaimTransmissionStart` and the provider socket; permit material remains a
 sealed process-local value and never appears in RPC, IPC, queues, service logs,
-or caller memory. Goal: optional process separation without inventing a
+or caller memory. It runs under an immutable `ProviderExecutionProfile`, has no
+master-key ring or general database writes, redeems only exact claim/request/
+tenant/provider/account/action/destination-bound opaque secret handles, and is
+confined by allowlisted egress, TLS identity, DNS-rebinding/redirect policy, and
+a tenant/account or documented bounded-trust-domain pool. Goal: optional
+process separation without inventing a
 transferable start capability. Deliverables: deploy manifests, executor
 placement/isolation profile, instruction codec/authentication and duplicate
-handling, status/reconciliation protocol, no-permit-transport evidence, and
+handling, scoped-credential broker, egress policy, pool-partition and residual-
+blast-radius evidence, status/reconciliation protocol, no-permit-transport evidence, and
 service runbook. Verification: service/executor impersonation, confused deputy,
 network bypass, instruction replay/substitution, duplicate RPC, claim-response
 loss, executor failover/stale process/compromise, socket/claim ownership split,
 permit or digest authorization leakage, version skew, partial outage, and
-rotation pass. Exit criteria: split mode preserves modular semantics, moves only
+rotation pass; include arbitrary unclaimed socket use, secret-handle/account
+substitution, cross-tenant credential reuse, unrestricted shared-credential
+rejection, and allowlist/TLS/DNS/redirect/general-proxy bypass. Exit criteria:
+split mode preserves modular semantics, moves only
 instructions/status across services, and routes every ambiguous claimed start
-to reconciliation.
+to reconciliation; executor compromise remains bounded to the admitted provider
+execution profile.
 `v0.142.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.142.1` — Production Telemetry Exporters And Graceful Drain
@@ -78,7 +92,10 @@ one-parent capacity-policy atomic activation, protected-floor governance,
 durable platform-floor profile ratchet, hierarchy-root complete-manifest rollout
 with fresh local post-finalization activation, delayed-transition authority
 rechecks, bounded dispatch-transmission windows with unique executor/lease
-claimants and instruction-only split boundaries,
+claimants and instruction-only split boundaries, immutable provider-execution
+profiles with scoped credential and egress authority, monotonic active root
+rollout generation with permanent successor supersession, complete-successor
+rollback, and fully typed floor-key migration,
 canonical composite acquisition/retry, and fair partitioned control-plane
 capacity.
 Goal: prevent split-brain effects. Deliverables: HA orchestration, work-variant
@@ -88,7 +105,9 @@ evidence, remote conditional-mutation evidence, composite-lock/retry evidence,
 exception-guard/attempt evidence, transmission-window/current-fence start-claim/
 claimant/trusted-executor/no-permit-transport/uncertainty evidence, capacity-
 policy owner/parent/floor-governance/ratchet/root-manifest/fresh-activation/
-current-authority evidence, fair-capacity evidence, and runbooks.
+active-generation/successor/typed-key-migration/current-authority evidence,
+provider-execution-profile/credential/egress/pool-partition evidence,
+fair-capacity evidence, and runbooks.
 Verification: partitions, clock skew, stale leader/fence,
 receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
 activity work, timer dispatch/result separation, multi-aggregate/remote-call
@@ -131,6 +150,10 @@ pre/post-claim crash, permit replay/restore/reconstruction, uncertain
 retransmission, duplicate instruction RPC, permit IPC/queue/log/core-dump
 exposure, digest authorization, executor failover/stale process/compromise,
 socket/claim ownership split,
+arbitrary unclaimed provider socket use, master-key/general-write/plaintext
+credential access, scoped-handle/account substitution, cross-tenant credential
+reuse, unrestricted shared credential, egress/TLS/DNS/redirect/general-proxy
+bypass,
 tenant-invoked capacity policy, ambiguous owner/parent, non-co-located or non-
 atomic activation, concurrent allocation/stale high-watermark, delta/
 simulation/floor substitution, self-lowered floor, partial rollout/rollback/
@@ -144,6 +167,11 @@ between root finalization and activation, stale prepared activation instead of
 blocked reconciliation, floor-profile ID/version/digest/admission-epoch
 substitution, stale/lower-floor startup, mixed-version/downgrade/rollback/lower-
 default/restore ratchet weakening, reserve-floor/policy replay,
+concurrent successor creation, partial-activation rollback, late superseded
+preparation/finalization/activation, active-generation substitution,
+cancellation/supersession confusion, blocked-parent recovery, superseded
+restore, typed floor-key omission/alias/substitution, unit/scale/period/kind/
+lane/region/settlement-policy confusion, lossy/overflowing key migration,
 stale tenant/principal/policy authority during transfer, tenant/subject/session/
 delegation/policy/principal
 revocation racing dispatch, missing/substituted/reordered authority fences,
@@ -161,10 +189,13 @@ capacity, use a stale/unfenced unconditional exception, rewrite existing class,
 bypass a transmission deadline/current-fence start claim, retry an uncertain
 start, return/reconstruct a permit for a second worker or lease generation,
 bypass trusted executor claim-plus-socket ownership or move permit authority
-across a service boundary, bypass policy ownership/atomic parent activation/
+across a service boundary, escape its provider execution profile, redeem
+unclaimed or cross-tenant credentials, or obtain arbitrary egress, bypass
+policy ownership/atomic parent activation/
 floor governance/platform-floor ratchet/root-manifest completeness/fresh post-
 finalization parent revalidation/conservative rollout/current transfer
-authority, duplicate through deadlock retry, duplicate a refund, or starve fair
+authority/active-generation successor semantics/total typed-key migration,
+duplicate through deadlock retry, duplicate a refund, or starve fair
 bounded recovery.
 `v0.143.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -217,6 +248,10 @@ receipts, reviewed exception, dispatch `redeemed_at`/`transmit_before`, admitted
 bindings/epochs, claim ID, worker instance, lease generation/fence, permit
 digest, immutable instruction/executor identity, and status—but no live permit
 material or transferable capability,
+admitted `ProviderExecutionProfile` identity/version/digest, pool trust domain,
+opaque scoped-handle metadata and claim/request/account/action/destination/
+expiry redemption receipt—but no plaintext credential or master key—plus
+network allowlist/TLS/DNS/redirect policy,
 whole quota claim-set digest/member restoration with partial-set
 quarantine, hierarchical capacity-lease epoch/allocation/unreserved-remainder/
 per-kind encumbrance/transfer state/receipt/acknowledgement/original-claim-and-
@@ -224,9 +259,12 @@ transfer-lineage plus accounting owner/root/parent/period/lane/class/region/
 authorization restoration, capacity-policy version/simulation/protected floors,
 one-parent lineage/parent epoch/high-watermark/exact deltas/independent floor-
 set owner/history/reduction receipts/cross-command separation, platform-floor
-profile ID/version/digest and per-class admission epoch/high-watermark, root
+profile ID/version/digest and fully typed key/admission epoch/high-watermark
+with total key-migration evidence, root
 manifest/digest/membership epoch/complete parent set/conservation
-totals, multi-parent prepared/finalized/activated/blocked/reconciliation receipts
+totals, active rollout generation, predecessor/successor lineage, typed
+cancellation/supersession state, multi-parent prepared/finalized/activated/
+blocked/reconciliation receipts
 and local activation evidence, delayed-transition authority epochs, rebuild/
 workflow continuation pass.
 Exit criteria: claimed RPO/RTO is demonstrated; recovery neither retains data
@@ -243,8 +281,12 @@ unconditional exception; cannot resurrect an exception attempt, reclassify
 existing capacity, extend/replay a transmission window or classify an uncertain
 start as unsent, reconstruct, transport, or return permit authority from a
 stored claim/digest,
+recover an unscoped credential, master-key/general-write authority, or broader
+egress than the restored provider execution profile,
 roll back a policy lineage/parent high-watermark/floor history/root manifest/
-membership epoch/rollout/parent-activation receipt, erase cross-command
+membership epoch/active rollout generation/supersession/parent-activation
+receipt, reactivate a superseded generation, treat partial activation as
+cancellation, accept an incomplete/lossy/overflowing typed-key migration, erase cross-command
 separation evidence, lower/omit the durable platform-floor ratchet, start a
 restored node below it, activate stale prepared parent state, or authorize a
 delayed transition from historical decisions alone; and every related surface
@@ -265,7 +307,9 @@ provider profiles and exception-guard contention, immutable transfer
 classification, transmission-window/start-claim/permit contention, one-parent
 policy activation, protected-floor governance/platform-floor ratchet, and
 complete-root-manifest/fresh-parent-activation rollout contention, delayed-
-transition authority epochs, starvation bounds,
+transition authority epochs, active-root-generation successor contention,
+fully typed floor-key migration, provider-execution-profile scoped-credential/
+pool/egress contention, starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
 Deliverables: multi-claim quota-lifecycle/load/fault harnesses, per-kind
@@ -277,6 +321,8 @@ and exception-guard harnesses, transmission-pause/deadline/clock/uncertainty
 harness with duplicate claimants/lease takeover/claim-response loss, split-
 executor duplicate-instruction/no-permit-transport/failover harness, policy
 owner/parent/floor-governance/ratchet/root-manifest/fresh-activation oracle,
+active-generation/successor/typed-key migration oracle, provider credential-
+scope and egress-isolation harness,
 leak/escalation evidence, and signed reports. Verification: atomic
 bounded claim sets across every work bundle, concurrent overlapping-set
 canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
@@ -297,7 +343,9 @@ rewrite, transmission deadline and current-fence start-claim races, long pause,
 clock rollback, concurrent shared-credential workers, claim/worker/lease/permit
 substitution, claim-response loss, takeover, permit restore/replay/
 reconstruction/transport, digest authorization, duplicate instruction, executor
-failover/compromise, uncertain retransmission, tenant-invoked capacity policy,
+failover/compromise, arbitrary unclaimed provider socket use, secret-handle/
+account/cross-tenant substitution, unrestricted shared credentials, egress/TLS/
+DNS/redirect/general-proxy bypass, uncertain retransmission, tenant-invoked capacity policy,
 owner/parent ambiguity, concurrent allocation, stale high-watermark, self-
 lowered floor, floor-reduction/spend approval reuse, stale operational fences/
 obligations, platform-minimum violation, omitted/aliased parent, membership
@@ -308,6 +356,10 @@ instead of blocked reconciliation, floor-profile/ratchet substitution, lower-
 floor startup, mixed-version/downgrade/rollback/restore weakening, partial
 rollout/rollback/restore, floor/simulation replay, stale activation/
 acknowledgement authority,
+concurrent successor creation, late superseded messages, superseded restore,
+cancellation/supersession confusion, typed-key omission/substitution, unit/
+scale/period/kind/lane/region/settlement-policy confusion, lossy/overflowing
+key migration,
 composite lock-order contention, retry exhaustion/identity preservation,
 concurrency release independent of remote outcome,
 consumable-operation evidence rules, non-refundable transmitted rate tokens,
@@ -329,7 +381,8 @@ transmission-window/start-claim bypass, uncertain-start retry, non-atomic policy
 activation, duplicate/reconstructed permit authority, floor-governance/cross-
 command separation/platform-floor ratchet/root-manifest completeness/fresh
 parent activation bypass, permit transport or claim/socket split, unsafe partial
-rollout, delayed-authority bypass, retry-driven duplicate work, unfair or
+rollout, active-generation/successor or total typed-key-migration bypass,
+provider credential/egress scope escape, delayed-authority bypass, retry-driven duplicate work, unfair or
 blocked recovery, and unsafe saturation block release.
 `v0.146.0
 implementation stop reached. Run pentest for this exact commit.`
@@ -342,26 +395,37 @@ core-dump/swap profile, sealed transmission-permit construction/consumption/drop
 assurance, executor isolation, provenance and secret scanning. Goal: close build
 and runtime supply-chain paths. Deliverables: audits, candidate-tree/artifact-
 bound signed evidence, SBOM/provenance, reproducible artifacts, permit-memory/
-diagnostic exposure report, and hardening guide.
+diagnostic exposure report, executor credential-operation/egress isolation and
+residual-blast-radius report, and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
 tree/artifact, permit clone/serialization/log/core-dump/swap canaries, failed
 zeroization, executor compromise, substitution, and unsafe delta pass.
+Include master-key/general-write/plaintext credential canaries, arbitrary
+unclaimed socket use, handle/account/cross-tenant substitution, and
+allowlist/TLS/DNS/redirect/general-proxy bypass.
 Exit criteria: every trusted input is pinned/accounted. `v0.147.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.148.0` — Compatibility Freeze
 Status: planned. Setup: freeze API/event/workflow/policy/plugin/pack/export/agent
 versions and support windows, immutable event-schema registry, complete pure
 upcaster chains, original-byte hash authority, unknown-event quarantine, and the
-platform-floor profile compatibility/admission matrix.
+platform-floor profile compatibility/admission matrix including full
+`PlatformSafetyFloorKey` schemas/migrations, `ActiveRolloutGeneration` and
+successor-state compatibility, and `ProviderExecutionProfile` protocol/
+credential/egress compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
 golden mixed-version event corpus, migration/rebuild suites, and deprecation
 rules. Verification: downgrade/skew/unknown versions, upcaster determinism,
 original-byte mutation, rolling upgrades, old data/plugins/agents, stricter
 mixed-version floor selection, stale/lower-floor node rejection, lower-default
-release, interrupted higher-floor migration, and rollback/restore ratchet pass.
+release, interrupted higher-floor or typed-key migration, unit/period/kind/
+lane/region/settlement-policy substitution, mixed rollout generations, late
+superseded messages, provider-profile/handle-protocol skew, and rollback/restore
+ratchet pass.
 Exit criteria: supported combinations are exact and no compatible version path
-can lower the durable platform floor.
+can lower the durable platform floor, reactivate a superseded rollout, or
+broaden executor credential/network authority.
 `v0.148.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.149.0` — External Pentest Remediation Candidate
@@ -370,12 +434,18 @@ Status: planned. Setup: freeze scope/artifacts/environment and engage independen
 ## `0.150.0` — Final Production-Readiness Candidate
 Status: planned. Setup: candidate from remediated freeze; exact install/upgrade/
 restore/rollback/failover artifacts and evidence, selected trusted-executor
-deployment, and durable floor-profile ratchet state. Goal: final pre-RC readiness
+deployment and provider execution profiles, active rollout generation/
+successor state, and durable fully typed floor-profile ratchet state. Goal:
+final pre-RC readiness
 proof. Deliverables: complete candidate bundle, runbooks, acceptance report,
 no-permit-transport proof, fresh-parent-activation evidence, and floor-ratchet
-compatibility evidence. Verification: clean install, split executor, duplicate
+compatibility evidence including total typed-key migrations and successor
+rollbacks. Verification: clean install, split executor, scoped credential and
+egress isolation, arbitrary unclaimed socket and cross-tenant handle rejection, duplicate
 instruction/response loss/failover, rolling upgrade, higher-floor migration,
 lower-floor downgrade rejection, restore, rollback, parent-state drift after
-root finalization, load, compatibility, and evidence reproducibility pass. Exit criteria:
+root finalization, concurrent successor, late superseded messages, typed-key
+substitution/migration failure, load, compatibility, and evidence
+reproducibility pass. Exit criteria:
 no known blocking gap remains.
 `v0.150.0 implementation stop reached. Run pentest for this exact commit.`
