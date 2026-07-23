@@ -109,12 +109,14 @@ named SDK exception may change. `v0.140.7 implementation stop reached. Run pente
 
 Status: planned.
 Setup: compare disabled, advisory-only, and provider/model-specific profiles by
-purpose, tenant, classification, residency, retention, evaluation, and contracts.
+purpose, tenant, classification, residency, retention, evaluation, contracts,
+and passing `0.98.1` hosted semantic-index evidence where similarity is enabled.
 Goal: decide whether AI is disabled or supported in a bounded `1.0.0` profile.
 Deliverables: approved purposes/providers/models, no-fallback rules, broker
 identity/network isolation, evaluation thresholds, monitoring, and kill switch.
 Verification: prompt injection, retrieval/citation leakage, provider drift,
-cache partition, proposal non-execution, disable, and incident exercises pass.
+cache/index partition, semantic adapter deletion/rebuild/outage, proposal non-
+execution, disable, and incident exercises pass.
 Exit criteria: absence of sufficient evidence selects disabled-by-default.
 `v0.140.8 implementation stop reached. Run pentest for this exact commit.`
 
@@ -127,10 +129,12 @@ their exact specification versions, extensions, codecs, vendor connector
 profiles (including selected Microsoft Defender/Sentinel and Tenable APIs),
 licenses, trust and update models.
 Goal: freeze an explicit support/defer matrix rather than implying generic
-standards compatibility.
+standards compatibility. This milestone cannot implement a missing profile.
 Deliverables: supported/deferred/rejected matrix for SCIM/SAML, CVSS/VEX,
 SPDX/CycloneDX, STIX/TAXII, syslog/webhook and any shipped profile; conformance
-corpora, version policy, admission records, and truthful compatibility wording.
+corpora, version policy, admission records, implementing-milestone references,
+and truthful compatibility wording. Every profile without complete earlier
+implementation and pentest evidence is explicitly deferred.
 Verification: namespace/version/extension confusion, parser differentials,
 downgrade, signature/source spoofing, round trips, lossiness, bombs, tenant/
 policy mapping, and source-drift review pass for every selected profile.

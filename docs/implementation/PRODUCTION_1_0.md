@@ -16,8 +16,9 @@ Deliverables:
   agent protocol with migration/support policy.
 - Production ITSM, SecOps, assets/service graph, knowledge, risk/compliance,
   cases, vulnerability management, workflow/policy, composable interfaces,
-  search, governed plugin catalog/connectors, optional federation/AI, and
-  administration.
+  lexical and selected semantic search, on-call/paging/notification preferences,
+  SLI/SLO/error budgets, service health/status communications, governed plugin
+  catalog/connectors, optional federation/AI, and administration.
 - Supported single-node/HA/regional profiles; backup, restore, rebuild, upgrade,
   rollback, health, quota, backpressure, incident, and DR runbooks.
 - Signed source/artifacts/checksums, SBOM, provenance, licenses, compatibility
@@ -32,10 +33,16 @@ Verification:
   exports/attachments/notifications/admin; every untrusted parser fuzzed.
 - Independent crypto review, plugin escape and AI injection/tool-abuse suites,
   storage conformance, migration/restore/rebuild/workflow continuation tests.
+- Crash-point proof that protected commands cannot commit without authoritative
+  audit intent; protected reads/downloads cannot release bytes before audit
+  receipt; streaming completion/abort reconciles.
 - Reproducible builds, clean install/upgrade/rollback/failover, load/soak/chaos,
   secure defaults, accessibility, localization, and disaster-recovery exercises.
 - Decision-record conformance proves each shipped artifact and deployment
   matches the reviewed `0.140.1–0.140.10` choices without silent fallback.
+- Every selected interchange and semantic-index profile cites its earlier
+  implementation admission, conformance corpus, pentest, and operational owner;
+  missing profiles are explicitly unsupported.
 
 Exit criteria: no acceptance criterion is waived for schedule. Any candidate
 code or artifact change creates a new RC and repeats affected review. After the

@@ -30,6 +30,9 @@ they are never the first technology selection.
 Every user-facing capability is API-first: API contract/application/transport
 crates remain separate from UI composition/rendering crates, and the first-
 party UI has no privileged command, repository, or database path.
+Optional federation, AI, vendor-connector, plugin-storefront, and semantic-index
+crates depend inward on stable ports. The kernel and first-party domains must
+build, test, and operate without any optional product family.
 
 ## Universal Verification And Exit
 

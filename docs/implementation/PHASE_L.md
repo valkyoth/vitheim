@@ -59,6 +59,11 @@ define publisher identity, package/signature/digest, provenance, license,
 privacy/data-flow declaration, requested capabilities, supported API/ABI/
 platform versions, tenant eligibility, review state, pricing metadata if ever
 used, vulnerability response, deprecation, revocation, and offline mirrors.
+Define exact dependency identities/version ranges, a canonical bounded
+dependency graph and lock manifest, transitive capability/data-flow union and
+diff, cycle/depth/node/work limits, conflict resolution, revocation cascades,
+threshold-signed root/catalog metadata, publisher-key compromise response,
+freeze/rollback protection, and last-known-good recovery.
 
 Goal: provide a storefront where tenants can discover extensions without making
 browse, purchase, download, install, permission approval, or activation the same
@@ -66,12 +71,17 @@ security decision.
 
 Deliverables: catalog and listing aggregates, signed catalog snapshots, package
 transparency/provenance view, permission-diff UI/API, tenant allow/deny policy,
-review workflow, mirror protocol, and operator/publisher runbooks.
+dependency resolver/lock manifest, transitive capability diff, threshold-root
+and delegated publisher trust model, revocation-cascade planner, review workflow,
+mirror protocol, and operator/publisher compromise runbooks.
 
 Verification: publisher impersonation, typosquatting/confusable names,
 listing/package substitution, hidden capability change, malicious update,
 downgrade, license/privacy omission, review bypass, popularity/rating abuse,
-revoked/offline package, mirror rollback, and tenant visibility leaks pass.
+dependency confusion/substitution, version-range ambiguity, graph cycles/bombs,
+hidden transitive capability, dependency revocation cascade, compromised
+publisher/root threshold, freeze/rollback attack, revoked/offline package,
+mirror rollback, and tenant visibility leaks pass.
 
 Exit criteria: only a separately approved signed package can move from catalog
 discovery to installed state, and activation still requires explicit current

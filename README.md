@@ -26,8 +26,9 @@
 Vitheim is a planned service-operations platform for incidents, requests,
 changes, assets and service graphs, security operations, risk and compliance,
 knowledge, vulnerability management, composable dashboards, durable workflows,
-governed WASM plugins/connectors, optional organization federation,
-policy-controlled automation, and optional untrusted AI assistance. It is
+on-call/paging, service health and reliability objectives, governed WASM
+plugins/connectors, optional organization federation, policy-controlled
+automation, and optional untrusted AI assistance. It is
 API-first: the first-party interface is a separately bounded API client, not a
 privileged path into domain or storage code.
 
@@ -105,7 +106,7 @@ and licensing decision. See [Publication Policy](docs/PUBLICATION_POLICY.md).
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
-- [Implementation Plan — all 196 milestones](docs/IMPLEMENTATION_PLAN.md)
+- [Implementation Plan — all 211 milestones](docs/IMPLEMENTATION_PLAN.md)
 - [Release Plan](docs/RELEASE_PLAN.md)
 - [Roadmap Gap Dispositions](docs/ROADMAP_GAP_DISPOSITIONS.md)
 - [Modularity Policy](docs/MODULARITY_POLICY.md)

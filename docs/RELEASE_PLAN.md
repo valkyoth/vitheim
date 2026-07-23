@@ -96,13 +96,15 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.13.0` | Expected-version concurrency | Lost updates, stale writers, duplicated events, race model tests |
 | `0.14.0` | Snapshots and validation | Stale, forged, truncated, cross-tenant, or poisoned snapshots |
 | `0.15.0` | Projection engine and checkpoints | Skipped, duplicated, reordered events and invalid checkpoints |
-| `0.16.0` | Transactional outbox model | Event without message, message without event, rollback gaps |
+| `0.15.1` | Security audit envelope and durable intent | Missing/forged audit authority, command/audit mismatch, duplicate rejection, metadata leakage |
+| `0.16.0` | Transactional event/receipt/audit/outbox model | Mutation without audit/message, denial with business effects, rollback gaps |
 | `0.17.0` | Inbox and idempotent consumer model | Replay, duplicate effects, poisoned receipts, crash windows |
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
 | `0.18.1` | Durable quota accounting | Concurrent oversubscription, retry/refund races, tenant unfairness, reconciliation |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
-| `0.20.1` | Security audit facts and audit journal | Denial/read/export/plugin/AI audit gaps, audit outage, leakage, duplicate rejection receipts |
+| `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
+| `0.20.2` | Hosted telemetry semantics and instrumentation contract | Tenant/secret labels, cardinality, trace spoofing, readiness lies, backpressure |
 
 ## Phase C — Storage Portability
 
@@ -147,7 +149,11 @@ the first authenticated UI/API slice passes cross-module isolation testing.
 | `0.36.1` | Malware-scanner adapter and isolation | Scanner impersonation/downgrade, stale verdicts, worker escape, outage |
 | `0.37.0` | Priority, severity, and impact models | Manipulation, overflow, inconsistent derived priority |
 | `0.38.0` | Calendars, targets, and SLA calculations | Time zones, holidays, DST, clock boundaries, exhaustion |
+| `0.38.1` | SLI, SLO, and error-budget models | Source/unit/window confusion, missing-data fail-open, correction and exclusion abuse |
 | `0.39.0` | Approval and notification foundations | Self-approval, duplicate decision, delivery replay |
+| `0.39.1` | On-call rotations, overrides, and handoffs | Stale membership, schedule ambiguity, override abuse, coverage gaps |
+| `0.39.2` | Paging escalation, acknowledgement, and receipts | Forged acknowledgement, escalation skip, flood/retry loops, provider outage |
+| `0.39.3` | Notification preferences, quiet hours, and emergency overrides | Endpoint takeover, mandatory suppression, quiet-hour abuse, notification flood |
 | `0.40.0` | First authenticated API and service-desk UI | IDOR, CSRF, XSS, session fixation, field leakage |
 | `0.40.1` | API-first application and UI crate boundary | Privileged UI path, forbidden dependencies, headless/UI differential, undocumented actions |
 
@@ -168,6 +174,7 @@ integration is deferred to `0.70.0` and `0.100.0`.
 | `0.46.0` | Change management | Approval bypass, conflict and schedule manipulation |
 | `0.47.0` | Release and deployment records | False status, unauthorized linkage, evidence forgery |
 | `0.48.0` | Major-incident command process | Role takeover, notification floods, hidden decisions |
+| `0.48.1` | Stakeholder communications and status publishing | Premature/false publication, audience leakage, stale status, correction-history loss |
 | `0.49.0` | Postmortems and corrective actions | Sensitive publication, deletion, blame/identity leakage |
 | `0.50.0` | Integrated ITSM beta with later-phase port fakes | Cross-module authorization, fake-port contracts, replay and upgrades |
 
@@ -185,7 +192,9 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.53.0` | Hosted OIDC integration | Discovery, mix-up, token validation, replay, downgrade, session fixation |
 | `0.53.1` | Hosted WebAuthn profile and credential lifecycle | RP/origin/challenge binding, attestation, counters, recovery |
 | `0.53.2` | Distributed session store | Fixation/replay, revocation lag, node failure, partition, cross-tenant collision |
+| `0.53.3` | SAML identity profile and adapter | XML signature wrapping, audience/destination mix-up, assertion replay, metadata rollback |
 | `0.54.0` | Directory and group synchronization | Group takeover, stale privilege, deletion/recreation |
+| `0.54.1` | SCIM provisioning profile and adapter | External-ID collision, filter/PATCH abuse, group takeover, pagination/bulk bombs |
 | `0.55.0` | RBAC engine | Role escalation, inherited cycles, hidden grants |
 | `0.56.0` | ABAC engine | Missing attributes, type confusion, fail-open decisions |
 | `0.56.1` | Policy lifecycle, bootstrap, and recovery | Self-approval, stale simulation, lockout, recovery abuse, rollback downgrade |
@@ -222,6 +231,8 @@ Phase exit: integrated SecOps isolation and evidence custody pass pentest.
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.71.0` | Authenticated alert ingestion | Source spoofing, replay, flooding, tenant confusion |
+| `0.71.1` | Syslog and security-webhook ingestion profiles | Source/framing/schema spoofing, replay, log injection, backpressure/drop evidence |
+| `0.71.2` | STIX and TAXII threat-intelligence profiles | Collection/object/marking confusion, graph/pattern bombs, revoked-object reuse |
 | `0.72.0` | Alert normalization | Parser confusion, field smuggling, oversized records |
 | `0.73.0` | Deduplication engine | Collision abuse and evidence loss |
 | `0.74.0` | Suppression and maintenance windows | Malicious suppression and expiry bypass |
@@ -233,6 +244,7 @@ Phase exit: integrated SecOps isolation and evidence custody pass pentest.
 | `0.78.2` | Exposure prioritization and risk decisions | Score/criticality/control manipulation, stale inputs, unauthorized override |
 | `0.78.3` | Remediation campaigns, exceptions, and verification | Mass closure, self-approval, stale verification, immortal exceptions |
 | `0.78.4` | Vulnerability program conformance and reporting | Coverage/denominator manipulation, stale dashboards, count/export leakage |
+| `0.78.5` | CVE, CVSS, and VEX interchange profiles | Identifier/product/score confusion, forged source, VEX status abuse, feed rollback |
 | `0.79.0` | Forensic timeline and evidence custody | Timestamp tamper, custody gaps, export leakage |
 | `0.80.0` | Integrated SecOps workspace with search fake | Cross-source/tenant leakage, current authorization, no premature search claim |
 
@@ -246,6 +258,7 @@ Phase exit: graph authorization and reconciliation are explainable and bounded.
 | --- | --- | --- |
 | `0.81.0` | Asset lifecycle | Ownership/disposal changes, evidence removal, illegal states |
 | `0.82.0` | Business and technical services | Service-owner escalation and tenant linkage |
+| `0.82.1` | Service health, availability, and SLO binding | False/stale health, clock intervals, override abuse, unknown-to-healthy fail-open |
 | `0.83.0` | Typed relationship graph | Malicious cycles, unauthorized edges, traversal bounds |
 | `0.84.0` | Provenance and confidence | Source impersonation, confidence inflation, evidence detach |
 | `0.85.0` | Bitemporal facts | Historical rewrite, overlaps, invalid intervals |
@@ -256,6 +269,7 @@ Phase exit: graph authorization and reconciliation are explainable and bounded.
 | `0.88.2` | Evidence-bound cross-domain correlation | Poisoned/circular evidence, confidence abuse, path explosion, case storms |
 | `0.88.3` | Correlation workspace and conformance | Unauthorized pivots, feedback poisoning, bulk abuse, cross-domain leakage |
 | `0.89.0` | Software and license inventory | Forged inventory, entitlement and contract leakage |
+| `0.89.1` | SPDX and CycloneDX SBOM ingestion profiles | Component/namespace/license confusion, completeness inflation, parser bombs |
 | `0.90.0` | Interactive service map | Graph authorization, browser injection, stale policy |
 
 ## Phase J — Search And Knowledge
@@ -275,6 +289,7 @@ Phase exit: search/API conformance proves identical visibility.
 | `0.96.0` | Temporal and history search | Historical access bypass and event inference |
 | `0.97.0` | Relationship and impact search | Graph path disclosure and traversal exhaustion |
 | `0.98.0` | Semantic-index interface | Embedding leakage, cross-tenant similarity, poisoning |
+| `0.98.1` | Hosted semantic-index adapter and isolation | Cross-tenant/model recall, filter bypass, stale deletion, re-embedding split state |
 | `0.99.0` | Knowledge articles and runbooks | Unsafe content, poisoning, publication bypass |
 | `0.100.0` | Unified search conformance suite | Search/API/read/export authorization equivalence |
 
@@ -411,7 +426,7 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | --- | --- | --- |
 | `0.141.0` | Single-node production packaging | Permissions, defaults, secret exposure, clean install |
 | `0.142.0` | Split API/worker/ingest/index deployments | Service identity and network authorization |
-| `0.142.1` | Production telemetry exporters and graceful drain | Tenant/secret leakage, cardinality, exporter failure, readiness and drain |
+| `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
 | `0.143.0` | HA leases, failover, and partitions | Split brain, duplicate processing, fencing |
 | `0.144.0` | Regional placement and residency | Cross-region leakage and unsafe failover |
 | `0.145.0` | Backup, restore, and disaster recovery | Substitution, incomplete restore, RPO/RTO claims |
@@ -438,7 +453,9 @@ are independently evidenced as production-ready.
 - Production ITSM, SecOps, vulnerability, assets/software assets/CMDB/service
   graph and correlation, knowledge, risk/compliance, cases, workflow/policy
   builders, composable dashboards/layout profiles, search, governed connector
-  storefront, optional federation/AI, administration, import/export, and reporting.
+  storefront, on-call/paging/preferences, SLI/SLO/error budgets, service health/
+  status publishing, optional federation/AI, administration, import/export, and
+  reporting.
 - Documented single-node, HA, regional, backup/restore, rebuild, recovery,
   upgrade, rollback, health, quota, and backpressure operations.
 - Identical mandatory conformance for supported production storage profiles;
@@ -453,6 +470,8 @@ are independently evidenced as production-ready.
   notification, and administrative interface.
 - Every untrusted parser is fuzzed; cryptography is independently reviewed;
   plugin escape and AI injection/tool-abuse suites pass.
+- Atomic audit-intent crash tests, protected-read release receipts, exact
+  interchange conformance, and selected semantic-index isolation/rebuild pass.
 - Backup restoration, event integrity, projection/search rebuild, workflow
   continuation, disaster recovery, migration, rollback, load, soak, chaos,
   accessibility, localization, and secure-default tests pass.

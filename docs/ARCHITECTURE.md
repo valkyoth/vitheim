@@ -61,6 +61,12 @@ authorization semantics.
 14. Plugin catalogs distribute signed capability requests, not ambient trust.
     Installation, permission approval, activation, upgrade, and revocation are
     separate governed actions.
+15. A protected mutation commits its authoritative audit intent atomically with
+    events, receipt, stream head, integrity links, and outbox. A protected read
+    or download records its audit authorization receipt before releasing bytes.
+16. Hosted telemetry follows one early tenant-safe bounded schema. Metrics,
+    traces, logs, health, or exporter failure never become authority and never
+    contain secrets, sensitive payloads, or unbounded attacker-controlled labels.
 
 ## Layers
 
@@ -91,11 +97,12 @@ strategy for that milestone are explicitly approved.
 - Kernel: `vitheim-command`, `vitheim-event`, `vitheim-aggregate`,
   `vitheim-journal-model`, `vitheim-projection-model`, `vitheim-query`,
   `vitheim-audit-model`, `vitheim-evidence-model`, `vitheim-crypto-api`, and
-  `vitheim-tenant`, plus federation trust/shared-space models.
+  `vitheim-tenant`. The kernel has no optional-product dependency.
 - Domains: focused work, incident, request, catalog, problem, change, release,
   alert, SecOps, vulnerability, risk, control, obligation, evidence, asset,
-  software-asset, service, relationship, knowledge, SLA, approval, and case
-  crates.
+  software-asset, service, service-health, relationship, knowledge, SLA,
+  SLI/SLO, on-call, paging, notification preference, status communication,
+  approval, and case crates.
 - Engines: kernel orchestration, workflow, policy, compliance, correlation,
   reconciliation, scheduling, notification, search planning, and reporting.
 - Product boundaries: `vitheim-api-contract` owns transport-neutral public
@@ -107,6 +114,10 @@ strategy for that milestone are explicitly approved.
   integrations, runtime, import/export, federation transport, and optional AI
   broker. API contract/application/transport crates remain separate from UI
   shell/composition/rendering crates.
+- Optional product families: federation trust/shared-space/protocol/host,
+  AI provider/broker, vendor connector packs, and plugin storefront crates
+  depend inward on stable ports. Core/kernel and first-party domain crates must
+  build and operate without them.
 
 Crates are created only when their release begins. Empty speculative crates are
 not accepted. The facade re-exports only reviewed capabilities.

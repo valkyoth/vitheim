@@ -84,7 +84,25 @@ Status: planned. Setup: canonical IR, simulation, explanation, diff, signing, se
 Status: planned. Setup: bounded query/report plans, aggregates, scheduling, export policy, quotas. Goal: safe operational reporting. Deliverables: builder, renderer, scheduler. Verification: expensive queries, unauthorized aggregates/counts, formula/export injection, tenant/cache leakage pass. Exit criteria: reports reveal no more than source reads. `v0.135.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.136.0` — Request Portal And Generic Cases
-Status: planned. Setup: external identity, enumeration resistance, public forms, case types, uploads, messaging. Goal: safe requester and custom-case experience. Deliverables: portal and case aggregate. Verification: account/case enumeration, cross-user/tenant access, spam, upload abuse, XSS/CSRF pass. Exit criteria: external users see only explicit portal projections. `v0.136.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: external identity, enumeration resistance, public forms,
+uploads, messaging, and custom case types whose `CaseId`, commands, events,
+streams, repository/ports, immutable schema version, and validated lifecycle
+version are distinct from Incident, Request, Change, Asset, Vulnerability, and
+every first-party domain. Built-in domains cannot be reconfigured, imported,
+cast, or migrated into generic cases. Forbid JSON Patch, arbitrary field/status
+setters, polymorphic repositories/write ports, and custom namespaces that shadow
+system, tenant, policy, evidence, audit, integrity, or lifecycle fields.
+Goal: safe requester and custom-case experience without reopening a universal
+mutable ticket model. Deliverables: typed case aggregate/factory, narrow
+lifecycle commands/events, namespaced fields, schema/lifecycle binding,
+reviewed process-manager migration, portal projections, and compile-fail
+cross-domain fixtures. Verification: account/case enumeration, CaseId/domain ID
+substitution, generic patch/status/repository attempts, built-in import/cast,
+schema/lifecycle mismatch, protected namespace shadowing, unsafe in-place
+migration, cross-user/tenant access, spam, upload abuse, XSS/CSRF pass.
+Exit criteria: external users see only explicit portal projections, and custom
+cases cannot mutate or impersonate first-party domain aggregates. `v0.136.0
+implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.137.0` — Configuration-As-Code And Signed Changes
 Status: planned. Setup: canonical bundles, provenance/signatures, plan/diff, policy, approval, staged apply/rollback. Goal: auditable reproducible configuration. Deliverables: compiler, planner, apply engine. Verification: substitution, stale plan, unauthorized activation, partial apply, rollback, secret inclusion pass. Exit criteria: applied config equals reviewed digest. `v0.137.0 implementation stop reached. Run pentest for this exact commit.`

@@ -56,6 +56,37 @@ Status: planned. Setup: path grammar, allowed edges, authorization, depth/work, 
 ## `0.98.0` — Semantic-Index Interface
 Status: planned. Setup: embedding provider boundary, model/version, residency, redaction, tenant partitions, deletion. Goal: optional replaceable similarity search. Deliverables: vector port and provenance model. Verification: cross-tenant similarity, embedding leakage, poisoning, stale deletion, provider failure pass. Exit criteria: lexical/product correctness never depends on vectors. `v0.98.0 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.98.1` — Hosted Semantic-Index Adapter And Isolation
+
+Status: planned only if semantic similarity is intended for a production
+profile; otherwise it is explicitly unavailable at `0.140.8`. Blocked until an
+exact vector engine/extension, client/TLS stack, storage format, maintenance,
+license, unsafe/native code, and operational profile are admitted.
+
+Setup: bind tenant/purpose/data-class partitions, document/chunk and embedding
+IDs, source/policy/model/version/dimension/distance metric, pre-filter and
+post-verification rules, candidate/overfetch/work limits, encryption, ingestion
+checkpoints, updates/deletion/retention/erasure, re-embedding migration, rebuild,
+backup/restore, cancellation, quotas, and degraded/disabled behavior.
+
+Goal: own one replaceable production semantic-index implementation without
+allowing similarity infrastructure to become an authorization oracle or
+mandatory product dependency.
+
+Deliverables: admitted hosted adapter, capability probes, policy-filter plan,
+tenant/model namespaces, deletion verifier, migration/rebuild tooling, memory-
+versus-hosted differential corpus, load harness, and operator runbook.
+
+Verification: cross-tenant/purpose/model recall, hidden candidate/count leakage,
+filter-after-retrieval bypass, embedding inversion/exfiltration, poisoned vector,
+dimension/metric confusion, stale policy/deletion, erasure/retention failure,
+re-embedding split state, backup/restore, outage/fallback, query exhaustion,
+side-channel, and differential/load tests pass.
+
+Exit criteria: every enabled semantic result is tenant/purpose/policy safe and
+rebuildable for a pinned model/index profile; without this evidence, production
+similarity remains disabled. `v0.98.1 implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.99.0` — Knowledge Articles And Runbooks
 Status: planned. Setup: draft/review/publish, audience, safe content, versions, expiry, feedback, provenance. Goal: governed reusable knowledge. Deliverables: knowledge aggregate, renderer, contextual suggestions. Verification: stored injection, publication bypass, poisoning, hidden linkage, stale article, search parity pass. Exit criteria: trusted content has approval/version evidence. `v0.99.0 implementation stop reached. Run pentest for this exact commit.`
 

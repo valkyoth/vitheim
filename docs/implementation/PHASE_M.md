@@ -27,7 +27,15 @@ cross-tenant recall, truncation and unsafe rendering pass. Exit criteria:
 summaries never become record facts automatically. `v0.124.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.125.0` — Similarity And Duplicate Suggestions
-Status: planned. Setup: tenant/policy filters before retrieval, model/index versions, confidence, feedback. Goal: advisory duplicate discovery. Deliverables: candidate service and explanations. Verification: cross-tenant similarity, poisoning, hidden candidate, adversarial text, stale deletion pass. Exit criteria: users independently confirm links. `v0.125.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned; production enablement requires a passing `0.98.1` adapter or
+remains unavailable. Setup: tenant/policy filters before retrieval, exact hosted
+capability, model/index versions, confidence, feedback, and no lexical-to-
+semantic policy fallback. Goal: advisory duplicate discovery. Deliverables:
+candidate service and explanations. Verification: cross-tenant similarity,
+poisoning, hidden candidate, adversarial text, stale deletion, adapter outage/
+disable pass. Exit criteria: users independently confirm links and production
+similarity cannot activate without hosted isolation evidence. `v0.125.0
+implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.126.0` — Triage And Next-Action Suggestions
 Status: planned. Setup: allowed suggestions, evidence/citations, confidence, policy constraints, reviewer decision. Goal: useful triage without authority. Deliverables: structured suggestions and feedback. Verification: manipulated assignment, unsafe containment, injection, missing evidence, bias/evaluation regression pass. Exit criteria: suggestions cannot execute. `v0.126.0 implementation stop reached. Run pentest for this exact commit.`

@@ -100,25 +100,60 @@ rebuild equivalence, tenant isolation, and bounded batch tests pass.
 Exit criteria: projections can be erased and recreated exactly from authority.
 `v0.15.0 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.15.1` — Security Audit Envelope And Durable Intent
+
+Status: planned.
+
+Setup: define canonical bounded security-audit facts and authoritative intents
+before transactional mutation exists. Separate successful domain-event facts
+from attempted/authorized/denied/rejected security actions; bind tenant, actor,
+remote actor assertions, authentication assurance, purpose, policy/version,
+resource/action/field class, command/request digest, result, correlation/
+causation, time, classification, and idempotency. Define the mandatory-audit
+action registry and safe metadata rules from `0.8.1`.
+
+Goal: make required audit evidence part of the commit protocol rather than a
+best-effort write to a later sink.
+
+Deliverables: `SecurityAuditFact`, `SecurityAuditIntent`, audit/rejection receipt
+models, canonical codec, redaction/classification rules, atomic commit contract,
+memory authority, and fixtures for successful and denied operations.
+
+Verification: missing/mismatched tenant/actor/policy/result, forged attribution,
+duplicate rejection, command/audit digest mismatch, secret/payload injection,
+classification downgrade, oversized facts, crash points, canonical round trips,
+property tests, and fuzzing pass.
+
+Exit criteria: every operation classified as mandatory-audit has a bounded
+authoritative audit intent that can commit atomically with its outcome.
+`v0.15.1 implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.16.0` — Transactional Outbox Model
 
 Status: planned.
 
 Setup: bind exact-version CAS, consecutive events, stream head, request-digest
-receipt, outbox entries, integrity links, authority-owned uniqueness indexes,
-destination, payload version, attempt policy, and one database transaction.
+receipt, authoritative `0.15.1` audit intent, outbox entries, integrity links,
+authority-owned uniqueness indexes, destination, payload version, attempt
+policy, and one database transaction. Denied/rejected commands atomically commit
+their idempotent outcome plus audit fact but no domain events, stream advance,
+business outbox, or state effect.
 Outbox routing contains protected references rather than pre-rendered sensitive
 bodies and cannot copy fields forbidden by the `0.8.1` lifecycle.
 
-Goal: prevent committed business facts from losing required asynchronous work.
+Goal: prevent committed business facts from losing required asynchronous work
+or mandatory audit evidence.
 
-Deliverables: outbox semantic types/port, atomic memory implementation, dispatcher
-claim/ack protocol, and failure fixtures.
+Deliverables: outbox semantic types/port, command-commit unit including audit
+authority, atomic memory implementation, dispatcher claim/ack protocol, and
+failure fixtures.
 
-Verification: fail before/during/after commit, duplicate dispatch, crash before
-ack, poison payload, tenant routing, and rollback tests pass.
+Verification: fail before/during/after every event/receipt/audit/outbox write,
+successful mutation without audit, denied mutation with domain events, duplicate
+dispatch/audit, crash before ack, poison payload, tenant routing, and rollback pass.
 
-Exit criteria: no observable state contains only one side of the transaction.
+Exit criteria: no successful protected mutation exists without its authoritative
+audit intent, and no rejected mutation produces business state or effects.
 `v0.16.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.17.0` — Inbox And Idempotent Consumers
@@ -222,29 +257,62 @@ repair attempts, report injection, rebuild equivalence, and operator UX pass.
 Exit criteria: verification cannot mutate state and repair never runs implicitly.
 `v0.20.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.20.1` — Security Audit Facts And Audit Journal
+## `0.20.1` — Security Audit Projection, Access Receipts, And Journal
 
 Status: planned.
 
-Setup: separate successful domain events from security audit facts for accepted
-and denied attempts; cover command rejection, authorization denial, sensitive
-reads/searches/exports/downloads, administration, plugin calls, and AI context.
-Define actor/tenant/purpose/policy/result facts, redaction/classification,
-retention, integrity anchoring, idempotent rejection receipts, and audit failure
-behavior.
+Setup: project authoritative `0.15.1` intents into a separately queryable,
+integrity-anchored audit journal; cover command rejection, authorization denial,
+sensitive reads/searches/exports/downloads, administration, plugin calls, AI
+context, and federation. For protected reads/downloads, durably record the
+authorization receipt before releasing bytes. Streaming operations record
+start, bounded progress/byte counts, completion or abortion. Define redaction,
+retention, access/export, rebuild, lag, and explicit outage classes.
 
-Goal: make security-relevant attempts attributable without mutating aggregates
-or pretending denials are domain events.
+Goal: provide complete security investigation evidence without making the
+separate audit projection the sole authority or pretending denials are domain events.
 
-Deliverables: `SecurityAuditSink` semantic port, bounded audit fact/envelope,
-memory journal, rejection-receipt contract, mandatory-audit action registry,
-query/export policy, and integrity/retention hooks.
+Deliverables: audit projector/journal port, access-release guard, streaming audit
+lifecycle, memory journal, query/export policy, integrity/retention hooks,
+rebuild/lag verifier, and operation-class outage matrix.
 
 Verification: domain rejection produces no domain event/outbox effect while one
-deduplicated audit fact remains; audit outage fails closed for mandatory reads/
-writes without granting access; spoofing, log injection, secret leakage,
-cross-tenant reads, replay, truncation, retention, and anchor verification pass.
+deduplicated authoritative fact remains; crash after command commit rebuilds the
+audit journal; crash before read receipt releases no protected bytes; stream
+abort/completion and byte counts reconcile. Audit outage fails closed for
+mandatory-audit operations, while explicitly non-mandatory health/static
+operations follow their documented policy. Spoofing, log injection, secret
+leakage, cross-tenant reads, replay, truncation, retention, and anchors pass.
 
 Exit criteria: every mandatory security action is durably auditable or fails
-closed, while audit recording never changes domain outcome. `v0.20.1
+closed. Audit evidence never changes the aggregate decision, but required audit
+authority is a prerequisite for committing or releasing the protected outcome. `v0.20.1
 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.20.2` — Hosted Telemetry Semantics And Instrumentation Contract
+
+Status: planned.
+
+Setup: define correlation/causation and validated trace-context propagation,
+tenant/data classification, redaction, bounded metric label vocabulary and
+cardinality, monotonic counters/histograms, lag/saturation/retry/quota/queue/
+projection measurements, health/liveness/readiness, clock semantics, sampling,
+buffer/drop/backpressure, and failure isolation. Secrets, sensitive payloads,
+raw user IDs, attacker-controlled strings, and unbounded resource identifiers
+are prohibited from labels/log fields.
+
+Goal: establish instrumentation conventions before hosted adapters, workers,
+connectors, plugins, federation, and product services proliferate.
+
+Deliverables: project-owned telemetry event/metric/trace/health ports, schema
+registry, redaction/cardinality gates, no-op and bounded-memory collectors,
+fake clock/context, instrumentation conformance suite, and adapter checklist.
+
+Verification: tenant/secret/payload leaks, label cardinality explosion, trace
+spoofing/cycles, correlation confusion, clock jumps, recursive telemetry,
+buffer exhaustion, exporter backpressure simulation, dropped-signal accounting,
+readiness lies, and telemetry-disabled semantic equivalence pass.
+
+Exit criteria: every later hosted milestone instruments the same bounded
+tenant-safe contract, and telemetry failure cannot grant authority or corrupt
+domain correctness. `v0.20.2 implementation stop reached. Run pentest for this exact commit.`

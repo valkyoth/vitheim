@@ -86,12 +86,68 @@ clock shift, store outage, cleanup, and restore tests pass.
 Exit criteria: every supported HA node observes revocation within the documented
 fail-closed bound. `v0.53.2 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.53.3` — SAML Identity Profile And Adapter
+
+Status: planned only for an intended production SAML profile; otherwise it is
+explicitly deferred at `0.140.9`. Implementation is blocked until exact SAML/
+XML signature/encryption/client dependencies, conformance profile, maintenance,
+licenses, unsafe/native code, and cryptographic review are admitted.
+
+Setup: pin IdP/SP entity IDs and metadata, trust/signing/encryption keys,
+metadata refresh/rotation, binding, ACS/destination, audience/recipient,
+request/response correlation, assertion IDs/replay cache, issue/condition/
+session times, authentication context, NameID/attribute mapping, RelayState,
+logout/revocation, tenant routing, and error privacy.
+
+Goal: support a narrowly specified enterprise SAML authentication profile
+without generic XML/SAML acceptance or authorization claims.
+
+Deliverables: SAML identity adapter, hardened bounded XML boundary, metadata/
+key lifecycle, assertion validation and replay store, mapping rules,
+conformance corpus, negative fixtures, and operator runbook.
+
+Verification: XML signature wrapping, entity expansion/bombs, algorithm/key
+confusion, unsigned/partially signed content, destination/audience/recipient
+mix-up, assertion/request replay, RelayState injection, clock abuse, metadata
+rollback, tenant/IdP confusion, account linking, logout, and fuzzing pass.
+
+Exit criteria: only the exact admitted SAML profile authenticates, supplies
+versioned identity facts, and never grants authorization. `v0.53.3
+implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.54.0` — Directory And Group Synchronization
 Status: planned. Setup: define source authority, external IDs, delta/full sync,
 deletion, conflict, quarantine, and privilege review. Goal: safe directory facts.
 Deliverables: sync port, reconciliation, staged activation, audit report.
 Verification: group takeover, stale privilege, deletion/recreation, replayed delta,
 oversized sync, and tenant tests pass. Exit criteria: source changes cannot silently escalate rights. `v0.54.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.54.1` — SCIM Provisioning Profile And Adapter
+
+Status: planned only for an intended production SCIM profile; otherwise it is
+explicitly deferred at `0.140.9`. Hosted HTTP/TLS/client implementation requires
+its own admission record.
+
+Setup: pin exact SCIM specification/profile, base URL and tenant, bearer/client
+identity, user/group resource schemas and extensions, external IDs, ETags,
+filters, sorting/pagination, PATCH/bulk support policy, active/deleted states,
+delta/full reconciliation, rate limits, retry/idempotency, and error privacy.
+
+Goal: implement standards-based directory provisioning through the guarded
+`0.54.0` synchronization lifecycle rather than direct role mutation.
+
+Deliverables: SCIM client/server profile as selected, bounded codec/filter
+parser, mapping and quarantine rules, cursor/reconciliation state, conformance
+corpus, fake peer, capability report, and deployment runbook.
+
+Verification: tenant/base-URL confusion, SSRF, token leakage, external-ID
+collision, filter/operator injection, PATCH path confusion, group-cycle/takeover,
+delete/recreate, stale ETag, pagination/bulk bombs, replay, partial batch,
+schema-extension drift, and parser fuzzing pass.
+
+Exit criteria: SCIM changes remain staged external identity/group facts and
+cannot silently create Vitheim roles or capabilities. `v0.54.1 implementation
+stop reached. Run pentest for this exact commit.`
 
 ## `0.55.0` — RBAC Engine
 Status: planned. Setup: define platform, tenant, workspace, shared-space, and

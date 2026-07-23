@@ -41,10 +41,13 @@ Status: planned. Setup: one canonical source model, round-trip policy, provenanc
 ## `0.70.0` — HA Workflow Workers
 Status: planned. Setup: define leases/fencing, activity idempotency, `0.30.1`
 queue semantics, poison policy, drain, failover, authorization/tenant registry
-entries, and Phase E workflow contract fixtures. Goal: durable multi-worker
+entries, Phase E workflow contract fixtures, and `0.39.1–0.39.3` on-call/
+paging/notification process-manager scenarios. Goal: durable multi-worker
 execution. Deliverables: hosted worker orchestration, authorization cases,
-ITSM integration retest, and operational evidence. Verification: lease loss,
+ITSM and response-delivery integration retests, and operational evidence.
+Verification: lease loss,
 partitions, duplicate activity, crash points, poison loops, cross-tenant/
-unauthorized effects, Phase E fake-versus-real differential, rolling upgrades,
-and soak pass. Exit criteria: HA preserves documented at-least-once semantics
+unauthorized effects, paging escalation/acknowledgement and quiet-hour races,
+Phase E fake-versus-real differential, rolling upgrades, and soak pass.
+Exit criteria: HA preserves documented at-least-once semantics
 and every workflow interface is registered. `v0.70.0 implementation stop reached. Run pentest for this exact commit.`

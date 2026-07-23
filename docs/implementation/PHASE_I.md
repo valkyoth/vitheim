@@ -8,6 +8,34 @@ Status: planned. Setup: typed assets, ownership/location/cost/warranty, lifecycl
 ## `0.82.0` — Business And Technical Services
 Status: planned. Setup: service identity/type, owner, criticality, offerings, lifecycle, tenant scope. Goal: model accountable services. Deliverables: service aggregate/catalog. Verification: owner escalation, cross-tenant linkage, false criticality, retirement with dependents, replay pass. Exit criteria: service authority is explicit. `v0.82.0 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.82.1` — Service Health, Availability, And SLO Binding
+
+Status: planned.
+
+Setup: define service/component health state vocabulary, source identity and
+trust, observation/business-valid/recorded/checkpoint times, availability
+intervals, maintenance/dependency context, confidence, corrections/supersession,
+manual override authority/expiry, incident/change links, `0.38.1` SLI/SLO/error-
+budget bindings, aggregation rules, audience classification, and unknown state.
+
+Goal: represent service health as provenance-aware temporal facts rather than a
+mutable green/yellow/red field or direct copy of monitoring output.
+
+Deliverables: health-observation and correction models, service-health
+projection/aggregate rules, availability calculator, SLO binding, explanation
+timeline, source port/fake, Phase H fake-versus-real health integration, and
+internal/public DTO contracts.
+
+Verification: source spoofing, false healthy/recovered state, stale observations,
+clock/interval overlap, dependency cycles, confidence/override inflation,
+maintenance masking, unknown-to-healthy fail-open, hidden component leakage,
+rebuild permutations, alert/incident/status-publication feedback loops, and
+SLO/health/Phase H differential tests pass.
+
+Exit criteria: every health/availability claim cites source facts, corrections,
+aggregation/SLO policy, freshness, uncertainty, and audience. `v0.82.1
+implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.83.0` — Typed Relationship Graph
 Status: planned. Setup: edge vocabulary, direction, cardinality, temporal validity, provenance, policy, traversal bounds. Goal: first-class safe relationships. Deliverables: relationship aggregate and graph port. Verification: unauthorized edges, cycles, hidden endpoints, duplicate/contradictory edges, exhaustion pass. Exit criteria: every edge is tenant-bound and evidenced. `v0.83.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -46,8 +74,8 @@ Status: planned. Setup: tenant-partitioned adjacency; authorize edge, endpoints,
 and every intermediate node before traversal; purpose-specific edge allowlists;
 depth/node/path/time/work bounds, cycles, staleness and uncertainty. Goal: bounded
 pre-change impact without post-hoc redaction. Deliverables: impact planner and
-policy-safe proof paths plus a Phase H topology-port adapter and differential
-fixtures. Verification: hidden-node count/path/timing inference,
+policy-safe proof paths plus Phase E change and Phase H correlation topology-
+port adapters and differential fixtures. Verification: hidden-node count/path/timing inference,
 cycles, path explosion, stale graph, cross-tenant edge, ranking pass. Exit criteria: reports never reveal unauthorized topology. `v0.88.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.88.1` — Unified Cross-Domain Operational Graph
@@ -128,6 +156,35 @@ Run pentest for this exact commit.`
 
 ## `0.89.0` — Software And License Inventory
 Status: planned. Setup: software identity/version, installations, entitlements, allocations, renewals, support status, evidence. Goal: software asset management separate from hardware. Deliverables: software/entitlement aggregates and compliance projection. Verification: forged installs, entitlement leakage, duplicate allocation, version confusion, renewal boundaries pass. Exit criteria: compliance claims cite inventory and entitlement evidence. `v0.89.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.89.1` — SPDX And CycloneDX SBOM Ingestion Profiles
+
+Status: planned only for exact intended SPDX/CycloneDX versions and
+serializations; unsupported profiles are deferred at `0.140.9`. Parser,
+signature, and source clients require implementation admission.
+
+Setup: pin document/BOM identity and versions, creator/source/signature,
+components/packages/files/services, versions and identifiers, hashes, licenses,
+copyright, external references, dependency/containment relationships,
+compositions/completeness, vulnerabilities where present, timestamps,
+namespaces/serials, updates, tenant/asset/build links, quotas, and raw retention.
+
+Goal: ingest software bills of materials as versioned evidence for inventory,
+license, vulnerability, and graph workflows without treating an SBOM as
+automatically complete or authoritative installed state.
+
+Deliverables: bounded SPDX/CycloneDX codecs, canonical evidence envelope,
+component/relationship mapping, identity reconciliation, completeness model,
+signature/provenance verification, quarantine, conformance corpora, and runbook.
+
+Verification: namespace/serial/component collision, dependency cycles/bombs,
+hash/license/version confusion, signature/source spoofing, external-reference
+SSRF, completeness inflation, stale/substituted BOM, cross-asset/tenant link,
+XML/JSON/decompression bombs, parser differentials, fuzzing, and rebuild pass.
+
+Exit criteria: every SBOM-derived fact retains document/source/version/
+completeness evidence, and conflicts never silently overwrite inventory or
+license authority. `v0.89.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.90.0` — Interactive Service Map
 Status: planned. Setup: policy-filtered graph DTO, bounded expansion, layout data, stale markers, browser rendering. Goal: usable impact visualization. Deliverables: map API/UI and explanations. Verification: graph authorization, count/path inference, XSS, huge graph exhaustion, cache revocation, accessibility pass. Exit criteria: UI visibility equals graph policy. `v0.90.0 implementation stop reached. Run pentest for this exact commit.`

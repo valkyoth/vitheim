@@ -107,6 +107,31 @@ Verification: DST, leap/boundary times, overlapping holidays, pause abuse,
 overflow, long-span exhaustion, and known vectors pass.
 Exit criteria: identical pinned calendars yield identical results. `v0.38.0 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.38.1` — SLI, SLO, And Error-Budget Models
+
+Status: planned.
+
+Setup: distinguish internal service-level indicators/objectives and error
+budgets from customer-facing SLA commitments. Define indicator identity/unit/
+direction, good/valid event criteria, source/provenance, correction, rolling/
+calendar windows, objective versions, missing-data policy, burn-rate windows,
+budget consumption/reset, maintenance exclusions, and calculation budgets.
+
+Goal: model service reliability deterministically without treating monitoring
+data, SLOs, SLAs, or contractual penalties as interchangeable.
+
+Deliverables: typed SLI observation and correction facts, SLO/policy aggregate,
+pure window/error-budget engine, burn-rate explanation, fake measurement source,
+and golden calculation corpus.
+
+Verification: forged/stale sources, unit/window confusion, missing-data fail-open,
+historical rewrite, duplicate/out-of-order samples, exclusion abuse, overflow,
+clock/DST boundaries, policy downgrade, long-range exhaustion, and properties pass.
+
+Exit criteria: every SLO/error-budget result cites its exact observations,
+corrections, window, exclusions, and objective version. `v0.38.1 implementation
+stop reached. Run pentest for this exact commit.`
+
 ## `0.39.0` — Approval And Notification Foundations
 Status: planned.
 Setup: define approver eligibility, separation of duties, quorum, expiry, immutable decisions, and delivery intents.
@@ -117,6 +142,78 @@ sensitive bodies, templates, and idempotent routing port.
 Verification: self/stale/duplicate approval, quorum races, expiry, template injection,
 delivery replay, and hidden-field tests pass.
 Exit criteria: approvals and deliveries remain attributable. `v0.39.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.39.1` — On-Call Rotations, Overrides, And Handoffs
+
+Status: planned.
+
+Setup: define team/rotation identity, members and eligibility versions, timezone,
+layers, schedules, overrides, swaps, gaps/overlaps, effective responder,
+handoff acknowledgement, delegation, expiry, privacy, and audit. Being on call
+does not itself grant record or containment authority.
+
+Goal: calculate who should be contacted at a time without turning schedules
+into hidden authorization or mutable calendar scripts.
+
+Deliverables: rotation aggregate, pure schedule evaluator, override/swap/handoff
+commands and events, coverage projection, simulator, and calendar integration.
+
+Verification: stale membership, unauthorized swap/override, coverage gap,
+overlap ambiguity, DST/timezone/leap boundaries, expired delegation, identity
+recreation, privacy leakage, huge schedules, replay, and property tests pass.
+
+Exit criteria: effective on-call responsibility is reproducible and distinct
+from permission to perform the response action. `v0.39.1 implementation stop
+reached. Run pentest for this exact commit.`
+
+## `0.39.2` — Paging Escalation, Acknowledgement, And Receipts
+
+Status: planned.
+
+Setup: define paging policy/version, severity/trigger, ordered targets, delays,
+attempt caps, channels, delivery/acknowledgement identity, acknowledgement
+authority, stop/escalate conditions, deduplication, quiet-hour interaction,
+provider receipts, retry/backoff, cancellation, and incident linkage.
+
+Goal: deliver time-critical pages with bounded escalation and complete evidence.
+
+Deliverables: paging-policy aggregate, deterministic escalation process manager,
+provider-neutral page port, fake provider, acknowledgement commands, delivery/
+escalation receipts, and operator simulator.
+
+Verification: forged/replayed acknowledgement, wrong responder, delivery lies,
+duplicate/flood loops, stale rotation, escalation skip, quiet-hour bypass,
+provider outage, retry storms, cancellation races, tenant confusion, and clock
+boundaries pass.
+
+Exit criteria: every escalation step and stop decision is attributable,
+idempotent, bounded, and linked to current on-call and policy facts. `v0.39.2
+implementation stop reached. Run pentest for this exact commit.`
+
+## `0.39.3` — Notification Preferences, Quiet Hours, And Emergency Overrides
+
+Status: planned.
+
+Setup: define per-subject/team channel eligibility, verified endpoints,
+category/severity preferences, locale/timezone, quiet hours, digests, frequency
+caps, mandatory legal/security notices, emergency override authority, reason,
+expiry, escalation, unsubscribe limits, and policy precedence.
+
+Goal: respect delivery preferences without allowing users or attackers to
+suppress mandatory or emergency communications.
+
+Deliverables: notification-preference aggregate, pure delivery-policy evaluator,
+verified-endpoint lifecycle, quiet-hour/digest scheduler inputs, emergency
+override command, explanation trace, and preference API projections.
+
+Verification: endpoint takeover, preference/tenant confusion, timezone abuse,
+mandatory-notice suppression, perpetual emergency override, notification flood,
+hidden recipient/field leakage, stale revocation, digest duplication, and
+policy/renderer differential tests pass.
+
+Exit criteria: each delivery or suppression explains the current preference,
+mandatory policy, quiet-hours decision, and any bounded emergency override.
+`v0.39.3 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.40.0` — Authenticated API And Service-Desk UI
 Status: planned; internal test slice only until Phase F identity passes.

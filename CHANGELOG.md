@@ -26,4 +26,9 @@ All notable Vitheim changes are documented here. The format follows
   organization federation/shared spaces/managed-service delegation, a signed
   plugin storefront with Microsoft and Tenable connector packs, complete
   vulnerability management, and evidence-bound cross-domain graph correlation.
+- Closed the next roadmap review by making mandatory audit crash-atomic,
+  establishing early telemetry semantics, hardening generic cases and
+  federation protocol evidence, assigning every intended interchange/semantic
+  search adapter, and adding typed on-call, paging, notification, SLO,
+  service-health, and status-communication capabilities.
 - Added local and GitHub verification gates without a crate publication path.

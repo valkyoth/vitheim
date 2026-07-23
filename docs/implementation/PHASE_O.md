@@ -17,9 +17,12 @@ Setup: define tenant-safe structured log fields, classifications/redaction,
 bounded metric labels, trace propagation, audit separation, lag/saturation/
 quota/readiness signals, exporter identity, buffering/drop/backpressure policy,
 failure isolation, shutdown drain, and secret prohibition.
+Implement only exporter/collector profiles conforming to the established
+`0.20.2` instrumentation schemas and failure semantics; this milestone cannot
+invent incompatible per-service telemetry conventions.
 
-Goal: make operations observable without leaking tenant data or letting
-telemetry failure corrupt application correctness.
+Goal: connect the already-instrumented platform to production collectors and
+gracefully drain without leaking tenant data or changing correctness.
 
 Deliverables: metrics, traces, and structured-log ports/adapters; redaction and
 cardinality gates; readiness/drain protocol; fake collectors; operator dashboards

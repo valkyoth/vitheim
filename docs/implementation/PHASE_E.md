@@ -39,17 +39,23 @@ Exit criteria: conclusions retain evidence and access policy. `v0.44.0 implement
 
 ## `0.45.0` — Known Errors And Workarounds
 Status: planned. Setup: define draft/review/publish/retire, audience, risk warnings,
-expiry, and problem provenance. Goal: publish reviewed operational advice.
-Deliverables: known-error aggregate, approval workflow, contextual suggestions.
+expiry, problem provenance, and a deterministic search-discovery port/fake;
+Phase J search is not yet an implementation dependency. Goal: publish reviewed
+operational advice. Deliverables: known-error aggregate, approval workflow,
+contextual suggestion contract, and fake search fixtures.
 Verification: unauthorized/stale publication, unsafe markup, hidden linkage,
-expiry bypass, and search visibility pass. Exit criteria: unreviewed advice cannot surface as trusted. `v0.45.0 implementation stop reached. Run pentest for this exact commit.`
+expiry bypass, fake-port visibility pass; real search differential repeats at
+`0.100.0`. Exit criteria: unreviewed advice cannot surface as trusted. `v0.45.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.46.0` — Change Management
-Status: planned. Setup: freeze risk, plans, window, affected graph, conflicts,
-approval, implementation, validation, backout, and emergency rules. Goal: govern service change.
-Deliverables: change aggregate, assessment, calendar/conflict integration.
+Status: planned. Setup: freeze risk, plans, window, affected-topology port/fake,
+conflicts, approval, implementation, validation, backout, and emergency rules;
+Phase I graph is not yet an implementation dependency. Goal: govern service change.
+Deliverables: change aggregate, assessment, calendar/conflict integration, and
+deterministic topology fixtures.
 Verification: approval/window/backout bypass, self-approval, conflict races,
-emergency abuse, and replay pass. Exit criteria: execution needs a valid approved plan. `v0.46.0 implementation stop reached. Run pentest for this exact commit.`
+emergency abuse, fake topology differential, and replay pass; real graph
+integration repeats at `0.88.0`. Exit criteria: execution needs a valid approved plan. `v0.46.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.47.0` — Release And Deployment Records
 Status: planned. Setup: define release contents, environment, artifact identity,
@@ -64,6 +70,33 @@ decisions, handoffs, and closure. Goal: coordinate crises without role takeover.
 Deliverables: command process aggregate, role workspace, bounded notification plan.
 Verification: unauthorized declaration/role claim, flood, stale handoff, hidden
 timeline, and failure recovery pass. Exit criteria: every crisis action is attributable. `v0.48.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.48.1` — Stakeholder Communications And Status Publishing
+
+Status: planned.
+
+Setup: define internal stakeholder, customer, partner, regulatory, and public
+audiences; communication classification; source incident/service-health facts;
+draft/review/approve/publish/update/correct/retract lifecycle; channel/profile;
+templates/locales; cadence; embargo; subscriptions; accessibility; delivery
+receipts; public status component identity; history; and retention. Publication
+never exposes the private incident record by default.
+
+Goal: coordinate consistent major-incident communications and optional internal/
+public status pages without bypassing review, field policy, or source provenance.
+
+Deliverables: communication/status-update aggregate, audience-specific typed
+DTOs, approval workflow, status-page projection/API, channel publication port
+with fake adapter, correction/retraction model, subscription intents, and runbook.
+
+Verification: unauthorized/premature publish, audience/tenant confusion, hidden
+field/root-cause/evidence leak, stale service status, false recovery, template/
+locale/XSS injection, spoofed status component, correction-history deletion,
+notification flood, provider outage/retry, cache/CDN staleness, and DAST pass.
+
+Exit criteria: every published statement identifies its approved audience,
+source facts, reviewer, version, time, and correction history without revealing
+unauthorized incident data. `v0.48.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.49.0` — Postmortems And Corrective Actions
 Status: planned. Setup: define sensitive draft, contributors, evidence, review,

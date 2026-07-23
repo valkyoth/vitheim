@@ -5,6 +5,62 @@ Scope: `0.71.0–0.80.0`. Sources authenticate; parsing and correlation remain b
 ## `0.71.0` — Authenticated Alert Ingestion
 Status: planned. Setup: source identities, signatures/tokens, replay windows, schemas, quotas, tenant routing. Goal: trustworthy bounded intake. Deliverables: ingest protocol/port and receipts. Verification: spoof/replay/flood, wrong tenant, key rotation, malformed framing, backpressure pass. Exit criteria: unauthenticated alerts never enter authority. `v0.71.0 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.71.1` — Syslog And Security-Webhook Ingestion Profiles
+
+Status: planned only for exact production profiles; unimplemented syslog/
+webhook schema families are deferred at `0.140.9`. Network/TLS/parser
+implementations require version-bound admission.
+
+Setup: pin supported syslog transports/framing/message profiles and named
+security-webhook schemas; source/device identity, mTLS/signature/token,
+facility/severity, hostname/app/proc/message IDs, structured data, timestamps/
+clock quality, webhook event IDs, content type/encoding, replay windows,
+ordering, acknowledgement, quotas, tenant routing, and raw-byte preservation.
+
+Goal: accept common security telemetry through narrow authenticated profiles
+without treating arbitrary text/JSON or source severity as trusted authority.
+
+Deliverables: syslog listener and webhook receiver ports/adapters, bounded
+framing/codecs, source registry, schema mapping packs, raw evidence links,
+receipts, conformance corpora, and deployment guidance.
+
+Verification: source/tenant spoofing, delimiter/length confusion, truncation,
+Unicode/control/log injection, timestamp/severity manipulation, signature/token
+replay, compression/JSON bombs, schema smuggling, connection floods,
+backpressure/drop accounting, malformed corpus, and fuzzing pass.
+
+Exit criteria: every accepted message names an authenticated source and exact
+profile/schema; unsupported inputs remain quarantined raw evidence or are rejected.
+`v0.71.1 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.71.2` — STIX And TAXII Threat-Intelligence Profiles
+
+Status: planned only for intended exact STIX/TAXII production profiles;
+otherwise deferred at `0.140.9`. HTTP/TLS/JSON and signature implementations
+require admission before code begins.
+
+Setup: pin specification versions, TAXII server/API-root/collection identity,
+authentication, discovery, pagination/time filters, object IDs/types/versions,
+created/modified/revoked times, markings, confidence, relationships, sightings,
+indicator patterns, source trust, manifests/checkpoints, retry/backoff,
+deletion/revocation, raw object retention, and tenant/purpose policy.
+
+Goal: ingest and exchange threat intelligence as untrusted provenance-aware
+facts without granting indicators automatic correlation or containment authority.
+
+Deliverables: TAXII client/source adapter, bounded STIX codec/validator, marking
+and relationship mapping, collection checkpoint state, quarantine, immutable
+raw-to-derived provenance, conformance corpus, and operator runbook.
+
+Verification: server/collection/tenant confusion, object-ID/version collision,
+marking bypass, malicious relationship graph/pattern, revoked-object reuse,
+pagination/checkpoint rollback, duplicate/reordered updates, source-confidence
+inflation, JSON/decompression bombs, SSRF/auth leak, rate storms, and fuzz pass.
+
+Exit criteria: threat-intelligence facts retain exact source, version, marking,
+confidence, and revocation state and cannot trigger privileged actions directly.
+`v0.71.2 implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.72.0` — Alert Normalization
 Status: planned. Setup: immutable raw evidence, canonical derived alert fields,
 versioned mappings, limits, and unknown-field policy. Goal: normalize without
@@ -141,6 +197,35 @@ Exit criteria: program status distinguishes verified coverage from unknown or
 stale data and never treats absence of findings as proof of safety. `v0.78.4
 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.78.5` — CVE, CVSS, And VEX Interchange Profiles
+
+Status: planned only for exact production profiles chosen for implementation;
+other versions/formats are deferred at `0.140.9`. Codecs, feeds, signatures,
+and clients require implementation admission.
+
+Setup: pin CVE record/feed/API and CVSS/VEX specification/serialization versions;
+source/vendor identity, vulnerability/product identifiers, configurations,
+score vector/version/source/time, VEX product identity and status/justification/
+impact/action, signatures/provenance, updates/rejections, paging/checkpoints,
+licensing, quotas, and raw-record preservation.
+
+Goal: translate standardized vulnerability information into `0.78.1` source
+assertions without collapsing conflicting advisories, scores, product matches,
+or VEX statements into mutable truth.
+
+Deliverables: bounded codecs/adapters, canonical source envelopes, product/
+identifier mapping, versioned scoring parser, VEX assertion mapping, feed
+checkpoint/reconciliation, quarantine, conformance corpora, and runbook.
+
+Verification: identifier/product/CPE-style confusion, score/vector/version
+smuggling, forged source/signature, VEX status/justification abuse, stale/rejected
+record reuse, conflicting vendors, pagination rollback, licensing/source drift,
+oversized/deep records, parser differentials, fuzzing, and rebuild pass.
+
+Exit criteria: every imported vulnerability, score, and VEX status remains a
+versioned attributable assertion; local exposure and risk decisions stay
+authoritative. `v0.78.5 implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.79.0` — Forensic Timeline, Preservation, And Evidence Custody
 Status: planned. Setup: immutable content-addressed original bytes, tenant/case
 scope, envelope encryption, acquisition actor/tool/source/method/location, time
@@ -155,11 +240,15 @@ Exit criteria: evidence lineage is complete or explicitly incomplete. `v0.79.0 i
 
 ## `0.80.0` — Integrated SecOps Workspace
 Status: planned. Setup: pin current schemas/policies, source integrations,
-migrations, deterministic search-port fake, and representative attacks. Goal:
+migrations, deterministic search-port and service-health fakes, on-call/paging/
+notification/status-publication integration, and representative attacks. Goal:
 prove integrated alert-to-response behavior without claiming Phase J search.
 Deliverables: workspace, fake search contract fixtures, runbooks, operational
-evidence. Verification: cross-source/tenant leaks, current authorization/export
-parity, fake-search contract, load, recovery, upgrade, full phase pentest pass;
-real search parity is repeated at `0.100.0`. Exit criteria: SecOps scope and
-unavailable later-phase search are truthful and not called a full SIEM.
+evidence, paging/status integration fixtures, and service-health contract.
+Verification: cross-source/tenant leaks, paging storms/ack races, quiet-hour/
+emergency precedence, unauthorized status publication, current authorization/
+export parity, fake-search/health contracts, load, recovery, upgrade, full
+phase pentest pass; real service-health, graph, and search integration repeats
+at `0.82.1`, `0.88.0`, and `0.100.0`. Exit criteria: SecOps scope and
+unavailable later-phase dependencies are truthful and not called a full SIEM.
 `v0.80.0 implementation stop reached. Run pentest for this exact commit.`
