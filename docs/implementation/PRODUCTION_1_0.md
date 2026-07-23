@@ -5,7 +5,7 @@ Status: planned; never reached by date or version count alone.
 Setup: select an exact unchanged `v1.0.0-rc.N` commit and artifact set that has
 passed every preceding gate, independent external pentest, clean retest,
 reproducible build comparison, compatibility freeze, and operational exercise.
-The decisions in `0.140.1–0.140.9` are frozen, their selected profiles have
+The decisions in `0.140.1–0.140.10` are frozen, their selected profiles have
 passed Phase O, and unsupported alternatives are excluded from release claims.
 
 Goal: release the first production-supported Vitheim platform with claims no
@@ -15,15 +15,17 @@ Deliverables:
 - Stable API v1, event compatibility, plugin ABI v1, pack/export formats, and
   agent protocol with migration/support policy.
 - Production ITSM, SecOps, assets/service graph, knowledge, risk/compliance,
-  cases, workflow/policy, search, integrations, optional AI, and administration.
+  cases, vulnerability management, workflow/policy, composable interfaces,
+  search, governed plugin catalog/connectors, optional federation/AI, and
+  administration.
 - Supported single-node/HA/regional profiles; backup, restore, rebuild, upgrade,
   rollback, health, quota, backpressure, incident, and DR runbooks.
 - Signed source/artifacts/checksums, SBOM, provenance, licenses, compatibility
   evidence, pentest report, and complete release notes.
 - A production support matrix that names the selected dependency/crypto/KMS,
   tenant/storage, identity/session, plugin, privacy/residency, deployment,
-  API/SDK/publication, AI, and interchange profiles—and explicitly names
-  unsupported options.
+  API/SDK/publication, AI, interchange, and federation profiles—and explicitly
+  names unsupported options.
 
 Verification:
 - Full tenant/authorization matrix across API/UI/search/workflow/plugins/AI/
@@ -33,7 +35,7 @@ Verification:
 - Reproducible builds, clean install/upgrade/rollback/failover, load/soak/chaos,
   secure defaults, accessibility, localization, and disaster-recovery exercises.
 - Decision-record conformance proves each shipped artifact and deployment
-  matches the reviewed `0.140.1–0.140.9` choices without silent fallback.
+  matches the reviewed `0.140.1–0.140.10` choices without silent fallback.
 
 Exit criteria: no acceptance criterion is waived for schedule. Any candidate
 code or artifact change creates a new RC and repeats affected review. After the

@@ -20,5 +20,10 @@ All notable Vitheim changes are documented here. The format follows
 - Incorporated the second roadmap review with first-consumer technology
   admission, early sensitive-payload and security-audit architecture, explicit
   hosted HA adapters, corrected cross-phase integration gates, separated API/
-  SDK/import/export milestones, and nine production-profile freeze decisions.
+  SDK/import/export milestones, and explicit production-profile freeze decisions.
+- Expanded the product roadmap with an API-first UI crate boundary, governed
+  composable dashboards and organization-scale layouts, deeper RBAC,
+  organization federation/shared spaces/managed-service delegation, a signed
+  plugin storefront with Microsoft and Tenable connector packs, complete
+  vulnerability management, and evidence-bound cross-domain graph correlation.
 - Added local and GitHub verification gates without a crate publication path.

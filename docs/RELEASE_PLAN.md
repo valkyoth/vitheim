@@ -149,6 +149,7 @@ the first authenticated UI/API slice passes cross-module isolation testing.
 | `0.38.0` | Calendars, targets, and SLA calculations | Time zones, holidays, DST, clock boundaries, exhaustion |
 | `0.39.0` | Approval and notification foundations | Self-approval, duplicate decision, delivery replay |
 | `0.40.0` | First authenticated API and service-desk UI | IDOR, CSRF, XSS, session fixation, field leakage |
+| `0.40.1` | API-first application and UI crate boundary | Privileged UI path, forbidden dependencies, headless/UI differential, undocumented actions |
 
 ## Phase E — IT Service Management
 
@@ -228,6 +229,10 @@ Phase exit: integrated SecOps isolation and evidence custody pass pentest.
 | `0.76.0` | Alert-to-incident orchestration | Incident flooding, unauthorized linking, feedback loops |
 | `0.77.0` | Security-incident domain | Evidence access and containment privilege |
 | `0.78.0` | Vulnerability findings and remediation | Finding spoofing and risk-score manipulation |
+| `0.78.1` | Vulnerability identity and affected-asset assertions | Advisory/finding/asset confusion, conflicting source claims, destructive deduplication |
+| `0.78.2` | Exposure prioritization and risk decisions | Score/criticality/control manipulation, stale inputs, unauthorized override |
+| `0.78.3` | Remediation campaigns, exceptions, and verification | Mass closure, self-approval, stale verification, immortal exceptions |
+| `0.78.4` | Vulnerability program conformance and reporting | Coverage/denominator manipulation, stale dashboards, count/export leakage |
 | `0.79.0` | Forensic timeline and evidence custody | Timestamp tamper, custody gaps, export leakage |
 | `0.80.0` | Integrated SecOps workspace with search fake | Cross-source/tenant leakage, current authorization, no premature search claim |
 
@@ -247,6 +252,9 @@ Phase exit: graph authorization and reconciliation are explainable and bounded.
 | `0.86.0` | Discovery and import interface | Poisoned sources, oversized imports, replay |
 | `0.87.0` | Reconciliation engine | Source-priority abuse, destructive merge, nondeterminism |
 | `0.88.0` | Dependency impact analysis | Exhaustion and hidden-node inference |
+| `0.88.1` | Unified cross-domain operational graph | Wrong-type links, stale provenance, hidden endpoints, rebuild divergence |
+| `0.88.2` | Evidence-bound cross-domain correlation | Poisoned/circular evidence, confidence abuse, path explosion, case storms |
+| `0.88.3` | Correlation workspace and conformance | Unauthorized pivots, feedback poisoning, bulk abuse, cross-domain leakage |
 | `0.89.0` | Software and license inventory | Forged inventory, entitlement and contract leakage |
 | `0.90.0` | Interactive service map | Graph authorization, browser injection, stale policy |
 
@@ -303,10 +311,29 @@ Phase exit: cross-plugin/tenant isolation and compatibility suite pass pentest.
 | `0.114.0` | Capability and secret-handle model | Capability escalation and secret extraction |
 | `0.115.0` | Memory/CPU/network/output metering | Resource-limit bypass and host denial of service |
 | `0.116.0` | Signed plugin registry and rollout | Signature downgrade, malicious update, rollback |
+| `0.116.1` | Governed plugin catalog and storefront | Publisher/listing/package impersonation, hidden capabilities, review bypass |
 | `0.117.0` | Connector SDK and testkit | SSRF, replay, connector impersonation |
 | `0.118.0` | Mail, webhook, and collaboration connectors | Header injection, spoofing, action-link abuse |
+| `0.118.1` | Microsoft Defender and Sentinel connector pack | Provider/workspace confusion, cursor/webhook replay, schema drift, action escalation |
+| `0.118.2` | Tenable vulnerability connector pack | Asset/finding confusion, forged fixed state, score drift, coverage gaps |
 | `0.119.0` | Outbound-only integration agent | Agent takeover, spool extraction, identity theft |
 | `0.120.0` | Plugin compatibility/isolation suite | Cross-plugin and cross-tenant interference |
+
+## Organization Federation
+
+Setup: independently administered Vitheim deployments retain separate tenants,
+policy roots, identities, event authority, and keys. Goal: optional explicit
+cooperation without tenant merging or transitive trust. Phase exit: malicious-
+peer, revocation, partition, offboarding, and managed-service tests pass across
+both organizational boundaries.
+
+| Version | Goal and deliverable | Release-specific verification / pentest target |
+| --- | --- | --- |
+| `0.120.1` | Organization identity, trust, and connection enrollment | Peer/endpoint impersonation, invitation replay, downgrade, unilateral/transitive trust |
+| `0.120.2` | Federated shared spaces and resource projections | Participant/resource injection, field/count leakage, stale policy, residency/hold conflict |
+| `0.120.3` | Federated work exchange and synchronization | Forged/stale proposals, replay/reorder, lifecycle mismatch, echo loops, split brain |
+| `0.120.4` | Managed-service asset and security delegation | Provider escalation, cross-customer confusion, false ownership, unauthorized remediation |
+| `0.120.5` | Federation conformance, revocation, and recovery | Malicious peer, partitions, protocol skew, stale restore, cleanup/offboarding failure |
 
 ## Phase M — Optional AI Capabilities
 
@@ -331,13 +358,17 @@ tests pass without any autonomous authority claim.
 ## Phase N — Complete Product Experience
 
 Setup: every UI action maps to a command or policy-filtered read; no hidden
-database manipulation. Goal: accessible, localizable, operable full product.
+database manipulation. Goal: accessible, localizable, operable full product
+whose governed interface blocks support both unified small-company and separated
+enterprise operating models.
 Phase exit: administrators and external portal users pass full boundary review.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.131.0` | Unified shell and command palette | Unauthorized action discovery/execution |
 | `0.132.0` | Role-specific operational workspaces | Field and aggregate leakage |
+| `0.132.1` | Composable interface blocks and dashboard layouts | Unauthorized blocks/actions, XSS, query storms, layout/plugin substitution |
+| `0.132.2` | Organization-scale information architecture profiles | Profile-based privilege, hidden routes, unified-page exhaustion, semantic divergence |
 | `0.133.0` | Schema and form builder | Malicious schemas and stored UI injection |
 | `0.134.0` | Workflow and policy builder | Generated privilege escalation and hidden behavior |
 | `0.135.0` | Dashboards and bounded report builder | Query exhaustion and aggregate inference |
@@ -368,6 +399,7 @@ the first technology decision. An unselected option remains unsupported at
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange profile freeze decision | Exact SCIM/SAML, CVSS/VEX, SPDX/CycloneDX, STIX/TAXII, syslog/webhook support/defer evidence |
+| `0.140.10` | Federation production enablement decision | Cross-organization isolation, malicious peer, delegation abuse, revocation/offboarding evidence |
 
 ## Phase O — Production Hardening
 
@@ -400,11 +432,13 @@ are independently evidenced as production-ready.
 
 ### Deliverables
 
-- Stable API v1, plugin ABI v1, framework-pack v1, export format v1, and agent
-  protocol v1 with documented compatibility and migration policy.
+- Stable API v1, separate API/UI crate boundary, plugin ABI/catalog v1,
+  federation protocol/profile where enabled, framework-pack v1, export format
+  v1, and agent protocol v1 with documented compatibility and migration policy.
 - Production ITSM, SecOps, vulnerability, assets/software assets/CMDB/service
-  graph, knowledge, risk/compliance, cases, workflow/policy builders, search,
-  integrations, optional AI, administration, import/export, and reporting.
+  graph and correlation, knowledge, risk/compliance, cases, workflow/policy
+  builders, composable dashboards/layout profiles, search, governed connector
+  storefront, optional federation/AI, administration, import/export, and reporting.
 - Documented single-node, HA, regional, backup/restore, rebuild, recovery,
   upgrade, rollback, health, quota, and backpressure operations.
 - Identical mandatory conformance for supported production storage profiles;
@@ -415,7 +449,8 @@ are independently evidenced as production-ready.
 - External pentest completed with all critical/high findings fixed and cleanly
   retested; other findings fixed or explicitly time-bound and owned.
 - Tenant and authorization matrices cover every API, UI, search, workflow,
-  plugin, AI, export, attachment, notification, and administrative interface.
+  plugin, federation, shared-space/managed-service, AI, export, attachment,
+  notification, and administrative interface.
 - Every untrusted parser is fuzzed; cryptography is independently reviewed;
   plugin escape and AI injection/tool-abuse suites pass.
 - Backup restoration, event integrity, projection/search rebuild, workflow

@@ -27,6 +27,9 @@ the exact dependency/runtime, maintenance, license, unsafe/native code, protocol
 profile, trust boundary, replacement port, and rejection alternatives. The
 `0.140.x` decisions revalidate and freeze production support from those records;
 they are never the first technology selection.
+Every user-facing capability is API-first: API contract/application/transport
+crates remain separate from UI composition/rendering crates, and the first-
+party UI has no privileged command, repository, or database path.
 
 ## Universal Verification And Exit
 
@@ -58,9 +61,10 @@ versions contain corrections only and follow the same process.
 - [Phase J — Search And Knowledge (`0.91.0–0.100.0`)](implementation/PHASE_J.md)
 - [Phase K — Compliance And Risk (`0.101.0–0.110.0`)](implementation/PHASE_K.md)
 - [Phase L — WASM And Integrations (`0.111.0–0.120.0`)](implementation/PHASE_L.md)
+- [Organization Federation (`0.120.1–0.120.5`)](implementation/FEDERATION.md)
 - [Phase M — Optional AI (`0.121.0–0.130.0`)](implementation/PHASE_M.md)
 - [Phase N — Product Experience (`0.131.0–0.140.0`)](implementation/PHASE_N.md)
-- [Pre-Production Option Decisions (`0.140.1–0.140.9`)](implementation/OPTION_DECISIONS.md)
+- [Pre-Production Option Decisions (`0.140.1–0.140.10`)](implementation/OPTION_DECISIONS.md)
 - [Phase O — Production Hardening (`0.141.0–0.150.0`)](implementation/PHASE_O.md)
 - [`1.0.0` — Production Acceptance](implementation/PRODUCTION_1_0.md)
 

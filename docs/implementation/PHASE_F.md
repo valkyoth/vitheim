@@ -94,10 +94,17 @@ Verification: group takeover, stale privilege, deletion/recreation, replayed del
 oversized sync, and tenant tests pass. Exit criteria: source changes cannot silently escalate rights. `v0.54.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.55.0` — RBAC Engine
-Status: planned. Setup: define role/capability/scope, inheritance, separation,
-deny precedence, versions, and explanation. Goal: deterministic deny-by-default roles.
-Deliverables: pure evaluator, validated role graph, decision trace. Verification:
-cycles, hidden grants, scope confusion, stale role, escalation, and property tests pass.
+Status: planned. Setup: define platform, tenant, workspace, shared-space, and
+resource role/capability scopes; custom role templates, inheritance,
+separation-of-duties, explicit deny precedence, assignment provenance, expiry,
+versions, and explanation. Layouts, dashboards, navigation, saved views, and
+plugin installation never grant capabilities. Goal: deterministic deny-by-
+default roles across API and UI composition.
+Deliverables: pure evaluator, validated role graph, built-in least-authority
+role templates, custom-role compiler, effective-access explanation, and decision
+trace. Verification: cycles, hidden grants, scope confusion, dashboard/action
+discovery leaks, shared-space escalation, stale/expired roles, unsafe custom
+roles, assignment races, and property tests pass.
 Exit criteria: every permit cites the exact role path. `v0.55.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.56.0` — ABAC Engine

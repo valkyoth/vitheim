@@ -50,6 +50,82 @@ policy-safe proof paths plus a Phase H topology-port adapter and differential
 fixtures. Verification: hidden-node count/path/timing inference,
 cycles, path explosion, stale graph, cross-tenant edge, ranking pass. Exit criteria: reports never reveal unauthorized topology. `v0.88.0 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.88.1` — Unified Cross-Domain Operational Graph
+
+Status: planned.
+
+Setup: define typed, directional, temporal, provenance-aware edge vocabularies
+between organizations, teams, people/service principals, services, assets,
+software instances, vulnerabilities/exposures, alerts, incidents, changes,
+tasks, controls, and evidence. Preserve each source aggregate ID and prohibit
+generic untyped links or graph-owned mutation of domain truth.
+
+Goal: project one explainable relationship graph where, for example, server A
+is operated by team X, hosts vulnerable software Y, produced alert Z, affected
+service Q, and is referenced by incident and remediation work.
+
+Deliverables: cross-domain graph schema/registry, per-domain projection adapters,
+edge provenance and lifecycle rules, deterministic rebuild, consistency/lag
+tokens, and policy-filtered neighborhood API.
+
+Verification: wrong-type/tenant edges, source deletion/correction, duplicate or
+contradictory links, cycles, stale projections, hidden endpoint/intermediate
+inference, rebuild permutations, unknown edge versions, and graph bombs pass.
+
+Exit criteria: every graph node/edge maps to authoritative source facts and
+cannot outlive or exceed their visibility without an explicit historical rule.
+`v0.88.1 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.88.2` — Evidence-Bound Cross-Domain Correlation
+
+Status: planned.
+
+Setup: define versioned correlation rules over admitted edge/path types, temporal
+windows, source trust, identity equivalence, confidence, negative evidence,
+suppression, minimum evidence, explanation, deduplication, and depth/node/path/
+time/work budgets. Rules propose derived relationships or cases, never rewrite
+source facts.
+
+Goal: correlate vulnerabilities, alerts, incidents, changes, services, owners,
+and evidence into explainable operational/security context.
+
+Deliverables: pure correlation planner/evaluator, derived-assertion aggregate,
+bounded proof path, rule simulator, counterfactual explanation, and Phase H
+fake-versus-real graph differential suite.
+
+Verification: poisoned edges/sources, circular self-support, hidden-node or
+count leakage, temporal inversion, confidence inflation, path explosion,
+order-dependent results, duplicate case storms, stale/revoked facts, and
+adversarial rule fuzzing pass.
+
+Exit criteria: every correlation cites a bounded policy-safe evidence path,
+rule version, input versions, uncertainty, and rejected alternatives. `v0.88.2
+implementation stop reached. Run pentest for this exact commit.`
+
+## `0.88.3` — Correlation Workspace And Conformance Suite
+
+Status: planned.
+
+Setup: define analyst queues, graph/pivot API, timeline, proposed/confirmed/
+rejected correlation lifecycle, feedback authority, bulk limits, saved views,
+notifications, exports, and authorization registry coverage across every domain.
+
+Goal: turn correlation into an operable review system without making automated
+links silently authoritative.
+
+Deliverables: policy-filtered correlation workspace/API projections, graph and
+timeline explanations, review commands, regression corpus, coverage matrix,
+load harness, and operational runbook.
+
+Verification: unauthorized pivot/path, field/count leakage, confirmation
+escalation, feedback poisoning, stale review, cross-domain/tenant cache leak,
+bulk-action abuse, XSS/export injection, rebuild, source outage, and soak pass.
+
+Exit criteria: users can traverse authorized evidence from owner/team through
+asset, vulnerability, alert, incident, and remediation while every inferred
+link remains reviewable and attributable. `v0.88.3 implementation stop reached.
+Run pentest for this exact commit.`
+
 ## `0.89.0` — Software And License Inventory
 Status: planned. Setup: software identity/version, installations, entitlements, allocations, renewals, support status, evidence. Goal: software asset management separate from hardware. Deliverables: software/entitlement aggregates and compliance projection. Verification: forged installs, entitlement leakage, duplicate allocation, version confusion, renewal boundaries pass. Exit criteria: compliance claims cite inventory and entitlement evidence. `v0.89.0 implementation stop reached. Run pentest for this exact commit.`
 

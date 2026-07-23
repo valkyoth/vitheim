@@ -1,6 +1,6 @@
 # Pre-Production Profile Freeze Decisions
 
-Scope: `0.140.1–0.140.9`. These evidence-producing releases revalidate and
+Scope: `0.140.1–0.140.10`. These evidence-producing releases revalidate and
 freeze production profiles from version-bound implementation-admission records
 created at each first consuming milestone. They are never the first dependency,
 protocol, backend, or runtime selection and cannot retroactively legitimize
@@ -55,10 +55,12 @@ Exit criteria: production auth never falls back to the `0.40.0` test profile.
 
 Status: planned.
 Setup: compare Component Model runtimes, supported WIT/WASI level, process or
-container isolation, host metering, egress proxy, update, and sandbox operations.
+container isolation, host metering, egress proxy, update, sandbox operations,
+catalog/storefront trust, publisher admission, offline mirrors, and rollout.
 Goal: revalidate and freeze a bounded plugin profile with defense in depth.
 Deliverables: runtime/version pin, disabled default imports, worker identity,
-OS limits, egress/DNS/TLS policy, capability-handle and upgrade decisions.
+OS limits, egress/DNS/TLS policy, capability-handle, catalog/storefront trust,
+publisher/mirror, permission-diff, connector-support, and upgrade decisions.
 Verification: sandbox escape, metering bypass, host-call amplification, DNS
 rebinding, redirect, cross-plugin/tenant, and cancellation evidence is reviewed.
 Exit criteria: cryptography is not claimed to enforce resource isolation.
@@ -121,8 +123,9 @@ Exit criteria: absence of sufficient evidence selects disabled-by-default.
 Status: planned.
 Setup: inventory implemented and requested identity, vulnerability, SBOM,
 threat-intelligence, logging, webhook, and document interchange profiles plus
-their exact specification versions, extensions, codecs, licenses, trust and
-update models.
+their exact specification versions, extensions, codecs, vendor connector
+profiles (including selected Microsoft Defender/Sentinel and Tenable APIs),
+licenses, trust and update models.
 Goal: freeze an explicit support/defer matrix rather than implying generic
 standards compatibility.
 Deliverables: supported/deferred/rejected matrix for SCIM/SAML, CVSS/VEX,
@@ -134,3 +137,23 @@ policy mapping, and source-drift review pass for every selected profile.
 Exit criteria: `1.0.0` names only exact independently evidenced interchange
 profiles; generic family claims are forbidden. `v0.140.9 implementation stop
 reached. Run pentest for this exact commit.`
+
+## `0.140.10` — Federation Production Enablement Decision
+
+Status: planned.
+Setup: review `0.120.1–0.120.5` evidence for disabled, bilateral shared-space,
+federated work exchange, and managed-service profiles; exact protocol/API/
+schema versions; trust/transport; legal/controller-processor responsibilities;
+residency/retention; scale; support; incident; revocation; and interoperability.
+Goal: decide which, if any, federation capabilities are safe production claims.
+Deliverables: enabled/disabled profile matrix, peer eligibility and trust
+requirements, protocol/version pins, permitted resource/action/data classes,
+deployment/network profile, joint-operations responsibilities, kill switch,
+and explicit unsupported combinations.
+Verification: independent cross-organization architecture review and pentest
+cover malicious/compromised peers, transitive trust, tenant/RBAC/field leakage,
+partitions/replay, protocol downgrade, provider delegation abuse, revocation,
+offboarding, restore, erasure/hold/residency conflict, and incident exercises.
+Exit criteria: federation remains disabled by default; only exact profiles with
+complete bilateral evidence may enter Phase O and `1.0.0` support claims.
+`v0.140.10 implementation stop reached. Run pentest for this exact commit.`

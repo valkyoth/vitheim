@@ -6,7 +6,73 @@ Scope: `0.131.0–0.140.0`. UI actions are commands or policy-filtered reads.
 Status: planned. Setup: action registry, discovery policy, keyboard model, context, confirmation. Goal: one safe navigation/action shell. Deliverables: shell and palette. Verification: unauthorized discovery/execution, stale context, shortcut spoofing, injection, accessibility pass. Exit criteria: discovery never grants authority. `v0.131.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.132.0` — Role-Specific Workspaces
-Status: planned. Setup: declarative panels/queues/actions, role policy, field redaction, saved state. Goal: focused operational views. Deliverables: workspace definitions/rendering. Verification: field/count/action leakage, role change, cache state, tenant switching, accessibility pass. Exit criteria: workspace visibility equals read policy. `v0.132.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: declarative panels/queues/actions, `0.55.0` RBAC role
+policy, field redaction, saved state, and tenant/user defaults. Goal: focused
+operational views. Deliverables: workspace definitions/rendering and
+role-template mappings. Verification: field/count/action leakage, layout-
+inferred privilege, role change, cache state, tenant switching, accessibility
+pass. Exit criteria: workspace visibility equals current read/action policy and
+never grants the role it visually represents. `v0.132.0 implementation stop
+reached. Run pentest for this exact commit.`
+
+## `0.132.1` — Composable Interface Blocks And Dashboard Layouts
+
+Status: planned.
+
+Setup: define versioned safe blocks for lists, queues, cards, metrics, charts,
+timelines, graphs, forms, record details, actions, navigation, filters, text,
+and status; typed input/output slots; admitted API queries/actions; responsive
+grid constraints; refresh/cancellation; data/field classifications; budgets;
+accessibility; provenance; tenant/team/role/user ownership; sharing; versioning;
+draft/preview/review/publish/rollback; and migration. Arbitrary browser scripts,
+raw queries, HTML, database access, and hidden API endpoints are forbidden.
+
+Goal: let organizations build and rearrange interfaces like governed Lego
+blocks without creating a parallel application or authorization system.
+
+Deliverables: UI composition IR/schema, block registry and compiler, drag/drop
+layout builder, preview simulator, signed/versioned dashboard aggregate,
+responsive renderer, configuration-as-code format, reusable templates, and
+safe custom-block extension contract tied to the plugin capability system.
+
+Verification: malicious/deep/oversized layouts, unauthorized block/action/data
+source, hidden field/count inference, stored XSS/CSS/URL injection, drag/drop
+state corruption, stale RBAC/policy, shared-dashboard takeover, tenant/cache
+leakage, refresh/query storms, block/plugin substitution, rollback/migration,
+keyboard/screen-reader/mobile behavior, and fuzz/property tests pass.
+
+Exit criteria: users may freely compose admitted blocks, but rendered data and
+available actions never exceed current API, RBAC/ABAC, field, purpose, budget,
+and accessibility rules. `v0.132.1 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.132.2` — Organization-Scale Information Architecture Profiles
+
+Status: planned.
+
+Setup: define navigation/workspace profiles independent of domain schemas:
+`Unified Operations` for smaller organizations that want tickets, requests,
+incidents, alerts, vulnerabilities, and assets in one bounded page; `Separated
+Operations` for larger organizations with dedicated service-desk, incident,
+SecOps, vulnerability, asset, change, and administration areas; and governed
+custom profiles. Define role defaults, landing routes, deep links, shared
+filters, cross-module pivots, profile inheritance, migration, and fallbacks.
+
+Goal: support radically different operating models without forking the product,
+duplicating data, or changing command/read/authorization semantics.
+
+Deliverables: built-in small-company and enterprise profile packs, profile
+compiler, tenant/team/role selection rules, migration/diff preview, navigation
+and workspace templates, cross-profile deep-link contract, and admin guidance.
+
+Verification: module hiding mistaken for denial, hidden-route access, privilege
+through profile selection, profile/role mismatch, stale saved links, cross-
+module filter leakage, duplicate actions, oversized unified page, mobile/
+accessibility regressions, migration rollback, and identical API/RBAC
+differential scenarios across profiles pass.
+
+Exit criteria: the same authorized operation has identical domain and policy
+semantics whether shown on one unified page, a dedicated module page, or a
+tenant-composed workspace. `v0.132.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.133.0` — Schema And Form Builder
 Status: planned. Setup: safe widgets, schema constraints, preview, versioning, approval, migration. Goal: governed custom applications. Deliverables: builder/compiler and diff/review. Verification: malicious schema, stored UI injection, hidden required fields, recursion/size, unauthorized activation pass. Exit criteria: builder emits only validated declarative artifacts. `v0.133.0 implementation stop reached. Run pentest for this exact commit.`

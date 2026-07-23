@@ -131,3 +131,30 @@ field leakage, stale ETag, read-your-write token misuse, logout/revocation, and
 DAST pass.
 Exit criteria: the UI has no direct mutation bypass and cannot be deployed with
 the test identity profile as production. `v0.40.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.40.1` — API-First Application And UI Crate Boundary
+
+Status: planned.
+
+Setup: define separate `vitheim-api-contract`, `vitheim-api-application`,
+hosted transport, and `vitheim-ui` crate responsibilities; the UI receives only
+versioned API DTOs, actions, errors, consistency tokens, and capability
+descriptors. Forbid UI dependencies on aggregates, journal/storage adapters,
+internal dispatchers, secrets, or administrator-only repositories.
+
+Goal: make every product capability headless and ensure the first-party UI is
+an ordinary policy-constrained API client.
+
+Deliverables: checked crate/layer rules, transport-neutral API application port,
+in-process and hosted test transports, UI API client, headless conformance
+harness, and an interface registry proving every UI action maps to a documented
+command/read endpoint.
+
+Verification: compile-fail forbidden dependencies, UI-versus-headless
+differential scenarios, undocumented endpoint/action, direct mutation attempts,
+mass assignment, field/tenant leakage, stale ETag/consistency tokens, transport
+error equivalence, CSRF/origin behavior, and API-disabled UI failure pass.
+
+Exit criteria: removing the UI leaves a complete supported application API, and
+the UI cannot perform any action unavailable to an equivalently authorized API
+client. `v0.40.1 implementation stop reached. Run pentest for this exact commit.`

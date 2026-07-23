@@ -14,6 +14,21 @@ The initial deployment architecture is a modular deployable. Separate API,
 worker, ingest, indexer, agent, and CLI processes become optional deployment
 choices only after the crate boundaries work inside one process.
 
+Vitheim is API-first. The hosted API contract/transport and UI are separate
+crates and deployable boundaries. The first-party UI consumes the same
+versioned commands, policy-filtered reads, consistency tokens, and errors
+available to other authorized clients; it has no privileged repository,
+dispatcher, database, or hidden administration path.
+
+The interface is a governed composition system rather than one fixed screen.
+Vitheim supplies safe layout primitives, panels, lists, graphs, forms, actions,
+navigation, and supported workspace profiles. Tenants may compose these like
+Lego blocks within schema, policy, accessibility, performance, and provenance
+constraints. A small organization may intentionally use a unified operations
+page, while a larger organization may separate tickets, incidents, alerts,
+vulnerabilities, assets, and administration without changing domain or
+authorization semantics.
+
 ## Architectural Laws
 
 1. Domain logic performs no I/O and reads no ambient clock, randomness, files,
@@ -36,6 +51,16 @@ choices only after the crate boundaries work inside one process.
    and export has explicit size, depth, time, memory, and work budgets.
 10. Every important result is explainable from commands, events, policy,
     workflow, evidence, provenance, and versioned configuration.
+11. The API is the product boundary; the UI is an API client and cannot acquire
+    authority through layout, hidden endpoints, or direct domain/storage access.
+12. User-composed interfaces can narrow discovery and presentation but never
+    widen RBAC/ABAC rights, field visibility, query budgets, or command authority.
+13. Organization federation never merges tenants. Shared spaces and managed-
+    service relationships use explicit bilateral trust, resource projections,
+    delegated capabilities, provenance, revocation, and bounded synchronization.
+14. Plugin catalogs distribute signed capability requests, not ambient trust.
+    Installation, permission approval, activation, upgrade, and revocation are
+    separate governed actions.
 
 ## Layers
 
@@ -66,15 +91,22 @@ strategy for that milestone are explicitly approved.
 - Kernel: `vitheim-command`, `vitheim-event`, `vitheim-aggregate`,
   `vitheim-journal-model`, `vitheim-projection-model`, `vitheim-query`,
   `vitheim-audit-model`, `vitheim-evidence-model`, `vitheim-crypto-api`, and
-  `vitheim-tenant`.
+  `vitheim-tenant`, plus federation trust/shared-space models.
 - Domains: focused work, incident, request, catalog, problem, change, release,
   alert, SecOps, vulnerability, risk, control, obligation, evidence, asset,
   software-asset, service, relationship, knowledge, SLA, approval, and case
   crates.
 - Engines: kernel orchestration, workflow, policy, compliance, correlation,
   reconciliation, scheduling, notification, search planning, and reporting.
+- Product boundaries: `vitheim-api-contract` owns transport-neutral public
+  schemas, `vitheim-api-application` owns authorized use cases,
+  `vitheim-api-http` is one hosted transport, and `vitheim-ui-client`,
+  `vitheim-ui-composition`, and `vitheim-ui-shell` consume the API without
+  depending on domain or storage crates.
 - Hosted ports/adapters: storage, blobs, queues, search, identity, plugins,
-  API, integrations, runtime, UI, import/export, and optional AI broker.
+  integrations, runtime, import/export, federation transport, and optional AI
+  broker. API contract/application/transport crates remain separate from UI
+  shell/composition/rendering crates.
 
 Crates are created only when their release begins. Empty speculative crates are
 not accepted. The facade re-exports only reviewed capabilities.
@@ -89,6 +121,14 @@ change are not aliases for one universal mutable ticket table.
 All relationships are first-class, tenant-scoped, temporal, provenance-aware
 records. Asset and service facts retain source, observation time, confidence,
 evidence, and reconciliation decisions instead of silently overwriting values.
+Cross-domain graph projections may connect teams, services, assets,
+vulnerabilities, alerts, incidents, changes, evidence, and remediation work,
+but every node and edge retains its source-domain identity and authorization.
+
+Federated records remain owned by their source organization. A shared-space
+projection contains explicit origin, audience, permitted operations, sync
+position, retention, and revocation state. Remote facts never become local
+authority merely because two Vitheim deployments are connected.
 
 ## Portability
 
@@ -102,4 +142,3 @@ Aesynx runtime exists; the architecture merely avoids locking it out.
 Product version, public API version, event schema, workflow IR, policy
 language, plugin ABI, framework pack, export format, and agent protocol are
 independently versioned. A product release never silently equates them.
-
