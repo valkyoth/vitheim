@@ -49,7 +49,11 @@ authorization semantics.
    poison/dead-letter—plus snapshots, projections, scheduler/quota state,
    checkpoints, and idempotency. An adapter that cannot atomically validate
    fencing and commit receipt/effects/audit/outbox/integrity/quota fails
-   capability negotiation.
+   capability negotiation. Each bundle advances at most one authoritative
+   aggregate stream and contains local durable effects only. External calls
+   execute from committed intents and return through a later bundle; Vitheim
+   never claims a distributed database/provider transaction or exactly-once
+   remote execution.
 9. Every untrusted parser, query, workflow, plugin, attachment, import, report,
    and export has explicit size, depth, time, memory, and work budgets.
 10. Every important result is explainable from commands, events, policy,
@@ -72,7 +76,10 @@ authorization semantics.
     contain secrets, sensitive payloads, or unbounded attacker-controlled labels.
 17. Customer-service observations used for SLI/SLO and service health form an
     authenticated append-only measurement plane. They are not Vitheim's own
-    operational telemetry and cannot be synthesized from it implicitly.
+    operational telemetry and cannot be synthesized from it implicitly. Raw
+    observations cannot expire in favor of an authoritative rollup until its
+    manifest is committed, integrity verified, externally checkpointed, and
+    restore tested.
 18. Provenance-bearing domains reuse one N1 source/observation identity,
     correction/supersession, confidence-policy, and four-clock model.
 19. Secret plaintext is scoped, non-displayable, non-serializable through
@@ -84,9 +91,17 @@ authorization semantics.
 21. Every tenant-bearing durable, cached, indexed, backed-up, or externally
     copied surface registers its lifecycle contract. Export, hold, residency,
     topology migration, erasure, key destruction, restore, and closure cannot
-    silently omit a surface.
+    silently omit a surface. External-copy disposition uses typed evidence
+    strength and never equates a provider attestation, unconfirmed deletion
+    request, or unverifiable previously disclosed plaintext with locally
+    verified deletion or controlled-key cryptographic erasure.
 22. Vitheim is an OAuth resource server for workload authentication at `1.0.0`;
     an admitted external issuer authenticates clients and issues tokens.
+    Privileged workload APIs require an admitted sender-constrained token/
+    request profile. Any bearer profile is explicitly lower assurance,
+    short-lived, narrow-audience, and restricted to non-privileged actions;
+    replay caching is not represented as protection from first use of a stolen
+    bearer token.
     Operating an OAuth authorization server requires a separate future
     milestone and is not implied by agent enrollment.
 23. Plaintext credentials never enter Wasm guest memory. Plugins use opaque

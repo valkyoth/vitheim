@@ -2,6 +2,13 @@
 
 Scope: `0.11.0–0.20.0`. Pure semantic contracts and project-owned in-memory
 implementations establish ordering, replay, idempotency, and integrity.
+Every atomic bundle advances at most one authoritative aggregate stream.
+“Effects” in this phase means local durable events, receipts, audit facts,
+outbox intents, quota consumption, integrity commitments, uniqueness claims,
+and scheduler/inbox state only. Network/provider calls and other external side
+effects never join the database transaction; they execute at least once from a
+committed outbox/work intent and return results through a later consumer or
+activity-result bundle. No bundle claims distributed exactly-once execution.
 
 ## `0.11.0` — Semantic Event-Journal Interface
 
@@ -218,11 +225,14 @@ Status: planned.
 
 Setup: define `AtomicConsumerCommitBundle` with tenant/source/destination,
 inbound message identity and payload digest, inbox receipt and stored duplicate
-outcome, expected aggregate stream versions, consecutive emitted domain events,
+outcome, at most one authoritative aggregate stream and its exact expected
+version, consecutive emitted domain events,
 mandatory audit intent, business outbox entries, integrity/commit digest, and
 authority-owned uniqueness claims. The inbox receipt, all emitted effects, and
 their evidence share one database transaction; unsupported cross-aggregate
-effects remain process-manager messages rather than hidden multi-stream writes.
+effects remain outbox-driven process-manager messages rather than hidden multi-
+stream writes. Emitted effects are local durable effects only; external calls
+consume the committed outbox later and their results arrive in a new bundle.
 
 Goal: close the crash window between applying a consumer effect and recording
 that its inbound message was consumed.
@@ -235,7 +245,8 @@ Verification: crash or fail before/after each receipt/event/audit/outbox/
 integrity/uniqueness component, redeliver concurrently, reuse message ID with a
 different digest, mix tenant/source/destination, emit effects without a receipt,
 store a receipt without effects, split multi-aggregate work, and verify exact
-rollback, replay, model, and property cases pass.
+rollback, replay, model, and property cases pass. A harness that attempts a
+network/provider call inside the transaction is rejected.
 
 Exit criteria: a consumer either commits its receipt and complete emitted
 effect bundle once or commits neither; redelivery returns the bound prior
@@ -291,11 +302,15 @@ Setup: finalize a discriminated `AtomicWorkCommitBundle` family for command
 (`0.16.1`), consumer (`0.17.1`), scheduled timer, workflow activity completion,
 and poison/dead-letter transitions. Every applicable variant binds tenant,
 work/message/timer/activity identity and input digest, current fencing token,
-expected stream versions, events, command/inbox/timer/activity receipt,
+at most one authoritative aggregate stream and its exact expected version,
+events, command/inbox/timer/activity receipt,
 mandatory audit intent, outbox, integrity commitment, uniqueness claims, and
-the typed consumed `0.18.1` quota reservation. Timer firing and completion,
-activity completion, fence validation, and poison/dead-letter movement occur in
-the same transaction as their effects.
+the typed consumed `0.18.1` quota reservation. Cross-aggregate continuation is
+an outbox-driven process-manager decision. Timer dispatch atomically records
+the due/fenced dispatch transition and its outbox work intent; timer or remote
+work completion is a separate later activity-result/consumer transition that
+atomically records its own result receipt and local effects. Fence validation
+and poison/dead-letter movement occur with their respective local effects.
 
 Goal: prevent retries, lease loss, or crashes from separating asynchronous work
 completion evidence from the effects it emits.
@@ -304,13 +319,16 @@ Deliverables: versioned discriminated bundle model and canonical codec, shared
 validation laws, atomic memory implementation, capability negotiation profile,
 timer/activity/poison receipt types, dead-letter evidence, and deterministic
 failure/interleaving harness. Phase G workflow workers later specialize the
-activity payload without weakening this commit boundary.
+activity payload without weakening this commit boundary. The contract states
+at-least-once external execution explicitly and makes no distributed
+exactly-once claim.
 
 Verification: independently omit or split every variant component; crash
 between timer fire/completion, activity effect/receipt, inbox/dead-letter
 transition, fence check/commit, and quota consume/effect; replay stale fencing
-tokens; redeliver poison work; race cancellation/lease loss; and run rollback,
-recovery, model, state-machine, and property tests.
+tokens; attempt a second aggregate stream or remote call in one bundle;
+redeliver poison work; race cancellation/lease loss; and run rollback, recovery,
+model, state-machine, and property tests.
 
 Exit criteria: every supported asynchronous effect uses one negotiated atomic
 variant, stale/unfenced work cannot commit, and adapters unable to preserve a

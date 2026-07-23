@@ -14,12 +14,16 @@ Status: planned. Setup: bind task actor eligibility, claim, completion schema, a
 ## `0.64.0` — Timers, Deadlines, And Retries
 Status: planned. Setup: define logical deadlines, scheduled IDs, retry/backoff,
 jitter input, cancellation, quotas, and specialize the `0.18.2` atomic timer
-variant without weakening its fence/receipt/effect boundary. Goal: crash-safe
-time behavior. Deliverables: timer effects, scheduler bridge, and atomic-variant
-integration fixtures. Verification: clock jumps, retry storms, duplicate
-wakeups, cancellation races, stale fence, receipt/effect split, overflow, and
-replay pass. Exit criteria: timers cannot create uncontrolled or unreceipted
-work. `v0.64.0 implementation stop reached. Run pentest for this exact commit.`
+dispatch and later result variants without weakening their fence/receipt/local-
+effect boundaries. Remote work executes only after committed dispatch and
+returns through a separate activity-result/consumer bundle. Goal: crash-safe
+time behavior without a distributed exactly-once claim. Deliverables: timer
+dispatch/result effects, scheduler bridge, and atomic-variant integration
+fixtures. Verification: clock jumps, retry storms, duplicate wakeups/results,
+cancellation races, stale fence, dispatch/completion collapse, receipt/effect
+split, remote-call-in-transaction rejection, overflow, and replay pass.
+Exit criteria: timers cannot create uncontrolled or unreceipted work, and remote
+execution remains explicitly at least once. `v0.64.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.65.0` — Parallel Branches And Joins
 Status: planned. Setup: define branch identity, join policy, failure/cancel propagation, ordering, and bounds. Goal: deterministic concurrency semantics. Deliverables: fork/join IR and interpreter support. Verification: premature/duplicate join, late events, branch leaks, cancellation, permutations, and state-model pass. Exit criteria: scheduling order cannot change result. `v0.65.0 implementation stop reached. Run pentest for this exact commit.`
@@ -54,7 +58,8 @@ paging/notification process-manager scenarios. Goal: durable multi-worker
 execution. Deliverables: hosted worker orchestration, authorization cases,
 ITSM and response-delivery integration retests, and operational evidence.
 Verification: lease loss,
-partitions, duplicate activity, activity receipt/effect split, crash points,
+partitions, duplicate activity/result, activity receipt/effect split, network-
+call-in-transaction rejection, crash points,
 stale fencing commits, poison/dead-letter split, quota/effect split, poison loops, cross-tenant/
 unauthorized effects, paging escalation/acknowledgement and quiet-hour races,
 Phase E fake-versus-real differential, rolling upgrades, and soak pass.

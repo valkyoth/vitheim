@@ -44,19 +44,24 @@ Status: planned.
 Setup: compare exact OIDC conformance profiles/providers, WebAuthn level and
 attestation/counter policy, session stores, recovery, logout, and the `0.52.1`
 machine-to-machine profiles. Review `private_key_jwt`/mTLS choice, workload
-token lifetime/audience/proof, external issuer/key rotation and revocation, and
-the separate local-agent enrollment profile. Confirm that Vitheim remains an
+token lifetime/audience/proof, exact sender-constraint profile, privileged
+workload requirements, any restricted-bearer action matrix, external issuer/
+key rotation and revocation, replay-cache limitations, and the separate local-
+agent enrollment profile. Confirm that Vitheim remains an
 OAuth resource server, stores no client private credentials, exposes no token
 endpoint, and keeps personal access tokens/static API keys disabled.
 Goal: revalidate and freeze production authentication profiles independently of authorization.
 Deliverables: selected issuer/discovery/PKCE/token/session/logout rules,
 WebAuthn RP/origin/challenge/credential rules, selected workload-auth profile,
 external-issuer trust and mapping rules, separate agent-enrollment rules,
-explicit no-authorization-server/PAT/API-key/token-exchange disposition, and
-unsupported combinations. Any future Vitheim OAuth authorization server
+sender-constrained privileged profile, any lower-assurance restricted-bearer
+profile, explicit no-authorization-server/PAT/API-key/token-exchange
+disposition, and unsupported combinations. Any future Vitheim OAuth authorization server
 requires a new implementation milestone and cannot be selected here.
-Verification: protocol conformance, mix-up/replay/fixation/recovery, key rotation,
-enumeration, and degraded-provider behavior are independently reviewed.
+Verification: protocol conformance, mix-up/replay/fixation/recovery, false
+sender constraint, proof/token substitution, bearer privilege escalation,
+first-use stolen bearer behavior, key rotation, enumeration, and degraded-
+provider behavior are independently reviewed.
 Exit criteria: production auth never falls back to the `0.40.0` test profile.
 `v0.140.3 implementation stop reached. Run pentest for this exact commit.`
 
@@ -89,12 +94,16 @@ AI artifacts, federation projections, and connector checkpoints.
 Goal: freeze production data-lifecycle profiles before packaging.
 Deliverables: retention precedence, preservation/disposition, crypto-erasure,
 key ownership, deletion verification, backup expiry, residency matrices, and a
-zero-missing-surface registry report.
+zero-missing-surface registry report with typed external-copy evidence strengths
+and closure-policy results.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
-evidence custody, tenant closure, and cross-region scenarios pass review.
+evidence custody, false equivalence between local proof/provider attestation/
+unconfirmed request/unverifiable plaintext, tenant closure, and cross-region
+scenarios pass review.
 Exit criteria: no production data class or tenant-bearing surface lacks an
-owner, lifecycle, and verified disposition path.
+owner, lifecycle, typed disposition state, and policy result; accepted residual
+uncertainty remains explicit and is never described as verified erasure.
 `v0.140.5 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.140.6` — Deployment, HA, And Recovery Profile Decision

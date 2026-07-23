@@ -99,7 +99,8 @@ discovery to installed state, and activation still requires explicit current
 capability approval. `v0.116.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.117.0` — Connector SDK And Testkit
-Status: planned. Setup: `0.52.1` service-principal/workload-token identity,
+Status: planned. Setup: `0.52.1` service-principal identity and mandatory
+sender-constrained workload tokens for privileged connector operations,
 connector capabilities, non-extractable auth handles, cursor/idempotency,
 schemas, rate/backoff, host-brokered authenticated operations, and test
 simulation; the SDK exposes no raw-secret read. Goal: safe integration
@@ -182,8 +183,9 @@ remain authoritative. `v0.118.2 implementation stop reached. Run pentest for thi
 ## `0.119.0` — Outbound-Only Integration Agent
 Status: planned. Setup: stable device plus `0.52.1` service-principal identity,
 separate local enrollment challenge, device key attestation/profile,
-short-lived device/workload credential, audience-bound mTLS, capability policy,
-encrypted spool, update, revoke, compromise response, and no inbound listener.
+short-lived sender-constrained device/workload credential, audience-bound mTLS,
+capability policy, encrypted spool, update, revoke, compromise response, and no
+inbound listener.
 This is not an OAuth authorization-server or token-endpoint claim. Goal: reach
 private systems safely. Deliverables: agent enrollment/credential protocol,
 runtime, and operator controls. Verification: takeover, identity cloning/

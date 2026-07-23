@@ -43,7 +43,13 @@ backed-up, or external-copy state must update the `0.51.2`
 `TenantDataSurface` registry and lifecycle tests before exit. This is separate
 from authority-interface registration. Every asynchronous state effect must use
 the applicable `0.18.2` command/consumer/timer/activity/poison atomic variant;
-best-effort receipts are forbidden.
+best-effort receipts are forbidden. Each bundle advances no more than one
+authoritative aggregate stream and includes only local durable effects;
+provider/network work begins from committed intent and returns in a later
+bundle under explicitly at-least-once semantics.
+External-copy lifecycle evidence uses the typed `0.51.2` strength model and may
+never promote an attestation, unconfirmed request, or unverifiable disclosed
+plaintext to local deletion proof or controlled-key erasure.
 
 ## Universal Verification And Exit
 

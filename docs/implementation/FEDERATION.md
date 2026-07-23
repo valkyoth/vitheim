@@ -151,8 +151,10 @@ offboarding, retention/erasure/hold, incident response, and support boundaries.
 Distinguish capability revocation and future-sync termination from local cache/
 projection deletion, contractual disposition duty, peer deletion attestation,
 cryptographic erasure under controlled keys, and the unverifiable possibility
-that a previously authorized peer retained plaintext. Never label these all
-“data revocation.”
+that a previously authorized peer retained plaintext. Map these to the exact
+`0.51.2` disposition-evidence strengths and never label them all “data
+revocation.” A peer attestation remains provider/peer-attested evidence, not
+locally verified deletion.
 
 Goal: prove federation fails closed across two or more independently operated
 deployments and can be completely disconnected without corrupting local truth.
@@ -167,8 +169,10 @@ Verification: twin organizations/tenants with colliding IDs, malicious peer,
 compromised key/admin/plugin, protocol skew/downgrade, partitions/reordering,
 quota exhaustion, revocation/rotation races, restored stale peer, shared-space
 closure, claimed deletion with retained-copy fixture, legal-hold conflict,
-local cache/projection cleanup, key-controlled erasure, timing/count inference,
-and pentest across both trust boundaries pass.
+peer attestation mislabeled local verification, unconfirmed request mislabeled
+erasure, local cache/projection cleanup, key-controlled erasure, evidence-
+strength downgrade, timing/count inference, and pentest across both trust
+boundaries pass.
 
 Exit criteria: disconnecting a peer removes every capability and scheduled
 effect within documented bounds, preserves attributable required history, and

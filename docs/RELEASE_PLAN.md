@@ -100,10 +100,10 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.16.0` | Transactional event/receipt/audit/outbox model | Mutation without audit/message, denial with business effects, rollback gaps |
 | `0.16.1` | Atomic command commit bundle | Missing/split command component, audit/receipt digest deletion, denial-chain splice |
 | `0.17.0` | Inbox and idempotent consumer model | Replay, duplicate effects, poisoned receipts, crash windows |
-| `0.17.1` | Atomic consumer commit bundle | Effect/receipt split, redelivery duplication, message-digest conflict, hidden multi-stream write |
+| `0.17.1` | Atomic consumer commit bundle | Effect/receipt split, redelivery duplication, hidden multi-stream or remote-in-transaction work |
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
 | `0.18.1` | Durable quota accounting | Concurrent oversubscription, retry/refund races, tenant unfairness, reconciliation |
-| `0.18.2` | Atomic timer, activity, and work commit family | Fence/effect/receipt/quota split, duplicate timer/activity, poison/dead-letter loss |
+| `0.18.2` | Atomic timer, activity, and work commit family | Fence/effect/receipt/quota split, timer dispatch/result collapse, remote exactly-once implication |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
 | `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
@@ -156,7 +156,7 @@ the first authenticated UI/API slice passes cross-module isolation testing.
 | `0.38.0` | Calendars, targets, and SLA calculations | Time zones, holidays, DST, clock boundaries, exhaustion |
 | `0.38.1` | SLI, SLO, and error-budget models | Source/unit/window confusion, missing-data fail-open, correction and exclusion abuse |
 | `0.38.2` | Customer-service measurement plane | Source/tenant spoofing, late/duplicate data, watermark/downsampling distortion, telemetry-plane confusion |
-| `0.38.3` | Measurement retention and authoritative rollups | Raw expiry before authority, manifest/completeness forgery, insufficient resolution, late-data supersession |
+| `0.38.3` | Measurement retention and authoritative rollups | Raw expiry before committed/verified/external-checkpointed/restore-tested authority |
 | `0.39.0` | Approval and notification foundations | Self-approval, duplicate decision, delivery replay |
 | `0.39.1` | On-call rotations, overrides, and handoffs | Stale membership, schedule ambiguity, override abuse, coverage gaps |
 | `0.39.2` | Paging escalation, acknowledgement, and receipts | Forged acknowledgement, escalation skip, flood/retry loops, provider outage |
@@ -197,9 +197,9 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | --- | --- | --- |
 | `0.51.0` | Formal tenant isolation model | Cross-tenant reads/writes/caches/indexes/blobs/logs |
 | `0.51.1` | Tenant lifecycle and topology migration | Partial provision/delete, ID reuse, held data, cleanup/key-destroy ordering |
-| `0.51.2` | Tenant data-surface lifecycle registry | Unregistered stores/copies, incomplete export/hold/erasure/residency/closure evidence |
+| `0.51.2` | Tenant data-surface lifecycle registry | Unregistered copies, evidence-strength inflation, unverifiable plaintext mislabeled erased, closure bypass |
 | `0.52.0` | Subjects, service principals, and external identity links | Unsafe email/name linking, identity recreation, merge/migration takeover, lifecycle races |
-| `0.52.1` | OAuth resource-server workload authentication | Issuer/principal/tenant confusion, token replay/scope inflation, accidental token issuance/private-key custody |
+| `0.52.1` | OAuth resource-server workload authentication | False sender constraint, bearer privilege escalation, issuer/principal confusion, accidental token issuance |
 | `0.53.0` | Hosted OIDC integration | Discovery, mix-up, token validation, replay, downgrade, session fixation |
 | `0.53.1` | Hosted WebAuthn profile and credential lifecycle | RP/origin/challenge binding, attestation, counters, recovery |
 | `0.53.2` | Distributed session store | Fixation/replay, revocation lag, node failure, partition, cross-tenant collision |
@@ -421,9 +421,9 @@ the first technology decision. An unselected option remains unsupported at
 | --- | --- | --- |
 | `0.140.1` | Dependency, cryptography, KMS, and timestamp profile decision | Auditability, maintenance, license, key lifecycle, replacement boundary, no improvised security protocol |
 | `0.140.2` | Tenant and storage topology decision | Backend-specific structural enforcement, twin tenants, pool state, administrator boundary, no weak fallback |
-| `0.140.3` | Human, workload, session, and recovery authentication decision | External-issuer resource-server profile, no OAuth server/PAT/API keys, mix-up/replay/recovery/key-rotation evidence |
+| `0.140.3` | Human, workload, session, and recovery authentication decision | Sender-constrained privileged profile, restricted bearer, external issuer, no OAuth server/PAT/API keys |
 | `0.140.4` | Component runtime, worker isolation, and egress decision | Escape, metering, host amplification, DNS/redirect, OS limit, and cross-tenant evidence |
-| `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing stores/external copies, hold/erasure conflict, backups, crypto-erasure, disposition, regional boundaries |
+| `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, evidence-strength inflation, hold/erasure conflict, unverifiable plaintext, regional boundaries |
 | `0.140.6` | Deployment, HA, regional, and recovery profile decision | Trust boundaries, fencing, partition, capacity, upgrade/rollback, RPO/RTO evidence |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
@@ -443,7 +443,7 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
 | `0.143.0` | HA leases, atomic work, failover, and partitions | Split brain, stale fencing, receipt/effect/quota splits, duplicate processing |
 | `0.144.0` | Regional placement and residency | Unregistered-surface mapping gaps, cross-region/external-copy leakage, unsafe failover |
-| `0.145.0` | Backup, restore, and disaster recovery | Atomic-work/audit/rollup integrity, tenant-surface resurrection, incomplete restore, RPO/RTO claims |
+| `0.145.0` | Backup, restore, and disaster recovery | Atomic-work/audit integrity, rollup anchor/restore/raw-expiry gates, tenant-surface resurrection |
 | `0.146.0` | Performance, load, soak, and chaos certification | Observation/paging/status/index exhaustion, cascading failure, noisy tenants |
 | `0.147.0` | Final security, secret-memory, and supply-chain hardening | Diagnostic/crash/plugin secret leakage and artifact/dependency/CI/builder/key compromise |
 | `0.148.0` | API/event/plugin/pack compatibility freeze | Downgrade and version confusion |

@@ -43,4 +43,9 @@ All notable Vitheim changes are documented here. The format follows
   mandatory tenant data-surface lifecycle registry, an external-issuer OAuth
   resource-server profile, strict no-plaintext-credentials-in-Wasm enforcement,
   and a governed external identity-link lifecycle.
+- Refined the closed architecture without adding scope: atomic work is
+  single-aggregate and local-only with distinct at-least-once dispatch/results;
+  privileged workload tokens are sender constrained; external-copy disposition
+  evidence carries honest proof strength; and raw measurements cannot expire
+  until rollup authority is externally checkpointed and restore verified.
 - Added local and GitHub verification gates without a crate publication path.

@@ -42,7 +42,8 @@ policy, reconciliation, and every `0.18.2` atomic work variant. Goal: prevent
 split-brain effects. Deliverables: HA orchestration, work-variant fault matrix,
 and runbooks. Verification: partitions, clock skew, stale leader/fence,
 receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
-activity work, failover/failback, and chaos/soak pass. Exit criteria: split
+activity work, timer dispatch/result separation, multi-aggregate/remote-call
+transaction rejection, failover/failback, and chaos/soak pass. Exit criteria: split
 brain and stale workers reject every state-changing variant. `v0.143.0
 implementation stop reached. Run pentest for this exact commit.`
 
@@ -64,7 +65,9 @@ verified recoverability. Deliverables: backup/restore tools and DR evidence.
 Verification: substitution, partial/stale backup, lost/rotated key, held/erased
 data, point-in-time restore, every `0.18.2` atomic work variant and denial-only
 audit-chain integrity, external anchors, registered tenant-surface disposition,
-measurement rollup manifests, rebuild/workflow continuation pass.
+typed external-copy evidence-strength honesty, measurement rollup manifests,
+rollup checkpoint inclusion and raw-expiry gates, rebuild/workflow continuation
+pass.
 Exit criteria: claimed RPO/RTO is demonstrated. `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification

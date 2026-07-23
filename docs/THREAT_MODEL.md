@@ -41,15 +41,15 @@ The complete design anticipates boundaries between:
 | Threat | Mandatory controls |
 | --- | --- |
 | Cross-tenant disclosure or mutation | Non-optional tenant types, policy at every boundary, partitioned tests, cache/index/blob isolation |
-| Tenant data survives export/hold/erasure/closure | Generated lifecycle registry for every store/cache/index/backup/external copy, disposition receipts, closure blocker |
+| Tenant data survives export/hold/erasure/closure | Generated lifecycle registry for every store/cache/index/backup/external copy, typed honest evidence strength, disposition receipts, closure policy/blocker |
 | IDOR and confused deputy | Typed commands, actor and target binding, capability scope, policy snapshots, negative authorization matrix |
 | Event/evidence tampering | Append-only journal semantics, expected versions, integrity chains, signed checkpoints, restore verification |
-| Replay and duplicated effects | Atomic command/consumer/timer/activity/poison receipt-and-effect variants, fencing, quota binding, inbox/outbox semantics |
+| Replay and duplicated effects | Single-aggregate local-only atomic command/consumer/timer/activity/poison variants, distinct dispatch/result, fencing/quota, outbox/inbox, at-least-once remote semantics |
 | Parser/resource exhaustion | Explicit byte/item/depth/allocation/work limits, cancellation, quotas, fuzzing and load tests |
 | Injection and unsafe content | Canonical parsers, contextual encoding, attachment quarantine, no arbitrary scripts or SQL exposure |
 | Workflow or policy bypass | Deterministic IR, version pinning, simulation, approval, signed activation, fail-closed evaluator |
 | Plugin escape or secret extraction | Capability manifest, no direct database access, no plaintext credential in guest memory, brokered authenticated operations, memory/fuel/time/output/network limits, signed rollout |
-| Workload identity or issuer confusion | External-issuer OAuth resource-server validation, immutable issuer-subject mapping, audience/tenant/proof binding, no local token endpoint |
+| Workload identity, bearer theft, or issuer confusion | External-issuer resource-server validation, sender-constrained privileged tokens, restricted lower-assurance bearer policy, immutable issuer-subject/audience/tenant binding, no local token endpoint |
 | AI prompt/tool abuse | Permission-filtered context, provenance, tainting, structured proposals, independent policy and human approval |
 | Secret leakage | Non-extractable handles, host-brokered secret operations, redacted errors/logs, no core or Wasm plaintext secret storage, rotation and best-effort zeroization policy |
 | Supply-chain compromise | No current dependencies, pinned tools/actions, lockfile, SBOM, read-only CI, signed provenance and pentest gate |

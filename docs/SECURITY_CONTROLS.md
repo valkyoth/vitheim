@@ -37,11 +37,15 @@ audit decision.
 - Secure configuration defaults and startup validation.
 - Strong tenant partitions in storage, search, queues, caches, blobs, logs,
   exports, metrics labels, and backups.
-- Authentication independent from authorization; deny-by-default policy.
+- Authentication independent from authorization; sender-constrained privileged
+  workloads; explicitly lower-assurance, non-privileged bearer policy;
+  deny-by-default authorization.
 - Field-level redaction preserved through API, search, reports, notifications,
   AI context, audit, and exports.
-- Transactional event/outbox append, inbox deduplication, expected versions,
-  leases, poison handling, bounded retries, and backpressure.
+- Single-aggregate transactional local effects for command, consumer, timer,
+  activity, and poison transitions; distinct dispatch/results; inbox/outbox,
+  fencing, quotas, bounded retries, backpressure, and explicitly at-least-once
+  remote calls.
 - Capability-limited plugins and integrations; opaque secret handles and
   host-brokered authenticated operations; plaintext credentials never enter
   Wasm guest memory.
@@ -49,6 +53,9 @@ audit decision.
   checkpoints.
 - Tested backup/restore, projection/search rebuild, workflow continuation,
   migration rollback, and disaster recovery.
+- Typed tenant-surface disposition evidence that distinguishes local deletion/
+  controlled-key erasure from provider attestations, unconfirmed requests, and
+  unverifiable previously disclosed plaintext.
 - Complete audit provenance without recording plaintext secrets.
 
 ## Release Decision

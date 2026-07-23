@@ -43,12 +43,15 @@ state machine, machine-readable conformance report, and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
 audit intent, outbox, commitment, uniqueness claim, consumed quota, timer
-completion, activity completion, or dead-letter transition.
+dispatch/result receipt, activity completion, or dead-letter transition.
+Include invalid reference adapters that accept two authoritative aggregate
+streams or execute a network/provider call inside the transaction.
 
 Verification: prove every deliberately incomplete bundle adapter and adapters
 that lose snapshots, scheduler state, quota state, rejection receipts, audit
 authority, or integrity commitments fail the relevant capability/conformance
-test; run memory adapter through all atomicity/isolation/recovery cases.
+test; prove multi-stream and remote-in-transaction adapters fail; run the memory
+adapter through all atomicity/isolation/recovery cases.
 
 Exit criteria: an adapter cannot claim support by skipping or weakening tests.
 `v0.22.0 implementation stop reached. Run pentest for this exact commit.`

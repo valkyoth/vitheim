@@ -29,8 +29,10 @@ Verification: ID reuse, suspend bypass, partial provisioning/deletion, held
 tenant deletion, stale cache/index/backup/blob, key destruction order, topology
 rollback, concurrent admin, cross-tenant migration, and restore tests pass.
 
-Exit criteria: tenant closure either has complete verified disposition evidence
-or remains visibly incomplete and recoverable. `v0.51.1 implementation stop
+Exit criteria: tenant closure either has policy-acceptable accurately typed
+disposition evidence for every then-known surface or remains visibly incomplete
+and recoverable; external uncertainty is not labeled verified deletion.
+`v0.51.1 implementation stop
 reached. Run pentest for this exact commit.`
 
 ## `0.51.2` — Tenant Data-Surface Lifecycle Registry
@@ -43,6 +45,15 @@ tenant key, data classes and accountable owner, authoritative/derived/external
 status, export behavior, retention and legal-hold behavior, erasure/deletion
 semantics, backup/restore handling, residency/replication, key ownership and
 destruction, rebuild capability, tenant-topology migration, and cleanup proof.
+For external copies, define typed disposition evidence strengths:
+`LocallyVerifiedDeletion`, `ControlledKeyCryptographicErasure`,
+`ProviderAttestedDeletion`, `DeletionRequestedUnconfirmed`, and
+`PreviouslyDisclosedPlaintextUnverifiable`. Attestations are attributed claims,
+not cryptographic proof. Previously disclosed plaintext is never described as
+provably erased merely because access, synchronization, or a contract ended.
+Tenant closure policy defines acceptable/pending/blocking states by data class,
+legal hold, agreement, jurisdiction, and evidence strength while retaining the
+honest residual state.
 Inventory all earlier surfaces including event/audit journals and projections,
 blobs, queues, customer measurements and rollups, paging/delivery receipts,
 hosted status, and caches.
@@ -54,19 +65,26 @@ Deliverables: generated `TenantDataSurface` descriptor registry, compile/
 registration gate, lifecycle-operation planner, per-surface disposition
 receipts, completeness report, closure blocker, and adapter conformance API.
 The authorization-interface registry and this lifecycle registry remain
-distinct and cross-reference surfaces where applicable.
+distinct and cross-reference surfaces where applicable. Disposition receipts
+carry evidence kind, issuer/controller, scope, time, related request/
+attestation/key-destruction proof, verification status, residual-risk statement,
+and closure-policy result.
 
 Verification: missing/duplicate surface registration, omitted tenant key or
 data class, false derived/rebuild claim, export/hold/erasure conflict, stale
 backup/index/cache/external copy, residency mismatch, wrong key destruction,
 topology migration omission, cleanup-receipt forgery, restore resurrection, and
-late registration tests pass.
+late registration tests pass. Provider attestation presented as local proof,
+unconfirmed request presented as deletion, unverifiable plaintext presented as
+erased, evidence-strength downgrade, and closure-policy bypass all fail.
 
 Exit criteria: every existing tenant data surface has a complete lifecycle
 entry and tested disposition path. Every later milestone that adds or changes a
 surface is mechanically unable to exit until it updates this registry, and
 tenant closure remains visibly incomplete while any registered surface lacks
-verified disposition evidence.
+the evidence strength required by current closure policy. Closure may record an
+explicitly accepted unverifiable residual obligation where law and agreement
+permit, but cannot relabel it verified deletion or cryptographic erasure.
 `v0.51.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.52.0` — Subjects And Service Principals
@@ -100,9 +118,24 @@ Setup: select an admitted external authorization server where clients use its
 supported client-credentials authentication, such as `private_key_jwt` and/or
 mutual TLS. Vitheim validates short-lived access-token issuer, audience, tenant,
 immutable external subject-to-`ServicePrincipalId` link, token type, time,
-scope, key/signature, and certificate/proof binding where selected. Define
-external issuer/key rotation and compromise response, mapping disable/revoke,
-policy re-evaluation, replay restrictions, and connector workload identities.
+scope, key/signature, and the exact admitted token confirmation/sender-
+constraint profile. Client authentication at the external issuer, including
+`private_key_jwt` or mTLS, is not by itself evidence that the access token
+presented to Vitheim is sender constrained.
+Define two explicit assurance classes. `SenderConstrained` tokens bind a
+reviewed proof key or client certificate to the token and request; privileged
+workers, connectors, and agent-facing privileged APIs require this class.
+`BearerRestricted`, if supported at all, has a substantially shorter lifetime,
+one narrow audience, lower authentication assurance, and an explicit
+non-privileged action allowlist. It cannot perform administration, secret/
+credential operations, plugin lifecycle, containment, broad export, federation
+trust, or other privileged commands. Policy receives the assurance class and
+proof identity as typed facts and cannot upgrade bearer assurance.
+Define external issuer/key rotation and compromise response, mapping disable/
+revoke, policy re-evaluation, replay restrictions, and connector workload
+identities.
+A replay cache may detect a repeated token/proof tuple but is not claimed to
+prevent the first use of a stolen bearer token.
 Vitheim stores public validation material and external identity mappings, never
 client private credentials. Token issuance, client registration secrets, token
 exchange, delegation, impersonation, refresh tokens, and local OAuth grants are
@@ -117,21 +150,27 @@ their service-principal mapping only through the later enrollment protocol.
 
 Deliverables: resource-server workload-auth contract and validation adapter,
 external issuer/trust registry, service-principal link lifecycle, mTLS/proof
-binding, validation and replay controls, compromise/revocation workflow,
+binding and assurance-class types, restricted-bearer action matrix, validation
+and replay controls with documented limits, compromise/revocation workflow,
 conformance corpus, fake external issuer/client, operator tooling, and explicit
 no-token-endpoint/disabled-feature matrix.
 
 Verification: issuer/client/principal/tenant confusion, forged assertion, key/
 algorithm/token-type confusion, bearer replay, audience/scope inflation,
+false sender-constrained classification, proof/certificate/token substitution,
+proof replay, bearer-to-privileged escalation, first use of a stolen bearer
+remaining confined to the restricted action envelope despite a cold replay cache,
 certificate remapping, display-name collision, accidental token endpoint or
-private-client-key storage, token exchange/refresh misuse, stale policy/mapping,
-issuer key rotation/rollback, revocation lag, connector impersonation, clock
-abuse, issuer outage, and resource-server conformance tests pass.
+private-client-key storage, token exchange/refresh misuse, stale policy/
+mapping, issuer key rotation/rollback, revocation lag, connector impersonation,
+clock abuse, issuer outage, and resource-server conformance tests pass.
 
 Exit criteria: each workload request resolves to one immutable tenant-bound
 service principal, current issuer/token/mapping and assurance profile;
 authorization is independently reevaluated and no local token issuer or static
-secret is silently enabled. `v0.52.1
+secret is silently enabled. Every privileged workload token is cryptographically
+sender constrained under the selected profile; any admitted bearer token is
+visibly lower assurance and restricted by policy. `v0.52.1
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.53.0` — OIDC Integration
@@ -265,7 +304,8 @@ Exit criteria: every permit cites the exact role path. `v0.55.0 implementation s
 
 ## `0.56.0` — ABAC Engine
 Status: planned. Setup: define one policy decision request containing tenant,
-subject, action, resource, field set, purpose, environment and policy version;
+subject, authentication assurance/sender-constraint/proof identity, action,
+resource, field set, purpose, environment and policy version;
 define typed fact provenance/freshness, operators, missing/unknown behavior,
 obligations, and budgets. Goal: contextual policy without fail-open ambiguity.
 Deliverables: policy model/evaluator/compiler and `Deny`, `Permit`, or
@@ -334,6 +374,8 @@ make later registration mechanically mandatory. Deliverables: generated
 matrix, negative corpus, human-versus-service-principal differential tests,
 connector/agent/measurement-source cases, and coverage/evidence report.
 Verification: mutation and read parity, tenant pairs, stale policy/credential,
-wrong audience/scope, cache/index lag, break-glass, and differential adapters
-pass. Exit criteria: no principal kind or authority-bearing interface lacks a
-negative case. `v0.60.0 implementation stop reached. Run pentest for this exact commit.`
+wrong audience/scope, false sender constraint, bearer-to-privileged escalation,
+replay-cache limitations, cache/index lag, break-glass, and differential
+adapters pass. Exit criteria: no principal kind or authority-bearing interface
+lacks a negative case.
+`v0.60.0 implementation stop reached. Run pentest for this exact commit.`

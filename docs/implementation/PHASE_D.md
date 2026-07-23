@@ -176,7 +176,8 @@ integration is retested by `0.82.1`.
 
 ## `0.38.3` — Measurement Retention And Authoritative Rollups
 
-Status: planned.
+Status: planned; production raw expiry remains disabled until the exact
+production backup/restore profile repeats this gate at `0.145.0`.
 
 Setup: retain raw observations for at least the longest supported raw SLO
 window, correction horizon, lateness bound, investigation period, and hold
@@ -187,6 +188,14 @@ complete/partial/unknown state, source-observation Merkle or manifest digest,
 calculation/schema version, unit and aggregation method, resolution/fidelity,
 retention/hold policy, correction/supersession identity, late-data
 recalculation behavior, and the exact SLO window classes allowed to consume it.
+Raw expiry is a gated transition: the rollup and source manifest must be
+committed, their integrity chain verified, their commitment included in a
+retrievable externally retained `0.19.0` signed checkpoint, and the
+then-current adapter restore fixture must have successfully restored and
+reverified that rollup/manifest/checkpoint class. Checkpoint lag, anchor loss,
+or missing restore evidence keeps the raw observations retained and reports
+the blocked expiry. `0.145.0` repeats the proof for every selected production
+backup/restore profile before production retention jobs may expire raw data.
 
 Goal: preserve reproducible historical SLO and error-budget authority when
 retention permits raw customer observations to expire.
@@ -195,19 +204,24 @@ Deliverables: authoritative rollup aggregate/events, raw-to-rollup manifest and
 integrity proof, versioned rollup calculator, admissible-window registry,
 expiry preflight, late-data supersession process manager, reconciliation/
 recalculation tooling, memory and PostgreSQL adapters, restore/rebuild rules,
-and operator retention guide.
+external-checkpoint inclusion/verification receipt, restore-evidence binding,
+blocked-expiry projection/alerts, and operator retention guide.
 
 Verification: expire raw data before rollup commitment, mutate an existing
 rollup, omit or reorder source observations, forge completeness/count/watermark,
 change unit/method/version, consume insufficient resolution, late data after
 expiry, overlapping/supersession races, hold/erasure conflict, digest mismatch,
-restore without manifests, long-window recalculation, and raw-versus-rollup
-differential/property tests pass.
+crash between rollup commit and checkpoint, forged or unavailable external
+anchor, checkpoint before rollup commitment, restore without manifest/anchor,
+false restore receipt, raw expiry during anchor/restore lag, long-window
+recalculation, and raw-versus-rollup differential/property tests pass.
 
 Exit criteria: every supported historical SLO window is reproducible from
 retained raw facts or an explicitly admissible integrity-bound rollup;
 otherwise its result is unknown/unavailable rather than silently calculated
-from mutable aggregates.
+from mutable aggregates. No raw observation expires until the corresponding
+authoritative rollup is committed, integrity verified, externally checkpointed,
+and restore tested under the selected profile.
 `v0.38.3 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.39.0` — Approval And Notification Foundations

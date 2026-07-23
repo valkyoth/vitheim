@@ -36,7 +36,10 @@ Verification:
 - Crash-point proof that protected commands cannot commit without authoritative
   audit intent; every applicable `0.18.2` command/consumer/timer/activity/
   poison bundle component is atomic and integrity linked; fence and quota
-  consumption share the effect transaction; denial-only audit chains anchor;
+  consumption share the effect transaction. Each bundle advances at most one
+  authoritative aggregate stream and contains local durable effects only;
+  provider/network dispatch and results are separate at-least-once transitions
+  with no distributed exactly-once claim. Denial-only audit chains anchor;
   protected reads/downloads cannot release bytes before audit receipt;
   streaming completion/abort reconciles.
 - Workload authentication, customer-observation storage, paging delivery,
@@ -44,12 +47,18 @@ Verification:
   connector pass their exact production-profile failure and recovery suites.
 - The tenant data-surface registry is complete for every store, cache, index,
   backup, and external copy; closure exercises fail visibly on missing
-  disposition. Historical SLOs reproduce from retained raw observations or
-  admissible integrity-bound rollups.
+  disposition state. External-copy evidence distinguishes locally verified
+  deletion, controlled-key erasure, provider attestation, unconfirmed request,
+  and unverifiable disclosed plaintext without overstating proof. Historical
+  SLOs reproduce from retained raw observations or admissible integrity-bound
+  rollups; raw expiry evidence proves the rollup manifest was committed,
+  integrity verified, externally checkpointed, and restored successfully.
 - Workload authentication uses the selected external-issuer OAuth resource-
-  server profile; Vitheim exposes no OAuth token endpoint or client-private-key
-  custody. Wasm guest-memory canaries confirm no plaintext credential enters
-  any supported plugin path.
+  server profile; privileged access is sender constrained, any bearer profile
+  is lower-assurance and non-privileged, and replay caching is not credited as
+  preventing first use of theft. Vitheim exposes no OAuth token endpoint or
+  client-private-key custody. Wasm guest-memory canaries confirm no plaintext
+  credential enters any supported plugin path.
 - Reproducible builds, clean install/upgrade/rollback/failover, load/soak/chaos,
   secure defaults, accessibility, localization, and disaster-recovery exercises.
 - Decision-record conformance proves each shipped artifact and deployment
