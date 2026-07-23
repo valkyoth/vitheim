@@ -414,6 +414,11 @@ domain, attempt-claim identity/digest, claim/receipt enforcement point, and the
 bounded canonical `DispatchAuthorityFenceSet`. Backfill typed monotonic fence
 entries and atomic update points for tenant lifecycle, human/service identity,
 session/credential/mapping, group/role/relationship, delegation, and policy.
+For every capability requiring current target state, register its typed
+`DispatchTargetFence`, same-aggregate expected-version path or different-
+aggregate authoritative fence-row owner/update point, lifecycle and deletion/
+supersession epoch, transaction-domain placement, and unsupported remote/cross-
+shard/projection-only cases.
 Classify any external-only fact by staleness bound and forbid it from privileged
 dispatch unless an authoritative local revocation epoch exists. Only
 interfaces
@@ -424,7 +429,8 @@ compile/registration gate requiring an authorization case for every interface
 and effect intent, grant issuance/revalidation/revocation, authority redemption,
 grant ownership/process-manager continuation, redemption-guard/attempt-claim
 linearization, authority-fence registry/codec/update contract, and provider-
-dispatch enforcement points.
+dispatch enforcement points; include target-fence registry/codec/owner-update
+and co-location enforcement.
 Verification: API/search/report/export/notification/cache/AI leakage, derived inference,
 missing effect freshness/binding registration, unsafe `CommitBound`
 classification, missing/ambiguous execution-authority mode, approval grant
@@ -434,7 +440,9 @@ pre-issuance revocation loss, successor fork, missing/non-co-located guard,
 revocation/final-attempt race, claim/receipt substitution, grant/effect two-
 stream redemption, missing/duplicate/substituted/reordered fence entries, epoch
 reuse/rollback, stale external authority used for privileged dispatch, target
-substitution, and revocation pass.
+substitution, missing/stale target fence, deletion/merge/migration/supersession/
+restore racing dispatch, stale target projection, cross-shard target placement,
+and revocation pass.
 Exit criteria: hidden data cannot reappear downstream, and no external effect
 can bypass its declared commit/grant/redemption/dispatch authorization gates.
 `v0.58.0 implementation stop reached. Run pentest for this exact commit.`
@@ -477,13 +485,16 @@ execution-authority issuance/redemption/revocation cases plus inline/dedicated
 grant ownership/lineage and local redemption-guard/attempt-claim cases; enumerate
 the bounded authority-fence entry/update/co-location cases for tenant,
 subject/principal, session/credential/mapping, delegation, group/role/
-relationship, and policy. Goal: prove
+relationship, and policy; enumerate each current-target fence's identity,
+version/digest, lifecycle, deletion/supersession epoch, owner update, placement,
+and canonical acquisition case. Goal: prove
 equivalent deny-by-default policy independent of authentication mechanism and
 make later registration mechanically mandatory. Deliverables: generated
 matrix, negative corpus, human-versus-service-principal differential tests,
 connector/agent/measurement-source cases, delayed-effect authorization state
 machine, scheduled-offline grant fixtures, authority-fence race fixtures,
-external-staleness classifications, and coverage/evidence report.
+target-fence race fixtures, external-staleness classifications, and coverage/
+evidence report.
 Verification: mutation and read parity, tenant pairs, stale policy/credential,
 wrong audience/scope, false sender constraint, bearer-to-privileged escalation,
 replay-cache limitations, cache/index lag, commit-to-lease-to-dispatch policy/
@@ -498,12 +509,15 @@ attempt restore, grant/effect two-stream adapter, service-principal scope/
 audience confusion, each authority source changing between read/lease/dispatch,
 missing/substituted/reordered fence set, epoch rollback/reuse, non-co-located
 fence, bounded-stale external state used for privileged work, composite lock-
-order inversion and bounded-retry identity drift, worker confused
+order inversion and bounded-retry identity drift, missing/non-co-located target
+fence, target deletion/merge/migration/supersession/restore race, stale
+projection, cross-shard current target, worker confused
 deputy, unsafe low-risk profile, break-glass, and differential adapters pass.
 Exit criteria: no principal kind or
 authority-bearing interface lacks a negative case, and every delayed effect is
 proven against its commit-time decision, selected execution-authority model, and
 declared dispatch-freshness policy. Every privileged dispatch proves a complete
 co-located monotonic authority-fence set; bounded-stale-only external facts
-cannot satisfy it.
+cannot satisfy it. Every current-target dispatch proves its authoritative target
+fence or fails closed before provider I/O.
 `v0.60.0 implementation stop reached. Run pentest for this exact commit.`

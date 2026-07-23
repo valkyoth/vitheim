@@ -14,9 +14,16 @@ work bundle in one local transaction domain; a claimed quota profile must
 co-locate every claim set with its work bundle, and any wider limit must consume
 a fenced hierarchical capacity lease already allocated to that local partition.
 Every privileged dispatch profile must co-locate its complete
-`DispatchAuthorityFenceSet`. Cross-shard/region distributed work transactions
-are not a capability. All adapters use the canonical composite acquisition
-order and bounded identity-preserving deadlock retry contract.
+`DispatchAuthorityFenceSet`. Every current-target profile must also co-locate
+the target owner, authoritative `DispatchTargetFence`, and effect work bundle;
+same-aggregate targets use the expected stream version/digest, while different-
+aggregate targets use a fence row updated atomically with target events. Remote,
+cross-shard, or projection-only current-target semantics are not a capability.
+Cross-shard/region distributed work transactions are not a capability. Capacity
+movement uses the receipt-idempotent, at-least-once-delivered
+`QuotaCapacityTransferState` process manager, not a distributed exactly-once
+claim. All adapters use the canonical composite acquisition order and bounded
+identity-preserving deadlock retry contract.
 
 ## `0.21.0` — Storage Capability Negotiation
 
@@ -24,8 +31,9 @@ Status: planned.
 
 Setup: classify mandatory/optional capabilities, evidence version, startup
 probe, downgrade policy, transaction-domain placement/topology compatibility,
-authority-fence freshness/co-location, bounded deadlock-retry semantics, and
-fail-closed behavior.
+authority-fence and target-fence freshness/co-location, capacity-transfer
+receipt/delivery semantics, bounded deadlock-retry semantics, and fail-closed
+behavior.
 
 Goal: prevent adapters from silently weakening correctness.
 
@@ -35,9 +43,10 @@ decision engine, and operator diagnostics.
 Verification: false/missing/conflicting claims, version skew, downgrade, probe
 failure, non-co-located grant guard or quota set, active/active authoritative
 write claim, missing/non-co-located authority fence, stale external authority
-offered for privileged dispatch, cross-partition transaction requirement,
-unbounded or identity-changing deadlock retry, and optional-performance fallback
-tests pass.
+offered for privileged dispatch, missing/non-co-located target fence, remote or
+projection-only current target, cross-partition transaction requirement,
+distributed-exactly-once capacity-transfer claim, unbounded or identity-changing
+deadlock retry, and optional-performance fallback tests pass.
 
 Exit criteria: correctness never depends on an unverified optional capability.
 `v0.21.0 implementation stop reached. Run pentest for this exact commit.`
@@ -67,10 +76,14 @@ streams together, update a redemption guard by eventual projection, resurrect a
 consumed attempt, read authority facts before rather than lock them during the
 dispatch transaction, omit or eventually project a required authority epoch,
 reuse a policy epoch after rollback, acquire composite rows out of order, retry
-with a new identity, treat quota state as another aggregate, partially reserve/
-reconstruct a claim set, reacquire set members, span quota partitions, reclaim
-spent/encumbered child capacity, duplicate encumbrance transfer, or execute a
-network/provider call inside the transaction.
+with a new identity, omit a current target fence, update the target fence by
+eventual projection, accept a remote/cross-shard current target, restore a stale
+deletion/supersession epoch, treat quota state as another aggregate, partially
+reserve/reconstruct a claim set, reacquire set members, span quota partitions,
+reclaim spent/encumbered child capacity, claim distributed exactly-once
+capacity transfer, activate without inbox receipt, reclaim without authenticated
+acknowledgement and old-epoch fencing, make transfer capacity free at both ends,
+or execute a network/provider call inside the transaction.
 
 Verification: prove every deliberately incomplete bundle adapter and adapters
 that lose snapshots, scheduler state, quota state, rejection receipts, audit
@@ -82,10 +95,13 @@ revocation/final-attempt claim races, crash-before-provider retry, claim/receipt
 substitution, target drift, consumed-attempt restore, non-co-located guard,
 multi-stream redemption, cross-partition set, stale/duplicated hierarchical
 lease, lease expiry/reclamation with retained bytes/unknown liability/spent
-tokens, child loss, late settlement, duplicate transfer, missing/substituted
-authority fence, every authority-change-versus-dispatch race, composite lock-
-order inversion, exhausted/identity-changing retry, active/active authoritative
-topology, and remote-in-transaction adapters fail; run the memory adapter
+tokens, child loss, late settlement, every transfer crash/duplicate/reorder/lost-
+ack/failover/stale-epoch/conflict case, missing/substituted authority fence,
+missing/substituted target fence, target deletion/merge/migration/supersession/
+restore and target-change-versus-dispatch races, stale projection and cross-
+shard target placement, every authority-change-versus-dispatch race, composite
+lock-order inversion, exhausted/identity-changing retry, active/active
+authoritative topology, and remote-in-transaction adapters fail; run the memory adapter
 through all atomicity/isolation/recovery cases.
 
 Exit criteria: an adapter cannot claim support by skipping or weakening tests.
@@ -130,7 +146,9 @@ quota with all-or-none canonical claim-set reservation/exact-token consumption,
 co-located hierarchical capacity-lease accounting, grant-lineage ownership/
 process-manager state, co-located redemption guards/attempt claims, snapshot,
 co-located authority-fence epochs/sets, per-kind quota encumbrance and transfer
-accounting, canonical composite lock-order/deadlock-retry implementation,
+accounting, co-located target-fence rows and owner-update triggers,
+`QuotaCapacityTransferState` outbox/inbox process manager and receipt ledger,
+canonical composite lock-order/deadlock-retry implementation,
 integrity commitment, and configuration adapters; migrations, operator guide,
 backup/restore, and observability. Startup fails capability negotiation if any
 mandatory semantic component or transaction-domain placement is absent.
@@ -141,9 +159,12 @@ claim/receipt idempotency and substitution, consumed-attempt failover/restore,
 grant/effect two-stream rejection, overlapping claim-set serialization,
 deadlock/livelock, partial set crash/restore, hierarchical lease conservation/
 per-kind encumbrance/reclamation/transfer/failover, late settlement, authority-
-epoch revocation races, composite lock-order inversion and bounded retry,
-cross-partition rejection, tenant bypass, pool exhaustion, migration rollback,
-restore, and conformance pass.
+epoch revocation races, target deletion/merge/migration/supersession and current-
+target dispatch races, stale target projection, target-fence restore,
+capacity-transfer crash/duplicate/reorder/lost-ack/source-destination-failover/
+stale-epoch/conflict/late-evidence cases, composite lock-order inversion and
+bounded retry, cross-partition rejection, tenant bypass, pool exhaustion,
+migration rollback, restore, and conformance pass.
 
 Exit criteria: production claims match tested deployment profiles only.
 `v0.24.0 implementation stop reached. Run pentest for this exact commit.`
@@ -377,11 +398,14 @@ and stable attempt-claim/receipt identity so dispatch advances only the effect
 stream. Preserve `QuotaClaimSetId`, canonical digest, opaque pre-reserved token,
 immutable ordered membership, transaction-domain placement, hierarchical
 capacity-lease epoch/per-kind encumbrance/original-settlement identity, and set/
-claim/transfer transition idempotency; workers never reacquire individual quota
+claim/transfer transition idempotency. Preserve stable capacity-transfer ID,
+source/destination epochs, digest, sequence, state, acknowledgements, and
+original claim/transfer lineage through at-least-once queue delivery; workers
+never reacquire individual quota
 members, release encumbrance on capacity-lease expiry, or open a cross-partition
 transaction. Preserve and atomically lock the complete
-`DispatchAuthorityFenceSet` and canonical composite acquisition order across
-redelivery/failover.
+`DispatchAuthorityFenceSet`, required `DispatchTargetFence`, and canonical
+composite acquisition order across redelivery/failover.
 
 Goal: own an HA-capable durable queue profile without requiring a separate
 message broker for correctness.
@@ -393,7 +417,8 @@ reconciler, execution-grant redemption/revocation handling, fair partitioned
 control-plane lanes, grant-lineage issuance/successor process manager,
 redemption-guard/attempt-claim handler, exact-token local quota-set and
 hierarchical-capacity-lease/encumbrance-transfer handlers, authority-fence-set
-validator, canonical lock-order/deadlock-retry implementation, capability
+validator, target-fence validator, capacity-transfer outbox/inbox process
+manager and reconciler, canonical lock-order/deadlock-retry implementation, capability
 report, and operational metrics.
 
 Verification: enqueue/commit crashes, duplicate delivery, receipt/effect split,
@@ -418,7 +443,11 @@ tenant/subject/session/delegation/policy/service-principal revocation racing
 dispatch, missing/stale/substituted fence, lock-order inversion, unbounded or
 identity-changing retry, capacity-lease expiry with retained bytes/unknown
 liability/spent token, child loss, late settlement, duplicate encumbrance
-transfer, parent reclaim racing failover,
+transfer, transfer crash/duplicate/reorder/lost acknowledgement, source or
+destination failover, stale epoch, conflicting transfer, forbidden free-at-
+both-ends state, parent reclaim racing failover, target deletion/merge/
+migration/supersession/restore racing dispatch, stale target projection, cross-
+shard target placement, missing/substituted target fence,
 single-tenant reserve monopolization, global/per-tenant starvation, emergency-
 reserve misuse, partition/failover, drain/restart, and model/conformance tests
 pass.
@@ -431,9 +460,11 @@ settlement and single-stream grant ownership, claims attempts through a
 co-located guard without advancing the grant stream, consumes exact immutable
 quota sets without reacquisition or distributed transactions, conserves wider
 capacity and per-kind encumbrances through fenced local leases, linearizes every
-applicable authority change through the complete fence set, retries composite
-deadlocks without identity drift, keeps fair recovery available under hostile
-tenant exhaustion, and has no process-local queue dependency.
+applicable authority and current-target change through the complete authority
+and target fences, moves capacity with at-least-once messages and receipt-
+idempotent conservative accounting, retries composite deadlocks without
+identity drift, keeps fair recovery available under hostile tenant exhaustion,
+and has no process-local queue dependency.
 `v0.30.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.30.2` — Cache Semantics And Hosted Adapter

@@ -130,6 +130,19 @@ and remains unsupported for privileged `CommitAndDispatch` effects. Adapters may
 not substitute an eventually consistent cache or projection for a required
 fence row.
 
+Every current-target dispatch also carries a typed `DispatchTargetFence`.
+When the target is the effect-owning aggregate, the bundle's exact expected
+stream version and target digest are the fence. When it is a different local
+aggregate, that aggregate's owner maintains an authoritative co-located target-
+fence row in the same transaction as every target event; dispatch locks and
+validates that row without advancing the target stream. The fence binds tenant,
+target kind and ID, expected version and digest, lifecycle state, and monotonic
+deletion/supersession epoch. The target stream, target-fence row, and effect
+bundle must be placeable in one local transaction domain. A capability whose
+meaning requires current target state is unsupported when the target is remote,
+cross-shard, or available only through a projection. Deletion, merge, migration,
+supersession, and restore may never recreate or reuse an earlier target epoch.
+
 Quota accounting is an independent collection of state machines. Each effect
 owns a bounded `QuotaClaimSet`; each `QuotaClaim` has an opaque reservation ID,
 typed amount/unit, `QuotaKind`, settlement policy, and admission/lease/dispatch/
@@ -183,20 +196,36 @@ Parent reclamation is limited to the proven unreserved and unencumbered
 remainder. Existing retained-byte, unknown-liability, charged-operation, spent-
 rate-token, and other outstanding claims remain charged under their original
 kind/boundary until admissible settlement, verified deletion, authorized write-
-off, or a fenced exactly-once encumbrance transfer to a successor partition.
-Failover cannot recreate parent capacity while an old child encumbrance remains,
-and late provider evidence settles the original encumbrance after lease expiry
-or regional transfer.
+off, or a fenced encumbrance transfer to a successor partition. The transfer is
+not a distributed exactly-once transaction. A durable outbox/inbox process
+manager drives `QuotaCapacityTransferState` through `ReservedAtParent`,
+`InTransit`, `ActivatedAtChild`, `Returning`, and `Reclaimed`, with
+`ReconciliationRequired` as a fail-closed operational state. Every allocation
+or encumbrance move binds a stable `QuotaCapacityTransferId`, source and
+destination partition/lease epochs, kind/unit/period/settlement policy, amount,
+canonical digest, monotonic sequence, and original claim/encumbrance lineage.
+The parent reserves capacity before committing the outbox intent; the child
+activates it idempotently with an inbox receipt. In-transit capacity is
+unavailable at the parent. Return or reclamation requires an authenticated
+acknowledgement plus proof that the old child epoch is fenced. Uncertain or
+conflicting movement remains conservatively charged and enters reconciliation.
+Double-entry conservation may temporarily charge both sides during recovery but
+never permits the capacity to be free in both. Each local transition is exactly
+once by stable receipt; message delivery is at least once. Failover cannot
+recreate parent capacity while an old child encumbrance remains, and late
+provider evidence settles the original claim and transfer lineage after lease
+expiry or regional movement.
 
 All composite local transactions use one acquisition order: authoritative
-stream head; authority-fence rows ordered by typed key; grant redemption guard;
-quota-capacity lease and quota resource keys in canonical order; uniqueness
-claims; then command/inbox/timer/activity/attempt receipt rows. A transaction
-omits inapplicable classes but never reorders them. Adapters retry only
-classified serialization/deadlock failures, with a bounded policy and the same
-command/claim/transition identities, input digests, expected versions, and
-fence epochs. Exhaustion is visible and retryable by the caller/reconciler;
-retry never repeats provider I/O or consumes a new grant attempt/quota claim.
+stream head; authority-fence rows ordered by typed key; target-fence row; grant
+redemption guard; quota-capacity lease and quota resource keys in canonical
+order; uniqueness claims; then command/inbox/timer/activity/attempt receipt
+rows. A transaction omits inapplicable classes but never reorders them. Adapters
+retry only classified serialization/deadlock failures, with a bounded policy
+and the same command/claim/transition identities, input digests, expected
+versions, and fence epochs. Exhaustion is visible and retryable by the caller/
+reconciler; retry never repeats provider I/O or consumes a new grant attempt/
+quota claim.
 
 Only claims whose settlement policy depends on provider acceptance enter
 `HeldPendingOutcome`; such a claim continues to count against its governed
@@ -533,8 +562,17 @@ are leased into local partitions before reservation rather than consulted
 through a distributed transaction. Bind each lease to one quota kind/unit/
 accounting period/settlement policy. Model unreserved remainder separately from
 reserved, spent, and encumbered capacity; expiry stops admission but preserves
-outstanding claims. Define fenced exactly-once encumbrance transfer and original-
-lease late settlement across partition loss, failover, and regional movement.
+outstanding claims. Define the receipt-driven `QuotaCapacityTransferState`
+process manager (`ReservedAtParent` → `InTransit` → `ActivatedAtChild` →
+`Returning` → `Reclaimed`, or fail closed to `ReconciliationRequired`) for
+allocation and encumbrance movement across partition loss, failover, and
+regional movement. Bind stable transfer identity, source/destination epochs,
+digest, sequence, and original claim/encumbrance lineage; require parent reserve
+before outbox, idempotent child inbox activation, conservative in-transit
+charging, authenticated acknowledgement plus old-epoch fencing before reclaim,
+and double-entry conservation that may temporarily overcharge but never frees
+capacity in both partitions. Local receipt transitions are exactly once;
+delivery is at least once and late settlement retains original transfer lineage.
 Partition reconciliation/security-cleanup capacity by tenant/work class with
 ceilings, global fair-share/starvation bounds, and a strictly scoped emergency
 reserve. The bounded claim-set representation is finalized into work bundles
@@ -550,8 +588,10 @@ policies, exact-set evidence-bound refund/release/actual-cost settlement
 commands, distinct administrative adjustment/write-off command, whole-set
 restore/quarantine rules, transaction-domain placement contract, hierarchical
 capacity-lease state machine/conservation model, per-kind encumbrance ledger,
-encumbrance-transfer command/receipt, late-settlement mapping, partitioned fair
-control-plane capacity, deterministic memory adapter, recovery reconciler,
+capacity-transfer ID/codec/state machine, allocation/encumbrance outbox and inbox
+commands/receipts, authenticated acknowledgement and old-epoch-fence proof,
+double-entry conservation oracle, late-settlement lineage mapping, partitioned
+fair control-plane capacity, deterministic memory adapter, recovery reconciler,
 leak/escalation monitor, and contention model.
 
 Verification: concurrent oversubscription, crash after reserve/use/refund,
@@ -567,7 +607,11 @@ parent/child capacity over-allocation, stale/expired lease epoch, lease
 reclamation race, expiry with retained bytes, unknown liabilities, charged
 operations, and spent provider-rate tokens, child-partition loss, late provider
 settlement against an expired/transferred lease, duplicate encumbrance transfer,
-parent reclamation racing failover, failover allocation duplication, accidental
+every crash point and message duplicate/reorder, lost acknowledgement, source
+or destination failover, stale source/destination epoch, conflicting transfer,
+in-transit uncertainty, double-entry recovery overcharge and forbidden free-at-
+both-sides state, parent reclamation racing failover, failover allocation
+duplication, late evidence against original claim/transfer lineage, accidental
 cross-shard/cross-region transaction, incompatible active/active write topology,
 provider-outage exhaustion, one-tenant reconciliation monopolization, tenant
 attempts to consume emergency reserve, global/per-tenant starvation, lease loss,
@@ -582,7 +626,9 @@ from provider evidence; all-or-none exact-set linearization is deterministic,
 deadlock-free, recoverable only as a whole, and local to one transactional quota
 partition; wider limits conserve capacity through fenced hierarchical leases
 without distributed work transactions or reclaiming live encumbrances; late
-evidence and exactly-once transfers preserve the original per-kind charge; and
+evidence and receipt-idempotent, at-least-once-delivered transfer processing
+preserve the original per-kind charge and never make capacity free at both
+ends; and
 exhausted or abusive tenants cannot block fair bounded reconciliation or
 security cleanup.
 `v0.18.1 implementation stop reached. Run pentest for this exact commit.`
@@ -602,10 +648,15 @@ the exact pre-reserved `0.18.1` quota claim-set token/digest and applicable per-
 claim transitions. Quota records remain co-transactional local authority, not
 additional aggregate streams; a bundle never reacquires set members. Every
 dispatch variant binds and atomically validates its bounded
-`DispatchAuthorityFenceSet`. Every variant uses the platform-wide stream-head,
-authority-fence, grant-guard, quota-key, uniqueness-claim, then receipt
-acquisition order and bounded identity-preserving deadlock retry policy. Cross-
-aggregate continuation is an outbox-driven process-manager decision. Timer
+`DispatchAuthorityFenceSet` and, where current target state matters, its typed
+`DispatchTargetFence`. A same-aggregate target uses the bundle expected version
+and digest; a different local target uses the authoritative target-fence row
+updated beside target events. Remote, cross-shard, or projection-only current-
+target semantics fail capability negotiation. Every variant uses the platform-
+wide stream-head, authority-fence, target-fence, grant-guard, quota-key,
+uniqueness-claim, then receipt acquisition order and bounded identity-preserving
+deadlock retry policy. Cross-aggregate continuation is an outbox-driven process-
+manager decision. Timer
 dispatch atomically records
 the due/fenced dispatch transition and its outbox work intent; timer or remote
 work completion is a separate later activity-result/consumer transition that
@@ -658,9 +709,10 @@ execution-authority/grant codecs, issuance/revalidation/revocation commands,
 ownership/lineage/approval-receipt and pre-issuance-revocation contracts,
 redemption-guard/attempt-claim codec and state machine, redemption receipts,
 dispatch-authority-fence-set codec/epoch rules, canonical composite acquisition
-order and deadlock-retry contract, transaction-domain placement/capability
-contract, and exact-token bounded per-kind quota-disposition/refund/settlement/
-encumbrance-transfer codecs and state machines. Phase G workflow workers later
+order and deadlock-retry contract, `DispatchTargetFence` codec/owner-update/
+placement contract, transaction-domain placement/capability contract, and
+exact-token bounded per-kind quota-disposition/refund/settlement/
+capacity-transfer codecs and state machines. Phase G workflow workers later
 specialize
 the activity payload without weakening this commit boundary. The contract
 states at-least-once external execution explicitly and makes no distributed
@@ -683,7 +735,11 @@ external mapping; suspend a tenant; revoke a delegation; activate or roll back
 policy; change a role/group/relationship fact while dispatch locks the complete
 fence set; omit/substitute/reorder a fence entry; reuse an epoch after rollback;
 use a bounded-stale external source for privileged dispatch; deadlock composite
-transactions at every adjacent acquisition class; retry beyond the bound or
+transactions at every adjacent acquisition class; race target deletion, merge,
+migration, lifecycle change, or supersession against dispatch; substitute a
+stale target projection; place a different-aggregate target cross-shard; restore
+an old target version/deletion epoch; verify target-change-versus-dispatch
+linearization for both same-aggregate and target-fence-row cases; retry beyond the bound or
 with changed command/claim/digest/fence identity; expire an interactive human
 session while valid scheduled grant work proceeds; depart an approver; drift policy
 or approval version; replay/exhaust/revoke a grant immediately before dispatch;
@@ -700,7 +756,12 @@ mixed quota claim set; reserve overlapping sets concurrently in opposite input
 order; deadlock/livelock; crash after partial reservation; add/remove/reorder a
 claim after digest; consume by reacquiring members; place one set across quota
 partitions; exceed or duplicate a hierarchical capacity lease; attempt a cross-
-shard/region work transaction; replay a set/claim transition; release
+shard/region work transaction; replay a set/claim transition; crash at every
+capacity-transfer transition; duplicate/reorder allocation, activation, return,
+and acknowledgement delivery; lose an acknowledgement; fail over source or
+destination; present a stale epoch or conflicting transfer; attempt reclaim
+without authenticated acknowledgement and old-epoch fence proof; make capacity
+free at both ends; settle late evidence without original transfer lineage; release
 concurrency based on remote uncertainty;
 refund a transmitted rate token; duplicate or forge a refund/provider
 settlement; disguise administrative write-off as provider evidence; leak an
@@ -729,16 +790,23 @@ revocation cannot lose to stale guard state, and restore cannot resurrect a
 consumed attempt.
 Every applicable authority change linearizes against dispatch through the
 complete co-located monotonic fence set; unsupported external staleness cannot
-authorize privileged effects. Composite acquisition and bounded retry preserve
-one-stream atomicity without deadlock-driven duplication or identity drift.
+authorize privileged effects. Every current-target dispatch also linearizes
+against the authoritative target version, digest, lifecycle, and deletion/
+supersession epoch without advancing a second stream; unsupported placement or
+projection-only freshness fails closed. Composite acquisition and bounded retry
+preserve one-stream atomicity without deadlock-driven duplication or identity
+drift.
 Every bounded quota claim settles by kind at its declared boundary; refunds are
 evidence-bound and exactly once, write-offs remain distinct, compensation is
 accounted separately, and each exact immutable set reserves all-or-none,
 linearizes without an extra aggregate stream inside one quota partition, and
 restores/reconciles only as a whole. Hierarchical leases conserve wider capacity
 and preserve per-kind encumbrances through expiry, failover, transfer, and late
-settlement without a cross-partition work transaction. Fair partitioned recovery
-capacity cannot be monopolized or borrowed for tenant business work.
+settlement without a cross-partition work transaction. Transfer delivery is
+explicitly at least once, local state transitions are receipt-idempotent, and
+conservative double-entry accounting never exposes capacity at both ends. Fair
+partitioned recovery capacity cannot be monopolized or borrowed for tenant
+business work.
 `v0.18.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface

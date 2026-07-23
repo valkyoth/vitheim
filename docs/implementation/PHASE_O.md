@@ -43,12 +43,13 @@ authorization freshness/bindings, typed execution-authority redemption, bounded
 multi-kind quota claim settlement/exact-set linearization, one-owner grant
 lineages, co-located redemption guards, local quota partitions/hierarchical
 capacity leases/per-kind encumbrances, complete dispatch-authority fence sets,
-canonical composite acquisition/retry, and fair partitioned control-plane
-capacity.
+typed target fences, receipt-idempotent at-least-once capacity-transfer process
+management, canonical composite acquisition/retry, and fair partitioned
+control-plane capacity.
 Goal: prevent split-brain effects. Deliverables: HA orchestration, work-variant
 fault matrix, dispatch/grant-lineage/redemption-guard/authority-fence evidence,
-exact-set/capacity-lease/encumbrance quota evidence, composite-lock/retry
-evidence, fair-capacity evidence, and runbooks.
+exact-set/capacity-lease/encumbrance/transfer quota evidence, target-fence
+evidence, composite-lock/retry evidence, fair-capacity evidence, and runbooks.
 Verification: partitions, clock skew, stale leader/fence,
 receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
 activity work, timer dispatch/result separation, multi-aggregate/remote-call
@@ -72,7 +73,11 @@ confusion, write-off presented as provider evidence, duplicate refund,
 compensation claim reuse, exhausted tenant quota during recovery, capacity-lease
 expiry with retained bytes/unknown liability/charged operation/spent rate token,
 child loss, late settlement, duplicate transfer, parent
-reclamation racing failover, tenant/subject/session/delegation/policy/principal
+reclamation racing failover, every transfer crash/duplicate/reorder/lost-
+acknowledgement/source-destination-failover/stale-epoch/conflict point,
+forbidden free-at-both-ends capacity, target deletion/merge/migration/
+supersession/restore racing dispatch, stale target projection, cross-shard
+target placement, tenant/subject/session/delegation/policy/principal
 revocation racing dispatch, missing/substituted/reordered authority fences,
 epoch rollback/reuse, stale external authority, composite lock-order inversion,
 bounded-retry exhaustion/identity drift, one-tenant capacity monopolization,
@@ -82,7 +87,8 @@ changing variant; failover cannot bypass authority redemption, impersonate an
 offline human, fork a grant lineage, resurrect a consumed attempt, advance grant
 and effect streams together, erase or conflate quota claims, consume a partial/
 mutated/cross-partition set, overdraw or falsely reclaim a capacity lease, lose
-an encumbrance, bypass an authority fence, duplicate through deadlock retry,
+an encumbrance, expose capacity at both transfer ends, bypass an authority or
+target fence, duplicate through deadlock retry,
 duplicate a refund, or starve fair bounded recovery.
 `v0.143.0
 implementation stop reached. Run pentest for this exact commit.`
@@ -98,9 +104,11 @@ transaction-domain map, incompatible-capability rejection, zero-unmapped-
 surface report, and regional runbook.
 Verification: cross-region write/read/cache/backup/log/vector/measurement/
 plugin/AI/federation leakage, active/active write request, grant guard/effect or
-authority-fence/effect or quota-set/work split across regions, stale failover
-fence, duplicated capacity/encumbrance transfer, unregistered surface, failover
-bypass, and policy changes pass.
+authority-fence/effect or target-owner/fence/effect or quota-set/work split
+across regions, remote/projection-only current-target request, stale failover
+fence, duplicated/conflicting capacity transfer, lost acknowledgement, stale
+source/destination epoch, unregistered surface, failover bypass, and policy
+changes pass.
 Exit criteria: placement violations, unsupported active/active writes, or
 incomplete surface mapping fail closed.
 `v0.144.0 implementation stop reached. Run pentest for this exact commit.`
@@ -120,17 +128,20 @@ linkable-checkpoint disposition, non-sensitive tombstone and historical
 authority-loss records, complete grant-lineage owner/successor/tombstone
 restoration, redemption-guard version/revocation/consumed-attempt and matching
 claim/receipt restoration, every monotonic authority epoch and bound fence-set
-receipt, whole quota claim-set digest/member restoration with partial-set
+receipt, every target-fence version/digest/lifecycle/deletion/supersession epoch,
+whole quota claim-set digest/member restoration with partial-set
 quarantine, hierarchical capacity-lease epoch/allocation/unreserved-remainder/
-per-kind encumbrance/transfer/original-settlement restoration, rebuild/workflow
-continuation pass.
+per-kind encumbrance/transfer state/receipt/acknowledgement/original-claim-and-
+transfer-lineage restoration, rebuild/workflow continuation pass.
 Exit criteria: claimed RPO/RTO is demonstrated; recovery neither retains data
 past a controlling mandatory deletion obligation nor promotes an unverified
 rollup to authority; grant revocation/supersession cannot be resurrected; quota
 sets are restored/reconciled only as complete verified units; consumed attempts
 cannot be resurrected and authority epochs cannot roll back to pre-revocation
+values; target epochs cannot roll back to pre-deletion or pre-supersession
 values; parent capacity is not recreated while an encumbrance survives;
-transferred encumbrances exist in exactly one partition; and every related
+uncertain transfers stay conservatively charged, and a restored transfer can
+never make capacity free in both partitions; and every related
 surface has its own disposition proof.
 `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -143,14 +154,14 @@ separate compensation accounting, tenant/work-class partitioned reconciliation/
 security-cleanup capacity, single-partition claim-set placement, hierarchical
 capacity-lease allocation/expiry/reclamation/fencing, global fair share,
 per-kind encumbrance/transfer/late settlement, canonical composite lock order
-and bounded deadlock retry, starvation bounds, emergency reserve, baselines,
-failure scenarios, and evidence retention. Goal: prove bounded behavior under
-stress.
+and bounded deadlock retry, target-fence contention, starvation bounds,
+emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
+prove bounded behavior under stress.
 Deliverables: multi-claim quota-lifecycle/load/fault harnesses, per-kind
 settlement and exact-set linearization oracles, partition/fairness/reserve
 monitors, hierarchical-capacity-lease conservation and per-kind encumbrance-
-transfer oracles, composite-lock/retry contention harness, leak/escalation
-evidence, and signed reports. Verification: atomic
+transfer oracles, composite-lock/retry contention harness, target-change-versus-
+dispatch harness, leak/escalation evidence, and signed reports. Verification: atomic
 bounded claim sets across every work bundle, concurrent overlapping-set
 canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
 failover, immutable token/digest/membership, whole-set restore/reconciliation,
@@ -158,6 +169,8 @@ single-partition placement, parent/child lease conservation, lease churn/
 expiry/reclamation, failover duplication, cross-shard/region rejection,
 expiry with retained bytes/unknown liability/charged operation/spent token,
 child loss, late evidence, duplicate transfer, reclamation/failover races,
+lost acknowledgements, transfer message reorder, source/destination failover,
+stale epochs, conflicting transfers, conservative double-entry recovery,
 composite lock-order contention, retry exhaustion/identity preservation,
 concurrency release independent of remote outcome,
 consumable-operation evidence rules, non-refundable transmitted rate tokens,
@@ -172,8 +185,9 @@ paging/status retry/reconciliation, queue/index/embedding/plugin/report
 exhaustion, leaks, cascading failures, and long soak/chaos pass. Exit criteria:
 regressions, cross-kind settlement, partial/mutated/cross-partition set
 acceptance, capacity-lease over-allocation, deadlock/livelock, unbounded quota
-liability, lost/duplicated encumbrance, retry-driven duplicate work, unfair or
-blocked recovery, and unsafe saturation block release.
+liability, lost/duplicated encumbrance, capacity free at both transfer ends,
+target-fence race failure, retry-driven duplicate work, unfair or blocked
+recovery, and unsafe saturation block release.
 `v0.146.0
 implementation stop reached. Run pentest for this exact commit.`
 

@@ -108,11 +108,17 @@ implementation stop reached. Run pentest for this exact commit.`
 ## `0.87.0` — Reconciliation Engine
 Status: planned. Setup: source precedence, freshness/confidence, versioned/scoped
 manual locks, conflict outcomes, non-destructive alias/equivalence assertions,
-rule version, input identities, chosen/rejected values, and explanation. Goal:
+rule version, input identities, chosen/rejected values, and explanation. Asset
+merge, split, migration, deletion, and supersession commands update the
+authoritative `DispatchTargetFence` beside their owner events so a delayed
+current-target effect cannot act on the pre-change identity or lifecycle. Goal:
 deterministic fact reconciliation without destroying asset identities.
 Deliverables: pure engine and decision trace. Verification: priority abuse,
 destructive merge, input permutations, stale/manual conflict, lock expiry and
-exhaustion properties pass. Exit criteria: every chosen value explains rejected alternatives. `v0.87.0 implementation stop reached. Run pentest for this exact commit.`
+exhaustion, stale target fence/projection, target-change-versus-dispatch, and
+restored deletion/supersession epoch properties pass. Exit criteria: every
+chosen value explains rejected alternatives and identity reconciliation cannot
+resurrect dispatch authority. `v0.87.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.88.0` — Dependency Impact Analysis
 Status: planned. Setup: tenant-partitioned adjacency; authorize edge, endpoints,

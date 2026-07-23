@@ -104,6 +104,15 @@ require_text docs/implementation/PHASE_B.md \
     'Each `QuotaCapacityLease` binds exactly one `QuotaKind`, unit, accounting' \
     'per-kind quota-capacity encumbrance'
 require_text docs/implementation/PHASE_B.md \
+    'Every current-target dispatch also carries a typed `DispatchTargetFence`' \
+    'co-transactional current-target fence'
+require_text docs/implementation/PHASE_B.md \
+    'manager drives `QuotaCapacityTransferState` through `ReservedAtParent`' \
+    'explicit capacity-transfer process manager'
+require_text docs/implementation/PHASE_B.md \
+    'once by stable receipt; message delivery is at least once' \
+    'local receipt idempotency and at-least-once transfer delivery'
+require_text docs/implementation/PHASE_B.md \
     'All composite local transactions use one acquisition order: authoritative' \
     'canonical composite transaction acquisition'
 require_text docs/implementation/OPTION_DECISIONS.md \

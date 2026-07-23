@@ -31,8 +31,12 @@ MySQL database-per-tenant/composite enforcement, MongoDB partitioning, and
 SurrealDB namespace/permission profiles against the same conformance suite.
 Map local transaction domains for aggregate streams, redemption guards, effect
 work bundles, dispatch-authority fence rows, quota partitions, and hierarchical
-capacity leases. Reject any profile that needs a cross-shard/region distributed
-work transaction.
+capacity leases. Map target owners and authoritative `DispatchTargetFence` rows
+with the effect bundle, including same-aggregate expected-version handling.
+Reject any profile that needs remote, cross-shard, or projection-only current-
+target semantics or a cross-shard/region distributed work transaction. Compare
+capacity-transfer outbox/inbox placement and receipt semantics without accepting
+a distributed exactly-once delivery claim.
 Goal: freeze exact production storage, tenant-isolation, and local transaction-
 domain profiles from tested adapters; default candidates are SQLite single-node
 and PostgreSQL HA.
@@ -42,6 +46,8 @@ active/active rejection evidence, migration and portability consequences.
 Verification: twin-tenant collision, superuser/non-owner, pooling-state,
 constraint, non-co-located grant guard/effect bundle, cross-partition claim set,
 missing/non-co-located authority fence, stale/duplicated capacity lease,
+missing/non-co-located target fence, target owner/fence/effect split, remote or
+projection-only current target, distributed-exactly-once transfer claim,
 advertised active/active authoritative writes, backup/export, and fail-closed
 capability evidence is reviewed.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
@@ -186,9 +192,13 @@ and per-kind settlement mapping, canonical all-or-none claim-set reservation/
 exact-token consumption profile, grant ownership plus inline/dedicated issuance/
 revocation/successor behavior, redemption-guard placement/claim/receipt model,
 authority-fence source/update/co-location/staleness profile, canonical composite
-lock order/deadlock-retry policy,
+lock order/deadlock-retry policy, target-fence owner/update/co-location/
+lifecycle/deletion/supersession profile,
 quota partition map and hierarchical capacity-lease allocation/reclamation/
-per-kind encumbrance/transfer/late-settlement conservation profile,
+per-kind encumbrance/transfer/late-settlement conservation profile, including
+stable transfer ID, source/destination epochs, outbox/inbox receipts,
+authenticated acknowledgement, old-epoch fence proof, conservative double-
+entry recovery, and original lineage,
 active/active rejection/capability behavior, per-tenant/
 global fair-share and starvation policy, emergency-reserve sizing/isolation,
 RPO/RTO, upgrade/rollback, observability, and operator responsibility decisions.
@@ -204,7 +214,11 @@ order inversion and retry identity drift/exhaustion,
 overlapping-set deadlock/livelock, partial reservation/restore, token/digest/
 membership substitution, cross-partition claim sets, hierarchical lease
 over-allocation, expiry with persistent per-kind encumbrance, child loss, late
-settlement, duplicate transfer, reclamation/failover race, incompatible
+settlement, every transfer crash/duplicate/reorder/lost-ack/source-destination-
+failover/stale-epoch/conflict point, forbidden free-at-both-ends state, target
+deletion/merge/migration/supersession/restore race, stale projection, cross-
+shard target placement, missing/non-co-located target fence, reclamation/
+failover race, incompatible
 active/active topology,
 provider-outage tenant exhaustion, one-tenant unknown-outcome floods, per-
 tenant/global starvation, emergency-reserve borrowing, degraded dependencies,

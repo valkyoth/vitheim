@@ -79,6 +79,11 @@ audit decision.
   commands update their local epoch atomically with the owner event. Missing,
   stale, substituted, reused, or non-co-located fences deny; external-only
   bounded-stale facts never authorize privileged effects.
+  Current-target dispatch also requires a typed `DispatchTargetFence`. Same-
+  aggregate expected version/digest or a target-owner-maintained co-located row
+  binds target identity, lifecycle, and deletion/supersession epoch. Remote,
+  cross-shard, projection-only, stale, restored, or substituted target state
+  denies before provider I/O.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown
@@ -98,9 +103,14 @@ audit decision.
   at `1.0.0`; incompatible placement fails closed. Capacity leases bind kind,
   unit, period, and settlement policy. Expiry stops admission but retains spent/
   encumbered capacity; parents reclaim only proven free remainder, and claims
-  settle against their original encumbrance or a fenced exactly-once successor
-  transfer. Composite transactions use the canonical stream/fence/guard/quota/
-  uniqueness/receipt order with bounded identity-preserving deadlock retry.
+  settle against their original encumbrance through a
+  `QuotaCapacityTransferState` outbox/inbox process manager. Local transitions
+  are receipt-idempotent, delivery is at least once, reclaim requires
+  authenticated acknowledgement and old-epoch fence proof, uncertainty stays
+  charged, and double-entry recovery never frees capacity at both ends.
+  Composite transactions use the canonical stream/authority-fence/target-fence/
+  guard/quota/uniqueness/receipt order with bounded identity-preserving deadlock
+  retry.
   Per-tenant/work-class
   ceilings, fair share, starvation bounds, and a scoped emergency reserve keep
   recovery available without tenant borrowing or monopolization.

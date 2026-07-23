@@ -86,6 +86,12 @@ session/credential/mapping, delegation, group/role/relationship, and policy
 epochs. Their owner commands update the local epoch with the event, closing the
 read-before-dispatch TOCTOU window. External-only bounded-stale facts cannot
 authorize privileged effects without authoritative local revocation state.
+Current-target work also binds a typed `DispatchTargetFence`: the effect
+stream's expected version/digest when it is the target, otherwise an
+authoritative fence row updated atomically by the local target owner. It binds
+lifecycle and deletion/supersession epoch as well as identity/version, must
+co-locate with the effect bundle, and rejects remote, cross-shard, or projection-
+only freshness.
 Each effect carries a bounded atomic set of typed quota claims with independent
 amount/unit, settlement policy, and admission/lease/dispatch/transmission/
 storage boundary. Concurrency releases with the local lease; operation, rate,
@@ -107,10 +113,14 @@ active/active authoritative multi-region writes.
 Each hierarchical lease binds quota kind, unit, period, and settlement policy.
 Expiry stops new reservations but preserves spent/encumbered capacity; a parent
 reclaims only proven free remainder. Outstanding claims settle against the
-original encumbrance or transfer exactly once under fencing through failover and
-late evidence.
-Composite transactions use one order—stream head, authority fences, grant
-guard, quota lease/keys, uniqueness claims, then receipts—and retry only
+original encumbrance through a durable `QuotaCapacityTransferState` outbox/inbox
+process manager. Stable identities, epochs, digests, sequences, receipts, an
+authenticated acknowledgement, and old-child fence proof make local transitions
+idempotent over at-least-once delivery. Uncertainty stays charged and double-
+entry recovery never exposes capacity at both ends; late evidence retains its
+original claim/transfer lineage.
+Composite transactions use one order—stream head, authority fences, target
+fence, grant guard, quota lease/keys, uniqueness claims, then receipts—and retry only
 classified deadlocks under a bounded identity/digest/version-preserving policy.
 Tenant/work-class
 partitioning, fair share, ceilings, starvation bounds, and a scoped emergency
@@ -144,7 +154,9 @@ grant owner/lineage/successor/outbox causation, redemption-guard/attempt-claim
 placement and receipt, authority-fence sources/epochs/co-location/staleness,
 bounded quota-claim kinds/boundaries/settlement, exact-set token/digest/
 linearization, quota partition/capacity-lease/encumbrance-transfer topology,
-canonical composite lock/retry behavior, refund/write-off evidence, and
+target-fence owner/epoch/co-location/placement, receipt-idempotent capacity-
+transfer delivery/conservation, canonical composite lock/retry behavior,
+refund/write-off evidence, and
 compensation/recovery-capacity behavior.
 
 At each implementation stop: do not tag, publish, or begin the next milestone.

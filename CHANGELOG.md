@@ -82,6 +82,12 @@ All notable Vitheim changes are documented here. The format follows
 - Closed the remaining dispatch and lease-lifecycle races without new versions:
   every authority source now supplies a monotonic local dispatch fence; expired
   hierarchical quota leases retain per-kind encumbrances through settlement or
-  exactly-once transfer; and composite transactions share one canonical lock
+  fenced transfer; and composite transactions share one canonical lock
   order with bounded identity-preserving deadlock retry.
+- Closed the target-state and cross-partition transfer gaps without new
+  versions: current-target dispatch now locks a typed co-transactional fence
+  covering lifecycle and deletion/supersession epochs, while quota capacity
+  moves through an explicit outbox/inbox state machine with receipt-idempotent
+  local transitions, at-least-once delivery, authenticated reclaim, conservative
+  double-entry accounting, and original claim/transfer lineage.
 - Added local and GitHub verification gates without a crate publication path.

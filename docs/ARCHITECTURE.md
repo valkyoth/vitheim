@@ -96,6 +96,12 @@ authorization semantics.
    epoch update or dispatch transaction wins establishes the order. External-
    only bounded-stale facts cannot authorize privileged effects without an
    authoritative co-located local revocation epoch.
+   Current-target dispatch also locks a typed `DispatchTargetFence`. The effect
+   aggregate's expected version/digest is sufficient when it is the target;
+   otherwise the target owner atomically maintains a co-located fence binding
+   tenant, kind/ID, version/digest, lifecycle, and deletion/supersession epoch.
+   Remote, cross-shard, and projection-only current-target semantics are
+   unsupported, and restore cannot reuse an earlier target epoch.
    Each effect carries a bounded atomic set of typed quota claims rather than
    one universal reservation. Concurrency releases with its local lease;
    consumable operations follow declared evidence rules; provider-rate tokens
@@ -116,10 +122,16 @@ authorization semantics.
    A lease binds kind, unit, period, and settlement policy. Expiry blocks new
    reservations but preserves spent or encumbered capacity; parents reclaim only
    proven free remainder. Outstanding claims settle against the original
-   encumbrance or move once through a fenced transfer, including across failover
-   and late provider evidence.
-   Composite transactions acquire stream head, authority fences, grant guard,
-   quota lease/keys, uniqueness claims, then receipts in one canonical order.
+   encumbrance or move through an outbox/inbox
+   `QuotaCapacityTransferState` process manager. Stable transfer identity,
+   epochs, digest, sequence, authenticated acknowledgement, and old-child fence
+   proof provide receipt-idempotent local transitions over at-least-once
+   delivery. Uncertain movement stays conservatively charged; double-entry
+   recovery may overcharge temporarily but never frees capacity at both ends,
+   and late evidence retains the original claim/transfer lineage.
+   Composite transactions acquire stream head, authority fences, target fence,
+   grant guard, quota lease/keys, uniqueness claims, then receipts in one
+   canonical order.
    Only classified deadlocks receive bounded, identity-preserving retries.
    Compensation is accounted separately. Tenant/work-class
    partitioning, fair share, ceilings, starvation bounds, and a scoped emergency

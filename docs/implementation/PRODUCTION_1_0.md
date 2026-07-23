@@ -83,6 +83,12 @@ Verification:
   local epochs rather than read-before-commit checks. Missing/substituted/
   reordered/non-local fences, epoch rollback/reuse, and bounded-stale external
   authority for privileged work fail closed.
+  Every current-target dispatch also proves a typed `DispatchTargetFence`.
+  Same-aggregate work uses exact expected stream version/digest; different-
+  aggregate work locks the target-owner-maintained co-located row binding tenant,
+  kind/ID, version/digest, lifecycle, and deletion/supersession epoch. Deletion,
+  merge, migration, supersession, stale projection, cross-shard placement, and
+  restore races cannot authorize provider I/O or advance a second stream.
   Quota evidence proves bounded atomic claim sets and correct settlement for
   concurrency leases, consumable operations, provider-rate tokens, estimated
   liabilities, and retained bytes across their exact boundaries. Only provider-
@@ -100,11 +106,18 @@ Verification:
   allocation and binding kind/unit/period/settlement. Expiry stops new
   reservation but preserves retained bytes, unknown liabilities, charged
   operations, spent rate tokens, and every other encumbrance until original
-  settlement or fenced exactly-once transfer. Child loss, late evidence,
-  duplicate transfer, and parent reclamation racing failover cannot lose or
-  recreate capacity. Cross-partition set, distributed work transaction, and
+  settlement or fenced transfer. Transfer uses a stable
+  `QuotaCapacityTransferState` outbox/inbox lineage with source/destination
+  epochs, digest, sequence, receipts, authenticated acknowledgement, and old-
+  child fence proof. Local transitions are exactly once by receipt while
+  delivery remains at least once; uncertainty stays conservatively charged and
+  double-entry recovery never makes capacity free at both ends. Child loss,
+  late evidence, duplicate/reordered delivery, lost acknowledgement, conflicting
+  transfer, and parent reclamation racing failover cannot lose or recreate
+  capacity. Cross-partition set, distributed work transaction, and
   active/active authoritative-write requests fail closed. Composite transactions
-  use the canonical stream/fence/guard/quota/uniqueness/receipt order; bounded
+  use the canonical stream/authority-fence/target-fence/guard/quota/uniqueness/
+  receipt order; bounded
   retries preserve identity/digest/version/fence state and never repeat I/O.
   Provider-outage and hostile-tenant tests prove per-tenant/work-class ceilings,
   global fair share, starvation bounds, and scoped non-borrowable emergency
