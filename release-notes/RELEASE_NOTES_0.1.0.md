@@ -16,6 +16,8 @@ baseline. This is not a production release.
 - Added detailed implementation handoffs for all 225 planned milestones and a
   completeness check that prevents missing version plans or pentest stops.
 - Enforced the 500-line Rust source limit and no-third-party baseline.
+- Made repository verification portable to GitHub-hosted runners without an
+  undeclared ripgrep installation.
 
 ## Security
 

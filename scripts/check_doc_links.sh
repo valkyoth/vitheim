@@ -5,7 +5,8 @@ failed=0
 tmp="$(mktemp "${TMPDIR:-/tmp}/vitheim-doc-links.XXXXXX")"
 trap 'rm -f "$tmp"' EXIT HUP INT TERM
 
-rg -n --glob '*.md' -o '\[[^]]+\]\([^ )#]+(?:#[^ )]+)?\)' . > "$tmp" || true
+git grep -n -E -o '\[[^]]+\]\([^ )#]+(#[^ )]+)?\)' -- '*.md' > "$tmp" ||
+    true
 
 while IFS= read -r entry; do
     file="${entry%%:*}"
@@ -27,4 +28,3 @@ done < "$tmp"
 if [ "$failed" -ne 0 ]; then
     exit 1
 fi
-

@@ -52,4 +52,7 @@ All notable Vitheim changes are documented here. The format follows
   outranks unavailable rollup-preservation proof; remote effects have durable
   ambiguous-outcome and reconciliation semantics; and the tenant-surface
   registry has an inward descriptor, explicit backfill, and prospective gate.
+- Removed the undeclared ripgrep dependency from repository verification so
+  GitHub-hosted runners use portable `grep`/`git grep` policy, plan, link, SBOM,
+  release-readiness, and tool-freshness checks.
 - Added local and GitHub verification gates without a crate publication path.

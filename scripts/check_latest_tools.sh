@@ -12,12 +12,22 @@ test "$(cargo deny --version | awk '{print $2}')" = "$expected_deny"
 test "$(cargo audit --version | awk '{print $2}')" = "$expected_audit"
 test "$(cargo sbom --version | awk '{print $2}')" = "$expected_sbom"
 
-test "$(cargo search cargo-deny --limit 1 | sed -n 's/^cargo-deny = "\([^"]*\)".*/\1/p')" = "$expected_deny"
-test "$(cargo search cargo-audit --limit 1 | sed -n 's/^cargo-audit = "\([^"]*\)".*/\1/p')" = "$expected_audit"
-test "$(cargo search cargo-sbom --limit 1 | sed -n 's/^cargo-sbom = "\([^"]*\)".*/\1/p')" = "$expected_sbom"
+test "$(
+    cargo search --color never cargo-deny --limit 1 |
+        sed -n 's/^cargo-deny = "\([^"]*\)".*/\1/p'
+)" = "$expected_deny"
+test "$(
+    cargo search --color never cargo-audit --limit 1 |
+        sed -n 's/^cargo-audit = "\([^"]*\)".*/\1/p'
+)" = "$expected_audit"
+test "$(
+    cargo search --color never cargo-sbom --limit 1 |
+        sed -n 's/^cargo-sbom = "\([^"]*\)".*/\1/p'
+)" = "$expected_sbom"
 
 checkout="$(git ls-remote https://github.com/actions/checkout.git refs/tags/v7.0.1 | awk '{print $1}')"
 test "$checkout" = "$expected_checkout"
 
-rustup check | rg -q "stable.*$expected_rust|$expected_rust.*up to date"
-
+rustup_status="$(rustup check)"
+printf '%s\n' "$rustup_status" |
+    grep -Eq "stable.*$expected_rust|$expected_rust.*up to date"

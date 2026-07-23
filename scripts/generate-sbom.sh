@@ -13,9 +13,9 @@ case "$mode" in
     --check)
         test -s "$target"
         for package in vitheim vitheim-budget vitheim-error vitheim-id vitheim-time; do
-            rg -q "\"name\": \"$package\"" "$target"
+            grep -Fq "\"name\": \"$package\"" "$target"
         done
-        if rg -q 'registry\+|git\+' "$target"; then
+        if grep -Eq 'registry\+|git\+' "$target"; then
             echo "SBOM contains a forbidden third-party Cargo source" >&2
             exit 1
         fi
@@ -29,4 +29,3 @@ case "$mode" in
         exit 2
         ;;
 esac
-
