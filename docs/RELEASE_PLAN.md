@@ -104,8 +104,8 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
 | `0.18.1` | Active-generation successor/cancellation recovery and typed floor ratchet | Prepared cancellation creates one complete recovery successor; no independent restore; idempotent receipts/deadline; successor/key migration races |
 | `0.18.2` | Atomic work with governed evaluators, serialized rotation/remediation, and evidence-backed quarantine | Evaluator lineage/reevaluation, quarantine resolution/no revival, independent remediation/no-path manual state, existing rotation/TCB cases |
-| `0.18.3` | Complete declaration-driven invariant ownership/lifecycle registry | Foundational backfill; bidirectional declaration coverage; stable enforcement/capability/test/recovery/fence IDs; supersession symmetry; mixed-version/migration/rollback completeness |
-| `0.18.4` | Campaign-rooted bounded evaluator re-evaluation scheduler | Atomic epoch/campaign creation, cutoff/index/cursor completeness, millions of snapshots, concurrent credential lifecycle, repeated replacement, outage, failover, hostile-tenant starvation |
+| `0.18.3` | Complete ownership-root, composite-law, and lifecycle registry | All-document bidirectional declarations; independent roots; per-point negative IDs; law dependencies/recovery; acyclic version-ordered supersession; mixed-version/migration/rollback completeness |
+| `0.18.4` | Journal-complete bounded evaluator re-evaluation scheduler | Atomic epoch/campaign root, authoritative membership journals, sealed shard high-watermarks, fenced moves, one receipt per shard, final barrier/reconciliation, millions of credentials, outage/failover/starvation |
 | `0.18.5` | Remediation-authority bootstrap and recovery root | First admission, independent channels/KMS, quorum/separation, simultaneous loss, compromise, circularity, stale restore, manual-only providers |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
@@ -124,8 +124,8 @@ implementations remain blocked rather than being implemented casually.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.21.0` | Stable-invariant storage negotiation for provider and foundational authority | Missing/false/downgraded `VIT-CAP-*` claims, unregistered invariants, evaluator campaign/index/cursor placement, existing provider state |
-| `0.22.0` | Declaration-derived destructive invariant and storage conformance | Concrete `VIT-ENF/TST/RCV-*` resolution, atomicity/isolation, campaign completeness, lifecycle/supersession, existing provider cases |
+| `0.21.0` | Stable-invariant storage negotiation for provider and foundational authority | Missing/false/downgraded `VIT-CAP-*` claims, unregistered roots/laws, membership-journal/campaign/scan-receipt placement, existing provider state |
+| `0.22.0` | Declaration-derived destructive invariant and storage conformance | Concrete per-point `VIT-ENF/TST/RCV-*` resolution, law recovery, atomicity/isolation, journal/barrier campaign completeness, lifecycle/supersession, existing provider cases |
 | `0.23.0` | SQLite single-node adapter | Locking, rollback, injection, file permissions, tenant partition |
 | `0.24.0` | PostgreSQL reference production adapter | Atomic evaluator/quarantine-generation transitions, rotation/remediation lineage separation and quotas, existing recovery/floors |
 | `0.25.0` | Experimental MySQL adapter | Isolation/encoding differences, rollback, tenant enforcement, no default v1 claim |
@@ -424,11 +424,11 @@ the first technology decision. An unselected option remains unsupported at
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.140.1` | Cryptography/time and exact credential-operation/rotation/recovery-root profile decision | Existing rotation/idempotency/orphan/count and signing/bearer TCB freeze plus remediation bootstrap, independent channel/KMS/quorum profile or manual-only recovery |
-| `0.140.2` | Storage topology for complete registered invariants and governed provider state | Zero-missing declaration/capability matrix plus rotation/quarantine/cancellation placement, evaluator campaign/index/queue/cursors/fairness, tombstones, remediation ceremony |
+| `0.140.2` | Storage topology for complete registered invariants and governed provider state | Zero-missing root/law/capability matrix plus rotation/quarantine/cancellation placement, evaluator membership journals/campaign/scan receipts/barrier/queue/fairness, tombstones, remediation ceremony |
 | `0.140.3` | Human/workload/session and worker-instance identity decision | Co-located epochs, enforceable expiry, unique per-runtime claimant, lease-fence binding, restart/takeover invalidation |
 | `0.140.4` | Component runtime and governed credential-broker TCB decision | Evaluator binary/corpus admission and upgrade; quarantine-resolution evidence; non-composable remediation authority; existing TCB |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, retention precedence, omitted derived surfaces, tombstone/evidence inflation |
-| `0.140.6` | Deployment/HA invariant-owner and recovery decision | Complete owner/fence placement plus atomic evaluator campaign root, enumeration/completeness/fairness HA, quarantine/remediation isolation, RPO/RTO |
+| `0.140.6` | Deployment/HA invariant-owner and recovery decision | Complete owner/law/fence placement plus atomic evaluator campaign root, membership journal/scan-receipt/barrier/fairness HA, quarantine/remediation isolation, RPO/RTO |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |

@@ -8,6 +8,14 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Incorporated the latest gap review by separating one-owner invariant roots
+  from composite security laws, adding independently updated authority roots,
+  per-enforcement negative-test child contracts, all-document declaration
+  scanning, and acyclic version-ordered lifecycle validation.
+- Replaced projection-authoritative evaluator discovery with append-only
+  membership journals, sealed shard generations/high-watermarks, fenced moves,
+  one completion receipt per shard, a final barrier, and authoritative mismatch
+  reconciliation carried through storage, HA, option, and production gates.
 - Expanded `0.18.3` from a nine-row shape check into a complete declaration-
   driven ownership and lifecycle registry through `0.18.2`, with stable
   enforcement, capability, verification, recovery, and owner-fence contracts.

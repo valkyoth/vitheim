@@ -195,13 +195,15 @@ Verification:
   receive priority within those bounds. A newer evaluator permanently
   supersedes older job generations, stale evidence is authenticated and fetched
   again, crash/failover resumes safely, and queued credentials never use old
-  output. `VIT-INV-027` additionally proves the evaluator epoch and one durable
-  invalidation-campaign root commit atomically. The root binds the authoritative
-  snapshot-generation index, frozen cutoff and complete shard manifest, stable
-  page cursors, generation-bound idempotent job materialization, concurrent
-  credential create/move/delete/quarantine/rotation dispositions, and expected/
-  materialized/completed/escalated counts. Terminal completion requires a
-  reconciliation manifest with zero unexplained epoch-mismatched snapshots.
+  output. Composite `VIT-LAW-004`, coordinated by `VIT-INV-027`, additionally
+  proves the evaluator epoch and one durable invalidation-campaign root commit
+  atomically. `VIT-INV-046` authoritative append-only membership shard journals
+  bind sealed generations/high-watermarks, capability mutation intents, and
+  fenced source-first move lineage. `VIT-INV-047` supplies one fenced scan and
+  exactly one completion receipt per canonical manifest shard. Terminal
+  completion requires every receipt, a final membership barrier, and continuous
+  capability-owner reconciliation with zero unexplained epoch mismatch. Search
+  and projection indexes remain rebuildable accelerators, never proof.
   Repeated evaluator replacement tombstones predecessor campaigns; their counts
   cannot satisfy the successor. Crash, failover, restore, or stuck enumeration
   remains resumable and visible rather than silently omitting work.
@@ -241,9 +243,10 @@ Verification:
   Acceptance tests cover evaluator security fixes, semantic/corpus changes,
   mixed-version and downgrade nodes, emergency revocation, millions of
   snapshots, provider outage/rate limits, hostile tenants, repeated evaluator
-  replacement, epoch/campaign atomicity, cutoff/index/shard/page omission,
-  concurrent credential lifecycle during enumeration, premature campaign
-  completion, missing-snapshot reconciliation, stuck/superseded campaign,
+  replacement, epoch/campaign atomicity, membership-intent/journal/generation/
+  high-watermark/manifest/scan/receipt/barrier omission, fenced moves,
+  concurrent credential lifecycle during enumeration, projection-authoritative
+  or premature completion, capability-owner mismatch, stuck/superseded campaign,
   partial reevaluation, stale evidence, queue crash/failover and starvation,
   restore; every quarantine transition, stale/weak/inconsistent evidence,
   resolver collusion, generic/incident-only clear, old-handle/receipt/queue/

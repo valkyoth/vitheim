@@ -138,10 +138,12 @@ audit decision.
   monotonic epoch; evaluator change/revocation immediately requires
   re-evaluation and incompatible nodes reject startup. Re-evaluation uses
   an invalidation campaign root created atomically with the evaluator epoch,
-  an authoritative evaluator-epoch/snapshot-generation index, frozen cutoff and
-  shard manifest, stable page cursors, generation-bound idempotent jobs,
-  explicit create/move/delete/quarantine/rotation dispositions, and a terminal
-  completeness reconciliation proof. A successor campaign tombstones older
+  authoritative append-only membership shard journals, sealed generations and
+  high-watermarks, fenced cross-shard moves, one scan receipt per manifest
+  shard, a final membership barrier, generation-bound idempotent jobs, explicit
+  create/move/delete/quarantine/rotation dispositions, and authoritative
+  capability-owner mismatch reconciliation. Search/projection indexes cannot
+  prove completeness. A successor campaign tombstones older
   enumeration and cannot inherit its counts. Re-evaluation then uses
   durable tenant/provider/account-partitioned jobs with stable generations,
   bounded concurrency/retry/provider-rate claims, global and tenant fairness,

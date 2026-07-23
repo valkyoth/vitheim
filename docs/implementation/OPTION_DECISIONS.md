@@ -120,16 +120,20 @@ fair-share counters, priority, cleanup lane, freshness/refetch state, and
 escalation. Produce a complete stable-invariant-ID coverage matrix from
 `docs/INVARIANT_OWNERSHIP.md`; a selected storage profile missing an applicable
 `VIT-CAP-*` capability is unsupported rather than waived. Coverage begins from
-phase declarations and resolves every ownership/lifecycle row, `VIT-ENF-*`
-enforcement contract, `VIT-TST-*` conformance contract, `VIT-RCV-*` recovery
-field, and `VIT-FEN-*` owner-transfer fence. Freeze symmetric supersession,
-mixed-version behavior, migration contract, and rollback floor for every
-selected invariant; zero unregistered or prose-only authority is permitted.
+all phase and production declarations and resolves every ownership/lifecycle
+row, composite `VIT-LAW-*`, per-point `VIT-ENF-*`/negative-child contract,
+`VIT-RCV-*` recovery field, and `VIT-FEN-*` owner-transfer fence. Freeze
+acyclic, version-ordered symmetric supersession, mixed-version behavior,
+migration contract, and rollback floor for every selected invariant; zero
+unregistered or prose-only authority is permitted.
 Map the evaluator invalidation-campaign root in the same transaction domain as
-evaluator epoch activation/revocation, plus its authoritative snapshot-
-generation index, cutoff/shard manifest, cursors, idempotent materialization,
-concurrent-credential dispositions, counts, completeness reconciler/proof,
-successor tombstones, and stuck state.
+evaluator epoch activation/revocation. Separately map authoritative append-only
+membership shard journals/generations/high-watermarks, atomic capability
+membership intents, source-first fenced moves, the canonical sealed manifest,
+one fenced scan/receipt per shard, final membership barrier, idempotent
+materialization/dispositions, capability-owner mismatch reconciliation,
+successor tombstones, and stuck state. Search and projections are never
+completeness authority.
 Map capacity-policy lineage owner/
 one-parent ledger/high-watermark, protected-floor history/reduction/separation/
 platform-floor profile/admission/ratchet rows, hierarchy-root manifest/
@@ -166,16 +170,19 @@ rotation owner/state/evidence/deadline split, non-atomic local activation,
 missing/non-co-located rotation guard, two non-terminal rotations, lost orphan/
 count encumbrance, capability snapshot/epoch/quarantine/claim split, cleared
 quarantine on restore, evaluator lineage/epoch/reevaluation split, old evaluator
-output surviving activation/revocation, split epoch/campaign root, missing
-snapshot index/cutoff/shard/page/job/disposition/count/completeness state,
-predecessor campaign reuse, incompatible-node startup, partial
+output surviving activation/revocation, split epoch/campaign root, projection-
+authoritative discovery, missing membership intent/journal/generation/high-
+watermark/manifest/scan/receipt/barrier/disposition/reconciliation state,
+unfenced cross-shard move, predecessor campaign reuse, incompatible-node
+startup, partial
 quarantine transition or old-work tombstone loss, generic/incident-only clear,
 missing strong revision/consistency barrier/resolver separation, remediation
 lineage merged with business credentials or quota, stale observer state or
 dispatch-time remote discovery,
-unregistered invariant declaration/owner/lifecycle, unresolved enforcement/
-capability/test/recovery/fence ID, asymmetric supersession, unsafe mixed-version
-owner transfer, missing migration contract or rollback floor,
+unregistered invariant declaration/owner/lifecycle/law, unresolved per-point
+enforcement/negative/capability/recovery/fence ID, cyclic or non-increasing
+supersession, unsafe mixed-version owner transfer, invalid status semantics,
+missing migration contract or rollback floor,
 ambiguous or multi-parent policy owner, non-co-located policy stream/parent
 ledger/floor row, non-atomic activation, shared floor/policy authority, missing
 operational fences/platform minimum/cross-command separation, incomplete or
@@ -460,10 +467,13 @@ partitions, stable job generations and durable cursors, global/per-tenant
 fairness and starvation bounds, provider-rate claims, bounded concurrency/retry,
 non-borrowable cleanup capacity, privileged/near-term priority, fresh-evidence
 fetch, successor cancellation, and failover/RPO/RTO. Freeze the crash-atomic
-evaluator-epoch-plus-invalidation-campaign-root placement, snapshot index and
-enumeration cutoff semantics, shard/page cursor ownership, concurrent credential
-lifecycle dispositions, manifest/count completeness proof, predecessor/
-successor campaign fencing, stuck-campaign escalation, and campaign RPO/RTO.
+evaluator-epoch-plus-invalidation-campaign-root placement; authoritative
+membership-journal shards/generations/high-watermarks; capability mutation
+intents; source-first move fencing; manifest and one scan receipt per shard;
+final barrier; concurrent lifecycle dispositions; capability-owner mismatch
+proof; predecessor/successor fencing; stuck escalation; and campaign RPO/RTO.
+Reject projection/search authority and any HA design needing a fleet-wide
+atomic freeze.
 The HA profile also resolves every declaration-derived invariant owner,
 transaction domain, stable contract ID, lifecycle/supersession fence, mixed-
 version rule, recovery field, and rollback floor. Only local credential
@@ -526,8 +536,9 @@ deadline/outage and atomic-local-activation profile, credential-capability
 snapshot/epoch/event-or-poll/freshness/revision profile, rotation guard/
 idempotency/takeover/orphan/count-quota profile, semantic evaluator/AST/evidence/
 complexity/evaluator-lineage/admission/epoch/reevaluation/startup profile,
-invalidation-campaign root/snapshot-index/cutoff/shard-page/materialization/
-disposition/count/completeness/successor/stuck profile,
+invalidation-campaign root/membership-journal/generation/high-watermark/fenced-
+move/shard-scan/receipt/final-barrier/materialization/disposition/
+reconciliation/successor/stuck profile,
 reduced/quarantine-resolution/consistency/resolver/new-generation/tombstone/
 incident profile, independent remediation authority/profile/lineage/audit/
 cleanup-quota or manual-only recovery profile, restore ordering,
@@ -599,8 +610,9 @@ simultaneous rotation, unknown successor, late callback, orphan/count exhaustion
 evaluator semantic/downgrade/budget failure, quarantined non-privileged or
 claimed work, safe-subset policy bypass, automatic widening, break-glass
 promotion, evaluator activation/revocation/epoch/reevaluation split brain,
-epoch/campaign-root split, index/cutoff/shard/page/job omission, concurrent
-credential disposition loss, false terminal counts, stuck/predecessor campaign
+epoch/campaign-root split, membership-intent/journal/high-watermark/manifest/
+scan/receipt/barrier/job omission, concurrent credential disposition or move
+loss, projection-authoritative or false completion, stuck/predecessor campaign
 reuse, incompatible-node readiness, partial resolution/old-work revival, missing strong
 revision/consistency/resolver separation, remediation credential/profile/tenant
 substitution, circularity/business use, sole-key outage/response loss/count

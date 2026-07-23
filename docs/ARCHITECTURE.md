@@ -317,10 +317,12 @@ authorization semantics.
     count. Phase prose and projections cannot become alternate authority.
 25. Evaluator replacement remains immediately fail closed but re-evaluation is
     bounded, durable, and complete. Epoch activation/revocation atomically
-    creates an invalidation-campaign root; an authoritative snapshot-generation
-    index, frozen enumeration cutoff, shard/page cursors, idempotent job
-    materialization, concurrent-credential dispositions, and terminal
-    reconciliation manifest ensure no affected credential is missed.
+    creates an invalidation-campaign root. Authoritative append-only membership
+    shard journals with sealed generations/high-watermarks, fenced source-first
+    moves, one fenced scan and receipt per manifest shard, a final membership
+    barrier, and capability-owner mismatch reconciliation ensure no affected
+    credential is missed. Search and projection indexes are accelerators only
+    and never evidence of completeness.
     Tenant/provider/account queues, stable job generations,
     leases/cursors, provider-rate claims, global fair share, tenant ceilings,
     starvation bounds, and a non-borrowable cleanup lane prevent a fleet surge

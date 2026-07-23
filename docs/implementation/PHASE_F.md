@@ -13,6 +13,7 @@ and timing/count inference pass. Exit criteria: every interface proves isolation
 ## `0.51.1` — Tenant Lifecycle And Topology Migration
 
 Status: planned.
+<!-- vitheim-invariant VIT-INV-036 0.51.1 -->
 
 Setup: define provision, activate, suspend, resume, export, legal hold, close,
 delete, key destroy, identifier non-reuse, backup/index/cache cleanup, residency/
@@ -119,6 +120,7 @@ retention decision.
 
 ## `0.52.0` — Subjects And Service Principals
 Status: planned. Setup: define human/service/device identities, issuer binding,
+<!-- vitheim-invariant VIT-INV-037 0.52.0 -->
 lifecycle, credential facts, and impersonation prohibition. Define an
 external-identity-link aggregate keyed only by compound issuer plus immutable
 external subject ID; never auto-link email, display name, or mutable username.
@@ -214,6 +216,7 @@ implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.53.0` — OIDC Integration
 Status: planned; blocked until this milestone admits an audited OIDC/client/TLS
+<!-- vitheim-invariant VIT-INV-038 0.53.0 -->
 implementation and exact conformance profile. Setup: pin an exact
 OIDC conformance profile covering discovery, issuer/JWKS rotation, exact redirect
 matching, authorization code plus PKCE, state/nonce, mix-up defenses, token type,
@@ -335,6 +338,7 @@ stop reached. Run pentest for this exact commit.`
 
 ## `0.55.0` — RBAC Engine
 Status: planned. Setup: define platform, tenant, workspace, shared-space, and
+<!-- vitheim-invariant VIT-INV-040 0.55.0 -->
 resource role/capability scopes; custom role templates, inheritance,
 separation-of-duties, explicit deny precedence, assignment provenance, expiry,
 versions, explanation, and monotonic role/assignment enforcement epochs updated
@@ -351,6 +355,7 @@ Exit criteria: every permit cites the exact role path. `v0.55.0 implementation s
 
 ## `0.56.0` — ABAC Engine
 Status: planned. Setup: define one policy decision request containing tenant,
+<!-- vitheim-invariant VIT-INV-042 0.56.0 -->
 subject, authentication assurance/sender-constraint/proof identity, action,
 resource, field set, purpose, environment and policy version;
 define typed fact provenance/freshness, operators, missing/unknown behavior,
@@ -387,6 +392,7 @@ least-authority recovery path. `v0.56.1 implementation stop reached. Run pentest
 
 ## `0.57.0` — Relationship-Based Authorization
 Status: planned. Setup: define admitted edge types, direction, depth/work bounds,
+<!-- vitheim-invariant VIT-INV-041 0.57.0 -->
 security labels, freshness, explanation paths, and monotonic relationship-fact
 epochs updated with authoritative edge changes. Goal: authorize ownership/
 delegation graphs safely.
@@ -562,6 +568,7 @@ authorization gates.
 
 ## `0.59.0` — Delegation And Break-Glass Access
 Status: planned. Setup: require delegation to be a non-amplifying subset with
+<!-- vitheim-invariant VIT-INV-039 0.59.0 -->
 tenant/resource scope, expiry, revocation and redelegation policy; break glass
 requires strong reauthentication, independent approval where feasible, dedicated
 short session, reason, notifications, live monitoring, and immutable usage.
@@ -611,8 +618,9 @@ rotation state/guard/idempotency/takeover/orphan/count/evidence/unknown/deadline
 cases, credential-capability snapshot/epoch/freshness/raw-and-normalized-digest/
 evaluator-version/canonical-result/safe-subset/quarantine/reconciler cases,
 evaluator-lineage/admission/generation/epoch/reevaluation/startup cases,
-invalidation-campaign root/index/cutoff/shard-page/materialization/disposition/
-completeness/successor/stuck cases,
+invalidation-campaign root/membership-journal/high-watermark/fenced-move/shard-
+scan/receipt/final-barrier/materialization/disposition/reconciliation/
+successor/stuck cases,
 quarantine investigation/remediation/verification/resolution/current-evidence/
 resolver/new-generation/tombstone cases, remediation-authority profile/lineage/
 approval/audit/epoch/egress/cleanup-quota/manual-limit cases, and

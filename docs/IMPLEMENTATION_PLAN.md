@@ -44,10 +44,15 @@ every invariant must have an introducing milestone declaration, exactly one
 ownership row, one lifecycle/supersession row, an owner-maintained guard,
 transaction placement, and stable enforcement/capability/test/recovery/fence
 contract IDs before its milestone may exit. Bidirectional checks derive coverage
-from declarations rather than a static expected count. Phase prose supplies
-context but cannot establish a second owner; storage profiles, concrete tests,
-recovery manifests, owner transfers, mixed-version behavior, and rollback floors
-must resolve the stable contracts instead of relying on prose.
+from declarations across every implementation document rather than a static
+expected count. Cross-owner guarantees use registered `VIT-LAW-*` records with
+one proof coordinator, explicit contributors, local linearization points,
+fail-closed state, and end-to-end recovery; they never invent a shared owner.
+Every enforcement point derives its own stable negative-test child ID. Phase
+prose supplies context but cannot establish a second owner; storage profiles,
+concrete tests, recovery manifests, owner transfers, mixed-version behavior,
+and rollback floors must resolve the stable contracts instead of relying on
+prose. Supersession is acyclic and version ordered.
 Before `0.51.2`, every milestone that creates or changes tenant-bearing durable,
 cached, indexed, backed-up, or external-copy state must supply the neutral
 `0.8.1` lifecycle descriptor and inventory fixture without depending outward on

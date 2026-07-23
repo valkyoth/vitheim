@@ -118,8 +118,10 @@ resolution/new-generation/tombstone evidence, independent remediation lineage/
 approval/audit/quota or manual-only recovery state, remediation bootstrap/
 recovery ceremony/quorum/channel/KMS-independence/epoch state, evaluator
 re-evaluation queue/job-generation/cursor/lease/fair-share/provider-rate/
-cleanup-lane state, evaluator invalidation-campaign root/snapshot-generation
-index/cutoff/shard-page cursor/materialization/completeness-manifest/stuck-state,
+cleanup-lane state, evaluator invalidation-campaign root, authoritative
+membership mutation/journal/shard-generation/high-watermark, fenced move,
+campaign-shard scan/cursor/single-receipt/final-barrier/materialization/
+reconciliation/stuck state,
 explicit credential-operation/TCB placement, cancellation-recovery
 successor semantics, bounded
 deadlock-retry semantics, and fail-closed behavior.
@@ -128,8 +130,10 @@ Goal: prevent adapters from silently weakening correctness.
 
 Deliverables: stable capability vocabulary, signed/probed report model,
 compatibility decision engine, declaration-to-invariant-to-`VIT-CAP-*` coverage
-report, lifecycle/supersession/owner-fence placement report, and operator
-diagnostics. A claimed storage profile fails admission when any applicable
+report, composite-law contributor/coordinator/recovery placement report, per-
+enforcement negative-child realization, lifecycle/supersession/owner-fence
+placement report, and operator diagnostics. A claimed storage profile fails
+admission when any applicable
 registry `requires:` capability is missing.
 
 Verification: false/missing/conflicting claims, version skew, downgrade, probe
@@ -168,11 +172,12 @@ approved bootstrap/recovery, shared channel/KMS dependency presented as
 independent, stale recovery epoch, or false automatic recovery without an
 independent provider path; missing evaluator job uniqueness, durable cursor,
 fair-share ceiling, protected cleanup lane, current generation fence, or
-fresh-evidence refetch; non-atomic evaluator-epoch/campaign-root creation,
-missing or projection-only snapshot-generation index, unstable cutoff/shard
-manifest/page cursor, unaccounted concurrent credential lifecycle, incomplete
-materialization/count/terminal proof, or predecessor campaign satisfying a
-successor; remote permission
+fresh-evidence refetch; non-atomic evaluator-epoch/campaign-root creation, lost
+capability membership intent, missing/corrupt membership journal/generation/
+high-watermark, projection or search used as authority, unstable manifest/scan/
+receipt/final barrier, unfenced shard move, unaccounted concurrent lifecycle
+mutation, incomplete materialization/reconciliation proof, or predecessor
+campaign satisfying a successor; remote permission
 discovery in dispatch, restored revoked generation
 or handle, stale queued instruction after
 suspension, credential export from signing/mTLS/HSM, bearer serialization/TLS/
@@ -268,11 +273,12 @@ or claim automated recovery without an independent provider path; lose or
 duplicate evaluator jobs/cursors, use old output while queued, let one tenant
 starve others, lend the cleanup lane to business work, or complete against a
 superseded evaluator generation; split evaluator epoch from campaign root,
-omit an indexed snapshot/page/job/count, change cutoff during traversal, lose a
-concurrent credential disposition, accept a false terminal manifest, or let an
-old campaign close the current epoch; omit a declared invariant, stable contract
-resolution, lifecycle row, symmetric supersession, owner fence, mixed-version
-rule, migration contract, or rollback floor; rewrite an existing
+omit a membership mutation/journal/shard/scan/receipt/job, change a sealed high-
+watermark, lose a concurrent disposition or fenced move, accept completion
+without the final barrier and zero mismatch, or let an old campaign close the
+current epoch; omit a declared invariant/law, per-point negative contract,
+lifecycle row, acyclic version-ordered symmetric supersession, owner fence,
+mixed-version rule, migration contract, or rollback floor; rewrite an existing
 capacity class, use a cross-class adjustment, activate capacity policy without
 its one owner or atomic co-located parent/floor transaction, let a policy lower
 its own floor, reuse floor approvers to spend released capacity, ignore
@@ -768,8 +774,10 @@ remediation profile/credential-lineage/approval/audit/epoch/cleanup-quota or
 manual-only limitation, and cancellation-recovery
 lineage/receipts across every schema change; include declaration/lifecycle/
 contract-ID coverage, supersession receipts, old/new owner fence state,
-mixed-version admission, rollback floor, evaluator campaign root/index/cutoff/
-cursors/counts/completeness proof/stuck state, and concrete `VIT-RCV-*` fields.
+mixed-version admission, rollback floor, evaluator campaign root/membership
+journals/generations/high-watermarks/fenced moves/scan receipts/final barrier/
+mismatch proof/stuck state, composite-law recovery, per-point negative-child
+realization, and concrete `VIT-RCV-*` fields.
 
 Verification: reorder/substitution, partial failure, concurrent runner, lease loss,
 downgrade, malicious input, retry, backup restore, floor-profile conflict,
@@ -786,10 +794,11 @@ incomplete reevaluation, incompatible-node admission, cleared/partially advanced
 quarantine, missing resolution evidence or old-work tombstone, remediation
 lineage merged with business authority, lost cleanup quota/manual-only
 limitation, or affected-execution incident linkage,
-asymmetric/unknown invariant supersession, active predecessor and successor,
+asymmetric/unknown/cyclic or version-regressing invariant supersession,
+inconsistent active/superseded/retired state,
 missing owner fence, unsafe mixed-version admission, unresolved recovery
 contract, rollback below the declared floor, deleted superseded history,
-missing campaign snapshot/page/count/completeness state,
+missing campaign membership journal/scan receipt/final barrier/mismatch state,
 missing operation-profile discriminator, cancelled-prepared recovery receipt
 loss/duplication, and restored independent-parent-release cases.
 

@@ -20,9 +20,12 @@ credential lineage/audit/epoch/cleanup quota or manual-only limitation.
 Persist the `0.18.4` evaluator-job generations, tenant/provider/account queue
 partitions, durable cursors, attempts, leases, priority, freshness/refetch,
 fair-share/provider-rate/cleanup-lane accounting, and escalation; also persist
-the atomic invalidation-campaign root, authoritative snapshot-generation index,
-cutoff/shard manifest, page cursors, materialization/disposition counts,
-completeness proof, successor tombstones, and stuck state. Persist the
+the atomic invalidation-campaign root, authoritative membership mutation intents
+and append-only shard journals, sealed generations/high-watermarks, fenced move
+lineage, canonical manifest, per-shard scan cursors and single receipts, final
+membership barrier, materialization/dispositions, capability-owner mismatch
+proof, successor tombstones, and stuck state. Projection/search state is
+rebuildable and cannot certify completeness. Persist the
 `0.18.5` remediation ceremony manifest, channel/KMS bindings, quorum receipts,
 compromise/loss/recovery epoch, expiry, exercise evidence, and manual-only
 limitation. Package a declaration-derived report proving every applicable stable
@@ -43,8 +46,10 @@ handle restore, unauthorized/stale profile activation, lost tombstone/rotation
 evidence/deadline, restored dual redemption, stale/restored capability snapshot,
 evaluator admission/epoch rollback or incompatible binary startup, partial
 reevaluation, queued old-output use, lost/duplicated evaluator job or cursor,
-missing/split campaign root, index/cutoff/page/count/completeness corruption,
-premature or predecessor campaign completion, tenant starvation/cleanup-lane
+missing/split campaign root, lost membership intent, journal/generation/high-
+watermark/manifest/scan/receipt/barrier corruption, projection-authoritative
+completion, unfenced move, late mismatch, premature or predecessor campaign
+completion, tenant starvation/cleanup-lane
 borrowing, cleared quarantine/old-work revival,
 remediation-lineage merge, self-approved/circular recovery, lost channel/KMS/
 quorum/exercise state, stale recovery epoch, or lost manual-only limitation,
@@ -173,8 +178,9 @@ evaluator-lineage/epoch/reevaluation fencing, quarantine-resolution/new-
 generation/tombstone ownership, independent remediation credential-lineage/
 cleanup-quota isolation or manual-only state, bounded evaluator job/cursor/
 fairness/provider-rate/cleanup-lane scheduling, remediation bootstrap/recovery
-quorum/channel/KMS/epoch/exercise state, atomic evaluator campaign/index/cutoff/
-cursor/materialization/completeness/stuck-state ownership, declaration-derived
+quorum/channel/KMS/epoch/exercise state, atomic evaluator campaign/membership-
+journal/high-watermark/scan-receipt/final-barrier/reconciliation/stuck-state
+ownership, declaration-derived
 invariant owner/lifecycle/contract/fence placement,
 explicit credential-operation/
 bearer-broker TCB profiles, monotonic active root
@@ -384,9 +390,10 @@ consistency/new-capability-generation/pre-resolution-tombstone state,
 independent remediation profile/credential-lineage/approval/audit/epoch/egress/
 cleanup-quota/manual-only limitation, evaluator re-evaluation job generations/
 queue partitions/cursors/attempts/leases/freshness/priority/fairness/provider-
-rate/cleanup-lane/escalation, invalidation-campaign root/snapshot index/cutoff/
-shard-page cursors/materialization-disposition counts/completeness proof/
-successor tombstones/stuck state, remediation ceremony/channel/KMS/quorum/
+rate/cleanup-lane/escalation, invalidation-campaign root/membership journals/
+generations/high-watermarks/fenced moves/shard scans/receipts/final barrier/
+materialization-dispositions/mismatch proof/successor tombstones/stuck state,
+remediation ceremony/channel/KMS/quorum/
 compromise-loss-recovery epoch/expiry/exercise evidence, and the complete
 declaration-derived stable-invariant ownership/lifecycle/contract/fence and
 monotonic-state manifest,
