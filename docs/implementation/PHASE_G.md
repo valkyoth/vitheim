@@ -61,13 +61,18 @@ streams together. Every dispatch atomically locks the complete applicable
 canonical composite acquisition order. Same-aggregate targets use expected
 version/digest; different local targets use their owner-maintained fence row.
 Remote, cross-shard, and projection-only current-target timers fail closed.
+Provider-owned mutations instead preserve the immutable
+`RemoteTargetConcurrencyProfile`; a conditional timer sends the exact admitted
+validator, never refreshes it, and treats precondition failure as typed non-
+acceptance while post-transmission response loss remains unknown.
 Remote work executes only after committed authorized dispatch and
 returns through a separate activity-result/consumer bundle. Goal: crash-safe
 time and authority behavior without a distributed exactly-once claim.
 Deliverables: timer dispatch/result effects, execution-authority/grant reference
 codec, redemption-guard/attempt-claim and cancellation evidence, scheduler
 bridge, authority-fence-set and target-fence evidence, canonical lock-order/deadlock-retry
-fixtures, and atomic-variant integration fixtures. Verification: clock jumps,
+fixtures, remote-target conditional-mutation fixtures, and atomic-variant
+integration fixtures. Verification: clock jumps,
 retry storms, duplicate wakeups/results,
 cancellation/revocation races, not-before/expiry boundaries, grant replay and
 attempt exhaustion, concurrent final attempt, crash after claim before provider
@@ -77,6 +82,9 @@ two-stream rejection, tenant/subject/session/delegation/policy/service-principal
 revocation racing dispatch, missing/substituted fence, stale external authority,
 target deletion/merge/migration/supersession/restore racing dispatch, missing/
 stale target fence, stale target projection, cross-shard target placement,
+remote validator/account/resource substitution, ABA recreation, weak/strong
+confusion, ignored/downgraded provider condition, silent refresh, precondition
+failure retry, response-loss misclassification,
 lock-order inversion, retry identity drift/exhaustion, dispatch/completion
 collapse, receipt/effect split,
 remote-call-in-transaction rejection, overflow, and replay pass.
@@ -145,6 +153,8 @@ partitioned control-plane capacity, grant-redemption-guard and hierarchical
 quota-capacity-lease topology/per-kind encumbrance transfer, complete dispatch-
 authority fence sets, typed target fences, receipt-idempotent
 `QuotaCapacityTransferState` processing with at-least-once delivery, canonical
+remote-target concurrency profiles, immutable capacity-transfer owner/
+hierarchy/parent/period/lane/class/region/authorization bindings, canonical
 composite acquisition/retry behavior, and `0.51.2`
 tenant-data-surface registry entries, Phase E workflow contract fixtures, and
 `0.39.1–0.39.3` on-call/
@@ -156,7 +166,9 @@ fenced dispatch receipts, grant issuance/revocation/lineage process manager,
 co-located redemption-guard/attempt-claim handling, exact-token local per-kind
 quota settlement with hierarchical capacity leases/encumbrance transfer,
 authority-fence and target-fence validators, capacity-transfer outbox/inbox
-process manager and reconciler, bounded identity-preserving deadlock retry, fair
+process manager and reconciler, remote-target conditional-mutation validator/
+outcome handler, capacity-transfer classification guard, bounded identity-
+preserving deadlock retry, fair
 partitioned recovery lanes, and operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
 receipt/effect split, network-call-in-transaction rejection, crash points,
@@ -189,12 +201,17 @@ charged operations, or spent tokens, child-partition loss, late evidence after
 expiry/failover, duplicate encumbrance transfer, parent reclaim/failover race,
 transfer crash/duplicate/reorder/lost acknowledgement, source/destination
 failover, stale epoch, conflicting transfer, forbidden free-at-both-ends state,
+accounting-owner/hierarchy-root/parent/period/lane/class/region/authorization
+substitution, emergency/security-cleanup-to-business reclassification,
 tenant/subject/session/delegation/policy/service-principal authority changes
 racing dispatch, missing/substituted/reordered fence entries, epoch reuse, stale
 external authority for privileged work, target deletion/merge/migration/
 supersession/restore racing dispatch, missing/stale target fence, stale target
-projection, cross-shard target placement, lock-order inversion, retry exhaustion/
-identity drift,
+projection, cross-shard target placement, remote validator/account/resource
+substitution, ABA recreation, weak/strong
+confusion, provider downgrade/ignored conditional, silent refresh, typed
+precondition failure retried, response-loss misclassification,
+lock-order inversion, retry exhaustion/identity drift,
 provider outage under tenant exhaustion, per-tenant/global recovery starvation
 or reserve abuse, Phase E fake-versus-real differential, rolling upgrades, and
 soak pass.
@@ -210,12 +227,16 @@ while only the effect stream advances. Every authority change linearizes through
 the complete local monotonic fence set, and composite retries preserve identity.
 Every current-target dispatch linearizes on the target stream version/digest or
 co-located authoritative target-fence row without advancing a second stream.
+Remote provider mutation preserves its separate concurrency profile and exact
+validator or reviewed exception without claiming local target freshness.
 Every exact immutable quota set remains local transactional authority in one
 partition, reserves all-or-none, and settles by kind; hierarchical leases
 conserve wider capacity and per-kind encumbrances through expiry/failover/
 transfer without a distributed work transaction; local transfer transitions are
 receipt-idempotent, message delivery is at least once, and conservative double-
-entry accounting never exposes capacity at both ends; eligible refunds occur exactly once,
+entry accounting never exposes capacity at both ends or changes owner,
+hierarchy, parent, period, lane, capacity class, region, or authorization
+lineage; eligible refunds occur exactly once,
 administrative write-off remains distinct, compensation is separately
 accounted, fair recovery remains available under hostile tenant exhaustion, and
 every workflow interface/data surface is registered.

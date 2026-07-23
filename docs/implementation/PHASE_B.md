@@ -143,6 +143,29 @@ meaning requires current target state is unsupported when the target is remote,
 cross-shard, or available only through a projection. Deletion, merge, migration,
 supersession, and restore may never recreate or reuse an earlier target epoch.
 
+Remote provider state never masquerades as a `DispatchTargetFence`. Every
+remote-mutating capability instead declares one
+`RemoteTargetConcurrencyProfile`: `NotApplicable`, `ConditionalMutation`,
+`UnconditionalReviewed`, or `Unsupported`. `ConditionalMutation` immutably
+binds provider and resource identity, tenant/account, validator kind and bytes
+(for example ETag, generation, resource version, or revision), strong/weak
+classification, provenance and observation time, admitted provider capability/
+version, exact request digest, and idempotency key. The adapter transmits that
+validator through the provider's admitted conditional-write mechanism. A
+precondition failure becomes typed, evidence-backed
+`RemoteOutcome::DefinitelyNotAccepted`; it is not a generic retry. A worker
+cannot silently refresh the validator:
+changed remote state requires a new authorized intent. Ignored, weakened, or
+downgraded conditional behavior fails provider capability negotiation.
+Privileged, destructive, and containment mutations require a strong conditional
+profile unless a separately approved, narrowly scoped `UnconditionalReviewed`
+exception records the absent provider primitive, exact unconditional semantics,
+risk owner, quorum, expiry, and compensating controls. Weak validators and
+delete/recreate-reusable validators cannot satisfy that rule. Response loss
+after conditional transmission still follows `OutcomeUnknown`, provider
+idempotency, query, and reconciliation rules; it is never inferred to be a
+precondition failure.
+
 Quota accounting is an independent collection of state machines. Each effect
 owns a bounded `QuotaClaimSet`; each `QuotaClaim` has an opaque reservation ID,
 typed amount/unit, `QuotaKind`, settlement policy, and admission/lease/dispatch/
@@ -204,6 +227,15 @@ manager drives `QuotaCapacityTransferState` through `ReservedAtParent`,
 or encumbrance move binds a stable `QuotaCapacityTransferId`, source and
 destination partition/lease epochs, kind/unit/period/settlement policy, amount,
 canonical digest, monotonic sequence, and original claim/encumbrance lineage.
+It also binds the tenant or global accounting owner, hierarchy root and parent-
+lease identity, work class/recovery lane, capacity class (`Business`,
+`Reconciliation`, `SecurityCleanup`, or `Emergency`), residency/region scope,
+and source/destination authorization-decision identities. Ordinary transfer may
+change only the admitted partition/lease location and epoch; it cannot
+reclassify any bound accounting field. Cross-class movement is a separately
+authorized, audited adjustment command, never a transfer. The destination
+acknowledgement principal must be authorized for that exact tenant, hierarchy,
+parent lineage, lane, class, period, region, and destination epoch.
 The parent reserves capacity before committing the outbox intent; the child
 activates it idempotently with an inbox receipt. In-transit capacity is
 unavailable at the parent. Return or reclamation requires an authenticated
@@ -390,7 +422,11 @@ immutable authorization binding and freshness profile before dispatch. The
 binding covers tenant, initiating subject, delegation chain/version, capability,
 exact target identity/version/digest, purpose, request digest, policy decision/
 version, authentication assurance/expiry, and selected
-`EffectExecutionAuthority`. Denied/rejected commands atomically
+`EffectExecutionAuthority`. A remote-mutating intent additionally binds its
+`RemoteTargetConcurrencyProfile`; conditional mode freezes provider/account/
+resource, validator kind/bytes/strength/provenance/observation time, admitted
+provider capability/version, request digest, and idempotency key. Denied/
+rejected commands atomically
 commit their idempotent outcome plus audit fact but no domain events, stream
 advance, business outbox, or state effect.
 Outbox routing contains protected references rather than pre-rendered sensitive
@@ -404,8 +440,8 @@ remote-outcome, resolution-source/evidence, operational-resolution, and
 compensation types, command-commit unit including audit authority, atomic
 memory implementation, dispatcher claim/ack protocol, outcome query/
 reconciliation port, authorization-binding/freshness types, dispatch-
-authorization and durable execution-grant receipt contracts, and failure
-fixtures.
+authorization and durable execution-grant receipt contracts, remote-target
+concurrency descriptor/outcome contract, and failure fixtures.
 
 Verification: fail before/during/after every event/receipt/audit/outbox write,
 successful mutation without audit, denied mutation with domain events, duplicate
@@ -414,7 +450,11 @@ idempotency-key expiry/scope mismatch, execution state presented as remote
 outcome, forged remote outcome, operator assessment presented as verified
 provider evidence, forged resolution source, stale policy/delegation/
 authentication binding, expired/replayed/substituted execution grant, offline-
-human impersonation, target or request substitution, lease-holder confused
+human impersonation, target or request substitution, remote validator/account/
+resource substitution, weak/strong confusion, ABA deletion/recreation, provider
+conditional-capability downgrade, ignored conditional header, unsafe validator
+refresh, precondition failure misclassified as retry, response loss misclassified
+as non-acceptance, lease-holder confused
 deputy, poison payload, tenant routing, and rollback pass.
 
 Exit criteria: no successful protected mutation exists without its authoritative
@@ -567,7 +607,12 @@ process manager (`ReservedAtParent` → `InTransit` → `ActivatedAtChild` →
 `Returning` → `Reclaimed`, or fail closed to `ReconciliationRequired`) for
 allocation and encumbrance movement across partition loss, failover, and
 regional movement. Bind stable transfer identity, source/destination epochs,
-digest, sequence, and original claim/encumbrance lineage; require parent reserve
+digest, sequence, original claim/encumbrance lineage, tenant/global accounting
+owner, hierarchy root, parent lease, work class/recovery lane, capacity class,
+period/settlement policy, residency/region, and source/destination authorization
+decisions. Freeze those accounting bindings across ordinary transfer; require a
+separate authorized audited adjustment for cross-class movement and exact-
+destination-hierarchy authorization for acknowledgement. Require parent reserve
 before outbox, idempotent child inbox activation, conservative in-transit
 charging, authenticated acknowledgement plus old-epoch fencing before reclaim,
 and double-entry conservation that may temporarily overcharge but never frees
@@ -590,7 +635,8 @@ restore/quarantine rules, transaction-domain placement contract, hierarchical
 capacity-lease state machine/conservation model, per-kind encumbrance ledger,
 capacity-transfer ID/codec/state machine, allocation/encumbrance outbox and inbox
 commands/receipts, authenticated acknowledgement and old-epoch-fence proof,
-double-entry conservation oracle, late-settlement lineage mapping, partitioned
+immutable accounting-hierarchy/classification binding and separate adjustment
+command, double-entry conservation oracle, late-settlement lineage mapping, partitioned
 fair control-plane capacity, deterministic memory adapter, recovery reconciler,
 leak/escalation monitor, and contention model.
 
@@ -610,8 +656,11 @@ settlement against an expired/transferred lease, duplicate encumbrance transfer,
 every crash point and message duplicate/reorder, lost acknowledgement, source
 or destination failover, stale source/destination epoch, conflicting transfer,
 in-transit uncertainty, double-entry recovery overcharge and forbidden free-at-
-both-sides state, parent reclamation racing failover, failover allocation
-duplication, late evidence against original claim/transfer lineage, accidental
+duplication, cross-tenant/global-owner, hierarchy-root, parent-lease, accounting-
+period, work-class/recovery-lane, capacity-class, residency/region, destination-
+authorization, and acknowledgement-principal substitution; emergency/security-
+cleanup-to-business reclassification; cross-class movement through ordinary
+transfer; late evidence against original claim/transfer lineage; accidental
 cross-shard/cross-region transaction, incompatible active/active write topology,
 provider-outage exhaustion, one-tenant reconciliation monopolization, tenant
 attempts to consume emergency reserve, global/per-tenant starvation, lease loss,
@@ -628,7 +677,8 @@ partition; wider limits conserve capacity through fenced hierarchical leases
 without distributed work transactions or reclaiming live encumbrances; late
 evidence and receipt-idempotent, at-least-once-delivered transfer processing
 preserve the original per-kind charge and never make capacity free at both
-ends; and
+ends or change owner, hierarchy, period, lane, capacity class, residency, or
+authorization lineage; and
 exhausted or abusive tenants cannot block fair bounded reconciliation or
 security cleanup.
 `v0.18.1 implementation stop reached. Run pentest for this exact commit.`
@@ -668,6 +718,16 @@ workflow, deadlines/escalation, late-evidence conflict handling, privileged-
 resolver authorization, and authorized/manual resolution commands. A resolution
 command changes operational state; without admissible provider evidence it
 cannot manufacture or replace `RemoteOutcome`.
+Finalize the separate remote-target concurrency contract: local target-fence
+validation remains unavailable for provider-owned state, while a
+`ConditionalMutation` dispatch must send the exact immutable strong validator
+through the admitted provider mechanism. A typed precondition failure records
+evidence-backed `RemoteOutcome::DefinitelyNotAccepted` and does not refresh or
+retry. Any changed
+validator creates a new authorized intent. `UnconditionalReviewed` is available
+only under its explicit scoped exception; unsupported, downgraded, ignored, or
+weak conditional semantics deny privileged/destructive/containment dispatch.
+Ambiguous post-transmission loss remains `OutcomeUnknown`.
 Finalize authorization freshness, execution-authority redemption, and quota
 disposition in the same state family. Intent creation always requires commit-
 time authorization. For a `CommitAndDispatch` capability, dispatch atomically
@@ -710,7 +770,9 @@ ownership/lineage/approval-receipt and pre-issuance-revocation contracts,
 redemption-guard/attempt-claim codec and state machine, redemption receipts,
 dispatch-authority-fence-set codec/epoch rules, canonical composite acquisition
 order and deadlock-retry contract, `DispatchTargetFence` codec/owner-update/
-placement contract, transaction-domain placement/capability contract, and
+placement contract, remote-target concurrency profile/validator codec/provider-
+capability contract and typed precondition outcome, transaction-domain
+placement/capability contract, and
 exact-token bounded per-kind quota-disposition/refund/settlement/
 capacity-transfer codecs and state machines. Phase G workflow workers later
 specialize
@@ -739,7 +801,13 @@ transactions at every adjacent acquisition class; race target deletion, merge,
 migration, lifecycle change, or supersession against dispatch; substitute a
 stale target projection; place a different-aggregate target cross-shard; restore
 an old target version/deletion epoch; verify target-change-versus-dispatch
-linearization for both same-aggregate and target-fence-row cases; retry beyond the bound or
+linearization for both same-aggregate and target-fence-row cases; substitute
+remote provider/account/resource or validator bytes/kind/provenance; confuse
+weak and strong validators; delete/recreate a resource with an ABA validator;
+use a stale validator; downgrade or ignore conditional writes; silently refresh
+after precondition failure; retry that failure without a new intent; treat
+response loss as non-acceptance; use unconditional semantics without the exact
+reviewed exception; retry beyond the bound or
 with changed command/claim/digest/fence identity; expire an interactive human
 session while valid scheduled grant work proceeds; depart an approver; drift policy
 or approval version; replay/exhaust/revoke a grant immediately before dispatch;
@@ -761,7 +829,11 @@ capacity-transfer transition; duplicate/reorder allocation, activation, return,
 and acknowledgement delivery; lose an acknowledgement; fail over source or
 destination; present a stale epoch or conflicting transfer; attempt reclaim
 without authenticated acknowledgement and old-epoch fence proof; make capacity
-free at both ends; settle late evidence without original transfer lineage; release
+free at both ends; substitute accounting owner, hierarchy root, parent lease,
+period, work/recovery lane, capacity class, residency/region, source/destination
+authorization, or acknowledgement principal; reclassify emergency/security-
+cleanup capacity as business capacity through transfer; settle late evidence
+without original transfer lineage; release
 concurrency based on remote uncertainty;
 refund a transmitted rate token; duplicate or forge a refund/provider
 settlement; disguise administrative write-off as provider evidence; leak an
@@ -796,6 +868,10 @@ supersession epoch without advancing a second stream; unsupported placement or
 projection-only freshness fails closed. Composite acquisition and bounded retry
 preserve one-stream atomicity without deadlock-driven duplication or identity
 drift.
+Remote mutation either uses the exact admitted conditional validator, an exact
+reviewed unconditional exception, or is unsupported; local target fencing is
+never implied. Precondition failure cannot trigger silent refresh, and response
+loss cannot be rewritten as non-acceptance.
 Every bounded quota claim settles by kind at its declared boundary; refunds are
 evidence-bound and exactly once, write-offs remain distinct, compensation is
 accounted separately, and each exact immutable set reserves all-or-none,
@@ -805,8 +881,9 @@ and preserve per-kind encumbrances through expiry, failover, transfer, and late
 settlement without a cross-partition work transaction. Transfer delivery is
 explicitly at least once, local state transitions are receipt-idempotent, and
 conservative double-entry accounting never exposes capacity at both ends. Fair
-partitioned recovery capacity cannot be monopolized or borrowed for tenant
-business work.
+partitioned recovery capacity cannot be monopolized, borrowed for tenant
+business work, activated under another owner/parent/period/region/lane, or
+reclassified by an ordinary transfer.
 `v0.18.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface

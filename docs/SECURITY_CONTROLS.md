@@ -84,6 +84,13 @@ audit decision.
   binds target identity, lifecycle, and deletion/supersession epoch. Remote,
   cross-shard, projection-only, stale, restored, or substituted target state
   denies before provider I/O.
+  Provider-owned targets use a distinct `RemoteTargetConcurrencyProfile`, never
+  a local fence. Strong conditional mutation binds exact provider/account/
+  resource, validator bytes/kind/provenance, admitted provider capability,
+  request digest, and idempotency key. Precondition failure is typed non-
+  acceptance and cannot silently refresh; response loss remains unknown.
+  Privileged/destructive/containment unconditional mutation requires a narrow
+  expiring reviewed exception.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown
@@ -108,6 +115,11 @@ audit decision.
   are receipt-idempotent, delivery is at least once, reclaim requires
   authenticated acknowledgement and old-epoch fence proof, uncertainty stays
   charged, and double-entry recovery never frees capacity at both ends.
+  Transfer also freezes accounting owner, hierarchy root/parent lease, period,
+  work/recovery lane, capacity class, residency/region, and source/destination
+  authorization. A transfer cannot change tenant, parent, period, region, lane,
+  or turn emergency/security-cleanup capacity into business capacity; such
+  movement requires a distinct authorized audited adjustment.
   Composite transactions use the canonical stream/authority-fence/target-fence/
   guard/quota/uniqueness/receipt order with bounded identity-preserving deadlock
   retry.

@@ -92,6 +92,13 @@ authoritative fence row updated atomically by the local target owner. It binds
 lifecycle and deletion/supersession epoch as well as identity/version, must
 co-locate with the effect bundle, and rejects remote, cross-shard, or projection-
 only freshness.
+Provider-owned mutable targets use a distinct `RemoteTargetConcurrencyProfile`,
+not a local fence. Conditional mutation freezes provider/account/resource,
+validator kind/bytes/strength/provenance/time, admitted provider capability,
+request digest, and idempotency key. Precondition failure is typed non-
+acceptance and cannot trigger automatic validator refresh; privileged,
+destructive, and containment work requires a strong validator unless a narrow
+reviewed unconditional exception applies. Response loss stays unknown.
 Each effect carries a bounded atomic set of typed quota claims with independent
 amount/unit, settlement policy, and admission/lease/dispatch/transmission/
 storage boundary. Concurrency releases with the local lease; operation, rate,
@@ -118,7 +125,11 @@ process manager. Stable identities, epochs, digests, sequences, receipts, an
 authenticated acknowledgement, and old-child fence proof make local transitions
 idempotent over at-least-once delivery. Uncertainty stays charged and double-
 entry recovery never exposes capacity at both ends; late evidence retains its
-original claim/transfer lineage.
+original claim/transfer lineage. Transfer freezes accounting owner, hierarchy
+root/parent lease, period, work/recovery lane, capacity class, residency/region,
+and authorization decisions. Ordinary transfer cannot cross tenant, hierarchy,
+period, lane, class, or residency; cross-class movement is a separate authorized
+audited adjustment.
 Composite transactions use one order—stream head, authority fences, target
 fence, grant guard, quota lease/keys, uniqueness claims, then receipts—and retry only
 classified deadlocks under a bounded identity/digest/version-preserving policy.
@@ -155,7 +166,8 @@ placement and receipt, authority-fence sources/epochs/co-location/staleness,
 bounded quota-claim kinds/boundaries/settlement, exact-set token/digest/
 linearization, quota partition/capacity-lease/encumbrance-transfer topology,
 target-fence owner/epoch/co-location/placement, receipt-idempotent capacity-
-transfer delivery/conservation, canonical composite lock/retry behavior,
+transfer delivery/conservation/classification, remote-target concurrency
+profile/provider capability/precondition outcome, canonical composite lock/retry behavior,
 refund/write-off evidence, and
 compensation/recovery-capacity behavior.
 

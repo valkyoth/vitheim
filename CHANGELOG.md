@@ -90,4 +90,9 @@ All notable Vitheim changes are documented here. The format follows
   moves through an explicit outbox/inbox state machine with receipt-idempotent
   local transitions, at-least-once delivery, authenticated reclaim, conservative
   double-entry accounting, and original claim/transfer lineage.
+- Closed the provider-concurrency and transfer-reclassification gaps without new
+  versions: remote mutations now bind an admitted conditional-write profile and
+  immutable validator without pretending to be locally fenced, while capacity
+  transfer freezes its complete accounting hierarchy, lane, class, residency,
+  and authorization lineage.
 - Added local and GitHub verification gates without a crate publication path.

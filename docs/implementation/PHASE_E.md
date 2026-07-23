@@ -145,6 +145,11 @@ origins; immutable publication version, component/audience mapping, approval
 receipt, conditional write/idempotency, cache policy, subscription delivery,
 correction/retraction, authenticated channel receipt, retry/reconciliation,
 outage/degraded behavior, custom-domain/TLS, rate limits, and anti-enumeration.
+Any external channel mutation uses the `0.18.2`
+`RemoteTargetConcurrencyProfile`: exact provider/account/resource and strong
+validator are immutable, precondition failure is typed non-acceptance, workers
+never refresh automatically, and response loss remains unknown. A reviewed
+unconditional channel is explicit and cannot imply local target fencing.
 
 Goal: turn the `0.48.1` publication port and fake into a supported hosted status
 surface without exposing the private incident or service-health authority.
@@ -159,7 +164,10 @@ Verification: unauthorized/premature publication, audience/component/tenant
 confusion, hidden-field and count leakage, stale cache/CDN, false success
 receipt, duplicate/out-of-order update, correction-history loss, provider
 outage/retry, subscription flood, domain/TLS takeover, restore/rebuild,
-accessibility, load, and fake-versus-hosted differential tests pass.
+validator/resource/account substitution, ABA delete/recreate, weak/strong
+confusion, ignored/downgraded conditional writes, silent refresh, response-loss
+misclassification, accessibility, load, and fake-versus-hosted differential
+tests pass.
 
 Exit criteria: at least the selected built-in hosted profile publishes and
 corrects status with reproducible approval/source/receipt history; external

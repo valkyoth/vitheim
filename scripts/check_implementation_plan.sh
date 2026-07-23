@@ -107,11 +107,20 @@ require_text docs/implementation/PHASE_B.md \
     'Every current-target dispatch also carries a typed `DispatchTargetFence`' \
     'co-transactional current-target fence'
 require_text docs/implementation/PHASE_B.md \
+    'Remote provider state never masquerades as a `DispatchTargetFence`' \
+    'remote target concurrency remains separate from local fencing'
+require_text docs/implementation/PHASE_B.md \
+    '`RemoteTargetConcurrencyProfile`: `NotApplicable`, `ConditionalMutation`' \
+    'typed remote target concurrency profile'
+require_text docs/implementation/PHASE_B.md \
     'manager drives `QuotaCapacityTransferState` through `ReservedAtParent`' \
     'explicit capacity-transfer process manager'
 require_text docs/implementation/PHASE_B.md \
     'once by stable receipt; message delivery is at least once' \
     'local receipt idempotency and at-least-once transfer delivery'
+require_text docs/implementation/PHASE_B.md \
+    'It also binds the tenant or global accounting owner, hierarchy root and parent-' \
+    'immutable capacity-transfer accounting hierarchy'
 require_text docs/implementation/PHASE_B.md \
     'All composite local transactions use one acquisition order: authoritative' \
     'canonical composite transaction acquisition'

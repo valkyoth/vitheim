@@ -89,6 +89,13 @@ Verification:
   kind/ID, version/digest, lifecycle, and deletion/supersession epoch. Deletion,
   merge, migration, supersession, stale projection, cross-shard placement, and
   restore races cannot authorize provider I/O or advance a second stream.
+  Provider-owned targets prove a separate `RemoteTargetConcurrencyProfile`,
+  never a local fence. Conditional dispatch binds the exact provider/account/
+  resource, strong validator and provenance, admitted provider capability/
+  version, request digest, and idempotency key. Provider precondition failure is
+  typed non-acceptance and cannot trigger validator refresh; response loss
+  remains unknown. Every privileged/destructive/containment unconditional path
+  cites its narrow expiring reviewed exception and compensating controls.
   Quota evidence proves bounded atomic claim sets and correct settlement for
   concurrency leases, consumable operations, provider-rate tokens, estimated
   liabilities, and retained bytes across their exact boundaries. Only provider-
@@ -114,7 +121,11 @@ Verification:
   double-entry recovery never makes capacity free at both ends. Child loss,
   late evidence, duplicate/reordered delivery, lost acknowledgement, conflicting
   transfer, and parent reclamation racing failover cannot lose or recreate
-  capacity. Cross-partition set, distributed work transaction, and
+  capacity. Transfer binds accounting owner, hierarchy root/parent lease,
+  period, work/recovery lane, capacity class, residency/region, and source/
+  destination authorization; ordinary transfer cannot change them or convert
+  emergency/security-cleanup capacity into business capacity. Cross-class
+  movement requires a distinct audited authorized adjustment. Cross-partition set, distributed work transaction, and
   active/active authoritative-write requests fail closed. Composite transactions
   use the canonical stream/authority-fence/target-fence/guard/quota/uniqueness/
   receipt order; bounded

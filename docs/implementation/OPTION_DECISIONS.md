@@ -106,19 +106,26 @@ the invariant that plaintext credentials never enter Wasm guest memory. Freeze
 the broker profile that enforces immutable effect bindings, mandatory current
 dispatch authorization for high-risk capabilities, service-principal or exact
 approved-grant redemption, bounded typed quota claim sets and settlement, and
-denial of plugin access to control-plane emergency reserve.
+denial of plugin access to control-plane emergency reserve. Freeze provider-
+mutation profiles: admitted strong conditional mechanisms and validator
+semantics, explicit unsupported cases, and narrowly reviewed unconditional
+exceptions. A plugin cannot refresh a validator, weaken a profile, or represent
+provider concurrency as a local target fence.
 Goal: revalidate and freeze a bounded plugin profile with defense in depth.
 Deliverables: runtime/version pin, disabled default imports, worker identity,
 OS limits, egress/DNS/TLS policy, capability-handle, catalog/storefront trust,
 host-brokered authenticated HTTP/signing/token/certificate operations,
 publisher/mirror, permission-diff, connector-support, effect-dispatch gate,
 grant/service-principal redemption, quota-claim/recovery-reserve isolation, and
-upgrade decisions.
+remote-target conditional-write/precondition-outcome gate, and upgrade
+decisions.
 Verification: sandbox escape, metering bypass, host-call amplification, DNS
 rebinding, redirect, cross-plugin/tenant, guest-memory secret canaries, broker
 confused-deputy/target substitution, stale dispatch authority, quota/refund/
 cross-kind settlement/reserve abuse, grant replay/impersonation, and cancellation
-evidence is reviewed.
+evidence is reviewed; include provider/account/resource/validator substitution,
+weak/strong and ABA confusion, ignored/downgraded conditional writes, silent
+refresh, response-loss ambiguity, and unconditional-exception misuse.
 Exit criteria: cryptography is not claimed to enforce resource isolation.
 `v0.140.4 implementation stop reached. Run pentest for this exact commit.`
 
@@ -194,11 +201,16 @@ revocation/successor behavior, redemption-guard placement/claim/receipt model,
 authority-fence source/update/co-location/staleness profile, canonical composite
 lock order/deadlock-retry policy, target-fence owner/update/co-location/
 lifecycle/deletion/supersession profile,
+remote-target concurrency profile with exact provider/version, validator
+strength/ABA properties, conditional request mapping, precondition outcome,
+idempotency/query/reconciliation behavior, and reviewed unconditional exceptions,
 quota partition map and hierarchical capacity-lease allocation/reclamation/
 per-kind encumbrance/transfer/late-settlement conservation profile, including
 stable transfer ID, source/destination epochs, outbox/inbox receipts,
 authenticated acknowledgement, old-epoch fence proof, conservative double-
-entry recovery, and original lineage,
+entry recovery, original lineage, immutable accounting owner/hierarchy root/
+parent lease/period/work or recovery lane/capacity class/residency/region, and
+source/destination authorization decisions,
 active/active rejection/capability behavior, per-tenant/
 global fair-share and starvation policy, emergency-reserve sizing/isolation,
 RPO/RTO, upgrade/rollback, observability, and operator responsibility decisions.
@@ -218,7 +230,11 @@ settlement, every transfer crash/duplicate/reorder/lost-ack/source-destination-
 failover/stale-epoch/conflict point, forbidden free-at-both-ends state, target
 deletion/merge/migration/supersession/restore race, stale projection, cross-
 shard target placement, missing/non-co-located target fence, reclamation/
-failover race, incompatible
+failover race, remote validator/account/resource substitution, weak/strong/ABA
+confusion, ignored or downgraded conditional writes, unsafe refresh,
+precondition/response-loss misclassification, transfer owner/root/parent/period/
+lane/class/region/authorization substitution, emergency/security-cleanup-to-
+business reclassification, incompatible
 active/active topology,
 provider-outage tenant exhaustion, one-tenant unknown-outcome floods, per-
 tenant/global starvation, emergency-reserve borrowing, degraded dependencies,

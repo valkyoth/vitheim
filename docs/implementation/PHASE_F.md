@@ -419,6 +419,12 @@ For every capability requiring current target state, register its typed
 aggregate authoritative fence-row owner/update point, lifecycle and deletion/
 supersession epoch, transaction-domain placement, and unsupported remote/cross-
 shard/projection-only cases.
+For every provider-owned mutable target, separately register
+`RemoteTargetConcurrencyProfile`, provider/account/resource identity, validator
+kind/strength/provenance, admitted conditional-write capability/version,
+idempotency binding, precondition-failure outcome, refresh prohibition, and any
+narrow `UnconditionalReviewed` exception. This remote provider contract is
+never registered as a local target fence.
 Classify any external-only fact by staleness bound and forbid it from privileged
 dispatch unless an authoritative local revocation epoch exists. Only
 interfaces
@@ -430,7 +436,8 @@ and effect intent, grant issuance/revalidation/revocation, authority redemption,
 grant ownership/process-manager continuation, redemption-guard/attempt-claim
 linearization, authority-fence registry/codec/update contract, and provider-
 dispatch enforcement points; include target-fence registry/codec/owner-update
-and co-location enforcement.
+and co-location enforcement plus remote-target concurrency profile/provider-
+capability/precondition-outcome enforcement.
 Verification: API/search/report/export/notification/cache/AI leakage, derived inference,
 missing effect freshness/binding registration, unsafe `CommitBound`
 classification, missing/ambiguous execution-authority mode, approval grant
@@ -442,6 +449,9 @@ stream redemption, missing/duplicate/substituted/reordered fence entries, epoch
 reuse/rollback, stale external authority used for privileged dispatch, target
 substitution, missing/stale target fence, deletion/merge/migration/supersession/
 restore racing dispatch, stale target projection, cross-shard target placement,
+remote account/resource/validator substitution, ABA recreation, weak/strong
+confusion, provider downgrade/ignored conditional, unsafe refresh, response-
+loss misclassification, unauthorized unconditional exception,
 and revocation pass.
 Exit criteria: hidden data cannot reappear downstream, and no external effect
 can bypass its declared commit/grant/redemption/dispatch authorization gates.
@@ -487,14 +497,16 @@ the bounded authority-fence entry/update/co-location cases for tenant,
 subject/principal, session/credential/mapping, delegation, group/role/
 relationship, and policy; enumerate each current-target fence's identity,
 version/digest, lifecycle, deletion/supersession epoch, owner update, placement,
-and canonical acquisition case. Goal: prove
+and canonical acquisition case; enumerate remote-target conditional/unconditional
+profiles, immutable validators, provider capability evidence, and typed
+precondition outcomes independently of local fences. Goal: prove
 equivalent deny-by-default policy independent of authentication mechanism and
 make later registration mechanically mandatory. Deliverables: generated
 matrix, negative corpus, human-versus-service-principal differential tests,
 connector/agent/measurement-source cases, delayed-effect authorization state
 machine, scheduled-offline grant fixtures, authority-fence race fixtures,
 target-fence race fixtures, external-staleness classifications, and coverage/
-evidence report.
+evidence report; include remote-validator/provider-downgrade/ABA fixtures.
 Verification: mutation and read parity, tenant pairs, stale policy/credential,
 wrong audience/scope, false sender constraint, bearer-to-privileged escalation,
 replay-cache limitations, cache/index lag, commit-to-lease-to-dispatch policy/
@@ -511,7 +523,9 @@ missing/substituted/reordered fence set, epoch rollback/reuse, non-co-located
 fence, bounded-stale external state used for privileged work, composite lock-
 order inversion and bounded-retry identity drift, missing/non-co-located target
 fence, target deletion/merge/migration/supersession/restore race, stale
-projection, cross-shard current target, worker confused
+projection, cross-shard current target, remote validator/account/resource
+substitution, weak/strong confusion, ABA recreation, provider downgrade or
+ignored condition, silent refresh, unconditional-exception misuse, worker confused
 deputy, unsafe low-risk profile, break-glass, and differential adapters pass.
 Exit criteria: no principal kind or
 authority-bearing interface lacks a negative case, and every delayed effect is
@@ -519,5 +533,6 @@ proven against its commit-time decision, selected execution-authority model, and
 declared dispatch-freshness policy. Every privileged dispatch proves a complete
 co-located monotonic authority-fence set; bounded-stale-only external facts
 cannot satisfy it. Every current-target dispatch proves its authoritative target
-fence or fails closed before provider I/O.
+fence or fails closed before provider I/O. Every remote mutation proves its
+separate admitted concurrency profile without implying local freshness.
 `v0.60.0 implementation stop reached. Run pentest for this exact commit.`

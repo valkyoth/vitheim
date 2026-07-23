@@ -28,25 +28,33 @@ target/purpose/request/policy/assurance bindings, declared authorization
 freshness, exact live-subject/approved-grant/service-principal execution
 authority, current redemption where required, provider idempotency-
 key scope/retention, status-query and reconciliation support, retry/replay
-horizon, compensation, privilege/non-compensability, bounded typed quota-claim
+horizon, typed `RemoteTargetConcurrencyProfile` for provider mutations,
+immutable validator/provider/account/resource binding, compensation, privilege/non-compensability, bounded typed quota-claim
 settlement, and audit. Each capability maps exactly onto the `0.18.2`
 execution state, remote outcome, resolution source/evidence, operational
 resolution workflow, and separate compensation state; plugins cannot select a
 stronger capability, synthesize provider evidence, close a privileged manual
 workflow, reinterpret `OutcomeUnknown`, downgrade `CommitAndDispatch`, reuse
 another effect's quota claims, confuse settlement kinds, impersonate an offline
-approver, or spend control-plane emergency reserve. Goal:
+approver, refresh a remote validator, downgrade strong conditional mutation,
+claim a remote validator is a local target fence, or spend control-plane emergency reserve. Goal:
 controlled hosted extension
 effects with truthful remote outcomes. Deliverables: host-call broker, typed
 effect-capability descriptors, distinct lifecycle/outcome/resolution/
 compensation receipts, reconciliation deadline/escalation boundary, and
 authorized manual-resolution boundary; single-use dispatch-authorization
 receipts, grant/service-principal redemption, and per-kind quota settlement/
-compensation accounting integration.
+compensation accounting integration; include conditional-write broker,
+precondition outcome mapping, provider capability validation, and reviewed-
+unconditional-exception enforcement.
 Verification: unauthorized calls, replay, commit-to-dispatch revocation,
 forged/stale dispatch receipt, worker/plugin confused deputy, cross-tenant
 handles, target/request-digest substitution, unsafe freshness downgrade,
 grant replay/attempt exhaustion/target drift, offline-human impersonation,
+provider/account/resource/validator substitution, weak/strong confusion, ABA
+delete/recreate, ignored/downgraded conditional mechanism, unsafe automatic
+refresh, precondition failure retried, response loss treated as non-acceptance,
+unreviewed unconditional mutation,
 provider acceptance plus lost response, idempotency expiry, forged success/
 resolution source, operator assessment presented as provider truth, late
 callback versus manual resolution, forbidden blind retry, privileged resolver
@@ -138,12 +146,17 @@ Status: planned. Setup: `0.52.1` service-principal identity and mandatory
 sender-constrained workload tokens for privileged connector operations,
 connector capabilities, non-extractable auth handles, cursor/idempotency,
 schemas, rate/backoff, host-brokered authenticated operations, and test
-simulation; the SDK exposes no raw-secret read. Goal: safe integration
+simulation. Expose the typed remote-target concurrency descriptor, strong/weak
+validator fixtures, conditional-write/precondition outcome contract, and
+explicit unsupported/unconditional-reviewed profiles; the SDK exposes no raw-
+secret read. Goal: safe integration
 development. Deliverables: private SDK/testkit, broker-operation mocks, guest-
 memory canary harness, and conformance suite. Verification: principal/tenant/
 audience confusion, SSRF, token replay, impersonation, handle extraction,
 plaintext credential in guest memory, pagination loops, secret logs, and
-malformed remote data pass. Exit criteria: connectors pass conformance before
+malformed remote data, validator/resource/account substitution, ABA recreation,
+provider conditional downgrade or ignored header, silent refresh, and response-
+loss ambiguity pass. Exit criteria: connectors pass conformance before
 activation and cannot request plaintext credentials. `v0.117.0 implementation
 stop reached. Run pentest for this exact commit.`
 
@@ -220,12 +233,16 @@ Status: planned. Setup: stable device plus `0.52.1` service-principal identity,
 separate local enrollment challenge, device key attestation/profile,
 short-lived sender-constrained device/workload credential, audience-bound mTLS,
 capability policy, encrypted spool, update, revoke, compromise response, and no
-inbound listener.
+inbound listener. Spool records preserve the complete remote-target concurrency
+profile, validator and provider capability evidence, request digest, idempotency
+key, and reviewed exception; offline replay cannot refresh or weaken them.
 This is not an OAuth authorization-server or token-endpoint claim. Goal: reach
 private systems safely. Deliverables: agent enrollment/credential protocol,
 runtime, and operator controls. Verification: takeover, identity cloning/
 remapping, enrollment replay, credential/spool extraction, audience/scope
-inflation, downgrade, revocation, and offline limits pass. Exit criteria: agent
+inflation, downgrade, revocation, validator/profile substitution, stale or
+silently refreshed validator, conditional-capability downgrade, and offline
+limits pass. Exit criteria: agent
 compromise is bounded and revocable without making Vitheim a general OAuth
 issuer.
 `v0.119.0 implementation stop reached. Run pentest for this exact commit.`

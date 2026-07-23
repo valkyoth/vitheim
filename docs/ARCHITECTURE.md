@@ -102,6 +102,15 @@ authorization semantics.
    tenant, kind/ID, version/digest, lifecycle, and deletion/supersession epoch.
    Remote, cross-shard, and projection-only current-target semantics are
    unsupported, and restore cannot reuse an earlier target epoch.
+   Provider-owned mutable targets use a separate
+   `RemoteTargetConcurrencyProfile`, never a local fence. Conditional mutation
+   binds the exact provider/account/resource, strong validator and provenance,
+   admitted provider capability/version, request digest, and idempotency key.
+   The provider enforces the precondition after local commit; failure is typed
+   non-acceptance, never silent validator refresh. Privileged/destructive/
+   containment work requires strong conditional mutation unless an exact,
+   expiring reviewed unconditional exception applies. Response loss remains
+   unknown and reconciling.
    Each effect carries a bounded atomic set of typed quota claims rather than
    one universal reservation. Concurrency releases with its local lease;
    consumable operations follow declared evidence rules; provider-rate tokens
@@ -128,7 +137,12 @@ authorization semantics.
    proof provide receipt-idempotent local transitions over at-least-once
    delivery. Uncertain movement stays conservatively charged; double-entry
    recovery may overcharge temporarily but never frees capacity at both ends,
-   and late evidence retains the original claim/transfer lineage.
+   and late evidence retains the original claim/transfer lineage. Transfer also
+   freezes accounting owner, hierarchy root/parent lease, period, work/recovery
+   lane, capacity class, residency/region, and source/destination authorization.
+   Ordinary transfer cannot reclassify emergency or recovery capacity as
+   business capacity; cross-class movement requires a distinct audited
+   adjustment.
    Composite transactions acquire stream head, authority fences, target fence,
    grant guard, quota lease/keys, uniqueness claims, then receipts in one
    canonical order.
