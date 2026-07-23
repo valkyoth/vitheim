@@ -138,16 +138,42 @@ Verification:
   revocation cannot activate a replacement.
   It proves `ProviderCredentialRotationState` from provisioning through
   verification, atomic local activation, provider old-credential revocation, and
-  completion, with fail-closed unknown/failed/manual states, admissible provider
-  identity/permission/revocation evidence, no blind retry, bounded overlap/
-  escalation, a single-credential maintenance profile, retained old identity,
-  and restore-safe one-generation local redeemability. It proves a versioned
-  `ProviderCredentialCapabilitySnapshot` and never-reused local epoch bind
-  effective permissions, role/group/trust provenance, provider policy revision/
-  validator, observation source/time/freshness, profile, and credential
-  generation. Authenticated event/poll reconciliation advances it; stale,
-  unverifiable, insufficient, broader, mismatched, or restored snapshots fail
-  privileged transmission without remote discovery in dispatch.
+  completion. Exactly one credential-lineage owner holds a co-located
+  `ProviderCredentialRotationGuard`; one stable rotation ID, intended successor,
+  provisioning idempotency key/request digest, and at most one non-terminal
+  rotation survive crash, failover, and restore. Provisioning or revocation
+  uncertainty blocks ordinary successor creation. Authorized takeover first
+  inventories the provider, fences late callbacks, and drives typed orphan
+  credentials through bounded discovery, quarantine, revocation, and manual
+  escalation. Pending and orphan generations remain charged to
+  `ProviderCredentialCount` until provider revocation is confirmed. Local
+  activation and lineage advancement share the owner transaction, and no second
+  aggregate stream becomes an authority source. Unknown/failed/manual states,
+  evidence requirements, no-blind-retry, overlap/escalation, single-credential
+  maintenance, retained old identity, and restore-safe one-generation local
+  redeemability are demonstrated.
+  It proves a versioned `ProviderCredentialCapabilitySnapshot` and never-reused
+  local epoch bind raw provider policy evidence digest, canonical normalized AST
+  digest, reviewed evaluator identity/version and corpus, provider policy
+  language/version, effective permissions and their role/group/cross-account/
+  boundary/inheritance provenance, observation source/time/freshness, profile,
+  credential generation, canonical `ProviderPermissionComparison`
+  (`Equal`, `StrictSubset`, `StrictSuperset`, `Incomparable`, or `Unknown`), and
+  explanation evidence. Evaluation models wildcards, explicit deny, resources,
+  tags, time/network/identity/session conditions, permission boundaries,
+  organization policies, and inherited role/group/trust authority; unsupported,
+  ambiguous, or budget-exhausted evaluation is `Unknown`. Only `Equal` is
+  universally admissible. `StrictSubset` may continue only through a reviewed
+  explicit safe-subset profile that proves the exact operation remains covered.
+  `StrictSuperset`, `Incomparable`, and `Unknown` advance the credential epoch,
+  emit `CredentialCapabilityQuarantined`, invalidate every handle and queued or
+  claimed operation—including apparently non-privileged work—and open a
+  security incident with raw/evaluator/affected-work evidence. No automatic
+  profile widening or ordinary break-glass bypass exists. Quarantine linearizes
+  against first credential use; an already-started call becomes one bounded
+  `OutcomeUnknown`, never an ordinary retry. Authenticated event/poll
+  reconciliation advances snapshots; restore cannot clear quarantine or revive
+  stale authority, and provider IAM discovery never occurs in dispatch.
   Non-exportable signing/
   mTLS/HSM profiles expose operations only. Bearer/API-key profiles put
   authorization serialization, redirects, TLS, start claim, and socket in the

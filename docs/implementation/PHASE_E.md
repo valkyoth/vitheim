@@ -174,10 +174,19 @@ local rotation activation, broker-policy change, and restore cannot leave an old
 instruction or handle redeemable. Channel profiles use the typed control-plane
 proposal/approval/activation/revocation lifecycle, signed exact-digest admission,
 semantic expansion review, current fences, and revocation tombstones. Remote
-credential rotation uses the provider-evidence/unknown/reconciliation process,
-and publication requires a fresh credential-capability snapshot/epoch proving
-the observed channel permissions and provider-policy revision. Non-exportable
-channel signing/mTLS exposes operations only.
+credential rotation uses the single-lineage-owner
+`ProviderCredentialRotationGuard`: one stable rotation ID, intended successor,
+and provisioning idempotency digest may be non-terminal at a time.
+Provisioning/revocation uncertainty blocks ordinary successor rotation;
+authorized takeover first inventories the provider and drives discovered
+orphans through bounded quarantine and revocation. Pending and orphaned channel
+credentials remain charged to the provider credential-count quota until
+revocation is confirmed. Publication requires a fresh credential-capability
+snapshot/epoch whose reviewed, versioned semantic evaluator returns `Equal` or
+an explicitly admitted `StrictSubset`; `StrictSuperset`, `Incomparable`, or
+`Unknown` advances the epoch and quarantines the whole credential, including
+apparently non-privileged channel work. Non-exportable channel signing/mTLS
+exposes operations only.
 For bearer/API-key channels, the hardened channel broker joins the executor TCB
 and owns authorization serialization, redirects, TLS, claim, and socket; bearer
 bytes may exist briefly only there and never in the publication worker, queue,
@@ -190,7 +199,9 @@ Deliverables: policy-filtered built-in status API and read projection, static/
 cache representation with explicit freshness, authenticated administration
 transport, publication reconciler, subscription integration through `0.39.4`,
 optional admitted channel adapter, capability/health probes, DAST corpus,
-deployment guide, and outage runbook.
+deployment guide, and outage runbook; include rotation-guard/orphan-inventory/
+credential-count evidence and semantic evaluator/corpus/quarantine evidence for
+every admitted external channel.
 
 Verification: unauthorized/premature publication, audience/component/tenant
 confusion, hidden-field and count leakage, stale cache/CDN, false success
@@ -214,7 +225,11 @@ destination/trust-radius expansion, stale activation fence or tombstone bypass,
 every rotation crash/unknown/evidence/deadline state, restored dual redemption,
 out-of-band permission/role/group/trust change, callback reorder, stale poll,
 policy-revision mismatch, stale/restored capability snapshot, stale queued
-instruction/restored handle, signing/mTLS export,
+instruction/restored handle, simultaneous rotations, idempotency-digest
+substitution, late callback after takeover, orphan omission, provider-count
+limit exhaustion, string-set or wildcard/deny/resource/condition comparison,
+evaluator downgrade/budget exhaustion, claimed/queued/non-privileged work after
+whole-credential quarantine, unsafe automatic profile widening, signing/mTLS export,
 bearer material outside the broker TCB, caller-owned claim/socket, HTTP/TLS/
 redirect/diagnostic/crash memory-canary failure, accessibility, load, and fake-
 versus-hosted differential tests pass.

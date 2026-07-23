@@ -153,6 +153,16 @@ All notable Vitheim changes are documented here. The format follows
 - Added versioned credential-capability snapshots and monotonic local epochs so
   stale, broadened, insufficient, or policy-mismatched out-of-band provider
   permission state cannot authorize privileged transmission.
+- Replaced Boolean/string-set permission comparison with reviewed, versioned
+  provider semantic evaluators returning equal, subset, superset, incomparable,
+  or unknown and binding raw/normalized/evaluator/language/explanation evidence.
+- Serialized credential rotation through one lineage owner and co-located guard,
+  stable rotation/idempotency/digest identity, authorized provider-inventory
+  takeover, quarantined orphan workflows, and credential-count quota accounting.
+- Made superset, incomparable, or unknown permission results quarantine the
+  entire credential, invalidate every handle and queued instruction, emit a
+  security incident, and reject automatic widening or break-glass promotion;
+  safe-subset continuation is an explicit profile decision.
 - Replaced the impossible blanket no-plaintext executor claim with explicit
   credential-operation profiles: signing/mTLS/HSM keys stay non-exportable,
   while bearer authorization serialization, TLS, claim, and socket live inside

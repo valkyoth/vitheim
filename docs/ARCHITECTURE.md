@@ -145,12 +145,20 @@ authorization semantics.
    quorum/separation, current activation fences, and a revocation tombstone.
    Remote credential rotation is an evidence-driven process: only local
    successor activation is atomic and disables predecessor redemption; unknown
-   provider creation/revocation reconciles to bounded deadlines. A fresh
+   provider creation/revocation reconciles to bounded deadlines. One credential-
+   lineage owner and co-located guard allow only one non-terminal rotation;
+   unknown states block ordinary successors, authorized takeover inventories the
+   provider, orphan credentials remain quarantined and provider-count-quota
+   charged, and late callbacks are generation/digest fenced. A fresh
    `ProviderCredentialCapabilitySnapshot` and monotonic local epoch bind
    observed permissions, role/group/trust provenance, provider policy revision,
-   profile, and credential generation. Privileged transmission fails closed on
-   stale, unverifiable, insufficient, broader, or mismatched snapshots; dispatch
-   never discovers remote permissions inside its transaction. Restore cannot
+   raw and normalized policy digests, reviewed evaluator/policy-language
+   versions, canonical comparison/explanation, profile, and credential
+   generation. Only equal or explicitly admitted proven-safe subset authority
+   may operate. Superset, incomparable, or unknown quarantines the whole
+   credential, invalidates all pending handles/work, and creates a security
+   incident; automatic profile widening and break-glass promotion are forbidden.
+   Dispatch never discovers remote permissions inside its transaction. Restore cannot
    resurrect old authority. Non-exportable signing/mTLS/HSM profiles
    expose operations only. For bearer/API-key profiles, the hardened broker is
    part of the executor TCB and owns header serialization, redirects, TLS, claim,

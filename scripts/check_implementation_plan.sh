@@ -170,6 +170,15 @@ require_text docs/implementation/PHASE_B.md \
     'Provider-side credential rotation is not described as one atomic transaction.' \
     'asynchronous provider credential rotation'
 require_text docs/implementation/PHASE_B.md \
+    'Every credential lineage has exactly one authoritative owner.' \
+    'serialized credential rotation lineage'
+require_text docs/implementation/PHASE_B.md \
+    'Permission comparison uses a canonical `ProviderPermissionComparison` result:' \
+    'semantic provider permission comparison'
+require_text docs/implementation/PHASE_B.md \
+    'capability epoch and places the entire credential in' \
+    'whole-credential capability quarantine'
+require_text docs/implementation/PHASE_B.md \
     'Every credential generation also owns a versioned' \
     'provider credential capability snapshot'
 require_text docs/implementation/PHASE_B.md \

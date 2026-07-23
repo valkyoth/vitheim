@@ -125,9 +125,16 @@ audit decision.
   rotation is asynchronous and
   evidence-driven; local successor activation atomically disables predecessor
   redemption, while unknown provider creation/revocation reconciles with bounded
-  overlap and escalation. Fresh credential-capability snapshots and local epochs
-  bind observed permissions and provider policy provenance; privileged claims
-  fail closed on drift, staleness, or mismatch. Restore cannot resurrect any of
+  overlap and escalation. A lineage-owned guard serializes rotations; unknown
+  states block successors, takeover inventories the provider, orphan credentials
+  are quarantined and quota-counted, and late callbacks are fenced. Fresh
+  credential-capability snapshots and local epochs bind raw/normalized policy,
+  reviewed evaluator and policy-language versions, canonical comparison/
+  explanation, and provider provenance. Only equal or explicitly admitted safe
+  subset authority may operate; superset, incomparable, or unknown quarantines
+  the entire credential, invalidates all handles/work, and emits an incident.
+  Neither automatic profile widening nor break-glass may bypass it. Restore
+  cannot resurrect any of
   this authority. Signing/mTLS/HSM key material remains non-
   exportable. Bearer/API-key profiles put HTTP authorization serialization, TLS,
   claim, and socket inside the hardened broker/executor TCB; bearer bytes may

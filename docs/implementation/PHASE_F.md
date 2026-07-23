@@ -446,10 +446,16 @@ never-reused profile/account/credential/broker-policy epochs, and revocation-
 versus-redemption ordering. Register the typed lifecycle commands/control-plane
 capability, signed admission/exact digest, semantic expansion class, risk owner,
 quorum/separation, activation fences, tombstone, and emergency-revocation rule.
-Register the credential-rotation owner/states/provider evidence/unknown outcome/
-local activation/overlap/deadline/outage/restore rules. Register the exact
-credential-capability snapshot/local epoch/freshness/provider-policy validator/
-event-or-poll reconciler and fail-closed drift rules. Register the exact
+Register the credential-rotation lineage owner, co-located
+`ProviderCredentialRotationGuard`, stable rotation ID/intended successor/
+provisioning idempotency digest, one-non-terminal rule, provider inventory and
+takeover authority, orphan states, late-callback fences, local activation
+transaction, provider-credential-count quota, provider evidence/unknown outcome/
+overlap/deadline/outage/restore rules. Register the exact credential-capability
+snapshot/local epoch/freshness, raw-evidence and normalized-AST digests,
+provider policy language/version and reviewed evaluator version/corpus, canonical
+`ProviderPermissionComparison`, event-or-poll reconciler, whole-credential
+quarantine/incident owner, and explicit safe-`StrictSubset` profile. Register the exact
 credential-operation profile: non-exportable signing/mTLS/HSM, brokered bearer
 transmission with broker-owned header/redirect/TLS/claim/socket TCB, or
 unsupported credential-exporting connector.
@@ -511,9 +517,14 @@ blast-radius record, profile/account/credential/broker epoch omission/rollback,
 unauthorized/self-approved lifecycle command, unsigned/wrong-digest admission,
 hidden semantic expansion, stale activation fence/tombstone bypass, emergency
 replacement activation, revocation/account-suspension/rotation/ABA race, every
-rotation crash/unknown/evidence/deadline/outage failure, restored dual
-redeemability, permission/role/group/trust/policy drift, callback reorder, stale
-poll, stale/unverifiable/insufficient/broader/restored snapshot, remote
+rotation crash/unknown/evidence/deadline/outage failure, concurrent rotation,
+idempotency-digest substitution, unauthorized takeover, missed orphan, late
+callback, provider-count-limit exhaustion, restored dual redeemability,
+wildcard/explicit-deny/resource/tag/time/network/identity/session/boundary/org-
+policy/role/group/cross-account/inheritance drift, evaluator downgrade or budget
+exhaustion, unsafe safe-subset admission, queued/claimed/non-privileged use after
+whole-credential quarantine, stale/unverifiable/insufficient/broader/restored
+snapshot, remote
 permission discovery in dispatch, stale instruction/restored
 handle, signing/mTLS/HSM export, bearer escape/caller-owned claim/socket/memory-
 canary failure, tenant-invoked capacity
@@ -581,8 +592,10 @@ guard/attempt/revocation cases, dispatch-transmission windows/start claims/
 claimants/executor/instruction-only/provider-execution-profile/permits, and
 provider profile/account/credential/broker epoch and credential-operation/TCB
 placement cases, profile lifecycle command/approval/tombstone cases, credential-
-rotation state/evidence/unknown/deadline cases, credential-capability snapshot/
-epoch/freshness/reconciler cases, and capacity-policy owner/parent/floor-
+rotation state/guard/idempotency/takeover/orphan/count/evidence/unknown/deadline
+cases, credential-capability snapshot/epoch/freshness/raw-and-normalized-digest/
+evaluator-version/canonical-result/safe-subset/quarantine/reconciler cases, and
+capacity-policy owner/parent/floor-
 governance/typed-key-
 ratchet/root-manifest/
 active-generation-successor/cancellation-recovery/fresh-parent-activation/
@@ -598,7 +611,8 @@ evidence report; include remote-validator/provider-downgrade/ABA, exception-
 guard, transmission duplicate-worker/claim-response/lease-takeover fixtures,
 executor/split-service/duplicate-instruction/no-permit-transport fixtures, and
 provider credential/egress/executor-compromise/profile-lineage/epoch/revocation/
-profile-governance/rotation-state/capability-drift/credential-operation and
+profile-governance/rotation-guard/orphan/count/capability-evaluator/quarantine/
+credential-operation and
 bearer-memory fixtures, and capacity-policy
 floor-governance/key-migration/ratchet/root-membership/active-generation/
 successor/cancellation-recovery/post-finalization-activation/delayed-transfer
@@ -635,9 +649,13 @@ profile/account/credential/broker epoch substitution/rollback, emergency
 revocation, provider-account suspension, unauthorized/self-approved activation,
 semantic expansion, stale fence/tombstone, emergency replacement, rotation/ABA,
 every rotation crash/unknown/evidence/deadline/outage state, restored dual
-redemption, permission expansion/reduction, role/group/cross-account trust
-change, callback reorder, stale polling, wrong policy revision, restored
-snapshot, remote permission discovery in dispatch, stale queued instruction,
+redemption, simultaneous rotation, idempotency-digest substitution, takeover/
+inventory/orphan/late-callback/count-limit failure, semantic wildcard/deny/
+resource/condition/boundary/inheritance comparison, evaluator version downgrade
+or budget exhaustion, unsafe subset admission, whole-credential quarantine
+bypass by claimed/queued/non-privileged work, permission expansion/reduction,
+role/group/cross-account trust change, callback reorder, stale polling, wrong
+policy revision, restored snapshot, remote permission discovery in dispatch, stale queued instruction,
 restored handle, signing/mTLS/HSM export, bearer serialization/TLS/socket outside
 the broker TCB, caller-owned claim, HTTP/TLS/redirect/log/diagnostic/crash memory
 leak, uncertain retransmit, protected-class adjustment,
@@ -679,9 +697,14 @@ credentials and egress policy with bounded tenant/account trust domains. It
 rechecks monotonic profile/account/credential/broker epochs, prevents rotation/
 revocation resurrection, proves profile activation came through signed typed
 governance with semantic expansion review and a current tombstone fence, proves
-remote rotation/evidence/unknown outcomes through the authoritative process
-manager, and requires a fresh admitted credential-capability snapshot/epoch
-without dispatch-time remote discovery. It admits bearer work only when the
+remote rotation/evidence/unknown outcomes through one authoritative lineage
+owner and co-located guard, never permits two non-terminal rotations, inventories
+orphans during takeover, and keeps pending/orphan credentials quota-charged.
+It requires a fresh admitted credential-capability snapshot/epoch and reviewed
+semantic comparison without dispatch-time remote discovery; a superset,
+incomparable, or unknown result quarantines every operation on the credential,
+while a strict subset continues only under an explicit safe-subset profile. It
+admits bearer work only when the
 hardened broker owns serialization, TLS, claim, and socket and its memory
 canaries pass.
 Capacity policy cannot rewrite existing

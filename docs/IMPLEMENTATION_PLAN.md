@@ -125,10 +125,17 @@ linearizable. Profile authority uses typed control-plane commands, signed exact-
 digest admission, semantic expansion review, quorum/separation, current
 activation fences, and pre-activation revocation tombstones. Provider credential
 rotation is an asynchronous evidence/reconciliation workflow; only local
-successor activation is atomic and disables predecessor redemption. A fresh,
+successor activation is atomic and disables predecessor redemption. One lineage-
+owned guard serializes rotations; unknown states block successors, authorized
+takeover inventories the provider, orphan credentials stay quarantined and
+quota-counted, and late callbacks are fenced. A fresh,
 versioned credential-capability snapshot and monotonic local epoch fence out-of-
-band permission, role/group/trust, and provider-policy drift without remote
-discovery in the dispatch transaction. Non-exportable signing/mTLS exposes
+discovery in the dispatch transaction. A reviewed versioned semantic evaluator
+returns equal, subset, superset, incomparable, or unknown with raw/AST/evaluator/
+policy-language/explanation evidence. Only equal or an explicitly admitted
+proven-safe subset operates; all other results quarantine the whole credential,
+invalidate pending authority, create an incident, and prohibit automatic
+widening or break-glass promotion. Non-exportable signing/mTLS exposes
 operations only;
 bearer/API-key transmission places header serialization, TLS, claim, and socket
 inside the hardened credential-broker/executor TCB, where bearer bytes may

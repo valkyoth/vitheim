@@ -279,6 +279,30 @@ profile defines bounded overlap and escalation deadlines. A provider that
 supports only one credential uses an explicit outage/maintenance rotation
 profile. Restore can never make two generations locally redeemable.
 
+Every credential lineage has exactly one authoritative owner. A stable
+`ProviderCredentialRotationId` and intended successor generation identify each
+rotation. A co-located `ProviderCredentialRotationGuard` permits at most one
+non-terminal rotation for that lineage; `ProvisioningUnknown` and
+`RevocationUnknown` block ordinary successor rotation. Provisioning binds a
+provider idempotency key and exact request digest. Local rotation-state
+advancement and successor activation occur in one lineage-owner transaction,
+without advancing a second authoritative aggregate stream; remote work remains
+an outbox/reconciliation continuation.
+
+A separately authorized `TakeOverProviderCredentialRotation` recovery command
+must inventory authenticated provider credential state before it may resolve an
+unknown rotation or admit a successor. Credentials that were created remotely
+but cannot be safely associated with the intended rotation enter typed orphan
+states: discovered, quarantined, revocation pending, revocation unknown,
+confirmed revoked, or manual intervention required. Bounded orphan discovery,
+quarantine, revocation, and escalation never make an orphan redeemable. Late
+callbacks must match the still-current rotation generation, rotation ID,
+provider idempotency key, and request digest. A typed
+`ProviderCredentialCount` quota claim accounts for active, pending, and orphan
+credentials against the provider limit; no capacity is released until
+revocation is evidenced. Backup and restore preserve the guard, orphan state,
+provider-count encumbrance, and late-callback fences.
+
 Every credential generation also owns a versioned
 `ProviderCredentialCapabilitySnapshot`: exact provider/account/principal,
 requested and observed effective permissions, role/group/trust-chain
@@ -287,12 +311,46 @@ time/source/maximum freshness, admitted profile and credential generation, and
 a never-reused local `ProviderCredentialCapabilityEpoch`. This is distinct from
 the provider-feature `provider-capability epoch`. A reconciler advances it from
 authenticated provider events or bounded polling; dispatch never discovers
-remote permissions inside its transaction. Privileged transmission fails
-closed when the snapshot is stale or unverifiable, does not cover the requested
-operation, is broader than the admitted profile, or names a different provider
-policy revision. Every observed permission, role, group, or trust-chain change
-advances the local epoch and invalidates stale receipts; restore cannot revive
-an older snapshot.
+remote permissions inside its transaction.
+
+Permission comparison uses a canonical `ProviderPermissionComparison` result:
+`Equal`, `StrictSubset`, `StrictSuperset`, `Incomparable`, or `Unknown`; it is
+never inferred from string-set inclusion. Every provider adapter supplies a
+reviewed, versioned semantic evaluator and conformance corpus covering allow and
+explicit deny, wildcard and exclusion/`NotAction`, resource/tag/time/network/
+identity/session conditions, permission boundaries, organization policies,
+role/group/trust chains, cross-account access, and provider inheritance.
+Unsupported constructs, ambiguous conditions, evaluator failure, or exceeded
+expansion/work/depth budgets return `Unknown` and fail closed. The snapshot also
+binds the raw provider-policy evidence digest, normalized permission-AST digest,
+evaluator implementation identity/version, provider policy language/version,
+comparison result, and explanation-evidence digest.
+
+Only `Equal` or `StrictSubset` can be admissible. `StrictSubset` enters a
+distinct `CredentialCapabilityReduced` drift state; continuing an operation is
+permitted only when the frozen profile explicitly supports safe-subset
+continuation and the evaluator proves the exact requested operation remains
+covered. `StrictSuperset`, `Incomparable`, or `Unknown` atomically advances the
+capability epoch and places the entire credential in
+`CredentialCapabilityQuarantined`. Quarantine invalidates every handle and
+queued instruction and forbids every provider operation—not merely privileged
+ones—until reconciliation or an independently approved replacement completes.
+It emits a security incident binding the protected raw-evidence reference and
+digest, evaluator identity/version, comparison/explanation, and affected
+admitted or in-flight executions. Vitheim never widens a profile automatically
+to match observed authority, and break-glass cannot convert a quarantined
+credential into ordinary authority.
+
+The quarantine fence serializes with handle redemption and first credential
+use. If quarantine wins before signing, TLS client authentication, bearer
+serialization, or another credential operation, even already claimed work is
+denied. If credential use linearizes first, only that bounded in-flight attempt
+may exist and its ambiguous completion follows `OutcomeUnknown`; no further
+operation may start. Stale/unverifiable snapshots and policy-revision mismatch
+fail every operation and enter bounded reconciliation. Every observed
+permission, role, group, or trust-chain change advances the local epoch and
+invalidates stale receipts; restore cannot revive an older snapshot or clear
+quarantine.
 
 Credential operations use one explicit `ProviderCredentialOperationProfile`.
 `NonExportableSigning`, `NonExportableMtls`, and equivalent HSM-backed profiles
@@ -1236,12 +1294,27 @@ permanently disables predecessor redemption. Provider creation/revocation
 response loss reconciles as unknown, old identity/evidence remains until
 confirmed revocation, overlap has a deadline, and single-credential providers
 use an explicit maintenance profile.
+Each credential lineage owns a co-located single-non-terminal-rotation guard,
+stable rotation ID, intended successor generation, provisioning idempotency key/
+request digest, provider-count quota encumbrance, and typed orphan-credential
+state. Unknown rotations block ordinary successors. An authorized takeover
+inventories provider credentials; late callbacks must match the current
+generation and digest; orphan discovery/quarantine/revocation is bounded and
+never makes an orphan redeemable. Local state advancement and successor
+activation use one lineage-owner transaction, not two aggregate streams.
 The current versioned `ProviderCredentialCapabilitySnapshot` and monotonic local
 capability epoch bind observed effective permissions, role/group/trust
 provenance, provider policy validator, freshness, profile, and credential
-generation. A separate reconciler updates it; privileged claim fails closed on
-stale, unverifiable, insufficient, broader, or policy-revision-mismatched state
-without remote discovery in the dispatch transaction.
+generation. A separate reconciler updates it; every credential operation fails
+closed on stale, unverifiable, semantically unknown, or policy-revision-
+mismatched state without remote discovery in the dispatch transaction.
+Its reviewed versioned provider evaluator returns exactly `Equal`,
+`StrictSubset`, `StrictSuperset`, `Incomparable`, or `Unknown`, and binds raw-
+evidence/normalized-AST/evaluator/policy-language/result/explanation digests and
+versions. Only equal or an explicitly admitted safe subset can operate.
+Superset, incomparable, or unknown quarantines the whole credential, advances
+the capability epoch, invalidates all handles/queued work, emits a security
+incident, and cannot be bypassed by automatic profile widening or break-glass.
 The admitted `ProviderCredentialOperationProfile` is non-exportable signing/
 mTLS/HSM operation, brokered bearer transmission, or unsupported. For bearer/
 API-key work, the hardened broker is part of the executor TCB and owns header
@@ -1306,9 +1379,14 @@ radius model, authoritative profile lineage/generation and profile/account/
 credential/broker-policy epoch guards, typed profile-governance commands,
 signed admission/digest/semantic-diff/approval/tombstone state,
 `ProviderCredentialRotationState` with provider-evidence reconciliation,
-bounded overlap/deadline and local activation/restore ratchet,
+bounded overlap/deadline and local activation/restore ratchet, authoritative
+credential-lineage owner and `ProviderCredentialRotationGuard`, stable rotation
+ID/successor generation/idempotency key/request digest, takeover command,
+credential-orphan state/reconciler, and provider-credential-count quota claim,
 `ProviderCredentialCapabilitySnapshot` plus local epoch/freshness/reconciler
-contract, `ProviderCredentialOperationProfile` codec with non-exportable signing/
+contract, reviewed versioned permission evaluator/canonical comparison/AST and
+evidence bindings, reduced-drift/quarantine state, incident and credential-use
+linearization contract, `ProviderCredentialOperationProfile` codec with non-exportable signing/
 mTLS and brokered-bearer TCB placement, destination/TLS/DNS/redirect/no-general-
 proxy egress contract,
 authoritative-time and monotonic-start enforcement contract, and
@@ -1402,11 +1480,29 @@ ABA; crash at every remote rotation state; duplicate credential creation; lose
 a provisioning or revocation response; observe provider eventual consistency or
 continued old-key validity; exceed overlap/deadline; rotate a one-credential
 provider without its outage profile; restore two locally redeemable generations;
+start simultaneous rotations; bypass or restore the non-terminal rotation guard;
+substitute rotation ID, successor generation, idempotency key, or request digest;
+let unknown provisioning/revocation admit an ordinary successor; time out after
+provider-side creation; deliver a late creation callback; take over without an
+authorized provider inventory; create or replay an orphan handle; lose an orphan
+revocation response; exhaust or undercount the provider credential-count limit;
+advance local activation and rotation state through two owner streams;
 expand/reduce permissions out of band; change role/group/cross-account trust;
 reorder authenticated callbacks; observe provider IAM eventual consistency; use
 stale polling or restored capability
 snapshots; omit/substitute/reuse the credential-capability epoch; accept a stale,
-unverifiable, broader, insufficient, or wrong-policy-revision snapshot; discover
+unverifiable, broader, insufficient, or wrong-policy-revision snapshot; compare
+policy strings; confuse allow/deny, wildcard/`NotAction`, resource/tag/time/
+network/identity/session conditions, permission boundaries, organization policy,
+role/group/cross-account trust, or inheritance; downgrade/substitute the
+evaluator or policy-language version; exceed a complexity budget without
+`Unknown`; mismatch raw-policy/normalized-AST/result/explanation evidence;
+continue on `StrictSuperset`, `Incomparable`, or `Unknown`; use a non-privileged
+action through a quarantined credential; widen the profile automatically; use
+break-glass as ordinary quarantine bypass; continue `StrictSubset` without its
+explicit profile or exact-operation proof; race quarantine against queued,
+claimed, or first-credential-use work; replay a handle or restore quarantine;
+discover
 remote permission inside the dispatch transaction; redeem a stale queued
 instruction or restored handle; race revocation/
 rotation/policy change against redemption; export private key material from a
@@ -1503,8 +1599,14 @@ digest-bound, semantic-diff-classified control-plane mutation with current
 fences and a revocation tombstone. Rotation is an evidence-driven asynchronous
 provider process; only local successor activation is atomic and makes the
 predecessor non-redeemable, while unknown creation/revocation outcomes reconcile
-to a deadline. The current credential-capability snapshot/epoch proves fresh,
-admitted effective permissions without remote discovery in dispatch. Restore
+to a deadline. Its single-lineage rotation guard prevents concurrent or ordinary
+post-unknown successors; takeover inventories provider state, orphan credentials
+remain quarantined and quota-counted, and late callbacks are fenced. The current
+credential-capability snapshot/epoch proves fresh, semantically evaluated
+permissions without remote discovery in dispatch. Only equal or an explicitly
+admitted proven-safe subset may operate; superset, incomparable, or unknown
+quarantines the whole credential, invalidates all pending authority, emits a
+security incident, and cannot be widened or break-glass promoted. Restore
 cannot resurrect any of this authority. Non-exportable key profiles expose only
 operations; bearer transmission is performed entirely by the hardened broker/
 executor TCB,

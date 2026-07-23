@@ -39,7 +39,12 @@ Freeze the profile/account/credential/broker-policy epoch mechanism. Freeze the
 remote `ProviderCredentialRotationState`, admissible provider identity/
 permission/revocation evidence, atomic local successor activation, unknown-
 response reconciliation, bounded overlap/escalation, single-credential outage
-profile, and restore ratchet. Freeze `ProviderCredentialOperationProfile`:
+profile, and restore ratchet. Freeze exactly one credential-lineage owner and
+co-located non-terminal rotation guard, stable rotation ID/successor generation,
+provider idempotency key/request digest, unknown-state successor block,
+authorized provider-inventory takeover, orphan quarantine/revocation states and
+late-callback fences, and typed provider-credential-count quota accounting.
+Freeze `ProviderCredentialOperationProfile`:
 non-exportable signing/mTLS/HSM exposes operations only; brokered bearer/API-key
 transmission places authorization serialization, redirects, TLS, start claim,
 and socket inside the hardened broker/executor TCB; provider-required export to
@@ -56,8 +61,10 @@ Review handle substitution, cross-tenant redemption, credential lifetime and
 scope inflation, master-key exposure, and provider-account confusion against
 the exact admitted KMS implementation; include epoch rollback/ABA/restore,
 every rotation crash/unknown/evidence/deadline state, duplicate creation,
-eventual consistency, old-key continued validity, private-key export, bearer TCB
-escape, and HTTP/TLS/redirect/diagnostic/crash memory canaries.
+simultaneous rotation, timeout-then-provider-create, late callback, takeover,
+orphan revocation loss, credential-count exhaustion, eventual consistency,
+old-key continued validity, private-key export, bearer TCB escape, and HTTP/TLS/
+redirect/diagnostic/crash memory canaries.
 Exit criteria: Phase O has one approved, replaceable crypto/key profile.
 `v0.140.1 implementation stop reached. Run pentest for this exact commit.`
 
@@ -73,8 +80,11 @@ capacity leases. Map remote-mutation-exception owners/guards/provider-capability
 epochs and transmission-window/start-claim rows. Map profile-governance lineage/
 proposal/approval/admission/digest/diff/tombstone
 rows and atomic activation placement, credential-rotation state/provider-
-evidence/unknown/deadline/local-activation rows, credential-capability snapshot/
-epoch/freshness/validator/reconciler rows. Map capacity-policy lineage owner/
+evidence/unknown/deadline/local-activation rows, credential-lineage/rotation-
+guard/idempotency/digest/takeover/orphan/count-encumbrance rows, credential-
+capability snapshot/epoch/freshness/validator/reconciler/raw-policy/normalized-
+AST/evaluator/language/comparison/explanation/reduced/quarantine/incident rows.
+Map capacity-policy lineage owner/
 one-parent ledger/high-watermark, protected-floor history/reduction/separation/
 platform-floor profile/admission/ratchet rows, hierarchy-root manifest/
 membership/conservation/rollout rows, prepared-to-activated/blocked parent CAS,
@@ -105,8 +115,9 @@ persisted/reconstructable start permit, missing worker-instance/lease-fence/
 claim/permit binding, permit transport or digest authorization,
 non-co-located profile lineage/activation/tombstone, unsigned or stale approval,
 rotation owner/state/evidence/deadline split, non-atomic local activation,
-capability snapshot/epoch/claim split, stale observer state or dispatch-time
-remote discovery,
+missing/non-co-located rotation guard, two non-terminal rotations, lost orphan/
+count encumbrance, capability snapshot/epoch/quarantine/claim split, cleared
+quarantine on restore, stale observer state or dispatch-time remote discovery,
 ambiguous or multi-parent policy owner, non-co-located policy stream/parent
 ledger/floor row, non-atomic activation, shared floor/policy authority, missing
 operational fences/platform minimum/cross-command separation, incomplete or
@@ -223,10 +234,18 @@ implementation admission, semantic expansion classifier, risk owner, quorum/
 separation, current activation fences, revocation tombstone, and emergency-
 revocation/no-replacement rule. Freeze the asynchronous rotation state machine,
 provider evidence, atomic local activation, unknown reconciliation, overlap/
-deadline, outage profile, and restore behavior. Freeze the exact
+deadline, outage profile, one-lineage rotation guard/identity/idempotency,
+authorized inventory takeover, orphan/count-quota recovery, late-callback
+fences, and restore behavior. Freeze the exact
 `ProviderCredentialCapabilitySnapshot`, monotonic local epoch, authenticated
 event/polling reconciler, freshness policy, provider-policy validator, and
-fail-closed drift rules. Freeze non-exportable signing/
+fail-closed drift rules. Freeze reviewed versioned provider permission
+evaluators and corpora, canonical equal/subset/superset/incomparable/unknown
+result, raw-policy/normalized-AST/evaluator/policy-language/comparison/
+explanation bindings, and complexity budgets. Freeze whole-credential
+quarantine/incident/first-use fencing for superset/incomparable/unknown; forbid
+automatic widening and break-glass promotion. Freeze whether any explicit
+safe-subset profile is supported; otherwise `StrictSubset` also denies. Freeze non-exportable signing/
 mTLS/HSM operations and brokered-bearer transmission separately. For bearer/
 API-key profiles, the hardened broker joins the executor TCB and owns header
 serialization, redirects, TLS, claim, and socket; temporary bearer bytes are
@@ -244,7 +263,8 @@ pool-partition gate, residual-blast-radius record, and upgrade decisions.
 Include profile-lineage/epoch/rotation/restore gate, credential-operation
 profile and brokered-bearer TCB/memory-assurance record. Include profile-
 governance command/approval/tombstone gates, rotation-state/evidence/deadline
-record, and credential-capability snapshot/epoch/reconciler contract.
+record, lineage/guard/takeover/orphan/count-quota record, and credential-
+capability evaluator/snapshot/epoch/reduced/quarantine/incident contract.
 Verification: sandbox escape, metering bypass, host-call amplification, DNS
 rebinding, redirect, cross-plugin/tenant, guest-memory secret canaries, broker
 confused-deputy/target substitution, stale dispatch authority, quota/refund/
@@ -271,6 +291,14 @@ duplicate creation, eventual consistency/continued old-key validity, overlap/
 deadline/outage-profile failure, permission expansion/reduction, role/group/
 cross-account trust drift, callback reorder, stale polling, policy-revision
 mismatch, and restored capability snapshot.
+Include simultaneous rotations, unknown-state successor, rotation identity/
+idempotency/digest substitution, timeout-then-create, late callback, unauthorized
+takeover, orphan replay/revocation loss, credential-count exhaustion, wildcard/
+`NotAction`, explicit deny, conditional resource/tag/time/network/identity/
+session semantics, boundaries/organization policy/inheritance, evaluator
+downgrade and complexity exhaustion, raw/AST/result/explanation mismatch,
+non-privileged quarantined use, safe-subset without explicit support, claimed-
+work quarantine race, automatic widening, and break-glass promotion.
 Exit criteria: cryptography is not claimed to enforce resource isolation.
 `v0.140.4 implementation stop reached. Run pentest for this exact commit.`
 
@@ -344,7 +372,9 @@ and profile/account/credential/broker-policy epochs are co-located with the
 claim guard and cannot roll back on restore. Freeze the profile-governance
 lineage owner, approval/tombstone transaction placement, rotation process-
 manager owner, provider-evidence store/reconciler, capability-snapshot observer/
-freshness owner, and their HA/failover behavior. Only local credential
+freshness owner, credential-lineage/rotation-guard/takeover/orphan/count-quota
+owner, permission-evaluator/version/corpus owner, and capability-quarantine/
+incident/first-use fence owner, and their HA/failover behavior. Only local credential
 activation is atomic; remote create/revoke is explicitly asynchronous.
 Signing/mTLS/HSM is non-exportable;
 bearer/API-key serialization, redirects, TLS, claim, and socket reside together
@@ -401,7 +431,9 @@ TLS/DNS/redirect policy, authoritative lineage/generation and profile/account/
 credential/broker epochs, profile lifecycle command/capability/signed-admission/
 semantic-diff/approval/tombstone model, rotation state/evidence/unknown/overlap/
 deadline/outage and atomic-local-activation profile, credential-capability
-snapshot/epoch/event-or-poll/freshness/revision profile, restore ordering,
+snapshot/epoch/event-or-poll/freshness/revision profile, rotation guard/
+idempotency/takeover/orphan/count-quota profile, semantic evaluator/AST/evidence/
+complexity/reduced/quarantine/incident profile, restore ordering,
 credential-operation profile and bearer-broker TCB/memory boundary, and
 documented residual compromise radius,
 remote-target concurrency profile with exact provider/version, validator
@@ -466,6 +498,10 @@ every rotation crash/unknown/evidence/deadline state, duplicate creation,
 eventual consistency/continued old-key validity, restored dual redemption,
 permission/role/group/cross-account drift, callback reorder, stale polling,
 policy-revision mismatch, restored snapshot, remote discovery in dispatch,
+simultaneous rotation, unknown successor, late callback, orphan/count exhaustion,
+evaluator semantic/downgrade/budget failure, quarantined non-privileged or
+claimed work, safe-subset policy bypass, automatic widening, break-glass
+promotion,
 transfer owner/root/
 parent/period/lane/class/region/authorization substitution, emergency/security-cleanup-to-
 business conversion through adjustment, existing-class rewrite, tenant-invoked

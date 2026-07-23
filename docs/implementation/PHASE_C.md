@@ -30,10 +30,16 @@ claim guard; claim and handle redemption recheck them and restore cannot roll
 them back. Persist typed profile lifecycle proposals/approvals/tombstones and
 atomically co-locate active-generation updates with their current-fence checks.
 Persist asynchronous credential-rotation state, provider evidence, unknown
-outcomes, overlap/escalation deadlines, and atomic local successor activation.
+outcomes, overlap/escalation deadlines, atomic local successor activation, one
+credential-lineage owner, co-located rotation guard, rotation/successor/
+idempotency/digest identity, authorized takeover inventory, typed orphan state,
+late-callback fences, and provider-credential-count quota encumbrance.
 Co-locate the fresh `ProviderCredentialCapabilitySnapshot` and never-reused
 local capability epoch with the claim guard; an authenticated reconciler, never
-the dispatch transaction, observes provider permission/policy drift. The
+the dispatch transaction, observes provider permission/policy drift. Persist
+raw-policy/normalized-AST/evaluator/policy-language/comparison/explanation
+evidence, reduced drift, whole-credential quarantine, affected-execution
+incident references, and the quarantine-to-first-use fence. The
 negotiated credential-operation profile must distinguish non-
 exportable signing/mTLS/HSM operations from brokered bearer transmission. The
 bearer broker joins the executor TCB and owns header serialization, redirects,
@@ -93,7 +99,9 @@ parent activation, typed floor-key migration, trusted `TransmissionExecutor`/
 instruction-only split protocol, revocable `ProviderExecutionProfile` lineage/
 epoch guards, profile-governance/approval/tombstone state, asynchronous
 rotation/evidence/unknown/deadline state, credential-capability snapshot/epoch/
-reconciler, explicit credential-operation/TCB placement, cancellation-recovery
+reconciler, credential-lineage/rotation-guard/takeover/orphan/count-quota state,
+semantic permission-evaluator/evidence/result/reduced/quarantine/incident state,
+explicit credential-operation/TCB placement, cancellation-recovery
 successor semantics, bounded
 deadlock-retry semantics, and fail-closed behavior.
 
@@ -122,8 +130,14 @@ local successor activation, unauthorized or self-approved profile activation,
 unsigned/wrong-digest admission, hidden semantic expansion, stale activation
 fence, ignored revocation tombstone, emergency replacement activation, missing
 rotation state/evidence/unknown/deadline/outage profile, restored dual
-redeemability, stale/unverifiable/insufficient/broader/wrong-policy capability
-snapshot, remote permission discovery in dispatch, restored revoked generation
+redeemability, missing/non-co-located rotation guard, simultaneous non-terminal
+rotations, unknown-state successor, unauthorized takeover, lost orphan/count
+encumbrance, stale/unverifiable/insufficient/broader/wrong-policy capability
+snapshot, missing/unreviewed evaluator or corpus, unsupported semantic construct
+treated as known, complexity-budget fail-open, superset/incomparable/unknown
+without whole-credential quarantine, non-privileged quarantine bypass, automatic
+widening/break-glass promotion, unsafe subset continuation, remote permission
+discovery in dispatch, restored revoked generation
 or handle, stale queued instruction after
 suspension, credential export from signing/mTLS/HSM, bearer serialization/TLS/
 socket outside the broker TCB, separate broker caller claiming transmission,
@@ -353,8 +367,13 @@ typed profile lifecycle command/proposal/approval/signed-admission/semantic-
 diff/tombstone records and atomic activation constraints, authoritative
 credential-rotation state with provider identity/permission/revocation evidence,
 unknown outcomes, overlap/escalation deadlines and atomic local activation,
-credential-capability snapshots, monotonic local epochs, freshness/validator
-guards and reconciliation cursors, credential-operation-profile/TCB placement,
+one-owner lineage and co-located rotation guard, rotation ID/successor/
+idempotency/digest binding, takeover/inventory receipts, orphan lifecycle and
+late-callback guards, provider-credential-count quota encumbrances, credential-
+capability snapshots, monotonic local epochs, freshness/validator guards and
+reconciliation cursors, raw-policy/normalized-AST/evaluator/language/comparison/
+explanation evidence, reduced/quarantine state, incident/affected-execution
+references and first-use fence, credential-operation-profile/TCB placement,
 and scoped egress/pool partition evidence,
 canonical composite lock-order/deadlock-retry implementation,
 integrity commitment, and configuration adapters; migrations, operator guide,
@@ -392,9 +411,17 @@ key export, unauthorized/self-approved profile activation, digest/admission/
 semantic-expansion/quorum/fence/tombstone bypass, every rotation-state crash,
 duplicate provider creation, lost create/revoke response, eventual consistency,
 old-key continued validity, overlap/deadline/outage failure, restored dual
-redemption, provider permission expansion/reduction, role/group/trust drift,
+redemption, simultaneous rotation, guard bypass, unknown successor, rotation/
+generation/idempotency/digest substitution, timeout-then-create, late callback,
+unauthorized takeover, orphan replay/revocation loss/restore, credential-count
+exhaustion, two-stream local activation, provider permission expansion/reduction,
+role/group/trust drift,
 callback reorder, stale poll, wrong provider-policy validator, stale/restored
-capability snapshot or epoch, remote permission discovery in dispatch, bearer
+capability snapshot or epoch, wildcard/`NotAction`/deny/conditional/boundary/
+organization/inheritance semantic error, evaluator downgrade, complexity-budget
+failure, raw/AST/result/explanation mismatch, non-privileged quarantined use,
+safe-subset policy bypass, queued/claimed/first-use quarantine race, automatic
+widening, break-glass promotion, remote permission discovery in dispatch, bearer
 serialization/TLS/socket outside the broker, broker caller
 claim, HTTP/TLS/redirect/diagnostic/crash memory leakage, destination/TLS/DNS/
 redirect/general-proxy bypass, floor-key omission/
@@ -529,17 +556,28 @@ Implement the provider credential rotation port as the exact asynchronous
 effective-permission verification, atomic local activation, old-generation
 revocation pending, evidence-confirmed completion, unknown/failed/manual states,
 bounded overlap/escalation, and a declared single-credential maintenance
-profile. Implement capability observation as authenticated events or bounded
-polling producing versioned `ProviderCredentialCapabilitySnapshot` values;
+profile. Serialize it with one credential-lineage owner and co-located guard,
+stable rotation/successor/idempotency/digest identity, authorized provider-
+inventory takeover, bounded orphan quarantine/revocation, late-callback fences,
+and provider credential-count quota accounting. Implement capability observation
+as authenticated events or bounded polling producing versioned
+`ProviderCredentialCapabilitySnapshot` values;
 provider IAM discovery is never a dispatch-transaction operation.
+Each adapter provides a reviewed versioned semantic permission evaluator and
+conformance corpus for its policy language. It returns equal, subset, superset,
+incomparable, or unknown under explicit expansion/work/depth budgets and binds
+raw policy, normalized AST, evaluator/language, result, and explanation evidence.
+Superset/incomparable/unknown drives whole-credential quarantine and a security
+incident; safe-subset continuation is an explicit profile.
 
 Goal: keep master keys and long-lived secrets outside Vitheim processes while
 preserving provider-neutral inner ports.
 
 Deliverables: KMS and secret-provider ports/adapters, fake provider, envelope-key
 broker, capability probes, rotation state machine/reconciler/evidence store,
-permission-capability observer/snapshot validator, migration/rotation tooling,
-and operator runbook.
+rotation guard/takeover/orphan/count-quota tooling, permission-capability
+observer/snapshot validator, provider semantic evaluators/corpora, quarantine/
+incident workflow, migration/rotation tooling, and operator runbook.
 
 Verification: tenant/key confusion, stale/revoked keys, substitution, rollback,
 cache leakage, confused deputy, outage/timeout/retry storms, rotation, destruction,
@@ -547,7 +585,13 @@ recovery, audit failure, every rotation crash point, duplicate creation, lost
 create/revoke response, eventual consistency, continued old-key validity,
 overlap/deadline, single-key outage, restore dual redemption, permission
 expansion/reduction, role/group/trust change, callback reorder, stale poll,
-wrong policy revision, and restored snapshot cases all fail closed.
+wrong policy revision, simultaneous rotations, timeout-then-create, late
+callbacks, unauthorized takeover, orphan revocation loss, credential-count
+exhaustion, wildcard/`NotAction`, explicit deny, conditional resources/tags/
+time/network/identity/session, boundaries/organization policy/inheritance,
+evaluator downgrade/budget exhaustion, non-privileged quarantine bypass,
+automatic widening, break-glass promotion, claimed-work race, and restored
+snapshot/quarantine cases all fail closed.
 
 Exit criteria: no production encryption/signing path depends on filesystem keys
 or plaintext configuration secrets. `v0.28.2 implementation stop reached. Run pentest for this exact commit.`
@@ -616,9 +660,11 @@ adapter migration contract, and floor-profile ratchet migration/compatibility
 gate with total key-set mapping manifest and proof; preserve never-reused
 provider-profile/account/credential/broker epochs, non-redeemable predecessor
 generations, profile proposal/approval/tombstone state, rotation state/provider
-evidence/unknown outcome/overlap deadline, capability snapshots/local epochs/
-freshness provenance, and cancellation-recovery lineage/receipts across every
-schema change.
+evidence/unknown outcome/overlap deadline, rotation owner/guard/identity/
+takeover/orphan/count encumbrance, capability snapshots/local epochs/freshness
+provenance, raw-policy/normalized-AST/evaluator/language/result/explanation
+evidence, reduced/quarantine/incident/first-use state, and cancellation-recovery
+lineage/receipts across every schema change.
 
 Verification: reorder/substitution, partial failure, concurrent runner, lease loss,
 downgrade, malicious input, retry, backup restore, floor-profile conflict,
@@ -628,7 +674,9 @@ period, class/lane, region/residency, settlement-version substitution, omitted/
 duplicate key, rounding, overflow, and lossy mapping.
 Include epoch rollback/reuse, credential/profile resurrection, credential ABA,
 missing profile approval/tombstone or rotation/evidence/deadline state, restored
-dual redemption, stale/restored credential-capability snapshot or epoch,
+dual redemption, lost rotation guard/orphan/count encumbrance, stale/restored
+credential-capability snapshot or epoch, changed evaluator semantics without
+versioning, cleared quarantine or affected-execution incident linkage,
 missing operation-profile discriminator, cancelled-prepared recovery receipt
 loss/duplication, and restored independent-parent-release cases.
 
@@ -689,11 +737,15 @@ radius evidence across redelivery. Preserve the authoritative profile lineage,
 exact active generation, profile/account/credential/broker-policy epochs,
 profile activation admission/approval/digest/tombstone evidence, current
 rotation state/local activation epoch/provider evidence/deadline, current
-credential-capability snapshot/epoch/freshness/validator, credential-operation
-profile, and brokered-bearer TCB placement. Redelivery
+rotation owner/guard/identity/takeover/orphan/count encumbrance, current
+credential-capability snapshot/epoch/freshness/validator and semantic evaluator/
+language/result/evidence, reduced/quarantine/incident/first-use state,
+credential-operation profile, and brokered-bearer TCB placement. Redelivery
 cannot revive a suspended/revoked profile, rotated credential, stale handle, or
 old broker policy, bypass a revocation tombstone, progress remote rotation, or
-refresh provider permissions; queue payloads never contain bearer material.
+refresh/evaluate provider permissions, clear whole-credential quarantine, use a
+nominally non-privileged action, or start a successor after unknown rotation;
+queue payloads never contain bearer material.
 Only the authoritative rotation and permission reconcilers may advance those
 states. Preserve
 the immutable authorization binding and freshness profile across queues; a
@@ -756,7 +808,8 @@ claimant/trusted-executor/instruction-only/provider-execution-profile handler,
 profile/account/credential/broker epoch and credential-operation/bearer-broker
 handler, profile-governance lifecycle/approval/tombstone handler, credential-
 rotation process manager/evidence/deadline reconciler, credential-capability
-snapshot/epoch/freshness validator,
+snapshot/epoch/freshness validator, rotation guard/takeover/orphan/count-quota
+handler, permission-evaluator/evidence/reduced/quarantine/incident handler,
 floor-key/ratchet migration and active-generation successor/fresh post-
 finalization parent-activation handler, canonical lock-order/deadlock-retry
 implementation, capability report, and operational metrics.
@@ -793,8 +846,12 @@ ABA, unauthorized/self-approved profile activation, semantic expansion, stale
 activation fence/tombstone, emergency replacement, every rotation crash/
 unknown/evidence/deadline/outage state, duplicate creation, eventual consistency/
 continued old-key validity, restored dual redemption, permission/role/group/
-cross-account drift, callback reorder, stale polling, wrong policy revision,
-stale/restored capability snapshot, queue-driven rotation or permission refresh,
+cross-account drift, simultaneous rotation, unknown successor, timeout-then-
+create, late callback, unauthorized takeover, orphan revocation loss, credential-
+count exhaustion, callback reorder, stale polling, wrong policy revision,
+stale/restored capability snapshot, semantic evaluator/version/budget failure,
+non-privileged quarantine bypass, unsafe subset continuation, automatic widening,
+break-glass promotion, queue-driven rotation or permission refresh/evaluation,
 stale queued instruction, restored handle, signing/mTLS key export, bearer
 material outside the broker TCB or in queue/log/diagnostic/crash state, caller-
 owned bearer claim/TLS/socket, missing memory canary, uncertain retransmission, mixed
