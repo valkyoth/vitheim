@@ -12,7 +12,13 @@ declarations, exact existing roots/laws, or reviewed `none`; zero
 `VIT-PAUTH-*` proposals remain. Every effective composite-law generation and
 its exact dependency timing, coordinator, semantics, activation/migration/
 rollback/recovery contract, canonical manifest bytes, semantic-contract ID, and
-content digest has conformance evidence for the selected profiles.
+content digest has conformance evidence for the selected profiles. Every
+`@gNN` claim expands to and admits all tuples `g01..gNN`; the selected
+compiled/signed catalog trust profile is independently anchored and bound into
+artifacts, checkpoints, backups, restore, and failover evidence. Every semantic
+ID exhaustively resolves to compiled Rust transitions, typed outcomes, recovery
+logic, and concrete P/M/F tests. No unknown, prose-interpreted, or unresolved
+realization ships.
 
 Goal: release the first production-supported Vitheim platform with claims no
 broader than its evidence.
@@ -403,6 +409,10 @@ Verification:
   contiguous historical generation chain, exact-effective dependency and
   recovery contracts, semantic-contract ID, canonical manifest/digest,
   proof/activation fence, migration, and rollback floor.
+  Every generation tuple is in the independently trusted active admission
+  catalog, every terminal generation includes its complete admitted ancestry,
+  and every semantic contract has executable transition/recovery/P-M-F
+  evidence. Database authority cannot mint or replace law trust.
   `VIT-LAW-006` evidence distinguishes `DefinitelyNotStarted`,
   `OutcomeUnknown`, and `StartClaimedReconciling`; possible or claimed start
   never permits ordinary retransmission. Invariant and law supersession are
@@ -421,7 +431,8 @@ code or artifact change creates a new RC and repeats affected review. After the
 authority-review report proves exactly one resolved disposition per later
 milestone with zero proposals, and the law-generation report proves zero
 future-effective dependency, future-generation claim, semantic drift,
-noncanonical manifest, or digest mismatch, the
+noncanonical manifest, digest mismatch, untrusted catalog tuple, incomplete
+ancestry, or unknown/unrealized semantic contract, the
 final exact commit and artifacts pass the final independent pentest, stop for
 explicit maintainer authorization before creating `v1.0.0`; publishing crates
 remains forbidden except for a separately approved SDK. `v1.0.0 implementation

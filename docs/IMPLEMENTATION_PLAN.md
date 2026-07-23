@@ -66,7 +66,21 @@ only the latest resolved view. Each row materializes the canonical
 dependencies, a semantic contract, and a content digest verified by storage and
 recovery tooling. A later generation needs a meaningful dependency,
 coordinator, or semantic delta; removal-only and semantics-only evolution is
-valid.
+valid. Digest self-consistency never grants authority: startup, storage,
+migration, import, restore, failover, and recovery admit only exact
+`(LawId, Generation, Digest)` tuples in the independently trusted
+[Law Manifest Admission Set](LAW_MANIFEST_ADMISSIONS.md), whose compiled or
+platform-law-signed catalog identity, epoch, digest, and trust profile are
+bound into checkpoints, backups, and release evidence. Database access alone
+cannot extend this set.
+Canonical semantic prose is review evidence, not executable input. The
+[Law Semantic Realization Registry](LAW_SEMANTIC_REALIZATIONS.md) exhaustively
+binds every `VIT-LSEM-*` to compiled Rust transitions, typed outcomes, recovery
+logic, and exact positive/model/fault test contracts. Unknown or mismatched
+semantic IDs fail closed; no prose interpreter, reflection path, or plugin may
+create authority. A reference to `VIT-LAW-NNN@gNN` claims the complete
+predecessor closure `g01..gNN`, and conformance evidence enumerates and admits
+every tuple and realization in that closure.
 The [Milestone Authority Reviews](AUTHORITY_REVIEWS.md) registry gives every
 milestone after `0.18.3` exactly one `declares`, `extends`, `none`, or
 conservative `proposed` disposition. Before implementation begins, `proposed`
@@ -75,7 +89,9 @@ reviewed non-authority reason; no milestone, option decision, release
 candidate, or production gate may silently omit that review. CI permits a
 proposal only while that milestone’s own status is planned. Law extensions use
 `VIT-LAW-NNN@gNN` and must name the latest generation effective at the
-milestone, so conformance cannot claim a future generation.
+milestone, so conformance cannot claim a future generation. That shorthand is
+an ancestry-closure assertion, never permission to omit predecessor manifests,
+admission tuples, semantic realizations, or their evidence.
 Before `0.51.2`, every milestone that creates or changes tenant-bearing durable,
 cached, indexed, backed-up, or external-copy state must supply the neutral
 `0.8.1` lifecycle descriptor and inventory fixture without depending outward on

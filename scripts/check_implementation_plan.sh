@@ -208,6 +208,12 @@ require_text docs/LAW_GENERATIONS.md \
 require_text docs/LAW_GENERATION_MANIFEST.md \
     '# Law Generation Manifest' \
     'content-bound machine-readable law-generation schema'
+require_text docs/LAW_MANIFEST_ADMISSIONS.md \
+    '# Law Manifest Admission Set' \
+    'independently trusted law-manifest admission catalog'
+require_text docs/LAW_SEMANTIC_REALIZATIONS.md \
+    '# Law Semantic Realization Registry' \
+    'executable law semantic realization registry'
 require_text docs/AUTHORITY_REVIEWS.md \
     '# Milestone Authority Reviews' \
     'post-bootstrap milestone authority dispositions'
@@ -270,3 +276,5 @@ fi
 scripts/check_invariant_ownership.sh
 scripts/check_law_generations.sh
 scripts/check_authority_reviews.sh
+scripts/check_law_semantic_realizations.sh
+scripts/check_law_policy_adversarial.sh

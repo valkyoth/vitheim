@@ -4,6 +4,7 @@ set -eu
 reviews="${1:-docs/AUTHORITY_REVIEWS.md}"
 registry="docs/INVARIANT_OWNERSHIP.md"
 generations="docs/LAW_GENERATIONS.md"
+admissions="docs/LAW_MANIFEST_ADMISSIONS.md"
 if [ "$#" -gt 0 ]; then
     shift
 fi
@@ -12,7 +13,7 @@ if [ "$#" -eq 0 ]; then
 fi
 
 awk -F '|' -v reviews="$reviews" -v registry="$registry" \
-    -v generations="$generations" '
+    -v generations="$generations" -v admissions="$admissions" '
 BEGIN {
     failed = 0
 }
@@ -70,7 +71,15 @@ FILENAME == generations &&
     }
     next
 }
+FILENAME == admissions &&
+/^\| VIT-LAW-[0-9][0-9][0-9]@g[0-9][0-9] / {
+    split(trim($2), admission_reference, "@g")
+    admitted_generation[admission_reference[1],
+                        admission_reference[2] + 0] = 1
+    next
+}
 FILENAME != reviews && FILENAME != registry && FILENAME != generations &&
+FILENAME != admissions &&
 (/^## `([0-9]+\.[0-9]+\.[0-9]+)`/ || /^# `1\.0\.0`/) {
     heading = $0
     sub(/^##? `/, "", heading)
@@ -84,6 +93,7 @@ FILENAME != reviews && FILENAME != registry && FILENAME != generations &&
     next
 }
 FILENAME != reviews && FILENAME != registry && FILENAME != generations &&
+FILENAME != admissions &&
 current_version != "" &&
 /^<!--[[:space:]]+vitheim-(invariant|law)[[:space:]]+/ {
     count = split($0, marker, /[[:space:]]+/)
@@ -95,6 +105,7 @@ current_version != "" &&
     next
 }
 FILENAME != reviews && FILENAME != registry && FILENAME != generations &&
+FILENAME != admissions &&
 current_version != "" && /^Status:[[:space:]]*/ {
     if (eligible(current_version)) {
         milestone_status_count[current_version]++
@@ -193,6 +204,12 @@ END {
                         !law_generation[law, generation]) {
                         fail(version " extends unknown law generation " id)
                     } else {
+                        for (ancestor = 1; ancestor <= generation; ancestor++) {
+                            if (!admitted_generation[law, ancestor]) {
+                                fail(version " closure lacks admitted " law \
+                                     "@g" sprintf("%02d", ancestor))
+                            }
+                        }
                         latest = 0
                         for (candidate = 1;
                              candidate <= law_generation_count[law];
@@ -237,4 +254,4 @@ END {
     if (milestone_count == 0) fail("no post-0.18.3 milestones found")
     exit failed
 }
-' "$reviews" "$registry" "$generations" "$@"
+' "$reviews" "$registry" "$generations" "$admissions" "$@"

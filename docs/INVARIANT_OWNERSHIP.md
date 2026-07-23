@@ -6,7 +6,9 @@ This is the canonical index for authority-bearing invariants and the latest
 resolved view of composite laws. Historical law meaning is canonical in
 `docs/LAW_GENERATIONS.md`; a latest row here never retroactively changes an
 earlier milestone. Each generation is content-bound by the canonical
-`docs/LAW_GENERATION_MANIFEST.md` schema and digest. Detailed phase
+`docs/LAW_GENERATION_MANIFEST.md` schema and digest, admitted through
+`docs/LAW_MANIFEST_ADMISSIONS.md`, and bound to compiled transitions, outcomes,
+recovery, and tests by `docs/LAW_SEMANTIC_REALIZATIONS.md`. Detailed phase
 documents define behavior and test cases; they refer to stable IDs here instead
 of creating a second owner. Before a milestone may exit, every invariant it
 introduces or changes must have exactly one row, one authoritative owner, an

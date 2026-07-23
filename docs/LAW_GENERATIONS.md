@@ -10,6 +10,9 @@ resolves `unchanged` semantic fields from that predecessor. Generation one must
 state the complete linearization, failure, and recovery semantics.
 Later generations require at least one meaningful dependency, coordinator, or
 semantic delta; removal-only and semantics-only generations are valid.
+Generation one cannot remove roots. Every resolved set has at least two
+distinct roots, includes its coordinator, applies disjoint additions/removals,
+and must actually change when a dependency delta is claimed.
 
 An invariant dependency cannot enter a law before the invariant's lifecycle
 effective version. Mixed-version operation is the conservative intersection of
@@ -18,7 +21,12 @@ root cannot exercise the expanded law. Generation activation, migration,
 rollback, dependency-set, and recovery-proof contracts are append-only.
 Every row is a [Law Generation Manifest](LAW_GENERATION_MANIFEST.md) source
 record. Its semantic-contract ID and SHA-256 manifest digest bind the resolved
-dependency set and all security-relevant fields.
+dependency set and all security-relevant fields. Runtime trust additionally
+requires the exact tuple in
+[Law Manifest Admission Set](LAW_MANIFEST_ADMISSIONS.md), while executable
+meaning is closed over the
+[Law Semantic Realization Registry](LAW_SEMANTIC_REALIZATIONS.md). A
+`VIT-LAW-NNN@gNN` claim includes and enumerates all generations `g01..gNN`.
 
 | Law ID | Generation | Effective from | Predecessor | Coordinator | Add invariant roots | Remove invariant roots | Linearization, failure, and recovery semantics | Mixed-version intersection | Activation fence | Migration contract | Rollback floor | Dependency contract | Semantic contract | Recovery contract | Manifest digest |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

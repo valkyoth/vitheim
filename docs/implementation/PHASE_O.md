@@ -363,7 +363,11 @@ incomplete surface mapping fail closed.
 ## `0.145.0` — Backup, Restore, And Disaster Recovery
 Status: planned. Setup: RPO/RTO profiles and consistent DB/blob/key/config/
 retention-hold set, envelope encryption, immutability, rotation/revocation,
-crypto-erasure consequences, external checkpoint anchors and drills. Goal:
+crypto-erasure consequences, external checkpoint anchors and drills. Bind each
+backup/checkpoint to the active law-catalog ID, epoch, digest, trust profile,
+every admitted generation tuple in its predecessor closures, and the selected
+semantic-realization set. The backup medium never becomes a platform-law trust
+root. Goal:
 verified recoverability. Deliverables: backup/restore tools and DR evidence.
 Verification: substitution, partial/stale backup, lost/rotated key, held/erased
 data, point-in-time restore, every `0.18.2` atomic work variant and denial-only
@@ -428,6 +432,10 @@ blocked/reconciliation receipts, cancellation-recovery generation/actual-limit
 manifest/idempotent receipt/deadline/escalation state, and local activation
 evidence, delayed-transition authority epochs, rebuild/
 workflow continuation pass.
+Restore readiness verifies catalog signature/artifact provenance before mutable
+state, rejects a self-consistent manifest outside the trusted set, enumerates
+every ancestor rather than trusting only `@gNN`, and fails on any unknown or
+missing semantic realization.
 Exit criteria: claimed RPO/RTO is demonstrated; recovery neither retains data
 past a controlling mandatory deletion obligation nor promotes an unverified
 rollup to authority; grant revocation/supersession cannot be resurrected; quota

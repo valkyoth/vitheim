@@ -31,9 +31,15 @@ Fields appear in this exact order:
 14. `dependency_contract`: `VIT-LDEP-NNN-gNN-vN`;
 15. `recovery_contract`: `VIT-LRCV-NNN-gNN-vN`.
 
-No field is optional. Text is UTF-8 without tabs, carriage returns, leading or
-trailing whitespace, or Unicode normalization alternatives. Identifiers and
-SemVer values are ASCII. Unknown fields or format versions fail closed.
+No field is optional. Canonical-v1 source values use printable ASCII
+`U+0020–U+007E`; tabs, carriage returns, control characters, non-ASCII Unicode,
+embedded Markdown pipes, leading/trailing whitespace, and alternative Unicode
+normalizations are therefore unrepresentable. Markdown cells contain exactly
+one space after and before their delimiter. Generations are canonical nonzero
+decimal without leading zeroes, contract versions are `v1` or greater without
+leading zeroes, and SemVer numeric components are canonical decimal. Unknown
+fields, malformed identifiers, ambiguous values, or format versions fail
+closed before hashing.
 
 ## Planning Digest
 
@@ -51,14 +57,19 @@ unambiguous. The digest field itself is excluded.
 
 The Rust artifact uses the same field values and ordering through the canonical
 `0.6.0` codec and stores a typed `Digest32` plus the admitted digest-profile
-identifier. The `0.18.3` implementation-admission record must approve the
-digest implementation before production code uses it; `0.140.1` revalidates
-that choice. Planning SHA-256 verification does not authorize a casual
-first-party cryptographic implementation.
+identifier. Digest self-consistency is not authority: the exact
+`(LawId, Generation, Digest)` must also occur in the trusted
+[Law Manifest Admission Set](LAW_MANIFEST_ADMISSIONS.md). The `0.18.3`
+implementation-admission record must approve the digest implementation before
+production code uses it; `0.140.1` revalidates that choice. Planning SHA-256
+verification does not authorize a casual first-party cryptographic
+implementation.
 
 ## Evolution Rules
 
-Generation one declares the complete dependency set and complete semantics.
+Generation one declares the complete dependency set and complete semantics and
+cannot remove a dependency. Every resolved generation has at least two distinct
+roots and contains its coordinator. Additions and removals are disjoint.
 Each later generation starts from its predecessor, applies additions and
 removals, and either inherits semantics with `unchanged` or supplies a complete
 replacement. A later generation is valid only when at least one security-
@@ -68,6 +79,9 @@ relevant value changes:
 - dependency removal;
 - coordinator;
 - canonical semantics.
+
+A claimed dependency delta must change the final resolved set; canceling or
+otherwise neutral additions/removals are invalid.
 
 An addition-only assumption is forbidden. Removal-only and semantics-only
 generations are valid, but still require a new activation fence, migration,
@@ -80,12 +94,20 @@ released meaning requires a successor generation, not an in-place edit.
 ## Versioned Realization
 
 - `0.18.3`: implement the `no_std`/N1 manifest type, canonical codec, digest
-  verification, registry checker, and in-memory round-trip/golden fixtures.
-- `0.21.0`: storage capability negotiation declares manifest and digest support.
+  verification, strict field/parser and composite-structure checks, trusted
+  admission set, closed semantic-realization registry, and in-memory
+  round-trip/golden fixtures.
+- `0.19.0`: signed checkpoints bind the active admission-catalog identity,
+  epoch, digest, and trust profile.
+- `0.21.0`: storage capability negotiation declares manifest, digest,
+  admission-catalog, and semantic-realization support.
 - `0.22.0`: destructive adapter conformance persists, reads, and rejects
-  altered manifests/digests for exactly the generations effective by `0.22.0`.
+  altered or self-consistent-but-untrusted manifests for the complete
+  predecessor closure effective by `0.22.0`.
 - `0.29.0`: migration and recovery preserve predecessor manifests and verify
-  the successor before activation.
+  the successor and trusted admission catalog before activation.
+- `0.30.0`: export/import binds and verifies the full catalog and generation
+  ancestry; it never infers or silently upgrades law authority.
 - `0.51.1–0.59.0`: each identity/authorization expansion activates its exact
   generation-qualified manifests.
 - `0.140.1–0.140.6`: freeze digest, storage, identity, deployment, HA, and

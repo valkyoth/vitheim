@@ -3,11 +3,12 @@ set -eu
 
 registry="${1:-docs/INVARIANT_OWNERSHIP.md}"
 generations="${2:-docs/LAW_GENERATIONS.md}"
+admissions="${3:-docs/LAW_MANIFEST_ADMISSIONS.md}"
 digest_records="$(mktemp /tmp/vitheim-law-digests.XXXXXX)"
 trap 'rm -f "$digest_records"' EXIT
 
 if ! LC_ALL=C awk -F '|' -v registry="$registry" -v generations="$generations" \
-    -v digest_records="$digest_records" '
+    -v admissions="$admissions" -v digest_records="$digest_records" '
 BEGIN {
     failed = 0
     mode = ""
@@ -61,8 +62,25 @@ FILENAME == registry && mode == "law_lifecycle" &&
 }
 FILENAME == generations &&
 /^\| VIT-LAW-[0-9][0-9][0-9] / {
+    if (NF != 18) {
+        fail("generation row has a noncanonical Markdown field count")
+    }
+    if ($0 ~ /[^ -~]/) {
+        fail("generation row contains non-ASCII or prohibited whitespace")
+    }
+    for (field = 2; field <= 17; field++) {
+        canonical_cell = trim($field)
+        if ($field != " " canonical_cell " ") {
+            fail("generation row has noncanonical cell whitespace")
+        }
+    }
     id = trim($2)
-    generation = trim($3) + 0
+    generation_source = trim($3)
+    if (generation_source !~ /^[1-9][0-9]*$/ ||
+        (generation_source + 0) > 99) {
+        fail(id " generation is not canonical nonzero decimal")
+    }
+    generation = generation_source + 0
     effective = trim($4)
     predecessor = trim($5)
     coordinator = trim($6)
@@ -80,6 +98,9 @@ FILENAME == generations &&
     suffix = substr(id, 9)
     generation_padded = sprintf("%02d", generation)
 
+    if (!strict_semver(effective)) {
+        fail(id " generation effective version is not canonical SemVer")
+    }
     if (generation_seen[id, generation]++) {
         fail(id " repeats generation " generation)
     }
@@ -93,6 +114,9 @@ FILENAME == generations &&
         if (predecessor != "none") {
             fail(id " generation one must have no predecessor")
         }
+        if (removals != "none") {
+            fail(id " generation one cannot remove dependencies")
+        }
         if (semantics !~ /^linearize: / ||
             semantics !~ /; failure: / ||
              semantics !~ /; recovery: /) {
@@ -102,7 +126,8 @@ FILENAME == generations &&
             fail(id " generation one must declare its dependency set")
         }
     } else {
-        if ((predecessor + 0) != generation - 1) {
+        if (predecessor !~ /^[1-9][0-9]*$/ ||
+            (predecessor + 0) != generation - 1) {
             fail(id " generation predecessor is not contiguous")
         }
         if (version_compare(effective, latest_effective[id]) <= 0) {
@@ -128,6 +153,13 @@ FILENAME == generations &&
                                effective) > 0) {
         fail(id " generation predates its coordinator")
     }
+    prior_dependencies = resolved_dependencies(id)
+    if (!canonical_id_list(additions)) {
+        fail(id " generation additions are not canonical")
+    }
+    if (!canonical_id_list(removals)) {
+        fail(id " generation removals are not canonical")
+    }
     if (additions != "none") {
         addition_count = split(additions, addition_parts, ",")
         for (part = 1; part <= addition_count; part++) {
@@ -141,6 +173,7 @@ FILENAME == generations &&
             if (resolved[id, dependency]) {
                 fail(id " generation re-adds dependency " dependency)
             }
+            added_this[id, generation, dependency] = 1
             resolved[id, dependency] = 1
             resolved_count[id]++
         }
@@ -149,12 +182,25 @@ FILENAME == generations &&
         removal_count = split(removals, removal_parts, ",")
         for (part = 1; part <= removal_count; part++) {
             dependency = trim(removal_parts[part])
+            if (added_this[id, generation, dependency]) {
+                fail(id " generation adds and removes " dependency)
+            }
             if (!resolved[id, dependency]) {
                 fail(id " generation removes absent " dependency)
             }
             delete resolved[id, dependency]
             resolved_count[id]--
         }
+    }
+    dependencies = resolved_dependencies(id)
+    if (dependency_change && dependencies == prior_dependencies) {
+        fail(id " dependency delta does not change the resolved set")
+    }
+    if (resolved_count[id] < 2) {
+        fail(id " generation resolves fewer than two dependencies")
+    }
+    if (!resolved[id, coordinator]) {
+        fail(id " generation coordinator is not a dependency")
     }
     if (mixed == "" || mixed == "—") {
         fail(id " generation lacks mixed-version intersection")
@@ -163,26 +209,26 @@ FILENAME == generations &&
         fail(id " generation activation fence is mismatched")
     }
     expected_migration = "^VIT-LGMIG-" suffix "-g" generation_padded \
-        "-v[0-9]+$"
+        "-v[1-9][0-9]*$"
     if (migration !~ expected_migration) {
         fail(id " generation migration contract is mismatched")
     }
     expected_dependency = "^VIT-LDEP-" suffix "-g" generation_padded \
-        "-v[0-9]+$"
+        "-v[1-9][0-9]*$"
     if (dependency_contract !~ expected_dependency) {
         fail(id " generation dependency contract is mismatched")
     }
     expected_semantic = "^VIT-LSEM-" suffix "-g" generation_padded \
-        "-v[0-9]+$"
+        "-v[1-9][0-9]*$"
     if (semantic_contract !~ expected_semantic) {
         fail(id " generation semantic contract is mismatched")
     }
     expected_recovery = "^VIT-LRCV-" suffix "-g" generation_padded \
-        "-v[0-9]+$"
+        "-v[1-9][0-9]*$"
     if (recovery_contract !~ expected_recovery) {
         fail(id " generation recovery contract is mismatched")
     }
-    if (rollback !~ /^`[0-9]+\.[0-9]+\.[0-9]+`$/ ||
+    if (!strict_semver(rollback) ||
         version_compare(rollback, effective) < 0) {
         fail(id " generation rollback floor predates activation")
     }
@@ -190,14 +236,6 @@ FILENAME == generations &&
         resolved_semantics = latest_semantics[id]
     } else {
         resolved_semantics = semantics
-    }
-    dependencies = ""
-    for (number = 1; number <= 999; number++) {
-        dependency = sprintf("VIT-INV-%03d", number)
-        if (resolved[id, dependency]) {
-            if (dependencies != "") dependencies = dependencies ", "
-            dependencies = dependencies dependency
-        }
     }
     effective_value = effective
     rollback_value = rollback
@@ -221,7 +259,58 @@ FILENAME == generations &&
     latest_semantic_contract[id] = semantic_contract
     latest_recovery_contract[id] = recovery_contract
     latest_manifest_digest[id] = manifest_digest
+    generation_manifest_digest[id, generation] = manifest_digest
     generation_count++
+    next
+}
+FILENAME == admissions && /^Catalog ID: `/ {
+    catalog_id = $0
+    sub(/^Catalog ID: `/, "", catalog_id)
+    sub(/`$/, "", catalog_id)
+    next
+}
+FILENAME == admissions && /^Catalog epoch: `/ {
+    catalog_epoch = $0
+    sub(/^Catalog epoch: `/, "", catalog_epoch)
+    sub(/`$/, "", catalog_epoch)
+    next
+}
+FILENAME == admissions && /^Trust profile: `/ {
+    trust_profile = $0
+    sub(/^Trust profile: `/, "", trust_profile)
+    sub(/`$/, "", trust_profile)
+    next
+}
+FILENAME == admissions && /^Catalog digest: `/ {
+    catalog_digest = $0
+    sub(/^Catalog digest: `/, "", catalog_digest)
+    sub(/`$/, "", catalog_digest)
+    next
+}
+FILENAME == admissions && /^\| VIT-LAW-[0-9][0-9][0-9]@g[0-9][0-9] / {
+    if (NF != 4 || $0 ~ /[^ -~]/) {
+        fail("admission row is not canonical ASCII Markdown")
+    }
+    reference = trim($2)
+    admitted_digest = trim($3)
+    if ($2 != " " reference " " || $3 != " " admitted_digest " ") {
+        fail(reference " admission row has noncanonical whitespace")
+    }
+    split(reference, reference_parts, "@g")
+    admission_law = reference_parts[1]
+    admission_generation = reference_parts[2] + 0
+    admission_key = (substr(admission_law, 9) + 0) * 100 + \
+        admission_generation
+    if (admission_key <= latest_admission_key) {
+        fail(reference " admission rows are not strictly ordered")
+    }
+    latest_admission_key = admission_key
+    if (admission_seen[admission_law, admission_generation]++) {
+        fail(reference " admission is duplicated")
+    }
+    admitted_manifest_digest[admission_law, admission_generation] = \
+        admitted_digest
+    admission_count++
     next
 }
 function trim(value) {
@@ -231,6 +320,43 @@ function trim(value) {
 }
 function netstring(value) {
     return length(value) ":" value
+}
+function strict_semver(value, raw, parts, position) {
+    if (value !~ /^`[0-9]+\.[0-9]+\.[0-9]+`$/) return 0
+    raw = substr(value, 2, length(value) - 2)
+    split(raw, parts, ".")
+    for (position = 1; position <= 3; position++) {
+        if (length(parts[position]) > 1 &&
+            substr(parts[position], 1, 1) == "0") return 0
+    }
+    return 1
+}
+function canonical_id_list(value, parts, count, position, item, rebuilt,
+                           previous) {
+    if (value == "none") return 1
+    count = split(value, parts, ",")
+    rebuilt = ""
+    previous = ""
+    for (position = 1; position <= count; position++) {
+        item = trim(parts[position])
+        if (item !~ /^VIT-INV-[0-9][0-9][0-9]$/ ||
+            (previous != "" && item <= previous)) return 0
+        if (rebuilt != "") rebuilt = rebuilt ", "
+        rebuilt = rebuilt item
+        previous = item
+    }
+    return rebuilt == value
+}
+function resolved_dependencies(id, result, number, dependency) {
+    result = ""
+    for (number = 1; number <= 999; number++) {
+        dependency = sprintf("VIT-INV-%03d", number)
+        if (resolved[id, dependency]) {
+            if (result != "") result = result ", "
+            result = result dependency
+        }
+    }
+    return result
 }
 function version_compare(left, right, left_parts, right_parts, position) {
     gsub(/`/, "", left)
@@ -293,9 +419,48 @@ END {
         if (!current_law[id]) fail(id " generation has no current law view")
     }
     if (generation_count == 0) fail("no law generations found")
+    if (catalog_id !~ /^VIT-LAWCAT-[0-9][0-9][0-9]-v[1-9][0-9]*$/) {
+        fail("admission catalog ID is not canonical")
+    }
+    if (catalog_epoch !~ /^[1-9][0-9]*$/) {
+        fail("admission catalog epoch is not canonical")
+    }
+    if (trust_profile != \
+        "compiled-or-signed-platform-law-authority-v1") {
+        fail("admission catalog trust profile is unknown")
+    }
+    if (catalog_digest !~ /^sha256:[0-9a-f]+$/ ||
+        length(catalog_digest) != 71) {
+        fail("admission catalog digest is not canonical SHA-256")
+    }
+    if (admission_count != generation_count) {
+        fail("admission catalog does not cover every generation")
+    }
+    catalog_preimage = \
+        netstring("vitheim-law-manifest-admission-set-v1") \
+        netstring(catalog_id) netstring(catalog_epoch) \
+        netstring(trust_profile) netstring(generation_count "")
+    for (law_number = 1; law_number <= 999; law_number++) {
+        law = sprintf("VIT-LAW-%03d", law_number)
+        for (generation = 1;
+             generation <= latest_generation[law];
+             generation++) {
+            reference = law "@g" sprintf("%02d", generation)
+            expected_digest = generation_manifest_digest[law, generation]
+            if (!admission_seen[law, generation]) {
+                fail(reference " is absent from admission catalog")
+            } else if (admitted_manifest_digest[law, generation] != \
+                       expected_digest) {
+                fail(reference " admission digest differs from manifest")
+            }
+            catalog_preimage = catalog_preimage netstring(reference) \
+                netstring(expected_digest)
+        }
+    }
+    print catalog_digest "\t" catalog_id "\t" catalog_preimage > digest_records
     exit failed
 }
-' "$registry" "$generations"; then
+' "$registry" "$generations" "$admissions"; then
     exit 1
 fi
 

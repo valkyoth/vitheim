@@ -1893,6 +1893,31 @@ implementation is blocked until its exact digest implementation passes the
 fixtures verify canonical byte/digest stability. The latest ownership view must
 normalize to the latest resolved semantics and manifest digest.
 
+Implement `LawManifestAdmissionSetV1` from
+`docs/LAW_MANIFEST_ADMISSIONS.md` as a trust decision distinct from digest
+verification. It admits only exact `(LawId, Generation, Digest)` tuples through
+an artifact-provenance-bound compiled catalog or a catalog signed by a
+dedicated platform-law authority whose trust root is not mutable beside stored
+manifests. Database write access cannot mint law authority. Startup, in-memory
+persistence, export, restore, and every later adapter/migration path reject an
+otherwise canonical, self-consistent manifest outside the active set. Catalog
+successor, revocation, validity, release scope, predecessor digest, ID, epoch,
+digest, and trust profile are typed and monotonic. Checkpoint and backup binding
+is completed at `0.19.0` and `0.145.0`; profile selection is frozen before
+production at `0.140.1`, storage at `0.140.2`, and HA distribution/recovery at
+`0.140.6`.
+
+Implement the closed `LawSemanticId` enum and exhaustive
+`LawSemanticRealization` dispatch table from
+`docs/LAW_SEMANTIC_REALIZATIONS.md`. Canonical semantics remain human review
+evidence, never a prose interpreter, string-reflection command source, or
+plugin extension point. Each semantic ID resolves to compiled Rust
+transitions, typed outcomes, recovery logic, and its exact positive/model/fault
+contracts; unknown, unsupported, or manifest-mismatched IDs fail startup and
+restore. In particular, every `VIT-LAW-006` realization preserves
+`DefinitelyNotStarted`, `OutcomeUnknown`, and `StartClaimedReconciling` as
+distinct typed states.
+
 Generation one supplies dependencies and complete semantics. A later
 generation requires at least one real addition, removal, coordinator change, or
 semantic change. `none` additions are valid for a removal-only,
@@ -1900,6 +1925,13 @@ coordinator-only, or semantics-only generation; an unchanged generation with no
 other delta fails. Every legitimate delta still advances generation-qualified
 semantic/dependency/recovery contracts, manifest digest, activation fence,
 migration, and rollback evidence.
+Generation one cannot remove dependencies; every resolved generation has at
+least two distinct roots and includes its coordinator; additions and removals
+are disjoint; and a claimed dependency delta must alter the final set. Canonical
+source validation rejects leading-zero/malformed generation or contract
+versions, noncanonical SemVer, tabs, carriage returns, non-ASCII/Unicode
+normalization alternatives, embedded Markdown pipes, control characters, and
+noncanonical cell whitespace before digest calculation.
 
 Adopt `docs/AUTHORITY_REVIEWS.md` as the complete post-bootstrap milestone
 review registry. Every milestone after `0.18.3`, including option decisions and
@@ -1910,7 +1942,10 @@ starts. CI reads the milestone’s own `Status:` field and rejects a proposal as
 soon as status no longer contains `planned`; activation and authority
 resolution occur in the same commit. Law extensions name
 `VIT-LAW-NNN@gNN`, and the checker deterministically requires the latest
-generation effective at that milestone. CI derives the milestone set from all
+generation effective at that milestone. The reference asserts the complete
+`g01..gNN` ancestry: evidence enumerates each manifest digest, trusted catalog
+tuple, semantic realization, and P/M/F contract rather than checking only the
+terminal row. CI derives the milestone set from all
 implementation documents, rejects
 missing/duplicate/orphan reviews, and requires a `declares` disposition to match
 the declaration markers exactly.
@@ -1942,8 +1977,10 @@ checker across all implementation documents, phase-document
 declarations, owner-transfer/supersession procedure, storage-capability
 cross-check contract, test-contract realization index, and generated restore/
 migration monotonic-state manifest contract; canonical law-manifest schema,
-codec/API contract, semantic IDs, content digests, golden fixtures, and
-digest-verifying in-memory persistence. The checker rejects unregistered
+codec/API contract, semantic IDs, content digests, strict canonical parser,
+golden fixtures, independently trusted compiled/signed admission-set ports,
+catalog lifecycle, exhaustive semantic-realization table, and digest/admission-
+verifying in-memory persistence. The checker rejects unregistered
 declarations or rows, duplicate IDs, mismatched introduction versions, absent
 or alternative authoritative owners, guards without an owner-maintained update
 path, empty transaction placement, enforcement points without stable contracts
@@ -1960,7 +1997,11 @@ future dependencies, incorrect predecessors, contract/generation mismatches,
 latest-view drift, incomplete typed semantics, unsafe mixed-version
 intersections, digest mismatch, current semantic drift, no-op generation, and
 rollback below activation while accepting valid removal-only and semantics-only
-generations. Later milestones must declare and
+generations. It also rejects generation-one removal, overlapping or no-effect
+dependency deltas, coordinator absence, fewer than two resolved roots,
+malformed canonical fields, self-consistent-but-untrusted manifests, catalog
+tamper/rollback, unknown semantic realizations, and ancestry omission. Later
+milestones must declare and
 register new invariants and the corresponding law generation in the same
 commit. The authority-review checker rejects any post-`0.18.3` milestone
 without exactly one resolved or explicitly proposed disposition.
@@ -1983,7 +2024,15 @@ generation, predecessor, coordinator, semantic contract, activation fence,
 migration, rollback, dependency, recovery, canonical manifest field, or digest
 without detection; mutate latest law semantics without advancing the manifest;
 add a no-op generation; prove valid removal-only and semantics-only generations
-pass; change a planned proposed milestone to implementing/implemented without
+pass; remove a generation-one root; overlap additions and removals; leave fewer
+than two roots or remove the coordinator; claim a neutral dependency delta; use
+`01`, `v01`, noncanonical SemVer, a tab, carriage return, non-ASCII
+normalization alternative, embedded pipe, or irregular cell spaces; recompute
+a modified manifest digest while leaving it absent from the trusted catalog;
+forge, roll back, truncate, or substitute a catalog; omit one ancestor tuple or
+semantic realization; add an unknown semantic ID; remove a typed
+transition/outcome, recovery path, or P/M/F contract; change a planned proposed
+milestone to implementing/implemented without
 resolving it; cite a bare, stale, or future generation; omit or
 duplicate a later milestone authority review; misclassify declarations as
 `none`/`extends`/`proposed`; omit an epoch,
@@ -1999,7 +2048,9 @@ disposition; declaration/review coverage is derived rather than counted
 manually; no unresolved proposal survives a milestone status transition; no
 phase, adapter, test suite, restore, migration, mixed-version deployment, or
 owner transfer can silently omit the invariant, select a second owner, or lose
-required monotonic state.
+required monotonic state. Every manifest is both self-consistent and trusted,
+every shipped semantic ID resolves exhaustively to code/recovery/P-M-F tests,
+and every generation claim proves its admitted predecessor closure.
 `v0.18.3 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.18.4` — Bounded Evaluator Re-evaluation Scheduler
@@ -2221,7 +2272,8 @@ admission record for every hash, signing, KMS, and timestamp implementation.
 
 Setup: bind tenant, partition, stream, sequence, event/schema IDs, payload digest,
 the `0.18.2` work-variant/audit-intent/receipt/commit digests, predecessor, and
-key ID; define domain-stream and denial-only audit sequences, partition Merkle
+key ID, plus active law-catalog ID, epoch, digest, and trust profile; define
+domain-stream and denial-only audit sequences, partition Merkle
 commitments, external signed anchors, checkpoint cadence, rotation, independent
 timestamp option, and limits.
 
@@ -2229,14 +2281,17 @@ Goal: make event deletion, replacement, and reordering detectable.
 
 Deliverables: integrity-link model, crypto-provider interface only, partition
 commitment, externally retained checkpoint format, cross-signed rotation,
-verification report, corruption locator, and the signed admission record binding
-the reviewed implementation/profile versions.
+verification report, corruption locator, catalog-bound checkpoint/restore
+report, and the signed admission record binding the reviewed
+implementation/profile versions.
 
 Verification: deletion of an entire stream or denial sequence, removal of an
 audit intent or receipt while leaving domain events intact, reorder/substitution/
 splice, wrong stream/tenant/key, anchor loss, rotation, timestamp semantics,
 truncated chain, recovery verification, digest collision fixture, and bounded
-verify pass.
+verify pass; catalog substitution, rollback, missing ancestry tuple, and a
+self-consistent untrusted manifest are rejected even when event hashes remain
+valid.
 
 Exit criteria: tamper evidence is deterministic without inventing cryptography.
 `v0.19.0 implementation stop reached. Run pentest for this exact commit.`

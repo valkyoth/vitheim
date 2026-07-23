@@ -29,6 +29,16 @@ page, while a larger organization may separate tickets, incidents, alerts,
 vulnerabilities, assets, and administration without changing domain or
 authorization semantics.
 
+Composite-law content and authority are separate boundaries. Canonical manifest
+digests detect alteration, while only an independently anchored compiled or
+platform-law-signed admission catalog can trust an exact generation tuple.
+Stored manifests and database administrators cannot extend that catalog.
+Canonical semantic prose is never interpreted at runtime: a closed Rust
+realization table binds every supported semantic ID to typed transitions,
+outcomes, recovery, and tests. Every terminal generation reference includes its
+complete predecessor closure across startup, storage, migration, import,
+restore, failover, and release evidence.
+
 ## Architectural Laws
 
 1. Domain logic performs no I/O and reads no ambient clock, randomness, files,

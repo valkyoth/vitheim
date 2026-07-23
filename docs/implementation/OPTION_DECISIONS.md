@@ -22,7 +22,13 @@ Goal: freeze the production subset of previously admitted implementations and
 resolve any remaining zero-dependency/production-security conflict explicitly.
 Deliverables: revalidated admission-record inventory, approved production
 dependency allowlist or blocked features, crypto/KMS/key-rotation/timestamp
-profiles and adapter boundaries. The timestamp profile must define authoritative
+profiles and adapter boundaries. Freeze the law-manifest trust profile here:
+compiled catalog, signed catalog, or a precisely scoped combination; dedicated
+platform-law signing roots, signer quorum/separation, validity/release scope,
+catalog successor/revocation/rollback, root rotation and compromise recovery,
+artifact binding, and the independently reviewed digest/signature
+implementations. Mutable database/configuration authority alone can neither add
+a tuple nor replace a trust root. The timestamp profile must define authoritative
 transaction time, persisted `redeemed_at`/`transmit_before`, monotonic
 transmission-start enforcement, maximum admission-to-transmission intervals,
 rollback/suspend behavior, and fail-closed handling when remaining time cannot
@@ -90,6 +96,9 @@ circular authority, business-operation use, provider/account/tenant
 substitution, remediation response loss/outage/count exhaustion, unsupported
 automatic recovery, old-key continued validity, private-key export, bearer TCB escape, and HTTP/TLS/
 redirect/diagnostic/crash memory canaries.
+Also prove a self-consistent forged manifest/catalog, stale catalog, signer/root
+substitution, rollback past catalog or generation floors, and artifact/catalog
+scope mismatch fail closed.
 Exit criteria: Phase O has one approved, replaceable crypto/key profile.
 `v0.140.1 implementation stop reached. Run pentest for this exact commit.`
 
@@ -138,6 +147,12 @@ fence, migration/recovery contracts, conservative rolling-version
 intersection, rollback floor, canonical `LawGenerationManifestV1` bytes, and
 content digest. Reject a topology that supports only the
 latest flattened law view or admits an invariant before its effective version.
+Persist the exact admission-catalog ID, epoch, digest, trust profile, and full
+`g01..gNN` ancestry separately from mutable manifest rows. Map exhaustive
+semantic realizations and their transition/outcome/recovery/P-M-F evidence.
+Reject any topology where database administration can admit a new tuple,
+where restore can select an untrusted catalog, or where only a terminal
+generation is retained.
 Map the evaluator invalidation-campaign root in the same transaction domain as
 evaluator epoch activation/revocation. Separately map the canonical capability-
 owner source/topology manifest, monotonic outbox sequences/cutoff high-
@@ -170,7 +185,8 @@ Deliverables: supported/rejected profile matrix, capability probes, application
 and administrator threat boundaries, transaction-domain/co-location map,
 active/active rejection evidence, declaration-derived invariant/contract/
 lifecycle coverage, evaluator-campaign placement/completeness profile, migration
-and portability consequences.
+and portability consequences, plus the selected admission-catalog persistence/
+refresh model and ancestry/semantic-realization coverage matrix.
 Verification: twin-tenant collision, superuser/non-owner, pooling-state,
 constraint, non-co-located grant guard/effect bundle, cross-partition claim set,
 missing/non-co-located authority fence, stale/duplicated capacity lease,
@@ -200,6 +216,8 @@ unregistered invariant declaration/owner/lifecycle/law, unresolved per-point
 enforcement/negative/capability/recovery/fence ID, cyclic or non-increasing
 supersession, unsafe mixed-version owner transfer, invalid status semantics,
 missing migration contract or rollback floor,
+missing/untrusted catalog tuple, catalog rollback, signer/root substitution,
+omitted ancestor or semantic realization, unknown semantic ID,
 ambiguous or multi-parent policy owner, non-co-located policy stream/parent
 ledger/floor row, non-atomic activation, shared floor/policy authority, missing
 operational fences/platform minimum/cross-command separation, incomplete or
@@ -541,6 +559,13 @@ typed failure state, and persists/verifies its canonical manifest digest across
 upgrade, failover, and restore. In particular, transmission start distinguishes
 `DefinitelyNotStarted`, `OutcomeUnknown`, and `StartClaimedReconciling`; only
 the first permits an ordinary retry.
+Freeze catalog distribution and refresh as a fenced control-plane operation:
+each node verifies the selected compiled/signed trust profile, complete
+predecessor closure, and exhaustive semantic realizations before readiness.
+Failover, rollback, isolated-node startup, restore, and mixed-version operation
+reject stale, revoked, unknown, partial, or database-invented catalogs. RPO/RTO
+evidence states how the active catalog ID/epoch/digest is recovered without
+granting the backup medium signing authority.
 Goal: select the exact profiles Phase O must certify.
 Deliverables: support matrix, trust/network boundaries, fencing/quorum model,
 dispatch-authorization consistency/failure model, quota consumption/refund

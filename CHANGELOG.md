@@ -8,6 +8,17 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added an independently trusted law-manifest admission catalog so a canonical
+  digest proves content but cannot authorize an attacker-authored generation;
+  compiled or dedicated-platform-law-signed tuples now flow through
+  checkpoints, storage, migrations, option decisions, restore, and production.
+- Added an exhaustive law-semantic realization registry binding every
+  `VIT-LSEM-*` to planned Rust transitions, typed outcomes, recovery paths, and
+  exact positive/model/fault test contracts; prose interpretation and unknown
+  semantics fail closed.
+- Tightened composite generation structure, strict ASCII/canonical field
+  validation, and `@gNN` ancestry-closure evidence with adversarial repository
+  checks.
 - Content-bound every law generation with a canonical
   `LawGenerationManifestV1` schema, semantic contract, resolved dependencies,
   and verified SHA-256 planning digest carried through storage, migrations,

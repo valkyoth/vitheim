@@ -35,6 +35,14 @@ audit decision.
 ## Runtime Controls Planned Before Production
 
 - Secure configuration defaults and startup validation.
+- Law-manifest trust independent from mutable storage: exact admitted
+  `(LawId, Generation, Digest)` tuples, compiled or dedicated-platform-law
+  signed catalogs, strict canonical parsing, catalog-bound checkpoint/backup/
+  restore evidence, and rollback/revocation handling.
+- Closed law-semantic dispatch: prose is evidence only; supported IDs
+  exhaustively resolve to compiled transitions, typed outcomes, recovery, and
+  positive/model/fault tests, with unknown IDs and incomplete predecessor
+  closures rejected before readiness.
 - Strong tenant partitions in storage, search, queues, caches, blobs, logs,
   exports, metrics labels, and backups.
 - Authentication independent from authorization; sender-constrained privileged

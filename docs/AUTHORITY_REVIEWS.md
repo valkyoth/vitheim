@@ -14,7 +14,11 @@ It is legal only while the implementation milestone status contains `planned`;
 changing status to implementing, implemented, awaiting pentest, or ready to tag
 requires resolving the proposal in the same commit. An `extends` disposition
 qualifies every law as `VIT-LAW-NNN@gNN`; the generation must be the latest one
-effective at that milestone, never a future or bare law reference.
+effective at that milestone, never a future or bare law reference. The
+reference claims the full ancestry closure `g01..gNN`, not only the terminal
+row. Conformance and release evidence must enumerate each predecessor's exact
+semantic realization and trusted `(LawId, Generation, Digest)` admission tuple;
+an absent or untrusted ancestor fails closed.
 `scripts/generate_authority_reviews.sh` creates a conservative bootstrap for a
 new plan; reviewed `extends`/`none` resolutions in this registry are normative
 and must not be overwritten by regenerating that bootstrap.
