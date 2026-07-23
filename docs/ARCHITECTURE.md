@@ -154,10 +154,18 @@ authorization semantics.
    observed permissions, role/group/trust provenance, provider policy revision,
    raw and normalized policy digests, reviewed evaluator/policy-language
    versions, canonical comparison/explanation, profile, and credential
-   generation. Only equal or explicitly admitted proven-safe subset authority
+   generation. Evaluators have their own signed binary/corpus-admitted
+   authoritative lineage and monotonic epoch; activation or ordinary/emergency
+   revocation immediately requires reevaluation, and incompatible nodes reject
+   startup. Only equal or explicitly admitted proven-safe subset authority
    may operate. Superset, incomparable, or unknown quarantines the whole
    credential, invalidates all pending handles/work, and creates a security
    incident; automatic profile widening and break-glass promotion are forbidden.
+   Quarantine exits only through an owned evidence-backed investigation and
+   verified remediation/revalidation state machine that creates a fresh
+   capability generation without reviving old work. Credential repair uses an
+   independently admitted cleanup-only remediation credential/channel through
+   rotation/takeover; if the provider has none, recovery is manual.
    Dispatch never discovers remote permissions inside its transaction. Restore cannot
    resurrect old authority. Non-exportable signing/mTLS/HSM profiles
    expose operations only. For bearer/API-key profiles, the hardened broker is

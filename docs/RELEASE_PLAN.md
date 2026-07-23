@@ -103,7 +103,7 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.17.1` | Atomic consumer commit bundle | Receipt/local-commit split, redelivery duplication, hidden multi-stream or remote-in-transaction work |
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
 | `0.18.1` | Active-generation successor/cancellation recovery and typed floor ratchet | Prepared cancellation creates one complete recovery successor; no independent restore; idempotent receipts/deadline; successor/key migration races |
-| `0.18.2` | Atomic work with serialized rotation and semantic credential-capability quarantine | Concurrent/unknown rotation, orphan/count quota, policy evaluator/complexity, whole-credential quarantine, existing profile/TCB cases |
+| `0.18.2` | Atomic work with governed evaluators, serialized rotation/remediation, and evidence-backed quarantine | Evaluator lineage/reevaluation, quarantine resolution/no revival, independent remediation/no-path manual state, existing rotation/TCB cases |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
 | `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
@@ -121,20 +121,20 @@ implementations remain blocked rather than being implemented casually.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.21.0` | Storage negotiation for serialized rotation, semantic snapshots, and cancellation state | One-lineage guard/orphan/count quota; evaluator/result/quarantine state; existing approvals/recovery |
-| `0.22.0` | Destructive rotation/orphan, permission-evaluator/quarantine, executor, and rollout conformance | Simultaneous/unknown rotation, orphan loss, wildcard/deny/condition semantics, quarantine races, existing cases |
+| `0.21.0` | Storage negotiation for serialized rotation, governed evaluators, quarantine resolution, and cancellation state | Evaluator lineage/epoch/reevaluation; owned quarantine transitions/tombstones; remediation authority/lineage/quota |
+| `0.22.0` | Destructive rotation, evaluator-upgrade, quarantine-resolution, remediation, executor, and rollout conformance | Mixed evaluator generations, unsafe clearing/old-work revival, sole-key/circular recovery, existing cases |
 | `0.23.0` | SQLite single-node adapter | Locking, rollback, injection, file permissions, tenant partition |
-| `0.24.0` | PostgreSQL reference production adapter | Co-located rotation guard/activation/orphan/count quota and snapshot/evaluator/quarantine epochs; existing recovery/floors |
+| `0.24.0` | PostgreSQL reference production adapter | Atomic evaluator/quarantine-generation transitions, rotation/remediation lineage separation and quotas, existing recovery/floors |
 | `0.25.0` | Experimental MySQL adapter | Isolation/encoding differences, rollback, tenant enforcement, no default v1 claim |
 | `0.26.0` | Experimental MongoDB adapter | Transaction boundaries, query injection, collection isolation, no default v1 claim |
 | `0.27.0` | Experimental SurrealDB adapter | Namespace/graph/query isolation, capability truthfulness, no default v1 claim |
 | `0.28.0` | Blob-store API and filesystem adapter | Traversal, symlinks, races, content mismatch, quotas |
 | `0.28.1` | S3-compatible object-storage adapter | Tenant/object confusion, endpoint spoofing, multipart races, retention/deletion |
-| `0.28.2` | KMS and secret-provider adapters | Serialized idempotent provisioning, provider inventory/orphan cleanup/count limits, reviewed policy evaluators/corpora, quarantine evidence |
+| `0.28.2` | KMS and secret-provider adapters | Serialized provisioning/inventory/orphan/count controls plus governed evaluator upgrade/reevaluation, strong-resolution evidence, independent recovery or manual limitation |
 | `0.28.3` | In-process secret and brokered-bearer memory handling | HTTP/TLS/redirect/error/log/crash/core-dump/swap canaries, stale cache, honest transient-memory/erasure limits |
-| `0.29.0` | Resumable migrations preserving monotonic authority and floor admission | Rotation guard/orphan/count encumbrance and evaluator/result/quarantine anti-resurrection plus existing authority/floor state |
+| `0.29.0` | Resumable migrations preserving monotonic authority and floor admission | Existing rotation/authority/floor state plus evaluator lineage/reevaluation, quarantine generation/tombstones, and remediation lineage/quota anti-resurrection |
 | `0.30.0` | Cross-backend export and import | Substitution, truncation, tenant mix-up, integrity loss |
-| `0.30.1` | Durable queue preserving governed provider and cancellation-recovery authority | No queued rotation takeover/permission evaluation; quarantine invalidates all actions; orphan/count/guard and recovery state remain complete |
+| `0.30.1` | Durable queue preserving governed provider and cancellation-recovery authority | Existing guard/orphan/count/recovery state remains complete; evaluator revocation/resolution never revives work; queues cannot evaluate, clear, or remediate |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 
 ## Phase D — Universal Work Platform
@@ -183,7 +183,7 @@ integration is deferred to `0.70.0` and `0.100.0`.
 | `0.47.0` | Release and deployment records | False status, unauthorized linkage, evidence forgery |
 | `0.48.0` | Major-incident command process | Role takeover, notification floods, hidden decisions |
 | `0.48.1` | Stakeholder communications and status publishing | Premature/false publication, audience leakage, stale status, correction-history loss |
-| `0.48.2` | Hosted publication through governed credential-operation profiles | Serialized channel rotation/orphans, semantic permission comparison, whole-credential quarantine, bearer/uncertain publication |
+| `0.48.2` | Hosted publication through governed credential-operation profiles | Existing rotation/orphan/bearer/uncertainty controls plus evaluator reevaluation, evidence-backed quarantine exit, independent remediation or manual outage |
 | `0.49.0` | Postmortems and corrective actions | Sensitive publication, deletion, blame/identity leakage |
 | `0.50.0` | Integrated ITSM beta with later-phase port fakes | Cross-module authorization, fake-port contracts, replay and upgrades |
 
@@ -210,9 +210,9 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.56.0` | ABAC engine | Missing attributes, type confusion, fail-open decisions |
 | `0.56.1` | Policy lifecycle, bootstrap, recovery, and monotonic epoch | Activation/rollback racing dispatch, epoch reuse, self-approval, lockout, recovery abuse |
 | `0.57.0` | Relationship authorization with fact epochs | Edge change racing dispatch, epoch reuse, malicious paths, ownership spoofing, traversal bounds |
-| `0.58.0` | Authority registry for governed profiles, serialized credential state, TCB, and rollout recovery | Missing rotation owner/guard/orphan/count quota, evaluator/corpus/result/quarantine/incident, existing boundaries |
+| `0.58.0` | Authority registry for governed profiles, serialized credential state, TCB, and rollout recovery | Evaluator lineage/epoch/start fence, quarantine owner/resolver/tombstones, remediation profile/lineage/audit/quota, existing boundaries |
 | `0.59.0` | Delegation/break-glass with enforcement epoch | Delegation revoke racing dispatch, epoch reuse, unbounded privilege, grant amplification, weak audit |
-| `0.60.0` | Complete governed-executor and successor/cancellation conformance suite | Concurrent rotation/takeover/orphans/count exhaustion; policy semantics/budgets; quarantine claimed-work race; existing cases |
+| `0.60.0` | Complete governed-executor and successor/cancellation conformance suite | Existing profile/rotation/TCB/recovery cases plus evaluator upgrade/mixed nodes, invalid quarantine exits/revival, remediation compromise/circularity/no-path |
 
 ## Phase G — Durable Workflows
 
@@ -226,13 +226,13 @@ commit, and external-outcome semantics.
 | `0.61.0` | Workflow intermediate representation | Invalid graphs, instruction/depth bombs, hidden behavior |
 | `0.62.0` | Deterministic workflow interpreter | Infinite loops, nondeterminism, replay divergence |
 | `0.63.0` | Human approvals with grant-lineage issuance and redemption-guard maintenance | Self-approval, owner ambiguity, issuance reorder, pre-revocation, successor fork, omitted/stale guard |
-| `0.64.0` | Timers with governed provider authority and explicit credential TCB | Timer cannot advance rotation/evaluator; credential quarantine invalidates privileged and non-privileged queued/claimed work |
+| `0.64.0` | Timers with governed provider authority and explicit credential TCB | Existing stale/bearer/duplicate/failover cases; no timer evaluator/resolve/remediation authority; fresh authorization after resolution |
 | `0.65.0` | Parallel branches and joins | Premature joins, duplicate completion, branch leaks |
 | `0.66.0` | Linked, independently authorized and multi-claim-accounted compensation mechanics | State/linkage collapse, unknown original/compensation, evidence/authority race, claim reuse/cross-kind settlement, double rollback |
 | `0.67.0` | Signals and subworkflows | Signal spoofing, cross-tenant routing, recursion exhaustion |
 | `0.68.0` | Workflow history, versioning, and migration | Unbounded history, corrupt checkpoint, orphan activity, unsafe remap |
 | `0.69.0` | Visual/configuration-as-code compiler | Hidden flags, generated privilege escalation, divergence |
-| `0.70.0` | HA workers with governed executors and cancellation-recovery rollout | Guard split-brain, unknown takeover/orphan cleanup/count conservation, evaluator-version/quarantine races, existing failover |
+| `0.70.0` | HA workers with governed executors and cancellation-recovery rollout | Existing guard/orphan/count/TCB/rollout failover plus evaluator split brain, quarantine-generation races, remediation-lineage recovery |
 
 ## Phase H — Alerts And Security Operations
 
@@ -337,16 +337,16 @@ Phase exit: cross-plugin/tenant isolation and compatibility suite pass pentest.
 | --- | --- | --- |
 | `0.111.0` | Versioned WIT component interfaces | ABI confusion and malformed components |
 | `0.112.0` | Deterministic component execution | Fuel bypass, nondeterminism, covert host access |
-| `0.113.0` | Effectful components with governed provider execution authority | Plugin cannot rotate/take over/evaluate/widen; orphan and whole-credential quarantine fences all guest effects |
-| `0.114.0` | Capability, profile-governance, and credential-operation/TCB model | Rotation/orphan handles remain host-only; semantic evaluator/quarantine incident authority; existing key/bearer boundaries |
+| `0.113.0` | Effectful components with governed provider execution authority | Plugin cannot govern evaluators, resolve quarantine, or request remediation operations; reauthorization follows resolution |
+| `0.114.0` | Capability, profile-governance, and credential-operation/TCB model | Evaluator/quarantine/remediation handles remain host-only and non-composable; existing key/bearer boundaries |
 | `0.115.0` | Memory/CPU/network/output metering | Resource-limit bypass and host denial of service |
 | `0.116.0` | Signed plugin registry and rollout | Signature downgrade, malicious update, rollback |
 | `0.116.1` | Governed plugin catalog and storefront | Publisher/listing/package impersonation, hidden capabilities, review bypass |
-| `0.117.0` | Connector SDK with rotation/orphan, policy-evaluator/quarantine, and credential-TCB testkit | Simultaneous/unknown rotation, late callback/orphan/count exhaustion, wildcard/deny/condition corpus, quarantine races |
+| `0.117.0` | Connector SDK with evaluator/quarantine/remediation and credential-TCB testkit | Existing rotation/orphan/policy/TCB corpus plus evaluator upgrade/mixed-node, resolution no-revival, independent-remediation/no-path fixtures |
 | `0.118.0` | Mail, webhook, and collaboration connectors | Header injection, spoofing, action-link abuse |
 | `0.118.1` | Microsoft Defender and Sentinel connector pack | Provider/workspace confusion, cursor/webhook replay, schema drift, action escalation |
 | `0.118.2` | Tenable vulnerability connector pack | Asset/finding confusion, forged fixed state, score drift, coverage gaps |
-| `0.119.0` | Outbound agent with local governed credential-operation authority | Spool cannot rotate/take over/evaluate; current guard/evaluator/quarantine epoch pins all operations; orphan/count reconciliation |
+| `0.119.0` | Outbound agent with local governed credential-operation authority | Existing rotation/orphan/count/bearer isolation plus no spool evaluator/resolve/remediate authority and offline-work invalidation |
 | `0.120.0` | Plugin compatibility/isolation suite | Cross-plugin and cross-tenant interference |
 
 ## Organization Federation
@@ -420,12 +420,12 @@ the first technology decision. An unselected option remains unsupported at
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.140.1` | Cryptography/time and exact credential-operation/rotation profile decision | Rotation idempotency/inventory/orphan/count-limit profile; non-exportable/bearer TCB; sealed permit |
-| `0.140.2` | Storage topology for governed provider state and cancellation recovery | Co-located lineage/rotation/quarantine guards, orphan/count encumbrance, evaluator/snapshot/incident, and recovery state |
+| `0.140.1` | Cryptography/time and exact credential-operation/rotation profile decision | Existing rotation/idempotency/orphan/count and signing/bearer TCB freeze plus independent remediation channel/quota or manual-only recovery |
+| `0.140.2` | Storage topology for governed provider state and cancellation recovery | Existing rotation/quarantine/cancellation placement plus evaluator lineage/reevaluation, new-generation tombstones, remediation lineage/audit/quota |
 | `0.140.3` | Human/workload/session and worker-instance identity decision | Co-located epochs, enforceable expiry, unique per-runtime claimant, lease-fence binding, restart/takeover invalidation |
-| `0.140.4` | Component runtime and governed credential-broker TCB decision | Host-only rotation/takeover/evaluator/quarantine authority; reviewed semantic corpus and safe-subset decision; existing TCB |
+| `0.140.4` | Component runtime and governed credential-broker TCB decision | Evaluator binary/corpus admission and upgrade; quarantine-resolution evidence; non-composable remediation authority; existing TCB |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, retention precedence, omitted derived surfaces, tombstone/evidence inflation |
-| `0.140.6` | Deployment/HA provider-authority and successor/cancellation decision | Lineage/rotation/quarantine owner placement, orphan/count reconciliation, evaluator/version HA, recovery/RPO/RTO |
+| `0.140.6` | Deployment/HA provider-authority and successor/cancellation decision | Existing provider/rollout recovery plus evaluator/quarantine owner HA, remediation isolation/failover, reevaluation/manual-recovery RPO/RTO |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |
@@ -439,17 +439,17 @@ exit: production candidate has passed external pentest and all acceptance tests.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.141.0` | Single-node packaging with authority/floor startup ratchets | Rotation guard/orphan/count encumbrance and evaluator/result/quarantine incident anti-resurrection plus existing ratchets |
-| `0.142.0` | Split deployments with governed credential-operation TCB | Rotation/takeover/orphan and evaluator/quarantine owner routing; quarantine-to-first-use fence; existing TCB |
+| `0.141.0` | Single-node packaging with authority/floor startup ratchets | Active evaluator binary/corpus validation at startup; evaluator/quarantine/remediation lineage anti-rollback |
+| `0.142.0` | Split deployments with governed credential-operation TCB | Evaluator/quarantine/remediation owner routing; no authority in workers; incompatible executor readiness rejection |
 | `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
-| `0.143.0` | HA atomic work with governed execution and cancellation recovery | Split-brain rotation guard/takeover/orphan/count state; evaluator/quarantine/first-use races; existing failover |
+| `0.143.0` | HA atomic work with governed execution and cancellation recovery | Evaluator activation/revoke/reevaluation split brain; quarantine resolve/new-generation races; remediation isolation |
 | `0.144.0` | Authoritative-region placement and residency | Cross-region worker/lease identity collision, receipt/start split, floor owner split, omitted regional parent |
-| `0.145.0` | Backup, restore, and disaster recovery | No lost guard/orphan/count/evaluator/quarantine/incident state or restored stale handle/cleared quarantine |
-| `0.146.0` | Provider-governance, rotation/drift, credential-TCB, and cancellation contention certification | Simultaneous rotation/count pressure/orphan cleanup, evaluator budget/version churn, quarantine under queued/claimed load |
-| `0.147.0` | Final profile-governance, rotation/drift, bearer-memory, executor, and supply-chain hardening | Evaluator/corpus/evidence provenance, orphan/takeover abuse, quarantine incident integrity, existing TCB/supply chain |
-| `0.148.0` | Compatibility freeze for provider authority and rollout recovery | Rotation guard/orphan/count and evaluator/AST/result/reduced/quarantine/incident compatibility plus existing state |
-| `0.149.0` | Release candidate and external pentest remediation | Rotation takeover/orphan/count, policy-evaluator semantic bypass, quarantine escape, and complete platform retest |
-| `0.150.0` | Final production-readiness candidate | Serialized rotation/orphan/count, semantic evaluator/quarantine/incident, credential TCB, recovery, and lifecycle evidence |
+| `0.145.0` | Backup, restore, and disaster recovery | Existing authority/rotation/TCB/recovery anti-resurrection plus no evaluator rollback, quarantine clear/revival, remediation merge, or false recovery |
+| `0.146.0` | Provider-governance, rotation/drift, credential-TCB, and cancellation contention certification | Existing provider/TCB/rollout contention plus evaluator mass reevaluation, consistency barriers, resolution load, sole-key remediation pressure |
+| `0.147.0` | Final profile-governance, rotation/drift, bearer-memory, executor, and supply-chain hardening | Existing TCB/supply-chain assurance plus evaluator binary/corpus, resolution evidence/separation, and remediation credential isolation |
+| `0.148.0` | Compatibility freeze for provider authority and rollout recovery | Evaluator lineage/epoch, reevaluation state, quarantine resolution generations/tombstones, remediation profiles/protocol |
+| `0.149.0` | Release candidate and external pentest remediation | Complete prior platform retest plus evaluator-governance bypass, quarantine clear/revival, and remediation escalation/circularity |
+| `0.150.0` | Final production-readiness candidate | Existing lifecycle/TCB/recovery evidence plus active evaluator/reevaluation, evidence-backed resolution, independent remediation/manual limitation |
 
 ## `1.0.0` — Serious Production Release
 
@@ -500,7 +500,16 @@ are independently evidenced as production-ready.
   admitted exact-operation-safe subset operates. Superset, incomparable, or
   unknown quarantines the whole credential, invalidates all pending authority,
   emits an incident, and cannot be automatically widened or break-glass
-  promoted. Non-exportable signing/mTLS/
+  promoted. A signed binary/corpus-admitted evaluator lineage and never-reused
+  epoch govern the evaluator itself; activation/revocation immediately makes old
+  snapshots require re-evaluation and incompatible nodes reject startup.
+  Quarantine exits only through owned investigation/remediation and verified
+  replacement or revalidation using current evaluator/provider/epoch/
+  consistency and separated-resolver evidence. Resolution creates a new
+  capability generation and never revives earlier work. Rotation/takeover uses
+  an independent cleanup-only remediation credential/channel with its own
+  profile/lineage/approval/audit/quota; providers lacking one are explicitly
+  manual-recovery-only. Non-exportable signing/mTLS/
   HSM exposes operations only. Bearer/API-key profiles put authorization
   serialization, redirects, TLS, claim, and socket inside the hardened broker/
   executor TCB; temporary bearer bytes are covered by explicit memory canaries
@@ -554,10 +563,19 @@ are independently evidenced as production-ready.
   tag/time/network/identity/session conditions, boundaries/organization policy,
   role/group/cross-account trust/inheritance, evaluator or policy-language
   downgrade, complexity-budget exhaustion, raw/AST/result/explanation mismatch,
-  non-privileged use while quarantined, safe-subset without explicit profile,
+  unsigned/wrong-binary-or-corpus evaluator activation, evaluator epoch rollback,
+  security-fix/semantic/corpus upgrade, emergency revocation, partial
+  re-evaluation, mixed incompatible node, old snapshot surviving evaluator
+  revocation, non-privileged use while quarantined, safe-subset without explicit profile,
   claimed-work quarantine race, automatic widening, break-glass promotion,
-  callback reorder, stale polling, wrong policy validator, restored snapshot/
-  cleared quarantine, signing/mTLS/HSM key
+  generic administrator clear, incident-only closure, weak/stale resolution
+  evidence, missing consistency barrier or resolver separation, pre-resolution
+  handle/receipt/queue/effect revival, same-credential revalidation without a new
+  capability generation, sole-key quarantine, remediation-credential compromise,
+  derivation/circularity/business-operation abuse, cross-tenant substitution,
+  remediation response loss/outage/count exhaustion, provider with no
+  independent path claiming automatic recovery, callback reorder, stale polling,
+  wrong policy validator, restored snapshot/cleared quarantine, signing/mTLS/HSM key
   export, bearer HTTP/TLS/redirect/log/diagnostic/crash/core-dump/swap escape,
   caller-owned bearer claim/socket, and worker confused-deputy attempts.
 - Every untrusted parser is fuzzed; cryptography is independently reviewed;

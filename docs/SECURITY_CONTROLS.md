@@ -133,9 +133,16 @@ audit decision.
   explanation, and provider provenance. Only equal or explicitly admitted safe
   subset authority may operate; superset, incomparable, or unknown quarantines
   the entire credential, invalidates all handles/work, and emits an incident.
-  Neither automatic profile widening nor break-glass may bypass it. Restore
-  cannot resurrect any of
-  this authority. Signing/mTLS/HSM key material remains non-
+  Neither automatic profile widening nor break-glass may bypass it. The system
+  cannot roll back the evaluator's signed binary/corpus-admitted lineage or
+  monotonic epoch; evaluator change/revocation immediately requires
+  re-evaluation and incompatible nodes reject startup. Quarantine clears only
+  through separated, current-evidence remediation/revalidation that creates a
+  fresh capability generation and tombstones old work. Credential recovery uses
+  an independently admitted cleanup-only remediation credential/channel through
+  rotation/takeover, or enters manual intervention when no independent provider
+  recovery path exists. Restore cannot resurrect any of this authority.
+  Signing/mTLS/HSM key material remains non-
   exportable. Bearer/API-key profiles put HTTP authorization serialization, TLS,
   claim, and socket inside the hardened broker/executor TCB; bearer bytes may
   briefly exist only there and are prohibited from upstream, plugin, general

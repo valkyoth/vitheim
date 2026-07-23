@@ -39,7 +39,16 @@ local capability epoch with the claim guard; an authenticated reconciler, never
 the dispatch transaction, observes provider permission/policy drift. Persist
 raw-policy/normalized-AST/evaluator/policy-language/comparison/explanation
 evidence, reduced drift, whole-credential quarantine, affected-execution
-incident references, and the quarantine-to-first-use fence. The
+incident references, and the quarantine-to-first-use fence. Persist the
+authoritative evaluator lineage/generation, signed binary/corpus admission,
+provider/language compatibility, never-reused evaluator epoch, reevaluation
+state, and startup/readiness compatibility. Persist the capability owner's
+investigation/remediation/replacement-or-revalidation/resolution states,
+strong-revision/consistency/resolver-separation evidence, new capability
+generation, and permanent pre-resolution tombstones. Persist the independent
+remediation profile/credential lineage/approvals/audit/epochs/egress/security-
+cleanup quota and rotation/takeover-only guard separately from business
+credentials. The
 negotiated credential-operation profile must distinguish non-
 exportable signing/mTLS/HSM operations from brokered bearer transmission. The
 bearer broker joins the executor TCB and owns header serialization, redirects,
@@ -101,6 +110,9 @@ epoch guards, profile-governance/approval/tombstone state, asynchronous
 rotation/evidence/unknown/deadline state, credential-capability snapshot/epoch/
 reconciler, credential-lineage/rotation-guard/takeover/orphan/count-quota state,
 semantic permission-evaluator/evidence/result/reduced/quarantine/incident state,
+evaluator-lineage/admission/epoch/reevaluation/startup state, owned quarantine-
+resolution/new-generation/tombstone evidence, independent remediation lineage/
+approval/audit/quota or manual-only recovery state,
 explicit credential-operation/TCB placement, cancellation-recovery
 successor semantics, bounded
 deadlock-retry semantics, and fail-closed behavior.
@@ -136,7 +148,13 @@ encumbrance, stale/unverifiable/insufficient/broader/wrong-policy capability
 snapshot, missing/unreviewed evaluator or corpus, unsupported semantic construct
 treated as known, complexity-budget fail-open, superset/incomparable/unknown
 without whole-credential quarantine, non-privileged quarantine bypass, automatic
-widening/break-glass promotion, unsafe subset continuation, remote permission
+widening/break-glass promotion, unsafe subset continuation, evaluator lineage/
+epoch rollback, unsigned binary/corpus activation, stale
+snapshot after evaluator revocation, incompatible-node startup, partial
+reevaluation, generic or incident-only quarantine clear, weak/stale/
+inconsistent resolution, missing resolver separation, old-work revival,
+remediation/business lineage merge, circular remediation authority, or false
+automatic recovery without an independent provider path, remote permission
 discovery in dispatch, restored revoked generation
 or handle, stale queued instruction after
 suspension, credential export from signing/mTLS/HSM, bearer serialization/TLS/
@@ -214,7 +232,16 @@ tenants, omit or roll back profile/account/credential/broker epochs, resurrect a
 revoked profile or rotated handle, allow credential ABA, export key material
 from a signing/mTLS/HSM profile, let a general connector serialize bearer auth
 or own TLS/socket, let a separate broker caller claim transmission, omit HTTP/
-TLS/redirect/diagnostic/crash memory canaries, rewrite an existing
+TLS/redirect/diagnostic/crash memory canaries, treat evaluator identity/version
+as metadata without one signed binary/corpus-admitted lineage and monotonic
+epoch, keep old snapshots valid after activation/revocation, admit an
+incompatible node, authorize partial reevaluation, clear quarantine with an
+administrator flag or incident closure, resolve without strong revision/
+consistency/resolver separation/current epochs, reuse the pre-resolution
+capability generation or revive old work, merge remediation and business
+credential lineages, derive remediation from quarantine, expose remediation
+business operations, omit its cleanup quota, or claim automated recovery without
+an independent provider path, rewrite an existing
 capacity class, use a cross-class adjustment, activate capacity policy without
 its one owner or atomic co-located parent/floor transaction, let a policy lower
 its own floor, reuse floor approvers to spend released capacity, ignore
@@ -267,7 +294,13 @@ bypass, cross-tenant executor compromise, unrestricted shared credential, missin
 residual-blast-radius evidence, profile/account/credential/broker epoch rollback/
 reuse, emergency revocation/account suspension/rotation/ABA race, stale/restored
 handle, signing/mTLS key export, caller-owned bearer claim/socket, HTTP/TLS/
-redirect/log/diagnostic/crash memory-canary failure,
+redirect/log/diagnostic/crash memory-canary failure, evaluator security-fix/
+semantic/corpus activation, unsigned digest, epoch rollback, mixed-node
+downgrade, emergency revocation, partial reevaluation, unsafe quarantine clear/
+old-work revival, weak/inconsistent resolution, missing resolver separation/
+consistency barrier/new generation, sole-key quarantine, remediation compromise/
+derivation/business use/circularity/substitution/outage/response loss/count
+exhaustion/no-path automation,
 protected-class conversion by adjustment, capacity-policy owner ambiguity,
 non-atomic parent update, concurrent allocation, stale parent high-watermark,
 delta/simulation/floor-version substitution, floor-update race, floor reduction
@@ -373,7 +406,11 @@ late-callback guards, provider-credential-count quota encumbrances, credential-
 capability snapshots, monotonic local epochs, freshness/validator guards and
 reconciliation cursors, raw-policy/normalized-AST/evaluator/language/comparison/
 explanation evidence, reduced/quarantine state, incident/affected-execution
-references and first-use fence, credential-operation-profile/TCB placement,
+references and first-use fence, evaluator-lineage/generation/admission/epoch/
+reevaluation/startup rows, capability-owner quarantine-transition/strong-
+revision/consistency/resolver/new-generation/tombstone rows, remediation
+profile/credential-lineage/approval/audit/epoch/egress/cleanup-quota and
+rotation/takeover guard rows, credential-operation-profile/TCB placement,
 and scoped egress/pool partition evidence,
 canonical composite lock-order/deadlock-retry implementation,
 integrity commitment, and configuration adapters; migrations, operator guide,
@@ -421,7 +458,13 @@ capability snapshot or epoch, wildcard/`NotAction`/deny/conditional/boundary/
 organization/inheritance semantic error, evaluator downgrade, complexity-budget
 failure, raw/AST/result/explanation mismatch, non-privileged quarantined use,
 safe-subset policy bypass, queued/claimed/first-use quarantine race, automatic
-widening, break-glass promotion, remote permission discovery in dispatch, bearer
+widening, break-glass promotion, evaluator security-fix/semantic/corpus
+activation, unsigned digest, epoch rollback, emergency revoke, partial
+reevaluation, mixed incompatible node, unsafe quarantine clear/resolver/
+consistency evidence, old-work revival, same-credential generation reuse,
+remediation compromise/derivation/business use/circularity/cross-tenant
+substitution/outage/response loss/count exhaustion/no-path automation, remote
+permission discovery in dispatch, bearer
 serialization/TLS/socket outside the broker, broker caller
 claim, HTTP/TLS/redirect/diagnostic/crash memory leakage, destination/TLS/DNS/
 redirect/general-proxy bypass, floor-key omission/
@@ -568,7 +611,16 @@ conformance corpus for its policy language. It returns equal, subset, superset,
 incomparable, or unknown under explicit expansion/work/depth budgets and binds
 raw policy, normalized AST, evaluator/language, result, and explanation evidence.
 Superset/incomparable/unknown drives whole-credential quarantine and a security
-incident; safe-subset continuation is an explicit profile.
+incident; safe-subset continuation is an explicit profile. Implement its
+authoritative evaluator lineage with signed binary/corpus admission, exact
+provider/language versions, monotonic epoch, emergency revocation, immediate
+reevaluation of retained raw evidence, and incompatible-node startup gate.
+Implement quarantine investigation/remediation/replacement-or-revalidation/
+resolution using fresh strong-revision evidence, provider consistency barrier,
+current epochs, separated resolver, fresh capability generation, and permanent
+old-work tombstones. Implement provider remediation only through a separately
+admitted cleanup-only credential/recovery channel and rotation/takeover guard;
+providers without one advertise manual-intervention-only recovery.
 
 Goal: keep master keys and long-lived secrets outside Vitheim processes while
 preserving provider-neutral inner ports.
@@ -577,7 +629,9 @@ Deliverables: KMS and secret-provider ports/adapters, fake provider, envelope-ke
 broker, capability probes, rotation state machine/reconciler/evidence store,
 rotation guard/takeover/orphan/count-quota tooling, permission-capability
 observer/snapshot validator, provider semantic evaluators/corpora, quarantine/
-incident workflow, migration/rotation tooling, and operator runbook.
+incident/resolution workflow, evaluator-lineage admission/upgrade/revocation/
+reevaluation tooling, independent remediation credential/channel profile and
+cleanup-quota tooling, migration/rotation tooling, and operator runbook.
 
 Verification: tenant/key confusion, stale/revoked keys, substitution, rollback,
 cache leakage, confused deputy, outage/timeout/retry storms, rotation, destruction,
@@ -591,7 +645,13 @@ exhaustion, wildcard/`NotAction`, explicit deny, conditional resources/tags/
 time/network/identity/session, boundaries/organization policy/inheritance,
 evaluator downgrade/budget exhaustion, non-privileged quarantine bypass,
 automatic widening, break-glass promotion, claimed-work race, and restored
-snapshot/quarantine cases all fail closed.
+snapshot/quarantine cases; include evaluator security-fix/semantic/corpus
+upgrade, unsigned digest, mixed-node downgrade, emergency revoke, partial
+reevaluation, unsafe clear or incident-only closure, weak/stale/inconsistent
+resolution, missing resolver separation/consistency barrier, old-work revival,
+sole-key quarantine, remediation compromise/derivation/business use/circular
+dependency/cross-tenant substitution/outage/response loss/count exhaustion, and
+false automatic recovery without an independent provider path. All fail closed.
 
 Exit criteria: no production encryption/signing path depends on filesystem keys
 or plaintext configuration secrets. `v0.28.2 implementation stop reached. Run pentest for this exact commit.`
@@ -663,7 +723,11 @@ generations, profile proposal/approval/tombstone state, rotation state/provider
 evidence/unknown outcome/overlap deadline, rotation owner/guard/identity/
 takeover/orphan/count encumbrance, capability snapshots/local epochs/freshness
 provenance, raw-policy/normalized-AST/evaluator/language/result/explanation
-evidence, reduced/quarantine/incident/first-use state, and cancellation-recovery
+evidence, evaluator lineage/generation/admission/epoch/reevaluation/startup
+compatibility, reduced/quarantine investigation/remediation/verification/
+resolution/new-generation/tombstone/incident/first-use state, independent
+remediation profile/credential-lineage/approval/audit/epoch/cleanup-quota or
+manual-only limitation, and cancellation-recovery
 lineage/receipts across every schema change.
 
 Verification: reorder/substitution, partial failure, concurrent runner, lease loss,
@@ -676,7 +740,11 @@ Include epoch rollback/reuse, credential/profile resurrection, credential ABA,
 missing profile approval/tombstone or rotation/evidence/deadline state, restored
 dual redemption, lost rotation guard/orphan/count encumbrance, stale/restored
 credential-capability snapshot or epoch, changed evaluator semantics without
-versioning, cleared quarantine or affected-execution incident linkage,
+versioning, evaluator epoch rollback or old output restored as current,
+incomplete reevaluation, incompatible-node admission, cleared/partially advanced
+quarantine, missing resolution evidence or old-work tombstone, remediation
+lineage merged with business authority, lost cleanup quota/manual-only
+limitation, or affected-execution incident linkage,
 missing operation-profile discriminator, cancelled-prepared recovery receipt
 loss/duplication, and restored independent-parent-release cases.
 
@@ -740,11 +808,18 @@ rotation state/local activation epoch/provider evidence/deadline, current
 rotation owner/guard/identity/takeover/orphan/count encumbrance, current
 credential-capability snapshot/epoch/freshness/validator and semantic evaluator/
 language/result/evidence, reduced/quarantine/incident/first-use state,
+evaluator-lineage/generation/admission/epoch/reevaluation state, quarantine
+investigation/remediation/verification/resolution/new-generation/tombstones,
+independent remediation profile/lineage/audit/epoch/cleanup-quota/manual-only
+limitation,
 credential-operation profile, and brokered-bearer TCB placement. Redelivery
 cannot revive a suspended/revoked profile, rotated credential, stale handle, or
 old broker policy, bypass a revocation tombstone, progress remote rotation, or
 refresh/evaluate provider permissions, clear whole-credential quarantine, use a
 nominally non-privileged action, or start a successor after unknown rotation;
+it also cannot activate/revoke an evaluator, complete reevaluation, advance
+quarantine resolution, revive pre-resolution work, or redeem remediation
+authority;
 queue payloads never contain bearer material.
 Only the authoritative rotation and permission reconcilers may advance those
 states. Preserve
@@ -810,6 +885,8 @@ handler, profile-governance lifecycle/approval/tombstone handler, credential-
 rotation process manager/evidence/deadline reconciler, credential-capability
 snapshot/epoch/freshness validator, rotation guard/takeover/orphan/count-quota
 handler, permission-evaluator/evidence/reduced/quarantine/incident handler,
+evaluator-lineage/epoch/reevaluation validator, quarantine-resolution/new-
+generation/tombstone validator, remediation-authority-denial validator,
 floor-key/ratchet migration and active-generation successor/fresh post-
 finalization parent-activation handler, canonical lock-order/deadlock-retry
 implementation, capability report, and operational metrics.
@@ -851,7 +928,9 @@ create, late callback, unauthorized takeover, orphan revocation loss, credential
 count exhaustion, callback reorder, stale polling, wrong policy revision,
 stale/restored capability snapshot, semantic evaluator/version/budget failure,
 non-privileged quarantine bypass, unsafe subset continuation, automatic widening,
-break-glass promotion, queue-driven rotation or permission refresh/evaluation,
+break-glass promotion, evaluator activation/revoke/epoch/reevaluation change,
+old evaluator output or incompatible worker, unsafe quarantine clear/resolution/
+old-work revival, remediation authority in payload or worker, queue-driven rotation or permission refresh/evaluation,
 stale queued instruction, restored handle, signing/mTLS key export, bearer
 material outside the broker TCB or in queue/log/diagnostic/crash state, caller-
 owned bearer claim/TLS/socket, missing memory canary, uncertain retransmission, mixed

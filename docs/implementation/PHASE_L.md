@@ -73,7 +73,13 @@ quarantine/revocation, credential-count charging, and bounded unknown-state
 reconciliation. Start claim also requires a fresh admitted credential-capability
 snapshot/epoch and reviewed semantic evaluator result; provider IAM discovery
 never occurs in a plugin dispatch transaction. A superset, incomparable, or
-unknown result quarantines the whole credential. Restore cannot revive old authority. Non-exportable
+unknown result quarantines the whole credential. Evaluator admission/upgrade/
+revocation, reevaluation, quarantine investigation/resolution, and remediation
+authority remain host control-plane operations; guest code cannot invoke or
+compose them. Resolution creates a new capability generation, so every plugin
+effect requires fresh authorization and no old handle or instruction revives.
+Credential recovery uses only the host's independently admitted cleanup-only
+remediation channel through rotation/takeover. Restore cannot revive old authority. Non-exportable
 signing/mTLS/HSM profiles expose operations only. For bearer/API-key providers,
 the hardened broker joins the
 executor TCB and itself owns authorization serialization, redirects, TLS, start
@@ -94,7 +100,8 @@ window/unique-claimant/executor-boundary/no-permit-transport enforcement.
 Include provider-execution-profile admission, scoped credential redemption,
 lineage/epoch/profile-governance, rotation-state/evidence/deadline, credential-
 capability snapshot/semantic-evaluator/safe-subset/whole-credential-quarantine
-enforcement, rotation-guard/orphan/count enforcement, credential-operation/TCB placement, pool-
+enforcement, evaluator-lineage/reevaluation, quarantine-resolution/tombstone,
+remediation-authority denial, rotation-guard/orphan/count enforcement, credential-operation/TCB placement, pool-
 partition, egress, memory-canary, and residual-blast-radius evidence.
 Verification: unauthorized calls, replay, commit-to-dispatch revocation,
 forged/stale dispatch receipt, worker/plugin confused deputy, cross-tenant
@@ -120,6 +127,9 @@ evidence/deadline/outage state, restored dual redemption, permission/role/group/
 trust drift, concurrent rotation/idempotency/takeover/orphan/count-limit failure,
 wildcard/deny/resource/condition comparison, evaluator downgrade/budget
 exhaustion, queued/claimed/non-privileged quarantine bypass, callback reorder,
+evaluator activation/revocation/epoch/mixed-node failure, partial reevaluation,
+unsafe resolution or old-effect revival, remediation authority/credential/
+operation exposure to guest code,
 stale poll, policy-revision mismatch, restored
 snapshot, stale instruction/restored
 handle, signing/mTLS/HSM export, bearer material or HTTP/TLS/socket outside the
@@ -170,7 +180,9 @@ never revives an old handle. Profile activation evidence and the current
 credential-capability snapshot/epoch plus reviewed semantic evaluator result
 are mandatory. Superset, incomparable, or unknown comparison quarantines all
 handles and operations for the credential; plugin manifests cannot grant
-lifecycle or rotation authority.
+lifecycle, evaluator, quarantine-resolution, remediation, or rotation authority.
+Only current host reevaluation and evidence-backed resolution can create a new
+capability generation; all earlier handles remain tombstoned.
 The manifest selects non-exportable signing/mTLS/HSM operation, brokered bearer
 transmission, or unsupported. In the bearer profile, the hardened broker owns
 authorization serialization, redirects, TLS, claim, and socket; temporary bearer
@@ -184,6 +196,8 @@ scoped-handle redemption receipts, and optional plugin-state port.
 Include profile/account/credential/broker epoch guards, profile lifecycle/
 approval/tombstone validation, rotation state/evidence/deadline reconciliation,
 credential-capability snapshot/epoch/freshness validation, the
+evaluator-lineage/admission/epoch/reevaluation validator, quarantine-resolution/
+new-generation/tombstone validator, remediation-authority isolation validator,
 credential-operation-profile evaluator, brokered-bearer TCB declaration, and
 HTTP/TLS/redirect/diagnostic/crash memory canaries.
 Verification: forging, scope escalation, state namespace collision, quota/
@@ -197,7 +211,9 @@ restored handle, epoch rollback, unauthorized activation/semantic expansion,
 rotation crash/unknown/dual-redemption failure, provider permission drift/stale
 snapshot, rotation concurrency/idempotency/takeover/orphan/count-limit failure,
 semantic evaluator downgrade/budget failure, unsafe subset admission, whole-
-credential quarantine bypass, key export, bearer escape from the hardened
+credential quarantine bypass, evaluator activation/revocation/epoch/reevaluation
+failure, unsafe clear or old-handle revival, remediation authority derivation/
+guest/business use, key export, bearer escape from the hardened
 broker, caller-owned claim/socket, and memory-canary failures. Exit criteria:
 plaintext credentials never enter guest
 memory through any supported plugin API; exceptions are separate hosted
@@ -277,7 +293,10 @@ credential/broker epochs, rotation/restore fixtures, non-exportable key-operatio
 profiles, profile-governance command/approval/tombstone fixtures, asynchronous
 rotation/evidence/unknown/deadline/outage fixtures, credential-capability
 snapshot/epoch/semantic-comparison/safe-subset/whole-quarantine fixtures,
-rotation-guard/takeover/orphan/count fixtures, and a brokered-bearer simulator that owns header/
+evaluator lineage/admission/epoch/upgrade/revoke/reevaluation fixtures,
+quarantine-resolution/consistency/resolver/new-generation/tombstone fixtures,
+independent-remediation/no-path fixtures, rotation-guard/takeover/orphan/count
+fixtures, and a brokered-bearer simulator that owns header/
 redirect/TLS/claim/socket while instrumenting memory canaries. Goal: safe
 integration development.
 Deliverables: private SDK/testkit, broker-operation mocks, guest-memory canary
@@ -300,7 +319,11 @@ suspension, unauthorized activation/semantic expansion/stale tombstone,
 credential ABA, every rotation crash/unknown/evidence/deadline/outage state,
 rotation concurrency/idempotency/takeover/orphan/count-limit failure, semantic
 wildcard/deny/resource/condition comparison, evaluator downgrade/budget
-exhaustion, quarantine bypass, permission/role/group/trust drift, callback reorder, stale polling, policy-
+exhaustion, quarantine bypass, evaluator admission/epoch/revocation/mixed-node
+failure, partial reevaluation,
+unsafe clear/old-work revival, remediation compromise/derivation/business use/
+circularity/substitution/outage/response loss/count exhaustion/no-path
+automation, permission/role/group/trust drift, callback reorder, stale polling, policy-
 revision mismatch, stale/restored snapshot, stale/restored handle, signing/mTLS
 key export, bearer escape/caller-owned claim/socket/memory-canary failure, and
 uncertain retransmission pass.
@@ -406,7 +429,11 @@ revocation, broker-policy change, and restore make stale work non-redeemable.
 The spool pins profile activation evidence, current rotation state, and the
 rotation guard/idempotency/takeover/orphan/count state and credential-capability
 snapshot/epoch/freshness/semantic-evaluator result. Superset, incomparable, or
-unknown comparison invalidates all spooled work for that credential. It cannot approve a
+unknown comparison invalidates all spooled work for that credential. The spool
+also pins the current evaluator epoch and capability generation; evaluator
+activation/revocation, reevaluation, or quarantine resolution never makes an old
+record current. The agent cannot govern evaluators, investigate or resolve
+quarantine, use remediation authority, or retain a remediation credential. It cannot approve a
 profile, advance remote rotation, refresh provider permissions, or bypass a
 revocation tombstone; those remain authoritative control-plane/reconciler work.
 Non-exportable key profiles expose operations only. Bearer/API-key profiles put
@@ -437,7 +464,10 @@ unauthorized activation/hidden expansion/stale tombstone, rotation/ABA and every
 crash/unknown/evidence/deadline/outage state, restored dual redemption,
 rotation concurrency/idempotency/takeover/orphan/count-limit failure, wildcard/
 deny/resource/condition comparison, evaluator downgrade/budget exhaustion,
-whole-credential quarantine bypass, permission/role/group/trust drift, callback reorder, stale polling, wrong policy
+whole-credential quarantine bypass, evaluator epoch/admission/revocation
+substitution, old result after reevaluation,
+unsafe resolution/old-spool revival, remediation authority or credential in the
+agent, permission/role/group/trust drift, callback reorder, stale polling, wrong policy
 revision, restored snapshot, stale/restored handle, signing/mTLS export, bearer material outside
 the broker TCB, caller-owned claim/socket, and memory-canary failure.
 Exit criteria: agent

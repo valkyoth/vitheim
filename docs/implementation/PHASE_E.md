@@ -185,7 +185,14 @@ revocation is confirmed. Publication requires a fresh credential-capability
 snapshot/epoch whose reviewed, versioned semantic evaluator returns `Equal` or
 an explicitly admitted `StrictSubset`; `StrictSuperset`, `Incomparable`, or
 `Unknown` advances the epoch and quarantines the whole credential, including
-apparently non-privileged channel work. Non-exportable channel signing/mTLS
+apparently non-privileged channel work. The selected channel evaluator has a
+signed binary/corpus-admitted lineage and epoch; activation or revocation makes
+older snapshots `ReevaluationRequired`, and an incompatible publisher is not
+ready. Channel quarantine resolves only through the owned current-evaluator,
+strong-revision/consistency-barrier, separated-resolver state machine and a new
+capability generation; old publication work never revives. Rotation/takeover
+uses only an independent cleanup-only channel remediation credential/recovery
+path, or enters documented manual intervention. Non-exportable channel signing/mTLS
 exposes operations only.
 For bearer/API-key channels, the hardened channel broker joins the executor TCB
 and owns authorization serialization, redirects, TLS, claim, and socket; bearer
@@ -201,7 +208,9 @@ transport, publication reconciler, subscription integration through `0.39.4`,
 optional admitted channel adapter, capability/health probes, DAST corpus,
 deployment guide, and outage runbook; include rotation-guard/orphan-inventory/
 credential-count evidence and semantic evaluator/corpus/quarantine evidence for
-every admitted external channel.
+every admitted external channel; include evaluator-lineage/reevaluation,
+quarantine-resolution/tombstone, and independent-remediation/manual-limit
+evidence.
 
 Verification: unauthorized/premature publication, audience/component/tenant
 confusion, hidden-field and count leakage, stale cache/CDN, false success
@@ -229,7 +238,12 @@ instruction/restored handle, simultaneous rotations, idempotency-digest
 substitution, late callback after takeover, orphan omission, provider-count
 limit exhaustion, string-set or wildcard/deny/resource/condition comparison,
 evaluator downgrade/budget exhaustion, claimed/queued/non-privileged work after
-whole-credential quarantine, unsafe automatic profile widening, signing/mTLS export,
+whole-credential quarantine, unsafe automatic profile widening, evaluator
+activation/revoke/epoch/mixed-version failure, partial reevaluation, generic or
+incident-only quarantine clear, weak/inconsistent resolution, old-work revival,
+sole-channel-key quarantine, remediation credential compromise/derivation/
+business use/outage/response loss/count exhaustion/no-independent-path
+automation, signing/mTLS export,
 bearer material outside the broker TCB, caller-owned claim/socket, HTTP/TLS/
 redirect/diagnostic/crash memory-canary failure, accessibility, load, and fake-
 versus-hosted differential tests pass.

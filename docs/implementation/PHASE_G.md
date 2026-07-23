@@ -91,8 +91,11 @@ snapshot/epoch and cannot remotely discover or semantically evaluate permissions
 `CredentialCapabilityQuarantined` makes every timer using the credential
 non-redeemable regardless of the requested operation. Only governed profile
 lifecycle commands may change active authority; timers cannot approve/activate
-a profile, advance provider credential rotation, take it over, inventory
-orphans, or release provider-credential-count quota.
+a profile or evaluator, complete reevaluation or quarantine resolution, advance
+provider credential rotation, take it over, inventory orphans, redeem
+remediation authority, or release provider-credential-count quota. Resolution
+never wakes old timer authority; the effect must be freshly authorized under the
+new capability generation.
 Non-exportable signing/mTLS exposes operations only; a bearer/API-key broker is
 the executor TCB and owns authorization serialization, redirects, TLS, claim,
 and socket.
@@ -109,6 +112,8 @@ Include profile-lineage/epoch/revocation/rotation ordering, credential-operation
 profile, governed activation/tombstone, rotation-state/evidence/deadline,
 credential-capability snapshot/drift, brokered-bearer ownership, and HTTP/TLS/
 redirect/diagnostic/crash memory canary fixtures.
+Include evaluator-lineage/epoch/reevaluation, quarantine-resolution/new-
+generation/tombstone, and remediation-authority-denial fixtures.
 Verification: clock jumps,
 retry storms, duplicate wakeups/results,
 cancellation/revocation races, not-before/expiry boundaries, grant replay and
@@ -138,7 +143,9 @@ rotation crash/unknown/duplicate creation/continued-old-key/deadline failure,
 rotation-guard concurrency/idempotency/takeover/orphan/count-limit failure,
 semantic wildcard/deny/resource/condition comparison, permission/role/group/
 trust drift, evaluator downgrade/budget exhaustion, quarantine of queued/
-claimed/non-privileged work, callback reorder, stale polling, wrong policy
+claimed/non-privileged work, evaluator activation/revocation/epoch/reevaluation,
+unsafe quarantine clear or old-timer revival, remediation authority in timer
+payload or worker, callback reorder, stale polling, wrong policy
 revision, restored capability snapshot, signing/mTLS key export, bearer material
 or serialization/TLS/socket outside the broker TCB, caller-owned claim, memory-
 canary failure, uncertain retransmission,
@@ -226,7 +233,9 @@ protocol and provider credential/egress profile, canonical composite acquisition
 revocable provider profile/account/credential/broker epochs and explicit
 profile governance, rotation-state/evidence/guard/idempotency/takeover/orphan/
 count reconciliation, credential-capability snapshot/epoch semantic-evaluator
-freshness and whole-credential quarantine, credential-operation/bearer-broker TCB
+freshness and whole-credential quarantine, evaluator-lineage/epoch/reevaluation
+HA, quarantine-resolution/new-generation/tombstone ownership, independent
+remediation-authority lineage/isolation/manual-only state, credential-operation/bearer-broker TCB
 placement, cancellation-recovery
 successor semantics,
 and `0.51.2`
@@ -252,7 +261,9 @@ unique-claimant/trusted-executor/instruction-only/scoped-credential-egress
 handler, profile-governance lifecycle/approval/tombstone handler, credential-
 rotation process manager/evidence/deadline/guard/orphan/count reconciler,
 credential-capability snapshot/epoch/semantic-evaluator/freshness/quarantine
-observer, bounded identity-preserving deadlock retry,
+observer, evaluator-lineage/reevaluation coordinator, quarantine-resolution/
+new-generation/tombstone process manager, remediation-authority-isolation
+validator, bounded identity-preserving deadlock retry,
 fair partitioned recovery lanes, and operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
 receipt/effect split, network-call-in-transaction rejection, crash points,
@@ -287,7 +298,11 @@ tombstone, every rotation crash/unknown/evidence/deadline/outage state, restored
 dual redemption, concurrent rotation/idempotency/takeover/orphan/count-limit
 failure, wildcard/deny/resource/condition comparison, evaluator downgrade/
 budget exhaustion, whole-credential quarantine bypass, permission/role/group/
-trust drift, callback reorder, stale polling, wrong policy revision, restored
+trust drift, evaluator activation/revocation/epoch/reevaluation split brain, incompatible-
+worker execution, quarantine-resolution double owner/partial evidence/old-work
+revival, remediation-lineage split/derivation/business use/substitution/
+compromise/outage/response loss/count exhaustion/no-path automation, callback
+reorder, stale polling, wrong policy revision, restored
 snapshot, remote discovery in dispatch,
 stale instruction/restored handle, signing/mTLS export, bearer serialization/
 TLS/socket outside the broker TCB, caller-owned claim, HTTP/TLS/redirect/log/
@@ -374,7 +389,12 @@ quota-charged. A fresh admitted credential-capability snapshot/epoch and
 versioned semantic evaluator fence out-of-band permission drift without remote
 discovery in dispatch. Superset, incomparable, and unknown comparisons
 quarantine the entire credential; strict subsets require explicit safe-subset
-admission. Non-
+admission. Evaluator activation/revocation is one governed lineage/epoch and
+older snapshots remain unusable until reevaluated. Quarantine resolution has one
+owner, commits a fresh capability generation, and permanently rejects old work
+through failover. Remediation authority remains an independent cleanup-only
+lineage used solely by rotation/takeover; no independent provider path means
+manual intervention. Non-
 exportable key profiles expose only operations; bearer material is confined to
 the hardened broker/executor TCB
 that owns serialization, TLS, claim, and socket.

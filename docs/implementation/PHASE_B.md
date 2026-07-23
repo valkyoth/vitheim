@@ -326,6 +326,23 @@ binds the raw provider-policy evidence digest, normalized permission-AST digest,
 evaluator implementation identity/version, provider policy language/version,
 comparison result, and explanation-evidence digest.
 
+Evaluator code is authority-bearing. Each provider owns one authoritative
+`ProviderPermissionEvaluatorLineage` whose generations are `Proposed`, `Active`,
+`Suspended`, `Superseded`, or `Revoked`. A generation binds a signed
+implementation-admission record, executable binary digest, conformance-corpus
+digest, exact provider, and supported provider policy-language versions.
+Activation, suspension, supersession, and ordinary or emergency revocation are
+typed control-plane commands with the frozen quorum/separation rules. They atomically
+advance a never-reused `ProviderPermissionEvaluatorEpoch`; every capability
+snapshot and transmission-start fence binds the current epoch. An older
+generation's snapshots immediately become `ReevaluationRequired`, not merely
+stale at their former deadline. Credentials remain unusable until retained raw
+evidence is evaluated under the current active generation and a new capability
+epoch is committed. A node that cannot execute or validate the active evaluator,
+binary digest, corpus digest, or policy-language version rejects startup or
+readiness; mixed-version deployment cannot silently select an older evaluator.
+Restore cannot roll back evaluator lineage or make superseded output current.
+
 Only `Equal` or `StrictSubset` can be admissible. `StrictSubset` enters a
 distinct `CredentialCapabilityReduced` drift state; continuing an operation is
 permitted only when the frozen profile explicitly supports safe-subset
@@ -351,6 +368,45 @@ fail every operation and enter bounded reconciliation. Every observed
 permission, role, group, or trust-chain change advances the local epoch and
 invalidates stale receipts; restore cannot revive an older snapshot or clear
 quarantine.
+
+Quarantine has an evidence-backed owner state machine:
+`CredentialCapabilityQuarantined` → `Investigating` →
+`RemediationPending` → (`ReplacementVerified` | `RevalidationVerified`) →
+`Resolved`. The credential-capability lineage is its sole authority owner.
+Progress binds the incident, cause, affected executions, remediation actions,
+and an authorized resolver who is separated from every actor that widened the
+provider policy. `ReplacementVerified` proves a newly admitted credential;
+`RevalidationVerified` proves the retained credential using the current active
+evaluator, fresh authenticated provider evidence with a strong policy revision,
+`Equal` or explicitly safe `StrictSubset`, current profile/account/credential/
+broker/evaluator epochs, and the provider's required repeated observations or
+consistency barrier. Incident closure is downstream evidence and cannot clear
+credential quarantine.
+
+Resolution atomically creates a new never-reused local capability generation
+and permanently tombstones all pre-resolution handles, receipts, queued
+instructions, and effect authorizations. Every resumed effect requires fresh
+authorization against that generation. Generic administrator flags, snapshot
+rollback, break-glass, incident closure alone, partial re-evaluation, and restore
+cannot skip or reverse a state. A failed, ambiguous, inconsistent, or
+insufficient observation remains quarantined and returns to bounded
+investigation/reconciliation.
+
+Credential recovery uses a separate
+`ProviderCredentialRemediationAuthority`, never the quarantined credential. It
+is an independently admitted administrative credential or provider recovery
+channel scoped only to credential inventory, creation, disablement, and
+revocation. It has its own execution profile, credential lineage, approvals,
+audit trail, epochs, destination policy, security-cleanup quota, and bounded
+provider-outcome reconciliation. It cannot perform tenant business operations,
+be derived or delegated from a quarantined credential, or be redeemed outside
+`ProviderCredentialRotationState`/`TakeOverProviderCredentialRotation`. Its
+compromise cannot unlock, resolve, or widen the quarantined business credential.
+Provider-count exhaustion does not erase accounting: remediation must revoke or
+obtain provider-evidenced recovery capacity before creation. A supported-
+provider profile declares its independent recovery channel and residual risk;
+if none exists, the rotation enters `ManualInterventionRequired` without
+break-glass reuse of the quarantined credential.
 
 Credential operations use one explicit `ProviderCredentialOperationProfile`.
 `NonExportableSigning`, `NonExportableMtls`, and equivalent HSM-backed profiles
@@ -1311,10 +1367,21 @@ mismatched state without remote discovery in the dispatch transaction.
 Its reviewed versioned provider evaluator returns exactly `Equal`,
 `StrictSubset`, `StrictSuperset`, `Incomparable`, or `Unknown`, and binds raw-
 evidence/normalized-AST/evaluator/policy-language/result/explanation digests and
-versions. Only equal or an explicitly admitted safe subset can operate.
+versions. Its authoritative `ProviderPermissionEvaluatorLineage`, signed binary/
+corpus admission, current generation, and never-reused evaluator epoch govern
+activation and emergency revocation. Older results become
+`ReevaluationRequired`; nodes unable to validate the active evaluator reject
+startup. Only equal or an explicitly admitted safe subset can operate.
 Superset, incomparable, or unknown quarantines the whole credential, advances
 the capability epoch, invalidates all handles/queued work, emits a security
 incident, and cannot be bypassed by automatic profile widening or break-glass.
+Its owned investigation/remediation/replacement-or-revalidation/resolution
+state machine accepts only current-evaluator, strong-revision, current-epoch,
+consistency-barrier, separated-resolver evidence, then creates a new capability
+generation without reviving prior work. Rotation/takeover may recover through
+only an independently admitted, cleanup-only
+`ProviderCredentialRemediationAuthority`; absent such a provider path, it
+requires manual intervention rather than quarantined-credential reuse.
 The admitted `ProviderCredentialOperationProfile` is non-exportable signing/
 mTLS/HSM operation, brokered bearer transmission, or unsupported. For bearer/
 API-key work, the hardened broker is part of the executor TCB and owns header
@@ -1385,8 +1452,13 @@ ID/successor generation/idempotency key/request digest, takeover command,
 credential-orphan state/reconciler, and provider-credential-count quota claim,
 `ProviderCredentialCapabilitySnapshot` plus local epoch/freshness/reconciler
 contract, reviewed versioned permission evaluator/canonical comparison/AST and
-evidence bindings, reduced-drift/quarantine state, incident and credential-use
-linearization contract, `ProviderCredentialOperationProfile` codec with non-exportable signing/
+evidence bindings, authoritative evaluator lineage/generation/epoch and signed
+binary/corpus admission, reevaluation/startup gate, reduced-drift/quarantine
+investigation/remediation/verification/resolution state machine, separated
+resolver and consistency-barrier evidence, permanent pre-resolution tombstones,
+independent cleanup-only credential-remediation authority/profile/lineage/audit/
+quota contract, incident and credential-use linearization contract,
+`ProviderCredentialOperationProfile` codec with non-exportable signing/
 mTLS and brokered-bearer TCB placement, destination/TLS/DNS/redirect/no-general-
 proxy egress contract,
 authoritative-time and monotonic-start enforcement contract, and
@@ -1497,11 +1569,29 @@ network/identity/session conditions, permission boundaries, organization policy,
 role/group/cross-account trust, or inheritance; downgrade/substitute the
 evaluator or policy-language version; exceed a complexity budget without
 `Unknown`; mismatch raw-policy/normalized-AST/result/explanation evidence;
+activate an evaluator without signed binary/corpus admission or supported
+language binding; reuse/roll back its epoch; run mixed nodes unable to validate
+the active evaluator; discover an evaluator security bug; change semantics or
+corpus; emergency-revoke during queued/claimed work; retain an old-generation
+snapshot until its ordinary freshness deadline; partially re-evaluate or restore
+an older accepted result;
 continue on `StrictSuperset`, `Incomparable`, or `Unknown`; use a non-privileged
 action through a quarantined credential; widen the profile automatically; use
 break-glass as ordinary quarantine bypass; continue `StrictSubset` without its
 explicit profile or exact-operation proof; race quarantine against queued,
 claimed, or first-credential-use work; replay a handle or restore quarantine;
+clear quarantine through an administrator flag, snapshot rollback, break-glass,
+or incident closure; resolve with a stale evaluator, weak/missing policy
+revision, old epoch, unseparated resolver, single observation before the
+provider consistency barrier, partial/inconsistent evidence, or no remediation
+receipt; revive a pre-resolution handle/receipt/queue item/effect authorization;
+reuse the old capability generation after same-credential revalidation;
+quarantine the sole business credential; derive remediation authority from it;
+use remediation authority for tenant business work or outside rotation/takeover;
+substitute remediation provider/account/tenant/profile/lineage; compromise the
+remediation credential; exhaust credential-count quota; lose a remediation
+provider response; encounter provider outage or circular recovery authority;
+claim automated recovery where the provider has no independent path;
 discover
 remote permission inside the dispatch transaction; redeem a stale queued
 instruction or restored handle; race revocation/
@@ -1606,7 +1696,15 @@ credential-capability snapshot/epoch proves fresh, semantically evaluated
 permissions without remote discovery in dispatch. Only equal or an explicitly
 admitted proven-safe subset may operate; superset, incomparable, or unknown
 quarantines the whole credential, invalidates all pending authority, emits a
-security incident, and cannot be widened or break-glass promoted. Restore
+security incident, and cannot be widened or break-glass promoted. Evaluator
+generations are themselves governed signed authority: activation/revocation
+advances an epoch, immediately requires re-evaluation under the current binary/
+corpus/language contract, and rejects incompatible nodes. Quarantine clears only
+through its owned evidence-backed investigation/remediation/verified-resolution
+state machine, which creates a new capability generation and never revives old
+work. Credential repair uses only an independent cleanup-scoped remediation
+credential/channel through rotation/takeover; without one, recovery is manual.
+Restore
 cannot resurrect any of this authority. Non-exportable key profiles expose only
 operations; bearer transmission is performed entirely by the hardened broker/
 executor TCB,

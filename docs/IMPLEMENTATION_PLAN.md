@@ -135,7 +135,14 @@ returns equal, subset, superset, incomparable, or unknown with raw/AST/evaluator
 policy-language/explanation evidence. Only equal or an explicitly admitted
 proven-safe subset operates; all other results quarantine the whole credential,
 invalidate pending authority, create an incident, and prohibit automatic
-widening or break-glass promotion. Non-exportable signing/mTLS exposes
+widening or break-glass promotion. Evaluator binaries/corpora are governed by
+their own signed lineage and monotonic epoch; activation/revocation immediately
+requires reevaluation and incompatible nodes cannot start. Quarantine resolution
+requires current evaluator/provider/epoch/consistency and separated-resolver
+evidence, creates a new capability generation, and cannot revive earlier work.
+Rotation/takeover recovery uses a separately admitted cleanup-only remediation
+credential/channel; absence of an independent provider path means manual
+intervention. Non-exportable signing/mTLS exposes
 operations only;
 bearer/API-key transmission places header serialization, TLS, claim, and socket
 inside the hardened credential-broker/executor TCB, where bearer bytes may

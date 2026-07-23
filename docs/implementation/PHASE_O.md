@@ -12,9 +12,15 @@ policy epochs, profile approval/activation/tombstone state, credential-rotation
 lineage owner/guard/idempotency/takeover/orphan/count/provider-evidence/deadline
 state, and credential-capability snapshots/local epochs/raw and normalized
 digests/evaluator and policy-language versions/comparison/quarantine provenance.
+Persist the evaluator lineage/generation, signed binary/corpus admission,
+provider/language compatibility, never-reused epoch and reevaluation state;
+quarantine investigation/remediation/verification/resolution, fresh capability
+generation and old-work tombstones; and the independent remediation profile/
+credential lineage/audit/epoch/cleanup quota or manual-only limitation.
 Goal: hardened repeatable single-node install.
 Deliverables: signed packages, startup floor-profile compatibility gate,
-governed higher-floor and key-set migration/drain tooling, and runbook.
+active-evaluator binary/corpus/language compatibility gate, governed higher-
+floor and key-set migration/drain tooling, and runbook.
 Verification: clean
 install, permissions, rootless/non-root, secrets, restart, rolling upgrade,
 downgrade/rollback to a lower compiled floor, lower-default release, conflicting
@@ -23,6 +29,9 @@ settlement-policy substitution, lossy/overflowing/interrupted floor migration,
 profile/account/credential/broker epoch rollback, revoked-generation/rotated-
 handle restore, unauthorized/stale profile activation, lost tombstone/rotation
 evidence/deadline, restored dual redemption, stale/restored capability snapshot,
+evaluator admission/epoch rollback or incompatible binary startup, partial
+reevaluation, cleared quarantine/old-work revival, remediation-lineage merge or
+lost manual-only limitation,
 credential-operation-profile mismatch,
 and restore pass. Exit criteria: the
 documented profile is operable securely and no package change can start below or
@@ -52,6 +61,11 @@ local activation, and deadlines. The permission observer owns capability
 snapshots/local epochs and the reviewed versioned semantic evaluator/corpus;
 the executor only rechecks fresh state and never discovers provider IAM remotely.
 Superset, incomparable, and unknown comparisons quarantine the entire credential.
+The control plane alone owns evaluator lineage/epoch activation/revocation and
+reevaluation, quarantine investigation/resolution/new-generation tombstones,
+and the separate cleanup-only remediation credential lineage. Executors reject
+readiness when they cannot validate the active evaluator and never receive
+remediation authority.
 Signing/mTLS/HSM profiles
 are non-exportable. For bearer/API keys, the hardened credential broker is the
 `TransmissionExecutor`: it owns authorization serialization, redirects, TLS,
@@ -66,7 +80,8 @@ blast-radius evidence, profile-lineage/epoch guard, credential-
 operation/TCB profile, bearer-memory canaries, profile lifecycle/approval/
 tombstone routing, rotation reconciler/evidence/deadline ownership, capability-
 snapshot observer/freshness ownership, status/reconciliation protocol, no-
-permit-transport evidence, and service runbook. Verification: service/executor
+permit-transport evidence, evaluator/quarantine/remediation owner-routing and
+readiness evidence, and service runbook. Verification: service/executor
 impersonation, confused deputy,
 network bypass, instruction replay/substitution, duplicate RPC, claim-response
 loss, executor failover/stale process/compromise, socket/claim ownership split,
@@ -79,6 +94,9 @@ unauthorized/self-approved activation, hidden expansion, stale fence/tombstone,
 every rotation crash/unknown/evidence/deadline/outage state, restored dual
 redemption, permission/role/group/trust drift, callback reorder, stale polling,
 wrong policy revision, stale/restored snapshot, remote discovery in executor,
+evaluator activation/revocation/epoch/reevaluation routing or skew, incompatible
+executor readiness, unsafe quarantine clear/old-work revival, remediation
+authority in executor or business path,
 stale instruction/restored handle, epoch rollback, signing/mTLS key export,
 bearer escape, caller-owned claim/socket, and HTTP/TLS/redirect/log/diagnostic/
 crash memory-canary failure. Exit criteria:
@@ -134,7 +152,10 @@ claimants and instruction-only split boundaries, immutable provider-execution
 profiles with revocable lineage/epoch-scoped credential and egress authority,
 governed profile activation/tombstones, serialized rotation guard/takeover/
 orphan/count reconciliation, credential-capability snapshot/epoch semantic-
-evaluator freshness and whole-credential quarantine, explicit credential-operation/
+evaluator freshness and whole-credential quarantine,
+evaluator-lineage/epoch/reevaluation fencing, quarantine-resolution/new-
+generation/tombstone ownership, independent remediation credential-lineage/
+cleanup-quota isolation or manual-only state, explicit credential-operation/
 bearer-broker TCB profiles, monotonic active root
 rollout generation with permanent successor supersession, complete-successor
 rollback, prepared-cancellation recovery successor, and fully typed floor-key migration,
@@ -153,7 +174,10 @@ profile/account/credential/broker epoch/rotation and credential-operation/
 bearer-memory evidence, profile-governance/approval/tombstone evidence, rotation-
 state/guard/idempotency/takeover/orphan/count/provider-evidence/unknown/deadline
 evidence, credential-capability snapshot/epoch/evaluator/corpus/comparison/
-freshness/quarantine/reconciler evidence, cancellation-recovery/deadline
+freshness/quarantine/reconciler evidence, evaluator lineage/admission/epoch/
+reevaluation/startup evidence, quarantine resolution/current-evidence/resolver/
+consistency/new-generation/tombstone evidence, remediation profile/credential-
+lineage/audit/epoch/cleanup-quota/manual-limit evidence, cancellation-recovery/deadline
 evidence,
 fair-capacity evidence, and runbooks.
 Verification: partitions, clock skew, stale leader/fence,
@@ -209,7 +233,11 @@ replacement, every rotation crash/unknown/evidence/deadline/outage state,
 duplicate creation, eventual consistency/continued old-key validity, restored
 dual redemption, permission expansion/reduction, role/group/cross-account drift,
 callback reorder, stale polling, wrong policy revision, stale/restored snapshot,
-remote permission discovery in dispatch, signing/mTLS/HSM export, bearer escape
+evaluator activation/revocation/epoch/reevaluation split brain, mixed
+incompatible node, partial reevaluation, quarantine double resolution/
+weak-consistency evidence/old-work revival, remediation lineage merge/
+derivation/business use/substitution/compromise/outage/response loss/count
+exhaustion/no-path automation, remote permission discovery in dispatch, signing/mTLS/HSM export, bearer escape
 or caller-owned claim/socket, HTTP/TLS/redirect/log/diagnostic/crash memory-
 canary failure,
 tenant-invoked capacity policy, ambiguous owner/parent, non-co-located or non-
@@ -328,6 +356,12 @@ deadlines/local activation/revocation receipts, and credential-capability
 snapshots/local epochs/raw-policy and normalized-AST digests/evaluator identity
 and version/policy language and version/canonical comparison and explanation/
 observation provenance/freshness/provider-policy validators/quarantine incidents,
+evaluator lineage/generation/signed binary-and-corpus admission/provider-
+language compatibility/epoch/reevaluation state, quarantine investigation/
+remediation/replacement-or-revalidation/resolution/current-evidence/resolver/
+consistency/new-capability-generation/pre-resolution-tombstone state,
+independent remediation profile/credential-lineage/approval/audit/epoch/egress/
+cleanup-quota/manual-only limitation,
 whole quota claim-set digest/member restoration with partial-set
 quarantine, hierarchical capacity-lease epoch/allocation/unreserved-remainder/
 per-kind encumbrance/transfer state/receipt/acknowledgement/original-claim-and-
@@ -368,7 +402,13 @@ state, release quota before confirmed revocation, or erase old-credential
 identity/provider evidence/deadlines; restore a stale, broader, wrong-revision,
 unverifiable, evaluator-downgraded, or semantically unknown credential-capability
 snapshot/epoch; clear whole-credential quarantine or revive any queued/claimed/
-apparently non-privileged handle for it; recover
+apparently non-privileged handle for it; roll back evaluator lineage/epoch,
+accept an unvalidated binary/corpus/language version, make old output current,
+lose `ReevaluationRequired`, partially advance or generically clear quarantine,
+erase resolver/strong-revision/consistency/remediation evidence, reuse the old
+capability generation, revive pre-resolution authority, merge remediation and
+business credential lineages, restore remediation business scope, lose cleanup
+quota, or invent an independent recovery path; recover
 bearer material outside the hardened broker TCB,
 roll back a policy lineage/parent high-watermark/floor history/root manifest/
 membership epoch/active rollout generation/supersession/parent-activation
@@ -402,6 +442,9 @@ pool/egress and profile/account/credential/broker-epoch contention, credential-
 profile-governance activation/revocation contention, credential-rotation
 guard/idempotency/takeover/orphan/count/process/evidence/deadline contention,
 capability-observer semantic-evaluator/event/poll/freshness/quarantine contention,
+evaluator-lineage activation/revocation/reevaluation contention, quarantine-
+resolution consistency-barrier/new-generation contention, remediation
+credential-lineage/cleanup-quota/sole-key-recovery contention,
 starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
@@ -420,7 +463,9 @@ redirect/diagnostic/crash memory-canary harness, cancellation-recovery/
 deadline oracle, profile-governance/semantic-diff/tombstone race harness,
 rotation crash/unknown/evidence/guard/orphan/count/eventual-consistency oracle,
 provider-permission semantic-evaluator/corpus/drift/capability-snapshot/
-whole-credential-quarantine observer oracle,
+whole-credential-quarantine observer oracle, evaluator-upgrade/mass-reevaluation
+oracle, quarantine-resolution/no-old-work-revival oracle, independent-
+remediation/outage/manual-limit oracle,
 leak/escalation evidence, and signed reports. Verification: atomic
 bounded claim sets across every work bundle, concurrent overlapping-set
 canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
@@ -451,6 +496,12 @@ rotation crash/unknown/evidence/deadline/outage state, duplicate creation,
 eventual consistency/continued old-key validity, restored dual redemption,
 permission/role/group/cross-account drift, callback reorder, stale polling,
 wrong policy revision, stale/restored snapshot, remote discovery in dispatch,
+evaluator security-fix/semantic/corpus activation, emergency revocation, epoch
+rollback, mixed incompatible nodes, partial/mass reevaluation under load,
+generic or inconsistent quarantine resolution, missing consistency barrier/
+resolver separation, old-work revival, sole-key quarantine, remediation
+compromise/derivation/business use/circularity/substitution/outage/response
+loss/count exhaustion/no-path automation,
 signing/mTLS key export, bearer TCB escape/caller-owned claim/
 socket/memory-canary failure, uncertain retransmission, tenant-invoked capacity policy,
 owner/parent ambiguity, concurrent allocation, stale high-watermark, self-
@@ -494,8 +545,9 @@ rollout, active-generation/successor or total typed-key-migration bypass,
 provider credential/egress scope or epoch escape, bearer TCB/memory escape,
 profile-governance/tombstone bypass, rotation-state/guard/orphan/count/evidence/
 deadline corruption, credential-capability evaluator/drift/freshness/whole-
-credential-quarantine bypass, prepared-cancellation recovery
-bypass, delayed-authority bypass, retry-driven
+credential-quarantine/resolution/new-generation/tombstone bypass, evaluator-
+lineage/reevaluation/startup bypass, remediation-authority isolation/manual-
+limit bypass, prepared-cancellation recovery bypass, delayed-authority bypass, retry-driven
 duplicate work, unfair or
 blocked recovery, and unsafe saturation block release.
 `v0.146.0
@@ -516,6 +568,11 @@ profile-governance/semantic-diff/approval/tombstone audit, credential-rotation
 lineage-owner/guard/idempotency/takeover/orphan/count/provider-evidence/unknown-
 state/overlap/deadline assurance report, provider-IAM semantic-evaluator/corpus/
 capability-observation/freshness/drift/quarantine assurance report,
+permission-evaluator lineage/signed-binary/corpus/epoch/upgrade/revocation/
+reevaluation/startup assurance report, quarantine-resolution evidence/
+separation/consistency/new-generation/tombstone assurance report, independent
+remediation credential/profile/lineage/audit/egress/cleanup-quota/manual-limit
+assurance report,
 and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
@@ -532,6 +589,10 @@ single-key-outage/guard/idempotency/takeover/orphan/count cases, and semantic
 wildcard/deny/resource/condition/boundary/inheritance, evaluator downgrade or
 budget exhaustion, unsafe subset admission, quarantine bypass, and forged/stale/
 broader/wrong-revision capability snapshots or authenticated-event/poll reorder.
+Include evaluator supply-chain substitution, unsigned binary/corpus, epoch
+rollback, emergency-revocation lag, partial reevaluation, unsafe quarantine
+clear or old-work revival, resolver collusion, and remediation credential
+compromise/derivation/business use/circularity/substitution.
 Exit criteria: every trusted input is pinned/accounted. `v0.147.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.148.0` — Compatibility Freeze
@@ -546,7 +607,11 @@ credential-operation discriminator and bearer-broker TCB placement, plus
 profile lifecycle command/approval/admission/diff/tombstone compatibility,
 rotation-state/guard/idempotency/takeover/orphan/count/evidence/deadline/outage
 compatibility, capability-snapshot/local-epoch/raw-and-normalized-digest/
-evaluator-version/result/freshness/validator/quarantine compatibility, plus cancellation-recovery
+evaluator-version/result/freshness/validator/quarantine compatibility,
+evaluator-lineage/generation/admission/epoch/reevaluation/startup compatibility,
+quarantine-resolution/new-generation/tombstone/evidence compatibility,
+remediation-profile/credential-lineage/audit/epoch/quota/manual-limit
+compatibility, plus cancellation-recovery
 generation/receipt compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
 golden mixed-version event corpus, migration/rebuild suites, and deprecation
@@ -559,7 +624,9 @@ superseded messages, provider-profile/handle-protocol skew, and rollback/restore
 ratchet pass; include profile/account/credential/broker epoch skew/rollback,
 profile-command/approval/tombstone skew, rotation state/guard/idempotency/
 takeover/orphan/count/evidence/deadline skew, capability-snapshot/epoch/evaluator/
-canonical-result/freshness/provider-validator/quarantine skew, operation-profile
+canonical-result/freshness/provider-validator/quarantine skew, evaluator-
+lineage/admission/epoch/reevaluation/startup skew, quarantine transition/
+resolution/tombstone skew, remediation profile/lineage/quota/manual-limit skew, operation-profile
 confusion, bearer TCB drift, cancellation-recovery successor/
 receipt/deadline skew, and independent-parent-release rejection.
 Exit criteria: supported combinations are exact and no compatible version path
@@ -571,7 +638,8 @@ broaden executor credential/network authority.
 Status: planned. Setup: freeze scope/artifacts/environment and engage independent
 testers across all trust boundaries, including provider-profile governance,
 serialized remote credential rotation/takeover/orphan cleanup/count quotas,
-provider permission semantic evaluation and whole-credential quarantine, and
+provider permission evaluator governance/reevaluation, evidence-backed whole-
+credential quarantine resolution, independent remediation authority, and
 the credential broker/executor TCB. Goal: remediate complete attack paths.
 Deliverables: findings, fixes, regression tests, and clean retest evidence.
 Verification: external pentest plus tenant/auth/plugin/AI/storage/operations/
@@ -579,7 +647,9 @@ supply-chain regression passes; test unauthorized or semantically expanded
 profile activation, tombstone bypass, rotation guard/idempotency/takeover/orphan/
 count/unknown/evidence/deadline abuse, restored dual redemption, semantic
 evaluator downgrade/budget/construct confusion, unsafe subset admission, whole-
-credential quarantine bypass, and forged/stale/broader capability snapshots.
+credential quarantine bypass, evaluator activation/revocation/epoch/startup
+bypass, unsafe clear/old-work revival, remediation escalation/circularity/no-
+path automation, and forged/stale/broader capability snapshots.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -592,7 +662,10 @@ broker-policy epochs and selected credential-operation/bearer-broker TCB
 profiles, profile-governance approvals/tombstones, credential-rotation lineage/
 guard/idempotency/takeover/orphan/count/provider-evidence/deadline state,
 credential-capability snapshots/epochs/evaluator/comparison/freshness/
-quarantine state, and durable fully typed floor-profile ratchet state. Goal:
+quarantine state, evaluator lineage/admission/epoch/reevaluation state,
+quarantine investigation/remediation/verification/resolution/new-generation/
+tombstone state, independent remediation profile/credential-lineage/audit/
+cleanup-quota/manual-only state, and durable fully typed floor-profile ratchet state. Goal:
 final pre-RC readiness
 proof. Deliverables: complete candidate bundle, runbooks, acceptance report,
 no-permit-transport proof, fresh-parent-activation evidence, and floor-ratchet
@@ -605,6 +678,10 @@ every rotation crash/unknown/evidence/overlap/deadline/outage/restore/guard/
 idempotency/takeover/orphan/count check, out-of-band provider wildcard/deny/
 resource/condition/boundary/inheritance/role/group/trust semantic evaluator/
 event/poll/snapshot/quarantine check,
+evaluator signed-binary/corpus activation/revocation/epoch/reevaluation/startup
+check, quarantine current-evidence/consistency/resolver/new-generation/no-
+revival check, remediation independence/business-denial/outage/response-loss/
+count-exhaustion/manual-limit check,
 signing/mTLS non-exportability and bearer HTTP/TLS/redirect/diagnostic/crash
 memory canaries,
 instruction/response loss/failover, rolling upgrade, higher-floor migration,

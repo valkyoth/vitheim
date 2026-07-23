@@ -174,6 +174,48 @@ Verification:
   `OutcomeUnknown`, never an ordinary retry. Authenticated event/poll
   reconciliation advances snapshots; restore cannot clear quarantine or revive
   stale authority, and provider IAM discovery never occurs in dispatch.
+  It proves one authoritative `ProviderPermissionEvaluatorLineage` per provider.
+  Proposed, active, suspended, superseded, and revoked generations bind signed
+  implementation admission, executable binary digest, corpus digest, exact
+  provider, and supported policy-language versions. Activation, supersession,
+  suspension, or emergency revocation atomically advances a never-reused
+  `ProviderPermissionEvaluatorEpoch` bound into every snapshot and start claim.
+  All earlier outputs immediately become `ReevaluationRequired`; retained raw
+  evidence must be evaluated fully under the current generation and commit a new
+  capability epoch before any credential use. Partial reevaluation never
+  authorizes. Nodes unable to execute or validate the active binary, corpus, or
+  language version reject startup/readiness, including mixed-version,
+  downgrade, rollback, and restore cases.
+  It proves the credential-capability owner alone advances
+  `CredentialCapabilityQuarantined` → `Investigating` →
+  `RemediationPending` → (`ReplacementVerified` |
+  `RevalidationVerified`) → `Resolved`. Resolution binds the current evaluator,
+  fresh authenticated provider evidence with a strong revision, `Equal` or the
+  explicit exact-operation-safe subset profile, current profile/account/
+  credential/broker/evaluator epochs, incident/remediation receipts, a resolver
+  separated from the widening actor, and repeated observations or the
+  provider-defined consistency barrier. Resolution atomically creates a new
+  local capability generation and permanently tombstones every earlier handle,
+  receipt, queue item, and effect authorization. Generic administrator clearing,
+  break-glass, snapshot rollback, incident closure alone, partial evidence, and
+  restore cannot clear or skip the state machine.
+  It proves `ProviderCredentialRemediationAuthority` is an independently
+  admitted administrative credential or recovery channel scoped only to
+  inventory, credential creation, disablement, and revocation through rotation/
+  takeover. It has a separate profile, credential lineage, approvals, audit,
+  epochs, egress, security-cleanup quota, and outcome reconciliation; it cannot
+  perform business operations, derive from or delegate through quarantine,
+  directly resolve quarantine, cross tenants, or escape provider-count
+  accounting. If the provider has no independent recovery path, the supported
+  profile records that limitation and transitions to
+  `ManualInterventionRequired` without break-glass credential reuse.
+  Acceptance tests cover evaluator security fixes, semantic/corpus changes,
+  mixed-version and downgrade nodes, emergency revocation, partial reevaluation,
+  restore; every quarantine transition, stale/weak/inconsistent evidence,
+  resolver collusion, generic/incident-only clear, old-handle/receipt/queue/
+  effect replay; sole-credential quarantine, remediation credential compromise,
+  circular dependency, provider outage/response loss, cross-tenant substitution,
+  credential-count exhaustion, and providers without an independent path.
   Non-exportable signing/
   mTLS/HSM profiles expose operations only. Bearer/API-key profiles put
   authorization serialization, redirects, TLS, start claim, and socket in the

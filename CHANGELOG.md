@@ -163,6 +163,16 @@ All notable Vitheim changes are documented here. The format follows
   entire credential, invalidate every handle and queued instruction, emit a
   security incident, and reject automatic widening or break-glass promotion;
   safe-subset continuation is an explicit profile decision.
+- Added governed permission-evaluator lineages with signed binary/corpus
+  admission, monotonic epochs, emergency revocation, immediate re-evaluation,
+  and incompatible-node startup rejection.
+- Added an evidence-backed quarantine resolution state machine that requires
+  current evaluator/provider/epoch/consistency and separated-resolver evidence,
+  creates a new capability generation, and never revives pre-resolution work.
+- Added independently admitted, cleanup-only credential-remediation authority
+  for rotation/takeover recovery; providers without an independent recovery
+  channel fail to manual intervention instead of reusing quarantine or
+  break-glass.
 - Replaced the impossible blanket no-plaintext executor claim with explicit
   credential-operation profiles: signing/mTLS/HSM keys stay non-exportable,
   while bearer authorization serialization, TLS, claim, and socket live inside

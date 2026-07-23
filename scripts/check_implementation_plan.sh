@@ -179,6 +179,15 @@ require_text docs/implementation/PHASE_B.md \
     'capability epoch and places the entire credential in' \
     'whole-credential capability quarantine'
 require_text docs/implementation/PHASE_B.md \
+    'Evaluator code is authority-bearing. Each provider owns one authoritative' \
+    'governed provider permission evaluator lineage'
+require_text docs/implementation/PHASE_B.md \
+    'Quarantine has an evidence-backed owner state machine:' \
+    'evidence-backed credential quarantine resolution'
+require_text docs/implementation/PHASE_B.md \
+    'Credential recovery uses a separate' \
+    'independent provider credential remediation authority'
+require_text docs/implementation/PHASE_B.md \
     'Every credential generation also owns a versioned' \
     'provider credential capability snapshot'
 require_text docs/implementation/PHASE_B.md \
