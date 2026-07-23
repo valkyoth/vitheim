@@ -80,6 +80,12 @@ identity beside the effect stream and records the receipt/outbox atomically.
 Revocation versus redemption serializes on that guard, retry cannot consume a
 second attempt, and capability negotiation rejects non-co-located topologies or
 grant/effect two-stream mutation.
+Every dispatch also binds and atomically locks a bounded canonical
+`DispatchAuthorityFenceSet` of applicable monotonic tenant, subject/principal,
+session/credential/mapping, delegation, group/role/relationship, and policy
+epochs. Their owner commands update the local epoch with the event, closing the
+read-before-dispatch TOCTOU window. External-only bounded-stale facts cannot
+authorize privileged effects without authoritative local revocation state.
 Each effect carries a bounded atomic set of typed quota claims with independent
 amount/unit, settlement policy, and admission/lease/dispatch/transmission/
 storage boundary. Concurrency releases with the local lease; operation, rate,
@@ -98,6 +104,14 @@ partition before work admission; parent/child capacity is conserved and a work
 bundle never starts a distributed cross-shard/region transaction. The `1.0.0`
 profile supports authoritative-region writes plus fenced failover and rejects
 active/active authoritative multi-region writes.
+Each hierarchical lease binds quota kind, unit, period, and settlement policy.
+Expiry stops new reservations but preserves spent/encumbered capacity; a parent
+reclaims only proven free remainder. Outstanding claims settle against the
+original encumbrance or transfer exactly once under fencing through failover and
+late evidence.
+Composite transactions use one order—stream head, authority fences, grant
+guard, quota lease/keys, uniqueness claims, then receipts—and retry only
+classified deadlocks under a bounded identity/digest/version-preserving policy.
 Tenant/work-class
 partitioning, fair share, ceilings, starvation bounds, and a scoped emergency
 reserve protect reconciliation/security cleanup from tenant exhaustion and
@@ -127,9 +141,11 @@ cases in that conformance registry before exit. External effects additionally
 register intent-commit and dispatch enforcement points, immutable bindings,
 freshness and execution-authority profile, grant issuance/redemption/revocation,
 grant owner/lineage/successor/outbox causation, redemption-guard/attempt-claim
-placement and receipt, bounded quota-claim kinds/boundaries/settlement,
-exact-set token/digest/linearization, quota partition/capacity-lease topology,
-refund/write-off evidence, and compensation/recovery-capacity behavior.
+placement and receipt, authority-fence sources/epochs/co-location/staleness,
+bounded quota-claim kinds/boundaries/settlement, exact-set token/digest/
+linearization, quota partition/capacity-lease/encumbrance-transfer topology,
+canonical composite lock/retry behavior, refund/write-off evidence, and
+compensation/recovery-capacity behavior.
 
 At each implementation stop: do not tag, publish, or begin the next milestone.
 Pentest the exact commit, fix every blocking finding, rerun all gates, obtain a

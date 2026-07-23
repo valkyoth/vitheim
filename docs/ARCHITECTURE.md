@@ -89,6 +89,13 @@ authorization semantics.
    effects always use the fenced single-use dispatch gate. Worker or lease
    identity never grants business authority, and a changed binding requires a
    new intent.
+   Every dispatch also locks a bounded canonical `DispatchAuthorityFenceSet`
+   containing the applicable monotonic tenant, subject/principal, session/
+   credential/mapping, delegation, group/role/relationship, and policy epochs.
+   Authority changes increment their local epoch with the owner event; whichever
+   epoch update or dispatch transaction wins establishes the order. External-
+   only bounded-stale facts cannot authorize privileged effects without an
+   authoritative co-located local revocation epoch.
    Each effect carries a bounded atomic set of typed quota claims rather than
    one universal reservation. Concurrency releases with its local lease;
    consumable operations follow declared evidence rules; provider-rate tokens
@@ -106,6 +113,14 @@ authorization semantics.
    child capacity cannot exceed its parent and work never opens a cross-shard/
    region transaction. The `1.0.0` topology uses authoritative-region writes
    with fenced failover, not active/active authoritative multi-region writes.
+   A lease binds kind, unit, period, and settlement policy. Expiry blocks new
+   reservations but preserves spent or encumbered capacity; parents reclaim only
+   proven free remainder. Outstanding claims settle against the original
+   encumbrance or move once through a fenced transfer, including across failover
+   and late provider evidence.
+   Composite transactions acquire stream head, authority fences, grant guard,
+   quota lease/keys, uniqueness claims, then receipts in one canonical order.
+   Only classified deadlocks receive bounded, identity-preserving retries.
    Compensation is accounted separately. Tenant/work-class
    partitioning, fair share, ceilings, starvation bounds, and a scoped emergency
    reserve keep reconciliation/security cleanup available without admitting

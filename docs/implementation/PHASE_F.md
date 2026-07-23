@@ -16,18 +16,22 @@ Status: planned.
 
 Setup: define provision, activate, suspend, resume, export, legal hold, close,
 delete, key destroy, identifier non-reuse, backup/index/cache cleanup, residency/
-storage topology migration, approval, retry, and recovery states.
+storage topology migration, approval, retry, recovery states, and a monotonic
+tenant-authority epoch. Suspend/resume/close/delete and every authority-changing
+transition update that local epoch atomically with the tenant event.
 
 Goal: make the complete tenant lifecycle a governed aggregate rather than
 administrator scripts or scattered storage flags.
 
-Deliverables: tenant-lifecycle commands/events, process manager, cleanup proof
-ledger, migration plan/checkpoints, hold/erasure conflict policy, initial
-neutral `0.8.1` data-surface inventory consumed later by `0.51.2`, and runbook.
+Deliverables: tenant-lifecycle commands/events and enforcement epoch, process
+manager, cleanup proof ledger, migration plan/checkpoints, hold/erasure conflict
+policy, initial neutral `0.8.1` data-surface inventory consumed later by
+`0.51.2`, and runbook.
 
 Verification: ID reuse, suspend bypass, partial provisioning/deletion, held
 tenant deletion, stale cache/index/backup/blob, key destruction order, topology
-rollback, concurrent admin, cross-tenant migration, and restore tests pass.
+rollback, suspension/resume racing dispatch, epoch rollback/reuse, concurrent
+admin, cross-tenant migration, and restore tests pass.
 
 Exit criteria: tenant closure either has policy-acceptable accurately typed
 disposition evidence for every then-known surface or remains visibly incomplete
@@ -120,13 +124,17 @@ external-identity-link aggregate keyed only by compound issuer plus immutable
 external subject ID; never auto-link email, display name, or mutable username.
 Specify controlled JIT provisioning, OIDC/SAML/SCIM correlation, reviewable
 merge/split/unlink and IdP-migration operations, deprovision-versus-login race
-policy, identity recreation protection, and complete provenance/audit history.
+policy, identity recreation protection, complete provenance/audit history, and
+monotonic subject/service-principal/credential/mapping authority epochs updated
+atomically with their owning lifecycle events.
 Goal: stable actor identity without unsafe account correlation. Deliverables:
 subject model, external-identity-link aggregate, mapping/review workflows,
-disable/revoke events, migration tooling, and explanation view. Verification:
+disable/revoke events plus local enforcement epochs, migration tooling, and
+explanation view. Verification:
 issuer collision, email/name collision, account recreation, JIT/group
 escalation, merge/split/unlink abuse, IdP migration takeover, concurrent
-deprovision/login, stale/disabled identity, spoofing, and audit pass.
+deprovision/login and disable/revoke-versus-dispatch races, epoch reuse,
+stale/disabled identity, spoofing, and audit pass.
 Exit criteria: actor origin and lifecycle are explicit, and every external link
 is immutable-keyed, reviewable, reversible where permitted, and provenance
 complete.
@@ -158,8 +166,8 @@ credential operations, plugin lifecycle, containment, broad export, federation
 trust, or other privileged commands. Policy receives the assurance class and
 proof identity as typed facts and cannot upgrade bearer assurance.
 Define external issuer/key rotation and compromise response, mapping disable/
-revoke, policy re-evaluation, replay restrictions, and connector workload
-identities.
+revoke, monotonic local workload credential/mapping revocation epochs, policy
+re-evaluation, replay restrictions, and connector workload identities.
 A replay cache may detect a repeated token/proof tuple but is not claimed to
 prevent the first use of a stolen bearer token.
 Vitheim stores public validation material and external identity mappings, never
@@ -178,6 +186,7 @@ Deliverables: resource-server workload-auth contract and validation adapter,
 external issuer/trust registry, service-principal link lifecycle, mTLS/proof
 binding and assurance-class types, restricted-bearer action matrix, validation
 and replay controls with documented limits, compromise/revocation workflow,
+local revocation-epoch adapter, external-fact staleness classification,
 conformance corpus, fake external issuer/client, operator tooling, and explicit
 no-token-endpoint/disabled-feature matrix.
 
@@ -189,14 +198,18 @@ remaining confined to the restricted action envelope despite a cold replay cache
 certificate remapping, display-name collision, accidental token endpoint or
 private-client-key storage, token exchange/refresh misuse, stale policy/
 mapping, issuer key rotation/rollback, revocation lag, connector impersonation,
-clock abuse, issuer outage, and resource-server conformance tests pass.
+credential/mapping revocation racing privileged dispatch, missing/stale local
+epoch, bounded-stale external fact offered to privileged dispatch, clock abuse,
+issuer outage, and resource-server conformance tests pass.
 
 Exit criteria: each workload request resolves to one immutable tenant-bound
 service principal, current issuer/token/mapping and assurance profile;
 authorization is independently reevaluated and no local token issuer or static
 secret is silently enabled. Every privileged workload token is cryptographically
 sender constrained under the selected profile; any admitted bearer token is
-visibly lower assurance and restricted by policy. `v0.52.1
+visibly lower assurance and restricted by policy. Privileged dispatch requires
+an authoritative local revocation epoch; a bounded-stale-only issuer profile is
+unsupported for that action class. `v0.52.1
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.53.0` — OIDC Integration
@@ -230,18 +243,20 @@ implementation-admission record are approved.
 Setup: define opaque session ID/digest, tenant/subject binding, creation and
 absolute/idle expiry, rotation, revocation, logout, credential/policy version,
 device context, concurrent limits, encryption, cache behavior, HA consistency,
-cleanup, and outage policy.
+cleanup, outage policy, and a monotonic local session-authority epoch updated
+atomically with rotate/revoke/logout/expiry transitions.
 
 Goal: provide multi-node sessions without bearer-state confusion or local-memory
 affinity.
 
 Deliverables: session-store semantic port, memory fake, PostgreSQL reference
 adapter, optional admitted hosted-cache adapter, cleanup/revocation protocol,
-capability probes, and operator evidence.
+authority-epoch port, capability probes, and operator evidence.
 
 Verification: fixation, guessing, replay, rotation race, stale credential/policy,
 logout propagation, cross-tenant collision, node failover, partition, eviction,
-clock shift, store outage, cleanup, and restore tests pass.
+clock shift, logout/revocation racing dispatch, epoch rollback/reuse, store
+outage, cleanup, and restore tests pass.
 
 Exit criteria: every supported HA node observes revocation within the documented
 fail-closed bound. `v0.53.2 implementation stop reached. Run pentest for this exact commit.`
@@ -277,10 +292,14 @@ implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.54.0` — Directory And Group Synchronization
 Status: planned. Setup: define source authority, external IDs, delta/full sync,
-deletion, conflict, quarantine, and privilege review. Goal: safe directory facts.
-Deliverables: sync port, reconciliation, staged activation, audit report.
+deletion, conflict, quarantine, and privilege review. Activated group changes
+increment the affected local authorization-fact epoch in the same transaction.
+Goal: safe directory facts.
+Deliverables: sync port, reconciliation, staged activation/epoch transition,
+and audit report.
 Verification: group takeover, stale privilege, deletion/recreation, replayed delta,
-oversized sync, and tenant tests pass. Exit criteria: source changes cannot silently escalate rights. `v0.54.0 implementation stop reached. Run pentest for this exact commit.`
+oversized sync, group-change-versus-dispatch race, epoch reuse, and tenant tests
+pass. Exit criteria: source changes cannot silently escalate rights. `v0.54.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.54.1` — SCIM Provisioning Profile And Adapter
 
@@ -318,14 +337,16 @@ stop reached. Run pentest for this exact commit.`
 Status: planned. Setup: define platform, tenant, workspace, shared-space, and
 resource role/capability scopes; custom role templates, inheritance,
 separation-of-duties, explicit deny precedence, assignment provenance, expiry,
-versions, and explanation. Layouts, dashboards, navigation, saved views, and
-plugin installation never grant capabilities. Goal: deterministic deny-by-
+versions, explanation, and monotonic role/assignment enforcement epochs updated
+with authority-changing events. Layouts, dashboards, navigation, saved views,
+and plugin installation never grant capabilities. Goal: deterministic deny-by-
 default roles across API and UI composition.
 Deliverables: pure evaluator, validated role graph, built-in least-authority
-role templates, custom-role compiler, effective-access explanation, and decision
-trace. Verification: cycles, hidden grants, scope confusion, dashboard/action
+role templates, custom-role compiler, effective-access explanation, enforcement-
+epoch transitions, and decision trace. Verification: cycles, hidden grants,
+scope confusion, dashboard/action
 discovery leaks, shared-space escalation, stale/expired roles, unsafe custom
-roles, assignment races, and property tests pass.
+roles, assignment-versus-dispatch races, epoch reuse, and property tests pass.
 Exit criteria: every permit cites the exact role path. `v0.55.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.56.0` — ABAC Engine
@@ -345,27 +366,34 @@ Status: planned.
 
 Setup: define draft, static validation, simulation, independent review,
 activation, rollback, expiry, separation of duties, immutable versions, safe
-bootstrap/root recovery, lockout detection, emergency rollback, and evidence.
+bootstrap/root recovery, lockout detection, emergency rollback, evidence, and a
+monotonic active-policy enforcement epoch that increments on activation,
+rollback, expiry, and recovery; rollback never restores an old epoch.
 
 Goal: govern policy changes with the same rigor as domain changes and prevent
 irrecoverable authorization lockout.
 
 Deliverables: policy-set aggregate, simulation/impact report, approval-bound
-activation command, rollback plan, bootstrap ceremony, and recovery runbook.
+activation command with atomic epoch transition, rollback plan, bootstrap
+ceremony, and recovery runbook.
 
 Verification: self-approval, stale simulation, signature/version substitution,
 unsafe default allow, owner lockout, recovery abuse, rollback downgrade,
-concurrent activation, and policy-cache invalidation pass.
+concurrent activation, activation/rollback-versus-dispatch, epoch reuse, and
+policy-cache invalidation pass.
 
 Exit criteria: active policy always identifies a reviewed version and a tested
 least-authority recovery path. `v0.56.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.57.0` — Relationship-Based Authorization
 Status: planned. Setup: define admitted edge types, direction, depth/work bounds,
-security labels, freshness, and explanation paths. Goal: authorize ownership/delegation graphs safely.
-Deliverables: graph policy operator and bounded path proof. Verification: forged
+security labels, freshness, explanation paths, and monotonic relationship-fact
+epochs updated with authoritative edge changes. Goal: authorize ownership/
+delegation graphs safely.
+Deliverables: graph policy operator, enforcement epoch, and bounded path proof.
+Verification: forged
 edges, malicious cycles, hidden-node inference, path explosion, stale ownership,
-and tenant tests pass. Exit criteria: permits include a visible bounded proof. `v0.57.0 implementation stop reached. Run pentest for this exact commit.`
+edge-change-versus-dispatch races, epoch reuse, and tenant tests pass. Exit criteria: permits include a visible bounded proof. `v0.57.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.58.0` — Field Redaction, Obligations, And Enforcement Registry
 Status: planned. Setup: classify fields, derived values, snippets, counts, caches,
@@ -382,7 +410,12 @@ redemption/revocation enforcement points, offline-human behavior, current-policy
 facts, required approval/quorum/separation rules, authoritative grant-lineage
 owner, immutable approval-receipt/outbox causation, generation uniqueness,
 pre-issuance revocation, successor supersession, redemption-guard transaction
-domain, attempt-claim identity/digest, and claim/receipt enforcement point. Only
+domain, attempt-claim identity/digest, claim/receipt enforcement point, and the
+bounded canonical `DispatchAuthorityFenceSet`. Backfill typed monotonic fence
+entries and atomic update points for tenant lifecycle, human/service identity,
+session/credential/mapping, group/role/relationship, delegation, and policy.
+Classify any external-only fact by staleness bound and forbid it from privileged
+dispatch unless an authoritative local revocation epoch exists. Only
 interfaces
 implemented through Phase F are instantiated now; later surfaces must register
 themselves before their own milestone can exit. Goal: preserve policy end to end.
@@ -390,7 +423,8 @@ Deliverables: redaction engine, typed visible DTOs, obligation executor, and
 compile/registration gate requiring an authorization case for every interface
 and effect intent, grant issuance/revalidation/revocation, authority redemption,
 grant ownership/process-manager continuation, redemption-guard/attempt-claim
-linearization, and provider-dispatch enforcement points.
+linearization, authority-fence registry/codec/update contract, and provider-
+dispatch enforcement points.
 Verification: API/search/report/export/notification/cache/AI leakage, derived inference,
 missing effect freshness/binding registration, unsafe `CommitBound`
 classification, missing/ambiguous execution-authority mode, approval grant
@@ -398,7 +432,9 @@ issued without quorum or separation, offline-human impersonation, dispatch
 revocation, ambiguous/two-stream grant ownership, approval-receipt substitution,
 pre-issuance revocation loss, successor fork, missing/non-co-located guard,
 revocation/final-attempt race, claim/receipt substitution, grant/effect two-
-stream redemption, target substitution, and revocation pass.
+stream redemption, missing/duplicate/substituted/reordered fence entries, epoch
+reuse/rollback, stale external authority used for privileged dispatch, target
+substitution, and revocation pass.
 Exit criteria: hidden data cannot reappear downstream, and no external effect
 can bypass its declared commit/grant/redemption/dispatch authorization gates.
 `v0.58.0 implementation stop reached. Run pentest for this exact commit.`
@@ -411,17 +447,21 @@ short session, reason, notifications, live monitoring, and immutable usage.
 Effect intents bind the complete delegation chain/version/expiry. Revocation or
 expiry invalidates any required dispatch-time authorization; a queued worker
 cannot retain or amplify the delegator's capability merely by holding a lease.
+Delegation creation/revocation/expiry increments a monotonic local enforcement
+epoch atomically with its owner event.
 An `ApprovedExecutionGrant` is not redelegation: only the registered approval
 command and current policy may create or revalidate its exact authority. It
 cannot expand the approvers' intersection of capabilities, survive a revocation
 condition, or be converted into a general service-principal credential.
 Goal: exceptional access without permanent privilege or waiver of tenant,
 audit, key, or evidence-custody invariants.
-Deliverables: exception aggregate, challenge/approval workflow, delayed-effect
-delegation and execution-grant validation, and heightened audit.
+Deliverables: exception aggregate, delegation enforcement epoch, challenge/
+approval workflow, delayed-effect delegation and execution-grant validation,
+and heightened audit.
 Verification: self-approval, broad scope, non-expiry, replay, hidden use, stale session,
 commit/dispatch revocation race, grant-as-redelegation or capability
-amplification, worker confused deputy, and revocation tests pass. Exit criteria:
+amplification, delegation epoch rollback/reuse, worker confused deputy, and
+revocation tests pass. Exit criteria:
 every exception is bounded and visible, and no delayed effect outlives its
 selected execution authority or declared revocation conditions.
 `v0.59.0 implementation stop reached. Run pentest for this exact commit.`
@@ -434,14 +474,16 @@ registry; include token audiences, credential/policy versions, external-effect
 commit/dispatch enforcement points, immutable effect bindings, and freshness
 profiles; enumerate live-subject, approved-grant, and service-principal
 execution-authority issuance/redemption/revocation cases plus inline/dedicated
-grant ownership/lineage and local redemption-guard/attempt-claim cases. Goal:
-prove
+grant ownership/lineage and local redemption-guard/attempt-claim cases; enumerate
+the bounded authority-fence entry/update/co-location cases for tenant,
+subject/principal, session/credential/mapping, delegation, group/role/
+relationship, and policy. Goal: prove
 equivalent deny-by-default policy independent of authentication mechanism and
 make later registration mechanically mandatory. Deliverables: generated
 matrix, negative corpus, human-versus-service-principal differential tests,
 connector/agent/measurement-source cases, delayed-effect authorization state
-machine, scheduled-offline grant fixtures, revocation-race fixtures, and
-coverage/evidence report.
+machine, scheduled-offline grant fixtures, authority-fence race fixtures,
+external-staleness classifications, and coverage/evidence report.
 Verification: mutation and read parity, tenant pairs, stale policy/credential,
 wrong audience/scope, false sender constraint, bearer-to-privileged escalation,
 replay-cache limitations, cache/index lag, commit-to-lease-to-dispatch policy/
@@ -453,10 +495,15 @@ generation substitution, pre-issuance revocation, successor/predecessor fork,
 revocation racing attempt claim, concurrent final attempt, crash after claim
 before provider I/O, claim/receipt substitution, target/version drift, consumed-
 attempt restore, grant/effect two-stream adapter, service-principal scope/
-audience confusion, worker confused
+audience confusion, each authority source changing between read/lease/dispatch,
+missing/substituted/reordered fence set, epoch rollback/reuse, non-co-located
+fence, bounded-stale external state used for privileged work, composite lock-
+order inversion and bounded-retry identity drift, worker confused
 deputy, unsafe low-risk profile, break-glass, and differential adapters pass.
 Exit criteria: no principal kind or
 authority-bearing interface lacks a negative case, and every delayed effect is
 proven against its commit-time decision, selected execution-authority model, and
-declared dispatch-freshness policy.
+declared dispatch-freshness policy. Every privileged dispatch proves a complete
+co-located monotonic authority-fence set; bounded-stale-only external facts
+cannot satisfy it.
 `v0.60.0 implementation stop reached. Run pentest for this exact commit.`

@@ -102,8 +102,8 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.17.0` | Inbox and idempotent consumer model | Replay, duplicate local commits, poisoned receipts, remote-duplication ambiguity |
 | `0.17.1` | Atomic consumer commit bundle | Receipt/local-commit split, redelivery duplication, hidden multi-stream or remote-in-transaction work |
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
-| `0.18.1` | Local exact-set quota reservation with hierarchical capacity leases and fair recovery | Cross-partition set, parent/child over-allocation, lease failover/reclamation, overlap deadlock, partial restore, token substitution |
-| `0.18.2` | Atomic work family with one-owner grants, local redemption guards, exact quota sets, and effect resolution | Revocation/final-attempt race, claim/receipt substitution, consumed-attempt restore, grant/effect two-stream mutation, atomic split |
+| `0.18.1` | Local exact quota sets with per-kind hierarchical lease encumbrances and fair recovery | Exact-set/deadlock/restore laws, expiry with live bytes/liability/spent tokens, child loss, late settlement, transfer/reclaim race |
+| `0.18.2` | Atomic effect-resolution work family with one-owner grants, guards, authority fences, exact quotas, and canonical commits | Authority/grant races, missing fence, lock inversion/retry drift, two-stream mutation, grant/quota/receipt atomic split |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
 | `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
@@ -121,10 +121,10 @@ implementations remain blocked rather than being implemented casually.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.21.0` | Storage and transaction-topology capability negotiation | False co-location/active-active claims, cross-partition requirement, downgrade, unsafe fallback |
-| `0.22.0` | Mandatory storage, redemption-guard, and quota-topology conformance testkit | Grant/effect two-stream mutation, stale guard, partial/cross-partition set, capacity overdraw, test bypass |
+| `0.21.0` | Storage, authority-fence, and transaction-topology capability negotiation | Missing/non-local epoch, stale external privileged facts, unbounded retry, false co-location/active-active claim, downgrade |
+| `0.22.0` | Destructive authority-fence, composite-lock, grant, and quota conformance | Read-before-dispatch TOCTOU, epoch reuse, lock inversion/retry drift, encumbrance reclaim/transfer loss, test bypass |
 | `0.23.0` | SQLite single-node adapter | Locking, rollback, injection, file permissions, tenant partition |
-| `0.24.0` | PostgreSQL reference production adapter | Redemption-guard races/restore, grant/effect two-stream rejection, local claim-set/capacity-lease conservation, transactions, tenant isolation |
+| `0.24.0` | PostgreSQL reference production adapter | Transactions/auth/injection/tenant isolation plus authority-epoch races, canonical retry, guard restore, encumbrance transfer/late settlement |
 | `0.25.0` | Experimental MySQL adapter | Isolation/encoding differences, rollback, tenant enforcement, no default v1 claim |
 | `0.26.0` | Experimental MongoDB adapter | Transaction boundaries, query injection, collection isolation, no default v1 claim |
 | `0.27.0` | Experimental SurrealDB adapter | Namespace/graph/query isolation, capability truthfulness, no default v1 claim |
@@ -134,7 +134,7 @@ implementations remain blocked rather than being implemented casually.
 | `0.28.3` | In-process secret handling | Formatting/diagnostic/plugin leakage, stale cache, crash/core-dump policy, overstated erasure |
 | `0.29.0` | Migration registry and resumable migrations | Interrupted/malicious migrations, downgrade and rollback safety |
 | `0.30.0` | Cross-backend export and import | Substitution, truncation, tenant mix-up, integrity loss |
-| `0.30.1` | Durable work queue preserving grant attempt claims and local exact quota sets | Revocation/final-attempt race, claim retry/substitution, consumed-attempt failover, cross-partition set, capacity-lease duplication |
+| `0.30.1` | Durable queue preserving effect resolution, authority fences, attempt claims, exact quotas, and encumbrances | Delivery/failover plus revocation TOCTOU, retry identity drift, consumed attempt, lease expiry/child loss/late settlement/transfer |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 
 ## Phase D — Universal Work Platform
@@ -196,23 +196,23 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.51.0` | Formal tenant isolation model | Cross-tenant reads/writes/caches/indexes/blobs/logs |
-| `0.51.1` | Tenant lifecycle and topology migration | Partial provision/delete, ID reuse, held data, cleanup/key-destroy ordering |
+| `0.51.1` | Tenant lifecycle, topology migration, and enforcement epoch | Suspension/resume racing dispatch, epoch reuse, partial provision/delete, cleanup/key-destroy ordering |
 | `0.51.2` | Tenant data-surface lifecycle registry | Backfill/outward-dependency/gate bypass, inherited retention, partial cleanup, evidence inflation |
-| `0.52.0` | Subjects, service principals, and external identity links | Unsafe email/name linking, identity recreation, merge/migration takeover, lifecycle races |
-| `0.52.1` | OAuth resource-server workload authentication | False sender constraint, bearer privilege escalation, issuer/principal confusion, accidental token issuance |
+| `0.52.0` | Subjects, service principals, identity links, and local enforcement epochs | Disable/mapping/principal revocation racing dispatch, epoch reuse, unsafe linking, identity recreation |
+| `0.52.1` | OAuth resource-server workload authentication | Credential/mapping epoch race, stale external privileged fact, false sender constraint, bearer escalation, issuer confusion |
 | `0.53.0` | Hosted OIDC integration | Discovery, mix-up, token validation, replay, downgrade, session fixation |
 | `0.53.1` | Hosted WebAuthn profile and credential lifecycle | RP/origin/challenge binding, attestation, counters, recovery |
-| `0.53.2` | Distributed session store | Fixation/replay, revocation lag, node failure, partition, cross-tenant collision |
+| `0.53.2` | Distributed session store with local session epoch | Logout/revocation racing dispatch, epoch reuse, fixation/replay, node failure, partition |
 | `0.53.3` | SAML identity profile and adapter | XML signature wrapping, audience/destination mix-up, assertion replay, metadata rollback |
-| `0.54.0` | Directory and group synchronization | Group takeover, stale privilege, deletion/recreation |
+| `0.54.0` | Directory/group synchronization with authorization-fact epoch | Group change racing dispatch, epoch reuse, takeover, stale privilege, deletion/recreation |
 | `0.54.1` | SCIM provisioning profile and adapter | External-ID collision, filter/PATCH abuse, group takeover, pagination/bulk bombs |
-| `0.55.0` | RBAC engine | Role escalation, inherited cycles, hidden grants |
+| `0.55.0` | RBAC engine with role/assignment epochs | Assignment racing dispatch, epoch reuse, escalation, inherited cycles, hidden grants |
 | `0.56.0` | ABAC engine | Missing attributes, type confusion, fail-open decisions |
-| `0.56.1` | Policy lifecycle, bootstrap, and recovery | Self-approval, stale simulation, lockout, recovery abuse, rollback downgrade |
-| `0.57.0` | Relationship-based authorization | Malicious paths, ownership spoofing, traversal bounds |
-| `0.58.0` | Field redaction, obligations, and execution-authority enforcement registry | Missing redemption guard/attempt-claim gate, non-co-location, grant/effect two-stream mutation, unsafe freshness classification |
-| `0.59.0` | Delegation and break-glass access | Unbounded privilege, grant-as-redelegation/amplification, weak approval/audit, delayed effect outliving authority |
-| `0.60.0` | Human, workload, grant, and delayed-effect authorization conformance suite | Revocation/final-attempt races, claim/receipt substitution, consumed-attempt restore, offline-human impersonation, interface equivalence |
+| `0.56.1` | Policy lifecycle, bootstrap, recovery, and monotonic epoch | Activation/rollback racing dispatch, epoch reuse, self-approval, lockout, recovery abuse |
+| `0.57.0` | Relationship authorization with fact epochs | Edge change racing dispatch, epoch reuse, malicious paths, ownership spoofing, traversal bounds |
+| `0.58.0` | Authority enforcement registry and fence-set backfill | Missing/substituted/reordered/non-local fence, epoch reuse, stale external privileged fact, unsafe freshness classification |
+| `0.59.0` | Delegation/break-glass with enforcement epoch | Delegation revoke racing dispatch, epoch reuse, unbounded privilege, grant amplification, weak audit |
+| `0.60.0` | Complete delayed-authority conformance suite | Every authority-source race, incomplete fence set, epoch rollback, external staleness, lock inversion/retry drift, interface parity |
 
 ## Phase G — Durable Workflows
 
@@ -226,13 +226,13 @@ commit, and external-outcome semantics.
 | `0.61.0` | Workflow intermediate representation | Invalid graphs, instruction/depth bombs, hidden behavior |
 | `0.62.0` | Deterministic workflow interpreter | Infinite loops, nondeterminism, replay divergence |
 | `0.63.0` | Human approvals with grant-lineage issuance and redemption-guard maintenance | Self-approval, owner ambiguity, issuance reorder, pre-revocation, successor fork, omitted/stale guard |
-| `0.64.0` | Timers, deadlines, guarded grant redemption, and retries | Timer-created authority, final-attempt/revocation race, claim-before-I/O crash, two-stream dispatch, consumed-attempt restore |
+| `0.64.0` | Timers, deadlines, fenced authority redemption, and bounded retries | Timer authority/clock/duplication plus every revocation race, missing fence, lock inversion/retry drift, final-attempt restore |
 | `0.65.0` | Parallel branches and joins | Premature joins, duplicate completion, branch leaks |
 | `0.66.0` | Linked, independently authorized and multi-claim-accounted compensation mechanics | State/linkage collapse, unknown original/compensation, evidence/authority race, claim reuse/cross-kind settlement, double rollback |
 | `0.67.0` | Signals and subworkflows | Signal spoofing, cross-tenant routing, recursion exhaustion |
 | `0.68.0` | Workflow history, versioning, and migration | Unbounded history, corrupt checkpoint, orphan activity, unsafe remap |
 | `0.69.0` | Visual/configuration-as-code compiler | Hidden flags, generated privilege escalation, divergence |
-| `0.70.0` | HA workers with grant guards and local exact-set/hierarchical quota settlement | Attempt-claim races/restore, grant/effect two-stream mutation, cross-partition set, capacity-lease failover/overdraw, network windows |
+| `0.70.0` | HA workers with typed authority, complete fences, exact quotas, and encumbrance-safe leases | Network/crash/failover plus epoch races, retry identity, lease expiry/child loss/late evidence/transfer, attempt restore |
 
 ## Phase H — Alerts And Security Operations
 
@@ -421,11 +421,11 @@ the first technology decision. An unselected option remains unsupported at
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.140.1` | Dependency, cryptography, KMS, and timestamp profile decision | Auditability, maintenance, license, key lifecycle, replacement boundary, no improvised security protocol |
-| `0.140.2` | Tenant, storage, and transaction-domain topology decision | Guard/effect and quota/work co-location, cross-partition rejection, active/active write rejection, no weak fallback |
-| `0.140.3` | Human, workload, grant-assurance, session, and recovery authentication decision | Sender-constrained service profile, offline-approver non-impersonation, grant assurance/session expiry, restricted bearer, no token issuer |
+| `0.140.2` | Tenant, storage, and transaction-domain topology decision | Guard/fence/effect and quota/work co-location, cross-partition rejection, active/active write rejection, no weak fallback |
+| `0.140.3` | Human/workload/session local-revocation profile decision | Co-located epochs, external-staleness classification, privileged-profile rejection, sender constraint, offline-human non-impersonation |
 | `0.140.4` | Component runtime, worker/effect-broker isolation, and egress decision | Escape, metering, grant/service redemption, multi-kind quota/reserve abuse, host amplification, DNS/redirect, OS/cross-tenant evidence |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, retention precedence, omitted derived surfaces, tombstone/evidence inflation |
-| `0.140.6` | Deployment, HA, grant-redemption, quota-capacity, regional, and recovery decision | Guard claim/revocation linearization, capacity-lease conservation, active/active rejection, failover/restore/RPO/RTO |
+| `0.140.6` | Deployment/HA authority-fence, composite-lock, and quota-encumbrance decision | Epoch linearization, external staleness, lock order/retry bound, per-kind expiry/transfer/late settlement, failover/RPO/RTO |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |
@@ -442,10 +442,10 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | `0.141.0` | Single-node production packaging | Permissions, defaults, secret exposure, clean install |
 | `0.142.0` | Split API/worker/ingest/index deployments | Service identity and network authorization |
 | `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
-| `0.143.0` | HA grant guards, local quota capacity, failover, and partitions | Final-attempt/revocation race, consumed-attempt resurrection, grant/effect two-stream mutation, capacity-lease duplication, split brain |
+| `0.143.0` | HA leases, atomic work, authority fences, quota encumbrances, failover, and partitions | Split brain/duplicate remote effect plus epoch TOCTOU, retry duplication, spent-capacity reclaim, transfer/failover loss |
 | `0.144.0` | Authoritative-region placement and residency | Active/active authoritative write request, cross-region guard/set split, stale failover fence, external-copy leakage |
-| `0.145.0` | Backup, restore, and disaster recovery | Consumed-attempt or capacity resurrection, partial quota-set reconstruction, grant revocation loss, disposition/authority loss |
-| `0.146.0` | Performance, local exact-set/hierarchical quota capacity, soak, and chaos certification | Cross-partition set, capacity over-allocation/reclamation, overlap deadlock, cross-kind drift, starvation, cascading failure |
+| `0.145.0` | Backup, restore, and disaster recovery | Authority-epoch rollback, consumed-attempt resurrection, live-encumbrance capacity recreation, duplicate transfer, disposition loss |
+| `0.146.0` | Performance, composite contention, and encumbrance-safe quota certification | Lock-order/retry duplication, lease expiry with live claims, child loss/late settlement/transfer race, starvation, cascading failure |
 | `0.147.0` | Final security, secret-memory, and supply-chain hardening | Diagnostic/crash/plugin secret leakage and artifact/dependency/CI/builder/key compromise |
 | `0.148.0` | API/event/plugin/pack compatibility freeze | Downgrade and version confusion |
 | `0.149.0` | Release candidate and external pentest remediation | Complete platform attack paths and clean retest |
@@ -473,8 +473,9 @@ are independently evidenced as production-ready.
   reporting.
 - Documented single-node, HA, regional, backup/restore, rebuild, recovery,
   upgrade, rollback, health, durable execution-authority/grant-lineage
-  ownership and guarded attempt claims, local exact-set/hierarchical quota
-  capacity, authoritative-region failover, fair recovery, and backpressure
+  ownership, guarded attempt claims, complete authority-fence epochs, canonical
+  composite transaction retry, local exact-set/hierarchical per-kind quota
+  encumbrances, authoritative-region failover, fair recovery, and backpressure
   operations.
 - Identical mandatory conformance for supported production storage profiles;
   SQLite remains limited to its documented single-node profile.
@@ -491,7 +492,9 @@ are independently evidenced as production-ready.
   impersonation, grant owner/approval-receipt/outbox/lineage/successor rules,
   pre-issuance revocation, co-located redemption guard, revocation/final-attempt
   races, claim/receipt substitution, consumed-attempt restore, grant/effect two-
-  stream rejection, target substitution, and worker confused-deputy attempts.
+  stream rejection, every tenant/identity/session/delegation/role/relationship/
+  policy revocation race, complete monotonic fence set, external-staleness
+  rejection, target substitution, and worker confused-deputy attempts.
 - Every untrusted parser is fuzzed; cryptography is independently reviewed;
   plugin escape and AI injection/tool-abuse suites pass.
 - Atomic audit-intent crash tests, protected-read release receipts, exact
@@ -499,10 +502,12 @@ are independently evidenced as production-ready.
   all-or-none canonical claim-set reservation, exact immutable token/digest/
   membership consumption, overlap deadlock/livelock freedom, whole-set restore/
   quarantine, single-partition placement, hierarchical capacity-lease
-  conservation/reclamation/failover, active/active authoritative-write
-  rejection, per-kind settlement, exactly-once refunds, write-off separation,
-  compensation claims, provider-outage fairness/emergency-reserve isolation,
-  and selected semantic-index isolation/rebuild pass.
+  per-kind encumbrance across expiry/reclamation/failover/transfer/late evidence,
+  canonical composite lock order and bounded identity-preserving retry,
+  active/active authoritative-write rejection, per-kind settlement, exactly-once
+  refunds, write-off separation, compensation claims, provider-outage fairness/
+  emergency-reserve isolation, and selected semantic-index isolation/rebuild
+  pass.
 - Backup restoration, event integrity, projection/search rebuild, workflow
   continuation, disaster recovery, migration, rollback, load, soak, chaos,
   accessibility, localization, and secure-default tests pass.

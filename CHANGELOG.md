@@ -79,4 +79,9 @@ All notable Vitheim changes are documented here. The format follows
   dispatch advances only the effect stream; quota sets stay in one local
   partition and wider limits use conserved hierarchical capacity leases.
   `1.0.0` explicitly rejects active/active authoritative multi-region writes.
+- Closed the remaining dispatch and lease-lifecycle races without new versions:
+  every authority source now supplies a monotonic local dispatch fence; expired
+  hierarchical quota leases retain per-kind encumbrances through settlement or
+  exactly-once transfer; and composite transactions share one canonical lock
+  order with bounded identity-preserving deadlock retry.
 - Added local and GitHub verification gates without a crate publication path.

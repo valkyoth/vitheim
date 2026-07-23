@@ -22,9 +22,10 @@ Deliverables:
 - Supported single-node/HA/regional profiles; backup, restore, rebuild, upgrade,
   rollback, health, live/grant/service-principal execution authority, multi-kind
   quota settlement/fair recovery capacity, guarded grant-attempt claims, local
-  quota partitions/hierarchical capacity leases, authoritative-region failover,
-  backpressure, incident, and DR runbooks. Active/active authoritative multi-
-  region writes are explicitly unsupported.
+  authority-fence epochs, canonical composite transaction retry, quota
+  partitions/hierarchical per-kind capacity encumbrances, authoritative-region
+  failover, backpressure, incident, and DR runbooks. Active/active authoritative
+  multi-region writes are explicitly unsupported.
 - Signed source/artifacts/checksums, SBOM, provenance, licenses, compatibility
   evidence, pentest report, and complete release notes.
 - A production support matrix that names the selected dependency/crypto/KMS,
@@ -75,6 +76,13 @@ Verification:
   provider I/O, duplicate/substituted claim/receipt, target/version drift,
   failover/restore, and invalid grant-plus-effect two-stream adapters prove
   attempts cannot be duplicated or resurrected.
+  Dispatch evidence also proves the complete bounded
+  `DispatchAuthorityFenceSet` is locked in the effect transaction. Tenant
+  suspension; human/principal disablement; session/logout, credential/mapping,
+  delegation, group/role/relationship, and policy changes race on monotonic
+  local epochs rather than read-before-commit checks. Missing/substituted/
+  reordered/non-local fences, epoch rollback/reuse, and bounded-stale external
+  authority for privileged work fail closed.
   Quota evidence proves bounded atomic claim sets and correct settlement for
   concurrency leases, consumable operations, provider-rate tokens, estimated
   liabilities, and retained bytes across their exact boundaries. Only provider-
@@ -89,9 +97,15 @@ Verification:
   partial or corrupt sets are quarantined rather than reconstructed. Every set
   shares one local quota partition with its work bundle; fenced hierarchical
   capacity leases supply global/regional limits while conserving parent/child
-  allocation. Cross-partition set, lease over-allocation/reclamation/failover,
-  distributed work transaction, and active/active authoritative-write requests
-  fail closed.
+  allocation and binding kind/unit/period/settlement. Expiry stops new
+  reservation but preserves retained bytes, unknown liabilities, charged
+  operations, spent rate tokens, and every other encumbrance until original
+  settlement or fenced exactly-once transfer. Child loss, late evidence,
+  duplicate transfer, and parent reclamation racing failover cannot lose or
+  recreate capacity. Cross-partition set, distributed work transaction, and
+  active/active authoritative-write requests fail closed. Composite transactions
+  use the canonical stream/fence/guard/quota/uniqueness/receipt order; bounded
+  retries preserve identity/digest/version/fence state and never repeat I/O.
   Provider-outage and hostile-tenant tests prove per-tenant/work-class ceilings,
   global fair share, starvation bounds, and scoped non-borrowable emergency
   capacity preserve bounded reconciliation and security cleanup.

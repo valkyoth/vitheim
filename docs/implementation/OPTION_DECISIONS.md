@@ -30,8 +30,9 @@ Setup: compare dedicated/shared tenancy for SQLite, PostgreSQL forced RLS,
 MySQL database-per-tenant/composite enforcement, MongoDB partitioning, and
 SurrealDB namespace/permission profiles against the same conformance suite.
 Map local transaction domains for aggregate streams, redemption guards, effect
-work bundles, quota partitions, and hierarchical capacity leases. Reject any
-profile that needs a cross-shard/region distributed work transaction.
+work bundles, dispatch-authority fence rows, quota partitions, and hierarchical
+capacity leases. Reject any profile that needs a cross-shard/region distributed
+work transaction.
 Goal: freeze exact production storage, tenant-isolation, and local transaction-
 domain profiles from tested adapters; default candidates are SQLite single-node
 and PostgreSQL HA.
@@ -40,8 +41,9 @@ and administrator threat boundaries, transaction-domain/co-location map,
 active/active rejection evidence, migration and portability consequences.
 Verification: twin-tenant collision, superuser/non-owner, pooling-state,
 constraint, non-co-located grant guard/effect bundle, cross-partition claim set,
-stale/duplicated capacity lease, advertised active/active authoritative writes,
-backup/export, and fail-closed capability evidence is reviewed.
+missing/non-co-located authority fence, stale/duplicated capacity lease,
+advertised active/active authoritative writes, backup/export, and fail-closed
+capability evidence is reviewed.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
 requires a distributed work transaction are rejected, not relabeled supported.
 `v0.140.2 implementation stop reached. Run pentest for this exact commit.`
@@ -61,8 +63,11 @@ dispatch, and the separate local-agent enrollment profile. Freeze the rule that
 a worker authenticates as itself and never impersonates an offline approver;
 normal approver-session expiry does not invalidate a valid grant, while the
 grant's exact current revocation/revalidation rules remain mandatory. Confirm
-that Vitheim remains an
-OAuth resource server, stores no client private credentials, exposes no token
+that privileged dispatch uses co-located authoritative local subject/principal,
+session/credential/mapping revocation epochs; any external-only bounded-
+staleness profile is classified and unsupported for privileged
+`CommitAndDispatch` effects. Also confirm that Vitheim remains an OAuth resource
+server, stores no client private credentials, exposes no token
 endpoint, and keeps personal access tokens/static API keys disabled.
 Goal: revalidate and freeze production authentication profiles independently of authorization.
 Deliverables: selected issuer/discovery/PKCE/token/session/logout rules,
@@ -70,15 +75,18 @@ WebAuthn RP/origin/challenge/credential rules, selected workload-auth profile,
 external-issuer trust and mapping rules, separate agent-enrollment rules,
 sender-constrained privileged profile, any lower-assurance restricted-bearer
 profile, explicit no-authorization-server/PAT/API-key/token-exchange
-disposition, live-subject/service-principal/grant assurance mapping, and
-unsupported combinations. Any future Vitheim OAuth authorization server
+disposition, live-subject/service-principal/grant assurance mapping, local
+revocation-epoch/staleness profile, and unsupported combinations. Any
+future Vitheim OAuth authorization server
 requires a new implementation milestone and cannot be selected here.
 Verification: protocol conformance, mix-up/replay/fixation/recovery, false
 sender constraint, proof/token substitution, bearer privilege escalation,
 first-use stolen bearer behavior, effect dispatch after credential/session/
 assurance expiry or revocation, valid scheduled grant after approver-session
-expiry, offline-human impersonation, grant assurance substitution, key rotation,
-enumeration, and degraded-provider behavior are independently reviewed.
+expiry, authority-epoch change racing dispatch, stale/substituted epoch,
+bounded-stale external authority used for privileged work, offline-human
+impersonation, grant assurance substitution, key rotation, enumeration, and
+degraded-provider behavior are independently reviewed.
 Exit criteria: production auth never falls back to the `0.40.0` test profile.
 `v0.140.3 implementation stop reached. Run pentest for this exact commit.`
 
@@ -159,9 +167,14 @@ kind quota transition atomicity with quota state as co-transactional local
 authority rather than another aggregate, and tenant/work-class partitioned fair
 reconciliation/security-cleanup capacity with a scoped emergency reserve;
 redemption uses a co-located fenced `GrantRedemptionGuard` so dispatch advances
-only the effect stream. Every quota set is local to its work transaction;
+only the effect stream. Dispatch also locks a bounded complete
+`DispatchAuthorityFenceSet` of applicable monotonic local epochs. Every quota
+set is local to its work transaction;
 global/regional limits allocate fenced hierarchical capacity leases into local
-partitions. Topology may tune capacity and consistency implementation but may
+partitions while retaining per-kind encumbrances after lease expiry. Every
+composite transaction uses the canonical acquisition order and bounded
+identity-preserving deadlock retry. Topology may tune capacity and consistency
+implementation but may
 not omit these controls or introduce a distributed work transaction. The
 `1.0.0` profile supports one authoritative write region per transaction domain
 with fenced failover; active/active authoritative multi-region writes are
@@ -172,8 +185,11 @@ dispatch-authorization consistency/failure model, quota consumption/refund
 and per-kind settlement mapping, canonical all-or-none claim-set reservation/
 exact-token consumption profile, grant ownership plus inline/dedicated issuance/
 revocation/successor behavior, redemption-guard placement/claim/receipt model,
+authority-fence source/update/co-location/staleness profile, canonical composite
+lock order/deadlock-retry policy,
 quota partition map and hierarchical capacity-lease allocation/reclamation/
-conservation profile, active/active rejection/capability behavior, per-tenant/
+per-kind encumbrance/transfer/late-settlement conservation profile,
+active/active rejection/capability behavior, per-tenant/
 global fair-share and starvation policy, emergency-reserve sizing/isolation,
 RPO/RTO, upgrade/rollback, observability, and operator responsibility decisions.
 Verification: failure-mode analysis covers partitions, split brain, key/service
@@ -182,9 +198,14 @@ receipts, grant replay/offline-human impersonation, duplicate refunds, cross-
 kind settlement, approval/grant crash-reorder-revocation/successor races,
 revocation/final-attempt claim race, crash-after-claim recovery, claim/receipt
 substitution, consumed-attempt restore, grant/effect two-stream mutation,
+tenant/subject/session/delegation/policy/principal revocation races, incomplete
+or stale fence sets, epoch reuse, external-staleness misuse, composite lock-
+order inversion and retry identity drift/exhaustion,
 overlapping-set deadlock/livelock, partial reservation/restore, token/digest/
 membership substitution, cross-partition claim sets, hierarchical lease
-over-allocation/reclamation/failover, incompatible active/active topology,
+over-allocation, expiry with persistent per-kind encumbrance, child loss, late
+settlement, duplicate transfer, reclamation/failover race, incompatible
+active/active topology,
 provider-outage tenant exhaustion, one-tenant unknown-outcome floods, per-
 tenant/global starvation, emergency-reserve borrowing, degraded dependencies,
 restore, capacity, and incident operations.

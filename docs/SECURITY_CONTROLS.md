@@ -73,6 +73,12 @@ audit decision.
   atomically compare-and-claims one bound attempt plus receipt/outbox. The guard
   serializes revocation/final-attempt races; retries and restore cannot create
   or resurrect consumption, and non-co-located or two-stream adapters fail.
+  Every dispatch locks a complete bounded `DispatchAuthorityFenceSet` of
+  applicable monotonic tenant, subject/principal, session/credential/mapping,
+  delegation, group/role/relationship, and policy epochs. Authority-changing
+  commands update their local epoch atomically with the owner event. Missing,
+  stale, substituted, reused, or non-co-located fences deny; external-only
+  bounded-stale facts never authorize privileged effects.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown
@@ -89,7 +95,13 @@ audit decision.
   wider limits allocate fenced hierarchical capacity leases into local
   partitions and conserve parent/child capacity without distributed work
   transactions. Active/active authoritative multi-region writes are unsupported
-  at `1.0.0`; incompatible placement fails closed. Per-tenant/work-class
+  at `1.0.0`; incompatible placement fails closed. Capacity leases bind kind,
+  unit, period, and settlement policy. Expiry stops admission but retains spent/
+  encumbered capacity; parents reclaim only proven free remainder, and claims
+  settle against their original encumbrance or a fenced exactly-once successor
+  transfer. Composite transactions use the canonical stream/fence/guard/quota/
+  uniqueness/receipt order with bounded identity-preserving deadlock retry.
+  Per-tenant/work-class
   ceilings, fair share, starvation bounds, and a scoped emergency reserve keep
   recovery available without tenant borrowing or monopolization.
 - Capability-limited plugins and integrations; opaque secret handles and

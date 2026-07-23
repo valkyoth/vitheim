@@ -56,18 +56,24 @@ Dispatch redeems live-subject, approved-grant, or service-principal authority
 under current rules; grant-backed work does not require an approver's expired
 session. Approved-grant dispatch compare-and-claims the exact fenced local
 redemption guard in the effect transaction; it never advances grant and effect
-streams together. Remote work executes only after committed authorized dispatch and
+streams together. Every dispatch atomically locks the complete applicable
+`DispatchAuthorityFenceSet` under the canonical composite acquisition order.
+Remote work executes only after committed authorized dispatch and
 returns through a separate activity-result/consumer bundle. Goal: crash-safe
 time and authority behavior without a distributed exactly-once claim.
 Deliverables: timer dispatch/result effects, execution-authority/grant reference
 codec, redemption-guard/attempt-claim and cancellation evidence, scheduler
-bridge, and atomic-variant integration fixtures. Verification: clock jumps,
+bridge, authority-fence-set evidence, canonical lock-order/deadlock-retry
+fixtures, and atomic-variant integration fixtures. Verification: clock jumps,
 retry storms, duplicate wakeups/results,
 cancellation/revocation races, not-before/expiry boundaries, grant replay and
 attempt exhaustion, concurrent final attempt, crash after claim before provider
 I/O, duplicate/substituted claim or receipt, consumed-attempt failover/restore,
 session expiry, approver/policy/target-version drift, stale fence, grant/effect
-two-stream rejection, dispatch/completion collapse, receipt/effect split,
+two-stream rejection, tenant/subject/session/delegation/policy/service-principal
+revocation racing dispatch, missing/substituted fence, stale external authority,
+lock-order inversion, retry identity drift/exhaustion, dispatch/completion
+collapse, receipt/effect split,
 remote-call-in-transaction rejection, overflow, and replay pass.
 Exit criteria: timers cannot create uncontrolled or unreceipted work, and remote
 execution remains explicitly at least once and independently authorized.
@@ -131,7 +137,8 @@ drain, failover, commit-and-dispatch authorization freshness, all three typed
 execution authorities, immutable effect bindings, bounded multi-kind quota
 claim-set token linearization, grant-lineage ownership/process management, fair
 partitioned control-plane capacity, grant-redemption-guard and hierarchical
-quota-capacity-lease topology, and `0.51.2`
+quota-capacity-lease topology/per-kind encumbrance transfer, complete dispatch-
+authority fence sets, canonical composite acquisition/retry behavior, and `0.51.2`
 tenant-data-surface registry entries, Phase E workflow contract fixtures, and
 `0.39.1–0.39.3` on-call/
 paging/notification process-manager scenarios. Goal: durable multi-worker
@@ -140,8 +147,9 @@ external-effect reconciler/manual queue, ITSM and response-delivery integration
 retests, worker-self-authenticated execution-authority redemption, single-use
 fenced dispatch receipts, grant issuance/revocation/lineage process manager,
 co-located redemption-guard/attempt-claim handling, exact-token local per-kind
-quota settlement with hierarchical capacity leases, fair partitioned recovery
-lanes, and operational evidence.
+quota settlement with hierarchical capacity leases/encumbrance transfer,
+authority-fence validator, bounded identity-preserving deadlock retry, fair
+partitioned recovery lanes, and operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
 receipt/effect split, network-call-in-transaction rejection, crash points,
 stale fencing commits, poison/dead-letter split, quota/effect split, poison
@@ -168,6 +176,13 @@ concurrency release under unknown remote outcome, transmitted rate-token refund,
 estimated-to-actual cost
 settlement, retained-byte accounting, write-off/provider-evidence confusion,
 duplicate/forged refund, unknown-liability leak, compensation claim reuse,
+capacity-lease expiry/reclamation with retained bytes, unknown liabilities,
+charged operations, or spent tokens, child-partition loss, late evidence after
+expiry/failover, duplicate encumbrance transfer, parent reclaim/failover race,
+tenant/subject/session/delegation/policy/service-principal authority changes
+racing dispatch, missing/substituted/reordered fence entries, epoch reuse, stale
+external authority for privileged work, lock-order inversion, retry exhaustion/
+identity drift,
 provider outage under tenant exhaustion, per-tenant/global recovery starvation
 or reserve abuse, Phase E fake-versus-real differential, rolling upgrades, and
 soak pass.
@@ -179,10 +194,12 @@ failover. Every dispatch proves its declared authorization freshness and exact
 binding by redeeming typed authority without human impersonation. Every grant
 lineage retains one authoritative owner through issuance, revocation, and
 successor creation; every attempt is claimed through a co-located fenced guard
-while only the effect stream advances. Every exact immutable quota set remains
-local transactional authority in one partition, reserves all-or-none, and
-settles by kind; hierarchical leases conserve wider capacity without a
-distributed work transaction; eligible refunds occur exactly once,
+while only the effect stream advances. Every authority change linearizes through
+the complete local monotonic fence set, and composite retries preserve identity.
+Every exact immutable quota set remains local transactional authority in one
+partition, reserves all-or-none, and settles by kind; hierarchical leases
+conserve wider capacity and per-kind encumbrances through expiry/failover/
+transfer without a distributed work transaction; eligible refunds occur exactly once,
 administrative write-off remains distinct, compensation is separately
 accounted, fair recovery remains available under hostile tenant exhaustion, and
 every workflow interface/data surface is registered.
