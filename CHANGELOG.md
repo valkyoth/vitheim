@@ -8,6 +8,15 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Content-bound every law generation with a canonical
+  `LawGenerationManifestV1` schema, semantic contract, resolved dependencies,
+  and verified SHA-256 planning digest carried through storage, migrations,
+  option freezes, recovery, and production evidence.
+- Made authority proposals legal only while their milestone is planned and
+  pinned every law-extension/conformance claim to the latest `@gNN` effective
+  at that milestone.
+- Allowed legitimate removal-only, coordinator-only, and semantics-only law
+  generations while rejecting no-op generations and current semantic drift.
 - Added canonical generation-by-generation composite-law history with exact
   effective dependencies, coordinators, semantics, activation/migration/
   rollback/recovery bindings, and CI rejection of future-root or latest-view

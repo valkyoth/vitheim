@@ -5,7 +5,9 @@ Before any Phase O milestone starts, resolve its one
 `docs/AUTHORITY_REVIEWS.md` disposition and every prerequisite option-decision
 disposition. Production evidence must cover the exact effective
 `docs/LAW_GENERATIONS.md` contracts; flattened latest-law claims, future
-dependencies, or unresolved proposed authority are release blockers.
+dependencies, unresolved proposed authority, noncanonical manifest bytes, or
+manifest-digest mismatch are release blockers. Any Phase O status transition
+resolves its proposal in the same commit.
 
 ## `0.141.0` — Single-Node Production Packaging
 Status: planned. Setup: supported OS/arch, packages/images, users/paths,

@@ -1882,12 +1882,36 @@ ambiguous claim or permit delivery is `OutcomeUnknown`; a committed claim enters
 `StartClaimedReconciling`. The last two require reconciliation and never
 authorize ordinary retransmission.
 
+Implement the `no_std`/N1 `LawGenerationManifestV1` and canonical codec defined
+by `docs/LAW_GENERATION_MANIFEST.md`. It contains the resolved dependency set,
+semantic-contract ID and complete resolved semantics, coordinator, effective
+version/predecessor, mixed-version rule, activation fence, migration/rollback,
+dependency/recovery contracts, and content digest. The planning checker
+recomputes the domain-separated length-prefixed SHA-256 digest; runtime
+implementation is blocked until its exact digest implementation passes the
+`0.18.3` admission review. In-memory persistence, export, restore, and golden
+fixtures verify canonical byte/digest stability. The latest ownership view must
+normalize to the latest resolved semantics and manifest digest.
+
+Generation one supplies dependencies and complete semantics. A later
+generation requires at least one real addition, removal, coordinator change, or
+semantic change. `none` additions are valid for a removal-only,
+coordinator-only, or semantics-only generation; an unchanged generation with no
+other delta fails. Every legitimate delta still advances generation-qualified
+semantic/dependency/recovery contracts, manifest digest, activation fence,
+migration, and rollback evidence.
+
 Adopt `docs/AUTHORITY_REVIEWS.md` as the complete post-bootstrap milestone
 review registry. Every milestone after `0.18.3`, including option decisions and
 `1.0.0`, has exactly one disposition: exact new declarations, exact existing
 roots/laws extended, reviewed `none`, or a stable conservative proposal. A
 proposal is planning evidence only and must resolve before that milestone
-starts. CI derives the milestone set from all implementation documents, rejects
+starts. CI reads the milestone’s own `Status:` field and rejects a proposal as
+soon as status no longer contains `planned`; activation and authority
+resolution occur in the same commit. Law extensions name
+`VIT-LAW-NNN@gNN`, and the checker deterministically requires the latest
+generation effective at that milestone. CI derives the milestone set from all
+implementation documents, rejects
 missing/duplicate/orphan reviews, and requires a `declares` disposition to match
 the declaration markers exactly.
 
@@ -1917,7 +1941,9 @@ explicit per-enforcement negative-child mappings, dependency-free bidirectional
 checker across all implementation documents, phase-document
 declarations, owner-transfer/supersession procedure, storage-capability
 cross-check contract, test-contract realization index, and generated restore/
-migration monotonic-state manifest contract. The checker rejects unregistered
+migration monotonic-state manifest contract; canonical law-manifest schema,
+codec/API contract, semantic IDs, content digests, golden fixtures, and
+digest-verifying in-memory persistence. The checker rejects unregistered
 declarations or rows, duplicate IDs, mismatched introduction versions, absent
 or alternative authoritative owners, guards without an owner-maintained update
 path, empty transaction placement, enforcement points without stable contracts
@@ -1932,10 +1958,14 @@ violations, and enforcement points without explicit matching negative children
 or valid active/retired status. It also rejects noncontiguous law generations,
 future dependencies, incorrect predecessors, contract/generation mismatches,
 latest-view drift, incomplete typed semantics, unsafe mixed-version
-intersections, and rollback below activation. Later milestones must declare and
+intersections, digest mismatch, current semantic drift, no-op generation, and
+rollback below activation while accepting valid removal-only and semantics-only
+generations. Later milestones must declare and
 register new invariants and the corresponding law generation in the same
 commit. The authority-review checker rejects any post-`0.18.3` milestone
 without exactly one resolved or explicitly proposed disposition.
+It rejects unresolved proposals for any non-planned milestone, bare or unknown
+law references, stale generations, and future-generation conformance claims.
 
 Verification: delete a declaration, ownership row, or lifecycle row in every
 direction; duplicate an ID; mismatch the introducing version; name two owners;
@@ -1950,7 +1980,11 @@ state inconsistently; remove a contributor or coordinator from a composite law;
 add a later-phase or production declaration without rows; add a dependency to a
 law generation before that invariant is effective; mutate a historical
 generation, predecessor, coordinator, semantic contract, activation fence,
-migration, rollback, dependency, or recovery binding without detection; omit or
+migration, rollback, dependency, recovery, canonical manifest field, or digest
+without detection; mutate latest law semantics without advancing the manifest;
+add a no-op generation; prove valid removal-only and semantics-only generations
+pass; change a planned proposed milestone to implementing/implemented without
+resolving it; cite a bare, stale, or future generation; omit or
 duplicate a later milestone authority review; misclassify declarations as
 `none`/`extends`/`proposed`; omit an epoch,
 cursor, tombstone, quota state, or recovery fact from the generated manifest;
@@ -1960,9 +1994,9 @@ markers systematically so the backfill cannot be reduced to a favored subset.
 Exit criteria: every authority-bearing invariant declared through `0.18.5` has
 one machine-checked ownership row, one lifecycle row, and resolvable stable
 contract IDs; every composite law has a contiguous historically accurate
-generation chain and every later milestone has exactly one authority
+content-bound manifest chain and every later milestone has exactly one authority
 disposition; declaration/review coverage is derived rather than counted
-manually; no
+manually; no unresolved proposal survives a milestone status transition; no
 phase, adapter, test suite, restore, migration, mixed-version deployment, or
 owner transfer can silently omit the invariant, select a second owner, or lose
 required monotonic state.

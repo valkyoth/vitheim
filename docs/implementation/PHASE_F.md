@@ -20,8 +20,8 @@ delete, key destroy, identifier non-reuse, backup/index/cache cleanup, residency
 storage topology migration, approval, retry, recovery states, and a monotonic
 tenant-authority epoch. Suspend/resume/close/delete and every authority-changing
 transition update that local epoch atomically with the tenant event.
-This milestone activates `VIT-LAW-001` generation 3 and `VIT-LAW-006`
-generation 2 only after `VIT-INV-036` is effective, their migration contracts
+This milestone activates `VIT-LAW-001@g03` and `VIT-LAW-006@g02` only after
+`VIT-INV-036` is effective, their migration contracts
 complete, and mixed-version nodes unable to validate the tenant root deny
 dispatch and transmission start.
 
@@ -136,7 +136,7 @@ separate monotonic subject/service-principal authority (`VIT-INV-037`) and
 external-identity mapping (`VIT-INV-048`) epochs, each updated only with its own
 lifecycle event. A mapping change cannot advance or impersonate principal
 lifecycle authority, and principal disablement cannot rewrite mapping history.
-Activate `VIT-LAW-001` generation 4 and `VIT-LAW-006` generation 3 under their
+Activate `VIT-LAW-001@g04` and `VIT-LAW-006@g03` under their
 recorded fences; predecessor-only nodes deny operations requiring either added
 identity root.
 Goal: stable actor identity without unsafe account correlation. Deliverables:
@@ -184,7 +184,7 @@ epoch, policy re-evaluation, replay restrictions, and connector workload
 identities. This epoch belongs to the workload binding transaction; it cannot be
 advanced by or substituted for interactive sessions, authenticators, or the
 principal lifecycle epoch.
-Activate `VIT-LAW-001` generation 5 and `VIT-LAW-006` generation 4 only after
+Activate `VIT-LAW-001@g05` and `VIT-LAW-006@g04` only after
 the workload-mapping root and generation migration are durable; predecessor-
 only nodes deny workload-authorized dispatch and start.
 A replay cache may detect a repeated token/proof tuple but is not claimed to
@@ -240,7 +240,7 @@ matching, authorization code plus PKCE, state/nonce, mix-up defenses, token type
 algorithm, `iss`/`aud`/`azp`/time checks, session rotation, logout, and revocation.
 `VIT-INV-038` is exclusively the interactive-session lifecycle epoch; external
 mapping and authenticator credential epochs remain independent inputs.
-Activate `VIT-LAW-001` generation 6 and `VIT-LAW-006` generation 5; mixed
+Activate `VIT-LAW-001@g06` and `VIT-LAW-006@g05`; mixed
 versions unable to validate the session root deny interactive dispatch/start.
 Goal: strong hosted authentication without granting authorization. Deliverables:
 OIDC identity adapter and session lifecycle. Verification: token/key/algorithm
@@ -255,7 +255,7 @@ origins, single-use challenges, user presence/verification, attestation,
 counter, backup eligibility/state, recovery, revocation, and enumeration policy.
 `VIT-INV-049` advances only with authenticator registration, counter/backup
 state, rotation, or revocation and cannot be replaced by a session refresh.
-Activate `VIT-LAW-001` generation 7 and `VIT-LAW-006` generation 6; nodes
+Activate `VIT-LAW-001@g07` and `VIT-LAW-006@g06`; nodes
 without the authenticator-root contract deny affected dispatch/start.
 Goal: review WebAuthn independently from OIDC rather than over-bundle protocols.
 Deliverables: credential ceremonies/lifecycle, conformance fixtures, and recovery
@@ -375,7 +375,7 @@ versions, explanation, and independent monotonic role-definition
 cannot advance admitted group authority. Layouts, dashboards, navigation, saved views,
 and plugin installation never grant capabilities. Goal: deterministic deny-by-
 default roles across API and UI composition.
-Activate `VIT-LAW-001` generation 8 and `VIT-LAW-006` generation 7 only after
+Activate `VIT-LAW-001@g08` and `VIT-LAW-006@g07` only after
 all three RBAC roots are effective and generation migration/conformance passes.
 Deliverables: pure evaluator, validated role graph, built-in least-authority
 role templates, custom-role compiler, effective-access explanation, enforcement-
@@ -394,7 +394,7 @@ subject, authentication assurance/sender-constraint/proof identity, action,
 resource, field set, purpose, environment and policy version;
 define typed fact provenance/freshness, operators, missing/unknown behavior,
 obligations, and budgets. Goal: contextual policy without fail-open ambiguity.
-Activate `VIT-LAW-001` generation 9 and `VIT-LAW-006` generation 8 under their
+Activate `VIT-LAW-001@g09` and `VIT-LAW-006@g08` under their
 recorded activation fences; predecessor-only nodes deny ABAC-dependent work.
 Deliverables: policy model/evaluator/compiler and `Deny`, `Permit`, or
 `PermitWithObligations` explanation—never a context-free boolean. Verification:
@@ -432,7 +432,7 @@ Status: planned. Setup: define admitted edge types, direction, depth/work bounds
 security labels, freshness, explanation paths, and monotonic relationship-fact
 epochs updated with authoritative edge changes. Goal: authorize ownership/
 delegation graphs safely.
-Activate `VIT-LAW-001` generation 10 and `VIT-LAW-006` generation 9; nodes
+Activate `VIT-LAW-001@g10` and `VIT-LAW-006@g09`; nodes
 without the relationship-root contract deny relationship-dependent work.
 Deliverables: graph policy operator, enforcement epoch, and bounded path proof.
 Verification: forged
@@ -615,7 +615,7 @@ expiry invalidates any required dispatch-time authorization; a queued worker
 cannot retain or amplify the delegator's capability merely by holding a lease.
 Delegation creation/revocation/expiry increments a monotonic local enforcement
 epoch atomically with its owner event.
-Activate `VIT-LAW-001` generation 11 and `VIT-LAW-006` generation 10 under the
+Activate `VIT-LAW-001@g11` and `VIT-LAW-006@g10` under the
 recorded fences; nodes without the delegation root deny delegated dispatch and
 transmission start.
 An `ApprovedExecutionGrant` is not redelegation: only the registered approval

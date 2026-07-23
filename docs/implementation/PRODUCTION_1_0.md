@@ -11,7 +11,8 @@ Every post-`0.18.3` milestone authority disposition is resolved to exact
 declarations, exact existing roots/laws, or reviewed `none`; zero
 `VIT-PAUTH-*` proposals remain. Every effective composite-law generation and
 its exact dependency timing, coordinator, semantics, activation/migration/
-rollback/recovery contract has conformance evidence for the selected profiles.
+rollback/recovery contract, canonical manifest bytes, semantic-contract ID, and
+content digest has conformance evidence for the selected profiles.
 
 Goal: release the first production-supported Vitheim platform with claims no
 broader than its evidence.
@@ -400,7 +401,8 @@ Verification:
   fencing. Every law ID has one introducing declaration, coordinator,
   contributor set, linearization/failure/recovery definition, lifecycle row,
   contiguous historical generation chain, exact-effective dependency and
-  recovery contracts, proof/activation fence, migration, and rollback floor.
+  recovery contracts, semantic-contract ID, canonical manifest/digest,
+  proof/activation fence, migration, and rollback floor.
   `VIT-LAW-006` evidence distinguishes `DefinitelyNotStarted`,
   `OutcomeUnknown`, and `StartClaimedReconciling`; possible or claimed start
   never permits ordinary retransmission. Invariant and law supersession are
@@ -418,7 +420,8 @@ Exit criteria: no acceptance criterion is waived for schedule. Any candidate
 code or artifact change creates a new RC and repeats affected review. After the
 authority-review report proves exactly one resolved disposition per later
 milestone with zero proposals, and the law-generation report proves zero
-future-effective dependency or latest-view drift, the
+future-effective dependency, future-generation claim, semantic drift,
+noncanonical manifest, or digest mismatch, the
 final exact commit and artifacts pass the final independent pentest, stop for
 explicit maintainer authorization before creating `v1.0.0`; publishing crates
 remains forbidden except for a separately approved SDK. `v1.0.0 implementation

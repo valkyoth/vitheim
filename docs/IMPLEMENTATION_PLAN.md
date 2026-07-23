@@ -61,13 +61,21 @@ milestone, predecessor, coordinator, exact dependency delta, linearization/
 failure/recovery semantics, mixed-version intersection, activation fence,
 migration, rollback, dependency contract, and recovery contract. A later root
 cannot be inserted into an earlier law generation. The ownership registry is
-only the latest resolved view.
+only the latest resolved view. Each row materializes the canonical
+[Law Generation Manifest](LAW_GENERATION_MANIFEST.md), including resolved
+dependencies, a semantic contract, and a content digest verified by storage and
+recovery tooling. A later generation needs a meaningful dependency,
+coordinator, or semantic delta; removal-only and semantics-only evolution is
+valid.
 The [Milestone Authority Reviews](AUTHORITY_REVIEWS.md) registry gives every
 milestone after `0.18.3` exactly one `declares`, `extends`, `none`, or
 conservative `proposed` disposition. Before implementation begins, `proposed`
 must resolve to exact stable declarations, exact extended roots/laws, or a
 reviewed non-authority reason; no milestone, option decision, release
-candidate, or production gate may silently omit that review.
+candidate, or production gate may silently omit that review. CI permits a
+proposal only while that milestone’s own status is planned. Law extensions use
+`VIT-LAW-NNN@gNN` and must name the latest generation effective at the
+milestone, so conformance cannot claim a future generation.
 Before `0.51.2`, every milestone that creates or changes tenant-bearing durable,
 cached, indexed, backed-up, or external-copy state must supply the neutral
 `0.8.1` lifecycle descriptor and inventory fixture without depending outward on

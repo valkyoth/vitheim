@@ -205,12 +205,21 @@ require_text docs/INVARIANT_OWNERSHIP.md \
 require_text docs/LAW_GENERATIONS.md \
     '# Composite Security Law Generations' \
     'canonical historical composite-law generations'
+require_text docs/LAW_GENERATION_MANIFEST.md \
+    '# Law Generation Manifest' \
+    'content-bound machine-readable law-generation schema'
 require_text docs/AUTHORITY_REVIEWS.md \
     '# Milestone Authority Reviews' \
     'post-bootstrap milestone authority dispositions'
 require_text docs/implementation/PHASE_B.md \
     '## `0.18.4` — Bounded Evaluator Re-evaluation Scheduler' \
     'bounded evaluator reevaluation milestone'
+require_text docs/implementation/PHASE_B.md \
+    'soon as status no longer contains `planned`' \
+    'authority proposal status transition gate'
+require_text docs/implementation/PHASE_C.md \
+    '`VIT-LAW-001@g02`' \
+    'generation-pinned storage conformance'
 require_text docs/implementation/PHASE_B.md \
     '`EvaluatorInvalidationCampaignRoot`' \
     'durable evaluator invalidation campaign root'

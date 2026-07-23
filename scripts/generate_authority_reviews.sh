@@ -84,6 +84,9 @@ awk '
         'IDs, or changed to `none` with a reviewed non-authority reason.' \
         'A proposed candidate is not implementation authority and cannot satisfy' \
         'storage, recovery, or production conformance by itself.' \
+        'It is legal only while the milestone status contains `planned`; changing' \
+        'status requires resolving the proposal in the same commit. `extends` law' \
+        'references are generation-qualified as `VIT-LAW-NNN@gNN`.' \
         '`scripts/generate_authority_reviews.sh` creates a conservative bootstrap for a' \
         'new plan; reviewed `extends`/`none` resolutions are normative and must not' \
         'be overwritten by regenerating that bootstrap.' \

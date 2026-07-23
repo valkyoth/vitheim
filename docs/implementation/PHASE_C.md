@@ -97,6 +97,9 @@ Status: planned.
 Setup: derive mandatory invariant capabilities from every declaration-resolved
 ownership/lifecycle row in `docs/INVARIANT_OWNERSHIP.md`, then classify
 mandatory/optional `VIT-CAP-*` capabilities,
+and require canonical `LawGenerationManifestV1` codec, resolved-generation,
+semantic-contract, digest persistence/readback, and digest-verification
+capabilities for every law generation effective at the adapter milestone,
 evidence version, startup
 probe, downgrade policy, transaction-domain placement/topology compatibility,
 authority-fence and target-fence freshness/co-location, capacity-transfer
@@ -132,7 +135,8 @@ Goal: prevent adapters from silently weakening correctness.
 Deliverables: stable capability vocabulary, signed/probed report model,
 compatibility decision engine, declaration-to-invariant-to-`VIT-CAP-*` coverage
 report, declared composite-law contributor/coordinator/dependency/recovery
-lifecycle placement report, explicit semantic per-enforcement negative-child
+lifecycle placement report with generation-qualified manifest/digest support,
+explicit semantic per-enforcement negative-child
 realization, lifecycle/supersession/owner-fence
 placement report, and operator diagnostics. A claimed storage profile fails
 admission when any applicable
@@ -216,7 +220,11 @@ invariant declaration, `VIT-ENF-*` enforcement contract, `VIT-TST-*`
 verification contract, `VIT-RCV-*` recovery field, lifecycle row, and exact
 effective `VIT-LAW-*` generation. Validate generation coordinator, resolved
 dependency set, activation fence, mixed-version intersection, migration,
-rollback, and recovery binding rather than only the latest law view; define
+rollback, semantic/recovery binding, canonical manifest bytes, and content
+digest rather than only the latest law view. The authority disposition cites
+exactly `VIT-LAW-001@g02`, `VIT-LAW-002@g01`, `VIT-LAW-003@g01`,
+`VIT-LAW-004@g01`, `VIT-LAW-005@g04`, and `VIT-LAW-006@g01`; later Phase F
+generations are not valid `0.22.0` conformance claims. Define
 fault injection, concurrency
 schedule, adversarial twin tenants with colliding local IDs, connection-session
 state reuse, cleanup, administrator threat boundary, and evidence format.
@@ -225,7 +233,9 @@ Goal: make production-support claims depend on identical observable behavior.
 
 Deliverables: reusable adapter harness, mandatory capability matrix, randomized
 state machine, machine-readable declaration/enforcement/test/recovery/lifecycle
-and law-generation coverage and conformance report, and destructive reference
+and law-generation coverage and conformance report; manifest/digest round-trip,
+tamper, noncanonical encoding, semantic-drift, and future-generation fixtures;
+and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
 audit intent, outbox, commitment, uniqueness claim, bounded quota claim-set/
@@ -771,6 +781,9 @@ must preserve the predecessor record, resolve the exact dependency delta only
 after every added root is effective, persist the activation fence and contract
 digests, enforce the conservative predecessor/successor intersection during
 rolling deployment, and prevent rollback below the generation floor.
+Persist the canonical predecessor and successor `LawGenerationManifestV1`
+bytes/digests, verify both before each checkpoint or recovery transition, and
+never synthesize a manifest from only the flattened latest law view.
 
 Goal: make schema evolution auditable, interruptible, and recoverable.
 
@@ -794,7 +807,8 @@ manifest/topology/outbox sequences/high-watermarks/inbox receipts/delivery
 barrier/blocked state/membership journals/generations/high-watermarks/fenced
 moves/scan receipts/final barrier/mismatch proof/stuck state, composite-law
 generation/predecessor/coordinator/dependency/activation/migration/rollback/
-recovery lifecycle, explicit per-point negative-child realization,
+semantic/recovery lifecycle plus canonical manifest bytes and digests, explicit
+per-point negative-child realization,
 and concrete `VIT-RCV-*` fields.
 
 Verification: reorder/substitution, partial failure, concurrent runner, lease loss,
@@ -818,7 +832,8 @@ missing owner fence, unsafe mixed-version admission, unresolved recovery
 contract, rollback below the declared floor, deleted superseded history,
 future-effective law dependency, skipped or rewritten law generation, latest-
 view drift, missing generation activation fence/digest, unsafe generation
-intersection,
+intersection, altered/noncanonical manifest, digest mismatch, or future-
+generation conformance claim,
 missing campaign membership journal/scan receipt/final barrier/mismatch state,
 missing operation-profile discriminator, cancelled-prepared recovery receipt
 loss/duplication, and restored independent-parent-release cases.

@@ -326,10 +326,16 @@ authorization semantics.
     count. Phase prose and projections cannot become alternate authority.
     `docs/LAW_GENERATIONS.md` preserves the exact historical coordinator,
     dependency delta, semantics, activation/migration/rollback, and recovery
-    contract for every composite law generation; the latest view cannot import
-    a future invariant into an earlier release. Every milestone after the
+    contract for every composite law generation. Its canonical
+    `LawGenerationManifestV1`, semantic ID, and content digest are persisted and
+    verified by adapters/recovery tooling; the latest view cannot import a
+    future invariant into an earlier release or alter semantics silently.
+    Removal-only and semantics-only successor generations are valid when
+    content-bound and nonempty. Every milestone after the
     registry bootstrap also has exactly one checked authority disposition in
-    `docs/AUTHORITY_REVIEWS.md`.
+    `docs/AUTHORITY_REVIEWS.md`; an unresolved proposal cannot survive its
+    transition out of planned status, and law claims name the effective
+    `@gNN`.
 25. Evaluator replacement remains immediately fail closed but re-evaluation is
     bounded, durable, and complete. Epoch activation/revocation atomically
     creates an invalidation-campaign root. A canonical capability-owner source

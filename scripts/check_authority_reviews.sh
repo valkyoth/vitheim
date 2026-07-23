@@ -3,6 +3,7 @@ set -eu
 
 reviews="${1:-docs/AUTHORITY_REVIEWS.md}"
 registry="docs/INVARIANT_OWNERSHIP.md"
+generations="docs/LAW_GENERATIONS.md"
 if [ "$#" -gt 0 ]; then
     shift
 fi
@@ -10,7 +11,8 @@ if [ "$#" -eq 0 ]; then
     set -- docs/implementation/*.md
 fi
 
-awk -F '|' -v reviews="$reviews" -v registry="$registry" '
+awk -F '|' -v reviews="$reviews" -v registry="$registry" \
+    -v generations="$generations" '
 BEGIN {
     failed = 0
 }
@@ -57,7 +59,18 @@ FILENAME == registry &&
     known_authority[trim($2)] = 1
     next
 }
-FILENAME != reviews && FILENAME != registry &&
+FILENAME == generations &&
+/^\| VIT-LAW-[0-9][0-9][0-9] / {
+    law = trim($2)
+    generation = trim($3) + 0
+    law_generation[law, generation] = 1
+    law_generation_effective[law, generation] = trim($4)
+    if (generation > law_generation_count[law]) {
+        law_generation_count[law] = generation
+    }
+    next
+}
+FILENAME != reviews && FILENAME != registry && FILENAME != generations &&
 (/^## `([0-9]+\.[0-9]+\.[0-9]+)`/ || /^# `1\.0\.0`/) {
     heading = $0
     sub(/^##? `/, "", heading)
@@ -70,13 +83,23 @@ FILENAME != reviews && FILENAME != registry &&
     }
     next
 }
-FILENAME != reviews && FILENAME != registry && current_version != "" &&
+FILENAME != reviews && FILENAME != registry && FILENAME != generations &&
+current_version != "" &&
 /^<!--[[:space:]]+vitheim-(invariant|law)[[:space:]]+/ {
     count = split($0, marker, /[[:space:]]+/)
     id = marker[3]
     if (eligible(current_version)) {
         milestone_declaration[current_version, id] = 1
         milestone_declaration_count[current_version]++
+    }
+    next
+}
+FILENAME != reviews && FILENAME != registry && FILENAME != generations &&
+current_version != "" && /^Status:[[:space:]]*/ {
+    if (eligible(current_version)) {
+        milestone_status_count[current_version]++
+        milestone_status[current_version] = $0
+        sub(/^Status:[[:space:]]*/, "", milestone_status[current_version])
     }
     next
 }
@@ -95,6 +118,21 @@ function trim(value) {
 function stable_id(value) {
     return value ~ /^VIT-(INV|LAW)-[0-9][0-9][0-9]$/
 }
+function is_planned_status(value) {
+    return value ~ /^planned([^[:alnum:]]|$)/ ||
+        value ~ /^conditional[[:space:]]+planned([^[:alnum:]]|$)/
+}
+function version_compare(left, right, left_parts, right_parts, position) {
+    gsub(/`/, "", left)
+    gsub(/`/, "", right)
+    split(left, left_parts, ".")
+    split(right, right_parts, ".")
+    for (position = 1; position <= 3; position++) {
+        if ((left_parts[position] + 0) < (right_parts[position] + 0)) return -1
+        if ((left_parts[position] + 0) > (right_parts[position] + 0)) return 1
+    }
+    return 0
+}
 function fail(message) {
     print "authority reviews: " message > "/dev/stderr"
     failed = 1
@@ -111,7 +149,14 @@ END {
         if (review_document[version] != milestone_document[version]) {
             fail(version " review points to the wrong document")
         }
+        if (milestone_status_count[version] != 1) {
+            fail(version " must have exactly one milestone status")
+        }
         disposition = review_disposition[version]
+        if (disposition == "proposed" &&
+            !is_planned_status(milestone_status[version])) {
+            fail(version " unresolved proposal is legal only while planned")
+        }
         if (disposition == "declares") {
             declared_count = split(review_identifiers[version],
                                    declared_parts, ",")
@@ -140,10 +185,42 @@ END {
             delete extension_seen
             for (part = 1; part <= extension_count; part++) {
                 id = trim(extension_parts[part])
-                if (!stable_id(id)) {
+                if (id ~ /^VIT-LAW-[0-9][0-9][0-9]@g[0-9][0-9]$/) {
+                    split(id, law_reference, "@g")
+                    law = law_reference[1]
+                    generation = law_reference[2] + 0
+                    if (!known_authority[law] ||
+                        !law_generation[law, generation]) {
+                        fail(version " extends unknown law generation " id)
+                    } else {
+                        latest = 0
+                        for (candidate = 1;
+                             candidate <= law_generation_count[law];
+                             candidate++) {
+                            candidate_effective = \
+                                law_generation_effective[law, candidate]
+                            candidate_compare = version_compare(candidate_effective, version)
+                            if (law_generation[law, candidate] &&
+                                candidate_compare <= 0) {
+                                latest = candidate
+                            }
+                        }
+                        referenced_effective = \
+                            law_generation_effective[law, generation]
+                        referenced_compare = version_compare(referenced_effective, version)
+                        if (referenced_compare > 0) {
+                            fail(version " extends future law generation " id)
+                        } else if (generation != latest) {
+                            expected_reference = law "@g" sprintf("%02d", latest)
+                            fail(version " does not cite effective generation " \
+                                 expected_reference)
+                        }
+                    }
+                } else if (id ~ /^VIT-LAW-/) {
+                    fail(version " extends bare law without generation " id)
+                } else if (!stable_id(id)) {
                     fail(version " extends malformed authority " id)
-                }
-                if (!known_authority[id]) {
+                } else if (!known_authority[id]) {
                     fail(version " extends unknown authority " id)
                 }
                 if (extension_seen[id]++) {
@@ -160,4 +237,4 @@ END {
     if (milestone_count == 0) fail("no post-0.18.3 milestones found")
     exit failed
 }
-' "$reviews" "$registry" "$@"
+' "$reviews" "$registry" "$generations" "$@"

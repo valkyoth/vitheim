@@ -49,10 +49,12 @@ verification/pentest target. It is additive to all of these gates:
   tests for every affected boundary;
 - forward/rollback migration and backup/restore evidence where data changes;
 - exact composite-law generation conformance, with no dependency effective
-  after its generation and no drift between historical and latest views;
+  after its generation, canonical manifest/digest verification, no semantic
+  drift between historical and latest views, and no future-generation claim;
 - exactly one authority disposition for every post-`0.18.3` milestone;
-  conservative proposals must resolve before implementation and cannot enter a
-  release candidate;
+  conservative proposals are legal only while the milestone is planned, must
+  resolve in the status-transition commit, and cannot enter a release
+  candidate;
 - release notes, known limitations, CI, CodeQL default setup, and signed
   release-evidence review.
 
@@ -109,7 +111,7 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
 | `0.18.1` | Active-generation successor/cancellation recovery and typed floor ratchet | Prepared cancellation creates one complete recovery successor; no independent restore; idempotent receipts/deadline; successor/key migration races |
 | `0.18.2` | Atomic work, independent provider epochs, and complete transmission-start law | Profile/account/credential/broker root separation; exact dispatch/grant-or-exception/target/provider/capability/evaluator/quarantine/lease/claimant/time/quota start proof; unproven start and `OutcomeUnknown`; existing evaluator/rotation/remediation cases |
-| `0.18.3` | Declared ownership-root, historical composite-law generation, enforcement, lifecycle, and milestone-authority registry | All-document bidirectional invariant/law declarations; exact generation-effective dependencies/coordinator/semantics/contracts; future-dependency and latest-view drift rejection; one authority disposition per later milestone; acyclic supersession and mixed-version/migration/rollback completeness |
+| `0.18.3` | Declared ownership-root, content-bound law-generation manifest, enforcement, lifecycle, and status-aware milestone-authority registry | Canonical manifest codec/schema/digest and semantic comparison; future dependency, latest-view drift, no-op generation rejection; valid removal/semantic-only evolution; proposals blocked after planned status; acyclic supersession and migration/rollback completeness |
 | `0.18.4` | Source-delivery- and journal-complete bounded evaluator re-evaluation | Atomic epoch/campaign root; source manifest/outbox watermarks/exact inbox receipts/topology fencing; `MembershipDeliveryBlocked`; membership journals, shard receipts, final barriers/reconciliation; outage/failover/starvation |
 | `0.18.5` | Remediation-authority bootstrap and recovery root | First admission, independent channels/KMS, quorum/separation, simultaneous loss, compromise, circularity, stale restore, manual-only providers |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
@@ -129,8 +131,8 @@ implementations remain blocked rather than being implemented casually.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.21.0` | Stable-invariant/law storage negotiation for provider and foundational authority | Missing/downgraded `VIT-CAP-*`; unregistered roots/laws; independent provider epochs; source outbox/inbox watermarks, delivery barrier, membership/campaign/scan placement |
-| `0.22.0` | Declaration-derived destructive invariant and generation-specific law conformance | Explicit semantic `VIT-ENF/TST/RCV-*`; exact law generation/dependency/recovery/activation contracts; typed transmission-start outcomes; source-delivery/journal barriers; lifecycle/supersession |
+| `0.21.0` | Stable-invariant and law-manifest storage negotiation for provider and foundational authority | Missing/downgraded `VIT-CAP-*`; manifest codec/digest persistence and readback; unregistered roots/laws; independent provider epochs; source delivery/membership/campaign placement |
+| `0.22.0` | Declaration-derived destructive invariant and generation-pinned law conformance | Exact `@gNN` set effective at `0.22.0`; canonical manifest/digest tamper and semantic-drift rejection; no future generation; explicit `VIT-ENF/TST/RCV-*`; typed transmission outcomes and lifecycle/supersession |
 | `0.23.0` | SQLite single-node adapter | Locking, rollback, injection, file permissions, tenant partition |
 | `0.24.0` | PostgreSQL reference production adapter | Atomic evaluator/quarantine-generation transitions, rotation/remediation lineage separation and quotas, existing recovery/floors |
 | `0.25.0` | Experimental MySQL adapter | Isolation/encoding differences, rollback, tenant enforcement, no default v1 claim |
@@ -140,7 +142,7 @@ implementations remain blocked rather than being implemented casually.
 | `0.28.1` | S3-compatible object-storage adapter | Tenant/object confusion, endpoint spoofing, multipart races, retention/deletion |
 | `0.28.2` | KMS and secret-provider adapters | Serialized provisioning/inventory/orphan/count controls plus governed evaluator upgrade/reevaluation, strong-resolution evidence, independent recovery or manual limitation |
 | `0.28.3` | In-process secret and brokered-bearer memory handling | HTTP/TLS/redirect/error/log/crash/core-dump/swap canaries, stale cache, honest transient-memory/erasure limits |
-| `0.29.0` | Resumable invariant-owner and law-generation migrations preserving monotonic authority | Existing authority/floor/provider state plus symmetric supersession, law generation activation/intersection, owner fences, mixed-version behavior, rollback floors, recovery fields, campaign anti-resurrection |
+| `0.29.0` | Resumable invariant-owner and content-bound law-generation migrations preserving monotonic authority | Preserve/verify predecessor and successor manifest bytes/digests; generation activation/intersection, owner fences, rollback floors, recovery fields, and campaign anti-resurrection |
 | `0.30.0` | Cross-backend export and import | Substitution, truncation, tenant mix-up, integrity loss |
 | `0.30.1` | Durable queue preserving governed provider and cancellation-recovery authority | Existing guard/orphan/count/recovery state remains complete; evaluator revocation/resolution never revives work; queues cannot evaluate, clear, or remediate |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
@@ -429,11 +431,11 @@ the first technology decision. An unselected option remains unsupported at
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.140.1` | Cryptography/time and exact credential-operation/rotation/recovery-root profile decision | Existing rotation/idempotency/orphan/count and signing/bearer TCB freeze plus remediation bootstrap, independent channel/KMS/quorum profile or manual-only recovery |
-| `0.140.2` | Storage topology for complete registered invariant/law generations and governed provider state | Zero-missing root/generation/capability matrix; exact activation/intersection/rollback placement; independent provider epochs; source delivery/membership/campaign barriers; typed transmission-start law; remediation |
+| `0.140.2` | Storage topology for complete registered invariant/law manifests and governed provider state | Zero-missing root/generation/capability matrix; persisted canonical bytes/digests and exact activation/intersection/rollback placement; provider epochs; campaign barriers; typed transmission law; remediation |
 | `0.140.3` | Human/workload/session and worker-instance identity decision | Co-located epochs, enforceable expiry, unique per-runtime claimant, lease-fence binding, restart/takeover invalidation |
 | `0.140.4` | Component runtime and governed credential-broker TCB decision | Evaluator binary/corpus admission and upgrade; quarantine-resolution evidence; non-composable remediation authority; existing TCB |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, retention precedence, omitted derived surfaces, tombstone/evidence inflation |
-| `0.140.6` | Deployment/HA invariant-owner, law-generation, and recovery decision | Complete owner/generation lifecycle/fence placement; typed transmission-start failover/reconciliation; campaign source delivery and membership scan barriers/fairness HA; quarantine/remediation; RPO/RTO |
+| `0.140.6` | Deployment/HA invariant-owner, content-bound law-generation, and recovery decision | Complete owner/manifest lifecycle/fence/digest placement; typed transmission failover/reconciliation; campaign delivery/membership barriers and fairness HA; quarantine/remediation; RPO/RTO |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |

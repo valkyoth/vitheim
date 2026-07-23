@@ -188,10 +188,13 @@ audit decision.
 - Canonical composite-law generations bind the actual effective milestone,
   predecessor, proof coordinator, dependency delta, linearization/failure/
   recovery semantics, mixed-version intersection, activation fence, migration,
-  rollback, and contract versions. CI rejects future-effective dependencies,
-  broken chains, and drift from the latest resolved view. A separate complete
-  milestone review registry rejects undeclared authority work or missing option/
-  production decisions.
+  rollback, semantic/dependency/recovery contract versions, canonical manifest,
+  and content digest. CI rejects future-effective dependencies, broken/no-op
+  chains, semantic or digest drift, and future-generation conformance while
+  permitting a genuine removal-only or semantics-only successor. A separate
+  complete milestone review registry rejects undeclared authority work,
+  proposals after planned status, bare law claims, or missing option/production
+  decisions.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown

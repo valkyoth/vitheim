@@ -5,7 +5,8 @@ Status: normative planning registry introduced by `0.18.3`
 This is the canonical index for authority-bearing invariants and the latest
 resolved view of composite laws. Historical law meaning is canonical in
 `docs/LAW_GENERATIONS.md`; a latest row here never retroactively changes an
-earlier milestone. Detailed phase
+earlier milestone. Each generation is content-bound by the canonical
+`docs/LAW_GENERATION_MANIFEST.md` schema and digest. Detailed phase
 documents define behavior and test cases; they refer to stable IDs here instead
 of creating a second owner. Before a milestone may exit, every invariant it
 introduces or changes must have exactly one row, one authoritative owner, an
@@ -43,9 +44,12 @@ every `docs/implementation/*.md` file, including production and future phase
 documents. `scripts/check_law_generations.sh` separately proves that every
 historical law generation is contiguous, uses only roots already effective at
 that milestone, binds its exact coordinator/semantics/fences/migration/
-rollback/contracts, and resolves to the latest view below.
+rollback/contracts/manifest digest, accepts only meaningful successor deltas,
+and resolves to the latest normalized view below.
 `docs/AUTHORITY_REVIEWS.md` and its checker ensure every later milestone
-explicitly addresses whether it creates or extends authority. Later
+explicitly addresses whether it creates or extends authority, blocks unresolved
+proposals after planned status, and pins law extensions to the generation
+effective at the milestone. Later
 implementation milestones
 bind the stable contracts to concrete modules, conformance cases, storage
 profiles, and generated recovery manifests.
@@ -189,23 +193,23 @@ The coordinator owns only the durable proof state named here.
 | VIT-LAW-002 | VIT-INV-030 | VIT-INV-025, VIT-INV-029, VIT-INV-030, VIT-INV-043 | platform profile activates; each local partition admits and ratchets it; startup and restore compare the local high-watermark | `SafetyFloorAdmissionBlocked` | restore profile lineage and every local ratchet, then prove no typed key decreased before admission | VIT-LENF-002; VIT-LTST-002-N |
 | VIT-LAW-003 | VIT-INV-031 | VIT-INV-016, VIT-INV-017, VIT-INV-024, VIT-INV-031, VIT-INV-044, VIT-INV-045 | coordinator opens transfer; source encumbers; destination activates once; acknowledgement authorizes source reclaim; coordinator closes | `CapacityTransferReconciling` | replay source outbox and destination inbox/receipt under both epochs; uncertainty stays encumbered and cannot create capacity | VIT-LENF-003; VIT-LTST-003-N |
 | VIT-LAW-004 | VIT-INV-027 | VIT-INV-001, VIT-INV-002, VIT-INV-008, VIT-INV-016, VIT-INV-017, VIT-INV-027, VIT-INV-046, VIT-INV-047, VIT-INV-056 | evaluator epoch and campaign root commit; source manifest/high-watermarks seal; exact outbox sequences receive inbox receipts; membership shards seal; scans issue one receipt per shard; delivery and membership barriers close before mismatch reconciliation | `MembershipDeliveryBlocked` | replay source outboxes, destination inbox receipts, membership journals, and scan receipts; re-read capability owners; require every source sequence through cutoff and zero unexplained mismatch | VIT-LENF-004; VIT-LTST-004-N |
-| VIT-LAW-005 | VIT-INV-012 | VIT-INV-007, VIT-INV-012, VIT-INV-013, VIT-INV-014, VIT-INV-015, VIT-INV-016, VIT-INV-017, VIT-INV-018, VIT-INV-021, VIT-INV-022 | one aggregate commit atomically appends events, audit, receipt, quota state, and outbox; worker claim and transmission start validate delayed fences | `AtomicWorkRejected` | restore the complete commit bundle and delayed-effect states or quarantine the bundle; partial reconstruction is forbidden | VIT-LENF-005; VIT-LTST-005-N |
+| VIT-LAW-005 | VIT-INV-012 | VIT-INV-007, VIT-INV-012, VIT-INV-013, VIT-INV-014, VIT-INV-015, VIT-INV-016, VIT-INV-017, VIT-INV-018, VIT-INV-021, VIT-INV-022 | one aggregate commit atomically appends events, audit, receipt, quota state, and outbox; worker claim validates delayed fences | `AtomicWorkRejected` | restore the complete commit bundle and delayed-effect states or quarantine the bundle; partial reconstruction is forbidden | VIT-LENF-005; VIT-LTST-005-N |
 | VIT-LAW-006 | VIT-INV-006 | VIT-INV-001, VIT-INV-002, VIT-INV-003, VIT-INV-006, VIT-INV-007, VIT-INV-018, VIT-INV-019, VIT-INV-020, VIT-INV-021, VIT-INV-022, VIT-INV-023, VIT-INV-028, VIT-INV-036, VIT-INV-037, VIT-INV-038, VIT-INV-039, VIT-INV-040, VIT-INV-041, VIT-INV-042, VIT-INV-048, VIT-INV-049, VIT-INV-050, VIT-INV-051, VIT-INV-052, VIT-INV-053, VIT-INV-054, VIT-INV-055 | each owner advances independently; the exact dispatch receipt, grant/redemption or exception guard, target, provider profile/account/credential/broker, capability/evaluator/quarantine, lease/claimant, deadline/time, and quota boundary are locked and rechecked immediately before provider I/O | `DefinitelyNotStarted`, `OutcomeUnknown`, or `StartClaimedReconciling` | restore every contributor and the unique start claim; reconcile provider evidence; if definite absence cannot be proven, retain non-retriable `OutcomeUnknown` and never retransmit blindly | VIT-LENF-006; VIT-LTST-006-N |
 
 ## Composite Security Law Lifecycle Registry
 
 Law declarations use `<!-- vitheim-law VIT-LAW-NNN 0.X.Y -->`. A contributor,
-linearization point, failure state, or recovery-proof change advances the
-dependency/recovery contract version and is governed like an owner migration.
+coordinator, linearization point, failure state, or recovery-proof change
+creates a content-bound generation and is governed like an owner migration.
 
-| Law ID | Status | Supersedes | Superseded by | Effective from | Dependency-set contract | Old/new proof fence | Mixed-version behavior | Migration contract | Rollback floor | Recovery-proof contract |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| VIT-LAW-001 | active | none | none | `0.16.0` | VIT-LDEP-001-g11-v1 | VIT-LFEN-001: generation-11 latest proof | use generation intersection; missing added root denies | VIT-LMIG-001-v11 | `0.59.0` | VIT-LRCV-001-g11-v1 |
-| VIT-LAW-002 | active | none | none | `0.18.1` | VIT-LDEP-002-g01-v1 | VIT-LFEN-002: generation-1 proof | reject nodes missing platform or local floor roots | VIT-LMIG-002-v1 | `0.18.1` | VIT-LRCV-002-g01-v1 |
-| VIT-LAW-003 | active | none | none | `0.18.1` | VIT-LDEP-003-g01-v1 | VIT-LFEN-003: generation-1 proof | reject nodes missing coordinator or endpoint roots | VIT-LMIG-003-v1 | `0.18.1` | VIT-LRCV-003-g01-v1 |
-| VIT-LAW-004 | active | none | none | `0.18.4` | VIT-LDEP-004-g01-v1 | VIT-LFEN-004: generation-1 proof | reject nodes missing source-delivery, membership, scan, or campaign roots | VIT-LMIG-004-v1 | `0.18.4` | VIT-LRCV-004-g01-v1 |
-| VIT-LAW-005 | active | none | none | `0.16.1` | VIT-LDEP-005-g04-v1 | VIT-LFEN-005: generation-4 latest proof | use generation intersection; missing inbox, lease, or quota root denies | VIT-LMIG-005-v4 | `0.18.1` | VIT-LRCV-005-g04-v1 |
-| VIT-LAW-006 | active | none | none | `0.18.2` | VIT-LDEP-006-g10-v1 | VIT-LFEN-006: generation-10 latest proof | use generation intersection; incompatible nodes cannot claim start | VIT-LMIG-006-v10 | `0.59.0` | VIT-LRCV-006-g10-v1 |
+| Law ID | Status | Supersedes | Superseded by | Effective from | Dependency-set contract | Old/new proof fence | Mixed-version behavior | Migration contract | Rollback floor | Recovery-proof contract | Semantic contract | Latest manifest digest |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| VIT-LAW-001 | active | none | none | `0.16.0` | VIT-LDEP-001-g11-v1 | VIT-LFEN-001: generation-11 latest proof | use generation intersection; missing added root denies | VIT-LMIG-001-v11 | `0.59.0` | VIT-LRCV-001-g11-v1 | VIT-LSEM-001-g11-v1 | sha256:854f8cbfd9fdb56c6e0593b9944c383623dcf4d7061f62b722f34852eeae97c3 |
+| VIT-LAW-002 | active | none | none | `0.18.1` | VIT-LDEP-002-g01-v1 | VIT-LFEN-002: generation-1 proof | reject nodes missing platform or local floor roots | VIT-LMIG-002-v1 | `0.18.1` | VIT-LRCV-002-g01-v1 | VIT-LSEM-002-g01-v1 | sha256:45f96a24e22d94a2a52f033b8c177155361cb87412071f9d6a83faf3492e2c5b |
+| VIT-LAW-003 | active | none | none | `0.18.1` | VIT-LDEP-003-g01-v1 | VIT-LFEN-003: generation-1 proof | reject nodes missing coordinator or endpoint roots | VIT-LMIG-003-v1 | `0.18.1` | VIT-LRCV-003-g01-v1 | VIT-LSEM-003-g01-v1 | sha256:d7676f2d86177a47be071e9498622ef3f2aca8612c7f364a677b2c67677fe808 |
+| VIT-LAW-004 | active | none | none | `0.18.4` | VIT-LDEP-004-g01-v1 | VIT-LFEN-004: generation-1 proof | reject nodes missing source-delivery, membership, scan, or campaign roots | VIT-LMIG-004-v1 | `0.18.4` | VIT-LRCV-004-g01-v1 | VIT-LSEM-004-g01-v1 | sha256:c7793caa65dd0f76405c5f75d191ee8d7da30e2bd3db6f654a9af4e1a789851a |
+| VIT-LAW-005 | active | none | none | `0.16.1` | VIT-LDEP-005-g04-v1 | VIT-LFEN-005: generation-4 latest proof | use generation intersection; missing inbox, lease, or quota root denies | VIT-LMIG-005-v4 | `0.18.1` | VIT-LRCV-005-g04-v1 | VIT-LSEM-005-g04-v1 | sha256:f859a7ddc5b2181b741e7d502ae2c948a0c57cc74d81110ed9823d792b707c09 |
+| VIT-LAW-006 | active | none | none | `0.18.2` | VIT-LDEP-006-g10-v1 | VIT-LFEN-006: generation-10 latest proof | use generation intersection; incompatible nodes cannot claim start | VIT-LMIG-006-v10 | `0.59.0` | VIT-LRCV-006-g10-v1 | VIT-LSEM-006-g10-v1 | sha256:54280761c256d867005a953f5c2f46d6e0d0ed018ac4b3ad47326d859f47d338 |
 
 ## Explicit Enforcement-To-Negative Verification Map
 
