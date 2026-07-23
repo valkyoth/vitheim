@@ -44,8 +44,10 @@ and runbooks. Verification: partitions, clock skew, stale leader/fence,
 receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
 activity work, timer dispatch/result separation, multi-aggregate/remote-call
 transaction rejection, provider acceptance plus lost response, unknown-outcome
-reconciliation/manual resolution, forbidden blind privileged/non-compensable
-retry, failover/failback, and chaos/soak pass. Exit criteria: split
+reconciliation deadline/escalation, distinct execution/outcome/evidence/manual/
+compensation state, direct/callback/query evidence racing manual resolution,
+forbidden blind privileged/non-compensable retry, failover/failback, and chaos/
+soak pass. Exit criteria: split
 brain and stale workers reject every state-changing variant. `v0.143.0
 implementation stop reached. Run pentest for this exact commit.`
 
@@ -69,11 +71,12 @@ data, point-in-time restore, every `0.18.2` atomic work variant and denial-only
 audit-chain integrity, external anchors, registered tenant-surface disposition,
 typed external-copy evidence-strength honesty, measurement rollup manifests,
 rollup checkpoint inclusion and substitution-expiry gates, mandatory deletion
-during unavailable proof, historical authority-loss records, rebuild/workflow
-continuation pass.
+during unavailable proof, independent rollup/manifest/result/cache/export/
+linkable-checkpoint disposition, non-sensitive tombstone and historical
+authority-loss records, rebuild/workflow continuation pass.
 Exit criteria: claimed RPO/RTO is demonstrated; recovery neither retains data
 past a controlling mandatory deletion obligation nor promotes an unverified
-rollup to authority.
+rollup to authority, and every related surface has its own disposition proof.
 `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification

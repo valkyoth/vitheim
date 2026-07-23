@@ -61,8 +61,13 @@ legal hold, agreement, jurisdiction, and evidence strength while retaining the
 honest residual state. Retention precedence distinguishes rollup-substitution
 expiry from mandatory erasure, maximum-retention, and closure deletion.
 Mandatory deletion proceeds despite missing rollup/checkpoint/restore proof,
-leaves the rollup non-authoritative, marks affected historical results unknown,
-and emits an immutable authority-loss disposition record.
+marks affected historical results unknown, and emits an immutable authority-
+loss disposition record. Evaluate each related surface independently: raw
+observations, rollup payload, source manifest, derived result, projection/cache,
+export, and linkable checkpoint metadata. A non-authoritative rollup may remain
+only under its own permitted retention decision; otherwise delete or crypto-
+erase it and every other covered surface, retaining only an allowed non-
+sensitive tombstone and authority-loss fact.
 Inventory all earlier surfaces including event/audit journals and projections,
 blobs, queues, customer measurements and rollups, paging/delivery receipts,
 hosted status, and caches.
@@ -73,8 +78,9 @@ new storage and external-copy paths.
 Deliverables: generated `TenantDataSurface` descriptor registry, compile/
 registration gate, pre-`0.51.2` descriptor backfill importer/report,
 dependency-direction check, lifecycle-operation and retention-precedence
-planner, per-surface disposition receipts, completeness report, closure blocker,
-and adapter conformance API.
+planner, related-surface disposition graph, per-surface disposition receipts,
+non-sensitive tombstone validator, completeness report, closure blocker, and
+adapter conformance API.
 The authorization-interface registry and this lifecycle registry remain
 distinct and cross-reference surfaces where applicable. Disposition receipts
 carry evidence kind, issuer/controller, scope, time, related request/
@@ -88,8 +94,10 @@ topology migration omission, cleanup-receipt forgery, restore resurrection, and
 late registration tests pass. Missing earlier-surface backfill, an earlier crate
 depending outward on Phase F, post-`0.51.2` registration bypass, rollup proof
 blocking mandatory deletion, historical authority surviving deletion without
-proof, and missing authority-loss disposition fail. Provider attestation
-presented as local proof, unconfirmed request presented as deletion,
+proof, rollup retention inherited from deleted raw data, omitted manifest/
+result/cache/export/linkable-checkpoint decision, sensitive tombstone, partial
+derived-surface cleanup, and missing authority-loss disposition fail. Provider
+attestation presented as local proof, unconfirmed request presented as deletion,
 unverifiable plaintext presented as erased, evidence-strength downgrade, and
 closure-policy bypass all fail.
 
@@ -101,7 +109,8 @@ the evidence strength required by current closure policy. Closure may record an
 explicitly accepted unverifiable residual obligation where law and agreement
 permit, but cannot relabel it verified deletion or cryptographic erasure.
 Neither rollup authority nor availability history may override a mandatory
-deletion obligation.
+deletion obligation, and no derived surface may inherit another surface's
+retention decision.
 `v0.51.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.52.0` — Subjects And Service Principals

@@ -312,14 +312,15 @@ priority/fairness, payload references, cancellation, drain, quotas, and exact
 mapping to the `0.18.2` consumer/timer/activity/poison atomic variants.
 Queue delivery/acknowledgement is distinct from external-effect acceptance and
 outcome. Preserve stable `EffectId`, request digest, attempt evidence,
-idempotency/replay horizon, and every unknown/reconciliation/manual-resolution
-state across lease expiry, redelivery, failover, and dead-letter movement.
+idempotency/replay horizon, and each typed execution, remote-outcome,
+resolution-evidence, operational-workflow, and compensation state across lease
+expiry, redelivery, failover, and dead-letter movement.
 
 Goal: own an HA-capable durable queue profile without requiring a separate
 message broker for correctness.
 
 Deliverables: project-owned queue port, journal/outbox-backed PostgreSQL adapter,
-memory fake, worker protocol, external-outcome reconciliation scheduling and
+memory fake, worker protocol, external-effect reconciliation scheduling and
 manual-resolution queue, capability report, and operational metrics.
 
 Verification: enqueue/commit crashes, duplicate delivery, receipt/effect split,
@@ -330,8 +331,9 @@ expiry, unknown-outcome dead-letter loss, partition/failover, drain/restart, and
 model/conformance tests pass.
 
 Exit criteria: HA work dispatch has documented at-least-once delivery and
-idempotent local-commit semantics, preserves the `0.18.2` external-outcome
-contract, and has no process-local queue dependency.
+idempotent local-commit semantics, preserves the `0.18.2` external-effect
+resolution contract without collapsing its typed dimensions, and has no
+process-local queue dependency.
 `v0.30.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.30.2` — Cache Semantics And Hosted Adapter

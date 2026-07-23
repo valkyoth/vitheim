@@ -185,31 +185,37 @@ precedence policy, retain raw observations for the longest supported raw SLO
 window, correction horizon, lateness bound, investigation period, and hold
 obligation. A raw SLO window cannot be promised beyond permitted raw retention;
 it requires an admissible rollup or becomes unknown. Before raw observations may
-be replaced by a rollup, create
-immutable authoritative rollup facts rather than promoting mutable time-series
-projections. Bind each rollup to tenant/indicator, exact input interval and
-watermark, input count and
-complete/partial/unknown state, source-observation Merkle or manifest digest,
+be replaced by a rollup, create immutable authoritative rollup facts rather
+than promoting mutable time-series projections. Bind each rollup to tenant/
+indicator, exact input interval and watermark, input count and complete/
+partial/unknown state, source-observation Merkle or manifest digest,
 calculation/schema version, unit and aggregation method, resolution/fidelity,
-retention/hold policy, correction/supersession identity, late-data
-recalculation behavior, and the exact SLO window classes allowed to consume it.
+retention/hold policy, correction/supersession identity, late-data recalculation
+behavior, and the exact SLO window classes allowed to consume it.
 Rollup-substitution expiry is a gated transition: the rollup and source
 manifest must be committed, their integrity chain verified, their commitment
-included in a
-retrievable externally retained `0.19.0` signed checkpoint, and the
-then-current adapter restore fixture must have successfully restored and
+included in a retrievable externally retained `0.19.0` signed checkpoint, and
+the then-current adapter restore fixture must have successfully restored and
 reverified that rollup/manifest/checkpoint class.
 Distinguish two deletion paths. Discretionary or policy-driven substitution of
 raw observations with a rollup is blocked by checkpoint lag, anchor loss, or
 missing restore evidence and retains raw data only while retention policy
 permits. Legally mandatory erasure, maximum-retention expiry, or tenant-closure
 deletion takes precedence and proceeds even when rollup proof is incomplete.
-In that case the rollup is not promoted to authority, every affected historical
-SLO/error-budget window becomes `Unknown`/`Unavailable`, and an immutable
-disposition fact records the controlling obligation, deleted scope, missing
-proof, affected windows, actor/policy, and authority loss. `0.145.0` repeats the
-substitution proof for every selected production backup/restore profile before
-production jobs may replace raw data with rollups.
+Every related derived surface receives an independent `0.51.2` disposition
+decision: rollup payload, source manifest, derived SLO/error-budget result,
+projection/cache, export, and linkable checkpoint metadata. No surface inherits
+permission to survive merely because another is retained. A rollup may remain
+stored but non-authoritative only when its own retention is independently
+permitted. Otherwise it and every other covered surface are deleted or
+cryptographically erased according to their own contract, leaving only an
+allowed non-sensitive tombstone and authority-loss fact. Historical windows
+become `Unknown`/`Unavailable` whether the non-authoritative rollup is retained
+or erased. The immutable disposition fact records the controlling obligation,
+per-surface decisions/evidence, missing proof, affected windows, actor/policy,
+and authority loss. `0.145.0` repeats the substitution proof for every selected
+production backup/restore profile before production jobs may replace raw data
+with rollups.
 
 Goal: preserve reproducible historical SLO and error-budget authority when
 retention permits raw customer observations to be replaced, and degrade
@@ -221,7 +227,9 @@ expiry preflight, late-data supersession process manager, reconciliation/
 recalculation tooling, memory and PostgreSQL adapters, restore/rebuild rules,
 external-checkpoint inclusion/verification receipt, restore-evidence binding,
 retention-precedence evaluator, blocked-substitution projection/alerts,
-authority-loss disposition event/projection, and operator retention guide.
+derived-surface disposition graph and per-surface receipts, non-sensitive
+tombstone contract, authority-loss disposition event/projection, and operator
+retention guide.
 
 Verification: expire raw data before rollup commitment, mutate an existing
 rollup, omit or reorder source observations, forge completeness/count/watermark,
@@ -232,9 +240,10 @@ anchor, checkpoint before rollup commitment, restore without manifest/anchor,
 false restore receipt, discretionary rollup substitution during anchor/restore
 lag, long-window recalculation, mandatory erasure/max-retention/closure during
 checkpoint or restore failure, unlawful retention to preserve SLO history,
-accidental rollup promotion after mandatory deletion, missing authority-loss
-record, and raw-
-versus-rollup differential/property tests pass.
+accidental rollup promotion after mandatory deletion, retained rollup without
+independent permission, omitted manifest/result/cache/export/linkable-checkpoint
+decision, sensitive tombstone, partial derived-surface erasure, missing
+authority-loss record, and raw-versus-rollup differential/property tests pass.
 
 Exit criteria: every supported historical SLO window is reproducible from
 retained raw facts or an explicitly admissible integrity-bound rollup;
@@ -242,8 +251,9 @@ otherwise its result is unknown/unavailable rather than silently calculated
 from mutable aggregates. Raw observations are replaced by an authoritative
 rollup only after commitment, integrity verification, external checkpointing,
 and restore testing under the selected profile. Mandatory deletion overrides
-preservation, records the loss immutably, and makes unsupported historical
-results explicitly unknown.
+preservation; every raw and derived surface is disposed independently, the loss
+is recorded without prohibited sensitive/linkable content, and unsupported
+historical results are explicitly unknown.
 `v0.38.3 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.39.0` — Approval And Notification Foundations

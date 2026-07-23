@@ -50,15 +50,20 @@ best-effort receipts are forbidden. Each bundle advances no more than one
 authoritative aggregate stream and includes only local durable effects;
 provider/network work begins from committed intent and returns in a later
 bundle under explicitly at-least-once semantics. Each external-effect
-capability follows the `0.16.0–0.18.2` outcome/reconciliation contract; an
-unknown privileged or non-compensable outcome is never retried blindly.
+capability follows the `0.16.0–0.18.2` contract with distinct execution state,
+remote outcome, resolution source/evidence, operational-resolution workflow,
+and compensation state. Manual assessment never becomes verified provider
+truth; unknown privileged or non-compensable work is never retried blindly.
 External-copy lifecycle evidence uses the typed `0.51.2` strength model and may
 never promote an attestation, unconfirmed request, or unverifiable disclosed
 plaintext to local deletion proof or controlled-key erasure. Rollup-substitution
 expiry requires its full authority proof, but a controlling mandatory erasure,
 maximum-retention, or closure deletion obligation takes precedence; any
 resulting loss of historical authority is recorded immutably and exposed as
-unknown/unavailable.
+unknown/unavailable. Raw data, rollups, manifests, derived results, caches/
+projections, exports, and linkable checkpoint metadata each receive their own
+disposition decision; only independently permitted non-authoritative data and
+allowed non-sensitive tombstone/authority-loss evidence may remain.
 
 ## Universal Verification And Exit
 

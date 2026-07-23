@@ -94,24 +94,32 @@ AI artifacts, federation projections, and connector checkpoints. Freeze an
 explicit precedence matrix distinguishing legal hold, mandatory erasure,
 maximum retention, tenant closure, contractual preservation, and discretionary
 rollup-substitution expiry; preservation of historical SLO authority cannot
-override mandatory deletion.
+override mandatory deletion. Independently decide disposition for raw
+observations, rollup payloads, source manifests, derived SLO/error-budget
+results, projections/caches, exports, and linkable checkpoint metadata; no
+related surface inherits another surface's permission to survive.
 Goal: freeze production data-lifecycle profiles before packaging.
 Deliverables: normative retention-precedence matrix, preservation/disposition,
 mandatory-deletion-with-authority-loss procedure, crypto-erasure, key ownership,
 deletion verification, backup expiry, residency matrices, and a zero-missing-
 surface registry report with typed external-copy evidence strengths and
-closure-policy results.
+closure-policy results; include a related-surface disposition matrix, per-
+surface evidence, and allowed non-sensitive tombstone/authority-loss schema.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
 evidence custody, false equivalence between local proof/provider attestation/
 unconfirmed request/unverifiable plaintext, missing rollup proof during
 mandatory deletion, unlawful retention for availability reporting, tenant
-closure, and cross-region scenarios pass review.
+closure, rollup retention inherited from raw disposition, omitted manifest/
+result/cache/export/checkpoint-metadata decision, sensitive tombstone, partial
+derived cleanup, and cross-region scenarios pass review.
 Exit criteria: no production data class or tenant-bearing surface lacks an
 owner, lifecycle, typed disposition state, and policy result; accepted residual
 uncertainty remains explicit and is never described as verified erasure.
 Mandatory deletion proceeds even when doing so makes historical results
-unknown, with immutable evidence of the precedence decision and authority loss.
+unknown, with independently evaluated disposition evidence for every related
+surface and immutable non-sensitive evidence of the precedence decision and
+authority loss.
 `v0.140.5 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.140.6` — Deployment, HA, And Recovery Profile Decision

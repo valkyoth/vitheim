@@ -30,18 +30,21 @@ Status: planned. Setup: define branch identity, join policy, failure/cancel prop
 
 ## `0.66.0` — Compensation Mechanics
 Status: planned. Setup: define compensable effects, stack/order, idempotency,
-retry horizon, manual intervention, and evidence against the `0.18.2` external-
-outcome states. Reconcile an `OutcomeUnknown` original effect before deciding
-whether compensation is applicable; compensation is itself a separately
-identified external effect whose unknown outcome is not blindly retried.
+retry horizon, manual intervention, and evidence against the separate `0.18.2`
+execution, remote-outcome, resolution-evidence, and operational-workflow types.
+Reconcile an `EffectExecutionState::OutcomeUnknown` original before deciding
+whether compensation is applicable. Compensation has its own
+`CompensationEffectId`, `CompensationState`, external-effect lifecycle, remote
+outcome, and resolution evidence linked to—but never mutating—the original.
 Goal: bounded auditable recovery from partial workflows without inventing
 certainty about provider state. Deliverables: compensation IR/state, original-
-and-compensation outcome linkage, reconciliation policy, and operator view.
 Verification: double/failed/out-of-order compensation, response-loss ambiguity,
 compensation after an unknown original, unknown compensation result, crash
-windows, non-compensable effects, unauthorized manual resolution, and replay
-pass. Exit criteria: incomplete rollback or uncertain provider state is
-explicit, never hidden or converted into assumed success.
+windows, non-compensable effects, operator assessment forged as provider
+outcome, late provider evidence racing manual/compensation decisions,
+unauthorized or self-approved privileged resolution, and replay pass.
+Exit criteria: incomplete rollback or uncertain provider state is explicit,
+never hidden, overwritten, or converted into assumed provider success.
 `v0.66.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.67.0` — Signals And Subworkflows
@@ -69,17 +72,21 @@ drain, failover, authorization and `0.51.2` tenant-data-surface registry
 entries, Phase E workflow contract fixtures, and `0.39.1–0.39.3` on-call/
 paging/notification process-manager scenarios. Goal: durable multi-worker
 execution. Deliverables: hosted worker orchestration, authorization cases,
-external-outcome reconciler/manual queue, ITSM and response-delivery integration
+external-effect reconciler/manual queue, ITSM and response-delivery integration
 retests, and operational evidence.
-Verification: lease loss,
-partitions, duplicate activity/result, activity receipt/effect split, network-
-stale fencing commits, poison/dead-letter split, quota/effect split, poison loops, cross-tenant/
-unauthorized effects, paging escalation/acknowledgement and quiet-hour races,
-provider acceptance followed by response loss, idempotency-window expiry,
-conflicting/unsupported status query, forbidden blind retry of an unknown
-privileged/non-compensable effect, Phase E fake-versus-real differential,
-rolling upgrades, and soak pass.
+Verification: lease loss, partitions, duplicate activity/result, activity
+receipt/effect split, network-call-in-transaction rejection, crash points,
+stale fencing commits, poison/dead-letter split, quota/effect split, poison
+loops, cross-tenant/unauthorized effects, paging escalation/acknowledgement and
+quiet-hour races, provider acceptance followed by response loss, idempotency-
+window expiry, conflicting/unsupported status query, reconciliation deadline/
+escalation, direct/callback/query evidence racing manual assessment, forbidden
+blind retry of an unknown privileged/non-compensable effect, unauthorized
+privileged resolution, Phase E fake-versus-real differential, rolling upgrades,
+and soak pass.
 Exit criteria: HA preserves documented at-least-once delivery while the atomic
 work variants prevent duplicate local protected commits and detect/reconcile
-possible remote duplication; every workflow interface/data surface is
-registered. `v0.70.0 implementation stop reached. Run pentest for this exact commit.`
+possible remote duplication. Execution state, provider outcome, resolution
+evidence, manual workflow, and compensation remain distinguishable through
+failover; every workflow interface/data surface is registered.
+`v0.70.0 implementation stop reached. Run pentest for this exact commit.`

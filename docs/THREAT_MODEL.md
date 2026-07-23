@@ -44,7 +44,7 @@ The complete design anticipates boundaries between:
 | Tenant data survives export/hold/erasure/closure | Foundation lifecycle descriptors, complete registry backfill plus prospective generated gate, explicit retention precedence, typed honest evidence, disposition receipts, closure policy/blocker |
 | IDOR and confused deputy | Typed commands, actor and target binding, capability scope, policy snapshots, negative authorization matrix |
 | Event/evidence tampering | Append-only journal semantics, expected versions, integrity chains, signed checkpoints, restore verification |
-| Replay, duplicated effects, or ambiguous provider outcomes | Single-aggregate local-only atomic commits, distinct dispatch/result, stable effect ID/request digest, declared provider idempotency/replay horizon, durable unknown/reconciliation/manual states, no blind privileged/non-compensable retry |
+| Replay, duplicated effects, or ambiguous provider outcomes | Single-aggregate local commits, stable effect ID/digest, distinct execution/outcome/resolution/manual/compensation types, provider-evidence strength, reconciliation deadline/fencing, no blind privileged/non-compensable retry |
 | Parser/resource exhaustion | Explicit byte/item/depth/allocation/work limits, cancellation, quotas, fuzzing and load tests |
 | Injection and unsafe content | Canonical parsers, contextual encoding, attachment quarantine, no arbitrary scripts or SQL exposure |
 | Workflow or policy bypass | Deterministic IR, version pinning, simulation, approval, signed activation, fail-closed evaluator |
@@ -54,7 +54,7 @@ The complete design anticipates boundaries between:
 | Secret leakage | Non-extractable handles, host-brokered secret operations, redacted errors/logs, no core or Wasm plaintext secret storage, rotation and best-effort zeroization policy |
 | Supply-chain compromise | No current dependencies, pinned tools/actions, lockfile, SBOM, read-only CI, signed provenance and pentest gate |
 | Availability failure | Tenant quotas, backpressure, poison queues, bounded retries, leases, recovery and chaos testing |
-| Historical authority conflicts with mandatory deletion | Rollup-substitution proof gate, mandatory-deletion precedence, non-authoritative residual rollup, unknown historical result, immutable authority-loss disposition |
+| Historical authority conflicts with mandatory deletion | Rollup-substitution gate, independent disposition for raw/rollup/manifest/result/cache/export/checkpoint metadata, permitted non-sensitive tombstone, unknown history, immutable authority-loss fact |
 
 ## Initial `0.1.0` Attack Surface
 

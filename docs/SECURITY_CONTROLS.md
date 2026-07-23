@@ -46,9 +46,11 @@ audit decision.
   activity, and poison transitions; distinct dispatch/results; inbox/outbox,
   fencing, quotas, bounded retries, backpressure, and explicitly at-least-once
   remote calls. Stable external-effect identities and request digests bind
-  provider idempotency/replay horizons, durable outcome states, reconciliation,
-  compensation, and authorized manual resolution; unknown privileged or non-
-  compensable outcomes are never retried blindly.
+  provider idempotency/replay horizons, separate execution/provider-outcome/
+  resolution-evidence/operational-workflow/compensation types, reconciliation
+  deadlines, escalation, and authorized manual resolution. Assessment is not
+  provider truth; unknown privileged or non-compensable work is never retried
+  blindly.
 - Capability-limited plugins and integrations; opaque secret handles and
   host-brokered authenticated operations; plaintext credentials never enter
   Wasm guest memory.
@@ -60,7 +62,10 @@ audit decision.
   controlled-key erasure from provider attestations, unconfirmed requests, and
   unverifiable previously disclosed plaintext. A controlling mandatory erasure,
   maximum-retention, or closure deletion obligation outranks rollup
-  preservation; lost historical authority is recorded and exposed as unknown.
+  preservation. Every raw/rollup/manifest/result/cache/export/checkpoint-
+  metadata surface is disposed independently; lost historical authority is
+  recorded without retaining prohibited sensitive/linkable content and exposed
+  as unknown.
 - Complete audit provenance without recording plaintext secrets.
 
 ## Release Decision

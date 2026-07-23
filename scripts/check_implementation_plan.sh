@@ -60,6 +60,29 @@ if [ "$pentest_count" -ne 225 ]; then
     failed=1
 fi
 
+require_text() {
+    file="$1"
+    text="$2"
+    label="$3"
+    if ! grep -Fq "$text" "$file"; then
+        echo "implementation plan: missing semantic anchor '$label' in $file" >&2
+        failed=1
+    fi
+}
+
+require_text docs/implementation/PHASE_B.md \
+    '`EffectExecutionState`:' 'effect execution state'
+require_text docs/implementation/PHASE_B.md \
+    '`RemoteOutcome`:' 'remote outcome'
+require_text docs/implementation/PHASE_B.md \
+    '`ResolutionSource`:' 'resolution source'
+require_text docs/implementation/PHASE_D.md \
+    'Every related derived surface receives an independent' \
+    'independent derived-surface disposition'
+require_text docs/implementation/PHASE_G.md \
+    'network-call-in-transaction rejection, crash points' \
+    'Phase G network/crash verification'
+
 if [ "$failed" -ne 0 ]; then
     exit 1
 fi

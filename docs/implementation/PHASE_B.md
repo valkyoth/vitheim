@@ -12,11 +12,34 @@ activity-result bundle. No bundle claims distributed exactly-once execution.
 Each external-effect capability declares a stable `EffectId` and request
 digest, provider idempotency-key scope and retention, status-query/
 reconciliation support, retry safety and maximum replay horizon, compensation
-support, and privilege/non-compensability class. Durable outcomes use
-`Pending`, `Dispatched`, `Succeeded`, `Failed`, `OutcomeUnknown`, `Reconciled`,
-and `ManualResolutionRequired`; an unknown privileged or non-compensable
-outcome is never retried without reconciliation or explicit authorized
-resolution.
+support, and privilege/non-compensability class. It never collapses these typed
+dimensions:
+
+- `EffectExecutionState`: `Pending`, `Leased`, `Dispatched`, `AwaitingResult`,
+  `OutcomeUnknown`, `Resolved`, or `Abandoned`;
+- `RemoteOutcome`: `Succeeded`, `Rejected`, `DefinitelyNotAccepted`,
+  `TerminalFailure`, or `Cancelled`, present only with admissible provider
+  evidence;
+- `ResolutionSource`: `DirectResponse`, `SignedCallback`, `ProviderQuery`,
+  `IdempotentReplay`, or `OperatorAssessment`, bound to immutable resolution
+  evidence and its verification strength;
+- `EffectResolutionWorkflowState`: `NotRequired`, `Reconciling`, `Escalated`,
+  `ManualReview`, or `Closed`; and
+- `CompensationState`: `NotRequired`, `Eligible`, `Requested`, `InProgress`,
+  `OutcomeUnknown`, `Completed`, or `Abandoned`, with a separate compensation
+  effect identity and full external-effect record linked to, but never
+  overwriting, the original effect.
+
+Every capability sets a reconciliation deadline and escalation path. An
+operator assessment may choose a safe local resolution or abandonment but
+never creates a verified provider outcome. Unknown privileged or non-
+compensable work is not blindly retried. Privileged resolution policy binds the
+permitted principal kind, current authentication assurance, tenant/effect
+scope, explicit resolution capability, reason, expiry, and required separation
+of duties/quorum. Concurrent direct/callback/query evidence and manual
+resolution use expected-version/fencing rules, retain both facts, and
+deterministically reopen or supersede only the operational workflow; provider
+evidence is never overwritten by an assessment.
 
 ## `0.11.0` — Semantic Event-Journal Interface
 
@@ -151,26 +174,30 @@ Setup: bind exact-version CAS, consecutive events, stream head, request-digest
 receipt, authoritative `0.15.1` audit intent, outbox entries, integrity links,
 authority-owned uniqueness indexes, destination, payload version, attempt
 policy, stable external `EffectId`/request digest, and one database transaction.
-Each effect intent records its capability declaration, initial `Pending` state,
-and immutable request binding before dispatch. Denied/rejected commands
-atomically commit their idempotent outcome plus audit fact but no domain events,
-stream advance, business outbox, or state effect.
+Each effect intent records its capability declaration, initial
+`EffectExecutionState::Pending`, empty remote outcome, resolution deadline, and
+immutable request binding before dispatch. Denied/rejected commands atomically
+commit their idempotent outcome plus audit fact but no domain events, stream
+advance, business outbox, or state effect.
 Outbox routing contains protected references rather than pre-rendered sensitive
 bodies and cannot copy fields forbidden by the `0.8.1` lifecycle.
 
 Goal: prevent committed business facts from losing required asynchronous work
 or mandatory audit evidence.
 
-Deliverables: outbox semantic types/port, external-effect capability and outcome
-types, command-commit unit including audit authority, atomic memory
-implementation, dispatcher claim/ack protocol, outcome query/reconciliation
-port, and failure fixtures.
+Deliverables: outbox semantic types/port, separate external-effect execution,
+remote-outcome, resolution-source/evidence, operational-resolution, and
+compensation types, command-commit unit including audit authority, atomic
+memory implementation, dispatcher claim/ack protocol, outcome query/
+reconciliation port, and failure fixtures.
 
 Verification: fail before/during/after every event/receipt/audit/outbox write,
 successful mutation without audit, denied mutation with domain events, duplicate
 dispatch/audit, crash before ack, provider acceptance followed by lost response,
-idempotency-key expiry/scope mismatch, forged outcome, poison payload, tenant
-routing, and rollback pass.
+idempotency-key expiry/scope mismatch, execution state presented as remote
+outcome, forged remote outcome, operator assessment presented as verified
+provider evidence, forged resolution source, poison payload, tenant routing,
+and rollback pass.
 
 Exit criteria: no successful protected mutation exists without its authoritative
 audit intent, no rejected mutation produces business state or effects, and
@@ -329,7 +356,11 @@ work completion is a separate later activity-result/consumer transition that
 atomically records its own result receipt and local effects. Fence validation
 and poison/dead-letter movement occur with their respective local effects.
 Finalize the generic external-effect state transitions, attempt evidence, status
-queries, reconciliation results, and authorized/manual resolution commands.
+queries, typed remote outcomes, resolution evidence/source, reconciliation
+workflow, deadlines/escalation, late-evidence conflict handling, privileged-
+resolver authorization, and authorized/manual resolution commands. A resolution
+command changes operational state; without admissible provider evidence it
+cannot manufacture or replace `RemoteOutcome`.
 
 Goal: prevent retries, lease loss, or crashes from separating asynchronous work
 completion evidence from the effects it emits.
@@ -337,11 +368,13 @@ completion evidence from the effects it emits.
 Deliverables: versioned discriminated bundle model and canonical codec, shared
 validation laws, atomic memory implementation, capability negotiation profile,
 timer/activity/poison receipt types, dead-letter evidence, and deterministic
-failure/interleaving harness. Phase G workflow workers later specialize the
-activity payload without weakening this commit boundary. The contract states
-at-least-once external execution explicitly and makes no distributed
-exactly-once claim. It distinguishes local commit/delivery success from remote
-acceptance and outcome.
+failure/interleaving harness; distinct execution/outcome/evidence/workflow
+codecs and state machines; reconciliation scheduler/escalation contract; and
+privileged-resolution policy facts. Phase G workflow workers later specialize
+the activity payload without weakening this commit boundary. The contract
+states at-least-once external execution explicitly and makes no distributed
+exactly-once claim. It distinguishes local commit/delivery success, provider
+outcome, how that outcome became known, and operational disposition.
 
 Verification: independently omit or split every variant component; crash
 between timer fire/completion, activity effect/receipt, inbox/dead-letter
@@ -349,14 +382,19 @@ transition, fence check/commit, and quota consume/effect; replay stale fencing
 tokens; attempt a second aggregate stream or remote call in one bundle;
 lose a response after provider acceptance; expire a provider idempotency key;
 return conflicting status queries; attempt blind retry of unknown privileged or
-non-compensable work; redeliver poison work; race cancellation/lease loss; and
-run rollback, recovery, model, state-machine, and property tests.
+non-compensable work; race direct response/signed callback/provider query
+against manual assessment and deadline escalation; attempt unauthorized or
+self-approved privileged resolution; receive late provider evidence after
+abandonment; redeliver poison work; race cancellation/lease loss; and run
+rollback, recovery, model, state-machine, and property tests.
 
 Exit criteria: every supported asynchronous effect uses one negotiated atomic
 variant, stale/unfenced work cannot commit, and adapters unable to preserve a
 variant report it unsupported. Every external outcome is terminally known,
-durably unknown and reconciling, or explicitly assigned for authorized manual
-resolution rather than inferred from delivery state.
+durably unknown and reconciling, or operationally abandoned/assigned for
+authorized manual resolution rather than inferred from delivery state. A
+manual conclusion remains visibly assessed and cannot become verified provider
+truth.
 `v0.18.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface

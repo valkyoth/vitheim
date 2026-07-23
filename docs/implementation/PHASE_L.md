@@ -26,16 +26,22 @@ Status: planned. Setup: capability calls, stable `EffectId`/request digest,
 authorization, provider idempotency-key scope/retention, status-query and
 reconciliation support, retry/replay horizon, compensation, privilege/
 non-compensability, and audit. Each capability maps exactly onto the `0.18.2`
-external-outcome states; plugins cannot select a stronger capability or
-reinterpret `OutcomeUnknown`. Goal: controlled hosted extension effects with
-truthful remote outcomes. Deliverables: host-call broker, typed effect-
-capability descriptors, outcome/reconciliation receipts, and manual-resolution
-boundary. Verification: unauthorized calls, replay, confused deputy, cross-
-tenant handles, request-digest substitution, provider acceptance plus lost
-response, idempotency expiry, forged success/reconciliation, forbidden blind
-retry, and partial failure pass. Exit criteria: every effect passes independent
-policy and ends known, durably reconciling, or explicitly assigned for
-authorized manual resolution. `v0.113.0 implementation stop reached. Run pentest for this exact commit.`
+execution state, remote outcome, resolution source/evidence, operational
+resolution workflow, and separate compensation state; plugins cannot select a
+stronger capability, synthesize provider evidence, close a privileged manual
+workflow, or reinterpret `OutcomeUnknown`. Goal: controlled hosted extension
+effects with truthful remote outcomes. Deliverables: host-call broker, typed
+effect-capability descriptors, distinct lifecycle/outcome/resolution/
+compensation receipts, reconciliation deadline/escalation boundary, and
+authorized manual-resolution boundary. Verification: unauthorized calls,
+replay, confused deputy, cross-tenant handles, request-digest substitution,
+provider acceptance plus lost response, idempotency expiry, forged success/
+resolution source, operator assessment presented as provider truth, late
+callback versus manual resolution, forbidden blind retry, privileged resolver
+impersonation, and partial failure pass. Exit criteria: every effect passes
+independent policy and its execution, provider truth, knowledge source,
+operational disposition, and compensation remain independently attributable.
+`v0.113.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.114.0` — Capability And Secret Handles
 Status: planned. Setup: manifests bind plugin digest, tenant, instance, action,

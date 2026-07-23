@@ -55,4 +55,8 @@ All notable Vitheim changes are documented here. The format follows
 - Removed the undeclared ripgrep dependency from repository verification so
   GitHub-hosted runners use portable `grep`/`git grep` policy, plan, link, SBOM,
   release-readiness, and tool-freshness checks.
+- Refined the closed roadmap without new versions by separating external-effect
+  lifecycle/provider truth/resolution/manual/compensation models, independently
+  disposing every rollup-derived surface, and restoring mechanically checked
+  Phase G network-call/crash-point verification.
 - Added local and GitHub verification gates without a crate publication path.

@@ -55,8 +55,12 @@ authorization semantics.
    never claims a distributed database/provider transaction or exactly-once
    remote execution. Every external effect has a stable identity, request
    digest, declared retry/idempotency/reconciliation/compensation capability,
-   and durable outcome state. An unknown privileged or non-compensable outcome
-   is reconciled or escalated, never blindly replayed.
+   and separately typed execution lifecycle, provider outcome, resolution
+   source/evidence, operational-resolution workflow, and compensation state.
+   Manual assessment never becomes verified provider truth. Unknown privileged
+   or non-compensable work is reconciled or escalated, never blindly replayed;
+   late provider evidence and manual decisions are retained and resolved under
+   fenced concurrency rules.
 9. Every untrusted parser, query, workflow, plugin, attachment, import, report,
    and export has explicit size, depth, time, memory, and work budgets.
 10. Every important result is explainable from commands, events, policy,
@@ -84,9 +88,13 @@ authorization semantics.
     its manifest is committed, integrity verified, externally checkpointed, and
     restore tested. A controlling mandatory-erasure, maximum-retention, or
     tenant-closure deletion obligation still proceeds when that proof is
-    unavailable; the rollup then remains non-authoritative, affected history
-    becomes unknown/unavailable, and an immutable disposition fact explains the
-    authority loss.
+    unavailable. Raw observations, rollup payload, source manifest, derived
+    result, cache/projection, export, and linkable checkpoint metadata each
+    receive an independent lifecycle decision. A rollup remains stored but non-
+    authoritative only when independently permitted; otherwise covered derived
+    surfaces are deleted or cryptographically erased, leaving only permitted
+    non-sensitive tombstone/authority-loss evidence. Affected history becomes
+    unknown/unavailable either way.
 18. Provenance-bearing domains reuse one N1 source/observation identity,
     correction/supersession, confidence-policy, and four-clock model.
 19. Secret plaintext is scoped, non-displayable, non-serializable through
@@ -98,7 +106,8 @@ authorization semantics.
 21. Every tenant-bearing durable, cached, indexed, backed-up, or externally
     copied surface registers its lifecycle contract. Export, hold, residency,
     topology migration, erasure, key destruction, restore, and closure cannot
-    silently omit a surface. External-copy disposition uses typed evidence
+    silently omit a surface or let related surfaces inherit one disposition
+    decision. External-copy disposition uses typed evidence
     strength and never equates a provider attestation, unconfirmed deletion
     request, or unverifiable previously disclosed plaintext with locally
     verified deletion or controlled-key cryptographic erasure.

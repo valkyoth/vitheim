@@ -40,9 +40,11 @@ Verification:
   authoritative aggregate stream and contains local durable effects only;
   provider/network dispatch and results are separate at-least-once transitions
   with no distributed exactly-once claim. Stable effect identity/request digest,
-  declared provider idempotency and replay horizon, durable unknown outcome,
-  reconciliation/compensation, and authorized manual-resolution tests prove an
-  ambiguous privileged or non-compensable effect is never blindly retried.
+  declared provider idempotency/replay horizon, distinct execution/provider-
+  outcome/resolution-evidence/operational-workflow/compensation models,
+  reconciliation deadlines/escalation, and authorized manual-resolution races
+  prove an ambiguous privileged or non-compensable effect is never blindly
+  retried and an assessment never becomes verified provider truth.
   Denial-only audit chains anchor;
   protected reads/downloads cannot release bytes before audit receipt;
   streaming completion/abort reconciles.
@@ -59,9 +61,11 @@ Verification:
   committed, integrity verified, externally checkpointed, and restored
   successfully.
   Controlling mandatory-erasure, maximum-retention, and closure exercises still
-  delete raw data when that proof is missing, keep the rollup non-authoritative,
-  expose affected history as unknown, and emit an immutable authority-loss
-  record.
+  delete raw data when that proof is missing and independently dispose rollup
+  payloads, source manifests, derived results, projections/caches, exports, and
+  linkable checkpoint metadata. A non-authoritative rollup remains only when
+  independently permitted; otherwise only allowed non-sensitive tombstone/
+  authority-loss evidence remains. Affected history is unknown either way.
   Registry evidence also proves `0.51.2` backfilled every earlier surface and
   mechanically gated every surface introduced thereafter without an outward
   dependency from foundation/domain crates.
