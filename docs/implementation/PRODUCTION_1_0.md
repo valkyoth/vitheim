@@ -21,8 +21,10 @@ Deliverables:
   catalog/connectors, optional federation/AI, and administration.
 - Supported single-node/HA/regional profiles; backup, restore, rebuild, upgrade,
   rollback, health, live/grant/service-principal execution authority, multi-kind
-  quota settlement/fair recovery capacity, backpressure, incident, and DR
-  runbooks.
+  quota settlement/fair recovery capacity, guarded grant-attempt claims, local
+  quota partitions/hierarchical capacity leases, authoritative-region failover,
+  backpressure, incident, and DR runbooks. Active/active authoritative multi-
+  region writes are explicitly unsupported.
 - Signed source/artifacts/checksums, SBOM, provenance, licenses, compatibility
   evidence, pentest report, and complete release notes.
 - A production support matrix that names the selected dependency/crypto/KMS,
@@ -66,6 +68,13 @@ Verification:
   lineage stream. Crash/reorder/duplicate and pre-issuance-revocation evidence
   proves delayed issuance cannot bypass revocation; successor creation
   atomically and permanently supersedes its predecessor in the owner stream.
+  Redemption evidence proves a co-located `GrantRedemptionGuard` is created,
+  revoked, and replaced beside the lineage owner, while dispatch advances only
+  the effect stream and atomically compare-and-claims one stable attempt plus
+  receipt/outbox. Revocation/final-attempt concurrency, crash after claim before
+  provider I/O, duplicate/substituted claim/receipt, target/version drift,
+  failover/restore, and invalid grant-plus-effect two-stream adapters prove
+  attempts cannot be duplicated or resurrected.
   Quota evidence proves bounded atomic claim sets and correct settlement for
   concurrency leases, consumable operations, provider-rate tokens, estimated
   liabilities, and retained bytes across their exact boundaries. Only provider-
@@ -77,7 +86,12 @@ Verification:
   immutable ordered membership to an opaque token/digest, and transitions as
   that exact set without member reacquisition. Concurrent overlap, partial-
   reservation crash/failover, token/member substitution, and restore tests prove
-  partial or corrupt sets are quarantined rather than reconstructed.
+  partial or corrupt sets are quarantined rather than reconstructed. Every set
+  shares one local quota partition with its work bundle; fenced hierarchical
+  capacity leases supply global/regional limits while conserving parent/child
+  allocation. Cross-partition set, lease over-allocation/reclamation/failover,
+  distributed work transaction, and active/active authoritative-write requests
+  fail closed.
   Provider-outage and hostile-tenant tests prove per-tenant/work-class ceilings,
   global fair share, starvation bounds, and scoped non-borrowable emergency
   capacity preserve bounded reconciliation and security cleanup.

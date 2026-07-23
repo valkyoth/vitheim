@@ -76,7 +76,14 @@ authorization semantics.
    later from an immutable approval receipt through outbox/process-manager work.
    Pre-issuance revocation is authoritative over delayed issuance, and successor
    creation atomically leaves its predecessor permanently non-redeemable in that
-   same owner stream. A reviewed capability declares `CommitBound` or
+   same owner stream. Redemption never advances that stream in the effect
+   transaction: a co-located, fenced `GrantRedemptionGuard` is local
+   transactional authority. The lineage-owner transaction creates/revokes/
+   replaces it; the effect transaction compare-and-claims one bound attempt and
+   atomically records its dispatch receipt/outbox. The shared guard serializes
+   revocation against
+   final-attempt claims, and restore cannot resurrect consumption. A reviewed
+   capability declares `CommitBound` or
    `CommitAndDispatch`, with the latter as default;
    privileged, destructive, secret-bearing, containment, and compensation
    effects always use the fenced single-use dispatch gate. Worker or lease
@@ -94,6 +101,11 @@ authorization semantics.
    thereafter has immutable membership; bundles transition that exact set
    without reacquisition. Idempotent settlement and recovery bind set plus claim
    identity, and partial/corrupt sets are quarantined rather than reconstructed.
+   Each set and work bundle share one local quota partition. Global/regional
+   limits allocate fenced hierarchical capacity leases into local partitions;
+   child capacity cannot exceed its parent and work never opens a cross-shard/
+   region transaction. The `1.0.0` topology uses authoritative-region writes
+   with fenced failover, not active/active authoritative multi-region writes.
    Compensation is accounted separately. Tenant/work-class
    partitioning, fair share, ceilings, starvation bounds, and a scoped emergency
    reserve keep reconciliation/security cleanup available without admitting

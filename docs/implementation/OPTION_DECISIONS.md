@@ -29,13 +29,21 @@ Status: planned.
 Setup: compare dedicated/shared tenancy for SQLite, PostgreSQL forced RLS,
 MySQL database-per-tenant/composite enforcement, MongoDB partitioning, and
 SurrealDB namespace/permission profiles against the same conformance suite.
-Goal: freeze exact production storage and tenant-isolation profiles from tested
-adapters; default candidates are SQLite single-node and PostgreSQL HA.
+Map local transaction domains for aggregate streams, redemption guards, effect
+work bundles, quota partitions, and hierarchical capacity leases. Reject any
+profile that needs a cross-shard/region distributed work transaction.
+Goal: freeze exact production storage, tenant-isolation, and local transaction-
+domain profiles from tested adapters; default candidates are SQLite single-node
+and PostgreSQL HA.
 Deliverables: supported/rejected profile matrix, capability probes, application
-and administrator threat boundaries, migration and portability consequences.
+and administrator threat boundaries, transaction-domain/co-location map,
+active/active rejection evidence, migration and portability consequences.
 Verification: twin-tenant collision, superuser/non-owner, pooling-state,
-constraint, backup/export, and fail-closed capability evidence is reviewed.
-Exit criteria: weaker isolation is rejected, not relabeled supported.
+constraint, non-co-located grant guard/effect bundle, cross-partition claim set,
+stale/duplicated capacity lease, advertised active/active authoritative writes,
+backup/export, and fail-closed capability evidence is reviewed.
+Exit criteria: weaker isolation, unavailable co-location, and any topology that
+requires a distributed work transaction are rejected, not relabeled supported.
 `v0.140.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.140.3` — Identity And Session Profile Decision
@@ -150,24 +158,36 @@ redemption, exactly one authoritative stream per grant lineage, bounded multi-
 kind quota transition atomicity with quota state as co-transactional local
 authority rather than another aggregate, and tenant/work-class partitioned fair
 reconciliation/security-cleanup capacity with a scoped emergency reserve;
-topology may tune capacity and consistency implementation but may not omit these
-controls.
+redemption uses a co-located fenced `GrantRedemptionGuard` so dispatch advances
+only the effect stream. Every quota set is local to its work transaction;
+global/regional limits allocate fenced hierarchical capacity leases into local
+partitions. Topology may tune capacity and consistency implementation but may
+not omit these controls or introduce a distributed work transaction. The
+`1.0.0` profile supports one authoritative write region per transaction domain
+with fenced failover; active/active authoritative multi-region writes are
+explicitly unsupported.
 Goal: select the exact profiles Phase O must certify.
 Deliverables: support matrix, trust/network boundaries, fencing/quorum model,
 dispatch-authorization consistency/failure model, quota consumption/refund
 and per-kind settlement mapping, canonical all-or-none claim-set reservation/
 exact-token consumption profile, grant ownership plus inline/dedicated issuance/
-revocation/successor behavior, per-tenant/global fair-share and starvation
-policy, emergency-reserve sizing/isolation, RPO/RTO, upgrade/rollback,
-observability, and operator responsibility decisions.
+revocation/successor behavior, redemption-guard placement/claim/receipt model,
+quota partition map and hierarchical capacity-lease allocation/reclamation/
+conservation profile, active/active rejection/capability behavior, per-tenant/
+global fair-share and starvation policy, emergency-reserve sizing/isolation,
+RPO/RTO, upgrade/rollback, observability, and operator responsibility decisions.
 Verification: failure-mode analysis covers partitions, split brain, key/service
 loss, policy/delegation revocation during dispatch, stale/forged dispatch
 receipts, grant replay/offline-human impersonation, duplicate refunds, cross-
 kind settlement, approval/grant crash-reorder-revocation/successor races,
+revocation/final-attempt claim race, crash-after-claim recovery, claim/receipt
+substitution, consumed-attempt restore, grant/effect two-stream mutation,
 overlapping-set deadlock/livelock, partial reservation/restore, token/digest/
-membership substitution, provider-outage tenant exhaustion, one-tenant unknown-
-outcome floods, per-tenant/global starvation, emergency-reserve borrowing,
-degraded dependencies, restore, capacity, and incident operations.
+membership substitution, cross-partition claim sets, hierarchical lease
+over-allocation/reclamation/failover, incompatible active/active topology,
+provider-outage tenant exhaustion, one-tenant unknown-outcome floods, per-
+tenant/global starvation, emergency-reserve borrowing, degraded dependencies,
+restore, capacity, and incident operations.
 Exit criteria: every `1.0.0` deployment claim maps to a Phase O test profile.
 `v0.140.6 implementation stop reached. Run pentest for this exact commit.`
 

@@ -60,9 +60,10 @@ external I/O; it never impersonates an initiating or approving human.
 `LiveSubjectAuthority` rechecks the live subject/session facts.
 `ServicePrincipalAuthority` rechecks the current principal, credential/proof,
 scope, and policy. `ApprovedExecutionGrant` validates its integrity receipt,
-exact bindings, window, remaining attempts, current tenant state, and current
-policy compatibility without requiring an approver's login session to remain
-alive. Session expiry alone does not revoke a grant. Explicit revocation, tenant
+exact bindings, window, guard-backed remaining-attempt state, current tenant
+state, and current policy compatibility without requiring an approver's login
+session to remain alive. Session expiry alone does not revoke a grant. Explicit
+revocation, tenant
 suspension, grant expiry/attempt exhaustion, or effect/request/target-version
 mismatch always denies redemption. Approver employment/eligibility loss or an
 authorization-relevant policy-version change revokes an unredeemed grant unless
@@ -82,14 +83,31 @@ intent can never make it redeemable. Successor creation and predecessor
 supersession occur in the same owner stream; the predecessor remains permanently
 non-redeemable, and replay cannot fork or reuse a generation identity.
 
-Successful redemption commits a fenced, single-use dispatch-authorization
-receipt for that exact attempt and binding. A change before that receipt denies/
-cancels dispatch, records the reason and audit evidence, and makes no provider
-call; a concurrent change after the receipt is retained as a race with an
-already admitted attempt, never rewritten as worker discretion. Lease ownership
-or worker identity grants no business capability. A worker cannot substitute
-tenant, subject, delegation, execution authority, capability, target, purpose,
-or request bytes; any binding mismatch requires a new authorized effect intent.
+Grant redemption and attempt consumption use a `GrantRedemptionGuard`, a local
+transactional authority like a uniqueness or quota claim, never a second
+aggregate stream. The lineage-owner transaction creates and fences the guard at
+issuance, revokes it with explicit revocation, and replaces it during atomic
+successor supersession. The guard binds grant lineage/generation, immutable
+approval receipt, effect/request/target/version, permitted-attempt ceiling,
+revocation epoch, and guard version. The dispatch transaction advances only the
+effect-owning aggregate while atomically compare-and-claiming one
+`GrantAttemptClaimId`/ordinal from the co-located guard and recording the exact
+single-use dispatch-authorization receipt/outbox intent. An idempotent retry
+with the same claim identity and digest observes that receipt; a different or
+substituted claim cannot reuse the attempt. Revocation and redemption serialize
+on the guard: a revocation that wins denies the claim, while a committed claim
+is retained as an already admitted attempt and is not rewritten as worker
+discretion. Crash after claim/receipt commit but before provider I/O resumes the
+committed outbox work without consuming another attempt.
+
+The lineage owner, redemption guard, and effect work bundle must share one local
+transaction domain even though only one aggregate stream advances in each
+transaction. Capability negotiation rejects a grant/effect topology that cannot
+provide that co-location; adapters may not atomically advance lineage and effect
+streams or substitute a later best-effort projection. Lease ownership or worker
+identity grants no business capability. A worker cannot substitute tenant,
+subject, delegation, execution authority, capability, target, purpose, or
+request bytes; any binding mismatch requires a new authorized effect intent.
 
 Quota accounting is an independent collection of state machines. Each effect
 owns a bounded `QuotaClaimSet`; each `QuotaClaim` has an opaque reservation ID,
@@ -122,6 +140,20 @@ reorders claims. Refund, release, settlement, and write-off transitions are
 idempotent against set identity/digest, claim identity, and transition identity.
 Restore and reconciliation verify the whole set and quarantine corruption or
 absence; they never reconstruct, expose, or settle a partial set.
+
+Every claim in an atomic set resides in the same local transactional quota
+partition as its work bundle. A wider global or regional limit is represented
+by a fenced hierarchical `QuotaCapacityLease` allocated to that partition in a
+separate transaction; local claim sets consume only the leased slice and never
+contact a parent partition during the work transaction. Lease identity, scope,
+epoch, amount, expiry/reclamation, and parent accounting are integrity bound,
+and aggregate child allocations cannot exceed parent capacity. A claim set
+cannot consume an expired or superseded epoch, and a parent cannot reallocate
+returned/expired capacity until fencing proves the prior child epoch unusable.
+It never opens a cross-shard or cross-region distributed transaction. The `1.0.0`
+topology supports one authoritative write region per transaction domain with
+fenced failover, not active/active authoritative writes across regions;
+incompatible claim-set placement fails capability negotiation.
 
 Only claims whose settlement policy depends on provider acceptance enter
 `HeldPendingOutcome`; such a claim continues to count against its governed
@@ -451,6 +483,11 @@ operations follow declared evidence rules; estimated liabilities hold and
 settle to actual cost/overage or audited write-off; retained-byte claims follow
 verified local allocation/deletion. Only provider-dependent claim kinds use
 `HeldPendingOutcome`. Compensation has a distinct bounded claim set.
+Require every set and consuming work bundle to share one transactional quota
+partition. Define hierarchical global/regional capacity leases, fencing,
+allocation/reclamation, and parent-versus-child conservation so wider limits
+are leased into local partitions before reservation rather than consulted
+through a distributed transaction.
 Partition reconciliation/security-cleanup capacity by tenant/work class with
 ceilings, global fair-share/starvation bounds, and a strictly scoped emergency
 reserve. The bounded claim-set representation is finalized into work bundles
@@ -464,9 +501,10 @@ machines, canonical claim-set codec/digest/token and ordering law, all-or-none
 reservation protocol, bounded claim-set/amount/unit types, capability settlement
 policies, exact-set evidence-bound refund/release/actual-cost settlement
 commands, distinct administrative adjustment/write-off command, whole-set
-restore/quarantine rules, partitioned fair control-plane capacity, deterministic
-memory adapter, recovery reconciler, leak/escalation monitor, and contention
-model.
+restore/quarantine rules, transaction-domain placement contract, hierarchical
+capacity-lease state machine/conservation model, partitioned fair control-plane
+capacity, deterministic memory adapter, recovery reconciler, leak/escalation
+monitor, and contention model.
 
 Verification: concurrent oversubscription, crash after reserve/use/refund,
 duplicate retry and refund, cancel/dispatch/refund races, indefinite held-
@@ -476,19 +514,24 @@ underestimated-cost overage, retained-byte deletion accounting, mixed multi-
 claim atomicity, concurrent overlapping sets, reversed-order deadlock/livelock,
 partial-reservation crash, immutable-membership add/remove/reorder substitution,
 token/digest mismatch, claim-set bound overflow, duplicate set/claim settlement,
-partial/corrupt set restore and reconciliation, provider-outage exhaustion, one-
-tenant reconciliation monopolization, tenant attempts to consume emergency
-reserve, global/per-tenant starvation, lease loss, integer overflow, forged
-refund/provider evidence, write-off misrepresented as provider refund, cross-
-tenant accounting, separate compensation accounting, and reconciliation tests
-pass.
+partial/corrupt set restore and reconciliation, cross-partition set rejection,
+parent/child capacity over-allocation, stale/expired lease epoch, lease
+reclamation race, failover allocation duplication, accidental cross-shard/
+cross-region transaction, incompatible active/active write topology, provider-
+outage exhaustion, one-tenant reconciliation monopolization, tenant attempts to
+consume emergency reserve, global/per-tenant starvation, lease loss, integer
+overflow, forged refund/provider evidence, write-off misrepresented as provider
+refund, cross-tenant accounting, separate compensation accounting, and
+reconciliation tests pass.
 
 Exit criteria: admitted work cannot exceed a durable quota through concurrency
 or retry; every claim kind settles at its documented boundary without treating
 all unknown outcomes alike; administrative adjustment remains visibly distinct
 from provider evidence; all-or-none exact-set linearization is deterministic,
-deadlock-free, and recoverable only as a whole; and exhausted or abusive tenants
-cannot block fair bounded reconciliation or security cleanup.
+deadlock-free, recoverable only as a whole, and local to one transactional quota
+partition; wider limits conserve capacity through fenced hierarchical leases
+without distributed work transactions; and exhausted or abusive tenants cannot
+block fair bounded reconciliation or security cleanup.
 `v0.18.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.18.2` — Atomic Timer, Activity, And Work Commit Family
@@ -537,7 +580,13 @@ grant shares the approval aggregate stream, while a dedicated grant uses one
 `ExecutionGrantLineage` stream created from the immutable approval receipt by an
 idempotent outbox/process manager. Pre-issuance revocation creates a terminal
 non-redeemable lineage/generation, and successor creation atomically supersedes
-its predecessor in that same owner stream.
+its predecessor in that same owner stream. Freeze redemption separately:
+`GrantRedemptionGuard` is co-transactional local authority created/fenced by the
+lineage-owner transaction and compare-and-claimed by the dispatch bundle. The
+dispatch transaction advances only the effect stream, atomically consumes one
+bound `GrantAttemptClaimId`, and records its fenced receipt/outbox intent;
+revocation versus claim linearizes on the guard. Grant lineage, guard, and
+effect work bundle must share a local transaction domain.
 
 Goal: prevent retries, lease loss, or crashes from separating asynchronous work
 completion evidence from the effects it emits.
@@ -550,8 +599,10 @@ codecs and state machines; reconciliation scheduler/escalation contract; and
 privileged-resolution policy facts; authorization-binding/freshness descriptors,
 execution-authority/grant codecs, issuance/revalidation/revocation commands,
 ownership/lineage/approval-receipt and pre-issuance-revocation contracts,
-redemption receipts, and exact-token bounded per-kind quota-disposition/refund/
-settlement codecs and state machines. Phase G workflow workers later specialize
+redemption-guard/attempt-claim codec and state machine, redemption receipts,
+transaction-domain placement/capability contract, and exact-token bounded per-
+kind quota-disposition/refund/settlement codecs and state machines. Phase G
+workflow workers later specialize
 the activity payload without weakening this commit boundary. The contract
 states at-least-once external execution explicitly and makes no distributed
 exactly-once claim. It distinguishes local commit/delivery success, provider
@@ -573,11 +624,18 @@ or approval version; replay/exhaust/revoke a grant immediately before dispatch;
 crash/reorder/duplicate approval-to-grant issuance; race revocation before
 delayed issuance; duplicate/fork a grant identity; create a successor without
 atomically superseding its predecessor; substitute approval receipt, target, or
-request bytes; use worker identity as business authority; split or partially
-restore a mixed quota claim set; reserve overlapping sets concurrently in
-opposite input order; deadlock/livelock; crash after partial reservation;
-add/remove/reorder a claim after digest; consume by reacquiring members; replay
-a set/claim transition; release concurrency based on remote uncertainty;
+request bytes; race revocation against an attempt claim; concurrently redeem the
+final attempt; crash after attempt claim/receipt but before provider I/O;
+duplicate or substitute attempt claim/receipt; drift the effect or target
+version during claim; restore/fail over a consumed attempt; try to advance grant
+and effect streams atomically; place lineage/guard/effect outside one transaction
+domain; use worker identity as business authority; split or partially restore a
+mixed quota claim set; reserve overlapping sets concurrently in opposite input
+order; deadlock/livelock; crash after partial reservation; add/remove/reorder a
+claim after digest; consume by reacquiring members; place one set across quota
+partitions; exceed or duplicate a hierarchical capacity lease; attempt a cross-
+shard/region work transaction; replay a set/claim transition; release
+concurrency based on remote uncertainty;
 refund a transmitted rate token; duplicate or forge a refund/provider
 settlement; disguise administrative write-off as provider evidence; leak an
 unknown-outcome liability; monopolize reconciliation capacity with one tenant;
@@ -595,12 +653,17 @@ authority, and exact immutable binding without impersonating an offline human.
 Every grant lineage has one authoritative owner stream; cross-aggregate issuance
 uses immutable approval receipt plus outbox/process-manager continuation,
 pre-issuance revocation wins, and superseded generations never become redeemable.
+Every redemption attempt linearizes through the co-located fenced guard while
+the bundle advances only the effect stream; claim/receipt retry is idempotent,
+revocation cannot lose to stale guard state, and restore cannot resurrect a
+consumed attempt.
 Every bounded quota claim settles by kind at its declared boundary; refunds are
 evidence-bound and exactly once, write-offs remain distinct, compensation is
 accounted separately, and each exact immutable set reserves all-or-none,
-linearizes without an extra aggregate stream, and restores/reconciles only as a
-whole. Fair partitioned recovery capacity cannot be monopolized or borrowed for
-tenant business work.
+linearizes without an extra aggregate stream inside one quota partition, and
+restores/reconciles only as a whole. Hierarchical leases conserve wider capacity
+without a cross-partition work transaction. Fair partitioned recovery capacity
+cannot be monopolized or borrowed for tenant business work.
 `v0.18.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface

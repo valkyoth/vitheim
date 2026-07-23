@@ -67,21 +67,25 @@ and outbox intent carrying stable lineage/generation identity; the dedicated
 grant process manager issues later without advancing the change stream again.
 Revocation may establish a non-redeemable lineage before delayed issuance, and
 successors preserve lineage while atomically and permanently superseding the
-prior generation in the one owner stream.
+prior generation in the one owner stream. The lineage-owner transaction also
+creates, revokes, or replaces the fenced local redemption guard co-located with
+the exact change-effect work bundle; it never leaves attempt authority to an
+eventually consistent projection.
 Goal: govern service change and scheduled execution without turning an old
 interactive session into ambient worker authority.
 Deliverables: change aggregate, assessment, calendar/conflict integration,
 approval-to-execution-grant command/receipt, revocation/revalidation transitions,
 inline-versus-dedicated ownership profile, dedicated issuance process-manager
-contract, lineage/successor projection, and deterministic topology/authority
-fixtures.
+contract, lineage/successor projection, redemption-guard placement/maintenance
+contract, and deterministic topology/authority fixtures.
 Verification: approval/window/backout bypass, self-approval, conflict races,
 expired human session during valid scheduled execution, worker impersonation,
 grant replay/attempt exhaustion, approval or policy-version drift, approver
 departure, target-version/request substitution, revocation immediately before
 dispatch, crash/reorder/duplicate approval-to-grant issuance, revocation before
 delayed issuance, duplicate grant identity, successor/predecessor fork,
-emergency abuse, fake topology differential, and replay pass; real graph
+missing/stale/non-co-located redemption guard, emergency abuse, fake topology
+differential, and replay pass; real graph
 integration repeats at `0.88.0`.
 Exit criteria: execution needs an exact valid approved plan and redeemable
 authority; no worker relies on an approving human remaining logged in.

@@ -86,11 +86,20 @@ require_text docs/implementation/PHASE_B.md \
     'Every grant lineage declares exactly one authoritative stream owner.' \
     'single authoritative grant-lineage owner'
 require_text docs/implementation/PHASE_B.md \
+    'Grant redemption and attempt consumption use a `GrantRedemptionGuard`' \
+    'local grant-redemption linearization'
+require_text docs/implementation/PHASE_B.md \
     'bounded `QuotaClaimSet`' \
     'bounded multi-kind quota claims'
 require_text docs/implementation/PHASE_B.md \
     'Quota ledgers and claim sets are local transactional authorities' \
     'quota claim sets are not aggregate streams'
+require_text docs/implementation/PHASE_B.md \
+    'Every claim in an atomic set resides in the same local transactional quota' \
+    'single-partition quota topology'
+require_text docs/implementation/OPTION_DECISIONS.md \
+    'active/active authoritative multi-region writes are' \
+    'active-active authoritative writes unsupported'
 require_text docs/implementation/PHASE_B.md \
     '`ProviderRateToken`:' \
     'provider-rate quota settlement'

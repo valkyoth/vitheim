@@ -25,18 +25,21 @@ lineage or emits an immutable approval receipt/outbox intent for one dedicated
 lineage stream. A workflow transition never advances both. Dedicated issuance
 is idempotent by lineage/generation and approval-receipt digest; pre-issuance
 revocation wins, and a successor atomically supersedes its predecessor in the
-lineage owner stream.
+lineage owner stream. Issuance/revocation/supersession also create, fence, or
+replace the co-located local redemption guard without advancing another
+aggregate stream.
 Goal: safe human workflow stops that can authorize bounded scheduled work
 without preserving an interactive login session.
 Deliverables: activity/approval models, grant issuance/revalidation/revocation
 commands and receipts, ownership declaration, dedicated grant process-manager
-contract, lineage/successor state, and workflow integration.
+contract, lineage/successor state, redemption-guard placement/maintenance
+contract, and workflow integration.
 Verification: theft, self-approval, stale claim, duplicate completion, grant
 issuance from a non-approval task, missing quorum/separation, expired approver
 session, approver departure, approval-version drift, grant replay/attempt
 exhaustion, target substitution, approval-to-issuance crash/reorder/duplicate,
 revocation before delayed issuance, duplicate generation, successor fork,
-hidden fields, and tenant isolation pass.
+guard omission or stale projection, hidden fields, and tenant isolation pass.
 Exit criteria: human decisions require current authority when made; later work
 uses only an exact independently redeemable grant, never an offline human
 identity. `v0.63.0 implementation stop reached. Run pentest for this exact commit.`
@@ -46,20 +49,26 @@ Status: planned. Setup: define logical deadlines, scheduled IDs, retry/backoff,
 jitter input, cancellation, quotas, and specialize the `0.18.2` atomic timer
 dispatch and later result variants without weakening their fence/receipt/local-
 effect boundaries. A scheduled item binds its execution-authority reference,
-not-before/expiry, remaining attempts, effect/request/target digest, and target
-version. A timer supplies time and wakeup only: it cannot create authority.
+not-before/expiry, attempt ceiling and redemption-guard reference, effect/
+request/target digest, and target version.
+A timer supplies time and wakeup only: it cannot create authority.
 Dispatch redeems live-subject, approved-grant, or service-principal authority
 under current rules; grant-backed work does not require an approver's expired
-session. Remote work executes only after committed authorized dispatch and
+session. Approved-grant dispatch compare-and-claims the exact fenced local
+redemption guard in the effect transaction; it never advances grant and effect
+streams together. Remote work executes only after committed authorized dispatch and
 returns through a separate activity-result/consumer bundle. Goal: crash-safe
 time and authority behavior without a distributed exactly-once claim.
 Deliverables: timer dispatch/result effects, execution-authority/grant reference
-codec, redemption/cancellation evidence, scheduler bridge, and atomic-variant integration
-fixtures. Verification: clock jumps, retry storms, duplicate wakeups/results,
+codec, redemption-guard/attempt-claim and cancellation evidence, scheduler
+bridge, and atomic-variant integration fixtures. Verification: clock jumps,
+retry storms, duplicate wakeups/results,
 cancellation/revocation races, not-before/expiry boundaries, grant replay and
-attempt exhaustion, session expiry, approver/policy/target-version drift, stale
-fence, dispatch/completion collapse, receipt/effect split, remote-call-in-
-transaction rejection, overflow, and replay pass.
+attempt exhaustion, concurrent final attempt, crash after claim before provider
+I/O, duplicate/substituted claim or receipt, consumed-attempt failover/restore,
+session expiry, approver/policy/target-version drift, stale fence, grant/effect
+two-stream rejection, dispatch/completion collapse, receipt/effect split,
+remote-call-in-transaction rejection, overflow, and replay pass.
 Exit criteria: timers cannot create uncontrolled or unreceipted work, and remote
 execution remains explicitly at least once and independently authorized.
 `v0.64.0 implementation stop reached. Run pentest for this exact commit.`
@@ -121,7 +130,8 @@ the `0.18.2` activity/poison variants, `0.30.1` queue semantics, poison policy,
 drain, failover, commit-and-dispatch authorization freshness, all three typed
 execution authorities, immutable effect bindings, bounded multi-kind quota
 claim-set token linearization, grant-lineage ownership/process management, fair
-partitioned control-plane capacity, and `0.51.2`
+partitioned control-plane capacity, grant-redemption-guard and hierarchical
+quota-capacity-lease topology, and `0.51.2`
 tenant-data-surface registry entries, Phase E workflow contract fixtures, and
 `0.39.1–0.39.3` on-call/
 paging/notification process-manager scenarios. Goal: durable multi-worker
@@ -129,8 +139,9 @@ execution. Deliverables: hosted worker orchestration, authorization cases,
 external-effect reconciler/manual queue, ITSM and response-delivery integration
 retests, worker-self-authenticated execution-authority redemption, single-use
 fenced dispatch receipts, grant issuance/revocation/lineage process manager,
-exact-token per-kind quota settlement, fair partitioned recovery lanes, and
-operational evidence.
+co-located redemption-guard/attempt-claim handling, exact-token local per-kind
+quota settlement with hierarchical capacity leases, fair partitioned recovery
+lanes, and operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
 receipt/effect split, network-call-in-transaction rejection, crash points,
 stale fencing commits, poison/dead-letter split, quota/effect split, poison
@@ -144,10 +155,15 @@ commit through lease and dispatch, forged/replayed dispatch authorization,
 worker impersonation of an offline approver, valid scheduled grant after session
 expiry, grant replay/attempt exhaustion, approval/policy/approver/target-version
 drift, approval-to-grant crash/reorder/duplicate, pre-issuance revocation,
-successor/predecessor fork, service-principal scope confusion, worker confused
-deputy or target/request substitution, mixed quota-claim atomicity, overlapping-
-set deadlock/livelock, partial reservation/recovery, token/digest/membership
-substitution, failover between reservation and exact-set consumption,
+successor/predecessor fork, revocation/final-attempt claim race, crash after
+claim before provider I/O, duplicate/substituted claim/receipt, effect/target
+drift, consumed-attempt failover/restore, grant/effect two-stream mutation,
+service-principal scope confusion, worker confused deputy or target/request
+substitution, mixed quota-claim atomicity, overlapping-set deadlock/livelock,
+partial reservation/recovery, token/digest/membership substitution, cross-
+partition claim set, hierarchical capacity-lease over-allocation/reclamation/
+failover, incompatible active/active region, failover between reservation and
+exact-set consumption,
 concurrency release under unknown remote outcome, transmitted rate-token refund,
 estimated-to-actual cost
 settlement, retained-byte accounting, write-off/provider-evidence confusion,
@@ -162,9 +178,11 @@ evidence, manual workflow, and compensation remain distinguishable through
 failover. Every dispatch proves its declared authorization freshness and exact
 binding by redeeming typed authority without human impersonation. Every grant
 lineage retains one authoritative owner through issuance, revocation, and
-successor creation. Every exact immutable quota set remains local transactional
-authority, reserves all-or-none, and settles by kind; eligible refunds occur
-exactly once,
+successor creation; every attempt is claimed through a co-located fenced guard
+while only the effect stream advances. Every exact immutable quota set remains
+local transactional authority in one partition, reserves all-or-none, and
+settles by kind; hierarchical leases conserve wider capacity without a
+distributed work transaction; eligible refunds occur exactly once,
 administrative write-off remains distinct, compensation is separately
 accounted, fair recovery remains available under hostile tenant exhaustion, and
 every workflow interface/data surface is registered.

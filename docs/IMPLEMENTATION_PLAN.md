@@ -73,6 +73,13 @@ immutable approval receipt and outbox/process manager create one dedicated
 lineage stream later. Pre-issuance revocation defeats delayed issuance;
 successors preserve lineage and leave superseded generations permanently non-
 redeemable without a two-stream transaction.
+Redemption uses a co-located fenced `GrantRedemptionGuard` as transactional
+local authority. Issuance/revocation/successor transactions maintain it beside
+the one lineage-owner stream; dispatch compare-and-claims one stable attempt
+identity beside the effect stream and records the receipt/outbox atomically.
+Revocation versus redemption serializes on that guard, retry cannot consume a
+second attempt, and capability negotiation rejects non-co-located topologies or
+grant/effect two-stream mutation.
 Each effect carries a bounded atomic set of typed quota claims with independent
 amount/unit, settlement policy, and admission/lease/dispatch/transmission/
 storage boundary. Concurrency releases with the local lease; operation, rate,
@@ -85,6 +92,12 @@ under canonical deadlock-free ordering, bind immutable ordered membership to an
 opaque token/digest, and are consumed/settled idempotently as that exact set
 without member reacquisition. Restore/reconciliation accepts the complete
 verified set or quarantines it; partial reconstruction is forbidden.
+Each set and work bundle reside in one local quota partition. Wider global or
+regional limits use fenced hierarchical capacity leases allocated into that
+partition before work admission; parent/child capacity is conserved and a work
+bundle never starts a distributed cross-shard/region transaction. The `1.0.0`
+profile supports authoritative-region writes plus fenced failover and rejects
+active/active authoritative multi-region writes.
 Tenant/work-class
 partitioning, fair share, ceilings, starvation bounds, and a scoped emergency
 reserve protect reconciliation/security cleanup from tenant exhaustion and
@@ -113,9 +126,10 @@ action, resource, fields, purpose, obligations, audit behavior, and negative
 cases in that conformance registry before exit. External effects additionally
 register intent-commit and dispatch enforcement points, immutable bindings,
 freshness and execution-authority profile, grant issuance/redemption/revocation,
-grant owner/lineage/successor/outbox causation, bounded quota-claim kinds/
-boundaries/settlement, exact-set token/digest/linearization, refund/write-off
-evidence, and compensation/recovery-capacity behavior.
+grant owner/lineage/successor/outbox causation, redemption-guard/attempt-claim
+placement and receipt, bounded quota-claim kinds/boundaries/settlement,
+exact-set token/digest/linearization, quota partition/capacity-lease topology,
+refund/write-off evidence, and compensation/recovery-capacity behavior.
 
 At each implementation stop: do not tag, publish, or begin the next milestone.
 Pentest the exact commit, fix every blocking finding, rerun all gates, obtain a

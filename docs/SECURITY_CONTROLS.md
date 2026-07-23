@@ -67,7 +67,12 @@ audit decision.
   aggregate; dedicated ownership uses immutable approval receipt plus outbox/
   process-manager continuation. Pre-issuance revocation wins, generation
   identities are unique, and a successor atomically leaves the superseded grant
-  permanently non-redeemable in that owner stream.
+  permanently non-redeemable in that owner stream. Redemption is linearized by
+  a co-located fenced local `GrantRedemptionGuard`: lineage-owner transitions
+  create/revoke/replace it, while dispatch advances only the effect stream and
+  atomically compare-and-claims one bound attempt plus receipt/outbox. The guard
+  serializes revocation/final-attempt races; retries and restore cannot create
+  or resurrect consumption, and non-co-located or two-stream adapters fail.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown
@@ -80,7 +85,11 @@ audit decision.
   ordering reserves all members or none, an opaque token/digest freezes ordered
   membership, bundles never reacquire individual members, transitions are
   idempotent by set/claim identity, and partial restore/reconciliation is
-  quarantined. Per-tenant/work-class
+  quarantined. Each set shares one local quota partition with its work bundle;
+  wider limits allocate fenced hierarchical capacity leases into local
+  partitions and conserve parent/child capacity without distributed work
+  transactions. Active/active authoritative multi-region writes are unsupported
+  at `1.0.0`; incompatible placement fails closed. Per-tenant/work-class
   ceilings, fair share, starvation bounds, and a scoped emergency reserve keep
   recovery available without tenant borrowing or monopolization.
 - Capability-limited plugins and integrations; opaque secret handles and

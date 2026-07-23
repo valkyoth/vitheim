@@ -74,4 +74,9 @@ All notable Vitheim changes are documented here. The format follows
   outbox-driven dedicated issuance and revocation-safe successors, while quota
   claim sets reserve all-or-none under canonical ordering and transition or
   recover only through their exact immutable token/digest.
+- Closed the remaining redemption/topology ambiguity without adding versions:
+  grant attempts now linearize through a co-located fenced local guard while
+  dispatch advances only the effect stream; quota sets stay in one local
+  partition and wider limits use conserved hierarchical capacity leases.
+  `1.0.0` explicitly rejects active/active authoritative multi-region writes.
 - Added local and GitHub verification gates without a crate publication path.
