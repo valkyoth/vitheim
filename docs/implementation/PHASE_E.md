@@ -51,7 +51,7 @@ expiry bypass, fake-port visibility pass; real search differential repeats at
 Status: planned. Setup: freeze risk, plans, window, affected-topology port/fake,
 conflicts, approval, implementation, validation, backout, and emergency rules;
 Phase I graph is not yet an implementation dependency. An approval command for
-scheduled implementation may issue an `ApprovedExecutionGrant` only after
+scheduled implementation may authorize an `ApprovedExecutionGrant` only after
 freezing the change/plan version, exact effect/request/target digests, affected
 target version, purpose, window/not-before/expiry, permitted attempts,
 approvers/quorum, approval assurance, separation of duties, policy version, and
@@ -60,20 +60,33 @@ grant; it never adopts an offline approver's identity. Human session expiry
 alone does not revoke the grant, while target drift, explicit revocation,
 tenant suspension, attempt/expiry exhaustion, approver eligibility loss, or
 authorization-policy drift follows the fail-closed `0.18.2` rules and requires
-a successor approval/revalidation grant.
+a successor approval/revalidation grant. Each change type declares grant
+ownership. If the change aggregate owns the lineage, approval and grant issuance
+are events in that one stream. Otherwise approval commits an immutable receipt
+and outbox intent carrying stable lineage/generation identity; the dedicated
+grant process manager issues later without advancing the change stream again.
+Revocation may establish a non-redeemable lineage before delayed issuance, and
+successors preserve lineage while atomically and permanently superseding the
+prior generation in the one owner stream.
 Goal: govern service change and scheduled execution without turning an old
 interactive session into ambient worker authority.
 Deliverables: change aggregate, assessment, calendar/conflict integration,
 approval-to-execution-grant command/receipt, revocation/revalidation transitions,
-and deterministic topology/authority fixtures.
+inline-versus-dedicated ownership profile, dedicated issuance process-manager
+contract, lineage/successor projection, and deterministic topology/authority
+fixtures.
 Verification: approval/window/backout bypass, self-approval, conflict races,
 expired human session during valid scheduled execution, worker impersonation,
 grant replay/attempt exhaustion, approval or policy-version drift, approver
 departure, target-version/request substitution, revocation immediately before
-dispatch, emergency abuse, fake topology differential, and replay pass; real
-graph integration repeats at `0.88.0`.
+dispatch, crash/reorder/duplicate approval-to-grant issuance, revocation before
+delayed issuance, duplicate grant identity, successor/predecessor fork,
+emergency abuse, fake topology differential, and replay pass; real graph
+integration repeats at `0.88.0`.
 Exit criteria: execution needs an exact valid approved plan and redeemable
 authority; no worker relies on an approving human remaining logged in.
+Inline ownership advances only the change stream; dedicated ownership uses an
+immutable receipt and outbox continuation, never a hidden two-stream commit.
 `v0.46.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.47.0` — Release And Deployment Records

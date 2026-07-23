@@ -83,8 +83,14 @@ require_text docs/implementation/PHASE_B.md \
     '`EffectExecutionAuthority`:' \
     'typed delayed execution authority'
 require_text docs/implementation/PHASE_B.md \
+    'Every grant lineage declares exactly one authoritative stream owner.' \
+    'single authoritative grant-lineage owner'
+require_text docs/implementation/PHASE_B.md \
     'bounded `QuotaClaimSet`' \
     'bounded multi-kind quota claims'
+require_text docs/implementation/PHASE_B.md \
+    'Quota ledgers and claim sets are local transactional authorities' \
+    'quota claim sets are not aggregate streams'
 require_text docs/implementation/PHASE_B.md \
     '`ProviderRateToken`:' \
     'provider-rate quota settlement'
@@ -103,6 +109,9 @@ require_text docs/implementation/PHASE_G.md \
 require_text docs/implementation/PHASE_G.md \
     'A timer supplies time and wakeup only: it cannot create authority.' \
     'timer cannot create authority'
+require_text docs/implementation/PHASE_O.md \
+    'whole quota claim-set digest/member restoration' \
+    'whole quota-set disaster recovery'
 
 if [ "$failed" -ne 0 ]; then
     exit 1

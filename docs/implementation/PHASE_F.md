@@ -379,18 +379,23 @@ whether dispatch authority is mandatory. Also register each permitted
 `EffectExecutionAuthority` (`LiveSubjectAuthority`,
 `ApprovedExecutionGrant`, or `ServicePrincipalAuthority`), its issuer/
 redemption/revocation enforcement points, offline-human behavior, current-policy
-facts, and required approval/quorum/separation rules. Only interfaces
+facts, required approval/quorum/separation rules, authoritative grant-lineage
+owner, immutable approval-receipt/outbox causation, generation uniqueness,
+pre-issuance revocation, and successor supersession. Only interfaces
 implemented through Phase F are instantiated now; later surfaces must register
 themselves before their own milestone can exit. Goal: preserve policy end to end.
 Deliverables: redaction engine, typed visible DTOs, obligation executor, and
 compile/registration gate requiring an authorization case for every interface
 and effect intent, grant issuance/revalidation/revocation, authority redemption,
-and provider-dispatch enforcement points.
+grant ownership/process-manager continuation, and provider-dispatch enforcement
+points.
 Verification: API/search/report/export/notification/cache/AI leakage, derived inference,
 missing effect freshness/binding registration, unsafe `CommitBound`
 classification, missing/ambiguous execution-authority mode, approval grant
 issued without quorum or separation, offline-human impersonation, dispatch
-revocation, target substitution, and revocation pass.
+revocation, ambiguous/two-stream grant ownership, approval-receipt substitution,
+pre-issuance revocation loss, successor fork, target substitution, and
+revocation pass.
 Exit criteria: hidden data cannot reappear downstream, and no external effect
 can bypass its declared commit/grant/redemption/dispatch authorization gates.
 `v0.58.0 implementation stop reached. Run pentest for this exact commit.`
@@ -425,7 +430,8 @@ implemented and every declared future interface schema from the generated
 registry; include token audiences, credential/policy versions, external-effect
 commit/dispatch enforcement points, immutable effect bindings, and freshness
 profiles; enumerate live-subject, approved-grant, and service-principal
-execution-authority issuance/redemption/revocation cases. Goal: prove
+execution-authority issuance/redemption/revocation cases plus inline/dedicated
+grant ownership and lineage cases. Goal: prove
 equivalent deny-by-default policy independent of authentication mechanism and
 make later registration mechanically mandatory. Deliverables: generated
 matrix, negative corpus, human-versus-service-principal differential tests,
@@ -438,7 +444,9 @@ replay-cache limitations, cache/index lag, commit-to-lease-to-dispatch policy/
 delegation/employment/tenant/target changes, forged dispatch receipt, target or
 request substitution, expired human session, grant forgery/replay/attempt
 exhaustion, approval/quorum/separation drift, approver departure, policy-version
-revalidation, service-principal scope/audience confusion, worker confused
+revalidation, approval-to-grant crash/reorder/duplicate, immutable-receipt/
+generation substitution, pre-issuance revocation, successor/predecessor fork,
+service-principal scope/audience confusion, worker confused
 deputy, unsafe low-risk profile, break-glass, and differential adapters pass.
 Exit criteria: no principal kind or
 authority-bearing interface lacks a negative case, and every delayed effect is

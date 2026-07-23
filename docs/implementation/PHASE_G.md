@@ -11,22 +11,32 @@ Status: planned. Setup: define state, step budget, yielded effects, replay input
 ## `0.63.0` — Human Tasks And Approvals
 Status: planned. Setup: bind task actor eligibility, claim, completion schema,
 approval separation, expiry, approval decision identity/version, quorum, and
-assurance. A designated approval node may emit an `ApprovedExecutionGrant`
-through the authorized `0.18.2` grant-issuance command only when it binds the
+assurance. A designated approval node may authorize an `ApprovedExecutionGrant`
+through the `0.18.2` inline issuance or dedicated issuance-intent command only
+when it binds the
 exact effect/request/target and target version, tenant, purpose, not-before/
 expiry, attempts, policy version, revocation conditions, and separation of
 duties. Ordinary task completion emits no execution authority. Approver session
 expiry after issuance does not require worker impersonation or invalidate the
 grant by itself; approver eligibility loss and policy drift require the defined
 fail-closed successor-grant revalidation.
+The workflow definition declares whether the approval aggregate owns the grant
+lineage or emits an immutable approval receipt/outbox intent for one dedicated
+lineage stream. A workflow transition never advances both. Dedicated issuance
+is idempotent by lineage/generation and approval-receipt digest; pre-issuance
+revocation wins, and a successor atomically supersedes its predecessor in the
+lineage owner stream.
 Goal: safe human workflow stops that can authorize bounded scheduled work
 without preserving an interactive login session.
 Deliverables: activity/approval models, grant issuance/revalidation/revocation
-commands and receipts, and workflow integration.
+commands and receipts, ownership declaration, dedicated grant process-manager
+contract, lineage/successor state, and workflow integration.
 Verification: theft, self-approval, stale claim, duplicate completion, grant
 issuance from a non-approval task, missing quorum/separation, expired approver
 session, approver departure, approval-version drift, grant replay/attempt
-exhaustion, target substitution, hidden fields, and tenant isolation pass.
+exhaustion, target substitution, approval-to-issuance crash/reorder/duplicate,
+revocation before delayed issuance, duplicate generation, successor fork,
+hidden fields, and tenant isolation pass.
 Exit criteria: human decisions require current authority when made; later work
 uses only an exact independently redeemable grant, never an offline human
 identity. `v0.63.0 implementation stop reached. Run pentest for this exact commit.`
@@ -110,15 +120,17 @@ Status: planned. Setup: define leases/fencing, activity idempotency, specialize
 the `0.18.2` activity/poison variants, `0.30.1` queue semantics, poison policy,
 drain, failover, commit-and-dispatch authorization freshness, all three typed
 execution authorities, immutable effect bindings, bounded multi-kind quota
-claim settlement, fair partitioned control-plane capacity, and `0.51.2`
+claim-set token linearization, grant-lineage ownership/process management, fair
+partitioned control-plane capacity, and `0.51.2`
 tenant-data-surface registry entries, Phase E workflow contract fixtures, and
 `0.39.1–0.39.3` on-call/
 paging/notification process-manager scenarios. Goal: durable multi-worker
 execution. Deliverables: hosted worker orchestration, authorization cases,
 external-effect reconciler/manual queue, ITSM and response-delivery integration
 retests, worker-self-authenticated execution-authority redemption, single-use
-fenced dispatch receipts, per-kind quota settlement, fair partitioned recovery
-lanes, and operational evidence.
+fenced dispatch receipts, grant issuance/revocation/lineage process manager,
+exact-token per-kind quota settlement, fair partitioned recovery lanes, and
+operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
 receipt/effect split, network-call-in-transaction rejection, crash points,
 stale fencing commits, poison/dead-letter split, quota/effect split, poison
@@ -131,9 +143,13 @@ privileged resolution, policy/delegation/employment/tenant/target changes from
 commit through lease and dispatch, forged/replayed dispatch authorization,
 worker impersonation of an offline approver, valid scheduled grant after session
 expiry, grant replay/attempt exhaustion, approval/policy/approver/target-version
-drift, service-principal scope confusion, worker confused deputy or target/
-request substitution, mixed quota-claim atomicity, concurrency release under
-unknown remote outcome, transmitted rate-token refund, estimated-to-actual cost
+drift, approval-to-grant crash/reorder/duplicate, pre-issuance revocation,
+successor/predecessor fork, service-principal scope confusion, worker confused
+deputy or target/request substitution, mixed quota-claim atomicity, overlapping-
+set deadlock/livelock, partial reservation/recovery, token/digest/membership
+substitution, failover between reservation and exact-set consumption,
+concurrency release under unknown remote outcome, transmitted rate-token refund,
+estimated-to-actual cost
 settlement, retained-byte accounting, write-off/provider-evidence confusion,
 duplicate/forged refund, unknown-liability leak, compensation claim reuse,
 provider outage under tenant exhaustion, per-tenant/global recovery starvation
@@ -144,8 +160,11 @@ work variants prevent duplicate local protected commits and detect/reconcile
 possible remote duplication. Execution state, provider outcome, resolution
 evidence, manual workflow, and compensation remain distinguishable through
 failover. Every dispatch proves its declared authorization freshness and exact
-binding by redeeming typed authority without human impersonation. Every bounded
-quota claim settles by kind, eligible refunds occur exactly once,
+binding by redeeming typed authority without human impersonation. Every grant
+lineage retains one authoritative owner through issuance, revocation, and
+successor creation. Every exact immutable quota set remains local transactional
+authority, reserves all-or-none, and settles by kind; eligible refunds occur
+exactly once,
 administrative write-off remains distinct, compensation is separately
 accounted, fair recovery remains available under hostile tenant exhaustion, and
 every workflow interface/data surface is registered.

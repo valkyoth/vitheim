@@ -69,4 +69,9 @@ All notable Vitheim changes are documented here. The format follows
   authority without impersonating offline humans; quota accounting now uses
   bounded multi-kind claims with distinct concurrency/rate/cost/storage
   settlement and fairly partitioned recovery capacity.
+- Closed the final transaction-model ambiguities without adding versions:
+  execution-grant lineages now have one explicit authoritative owner with
+  outbox-driven dedicated issuance and revocation-safe successors, while quota
+  claim sets reserve all-or-none under canonical ordering and transition or
+  recover only through their exact immutable token/digest.
 - Added local and GitHub verification gates without a crate publication path.

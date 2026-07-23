@@ -70,8 +70,14 @@ authorization semantics.
    revocation rules. The worker authenticates as itself, never as an offline
    human; session expiry alone does not invalidate a valid grant, while target
    drift, explicit revocation, tenant suspension, exhausted window/attempts, and
-   required approver/policy revalidation fail closed. A reviewed capability
-   declares `CommitBound` or `CommitAndDispatch`, with the latter as default;
+   required approver/policy revalidation fail closed. Each grant lineage has
+   exactly one authoritative owner stream. Inline
+   approval/grant state advances one aggregate; a dedicated lineage is created
+   later from an immutable approval receipt through outbox/process-manager work.
+   Pre-issuance revocation is authoritative over delayed issuance, and successor
+   creation atomically leaves its predecessor permanently non-redeemable in that
+   same owner stream. A reviewed capability declares `CommitBound` or
+   `CommitAndDispatch`, with the latter as default;
    privileged, destructive, secret-bearing, containment, and compensation
    effects always use the fenced single-use dispatch gate. Worker or lease
    identity never grants business authority, and a changed binding requires a
@@ -82,7 +88,13 @@ authorization semantics.
    become non-refundable at transmission; estimated liabilities hold and settle
    to actual cost or distinct audited write-off; retained bytes follow verified
    local allocation/deletion. Only provider-dependent claims remain held for
-   unknown outcomes. Compensation is accounted separately. Tenant/work-class
+   unknown outcomes. Quota ledgers/claim sets are co-transactional local
+   authority, not aggregate streams. Each canonical set reserves all-or-none
+   under deadlock-free resource ordering, returns an opaque token/digest, and
+   thereafter has immutable membership; bundles transition that exact set
+   without reacquisition. Idempotent settlement and recovery bind set plus claim
+   identity, and partial/corrupt sets are quarantined rather than reconstructed.
+   Compensation is accounted separately. Tenant/work-class
    partitioning, fair share, ceilings, starvation bounds, and a scoped emergency
    reserve keep reconciliation/security cleanup available without admitting
    tenant work or allowing one tenant to monopolize recovery.

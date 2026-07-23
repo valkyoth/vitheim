@@ -146,23 +146,28 @@ Setup: compare modular all-in-one, split services, single-node, HA, regional,
 orchestrator, package/image, authoritative-region, and recovery choices. Every
 profile must preserve the single-use dispatch-authorization gate, current
 policy/identity/delegation/tenant/target reads, typed execution-authority
-redemption, bounded multi-kind quota transition atomicity, and tenant/work-class
-partitioned fair reconciliation/security-cleanup capacity with a scoped
-emergency reserve; topology may tune capacity and consistency implementation
-but may not omit these controls.
+redemption, exactly one authoritative stream per grant lineage, bounded multi-
+kind quota transition atomicity with quota state as co-transactional local
+authority rather than another aggregate, and tenant/work-class partitioned fair
+reconciliation/security-cleanup capacity with a scoped emergency reserve;
+topology may tune capacity and consistency implementation but may not omit these
+controls.
 Goal: select the exact profiles Phase O must certify.
 Deliverables: support matrix, trust/network boundaries, fencing/quorum model,
 dispatch-authorization consistency/failure model, quota consumption/refund
-and per-kind settlement mapping, grant-revalidation/revocation behavior,
-per-tenant/global fair-share and starvation policy, emergency-reserve sizing/
-isolation, RPO/RTO, upgrade/rollback, observability, and operator responsibility
-decisions.
+and per-kind settlement mapping, canonical all-or-none claim-set reservation/
+exact-token consumption profile, grant ownership plus inline/dedicated issuance/
+revocation/successor behavior, per-tenant/global fair-share and starvation
+policy, emergency-reserve sizing/isolation, RPO/RTO, upgrade/rollback,
+observability, and operator responsibility decisions.
 Verification: failure-mode analysis covers partitions, split brain, key/service
 loss, policy/delegation revocation during dispatch, stale/forged dispatch
 receipts, grant replay/offline-human impersonation, duplicate refunds, cross-
-kind settlement, provider-outage tenant exhaustion, one-tenant unknown-outcome
-floods, per-tenant/global starvation, emergency-reserve borrowing, degraded
-dependencies, restore, capacity, and incident operations.
+kind settlement, approval/grant crash-reorder-revocation/successor races,
+overlapping-set deadlock/livelock, partial reservation/restore, token/digest/
+membership substitution, provider-outage tenant exhaustion, one-tenant unknown-
+outcome floods, per-tenant/global starvation, emergency-reserve borrowing,
+degraded dependencies, restore, capacity, and incident operations.
 Exit criteria: every `1.0.0` deployment claim maps to a Phase O test profile.
 `v0.140.6 implementation stop reached. Run pentest for this exact commit.`
 

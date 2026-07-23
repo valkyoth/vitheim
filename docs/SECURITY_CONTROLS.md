@@ -62,7 +62,12 @@ audit decision.
   authority redemption. Session expiry alone does not invalidate a grant;
   revocation, target drift, tenant suspension, grant exhaustion, and required
   approver/policy revalidation fail closed. Workers and leases confer no
-  business authority, and binding substitution is forbidden.
+  business authority, and binding substitution is forbidden. Every grant
+  lineage has one authoritative stream: inline ownership stays in the approval
+  aggregate; dedicated ownership uses immutable approval receipt plus outbox/
+  process-manager continuation. Pre-issuance revocation wins, generation
+  identities are unique, and a successor atomically leaves the superseded grant
+  permanently non-redeemable in that owner stream.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown
@@ -70,7 +75,12 @@ audit decision.
   non-refundable at transmission, liabilities reconcile to actual cost or a
   distinct audited write-off, and byte claims follow local allocation/deletion.
   Refunds are evidence-bound and exactly once; manual assessment cannot mint
-  provider evidence; compensation has separate claims. Per-tenant/work-class
+  provider evidence; compensation has separate claims. Claim sets are local
+  transactional authority, not aggregate streams: canonical deadlock-free
+  ordering reserves all members or none, an opaque token/digest freezes ordered
+  membership, bundles never reacquire individual members, transitions are
+  idempotent by set/claim identity, and partial restore/reconciliation is
+  quarantined. Per-tenant/work-class
   ceilings, fair share, starvation bounds, and a scoped emergency reserve keep
   recovery available without tenant borrowing or monopolization.
 - Capability-limited plugins and integrations; opaque secret handles and

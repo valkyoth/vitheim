@@ -68,6 +68,20 @@ mismatch always denies redemption. Approver employment/eligibility loss or an
 authorization-relevant policy-version change revokes an unredeemed grant unless
 a new authorized revalidation command creates a successor grant.
 
+Every grant lineage declares exactly one authoritative stream owner. When the
+approval and grant are state of the same aggregate, approval completion and
+grant issuance are consecutive events in that one stream. Otherwise the approval
+transaction commits an immutable approval receipt and outbox issuance intent;
+an idempotent process manager later creates or updates one dedicated
+`ExecutionGrantLineage` stream. No lifecycle transition is split between the
+approval and grant streams. The lineage binds a stable `GrantLineageId`, unique
+generation `GrantId`, immutable approval-receipt identity/digest, predecessor,
+and successor. A revocation command addressed to the stable lineage/generation
+may initialize it as `RevokedBeforeIssuance`, so a delayed or reordered issuance
+intent can never make it redeemable. Successor creation and predecessor
+supersession occur in the same owner stream; the predecessor remains permanently
+non-redeemable, and replay cannot fork or reuse a generation identity.
+
 Successful redemption commits a fenced, single-use dispatch-authorization
 receipt for that exact attempt and binding. A change before that receipt denies/
 cancels dispatch, records the reason and audit evidence, and makes no provider
@@ -95,6 +109,19 @@ transmission/storage boundary. `QuotaReservationState` distinguishes
   than capping it to the estimate, or a distinct administrative write-off; and
 - `RetainedBytes`: follow verified local allocation and deletion, not remote
   outcome.
+
+Quota ledgers and claim sets are local transactional authorities, like inbox/
+outbox receipts and uniqueness claims, not additional aggregate streams. A
+`QuotaClaimSetId` and canonical digest bind the complete canonically ordered set
+of normalized unique resource keys and claim descriptors. Reservation acquires
+overlapping resource keys in that canonical order (or an adapter-proven
+equivalent serialization rule), commits all claims or none, and returns an
+opaque `QuotaClaimSetToken`. A work bundle validates and transitions that exact
+reserved set; it never reacquires members independently or adds, removes, or
+reorders claims. Refund, release, settlement, and write-off transitions are
+idempotent against set identity/digest, claim identity, and transition identity.
+Restore and reconciliation verify the whole set and quarantine corruption or
+absence; they never reconstruct, expose, or settle a partial set.
 
 Only claims whose settlement policy depends on provider acceptance enter
 `HeldPendingOutcome`; such a claim continues to count against its governed
@@ -409,12 +436,16 @@ Exit criteria: expired or unfenced workers cannot commit protected work.
 Status: planned.
 
 Setup: define tenant/resource quota identity, opaque `QuotaReservationId`,
-reservation digest, bounded `QuotaClaimSet`, `QuotaKind`, settlement policy,
-typed amount/unit, `QuotaReservationState`, and per-claim admission/lease/
-dispatch/transmission/storage boundary. Define atomic reserve/consume/hold/
-refund/release/settle, concurrent-use leases, retry/idempotency binding,
-fairness, reconciliation, overflow behavior, and separately typed administrator
-adjustment/write-off evidence. Concurrency claims release with the local lease;
+reservation digest, `QuotaClaimSetId`, opaque `QuotaClaimSetToken`, canonical
+set digest/order, bounded `QuotaClaimSet`, `QuotaKind`, settlement policy, typed
+amount/unit, `QuotaReservationState`, and per-claim admission/lease/dispatch/
+transmission/storage boundary. Quota state is local transactional authority, not
+an aggregate stream. Define all-or-none reservation, canonical deadlock-free
+overlap acquisition, exact-set token consumption, immutable membership, atomic
+consume/hold/refund/release/settle, concurrent-use leases, retry/idempotency
+binding at set and claim level, fairness, reconciliation, overflow behavior, and
+separately typed administrator adjustment/write-off evidence. Concurrency claims
+release with the local lease;
 provider rate tokens are non-refundable after transmission; consumable
 operations follow declared evidence rules; estimated liabilities hold and
 settle to actual cost/overage or audited write-off; retained-byte claims follow
@@ -429,29 +460,36 @@ Goal: make resource limits durable correctness controls rather than process-loca
 counters.
 
 Deliverables: project-owned quota ledger/reservation port and per-kind state
-machines, bounded claim-set/amount/unit types, capability settlement policies,
-evidence-bound refund/release/actual-cost settlement commands, distinct
-administrative adjustment/write-off command, partitioned fair control-plane
-capacity, deterministic memory adapter, recovery reconciler, leak/escalation
-monitor, and contention model.
+machines, canonical claim-set codec/digest/token and ordering law, all-or-none
+reservation protocol, bounded claim-set/amount/unit types, capability settlement
+policies, exact-set evidence-bound refund/release/actual-cost settlement
+commands, distinct administrative adjustment/write-off command, whole-set
+restore/quarantine rules, partitioned fair control-plane capacity, deterministic
+memory adapter, recovery reconciler, leak/escalation monitor, and contention
+model.
 
 Verification: concurrent oversubscription, crash after reserve/use/refund,
 duplicate retry and refund, cancel/dispatch/refund races, indefinite held-
 reservation leak and escalation, concurrency release while provider outcome is
 unknown, rate-token refund after transmission, estimated-to-actual settlement,
 underestimated-cost overage, retained-byte deletion accounting, mixed multi-
-claim atomicity, claim-set bound overflow, provider-outage exhaustion, one-
-tenant reconciliation monopolization,
-tenant attempts to consume emergency reserve, global/per-tenant starvation,
-lease loss, integer overflow, forged refund/provider evidence, write-off
-misrepresented as provider refund, cross-tenant accounting, separate
-compensation accounting, and reconciliation tests pass.
+claim atomicity, concurrent overlapping sets, reversed-order deadlock/livelock,
+partial-reservation crash, immutable-membership add/remove/reorder substitution,
+token/digest mismatch, claim-set bound overflow, duplicate set/claim settlement,
+partial/corrupt set restore and reconciliation, provider-outage exhaustion, one-
+tenant reconciliation monopolization, tenant attempts to consume emergency
+reserve, global/per-tenant starvation, lease loss, integer overflow, forged
+refund/provider evidence, write-off misrepresented as provider refund, cross-
+tenant accounting, separate compensation accounting, and reconciliation tests
+pass.
 
 Exit criteria: admitted work cannot exceed a durable quota through concurrency
 or retry; every claim kind settles at its documented boundary without treating
 all unknown outcomes alike; administrative adjustment remains visibly distinct
-from provider evidence; and exhausted or abusive tenants cannot block fair
-bounded reconciliation or security cleanup. `v0.18.1 implementation stop reached. Run pentest for this exact commit.`
+from provider evidence; all-or-none exact-set linearization is deterministic,
+deadlock-free, and recoverable only as a whole; and exhausted or abusive tenants
+cannot block fair bounded reconciliation or security cleanup.
+`v0.18.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.18.2` — Atomic Timer, Activity, And Work Commit Family
 
@@ -464,7 +502,9 @@ work/message/timer/activity identity and input digest, current fencing token,
 at most one authoritative aggregate stream and its exact expected version,
 events, command/inbox/timer/activity receipt,
 mandatory audit intent, outbox, integrity commitment, uniqueness claims, and
-the bounded atomic `0.18.1` quota claim set and per-claim transitions. Cross-
+the exact pre-reserved `0.18.1` quota claim-set token/digest and applicable per-
+claim transitions. Quota records remain co-transactional local authority, not
+additional aggregate streams; a bundle never reacquires set members. Cross-
 aggregate continuation is an outbox-driven process-manager decision. Timer
 dispatch atomically records
 the due/fenced dispatch transition and its outbox work intent; timer or remote
@@ -492,7 +532,12 @@ binds its own authorization decision, effect identity, and bounded claim set.
 Grant issuance, revalidation/supersession, explicit revocation, redemption, and
 attempt consumption are distinct audited commands/transitions; only an
 authorized approval command can issue or supersede a grant, and a timer/queue/
-worker can only redeem it.
+worker can only redeem it. Freeze the authoritative ownership rule: an inline
+grant shares the approval aggregate stream, while a dedicated grant uses one
+`ExecutionGrantLineage` stream created from the immutable approval receipt by an
+idempotent outbox/process manager. Pre-issuance revocation creates a terminal
+non-redeemable lineage/generation, and successor creation atomically supersedes
+its predecessor in that same owner stream.
 
 Goal: prevent retries, lease loss, or crashes from separating asynchronous work
 completion evidence from the effects it emits.
@@ -504,8 +549,9 @@ failure/interleaving harness; distinct execution/outcome/evidence/workflow
 codecs and state machines; reconciliation scheduler/escalation contract; and
 privileged-resolution policy facts; authorization-binding/freshness descriptors,
 execution-authority/grant codecs, issuance/revalidation/revocation commands,
-redemption receipts, and bounded per-kind quota-disposition/refund/settlement
-codecs and state machines. Phase G workflow workers later specialize
+ownership/lineage/approval-receipt and pre-issuance-revocation contracts,
+redemption receipts, and exact-token bounded per-kind quota-disposition/refund/
+settlement codecs and state machines. Phase G workflow workers later specialize
 the activity payload without weakening this commit boundary. The contract
 states at-least-once external execution explicitly and makes no distributed
 exactly-once claim. It distinguishes local commit/delivery success, provider
@@ -524,8 +570,14 @@ abandonment; revoke policy/delegation/employment/tenant authority between
 commit, lease, authority redemption, authorization receipt, and dispatch; expire
 a human session for valid scheduled grant work; depart an approver; drift policy
 or approval version; replay/exhaust/revoke a grant immediately before dispatch;
-substitute target or request bytes; use worker identity as business authority;
-split a mixed quota claim set; release concurrency based on remote uncertainty;
+crash/reorder/duplicate approval-to-grant issuance; race revocation before
+delayed issuance; duplicate/fork a grant identity; create a successor without
+atomically superseding its predecessor; substitute approval receipt, target, or
+request bytes; use worker identity as business authority; split or partially
+restore a mixed quota claim set; reserve overlapping sets concurrently in
+opposite input order; deadlock/livelock; crash after partial reservation;
+add/remove/reorder a claim after digest; consume by reacquiring members; replay
+a set/claim transition; release concurrency based on remote uncertainty;
 refund a transmitted rate token; duplicate or forge a refund/provider
 settlement; disguise administrative write-off as provider evidence; leak an
 unknown-outcome liability; monopolize reconciliation capacity with one tenant;
@@ -540,10 +592,15 @@ authorized manual resolution rather than inferred from delivery state. A
 manual conclusion remains visibly assessed and cannot become verified provider
 truth. Every dispatch obeys its declared freshness profile, typed execution
 authority, and exact immutable binding without impersonating an offline human.
+Every grant lineage has one authoritative owner stream; cross-aggregate issuance
+uses immutable approval receipt plus outbox/process-manager continuation,
+pre-issuance revocation wins, and superseded generations never become redeemable.
 Every bounded quota claim settles by kind at its declared boundary; refunds are
 evidence-bound and exactly once, write-offs remain distinct, compensation is
-accounted separately, and fair partitioned recovery capacity cannot be
-monopolized or borrowed for tenant business work.
+accounted separately, and each exact immutable set reserves all-or-none,
+linearizes without an extra aggregate stream, and restores/reconciles only as a
+whole. Fair partitioned recovery capacity cannot be monopolized or borrowed for
+tenant business work.
 `v0.18.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface

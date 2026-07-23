@@ -40,11 +40,12 @@ reached. Run pentest for this exact commit.`
 Status: planned. Setup: quorum/authority, fencing, health, failover, partition
 policy, reconciliation, every `0.18.2` atomic work variant, delayed-effect
 authorization freshness/bindings, typed execution-authority redemption, bounded
-multi-kind quota claim settlement, and fair partitioned control-plane capacity.
+multi-kind quota claim settlement/exact-set linearization, one-owner grant
+lineages, and fair partitioned control-plane capacity.
 Goal: prevent split-brain effects. Deliverables: HA orchestration, work-variant
-fault matrix, dispatch/grant-redemption and per-kind quota-reconciliation
-evidence, fair-capacity evidence, and runbooks. Verification: partitions, clock
-skew, stale leader/fence,
+fault matrix, dispatch/grant-redemption/lineage and exact-set quota-
+reconciliation evidence, fair-capacity evidence, and runbooks. Verification:
+partitions, clock skew, stale leader/fence,
 receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
 activity work, timer dispatch/result separation, multi-aggregate/remote-call
 transaction rejection, provider acceptance plus lost response, unknown-outcome
@@ -53,15 +54,19 @@ compensation state, direct/callback/query evidence racing manual resolution,
 forbidden blind privileged/non-compensable retry, authority or target change
 across commit/lease/dispatch, stale/forged dispatch receipt, confused deputy,
 offline-approver impersonation, valid grant after session expiry, grant replay/
-attempt exhaustion/revocation, approver/policy/target-version drift, mixed
-quota-claim split, concurrency/rate/liability/retained-byte settlement
+attempt exhaustion/revocation, approval-to-grant crash/reorder/duplicate,
+pre-issuance revocation, successor fork, approver/policy/target-version drift,
+mixed quota-claim split, overlapping-set deadlock/livelock, partial set reserve/
+restore, token/digest/membership substitution, failover before exact-set
+consumption, concurrency/rate/liability/retained-byte settlement
 confusion, write-off presented as provider evidence, duplicate refund,
 compensation claim reuse, exhausted tenant quota during recovery, one-tenant
 capacity monopolization, emergency-reserve misuse, failover/failback, and chaos/
 soak pass. Exit criteria: split brain and stale workers reject every state-
 changing variant; failover cannot bypass authority redemption, impersonate an
-offline human, erase or conflate quota claims, duplicate a refund, or starve
-fair bounded recovery. `v0.143.0
+offline human, fork a grant lineage, erase or conflate quota claims, consume a
+partial/mutated set, duplicate a refund, or starve fair bounded recovery.
+`v0.143.0
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.144.0` — Regional Placement And Residency
@@ -86,10 +91,14 @@ typed external-copy evidence-strength honesty, measurement rollup manifests,
 rollup checkpoint inclusion and substitution-expiry gates, mandatory deletion
 during unavailable proof, independent rollup/manifest/result/cache/export/
 linkable-checkpoint disposition, non-sensitive tombstone and historical
-authority-loss records, rebuild/workflow continuation pass.
+authority-loss records, complete grant-lineage owner/successor/tombstone
+restoration, whole quota claim-set digest/member restoration with partial-set
+quarantine, rebuild/workflow continuation pass.
 Exit criteria: claimed RPO/RTO is demonstrated; recovery neither retains data
 past a controlling mandatory deletion obligation nor promotes an unverified
-rollup to authority, and every related surface has its own disposition proof.
+rollup to authority; grant revocation/supersession cannot be resurrected; quota
+sets are restored/reconciled only as complete verified units; and every related
+surface has its own disposition proof.
 `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification
@@ -102,9 +111,12 @@ security-cleanup capacity, global fair share, starvation bounds, emergency
 reserve, baselines, failure scenarios, and evidence retention. Goal: prove
 bounded behavior under stress.
 Deliverables: multi-claim quota-lifecycle/load/fault harnesses, per-kind
-settlement oracles, partition/fairness/reserve monitors, leak/escalation
-evidence, and signed reports. Verification: atomic bounded claim sets across
-every work bundle, concurrency release independent of remote outcome,
+settlement and exact-set linearization oracles, partition/fairness/reserve
+monitors, leak/escalation evidence, and signed reports. Verification: atomic
+bounded claim sets across every work bundle, concurrent overlapping-set
+canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
+failover, immutable token/digest/membership, whole-set restore/reconciliation,
+concurrency release independent of remote outcome,
 consumable-operation evidence rules, non-refundable transmitted rate tokens,
 unknown estimated liability and actual-cost/overage reconciliation, retained-
 byte allocation/deletion, duplicate/forged refunds, administrative write-off
@@ -115,8 +127,9 @@ starvation, emergency-reserve borrowing, noisy tenants, observation late-
 arrival/authoritative-rollup recalculation/downsampling,
 paging/status retry/reconciliation, queue/index/embedding/plugin/report
 exhaustion, leaks, cascading failures, and long soak/chaos pass. Exit criteria:
-regressions, cross-kind settlement, unbounded quota liability, unfair or blocked
-recovery, and unsafe saturation block release. `v0.146.0
+regressions, cross-kind settlement, partial/mutated set acceptance, deadlock/
+livelock, unbounded quota liability, unfair or blocked recovery, and unsafe
+saturation block release. `v0.146.0
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.147.0` — Final Security And Supply-Chain Hardening

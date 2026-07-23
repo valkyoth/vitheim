@@ -60,13 +60,24 @@ Verification:
   revocation. A worker authenticates as itself; a valid scheduled grant survives
   ordinary approver-session expiry without impersonation, while target drift,
   explicit revocation, tenant suspension, grant exhaustion, and required
-  approver/policy revalidation prevent provider I/O.
+  approver/policy revalidation prevent provider I/O. Every grant lineage proves
+  one authoritative owner: inline approval/grant transitions share one stream,
+  or immutable approval receipt plus outbox/process manager creates a dedicated
+  lineage stream. Crash/reorder/duplicate and pre-issuance-revocation evidence
+  proves delayed issuance cannot bypass revocation; successor creation
+  atomically and permanently supersedes its predecessor in the owner stream.
   Quota evidence proves bounded atomic claim sets and correct settlement for
   concurrency leases, consumable operations, provider-rate tokens, estimated
   liabilities, and retained bytes across their exact boundaries. Only provider-
   dependent claims hold for unknown outcomes; refunds are evidence-bound and
   exactly once; actual-cost settlement and administrative write-off remain
-  distinct from provider refund truth; compensation has separate claims.
+  distinct from provider refund truth; compensation has separate claims. Quota
+  state is co-transactional local authority rather than an aggregate stream.
+  Every set reserves all-or-none under canonical deadlock-free ordering, binds
+  immutable ordered membership to an opaque token/digest, and transitions as
+  that exact set without member reacquisition. Concurrent overlap, partial-
+  reservation crash/failover, token/member substitution, and restore tests prove
+  partial or corrupt sets are quarantined rather than reconstructed.
   Provider-outage and hostile-tenant tests prove per-tenant/work-class ceilings,
   global fair share, starvation bounds, and scoped non-borrowable emergency
   capacity preserve bounded reconciliation and security cleanup.

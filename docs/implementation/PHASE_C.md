@@ -46,13 +46,20 @@ audit intent, outbox, commitment, uniqueness claim, bounded quota claim-set/
 per-kind transition, timer dispatch/result receipt, activity completion, or
 dead-letter transition.
 Include invalid reference adapters that accept two authoritative aggregate
-streams or execute a network/provider call inside the transaction.
+streams, split an inline grant from its approval stream, mutate both approval
+and dedicated grant streams, omit immutable approval receipt/outbox continuation,
+treat quota state as another aggregate, partially reserve/reconstruct a claim
+set, reacquire set members, or execute a network/provider call inside the
+transaction.
 
 Verification: prove every deliberately incomplete bundle adapter and adapters
 that lose snapshots, scheduler state, quota state, rejection receipts, audit
 authority, or integrity commitments fail the relevant capability/conformance
-test; prove multi-stream and remote-in-transaction adapters fail; run the memory
-adapter through all atomicity/isolation/recovery cases.
+test; prove grant-owner ambiguity, approval/grant two-stream commits, delayed
+issuance after pre-issuance revocation, successor fork, noncanonical overlapping-
+set acquisition, partial claim-set reservation/restore, token/digest mismatch,
+multi-stream, and remote-in-transaction adapters fail; run the memory adapter
+through all atomicity/isolation/recovery cases.
 
 Exit criteria: an adapter cannot claim support by skipping or weakening tests.
 `v0.22.0 implementation stop reached. Run pentest for this exact commit.`
@@ -92,12 +99,16 @@ Goal: establish the deepest-tested reference production backend.
 
 Deliverables: complete `0.18.2` atomic work-bundle variants plus journal, projection,
 audit authority, rejection receipt, outbox, inbox, lease/scheduler, durable
-quota, snapshot, integrity commitment, and configuration adapters; migrations,
-operator guide, backup/restore, and observability. Startup fails capability
-negotiation if any mandatory semantic component is absent.
+quota with all-or-none canonical claim-set reservation/exact-token consumption,
+grant-lineage ownership/process-manager state, snapshot, integrity commitment,
+and configuration adapters; migrations, operator guide, backup/restore, and
+observability. Startup fails capability negotiation if any mandatory semantic
+component is absent.
 
 Verification: injection, auth downgrade, transaction crashes, concurrent append,
-tenant bypass, pool exhaustion, migration rollback, restore, and conformance pass.
+grant issuance/revocation reorder, overlapping claim-set serialization,
+deadlock/livelock, partial set crash/restore, tenant bypass, pool exhaustion,
+migration rollback, restore, and conformance pass.
 
 Exit criteria: production claims match tested deployment profiles only.
 `v0.24.0 implementation stop reached. Run pentest for this exact commit.`
@@ -325,6 +336,10 @@ quota claim's `QuotaKind`, settlement policy, amount/unit, reservation state,
 declared boundary, evidence-backed transition, and separate compensation claim
 set. Partition reconciliation/security lanes by tenant and work class with
 ceilings, global fair-share scheduling, starvation bounds, and emergency reserve.
+Preserve the one-owner grant-lineage rule and immutable approval-receipt/outbox
+causation across queue delivery. Preserve `QuotaClaimSetId`, canonical digest,
+opaque pre-reserved token, immutable ordered membership, and set/claim transition
+idempotency; workers never reacquire individual quota members.
 
 Goal: own an HA-capable durable queue profile without requiring a separate
 message broker for correctness.
@@ -333,7 +348,9 @@ Deliverables: project-owned queue port, journal/outbox-backed PostgreSQL adapter
 memory fake, worker protocol, external-effect reconciliation scheduling and
 manual-resolution queue, dispatch-authorization gate, quota-disposition
 reconciler, execution-grant redemption/revocation handling, fair partitioned
-control-plane lanes, capability report, and operational metrics.
+control-plane lanes, grant-lineage issuance/successor process manager,
+exact-token quota-set transition handler, capability report, and operational
+metrics.
 
 Verification: enqueue/commit crashes, duplicate delivery, receipt/effect split,
 stale ack/fence, lease loss, dead-letter/effect split, quota/effect split,
@@ -342,8 +359,11 @@ provider acceptance with lost worker response, blind retry after idempotency-key
 expiry, unknown-outcome dead-letter or quota-hold loss, stale authority after
 enqueue/lease, expired initiating session with a valid scheduled grant, grant
 replay/attempt exhaustion/revocation, approval/policy/approver/target-version
-drift, target substitution, offline-human impersonation, worker confused deputy,
-mixed quota-claim split, concurrency lease held by remote uncertainty,
+drift, approval/grant crash-reorder-duplicate, pre-issuance revocation,
+successor fork, target substitution, offline-human impersonation, worker
+confused deputy, mixed quota-claim split, overlapping-set deadlock/livelock,
+partial reservation/recovery, token/digest/membership substitution, failover
+before exact-set consumption, concurrency lease held by remote uncertainty,
 transmitted rate-token refund, cost settlement/write-off confusion, retained-
 byte drift, duplicate refund, provider outage with exhausted tenant quota,
 single-tenant reserve monopolization, global/per-tenant starvation, emergency-
@@ -354,8 +374,9 @@ Exit criteria: HA work dispatch has documented at-least-once delivery and
 idempotent local-commit semantics, preserves the `0.18.2` external-effect
 authorization, resolution, and quota contracts without collapsing their typed
 dimensions, redeems durable grants without impersonation, preserves per-kind
-settlement, keeps fair recovery available under hostile tenant exhaustion, and
-has no process-local queue dependency.
+settlement and single-stream grant ownership, consumes exact immutable quota
+sets without reacquisition, keeps fair recovery available under hostile tenant
+exhaustion, and has no process-local queue dependency.
 `v0.30.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.30.2` — Cache Semantics And Hosted Adapter
