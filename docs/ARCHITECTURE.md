@@ -48,11 +48,16 @@ authority. The bootstrap topology is a compiled immutable singleton.
 `VIT-INV-060` later becomes the sole dynamic topology-generation owner with
 expected-version successor manifests, monotonic member placement generations,
 fences, and tombstones; rollout generation 2 consumes its authenticated
-snapshot. Each catalog lineage has one monotonic active rollout generation and
-permanent `Superseded` loser state. Workload identity is an executable
-hardware-attested or orchestrator-attested single-active-lease profile, and
-canonical receipts require workload-bound authentication—a disk key, digest,
-or transport transcript is not authority. One project-owned
+snapshot only after epoch 12 activates/converges under generation 1 and an
+exact dormant-singleton handoff CAS commits; static and dynamic sources are
+never co-authoritative. Each catalog lineage has one monotonic active rollout
+generation, irreversible `ActivationAuthorized` state with atomic receipt/
+outbox and pinning, and permanent pre-authorization `Superseded` losers.
+Workload identity is an executable hardware-attested profile or an
+orchestrator-attested lease with online single-use action claims and zero
+offline authority. Canonical receipts use only signed, authority-MAC, or
+attested-channel-admission variants with replay and durable-integrity binding;
+a disk key, digest, transport transcript, or ordinary row is not authority. One project-owned
 canonical verifier serves runtime and release tooling. Stored manifests,
 cloned runtimes, field-shaped text, untrusted clocks, and database
 administrators cannot extend or reconstruct that authority.

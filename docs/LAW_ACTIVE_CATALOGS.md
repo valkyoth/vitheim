@@ -177,19 +177,37 @@ The selectable mechanisms at `0.140.1` are:
 1. `HardwareAttestedKey`: the identity key is non-exportable and its current
    attestation binds the complete catalog-owner key and measured workload; or
 2. `OrchestratorAttestedFencedLease`: a key-bound, short-lived orchestrator
-   identity is usable only with one current single-active lease/fencing token.
-   Duplicate renewal or simultaneous use permanently fences the older
-   incarnation.
+   identity is usable only with one current single-active lease/fencing token
+   and an online, single-use `WorkloadLeaseActionClaim` for every authority-
+   bearing transition. Each claim CAS-binds the instance ephemeral key,
+   `BootOrContinuityId`, lease generation/fence, canonical action digest, one-
+   use sequence, issuance, and expiry. No cached or offline lease authorizes
+   readiness, receipt creation/admission, topology change, dispatch, or
+   transmission start. The only exposure after loss/fencing is an already
+   claimed action until the frozen maximum action-claim lifetime; expiry forces
+   abort/reconciliation. Duplicate renewal or simultaneous use immediately
+   fences the affected incarnation and denies new claims.
 
 Raw disk-held mTLS keys, bearer tokens, host names, pod names, VM identities
 without key-bound attestation, and receipt digests alone are unsupported.
-`CatalogReceiptAuthenticationV1` binds every prepare, convergence, revocation,
-and topology receipt to the complete canonical receipt bytes with either a
-workload-bound signature/MAC under the selected profile or an equivalently
-protected attested channel plus a durable trusted admission record. Transport
-authentication is revalidated against issuer/key/revocation/fence state during
-receipt admission and again during recovery; copying a digest or transport
-transcript cannot authenticate a receipt.
+`CatalogReceiptAuthenticationV1` is exactly one closed variant:
+
+1. `WorkloadSignedReceipt`: a current admitted workload key signs the canonical
+   receipt bytes, profile/placement/lease fence, signer epoch, and domain;
+2. `AuthorityMacReceipt`: a non-exportable authority key handle MACs the same
+   fields and binds its owner, key epoch, purpose, and rotation/revocation
+   state; or
+3. `AttestedChannelAdmissionReceipt`: a unique verifier challenge, channel
+   exporter, authenticated peer identity/key/attestation, canonical receipt
+   bytes, admission/signer epochs, owner fences, and replay tombstone commit
+   atomically into the durable admission record.
+
+The channel variant's durable record is anchored by a signed/MACed checkpoint
+or independently trusted integrity chain before recovery may rely on it.
+Transport success, a database row, a digest, or an open-ended “equivalent”
+profile is never receipt authenticity. Admission and recovery revalidate the
+selected exact variant, issuer/key/attestation/revocation/lease/fence epochs,
+challenge uniqueness, replay tombstone, and integrity anchor.
 
 ## Placement Topology Authority
 
@@ -201,9 +219,9 @@ split/merge, autoscaling identity reuse, or topology mutation. Any such request
 before the governed handoff fails closed; the rollout root may snapshot this
 artifact but cannot edit or supersede it.
 
-`0.141.0` performs a one-time artifact-authorized handoff to
+`0.141.0` performs a staged, non-circular artifact-authorized handoff to
 `VIT-INV-060 PlacementTopologyGenerationState` before split-service or HA
-deployment and activates `VIT-LAW-008@g02`. One
+deployment. One
 `PlacementTopologyGenerationRow` per deployment owns expected-version CAS over
 the current monotonic topology generation, canonical sorted membership
 manifest/digest, and each member's monotonic placement generation, predecessor
@@ -212,7 +230,30 @@ service-role change, split, and merge commands create a complete successor
 manifest; activation atomically makes it current and emits durable fence
 intents for every removed or superseded placement. Restore takes the greatest
 externally evidenced topology and placement-generation ratchets and cannot
-resurrect a tombstone.
+resurrect a tombstone. Its handoff state is closed:
+`DormantInitialized` or `Committed`.
+
+The ceremony is:
+
+1. create `DormantInitialized` with bytes/digest exactly equal to the compiled
+   singleton; the compiled artifact remains the sole topology authority;
+2. use currently active `VIT-LAW-008@g01` and that static singleton to activate
+   and converge `VIT-LAWCAT-ACTIVE-e012-v1`, which contains
+   `VIT-LAW-008@g02`;
+3. after every required local owner has admitted generation 2, execute
+   `CommitTopologyAuthorityHandoff`;
+4. the expected-version CAS binds the completed epoch-12 rollout ID/generation,
+   catalog envelope digest, compiled static artifact digest, identical dormant
+   manifest digest, and handoff receipt, then changes the row to `Committed`;
+   and
+5. only `Committed` may issue `CurrentPlacementTopologyReceiptV1` or accept
+   dynamic commands.
+
+The handoff state is the exclusive source selector: before commit the compiled
+singleton is authoritative and the row is inert; after commit `VIT-INV-060` is
+authoritative and the compiled singleton is provenance only. They are never
+simultaneously authoritative. Recovery replays initialization/catalog rollout/
+local convergence/handoff boundaries and never infers `Committed`.
 
 The rollout process manager reads an authenticated
 `CurrentPlacementTopologyReceiptV1`, seals its exact topology generation and
@@ -240,26 +281,34 @@ generation; an in-flight manifest is never edited.
 The closed rollout states are:
 
 ```text
-Candidate -> Preparing -> GloballyActivated -> Converging -> Completed
-                    \-> Blocked
-Candidate/Preparing/Blocked(pre-activation) -> Abandoned
-stale or losing Candidate/Preparing/Blocked -> Superseded
+Candidate -> Preparing -> ActivationAuthorized -> GloballyActivated
+                                                 -> Converging -> Completed
+               \-> Blocked(source phase)
+Candidate/Preparing/Blocked(pre-authorization) -> Abandoned
+stale or losing Candidate/Preparing/Blocked(pre-authorization) -> Superseded
 any nonterminal state or Completed -> Revoked
 ```
 
 `Blocked` records its source phase and may resume only that phase after the same
-manifest's contradiction or availability issue is reconciled. After global
-activation, abandonment is forbidden; the rollout must converge, remain
-visibly blocked, or be revoked. `Abandoned` is an explicit pre-activation
+manifest's contradiction or availability issue is reconciled.
+`ActivationAuthorized` is an irreversible authorization-commit state. Entering
+it atomically persists the canonical authenticated activation authorization and
+its outbox intent, pins `ActiveRolloutGeneration`, and forbids abandonment,
+supersession, manifest replacement, or ordinary successor creation. The rollout
+may reach `GloballyActivated`, remain `Blocked` awaiting/reconciling the global
+result, or be revoked; delayed delivery cannot reopen `Preparing`. After
+authorization or global activation, abandonment is forbidden. `Abandoned` is an explicit pre-authorization
 operator cancellation. `Superseded` is the permanent losing-candidate state;
 `Revoked`, `Abandoned`, and `Superseded` are terminal.
 
 Creating an ordinary successor is allowed only when the current rollout is
-`Completed`, `Revoked`, `Abandoned`, or `Superseded`. An explicit pre-activation
-supersession CAS may replace `Candidate`, `Preparing`, or pre-activation
-`Blocked`, atomically advance `ActiveRolloutGeneration`, and tombstone the old
-rollout. A globally activated or converging rollout must complete or be
-revoked. Local inboxes and the global owner accept prepare, activation-
+`Completed`, `Revoked`, `Abandoned`, or `Superseded`. An explicit pre-authorization
+supersession CAS may replace `Candidate`, `Preparing`, or pre-authorization
+`Blocked` whose source phase predates authorization, atomically advance
+`ActiveRolloutGeneration`, and tombstone the old rollout. An
+`ActivationAuthorized`, globally activated, or converging rollout pins the
+generation and must resolve globally, complete, or be revoked. Local inboxes
+and the global owner accept prepare, activation-
 authorization, convergence, and revocation messages only from the exact current
 rollout generation. Late receipts or authorization from a losing generation
 are permanently rejected and retained as audit evidence.
@@ -273,8 +322,9 @@ transaction:
 3. local inbox processing verifies identity, placement/fence, binary
    capability, semantic set, catalog bytes, predecessor local epoch, and time,
    then atomically records one idempotent `CatalogPrepareReceipt`;
-4. the rollout root admits receipts by exact identity/digest and issues one
-   activation-authorization receipt only when policy is satisfied;
+4. the rollout root admits receipts by exact identity/authenticator and, only
+   when policy is satisfied, atomically enters `ActivationAuthorized`, stores
+   one canonical authorization receipt, and commits its outbox message;
 5. `VIT-INV-057` consumes that receipt in its own expected-version activation
    CAS and emits the authoritative global-activation receipt;
 6. the rollout root consumes that receipt, enters `GloballyActivated`, emits
@@ -306,21 +356,30 @@ reconciliation continues until every current placement has a receipt or is
 durably fenced. Missing, late, duplicate, or contradictory receipts move the
 root to `Blocked`, retain conservative readiness, and trigger a bounded
 deadline escalation with operator-visible evidence.
+For an `ActivationAuthorized` rollout, activate versus revoke is serialized by
+the global owner over the exact rollout/authorization ID, generation, candidate
+epoch/digest, expected lineage version, and distrust epoch. Revocation either
+tombstones the not-yet-activated authorization or follows an activation win and
+revokes the activated catalog; the rollout remains pinned until it consumes the
+global result. A delayed authorization cannot bypass the global tombstone.
 
 Recovery replays transactional outbox/inbox state, re-reads the global owner,
 current topology/placement manifest, and every local owner, and resumes from
 durable receipts. Crash injection covers before and after manifest seal,
 prepare outbox commit, local receipt commit, root receipt admission, activation
 authorization, global CAS, global receipt delivery, local convergence, final
-receipt admission, completion, topology change, revocation, abandonment, and
+receipt admission, completion, topology change, revocation, abandonment,
+supersession, and
 every response-loss boundary. Duplicate/reordered delivery is idempotent;
 ambiguous state never invents preparation, activation, convergence, or
 revocation completion.
 The first-successor suite also races two candidates through preparation, lets
-one current generation win the global activation CAS, loses both responses,
-and restarts both coordinators. Exactly one reconciles toward convergence; the
-other becomes permanently `Superseded`, and none of its late messages can
-change global or local authority.
+one claim `ActivationAuthorized`, loses the global response, and restarts both
+coordinators. Exactly one remains pinned and reconciles the global outcome; the
+other becomes permanently `Superseded` before authorization, and none of its
+late messages can change global or local authority. Separate tests race
+authorization commit against abandon/supersede, delayed authorization against
+revocation, and coordinator failover before/after authorization/outbox commit.
 
 ## Project-Owned Artifact Verification
 
@@ -411,8 +470,10 @@ authentication. `0.140.2` freezes separate global, rollout-root, future
 topology, and local row placement. `0.140.6` freezes `AllRequired` or a fully
 fenced quorum, topology evolution, distribution, failover, revocation, time
 loss, and recovery. `0.141.0` hands the compiled static topology to
-`VIT-INV-060` and activates `VIT-LAW-008@g02`; `0.142.0–0.143.0` prove split
-service and HA behavior. `0.145.0` proves backup/restore cannot clone a local
+`VIT-INV-060` without circular authority: epoch 12 is activated and converged
+under `VIT-LAW-008@g01`, then locally admitted generation 2 authorizes the
+one-time identical-manifest handoff CAS. `0.142.0–0.143.0` prove split service
+and HA behavior. `0.145.0` proves backup/restore cannot clone a local
 owner, invent a receipt, resurrect topology, or roll back catalog/validity
 state. Phase O and
 `1.0.0` require zero unresolved rollout receipts, identity clones, coverage

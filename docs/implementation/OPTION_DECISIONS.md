@@ -55,16 +55,26 @@ revocation receipt digest. Select one closed
 `WorkloadIdentityProofProfileV1`: `HardwareAttestedKey` requires a
 non-exportable key and current measured-workload attestation;
 `OrchestratorAttestedFencedLease` requires a key-bound short-lived identity,
-one single-active lease/fence, and simultaneous-use detection. Freeze issuer,
-subject, audience, deployment/region/service-role/partition/placement binding,
-public-key thumbprint, attestation policy/version, issuance/renewal/rotation/
-expiry/revocation, clone detection, replacement, restore, and compromise
-recovery. Freeze `CatalogReceiptAuthenticationV1`: canonical prepare,
-convergence, revocation, and topology receipt bytes require a workload-bound
-signature/MAC or equivalently protected attested channel plus durable trusted
-admission; a digest or transport success alone never proves authenticity.
-Recovery revalidates issuer, key, attestation, revocation, lease, and fence
-state. Disk-held ordinary mTLS keys, disk-derived or cloneable bearer identity,
+one single-active lease/fence, simultaneous-use detection, and an online,
+single-use `WorkloadLeaseActionClaim` for every authority-bearing transition.
+Freeze its maximum claim lifetime, action-digest/instance-key/continuity/lease-
+generation/fence/sequence bindings, online CAS issuance, and zero offline
+authority: after control-plane loss or fencing, exposure is limited to an
+already claimed action until that fixed bound expires. Freeze issuer, subject,
+audience, deployment/region/service-role/partition/placement binding, public-
+key thumbprint, attestation policy/version, issuance/renewal/rotation/expiry/
+revocation, clone detection, replacement, restore, and compromise recovery.
+Freeze `CatalogReceiptAuthenticationV1` as an exhaustive enum:
+`WorkloadSignedReceipt`, `AuthorityMacReceipt`, or
+`AttestedChannelAdmissionReceipt`. The channel variant binds a unique verifier
+challenge, channel exporter, peer identity/key/attestation, complete canonical
+receipt bytes, signer/admission epochs and owner fences, and an atomic replay
+tombstone; its durable admission record requires a signed/MACed checkpoint or
+independent integrity anchor. An open “equivalent” profile, digest, transport
+success, or ordinary database row never proves authenticity. Recovery
+revalidates the selected exact variant, issuer, key, attestation, revocation,
+lease/action claim, fences, challenge/tombstone, and integrity anchor.
+Disk-held ordinary mTLS keys, disk-derived or cloneable bearer identity,
 host/pod names, and unauthenticated receipt digests cannot support a production
 local catalog owner.
 Freeze the credential-operation mechanism used by every
@@ -189,11 +199,15 @@ epoch/digest, distrust epoch, trusted-time lower bound/continuity identity, and
 expiry tombstone, under the exact placement-generation key and workload/boot/
 binary/semantic/fence bindings. Map `VIT-INV-059` separately: rollout root,
 immutable topology/placement manifest, closed state, outbox/inbox, prepare/
-activation/convergence/revocation receipts, deadlines, escalation, and
+activation/convergence/revocation receipts, irreversible
+`ActivationAuthorized`, canonical authorization receipt and atomically paired
+outbox intent, pinned active generation, deadlines, escalation, and
 reconciliation. Reserve a fourth independent deployment topology-control
-partition for `VIT-INV-060`: expected-version current-generation row, canonical
-membership manifest/digest, monotonic member placement generations,
-predecessor fences, permanent tombstones, and transactional fence outbox. The
+partition for `VIT-INV-060`: closed `DormantInitialized`/`Committed` handoff
+state, exact artifact/rollout/manifest/local-admission binding, expected-version
+current-generation row, canonical membership manifest/digest, monotonic member
+placement generations, predecessor fences, permanent tombstones, and
+transactional fence outbox. The
 global, rollout, topology, and local update domains cannot share an authority
 row. Discovery/orchestrator state is non-authoritative.
 Planning-superset storage is non-authoritative and physically/logically
@@ -612,14 +626,18 @@ through expected-version successor activation, canonical manifests, fences, and
 tombstones. The rollout root consumes its authenticated current-topology
 receipt, CAS-claims one monotonic `ActiveRolloutGeneration` per catalog lineage,
 seals one topology/placement manifest, and gathers exact authenticated identity/
-capability/semantic/fence-bound prepare receipts; the global owner consumes
-rollout authorization through CAS; each independent local owner invokes the
+capability/semantic/fence-bound prepare receipts. It then atomically enters
+irreversible `ActivationAuthorized`, persists the authorization receipt and
+outbox, and pins that generation. The global owner serializes activation versus
+revocation through CAS; each independent local owner invokes the
 shared verifier and emits authenticated convergence; the rollout root finalizes
 from durable receipts. A digest alone is not receipt authentication.
-Exactly one rollout generation is current and nonterminal. Pre-activation
-supersession atomically tombstones the loser as `Superseded`; post-activation
-rollouts must complete or be revoked. Late losing receipts and authorization
-are permanently rejected.
+Exactly one rollout generation is current and nonterminal. Pre-authorization
+supersession atomically tombstones the loser as `Superseded`; an authorized
+generation remains pinned while the global result is reconciled, and
+post-activation rollouts must complete or be revoked. Late losing receipts and
+authorization are permanently rejected, and delayed authorization cannot
+bypass a revocation tombstone.
 Failover, rollback, isolated-node startup, restore, and mixed-version operation
 reject stale, revoked, unknown, partial, scope-mismatched, time-untrusted, or
 database-invented catalogs. RPO/RTO
@@ -642,6 +660,11 @@ lease issuer and failover domain, renewal/rotation/revocation and simultaneous-
 use response, plus receipt-authenticator key/epoch recovery. Failover cannot
 turn an exported mTLS key, stale lease, digest, or replayed channel transcript
 into workload or receipt authority.
+The HA matrix races authorization commit with abandon/supersede/revoke,
+response loss, delayed delivery, and coordinator/global-owner failover. It also
+proves online action-claim expiry and zero offline authority for the
+orchestrator profile and revalidates every closed receipt variant plus its
+durable integrity anchor.
 Goal: select the exact profiles Phase O must certify.
 Deliverables: support matrix, trust/network boundaries, fencing/quorum model,
 dispatch-authorization consistency/failure model, quota consumption/refund

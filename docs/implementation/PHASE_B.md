@@ -1931,12 +1931,20 @@ Define the closed `WorkloadIdentityProofProfileV1` and
 production mechanism. The identity contract binds issuer, subject, audience,
 owner key, public-key thumbprint, attestation policy/version, issue/expiry/
 revocation, and either a non-exportable hardware-attested key or a key-bound
-short-lived orchestrator identity with one single-active lease/fence and
-simultaneous-use detection. Prepare, convergence, revocation, and topology
-receipts authenticate their canonical bytes with that workload-bound profile
-or an equivalently protected attested channel plus durable trusted admission.
-A bare digest, ordinary disk-held mTLS key, bearer token, hostname, or observed
-pod/VM identity is neither identity nor receipt authority.
+short-lived orchestrator identity with one single-active lease/fence,
+simultaneous-use detection, and an online, single-use
+`WorkloadLeaseActionClaim` for every authority-bearing transition. No cached or
+offline lease grants readiness, receipt admission, topology change, dispatch,
+or transmission-start authority. Prepare, convergence, revocation, and topology
+receipts authenticate their complete canonical bytes through exactly one closed
+`CatalogReceiptAuthenticationV1` variant: `WorkloadSignedReceipt`,
+`AuthorityMacReceipt`, or `AttestedChannelAdmissionReceipt`. The channel
+variant binds a unique verifier challenge, channel exporter, authenticated peer
+identity/key/attestation, receipt bytes, signer/admission epochs and fences, and
+an atomic replay tombstone; its durable record has a signed/MACed checkpoint or
+independent integrity anchor. A bare digest, transport success, ordinary
+database row, disk-held mTLS key, bearer token, hostname, or observed pod/VM
+identity is neither identity nor receipt authority.
 `VIT-LAW-007` connects both owners to the platform safety-floor, dispatch-
 receipt, and transmission-start roots. Startup, restore, migration, failover,
 import, readiness, law activation, dispatch, and transmission start bind and
@@ -1964,10 +1972,13 @@ catalog/predecessor, capability/semantic requirements, owner fences, activation
 policy, and deadlines. Each catalog lineage owns one monotonic
 `ActiveRolloutGeneration`; candidate creation claims the next generation by
 expected-version CAS and permits at most one current nonterminal rollout. The
-closed states are `Candidate`, `Preparing`,
-`GloballyActivated`, `Converging`, `Completed`, `Blocked`, `Revoked`, and
-`Abandoned`, plus terminal losing-candidate state `Superseded`. Transactional
-outbox/inbox delivery carries prepare, global
+closed states are `Candidate`, `Preparing`, irreversible
+`ActivationAuthorized`, `GloballyActivated`, `Converging`, `Completed`,
+`Blocked`, `Revoked`, and `Abandoned`, plus terminal losing-candidate state
+`Superseded`. Entering `ActivationAuthorized` atomically persists the canonical
+activation-authorization receipt and outbox intent and pins the active rollout
+generation against abandonment, supersession, manifest replacement, or an
+ordinary successor. Transactional outbox/inbox delivery carries prepare, global
 activation, convergence, revocation, and reconciliation messages.
 
 Each `CatalogPrepareReceipt` binds rollout/manifest, canonical owner key,
@@ -1979,11 +1990,15 @@ consumes that authorization in its separate CAS. Completion then requires
 every convergence receipt. A topology join/leave/replace/move/split/merge
 blocks the affected rollout and requires a newly sealed manifest generation.
 Deadline escalation and reconciliation retain missing or contradictory
-receipts visibly. Abandonment is explicit pre-activation cancellation only.
-Pre-activation supersession atomically advances `ActiveRolloutGeneration` and
-tombstones the loser; a globally activated/converging rollout must complete or
-be revoked. Global and local owners permanently reject late receipts and
-activation authorization from a non-current or `Superseded` generation.
+receipts visibly. Abandonment is explicit pre-authorization cancellation only.
+Pre-authorization supersession atomically advances `ActiveRolloutGeneration`
+and tombstones the loser. An authorized rollout remains pinned while it
+reconciles the global activation-or-revocation result; a globally activated or
+converging rollout must complete or be revoked. The global owner serializes
+activate versus revoke over the exact authorization, rollout generation,
+candidate epoch/digest, lineage version, and distrust epoch. Global and local
+owners permanently reject delayed authorization or receipts from a non-current
+or `Superseded` generation and cannot bypass a revocation tombstone.
 
 Revocation and emergency distrust bypass normal preparation: global distrust
 advances first, high-priority outbox/inbox delivery ratchets connected local
@@ -2022,7 +2037,11 @@ profile, time source, and maximum uncertainty are frozen before production at
 `0.140.1`, separate global/rollout/future-topology/local storage at `0.140.2`,
 and HA rollout policy, topology evolution, revocation propagation, time loss,
 and recovery at `0.140.6`. `0.141.0` introduces the independently owned dynamic
-topology root and `VIT-LAW-008@g02` before any split-service deployment.
+topology root and `VIT-LAW-008@g02` before any split-service deployment. It
+first initializes an exact dormant singleton, activates and converges the
+epoch-12 catalog under generation 1/static authority, and only then commits the
+bound, identical-manifest handoff after every required local owner admits
+generation 2.
 
 Implement the closed `LawSemanticId` enum and exhaustive
 `LawSemanticRealization` dispatch table from
@@ -2178,7 +2197,7 @@ partition or reuse workload/boot/placement identity; mutate the placement
 manifest in flight; omit, duplicate, contradict, or cross-bind a prepare or
 convergence receipt; crash before/after every prepare/authorize/global-CAS/
 converge/finalize transition; change topology or placement generation during
-rollout; abandon after global activation; satisfy activation with an unfenced
+rollout; abandon or supersede after authorization; satisfy activation with an unfenced
 quorum; fail to propagate/reconcile revocation to an unreachable or partially
 rolled-out placement; add an unknown semantic ID;
 remove a typed transition/outcome, recovery path, or P/N/M/F contract; mark a
@@ -2229,11 +2248,15 @@ digest, and activate it through the `VIT-INV-059` process manager plus separate
 global and exact local owners. Exercise every state and crash boundary:
 manifest seal, prepare-outbox commit, local prepare receipt, root admission,
 activation authorization, global CAS/receipt, convergence delivery/receipt,
-completion, block/reconcile, pre-activation abandon, revocation, and response
-loss. Race two candidates through preparation and global CAS, lose both
-responses, restart both coordinators, and require exactly one winner while the
-loser becomes permanently `Superseded`; reject every late losing receipt and
-authorization. Because the bootstrap topology is static, join, leave,
+completion, block/reconcile, pre-authorization abandon, revocation, and response
+loss. Race authorization commit against abandon and supersede; crash before
+and after the state/receipt/outbox transaction; delay its delivery across
+coordinator failover and global revocation; and prove the authorized generation
+remains pinned until its global result is reconciled. Race two candidates
+through preparation, lose authorization/global responses, restart both
+coordinators, and require exactly one authorized winner while the loser becomes
+permanently `Superseded` before authorization; reject every late losing receipt
+and authorization. Because the bootstrap topology is static, join, leave,
 replacement, region move, and topology mutation requests fail closed here;
 dynamic versions are exercised after `VIT-INV-060` at `0.141.0`. Race every
 boundary with global/local/rollout failover and restore. Test unreachable
@@ -2457,7 +2480,10 @@ the `0.18.2` work-variant/audit-intent/receipt/commit digests, predecessor, and
 key ID, plus active law-catalog ID, epoch, payload/envelope digests, exact
 profile, activation floor, predecessor digest, exact scope, validity window and
 maximum uncertainty, signer/root epoch, revocation/successor policy, global
-lineage receipt, and independent local catalog/distrust/time ratchets. The
+lineage receipt, independent local catalog/distrust/time ratchets, and the
+`VIT-INV-059` active rollout generation, irreversible authorization state,
+canonical activation-authorization receipt, atomically paired outbox intent,
+global result, and terminal tombstones. The
 checkpoint verifier invokes the same canonical `LawCatalogVerifierV1` used at
 runtime and records its typed result; textual field presence is not evidence.
 Define
@@ -2480,6 +2506,10 @@ truncated chain, recovery verification, digest collision fixture, and bounded
 verify pass; catalog substitution, rollback, missing ancestry tuple, future
 tuple, envelope-field mutation, profile ambiguity, and a self-consistent
 untrusted manifest are rejected even when event hashes remain valid.
+Also delete, substitute, or split the authorization state/receipt/outbox/pinned-
+generation bundle, replay delayed authorization after revocation, and restore
+between every commit boundary; verification must fail closed or reconcile the
+authoritative global result without reopening preparation.
 
 Exit criteria: tamper evidence is deterministic without inventing cryptography.
 `v0.19.0 implementation stop reached. Run pentest for this exact commit.`

@@ -42,9 +42,13 @@ audit decision.
   generation owner, and exact attested/fenced local placement owners with
   catalog/distrust/trusted-time fences; compiled static bootstrap and immutable
   successor topology/placement manifests; one active rollout generation with
-  permanent loser supersession; transactional prepare/activation/convergence/
-  revocation delivery and workload-authenticated receipts rather than digest
-  authority; expected-version explicit
+  irreversible authorization receipt/outbox pinning and permanent
+  pre-authorization loser supersession; staged exact-singleton topology handoff
+  with exclusive authority; online single-use orchestrator action claims with
+  zero offline authority; transactional prepare/activation/convergence/
+  revocation delivery and closed signed/MAC/attested-channel receipt variants
+  with replay and durable-integrity anchors rather than digest authority;
+  expected-version explicit
   succession; gap-free milestone selection; shared runtime/CLI canonical
   cryptographic verification; complete scope/validity/uncertainty/signer/root/
   revocation/successor binding; catalog-bound checkpoint/backup/restore

@@ -178,8 +178,14 @@ expect_realization_failure "a missing typed transmission outcome"
 sed -i 's/, `Superseded`//' "$realizations"
 expect_realization_failure "a missing catalog-rollout loser state"
 
+sed -i 's/, `ActivationAuthorized`//' "$realizations"
+expect_realization_failure "a missing irreversible activation-authorization state"
+
 sed -i 's/`CurrentPlacementTopologyReceiptV1`, //' "$realizations"
 expect_realization_failure "a missing topology-authority receipt"
+
+sed -i 's/`CommitTopologyAuthorityHandoff`, //' "$realizations"
+expect_realization_failure "a missing topology-authority handoff transition"
 
 sed -i 's/, VIT-LST-001-g01-N//' "$realizations"
 expect_realization_failure "a missing negative semantic contract"

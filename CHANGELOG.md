@@ -8,6 +8,18 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Made catalog activation authorization an irreversible, atomic
+  `ActivationAuthorized` state with receipt/outbox persistence, active-
+  generation pinning, globally serialized activate-versus-revoke recovery, and
+  explicit abandon/supersede/failover/delay race tests.
+- Replaced the circular topology transition with a staged
+  `DormantInitialized` to `Committed` handoff: epoch 12 activates and converges
+  under generation 1 before an exact rollout/artifact/manifest/local-admission
+  CAS transfers exclusive authority to `VIT-INV-060`.
+- Closed workload and receipt assurance gaps with online single-use
+  `WorkloadLeaseActionClaim` authority, a frozen maximum exposure window and
+  zero offline authority, plus three exhaustive authenticated-receipt variants
+  with replay tombstones and durable integrity anchors.
 - Added independent dynamic placement-topology authority (`VIT-INV-060`) with
   an artifact-authorized singleton handoff at `0.141.0`, expected-version
   successor manifests, monotonic member generations, fences, tombstones, and

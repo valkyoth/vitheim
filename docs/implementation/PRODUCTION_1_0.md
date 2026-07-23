@@ -25,6 +25,13 @@ evidenced global owner; `VIT-INV-059` has one durable rollout-root owner;
 local `VIT-INV-058` is exactly one enforcement-partition placement generation
 with the selected attested/fenced workload proof, authenticated receipts,
 boot identity, binary/semantic digests, and fencing.
+The topology owner reached `Committed` only through the staged exact-singleton
+handoff after epoch-12 generation-1 activation/convergence and local
+generation-2 admission; evidence proves no boundary admitted dual or absent
+topology authority. The orchestrator identity profile has online single-use
+action claims with a frozen maximum lifetime and zero offline authority, and
+receipt authentication uses only the three closed reviewed variants with
+replay and durable-integrity evidence.
 `VIT-LAW-007` proves admission composition and `VIT-LAW-008` proves the
 manifest/prepare/global-activation/convergence/revocation process manager.
 Every
@@ -39,7 +46,11 @@ catalog per milestone. Every rollout has one monotonic active generation, one
 immutable topology/placement manifest read from topology authority, legal
 closed state including permanent losing `Superseded`, transactional messages,
 exact workload-authenticated identity-bound receipts, bounded reconciliation,
-and no distributed-transaction claim. Rollout/discovery cannot create
+and no distributed-transaction claim. Its irreversible
+`ActivationAuthorized` state atomically owns the authorization receipt/outbox,
+pins the generation, and is reconciled against the globally serialized
+activate-or-revoke result; no post-authorization abandon or supersede is
+possible. Rollout/discovery cannot create
 topology, and restore cannot resurrect a placement tombstone.
 
 Goal: release the first production-supported Vitheim platform with claims no

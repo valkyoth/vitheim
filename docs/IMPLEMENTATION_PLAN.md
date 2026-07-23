@@ -84,16 +84,20 @@ are exact enforcement-partition placement generations and hold identity fence,
 catalog/distrust/trusted-time ratchets. `VIT-LAW-007` composes both with
 platform safety-floor, dispatch, and transmission-start roots.
 `VIT-INV-059`/`VIT-LAW-008` add a separate durable rollout process manager:
-immutable topology/placement manifests, closed prepare/activate/converge/
-complete/block/revoke/abandon/supersede states, one monotonic active rollout
-generation per lineage, transactional outbox/inbox delivery, and authenticated
-identity/fence-bound receipts without a distributed transaction. `0.18.3`
-permits only the compiled immutable single-placement topology; `0.141.0`
-introduces independent `VIT-INV-060` current-topology authority and
-`VIT-LAW-008@g02` before split-service deployment. Rollout consumes topology
-receipts and cannot create membership or fences. `0.140.1` selects a typed
-hardware-attested or orchestrator-attested single-active-lease workload-
-identity proof and receipt-authentication profile; a disk key or digest is not
+immutable topology/placement manifests, irreversible `ActivationAuthorized`
+with atomic authorization receipt/outbox and pinned generation, closed
+converge/complete/block/revoke/abandon/supersede states, transactional delivery,
+and authenticated identity/fence-bound receipts without a distributed
+transaction. `0.18.3` permits only the compiled immutable single-placement
+topology. At `0.141.0`, epoch 12 activates/converges under generation 1/static
+authority, then an exact dormant-singleton handoff CAS makes independent
+`VIT-INV-060` and `VIT-LAW-008@g02` current; the two topology sources are never
+co-authoritative. Rollout consumes topology receipts and cannot create
+membership or fences. `0.140.1` selects a hardware-attested identity or an
+orchestrator-attested lease with online single-use action claims, fixed maximum
+lifetime, and zero offline authority. Receipt authentication is a closed
+signed, authority-MAC, or attested-channel-admission variant with replay and
+durable-integrity binding; a disk key, digest, transcript, or row is not
 authority. Every
 artifact is canonically decoded and cryptographically verified by one project-
 owned core shared by runtime and release CLI. No clone, startup, restore,

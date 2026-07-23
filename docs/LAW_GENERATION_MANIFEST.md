@@ -100,7 +100,9 @@ released meaning requires a successor generation, not an in-place edit.
   `VIT-INV-057` catalog lineage, separate `VIT-INV-058` local
   identity/catalog/distrust/trusted-time ratchets, `VIT-INV-059` durable
   serialized rollout process manager and `VIT-LAW-008@g01`, compiled static
-  singleton placement, authenticated receipt-bound state, planning/active
+  singleton placement, irreversible activation authorization with atomic
+  receipt/outbox and active-generation pinning, authenticated receipt-bound
+  state, planning/active
   separation, gap-free activation-floor
   selection, fully bound payload/envelope, one runtime/CLI cryptographic
   verifier, closed stage-aware P/N/M/F semantic-realization registry, and

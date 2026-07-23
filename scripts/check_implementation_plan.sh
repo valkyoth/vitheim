@@ -242,8 +242,20 @@ require_text docs/LAW_ACTIVE_CATALOGS.md \
     'monotonic `ActiveRolloutGeneration`' \
     'serialized catalog rollout generation'
 require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '`ActivationAuthorized` is an irreversible authorization-commit state' \
+    'irreversible catalog activation authorization'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
     '`Superseded` is the permanent losing-candidate state' \
     'permanent competing-rollout loser state'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '`DormantInitialized` or `Committed`' \
+    'closed topology authority handoff state'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '`WorkloadLeaseActionClaim`' \
+    'online single-use orchestrator action claim'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '`WorkloadSignedReceipt`' \
+    'closed catalog receipt authentication variants'
 require_text docs/implementation/PHASE_B.md \
     '<!-- vitheim-invariant VIT-INV-057 0.18.3 -->' \
     'owned global active law catalog lineage'
