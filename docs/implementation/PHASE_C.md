@@ -314,25 +314,36 @@ Queue delivery/acknowledgement is distinct from external-effect acceptance and
 outcome. Preserve stable `EffectId`, request digest, attempt evidence,
 idempotency/replay horizon, and each typed execution, remote-outcome,
 resolution-evidence, operational-workflow, and compensation state across lease
-expiry, redelivery, failover, and dead-letter movement.
+expiry, redelivery, failover, and dead-letter movement. Preserve the immutable
+authorization binding and freshness profile across queues; a worker must record
+the required current dispatch decision and cannot inherit business authority
+from queue or lease possession. Preserve `QuotaReservationState`, the declared
+consumption boundary, held-unknown disposition, evidence-bound exactly-once
+refund/release, separate compensation accounting, and isolated control-plane
+reconciliation capacity.
 
 Goal: own an HA-capable durable queue profile without requiring a separate
 message broker for correctness.
 
 Deliverables: project-owned queue port, journal/outbox-backed PostgreSQL adapter,
 memory fake, worker protocol, external-effect reconciliation scheduling and
-manual-resolution queue, capability report, and operational metrics.
+manual-resolution queue, dispatch-authorization gate, quota-disposition
+reconciler, control-plane reserve lane, capability report, and operational
+metrics.
 
 Verification: enqueue/commit crashes, duplicate delivery, receipt/effect split,
 stale ack/fence, lease loss, dead-letter/effect split, quota/effect split,
 poison loops, starvation, cross-tenant routing, sensitive payload leakage,
 provider acceptance with lost worker response, blind retry after idempotency-key
-expiry, unknown-outcome dead-letter loss, partition/failover, drain/restart, and
-model/conformance tests pass.
+expiry, unknown-outcome dead-letter or quota-hold loss, stale authority after
+enqueue/lease, target substitution, worker confused deputy, duplicate refund,
+provider outage with exhausted tenant quota, misuse/starvation of control-plane
+reserve, partition/failover, drain/restart, and model/conformance tests pass.
 
 Exit criteria: HA work dispatch has documented at-least-once delivery and
 idempotent local-commit semantics, preserves the `0.18.2` external-effect
-resolution contract without collapsing its typed dimensions, and has no
+authorization, resolution, and quota contracts without collapsing their typed
+dimensions, keeps recovery available under tenant exhaustion, and has no
 process-local queue dependency.
 `v0.30.1 implementation stop reached. Run pentest for this exact commit.`
 

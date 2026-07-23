@@ -50,7 +50,20 @@ audit decision.
   resolution-evidence/operational-workflow/compensation types, reconciliation
   deadlines, escalation, and authorized manual resolution. Assessment is not
   provider truth; unknown privileged or non-compensable work is never retried
-  blindly.
+  blindly. Effect intent always requires commit-time authorization and binds
+  tenant, initiator, delegation, capability, target, purpose, request, policy,
+  and authentication assurance. Reviewed low-risk immutable effects may be
+  `CommitBound`; privileged, destructive, secret-bearing, containment, and
+  compensation effects are `CommitAndDispatch` and require a current fenced
+  single-use dispatch authorization. Workers and leases confer no business
+  authority, and binding substitution is forbidden.
+- Durable quota states declare admission/dispatch consumption, keep unknown
+  provider outcomes charged/held, permit exactly one evidence-bound refund or
+  release for pre-dispatch cancellation or definitely-not-accepted proof, and
+  account compensation separately. Manual assessment cannot mint refund
+  evidence. Audited, strictly scoped control-plane reserves keep reconciliation
+  and security cleanup available under tenant exhaustion and cannot serve new
+  tenant work.
 - Capability-limited plugins and integrations; opaque secret handles and
   host-brokered authenticated operations; plaintext credentials never enter
   Wasm guest memory.

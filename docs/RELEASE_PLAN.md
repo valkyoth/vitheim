@@ -97,13 +97,13 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.14.0` | Snapshots and validation | Stale, forged, truncated, cross-tenant, or poisoned snapshots |
 | `0.15.0` | Projection engine and checkpoints | Skipped, duplicated, reordered events and invalid checkpoints |
 | `0.15.1` | Security audit envelope and durable intent | Missing/forged audit authority, command/audit mismatch, duplicate rejection, metadata leakage |
-| `0.16.0` | Transactional event/receipt/audit/outbox and typed effect intent | Mutation without audit/message, execution/outcome/evidence collapse, response loss, effect-ID confusion |
+| `0.16.0` | Transactional event/receipt/audit/outbox and authorization-bound typed effect intent | Mutation without audit/message, incomplete/stale authority binding, target substitution, execution/outcome/evidence collapse, response loss |
 | `0.16.1` | Atomic command commit bundle | Missing/split command component, audit/receipt digest deletion, denial-chain splice |
 | `0.17.0` | Inbox and idempotent consumer model | Replay, duplicate local commits, poisoned receipts, remote-duplication ambiguity |
 | `0.17.1` | Atomic consumer commit bundle | Receipt/local-commit split, redelivery duplication, hidden multi-stream or remote-in-transaction work |
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
-| `0.18.1` | Durable quota accounting | Concurrent oversubscription, retry/refund races, tenant unfairness, reconciliation |
-| `0.18.2` | Atomic work family and external-effect resolution contract | Atomic split, lifecycle/outcome/evidence/manual collapse, resolution race, blind unknown retry |
+| `0.18.1` | Durable quota lifecycle, refund evidence, and recovery reserve | Oversubscription, duplicate/forged refund, unknown-outcome leaks, compensation reuse, provider-outage recovery starvation |
+| `0.18.2` | Atomic work family with effect authorization, resolution, and quota contracts | Atomic split, commit/dispatch revocation, confused deputy/target substitution, lifecycle collapse, blind unknown retry, quota liability loss |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
 | `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
@@ -134,7 +134,7 @@ implementations remain blocked rather than being implemented casually.
 | `0.28.3` | In-process secret handling | Formatting/diagnostic/plugin leakage, stale cache, crash/core-dump policy, overstated erasure |
 | `0.29.0` | Migration registry and resumable migrations | Interrupted/malicious migrations, downgrade and rollback safety |
 | `0.30.0` | Cross-backend export and import | Substitution, truncation, tenant mix-up, integrity loss |
-| `0.30.1` | Durable journal-backed work queue | Duplicate delivery, provider response loss, unknown-outcome loss/blind retry, partition |
+| `0.30.1` | Durable journal-backed work queue preserving effect authority and quota state | Duplicate delivery, stale dispatch authority, provider response loss, unknown-outcome/quota loss, refund duplication, recovery starvation, partition |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 
 ## Phase D — Universal Work Platform
@@ -210,9 +210,9 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.56.0` | ABAC engine | Missing attributes, type confusion, fail-open decisions |
 | `0.56.1` | Policy lifecycle, bootstrap, and recovery | Self-approval, stale simulation, lockout, recovery abuse, rollback downgrade |
 | `0.57.0` | Relationship-based authorization | Malicious paths, ownership spoofing, traversal bounds |
-| `0.58.0` | Field redaction and policy obligations | Hidden-field leaks through APIs, search, export, notification |
-| `0.59.0` | Delegation and break-glass access | Unbounded/non-expiring privilege, weak approval/audit |
-| `0.60.0` | Human and workload authorization conformance suite | Principal/audience/credential confusion and complete action/read/field/search/export/ingest equivalence |
+| `0.58.0` | Field redaction, obligations, and commit/dispatch enforcement registry | Hidden-field leaks, missing effect gate/binding, unsafe freshness classification, dispatch revocation bypass |
+| `0.59.0` | Delegation and break-glass access | Unbounded/non-expiring privilege, weak approval/audit, delayed effect outliving delegation |
+| `0.60.0` | Human, workload, and delayed-effect authorization conformance suite | Principal/audience/credential confusion, commit/dispatch revocation, target substitution, confused deputy, interface equivalence |
 
 ## Phase G — Durable Workflows
 
@@ -228,11 +228,11 @@ commit, and external-outcome semantics.
 | `0.63.0` | Human tasks and approvals | Task theft, self-approval, stale authorization |
 | `0.64.0` | Timers, deadlines, and retries | Retry storms, clock manipulation, duplicated effects |
 | `0.65.0` | Parallel branches and joins | Premature joins, duplicate completion, branch leaks |
-| `0.66.0` | Compensation mechanics | State collapse, unknown original/compensation, evidence race, double/incomplete rollback |
+| `0.66.0` | Linked, independently authorized and quota-accounted compensation mechanics | State/linkage collapse, unknown original/compensation, evidence/authority race, quota reuse, double/incomplete rollback |
 | `0.67.0` | Signals and subworkflows | Signal spoofing, cross-tenant routing, recursion exhaustion |
 | `0.68.0` | Workflow history, versioning, and migration | Unbounded history, corrupt checkpoint, orphan activity, unsafe remap |
 | `0.69.0` | Visual/configuration-as-code compiler | Hidden flags, generated privilege escalation, divergence |
-| `0.70.0` | HA workflow workers | Lease/failover, duplicate remote effect, network/crash windows, resolution races/deadlines |
+| `0.70.0` | HA workflow workers with dispatch authorization and quota recovery lanes | Lease/failover, stale authority/confused deputy, duplicate remote effect/refund, unknown quota leak, recovery starvation, network/crash windows |
 
 ## Phase H — Alerts And Security Operations
 
@@ -337,7 +337,7 @@ Phase exit: cross-plugin/tenant isolation and compatibility suite pass pentest.
 | --- | --- | --- |
 | `0.111.0` | Versioned WIT component interfaces | ABI confusion and malformed components |
 | `0.112.0` | Deterministic component execution | Fuel bypass, nondeterminism, covert host access |
-| `0.113.0` | Effectful component execution | Unauthorized/replayed calls, forged provider evidence, state collapse, blind retry/resolver abuse |
+| `0.113.0` | Authorization-bound, quota-accounted effectful component execution | Commit/dispatch revocation, confused deputy/target substitution, forged provider/refund evidence, state collapse, quota/reserve abuse |
 | `0.114.0` | Capability and non-extractable secret-operation model | Capability escalation, broker confused deputy, plaintext secret in Wasm memory |
 | `0.115.0` | Memory/CPU/network/output metering | Resource-limit bypass and host denial of service |
 | `0.116.0` | Signed plugin registry and rollout | Signature downgrade, malicious update, rollback |
@@ -422,10 +422,10 @@ the first technology decision. An unselected option remains unsupported at
 | --- | --- | --- |
 | `0.140.1` | Dependency, cryptography, KMS, and timestamp profile decision | Auditability, maintenance, license, key lifecycle, replacement boundary, no improvised security protocol |
 | `0.140.2` | Tenant and storage topology decision | Backend-specific structural enforcement, twin tenants, pool state, administrator boundary, no weak fallback |
-| `0.140.3` | Human, workload, session, and recovery authentication decision | Sender-constrained privileged profile, restricted bearer, external issuer, no OAuth server/PAT/API keys |
-| `0.140.4` | Component runtime, worker isolation, and egress decision | Escape, metering, host amplification, DNS/redirect, OS limit, and cross-tenant evidence |
+| `0.140.3` | Human, workload, session, and recovery authentication decision | Sender-constrained privileged profile, dispatch-time assurance freshness, restricted bearer, external issuer, no OAuth server/PAT/API keys |
+| `0.140.4` | Component runtime, worker/effect-broker isolation, and egress decision | Escape, metering, dispatch authority, quota/reserve abuse, host amplification, DNS/redirect, OS limit, and cross-tenant evidence |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, retention precedence, omitted derived surfaces, tombstone/evidence inflation |
-| `0.140.6` | Deployment, HA, regional, and recovery profile decision | Trust boundaries, fencing, partition, capacity, upgrade/rollback, RPO/RTO evidence |
+| `0.140.6` | Deployment, HA, dispatch-authority, quota-recovery, regional, and recovery profile decision | Trust boundaries, fencing, revocation/receipt consistency, refund/recovery-reserve isolation, partition, capacity, upgrade/rollback, RPO/RTO evidence |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |
@@ -442,10 +442,10 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | `0.141.0` | Single-node production packaging | Permissions, defaults, secret exposure, clean install |
 | `0.142.0` | Split API/worker/ingest/index deployments | Service identity and network authorization |
 | `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
-| `0.143.0` | HA leases, atomic work, failover, and partitions | Split brain/atomic split, resolution race, evidence/manual conflation, duplicate remote effect |
+| `0.143.0` | HA leases, atomic work, effect authorization, quota recovery, failover, and partitions | Split brain/atomic split, stale dispatch authority, resolution/refund race, held-quota loss, recovery starvation, duplicate remote effect |
 | `0.144.0` | Regional placement and residency | Unregistered-surface mapping gaps, cross-region/external-copy leakage, unsafe failover |
 | `0.145.0` | Backup, restore, and disaster recovery | Atomic/rollup-proof integrity, partial disposition/resurrection, tombstone leak, authority loss |
-| `0.146.0` | Performance, load, soak, and chaos certification | Observation/paging/status/index exhaustion, cascading failure, noisy tenants |
+| `0.146.0` | Performance, quota-lifecycle, recovery-capacity, soak, and chaos certification | Duplicate refund, indefinite hold, provider-outage exhaustion, recovery-reserve starvation/borrowing, cascading failure, noisy tenants |
 | `0.147.0` | Final security, secret-memory, and supply-chain hardening | Diagnostic/crash/plugin secret leakage and artifact/dependency/CI/builder/key compromise |
 | `0.148.0` | API/event/plugin/pack compatibility freeze | Downgrade and version confusion |
 | `0.149.0` | Release candidate and external pentest remediation | Complete platform attack paths and clean retest |
@@ -472,7 +472,8 @@ are independently evidenced as production-ready.
   status publishing, optional federation/AI, administration, import/export, and
   reporting.
 - Documented single-node, HA, regional, backup/restore, rebuild, recovery,
-  upgrade, rollback, health, quota, and backpressure operations.
+  upgrade, rollback, health, delayed-effect authorization, quota liability/
+  control-plane reserve, and backpressure operations.
 - Identical mandatory conformance for supported production storage profiles;
   SQLite remains limited to its documented single-node profile.
 
@@ -482,11 +483,16 @@ are independently evidenced as production-ready.
   retested; other findings fixed or explicitly time-bound and owned.
 - Tenant and authorization matrices cover every API, UI, search, workflow,
   plugin, federation, shared-space/managed-service, AI, export, attachment,
-  notification, and administrative interface.
+  notification, and administrative interface, including intent-commit and
+  dispatch gates, effect binding/freshness profiles, revocation races, target
+  substitution, and worker confused-deputy attempts.
 - Every untrusted parser is fuzzed; cryptography is independently reviewed;
   plugin escape and AI injection/tool-abuse suites pass.
 - Atomic audit-intent crash tests, protected-read release receipts, exact
-  interchange conformance, and selected semantic-index isolation/rebuild pass.
+  interchange conformance, effect authorization/revocation races, quota
+  admission/dispatch/hold/exactly-once-refund/compensation transitions,
+  provider-outage recovery-reserve isolation, and selected semantic-index
+  isolation/rebuild pass.
 - Backup restoration, event integrity, projection/search rebuild, workflow
   continuation, disaster recovery, migration, rollback, load, soak, chaos,
   accessibility, localization, and secure-default tests pass.

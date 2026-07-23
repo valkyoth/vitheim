@@ -46,8 +46,9 @@ attestation/counter policy, session stores, recovery, logout, and the `0.52.1`
 machine-to-machine profiles. Review `private_key_jwt`/mTLS choice, workload
 token lifetime/audience/proof, exact sender-constraint profile, privileged
 workload requirements, any restricted-bearer action matrix, external issuer/
-key rotation and revocation, replay-cache limitations, and the separate local-
-agent enrollment profile. Confirm that Vitheim remains an
+key rotation and revocation, replay-cache limitations, authentication-assurance
+expiry/freshness at external-effect dispatch, and the separate local-agent
+enrollment profile. Confirm that Vitheim remains an
 OAuth resource server, stores no client private credentials, exposes no token
 endpoint, and keeps personal access tokens/static API keys disabled.
 Goal: revalidate and freeze production authentication profiles independently of authorization.
@@ -60,8 +61,9 @@ disposition, and unsupported combinations. Any future Vitheim OAuth authorizatio
 requires a new implementation milestone and cannot be selected here.
 Verification: protocol conformance, mix-up/replay/fixation/recovery, false
 sender constraint, proof/token substitution, bearer privilege escalation,
-first-use stolen bearer behavior, key rotation, enumeration, and degraded-
-provider behavior are independently reviewed.
+first-use stolen bearer behavior, effect dispatch after credential/session/
+assurance expiry or revocation, key rotation, enumeration, and degraded-provider
+behavior are independently reviewed.
 Exit criteria: production auth never falls back to the `0.40.0` test profile.
 `v0.140.3 implementation stop reached. Run pentest for this exact commit.`
 
@@ -71,15 +73,20 @@ Status: planned.
 Setup: compare Component Model runtimes, supported WIT/WASI level, process or
 container isolation, host metering, egress proxy, update, sandbox operations,
 catalog/storefront trust, publisher admission, offline mirrors, rollout, and
-the invariant that plaintext credentials never enter Wasm guest memory.
+the invariant that plaintext credentials never enter Wasm guest memory. Freeze
+the broker profile that enforces immutable effect bindings, mandatory current
+dispatch authorization for high-risk capabilities, typed quota disposition, and
+denial of plugin access to control-plane reserve.
 Goal: revalidate and freeze a bounded plugin profile with defense in depth.
 Deliverables: runtime/version pin, disabled default imports, worker identity,
 OS limits, egress/DNS/TLS policy, capability-handle, catalog/storefront trust,
 host-brokered authenticated HTTP/signing/token/certificate operations,
-publisher/mirror, permission-diff, connector-support, and upgrade decisions.
+publisher/mirror, permission-diff, connector-support, effect-dispatch gate,
+quota/recovery-reserve isolation, and upgrade decisions.
 Verification: sandbox escape, metering bypass, host-call amplification, DNS
 rebinding, redirect, cross-plugin/tenant, guest-memory secret canaries, broker
-confused-deputy, and cancellation evidence is reviewed.
+confused-deputy/target substitution, stale dispatch authority, quota/refund/
+reserve abuse, and cancellation evidence is reviewed.
 Exit criteria: cryptography is not claimed to enforce resource isolation.
 `v0.140.4 implementation stop reached. Run pentest for this exact commit.`
 
@@ -126,12 +133,21 @@ authority loss.
 
 Status: planned.
 Setup: compare modular all-in-one, split services, single-node, HA, regional,
-orchestrator, package/image, authoritative-region, and recovery choices.
+orchestrator, package/image, authoritative-region, and recovery choices. Every
+profile must preserve the single-use dispatch-authorization gate, current
+policy/identity/delegation/tenant/target reads, quota transition atomicity, and
+strictly isolated reconciliation/security-cleanup capacity; topology may tune
+capacity and consistency implementation but may not omit these controls.
 Goal: select the exact profiles Phase O must certify.
 Deliverables: support matrix, trust/network boundaries, fencing/quorum model,
-RPO/RTO, upgrade/rollback, observability, and operator responsibility decisions.
+dispatch-authorization consistency/failure model, quota consumption/refund
+boundary mapping, recovery-reserve sizing/isolation, RPO/RTO, upgrade/rollback,
+observability, and operator responsibility decisions.
 Verification: failure-mode analysis covers partitions, split brain, key/service
-loss, degraded dependencies, restore, capacity, and incident operations.
+loss, policy/delegation revocation during dispatch, stale/forged dispatch
+receipts, duplicate refunds, provider-outage tenant exhaustion, recovery-reserve
+starvation/borrowing, degraded dependencies, restore, capacity, and incident
+operations.
 Exit criteria: every `1.0.0` deployment claim maps to a Phase O test profile.
 `v0.140.6 implementation stop reached. Run pentest for this exact commit.`
 

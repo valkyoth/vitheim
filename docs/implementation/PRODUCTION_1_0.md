@@ -20,7 +20,8 @@ Deliverables:
   SLI/SLO/error budgets, service health/status communications, governed plugin
   catalog/connectors, optional federation/AI, and administration.
 - Supported single-node/HA/regional profiles; backup, restore, rebuild, upgrade,
-  rollback, health, quota, backpressure, incident, and DR runbooks.
+  rollback, health, delayed-effect authorization, quota liability/recovery
+  reserve, backpressure, incident, and DR runbooks.
 - Signed source/artifacts/checksums, SBOM, provenance, licenses, compatibility
   evidence, pentest report, and complete release notes.
 - A production support matrix that names the selected dependency/crypto/KMS,
@@ -30,7 +31,9 @@ Deliverables:
 
 Verification:
 - Full tenant/authorization matrix across API/UI/search/workflow/plugins/AI/
-  exports/attachments/notifications/admin; every untrusted parser fuzzed.
+  exports/attachments/notifications/admin, including every effect-intent and
+  dispatch enforcement point, freshness profile, immutable binding, revocation
+  race, and worker confused-deputy case; every untrusted parser fuzzed.
 - Independent crypto review, plugin escape and AI injection/tool-abuse suites,
   storage conformance, migration/restore/rebuild/workflow continuation tests.
 - Crash-point proof that protected commands cannot commit without authoritative
@@ -44,7 +47,17 @@ Verification:
   outcome/resolution-evidence/operational-workflow/compensation models,
   reconciliation deadlines/escalation, and authorized manual-resolution races
   prove an ambiguous privileged or non-compensable effect is never blindly
-  retried and an assessment never becomes verified provider truth.
+  retried and an assessment never becomes verified provider truth. Commit-time
+  authorization is mandatory; current fenced single-use dispatch authorization
+  is proven for every privileged, destructive, secret-bearing, containment, and
+  compensation effect. Changes to policy, delegation, employment, tenant, target,
+  assurance, or request binding before dispatch prevent provider I/O; worker and
+  lease identity never substitute business authority.
+  Quota evidence proves each declared admission/dispatch consumption boundary,
+  held unknown outcome, exactly-once evidence-bound refund/release, and separate
+  compensation reservation. Manual assessment cannot create refund proof.
+  Provider-outage and tenant-exhaustion tests prove bounded reconciliation and
+  security cleanup retain isolated non-borrowable control-plane capacity.
   Denial-only audit chains anchor;
   protected reads/downloads cannot release bytes before audit receipt;
   streaming completion/abort reconciles.

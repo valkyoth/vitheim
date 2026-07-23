@@ -23,24 +23,34 @@ ambient authority. `v0.112.0 implementation stop reached. Run pentest for this e
 
 ## `0.113.0` — Effectful Component Execution
 Status: planned. Setup: capability calls, stable `EffectId`/request digest,
-authorization, provider idempotency-key scope/retention, status-query and
-reconciliation support, retry/replay horizon, compensation, privilege/
-non-compensability, and audit. Each capability maps exactly onto the `0.18.2`
+commit-time authorization, immutable tenant/initiator/delegation/capability/
+target/purpose/request/policy/assurance bindings, declared authorization
+freshness, current dispatch authorization where required, provider idempotency-
+key scope/retention, status-query and reconciliation support, retry/replay
+horizon, compensation, privilege/non-compensability, quota disposition, and
+audit. Each capability maps exactly onto the `0.18.2`
 execution state, remote outcome, resolution source/evidence, operational
 resolution workflow, and separate compensation state; plugins cannot select a
 stronger capability, synthesize provider evidence, close a privileged manual
-workflow, or reinterpret `OutcomeUnknown`. Goal: controlled hosted extension
+workflow, reinterpret `OutcomeUnknown`, downgrade `CommitAndDispatch`, reuse
+another effect's quota reservation, or spend control-plane reserve. Goal:
+controlled hosted extension
 effects with truthful remote outcomes. Deliverables: host-call broker, typed
 effect-capability descriptors, distinct lifecycle/outcome/resolution/
 compensation receipts, reconciliation deadline/escalation boundary, and
-authorized manual-resolution boundary. Verification: unauthorized calls,
-replay, confused deputy, cross-tenant handles, request-digest substitution,
+authorized manual-resolution boundary; single-use dispatch-authorization
+receipts and quota hold/refund/compensation accounting integration.
+Verification: unauthorized calls, replay, commit-to-dispatch revocation,
+forged/stale dispatch receipt, worker/plugin confused deputy, cross-tenant
+handles, target/request-digest substitution, unsafe freshness downgrade,
 provider acceptance plus lost response, idempotency expiry, forged success/
 resolution source, operator assessment presented as provider truth, late
 callback versus manual resolution, forbidden blind retry, privileged resolver
-impersonation, and partial failure pass. Exit criteria: every effect passes
-independent policy and its execution, provider truth, knowledge source,
-operational disposition, and compensation remain independently attributable.
+impersonation, unknown-outcome refund, duplicate refund, compensation quota
+reuse, control-plane-reserve access, and partial failure pass. Exit criteria:
+every effect passes independent commit-time and declared dispatch-time policy;
+its exact binding, execution, provider truth, knowledge source, operational
+disposition, quota state, and compensation remain independently attributable.
 `v0.113.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.114.0` — Capability And Secret Handles

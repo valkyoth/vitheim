@@ -42,9 +42,10 @@ The complete design anticipates boundaries between:
 | --- | --- |
 | Cross-tenant disclosure or mutation | Non-optional tenant types, policy at every boundary, partitioned tests, cache/index/blob isolation |
 | Tenant data survives export/hold/erasure/closure | Foundation lifecycle descriptors, complete registry backfill plus prospective generated gate, explicit retention precedence, typed honest evidence, disposition receipts, closure policy/blocker |
-| IDOR and confused deputy | Typed commands, actor and target binding, capability scope, policy snapshots, negative authorization matrix |
+| IDOR, delayed-effect revocation, or confused deputy | Typed commands, immutable tenant/initiator/delegation/capability/target/request binding, commit-time authorization, mandatory current fenced dispatch authorization for high-risk effects, no worker-derived business authority, revocation and target-substitution tests |
 | Event/evidence tampering | Append-only journal semantics, expected versions, integrity chains, signed checkpoints, restore verification |
 | Replay, duplicated effects, or ambiguous provider outcomes | Single-aggregate local commits, stable effect ID/digest, distinct execution/outcome/resolution/manual/compensation types, provider-evidence strength, reconciliation deadline/fencing, no blind privileged/non-compensable retry |
+| Quota refund fraud, liability loss, or recovery starvation | Typed reservation lifecycle and declared consumption boundary, unknown outcomes held, evidence-bound exactly-once refund/release, separate compensation accounting, isolated audited reconciliation/security reserve |
 | Parser/resource exhaustion | Explicit byte/item/depth/allocation/work limits, cancellation, quotas, fuzzing and load tests |
 | Injection and unsafe content | Canonical parsers, contextual encoding, attachment quarantine, no arbitrary scripts or SQL exposure |
 | Workflow or policy bypass | Deterministic IR, version pinning, simulation, approval, signed activation, fail-closed evaluator |
@@ -53,7 +54,7 @@ The complete design anticipates boundaries between:
 | AI prompt/tool abuse | Permission-filtered context, provenance, tainting, structured proposals, independent policy and human approval |
 | Secret leakage | Non-extractable handles, host-brokered secret operations, redacted errors/logs, no core or Wasm plaintext secret storage, rotation and best-effort zeroization policy |
 | Supply-chain compromise | No current dependencies, pinned tools/actions, lockfile, SBOM, read-only CI, signed provenance and pentest gate |
-| Availability failure | Tenant quotas, backpressure, poison queues, bounded retries, leases, recovery and chaos testing |
+| Availability failure | Tenant quotas, non-borrowable recovery reserve, backpressure, poison queues, bounded retries, leases, provider-outage reconciliation and chaos testing |
 | Historical authority conflicts with mandatory deletion | Rollup-substitution gate, independent disposition for raw/rollup/manifest/result/cache/export/checkpoint metadata, permitted non-sensitive tombstone, unknown history, immutable authority-loss fact |
 
 ## Initial `0.1.0` Attack Surface

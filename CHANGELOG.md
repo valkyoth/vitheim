@@ -59,4 +59,9 @@ All notable Vitheim changes are documented here. The format follows
   lifecycle/provider truth/resolution/manual/compensation models, independently
   disposing every rollup-derived surface, and restoring mechanically checked
   Phase G network-call/crash-point verification.
+- Closed the delayed-effect control gaps without adding versions: restored the
+  complete compensation milestone, bound effect intents to commit-time and
+  risk-based current dispatch authorization, and tied quota hold/refund/
+  compensation semantics plus protected recovery capacity to the typed
+  external-effect lifecycle through HA and production acceptance.
 - Added local and GitHub verification gates without a crate publication path.

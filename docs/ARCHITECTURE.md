@@ -60,7 +60,20 @@ authorization semantics.
    Manual assessment never becomes verified provider truth. Unknown privileged
    or non-compensable work is reconciled or escalated, never blindly replayed;
    late provider evidence and manual decisions are retained and resolved under
-   fenced concurrency rules.
+   fenced concurrency rules. Intent creation always requires authorization and
+   immutably binds tenant, initiator, delegation, capability, target, purpose,
+   request, policy, and authentication assurance. A reviewed capability declares
+   `CommitBound` or `CommitAndDispatch`, with the latter as default; privileged,
+   destructive, secret-bearing, containment, and compensation effects always
+   reauthorize current policy,
+   subject/delegation/tenant/target state at a fenced single-use dispatch gate.
+   Worker or lease identity never grants business authority, and a changed
+   binding requires a new intent. Each capability also declares whether quota is
+   consumed at admission or dispatch. Unknown outcomes remain charged/held;
+   only pre-dispatch cancellation or admissible definitely-not-accepted evidence
+   can refund/release exactly once. Compensation is accounted separately.
+   Strictly scoped control-plane reserve keeps reconciliation and security
+   cleanup available under tenant exhaustion and cannot admit tenant work.
 9. Every untrusted parser, query, workflow, plugin, attachment, import, report,
    and export has explicit size, depth, time, memory, and work budgets.
 10. Every important result is explainable from commands, events, policy,

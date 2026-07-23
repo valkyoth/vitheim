@@ -38,17 +38,23 @@ reached. Run pentest for this exact commit.`
 
 ## `0.143.0` — HA Leases, Failover, And Partitions
 Status: planned. Setup: quorum/authority, fencing, health, failover, partition
-policy, reconciliation, and every `0.18.2` atomic work variant. Goal: prevent
-split-brain effects. Deliverables: HA orchestration, work-variant fault matrix,
-and runbooks. Verification: partitions, clock skew, stale leader/fence,
+policy, reconciliation, every `0.18.2` atomic work variant, delayed-effect
+authorization freshness/bindings, and quota disposition/control-plane reserve.
+Goal: prevent split-brain effects. Deliverables: HA orchestration, work-variant
+fault matrix, dispatch-authorization and quota-reconciliation evidence, and
+runbooks. Verification: partitions, clock skew, stale leader/fence,
 receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
 activity work, timer dispatch/result separation, multi-aggregate/remote-call
 transaction rejection, provider acceptance plus lost response, unknown-outcome
 reconciliation deadline/escalation, distinct execution/outcome/evidence/manual/
 compensation state, direct/callback/query evidence racing manual resolution,
-forbidden blind privileged/non-compensable retry, failover/failback, and chaos/
-soak pass. Exit criteria: split
-brain and stale workers reject every state-changing variant. `v0.143.0
+forbidden blind privileged/non-compensable retry, authority or target change
+across commit/lease/dispatch, stale/forged dispatch receipt, confused deputy,
+duplicate refund, held-quota loss, compensation quota reuse, exhausted tenant
+quota during recovery, control-plane reserve misuse, failover/failback, and
+chaos/soak pass. Exit criteria: split brain and stale workers reject every
+state-changing variant; failover cannot bypass dispatch authorization, erase
+quota liability, duplicate a refund, or starve bounded recovery. `v0.143.0
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.144.0` — Regional Placement And Residency
@@ -82,14 +88,22 @@ rollup to authority, and every related surface has its own disposition proof.
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification
 Status: planned. Setup: representative workloads, SLOs, durable `0.18.1` quota
 profiles, separate Vitheim-telemetry and customer-measurement capacity models,
-paging/status provider limits, fairness and reconciliation, baselines, failure
-scenarios, and evidence retention. Goal: prove bounded behavior under stress.
-Deliverables: harnesses and signed reports. Verification: atomic quota
-reservation/refund/work-bundle consumption, noisy tenants, observation late-
-arrival/authoritative-rollup recalculation/downsampling,
+paging/status provider limits, per-capability admission/dispatch consumption
+boundaries, held-unknown and exactly-once refund semantics, separate
+compensation accounting, isolated reconciliation/security-cleanup reserve,
+fairness and reconciliation, baselines, failure scenarios, and evidence
+retention. Goal: prove bounded behavior under stress.
+Deliverables: quota-lifecycle/load/fault harnesses, reserve-isolation monitors,
+leak/escalation evidence, and signed reports. Verification: atomic quota
+reservation/consumption/hold/refund/release across every work bundle, duplicate
+and forged refunds, indefinite unknown-outcome holds, cancellation/dispatch/
+provider-evidence races, compensation accounting, provider-outage tenant
+exhaustion, control-plane reserve starvation or tenant borrowing, noisy tenants,
+observation late-arrival/authoritative-rollup recalculation/downsampling,
 paging/status retry/reconciliation, queue/index/embedding/plugin/report
 exhaustion, leaks, cascading failures, and long soak/chaos pass. Exit criteria:
-regressions and unsafe saturation block release. `v0.146.0
+regressions, unbounded quota liability, blocked recovery, and unsafe saturation
+block release. `v0.146.0
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.147.0` — Final Security And Supply-Chain Hardening

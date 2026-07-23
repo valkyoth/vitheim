@@ -54,6 +54,21 @@ capability follows the `0.16.0–0.18.2` contract with distinct execution state,
 remote outcome, resolution source/evidence, operational-resolution workflow,
 and compensation state. Manual assessment never becomes verified provider
 truth; unknown privileged or non-compensable work is never retried blindly.
+Authorization is mandatory at effect-intent commit and binds tenant, initiator,
+delegation, capability, target, purpose, request, policy, and assurance. Every
+capability declares `CommitBound` or `CommitAndDispatch`, with dispatch recheck
+as the default; only reviewed immutable low-risk effects may be commit-bound,
+while privileged, destructive, secret-bearing, containment, and compensation
+effects require a current fenced,
+single-use dispatch decision. Authority, target, or request changes deny the
+old dispatch rather than being substituted by a worker.
+Each capability declares its quota admission/dispatch consumption boundary.
+Unknown outcomes remain durably charged/held; only pre-dispatch cancellation or
+admissible definitely-not-accepted evidence permits exactly one refund/release.
+Operator assessment cannot fabricate that evidence, compensation is separately
+accounted, and strictly scoped control-plane reserve capacity protects
+reconciliation/security cleanup from tenant exhaustion without admitting new
+tenant work.
 External-copy lifecycle evidence uses the typed `0.51.2` strength model and may
 never promote an attestation, unconfirmed request, or unverifiable disclosed
 plaintext to local deletion proof or controlled-key erasure. Rollup-substitution
@@ -75,7 +90,10 @@ invariant property tests, and migration/restore evidence where applicable.
 `0.58.0–0.60.0` backfill every authority-bearing interface implemented through
 Phase F. Every later milestone that adds one must register its tenant, subject,
 action, resource, fields, purpose, obligations, audit behavior, and negative
-cases in that conformance registry before exit.
+cases in that conformance registry before exit. External effects additionally
+register intent-commit and dispatch enforcement points, immutable bindings,
+freshness profile, quota boundary, refund evidence, and compensation/recovery
+capacity behavior.
 
 At each implementation stop: do not tag, publish, or begin the next milestone.
 Pentest the exact commit, fix every blocking finding, rerun all gates, obtain a

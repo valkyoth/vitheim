@@ -35,16 +35,27 @@ execution, remote-outcome, resolution-evidence, and operational-workflow types.
 Reconcile an `EffectExecutionState::OutcomeUnknown` original before deciding
 whether compensation is applicable. Compensation has its own
 `CompensationEffectId`, `CompensationState`, external-effect lifecycle, remote
-outcome, and resolution evidence linked to—but never mutating—the original.
+outcome, resolution evidence, `CommitAndDispatch` authorization decisions, and
+quota reservation linked to—but never mutating or borrowing quota from—the
+original.
 Goal: bounded auditable recovery from partial workflows without inventing
-certainty about provider state. Deliverables: compensation IR/state, original-
+certainty about provider state.
+Deliverables: compensation IR and state machine, canonical codecs,
+original-to-compensation linkage, distinct compensation effect/outcome/evidence
+and quota records, current dispatch-authorization and separation-of-duties rules,
+reconciliation policy with deadlines/escalation, operator/manual-resolution
+view, and deterministic race fixtures.
 Verification: double/failed/out-of-order compensation, response-loss ambiguity,
 compensation after an unknown original, unknown compensation result, crash
 windows, non-compensable effects, operator assessment forged as provider
 outcome, late provider evidence racing manual/compensation decisions,
-unauthorized or self-approved privileged resolution, and replay pass.
+unauthorized, revoked, or self-approved privileged compensation, reuse of the
+original quota reservation, duplicate compensation refund, target substitution,
+and replay pass.
 Exit criteria: incomplete rollback or uncertain provider state is explicit,
-never hidden, overwritten, or converted into assumed provider success.
+never hidden, overwritten, or converted into assumed provider success; every
+compensation remains linked, independently authorized, independently quota-
+accounted, reconcilable, and visible to operators.
 `v0.66.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.67.0` — Signals And Subworkflows
@@ -68,12 +79,15 @@ Status: planned. Setup: one canonical source model, round-trip policy, provenanc
 ## `0.70.0` — HA Workflow Workers
 Status: planned. Setup: define leases/fencing, activity idempotency, specialize
 the `0.18.2` activity/poison variants, `0.30.1` queue semantics, poison policy,
-drain, failover, authorization and `0.51.2` tenant-data-surface registry
-entries, Phase E workflow contract fixtures, and `0.39.1–0.39.3` on-call/
+drain, failover, commit-and-dispatch authorization freshness, immutable effect
+bindings, quota-disposition/control-plane-reserve semantics, and `0.51.2`
+tenant-data-surface registry entries, Phase E workflow contract fixtures, and
+`0.39.1–0.39.3` on-call/
 paging/notification process-manager scenarios. Goal: durable multi-worker
 execution. Deliverables: hosted worker orchestration, authorization cases,
 external-effect reconciler/manual queue, ITSM and response-delivery integration
-retests, and operational evidence.
+retests, single-use fenced dispatch-authorization receipts, quota hold/refund
+reconciliation, isolated recovery lanes, and operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
 receipt/effect split, network-call-in-transaction rejection, crash points,
 stale fencing commits, poison/dead-letter split, quota/effect split, poison
@@ -82,11 +96,18 @@ quiet-hour races, provider acceptance followed by response loss, idempotency-
 window expiry, conflicting/unsupported status query, reconciliation deadline/
 escalation, direct/callback/query evidence racing manual assessment, forbidden
 blind retry of an unknown privileged/non-compensable effect, unauthorized
-privileged resolution, Phase E fake-versus-real differential, rolling upgrades,
-and soak pass.
+privileged resolution, policy/delegation/employment/tenant/target changes from
+commit through lease and dispatch, forged/replayed dispatch authorization,
+worker confused deputy or target/request substitution, duplicate/forged refund,
+unknown-outcome quota leak, compensation quota reuse, provider outage under
+tenant exhaustion, control-plane-reserve abuse, Phase E fake-versus-real
+differential, rolling upgrades, and soak pass.
 Exit criteria: HA preserves documented at-least-once delivery while the atomic
 work variants prevent duplicate local protected commits and detect/reconcile
 possible remote duplication. Execution state, provider outcome, resolution
 evidence, manual workflow, and compensation remain distinguishable through
-failover; every workflow interface/data surface is registered.
+failover. Every dispatch proves its declared authorization freshness and exact
+binding; unknown work remains charged/held, eligible refunds occur exactly
+once, compensation is separately accounted, recovery remains available under
+tenant exhaustion, and every workflow interface/data surface is registered.
 `v0.70.0 implementation stop reached. Run pentest for this exact commit.`
