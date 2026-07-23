@@ -102,8 +102,8 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.17.0` | Inbox and idempotent consumer model | Replay, duplicate local commits, poisoned receipts, remote-duplication ambiguity |
 | `0.17.1` | Atomic consumer commit bundle | Receipt/local-commit split, redelivery duplication, hidden multi-stream or remote-in-transaction work |
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
-| `0.18.1` | Active-generation successor rollout and fully typed platform-floor ratchet | Post-finalization drift; concurrent successor; late superseded messages; complete-successor rollback; key omission/unit-period-kind-lane-region confusion; lossy migration |
-| `0.18.2` | Atomic work with claim-bound `ProviderExecutionProfile` | Unclaimed socket/credential use, account/handle substitution, cross-tenant compromise, egress bypass, duplicate instruction, executor failover, uncertain retransmit |
+| `0.18.1` | Active-generation successor/cancellation recovery and typed floor ratchet | Prepared cancellation creates one complete recovery successor; no independent restore; idempotent receipts/deadline; successor/key migration races |
+| `0.18.2` | Atomic work with revocable provider profile/credential epochs | Profile/account/credential/broker revocation and ABA; signing/mTLS export; bearer TCB escape; unclaimed egress; failover ambiguity |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
 | `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
@@ -121,20 +121,20 @@ implementations remain blocked rather than being implemented casually.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.21.0` | Storage negotiation for provider-execution, typed-floor, and active-rollout state | Credential/egress scope, key migration, successor lineage, permit transport, stale finalized parent authority |
-| `0.22.0` | Destructive executor, typed-floor, successor-rollout, lock, and quota conformance | Unclaimed sockets/cross-tenant handles, duplicate executor, key confusion, late superseded messages, post-finalization races |
+| `0.21.0` | Storage negotiation for revocable execution and cancellation-recovery state | Epoch/rotation/credential-operation TCB support, complete recovery successor, key migration, permit/rollout authority |
+| `0.22.0` | Destructive executor, credential-TCB, successor/cancellation, lock, and quota conformance | Epoch rollback/ABA, bearer escape, cancellation after preparation, independent restore, late messages |
 | `0.23.0` | SQLite single-node adapter | Locking, rollback, injection, file permissions, tenant partition |
-| `0.24.0` | PostgreSQL reference production adapter | Provider profile/claim audit without secret or permit persistence; typed floor keys; active-generation successor CAS |
+| `0.24.0` | PostgreSQL reference production adapter | Profile/account/credential/broker epoch guards; operation-profile state; cancellation-recovery receipts/deadlines; typed floors |
 | `0.25.0` | Experimental MySQL adapter | Isolation/encoding differences, rollback, tenant enforcement, no default v1 claim |
 | `0.26.0` | Experimental MongoDB adapter | Transaction boundaries, query injection, collection isolation, no default v1 claim |
 | `0.27.0` | Experimental SurrealDB adapter | Namespace/graph/query isolation, capability truthfulness, no default v1 claim |
 | `0.28.0` | Blob-store API and filesystem adapter | Traversal, symlinks, races, content mismatch, quotas |
 | `0.28.1` | S3-compatible object-storage adapter | Tenant/object confusion, endpoint spoofing, multipart races, retention/deletion |
 | `0.28.2` | KMS and secret-provider adapters | Key/tenant confusion, rotation/destruction, outage, secret leakage |
-| `0.28.3` | In-process secret handling | Formatting/diagnostic/plugin leakage, stale cache, crash/core-dump policy, overstated erasure |
-| `0.29.0` | Resumable migrations preserving fully typed monotonic floor admission | Total overflow-checked key migration, omitted/incompatible key, unit/period/region confusion, rollback/restore |
+| `0.28.3` | In-process secret and brokered-bearer memory handling | HTTP/TLS/redirect/error/log/crash/core-dump/swap canaries, stale cache, honest transient-memory/erasure limits |
+| `0.29.0` | Resumable migrations preserving monotonic authority and floor admission | Provider epoch/rotation anti-resurrection, cancellation-recovery receipt preservation, total typed-key migration |
 | `0.30.0` | Cross-backend export and import | Substitution, truncation, tenant mix-up, integrity loss |
-| `0.30.1` | Durable queue preserving provider profile, typed-floor, and active-generation authority | No secret/permit in queue; duplicate executor reconciles; exact floor keys and successor/parent evidence remain complete |
+| `0.30.1` | Durable queue preserving revocable provider and cancellation-recovery authority | No bearer/permit in queue; stale profile/handle denied; recovery successor/receipts/deadline remain complete |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 
 ## Phase D — Universal Work Platform
@@ -183,7 +183,7 @@ integration is deferred to `0.70.0` and `0.100.0`.
 | `0.47.0` | Release and deployment records | False status, unauthorized linkage, evidence forgery |
 | `0.48.0` | Major-incident command process | Role takeover, notification floods, hidden decisions |
 | `0.48.1` | Stakeholder communications and status publishing | Premature/false publication, audience leakage, stale status, correction-history loss |
-| `0.48.2` | Hosted status publication through a scoped provider execution profile | Unclaimed provider use, handle/account substitution, cross-tenant credentials, egress bypass, duplicate instruction, uncertain publication |
+| `0.48.2` | Hosted publication through revocable credential-operation profiles | Epoch revocation/rotation, signing/mTLS export, bearer-broker escape, stale publication instruction, uncertain outcome |
 | `0.49.0` | Postmortems and corrective actions | Sensitive publication, deletion, blame/identity leakage |
 | `0.50.0` | Integrated ITSM beta with later-phase port fakes | Cross-module authorization, fake-port contracts, replay and upgrades |
 
@@ -210,9 +210,9 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.56.0` | ABAC engine | Missing attributes, type confusion, fail-open decisions |
 | `0.56.1` | Policy lifecycle, bootstrap, recovery, and monotonic epoch | Activation/rollback racing dispatch, epoch reuse, self-approval, lockout, recovery abuse |
 | `0.57.0` | Relationship authorization with fact epochs | Edge change racing dispatch, epoch reuse, malicious paths, ownership spoofing, traversal bounds |
-| `0.58.0` | Authority registry for provider execution, typed floor, and active rollout generation | Missing profile/claim/socket authority, omitted floor key, missing successor state, stale post-finalization authority |
+| `0.58.0` | Authority registry for provider epochs, credential TCB, and rollout recovery | Missing lineage/epoch/operation-profile, bearer memory boundary, cancellation-recovery state/deadline |
 | `0.59.0` | Delegation/break-glass with enforcement epoch | Delegation revoke racing dispatch, epoch reuse, unbounded privilege, grant amplification, weak audit |
-| `0.60.0` | Complete provider-executor, typed-floor, and successor-rollout conformance suite | Credential/egress escape, key substitution/lossy migration, duplicate executor, late superseded activation |
+| `0.60.0` | Complete revocable-executor and successor/cancellation conformance suite | Epoch/ABA/restore, bearer escape, complete recovery successor, independent parent release, deadline escalation |
 
 ## Phase G — Durable Workflows
 
@@ -226,13 +226,13 @@ commit, and external-outcome semantics.
 | `0.61.0` | Workflow intermediate representation | Invalid graphs, instruction/depth bombs, hidden behavior |
 | `0.62.0` | Deterministic workflow interpreter | Infinite loops, nondeterminism, replay divergence |
 | `0.63.0` | Human approvals with grant-lineage issuance and redemption-guard maintenance | Self-approval, owner ambiguity, issuance reorder, pre-revocation, successor fork, omitted/stale guard |
-| `0.64.0` | Timers with claim-bound provider-execution profiles | Unclaimed socket/credential use, account/handle substitution, cross-tenant reuse, egress bypass, duplicate/failover ambiguity |
+| `0.64.0` | Timers with current provider epochs and explicit credential TCB | Stale instruction after revocation/rotation, bearer escape, caller-owned claim/socket, duplicate/failover ambiguity |
 | `0.65.0` | Parallel branches and joins | Premature joins, duplicate completion, branch leaks |
 | `0.66.0` | Linked, independently authorized and multi-claim-accounted compensation mechanics | State/linkage collapse, unknown original/compensation, evidence/authority race, claim reuse/cross-kind settlement, double rollback |
 | `0.67.0` | Signals and subworkflows | Signal spoofing, cross-tenant routing, recursion exhaustion |
 | `0.68.0` | Workflow history, versioning, and migration | Unbounded history, corrupt checkpoint, orphan activity, unsafe remap |
 | `0.69.0` | Visual/configuration-as-code compiler | Hidden flags, generated privilege escalation, divergence |
-| `0.70.0` | HA workers with scoped executors, typed floors, and active-generation successor rollout | Executor compromise/egress escape, typed-key migration, concurrent successor, late superseded messages, parent-state races |
+| `0.70.0` | HA workers with revocable executors and cancellation-recovery rollout | Epoch/credential-TCB compromise, cancellation recovery under failover/drift, late messages, typed-key migration |
 
 ## Phase H — Alerts And Security Operations
 
@@ -337,16 +337,16 @@ Phase exit: cross-plugin/tenant isolation and compatibility suite pass pentest.
 | --- | --- | --- |
 | `0.111.0` | Versioned WIT component interfaces | ABI confusion and malformed components |
 | `0.112.0` | Deterministic component execution | Fuel bypass, nondeterminism, covert host access |
-| `0.113.0` | Effectful components with claim-bound scoped provider execution | Guest claimant/socket control, unclaimed credential use, cross-tenant handles, egress bypass, executor failover |
-| `0.114.0` | Capability, provider profile, and non-extractable secret-operation model | Capability escalation, handle/account substitution, unrestricted credential, general-proxy behavior, plaintext Wasm secret |
+| `0.113.0` | Effectful components with revocable provider execution epochs | Profile/account/credential/broker revocation races, stale handles, signing export, bearer-broker escape, failover |
+| `0.114.0` | Capability and explicit credential-operation/TCB model | Non-exportable signing/mTLS/HSM, brokered bearer ownership/memory canaries, no guest/general-connector credential |
 | `0.115.0` | Memory/CPU/network/output metering | Resource-limit bypass and host denial of service |
 | `0.116.0` | Signed plugin registry and rollout | Signature downgrade, malicious update, rollback |
 | `0.116.1` | Governed plugin catalog and storefront | Publisher/listing/package impersonation, hidden capabilities, review bypass |
-| `0.117.0` | Connector SDK with provider-profile and instruction-only testkit | Scoped credential/egress/pool fixtures, unclaimed socket rejection, claim/socket binding, ambiguous delivery |
+| `0.117.0` | Connector SDK with profile-epoch and credential-TCB testkit | Revocation/rotation/ABA/restore, non-exportable key operations, bearer memory/claim/socket ownership |
 | `0.118.0` | Mail, webhook, and collaboration connectors | Header injection, spoofing, action-link abuse |
 | `0.118.1` | Microsoft Defender and Sentinel connector pack | Provider/workspace confusion, cursor/webhook replay, schema drift, action escalation |
 | `0.118.2` | Tenable vulnerability connector pack | Asset/finding confusion, forged fixed state, score drift, coverage gaps |
-| `0.119.0` | Outbound agent with local scoped provider-execution authority | Cross-tenant handle/account substitution, egress bypass, concurrent instances, executor failover, spool reconstruction |
+| `0.119.0` | Outbound agent with local revocable credential-operation authority | Epoch/rotation stale-spool denial, bearer TCB confinement, cross-tenant handles, concurrent instances/failover |
 | `0.120.0` | Plugin compatibility/isolation suite | Cross-plugin and cross-tenant interference |
 
 ## Organization Federation
@@ -420,12 +420,12 @@ the first technology decision. An unselected option remains unsupported at
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.140.1` | Cryptography/time, scoped credential-operation, and process-local permit decision | External master keys; claim-bound least-privilege handles; sealed permit; no improvised or transferable capability |
-| `0.140.2` | Storage topology for claimant, typed floor, and active successor rollout | Claim state/no permit; total key migration; one active generation; permanent supersession; active-active rejection |
+| `0.140.1` | Cryptography/time and exact credential-operation profile decision | Non-exportable signing/mTLS/HSM; brokered bearer TCB/memory limits; epoch/rotation anti-resurrection; sealed permit |
+| `0.140.2` | Storage topology for monotonic epochs and cancellation recovery | Co-located profile/account/credential/broker epochs; one complete recovery successor; idempotent receipt/deadline state |
 | `0.140.3` | Human/workload/session and worker-instance identity decision | Co-located epochs, enforceable expiry, unique per-runtime claimant, lease-fence binding, restart/takeover invalidation |
-| `0.140.4` | Component runtime, effect broker, and provider execution profile decision | No master key/general writes; scoped handles; bounded pools; allowlisted TLS/DNS-safe egress; residual blast radius |
+| `0.140.4` | Component runtime and revocable credential-broker TCB decision | Profile lineage/epochs, atomic rotation, signing non-exportability, bearer header/TLS/socket/memory ownership |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, retention precedence, omitted derived surfaces, tombstone/evidence inflation |
-| `0.140.6` | Deployment/HA scoped-executor, typed-floor, and successor-rollout decision | Credential/egress scope; total key migration; active generation; complete-successor rollback; failover/RPO/RTO |
+| `0.140.6` | Deployment/HA provider-epoch and successor/cancellation decision | Broker TCB placement; restore-safe epochs; prepared-cancellation recovery successor/receipts/deadline; RPO/RTO |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |
@@ -439,17 +439,17 @@ exit: production candidate has passed external pentest and all acceptance tests.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.141.0` | Single-node packaging with fully typed platform-floor startup ratchet | Missing/incompatible key, unit/period/kind/lane/region confusion, total overflow-checked migration, rollback/restore |
-| `0.142.0` | Split deployments with scoped provider execution profiles | Unclaimed socket/credential, handle/account/cross-tenant substitution, egress bypass, executor failover |
+| `0.141.0` | Single-node packaging with authority/floor startup ratchets | Provider epoch/handle anti-resurrection plus typed-floor migration and rollback/restore |
+| `0.142.0` | Split deployments with explicit credential-operation TCB | Non-exportable keys, broker-owned bearer header/TLS/claim/socket, memory canaries, epoch revocation |
 | `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
-| `0.143.0` | HA atomic work with scoped execution and active-generation successor rollout | Split brain, credential/egress escape, typed-key bypass, late superseded messages, stale parent state |
+| `0.143.0` | HA atomic work with revocable execution and cancellation recovery | Split-brain epoch/rotation races, bearer escape, prepared cancellation/recovery failover, stale parent state |
 | `0.144.0` | Authoritative-region placement and residency | Cross-region worker/lease identity collision, receipt/start split, floor owner split, omitted regional parent |
-| `0.145.0` | Backup, restore, and disaster recovery | Credential/egress broadening, typed-key loss, active-generation rollback, superseded reactivation |
-| `0.146.0` | Scoped-executor, typed-floor, and successor-rollout contention certification | Cross-tenant credentials, egress bypass, mixed keys, concurrent successor, late superseded races |
-| `0.147.0` | Final security, executor isolation, and supply-chain hardening | Master-key/general-write/credential canaries, arbitrary sockets, egress bypass, residual compromise radius |
-| `0.148.0` | Compatibility freeze for provider execution, floor keys, and rollout generations | Profile/handle skew, total key migration, late superseded messages, no authority broadening |
+| `0.145.0` | Backup, restore, and disaster recovery | Provider epoch/credential anti-resurrection, no bearer backup, cancellation-recovery receipt/deadline restoration |
+| `0.146.0` | Provider-epoch, credential-TCB, and cancellation contention certification | Revocation/rotation races, bearer memory pressure, recovery successor/receipt/deadline chaos |
+| `0.147.0` | Final security, bearer-memory, executor, and supply-chain hardening | HTTP/TLS/redirect/log/crash/core-dump/swap canaries, key export, epoch rollback, residual blast radius |
+| `0.148.0` | Compatibility freeze for provider epochs and rollout recovery | Epoch/operation-profile/TCB skew, recovery successor/receipt compatibility, no authority broadening |
 | `0.149.0` | Release candidate and external pentest remediation | Complete platform attack paths and clean retest |
-| `0.150.0` | Final production-readiness candidate | Scoped executor, active successor rollout, typed floor keys, install/upgrade/restore/rollback/failover evidence |
+| `0.150.0` | Final production-readiness candidate | Revocable credential TCB, cancellation recovery, typed floors, install/upgrade/restore/rollback/failover evidence |
 
 ## `1.0.0` — Serious Production Release
 
@@ -482,7 +482,13 @@ are independently evidenced as production-ready.
   destination and scoped opaque secret handle. Executors hold no master-key
   ring or general write authority, use least-privilege short-lived credentials,
   enforce allowlisted TLS/DNS/redirect-safe egress, run in documented bounded
-  pool trust domains, and publish their residual compromise radius.
+  pool trust domains, and publish their residual compromise radius. One
+  authoritative lineage owns monotonic profile/account/credential/broker-policy
+  epochs and revocation/rotation/restore ordering. Non-exportable signing/mTLS/
+  HSM exposes operations only. Bearer/API-key profiles put authorization
+  serialization, redirects, TLS, claim, and socket inside the hardened broker/
+  executor TCB; temporary bearer bytes are covered by explicit memory canaries
+  and never reach upstream, plugin, queue, general connector, or durable state.
 - Identical mandatory conformance for supported production storage profiles;
   SQLite remains limited to its documented single-node profile.
 
@@ -519,7 +525,10 @@ are independently evidenced as production-ready.
   uncertain-start no-retry, arbitrary unclaimed provider socket/credential use,
   handle/account/cross-tenant substitution, master-key/general-write rejection,
   unrestricted shared-credential rejection, allowlist/TLS/DNS/redirect/general-
-  proxy bypass, and worker confused-deputy attempts.
+  proxy bypass, profile/account/credential/broker epoch rollback/ABA/restore,
+  emergency revocation/account suspension/rotation races, signing/mTLS/HSM key
+  export, bearer HTTP/TLS/redirect/log/diagnostic/crash/core-dump/swap escape,
+  caller-owned bearer claim/socket, and worker confused-deputy attempts.
 - Every untrusted parser is fuzzed; cryptography is independently reviewed;
   plugin escape and AI injection/tool-abuse suites pass.
 - Atomic audit-intent crash tests, protected-read release receipts, exact
@@ -548,6 +557,10 @@ are independently evidenced as production-ready.
   supersession, complete-successor rollback over current actual limits, typed
   cancellation versus partial-activation supersession, rejection of late or
   restored superseded messages,
+  direct cancellation only before preparation, one complete root-owned recovery
+  successor after preparation, conservative prepared parents with no independent
+  restore, idempotent restore-safe recovery receipts, current ledger/floor/
+  obligation/authority rechecks, and overdue-recovery escalation,
   fresh local parent activation CAS over ledger/unallocated capacity/floor/
   obligations/root/current fences, conservative blocked/reconciliation state on
   drift, current delayed-transition authority, and emergency/security-cleanup/

@@ -136,7 +136,15 @@ authorization semantics.
    domain partitioning, destination/TLS/DNS/redirect enforcement, and no general
    proxy prevent authenticated unclaimed egress. Unscopable cross-tenant
    privileged credentials are unsupported; unavoidable provider residual blast
-   radius is explicit.
+   radius is explicit. One authoritative profile lineage owns active/suspended/
+   superseded/revoked generations and never-reused profile, provider-account,
+   credential-version, and broker-policy epochs. Start claim and handle
+   redemption recheck those epochs; rotation atomically disables the predecessor
+   and restore cannot resurrect it. Non-exportable signing/mTLS/HSM profiles
+   expose operations only. For bearer/API-key profiles, the hardened broker is
+   part of the executor TCB and owns header serialization, redirects, TLS, claim,
+   and socket. Bearer bytes may briefly exist there, but never in upstream
+   workers, plugins, general connector code, durable state, or diagnostics.
    Each effect carries a bounded atomic set of typed quota claims rather than
    one universal reservation. Concurrency releases with its local lease;
    consumable operations follow declared evidence rules; provider-rate tokens
@@ -184,6 +192,11 @@ authorization semantics.
    canonical parent manifest and membership epoch. The root owns one
    `ActiveRolloutGeneration`; successor creation permanently supersedes the
    predecessor, and rollback is a complete successor over current actual limits.
+   Cancellation before preparation terminates directly; after any preparation it
+   creates one complete root-owned recovery successor over actual parent limits.
+   Prepared parents stay conservative, never restore independently, and use
+   idempotent restore-safe recovery receipts, current-state/authority rechecks,
+   and overdue-recovery escalation.
    Finalization requires one bound prepared receipt from every exact member plus
    total per-class conservation. Membership change invalidates preparation.
    Finalization only permits activation: every parent validates the still-active

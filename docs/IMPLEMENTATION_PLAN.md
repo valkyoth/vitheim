@@ -119,6 +119,13 @@ opaque credential redemption to the exact claim and tenant/provider/account/
 action/request/destination, enforces least-privilege credentials and destination/
 TLS/DNS/redirect policy without a general proxy, partitions unscopable provider
 trust domains, and rejects unrestricted cross-tenant privileged credentials.
+One authoritative profile lineage and never-reused profile/account/credential/
+broker-policy epochs make suspension, revocation, rotation, queued work, and
+restore linearizable. Non-exportable signing/mTLS exposes operations only;
+bearer/API-key transmission places header serialization, TLS, claim, and socket
+inside the hardened credential-broker/executor TCB, where bearer bytes may
+briefly exist but cannot escape to upstream/plugin/general connector or durable/
+diagnostic surfaces.
 Each effect carries a bounded atomic set of typed quota claims with independent
 amount/unit, settlement policy, and admission/lease/dispatch/transmission/
 storage boundary. Concurrency releases with the local lease; operation, rate,
@@ -171,6 +178,11 @@ freshly CAS-revalidates its prepared state, ledger/unallocated capacity, floor
 ratchet/set, obligations, root generation/manifest, and current operational
 fences or remains conservatively blocked/reconciling. Delayed transfer steps
 recheck current local tenant, principal, and policy epochs.
+Pre-preparation cancellation terminates directly. Once any parent has prepared,
+cancellation atomically creates one root-owned recovery successor over the
+complete manifest and actual limits; parents remain conservative, cannot restore
+independently, and recover through idempotent restore-safe receipts with current
+state/authority checks and deadline escalation.
 Composite transactions use one order—stream head, authority fences, target
 fence, remote-mutation-exception guard, grant guard, quota lease/keys,
 uniqueness claims, then receipts—and retry only

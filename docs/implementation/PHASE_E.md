@@ -168,6 +168,14 @@ only an exact-claim-bound tenant/provider/account/publication-action/request/
 destination secret handle, uses least-privilege credentials, enforces destination
 allowlist/TLS/DNS/redirect rules without a general proxy, and isolates any
 unscopable account credential to a documented trust domain.
+Its authoritative lineage supplies current profile/account/credential/broker
+epochs to start claim and handle redemption; emergency suspension, revocation,
+rotation, broker-policy change, and restore cannot leave an old instruction or
+handle redeemable. Non-exportable channel signing/mTLS exposes operations only.
+For bearer/API-key channels, the hardened channel broker joins the executor TCB
+and owns authorization serialization, redirects, TLS, claim, and socket; bearer
+bytes may exist briefly only there and never in the publication worker, queue,
+log, diagnostic, crash record, or durable state.
 
 Goal: turn the `0.48.1` publication port and fake into a supported hosted status
 surface without exposing the private incident or service-health authority.
@@ -194,7 +202,11 @@ transport/logging/digest authorization, duplicate instruction, executor
 failover/compromise, arbitrary unclaimed publication request, credential-handle
 or provider-account substitution, cross-tenant credential reuse, egress/TLS/DNS/
 redirect bypass, unrestricted shared credential, understated residual blast
-radius, accessibility, load, and fake-versus-hosted differential tests pass.
+radius, profile/account/credential/broker epoch substitution or rollback,
+credential ABA, stale queued instruction/restored handle, signing/mTLS export,
+bearer material outside the broker TCB, caller-owned claim/socket, HTTP/TLS/
+redirect/diagnostic/crash memory-canary failure, accessibility, load, and fake-
+versus-hosted differential tests pass.
 
 Exit criteria: at least the selected built-in hosted profile publishes and
 corrects status with reproducible approval/source/receipt history; external

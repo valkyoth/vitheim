@@ -194,7 +194,8 @@ Every `CommitAndDispatch` authorization receipt carries a bounded
 `DispatchTransmissionWindow`. It binds `redeemed_at`, `transmit_before`, one
 effect/attempt identity, permitted service audience, provider, account, request
 digest, and the exact authority, target, exception, and provider-capability
-versions admitted at redemption. `transmit_before` is the earliest applicable
+versions plus provider-execution profile/account/credential/broker-policy
+epochs admitted at redemption. `transmit_before` is the earliest applicable
 authority, grant, exception, target, or provider-capability validity bound,
 further capped by a platform maximum admission-to-transmission interval. An
 authority source that cannot provide an enforceable bound or co-located current
@@ -203,6 +204,7 @@ epoch is unsupported for privileged work.
 Immediately before adapter I/O, the worker executes a local
 `ClaimTransmissionStart` transition. It rechecks the current authority-fence
 set, target fence, grant/exception guard state, and provider-capability epoch,
+provider-execution profile/account/credential/broker-policy epochs,
 validates authoritative transaction time against `transmit_before`, and
 atomically compare-and-swaps the exact receipt from `Admitted` to
 `TransmissionStartClaimed`. The transition binds a globally unique
@@ -220,11 +222,40 @@ Every executor runs under an immutable, versioned `ProviderExecutionProfile`
 bound to the instruction, receipt, claim, and audit evidence. The executor has
 no master-key-ring access and no general-purpose database-write capability.
 Provider credentials remain behind tenant/provider/account-scoped opaque secret
-handles; plaintext credentials never enter executor memory. Credential issuance,
-redemption, signing, or token attachment requires the exact successful claim and
-binds tenant, provider, account, action, receipt/effect attempt, request digest,
-destination, and expiry. Provider-native credentials are least privilege and
-short lived where supported.
+handles. Credential issuance, redemption, signing, or token attachment requires
+the exact successful claim and binds tenant, provider, account, action, receipt/
+effect attempt, request digest, destination, and expiry. Provider-native
+credentials are least privilege and short lived where supported.
+
+Every admitted profile scope has exactly one authoritative
+`ProviderExecutionProfileLineage`. Its generations are explicitly `Active`,
+`Suspended`, `Superseded`, or `Revoked` under a never-reused monotonic
+`ProviderExecutionProfileEpoch`. The same authoritative fence set carries the
+provider-account lifecycle epoch, credential-lineage/version epoch, and secret-
+broker policy epoch. `ClaimTransmissionStart` locks and rechecks all four current
+epochs; the claim and secret handle bind their exact values. Secret-handle
+redemption rechecks that the profile generation and provider account remain
+active, the credential generation is current, and broker policy still permits
+the exact operation. Credential rotation atomically activates its successor and
+makes the predecessor non-redeemable. Backup, failover, rollback, and restore
+cannot decrease an epoch or reactivate a suspended, superseded, or revoked
+profile, account, credential, broker policy, or handle. Revocation that
+linearizes before handle redemption denies transmission; redemption that
+linearizes first creates only the already bounded admitted attempt and grants no
+later reuse.
+
+Credential operations use one explicit `ProviderCredentialOperationProfile`.
+`NonExportableSigning`, `NonExportableMtls`, and equivalent HSM-backed profiles
+keep private key material behind the broker and expose only the bounded signing
+or TLS operation. `BrokeredBearerTransmission` applies to bearer tokens and API
+keys: the hardened credential broker itself performs authorization-header
+serialization, redirect handling, TLS, and the provider socket write, and is
+therefore part of the `TransmissionExecutor` TCB. Bearer material may exist
+briefly in that broker's hardened process memory, but never in upstream workers,
+Wasm guests, general connector code, RPC/IPC, queues, logs, diagnostics, or
+durable state. If the broker is a separate process, it—not its caller—executes
+`ClaimTransmissionStart` and owns the socket. A provider that requires exporting
+credentials into a general connector process is `Unsupported`.
 
 The profile also binds per-provider destination/port allowlists, strict TLS
 identity, DNS rebinding protection, redirect policy, and network enforcement;
@@ -424,6 +455,21 @@ after one or more parent activations is a distinct
 `SupersededAfterPartialActivation` state with actual-parent-limit evidence.
 Late preparation, finalization, or activation for a cancelled or superseded
 generation fails closed.
+
+Cancellation with no prepared parent may terminate the generation directly.
+Once any parent has prepared, cancelling the old generation atomically creates
+or selects exactly one root-owned `CancellationRecoveryGeneration` over the
+complete unchanged manifest and the actual effective limit of every parent.
+The cancelled generation is permanently non-active, and prepared parents retain
+the conservative old/new intersection until that recovery successor activates
+or an explicitly authorized later successor supersedes it. No parent
+independently restores an old limit. Recovery preparation, activation, and
+release recheck current ledger/high-watermark, floor ratchet/set, obligations,
+root membership, active generation, and operational authority. Recovery
+receipts are stable, idempotent, and restore-safe; late preparation from the
+cancelled generation fails. A bounded operational deadline escalates every
+cancelled/prepared parent that has not reached a terminal recovered or explicitly
+owned reconciliation state.
 
 Each manifest member first records an idempotent prepared receipt binding
 rollout ID, manifest digest, exact parent identity/generation, old/new limits,
@@ -871,8 +917,13 @@ Model multi-parent changes as process-manager rollouts of independent commands
 under one root-owned `QuotaCapacityRolloutRoot` manifest. The canonical digest
 binds membership epoch, every unique parent ID/generation/region/class/period,
 total conservation constraints, and one monotonic `ActiveRolloutGeneration`.
-Successor creation atomically supersedes the predecessor. Each parent prepares the conservative per-
-class intersection and a receipt bound to rollout plus manifest. Finalization
+Successor creation atomically supersedes the predecessor. Cancellation before
+any preparation terminates directly. Cancellation after preparation atomically
+creates one `CancellationRecoveryGeneration` over the complete manifest and
+actual parent limits; no parent restores independently, prepared parents remain
+conservative, recovery receipts are idempotent/restore-safe, and overdue recovery
+escalates. Each parent prepares the conservative per-class intersection and a
+receipt bound to rollout plus manifest. Finalization
 CAS-validates the unchanged root epoch and exactly one receipt for every
 manifest member. Finalization permits but does not authorize activation: each
 parent locks `Prepared`, validates the finalized root generation/manifest, and
@@ -887,7 +938,8 @@ active root generation. Rollback is a complete successor root rollout over the
 current manifest and actual parent limits, never an independent parent version
 or epoch reuse. Cancellation before finalization and supersession after partial
 activation are distinct typed states; late superseded messages and restored
-receipts fail closed. Require exact-destination-hierarchy
+receipts fail closed. Recovery transitions recheck current ledger, floors,
+obligations, manifest, active generation, and operational authority. Require exact-destination-hierarchy
 authorization for acknowledgement and current local tenant/principal/policy
 epoch checks at every delayed transition. Require parent reserve before outbox,
 idempotent child inbox activation, conservative in-transit
@@ -922,7 +974,8 @@ migration state machine plus `PlatformSafetyFloorKey` codec and total key-set
 mapping law, multi-parent hierarchy-root manifest/epoch/conservation/
 `ActiveRolloutGeneration` codec and conservative-rollout process manager with
 cancelled/superseded/prepared/finalized/activation-blocked/reconciliation
-receipts, successor rollback, and local activation CAS,
+receipts, `CancellationRecoveryGeneration`, idempotent recovery receipts and
+deadline escalation, successor rollback, and local activation CAS,
 delayed-transition authority-fence contract, double-entry
 conservation oracle, late-settlement lineage mapping, partitioned fair control-
 plane capacity, deterministic memory adapter, recovery reconciler, leak/
@@ -979,6 +1032,10 @@ region relocation, incomplete key-set migration; concurrent floor changes;
 floor-history rollback/restore;
 rollback epoch reuse; restore of an old policy, parent ledger, floor set, or
 rollout step; concurrent root rollout creation, cancellation/finalization race,
+cancel before any preparation; cancel after each preparation point; lose or
+duplicate cancellation/recovery delivery; leave cancelled prepared parents
+past the escalation deadline; independently restore an old parent limit; drift
+parent ledger/floor/obligations/authority during recovery;
 partial activation followed by rollback, delayed predecessor preparation/
 finalization/activation after successor creation, active-generation
 substitution, blocked-parent recovery, coordinator failover during supersession,
@@ -1011,7 +1068,12 @@ freshly CAS-revalidates its ledger, floor ratchet/set, obligations, root
 generation/manifest and currently active rollout generation, and operational
 authority or remains conservatively blocked/reconciling. Rollback and
 supersession are complete successor root rollouts over actual parent limits;
-late or restored predecessor messages cannot reactivate them. Floor reduction has separate authority, append-only
+late or restored predecessor messages cannot reactivate them. Cancellation
+before preparation terminates directly; cancellation after any preparation
+creates one complete recovery successor, keeps every prepared parent
+conservative, forbids independent restoration, uses idempotent restore-safe
+receipts and current-authority rechecks, and escalates overdue recovery. Floor
+reduction has separate authority, append-only
 history, current operational fences, obligation simulation, a durable versioned
 platform-minimum ratchet keyed by the full accounting/kind/unit/period/class/
 lane/region/settlement scope, and cross-command separation from spending
@@ -1102,6 +1164,19 @@ authenticated instructions only. The executor's bound
 tenant/provider/account-scoped opaque secret handles, binds credential
 redemption to the exact claim/tenant/account/action/request/destination, and
 enforces provider destination/TLS/DNS/redirect policy without a general proxy.
+The profile's one authoritative lineage supplies the exact active generation,
+never-reused profile epoch, provider-account lifecycle epoch, credential-
+lineage/version epoch, and broker-policy epoch. The start claim and handle
+redemption lock/recheck them; profile/account suspension or revocation, atomic
+credential rotation, and broker-policy change make stale instructions/handles
+non-redeemable. Revocation before redemption denies, while redemption first
+admits only the existing bounded attempt. Restore cannot roll back any epoch.
+The admitted `ProviderCredentialOperationProfile` is non-exportable signing/
+mTLS/HSM operation, brokered bearer transmission, or unsupported. For bearer/
+API-key work, the hardened broker is part of the executor TCB and owns header
+serialization, redirects, TLS, claim, and socket; bearer bytes may exist only
+briefly in that hardened process and never cross into upstream/general connector
+memory or durable/diagnostic surfaces.
 Pools partition credentials by tenant/account or documented bounded trust
 domain; unrestricted cross-tenant privileged credentials are unsupported and
 any unavoidable provider account-level residual blast radius is explicit. The
@@ -1156,7 +1231,11 @@ and ambiguous-delivery contract, `TransmissionInstruction`/
 zeroization contract, explicit no-transferable-capability production profile,
 `ProviderExecutionProfile` codec/admission rules, claim-bound opaque credential-
 handle redemption, executor database/key denial, scoped pool and residual-blast-
-radius model, destination/TLS/DNS/redirect/no-general-proxy egress contract,
+radius model, authoritative profile lineage/generation and profile/account/
+credential/broker-policy epoch guards, atomic credential rotation and restore
+ratchet, `ProviderCredentialOperationProfile` codec with non-exportable signing/
+mTLS and brokered-bearer TCB placement, destination/TLS/DNS/redirect/no-general-
+proxy egress contract,
 authoritative-time and monotonic-start enforcement contract, and
 exact-token bounded per-kind quota-disposition/refund/settlement/
 capacity-transfer, one-parent capacity-policy, protected-floor governance, and
@@ -1228,13 +1307,23 @@ the executor; let an upstream worker or split connector claim or hold permit
 authority; treat the stored digest as authority; violate sealed construction,
 non-`Clone`/non-serialization, consumed-by-value, or zeroize-on-drop properties;
 issue an arbitrary unclaimed provider request; give the executor master-key or
-general database-write access; expose plaintext/reusable provider credentials;
+general database-write access; expose bearer/API-key material outside the
+hardened broker TCB or through durable/diagnostic/general connector memory;
 substitute tenant/provider/account/action/request/destination in a secret handle;
 reuse a handle across claims; bypass the destination/port allowlist, TLS identity,
 DNS-rebinding/redirect policy, or no-general-proxy rule; compromise one executor
 and reach another tenant/account trust domain; admit one unrestricted privileged
 credential across unrelated tenants; omit or understate unavoidable provider
-blast radius;
+blast radius; omit/substitute/reuse the profile lineage, generation, profile
+epoch, provider-account lifecycle epoch, credential-lineage/version epoch, or
+broker-policy epoch; emergency-revoke or suspend a profile/account after
+instruction creation; rotate a secret before redemption; perform credential
+ABA; redeem a stale queued instruction or restored handle; race revocation/
+rotation/policy change against redemption; export private key material from a
+signing/mTLS/HSM profile; serialize a bearer header or own its TLS/socket outside
+the hardened broker; let a separate broker caller claim transmission; leak
+bearer material through HTTP/TLS/redirect diagnostics or crash paths; admit a
+provider requiring credential export into a general connector;
 lose evidence of whether a first byte was written; retransmit an uncertain
 attempt;
 reuse consumed authority after `DefinitelyNotStarted`; use worker identity as
@@ -1317,7 +1406,13 @@ status only; no supported production boundary serializes or transfers a permit,
 and its stored digest is never authority. The executor has no master-key/general
 database authority; every provider credential operation is an opaque, exact-
 claim-bound, tenant/provider/account/action/request/destination-scoped handle
-under least-privilege credential and deny-by-default egress policy. Unscopable
+under least-privilege credential and deny-by-default egress policy. Its
+authoritative profile/account/credential/broker-policy epochs are current at
+claim and redemption, rotation makes predecessors non-redeemable, and restore
+cannot resurrect them. Non-exportable key profiles expose only operations;
+bearer transmission is performed entirely by the hardened broker/executor TCB,
+where bearer bytes may exist briefly but cannot escape to upstream, plugin,
+queue, log, diagnostic, or durable surfaces. Unscopable
 cross-tenant privileged profiles are unsupported and unavoidable residual blast
 radius is explicit. Claim-response ambiguity, duplicate instruction delivery,
 executor failover, replacement workers, and uncertain start reconcile as

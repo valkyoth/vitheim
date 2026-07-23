@@ -127,6 +127,15 @@ Verification:
   strict TLS/DNS-rebinding/redirect controls, and no general proxy; tenant/
   account trust-domain partitioning; rejection of unrestricted shared cross-
   tenant privileged credentials; and explicit residual blast-radius evidence.
+  It proves exactly one authoritative profile lineage; active/suspended/
+  superseded/revoked generations; never-reused profile, provider-account,
+  credential-version, and broker-policy epochs; atomic rotation; claim/
+  redemption ordering; and restore anti-resurrection. Non-exportable signing/
+  mTLS/HSM profiles expose operations only. Bearer/API-key profiles put
+  authorization serialization, redirects, TLS, start claim, and socket in the
+  hardened broker/executor TCB. Bearer bytes may briefly exist only there, with
+  HTTP/TLS/redirect/log/diagnostic/crash/core-dump/swap memory canaries; export
+  into upstream, plugin, queue, general connector, or durable state is rejected.
   Quota evidence proves bounded atomic claim sets and correct settlement for
   concurrency leases, consumable operations, provider-rate tokens, estimated
   liabilities, and retained bytes across their exact boundaries. Only provider-
@@ -179,8 +188,13 @@ Verification:
   conservation, but only permits activation. Exactly one root generation is
   active; successor creation permanently supersedes its predecessor, rollback is
   a complete successor rollout over the current manifest and actual parent
-  limits, and cancelled/superseded late or restored work fails closed. Each
-  parent then locks its prepared
+  limits, and cancelled/superseded late or restored work fails closed.
+  Cancellation before preparation terminates directly. After any preparation,
+  cancellation atomically creates exactly one root-owned recovery successor over
+  the complete manifest and actual effective limits. Prepared parents remain
+  conservative, never restore independently, and recover through current ledger/
+  floor/obligation/authority checks, idempotent restore-safe receipts, and a
+  monitored escalation deadline. Each parent then locks its prepared
   state and freshly CAS-revalidates ledger epoch/high-watermark/unallocated
   capacity, floor ratchet/set, protected obligations, finalized and still-active
   root generation/manifest, and current tenant/hierarchy/incident/emergency/principal/policy

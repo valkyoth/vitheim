@@ -115,7 +115,15 @@ audit decision.
   where available, and destination/TLS/DNS/redirect controls with no general
   proxy. Executor pools isolate tenant/account trust domains; unrestricted shared
   cross-tenant privileged credentials are unsupported and unavoidable residual
-  provider blast radius is documented.
+  provider blast radius is documented. One authoritative profile lineage owns
+  active/suspended/superseded/revoked generations plus monotonic profile,
+  provider-account, credential-version, and broker-policy epochs; claim and
+  redemption recheck them, rotation disables predecessors atomically, and
+  restore cannot resurrect them. Signing/mTLS/HSM key material remains non-
+  exportable. Bearer/API-key profiles put HTTP authorization serialization, TLS,
+  claim, and socket inside the hardened broker/executor TCB; bearer bytes may
+  briefly exist only there and are prohibited from upstream, plugin, general
+  connector, durable, log, diagnostic, and crash surfaces.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown
@@ -165,7 +173,10 @@ audit decision.
   conservation-preserving, and overflow checked. The root admits exactly one
   active rollout generation; successors permanently supersede predecessors,
   rollback is a complete successor over actual limits, and late or restored
-  cancelled/superseded work fails closed.
+  cancelled/superseded work fails closed. Cancellation after any preparation
+  creates a complete root-owned recovery successor; prepared parents stay
+  conservative, never restore independently, recheck current state/authority,
+  use idempotent restore-safe receipts, and escalate missed recovery deadlines.
   Tenant work cannot invoke it, and every delayed transfer transition rechecks
   current local tenant/principal/policy epochs.
   Composite transactions use the canonical stream/authority-fence/target-fence/

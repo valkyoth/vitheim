@@ -60,6 +60,16 @@ rebinding/redirect rules, and socket ownership; the executor is never a general
 HTTP proxy. Executor pools are partitioned by tenant/account or another
 documented bounded trust domain, and a provider profile requiring an
 unrestricted credential shared across unrelated tenants is rejected.
+The profile belongs to one authoritative lineage with active/suspended/
+superseded/revoked generations and monotonic profile, provider-account,
+credential-version, and broker-policy epochs rechecked by start claim and handle
+redemption. Rotation atomically disables the predecessor; restore cannot revive
+old generations or handles. Non-exportable signing/mTLS/HSM profiles expose
+operations only. For bearer/API-key providers, the hardened broker joins the
+executor TCB and itself owns authorization serialization, redirects, TLS, start
+claim, and socket. Bearer bytes may briefly exist in that broker's memory but
+never in guest/upstream/general connector, RPC/queue, durable, log, diagnostic,
+or crash surfaces. Credential export to a general connector is unsupported.
 Goal:
 controlled hosted extension
 effects with truthful remote outcomes. Deliverables: host-call broker, typed
@@ -72,7 +82,8 @@ precondition outcome mapping, provider capability validation, and reviewed-
 unconditional-exception owner/guard/attempt enforcement plus transmission-
 window/unique-claimant/executor-boundary/no-permit-transport enforcement.
 Include provider-execution-profile admission, scoped credential redemption,
-pool-partition, egress, and residual-blast-radius evidence.
+lineage/epoch/rotation enforcement, credential-operation/TCB placement, pool-
+partition, egress, memory-canary, and residual-blast-radius evidence.
 Verification: unauthorized calls, replay, commit-to-dispatch revocation,
 forged/stale dispatch receipt, worker/plugin confused deputy, cross-tenant
 handles, target/request-digest substitution, unsafe freshness downgrade,
@@ -90,6 +101,10 @@ reconstruction/transport, digest authorization, duplicate instruction, executor
 failover/compromise, arbitrary unclaimed provider socket use, secret-handle or
 provider-account substitution, cross-tenant credential redemption, unrestricted
 shared-credential admission, egress/TLS/DNS/redirect/general-proxy bypass,
+profile/account/credential/broker epoch substitution/rollback, emergency
+revocation, account suspension, credential ABA, stale instruction/restored
+handle, signing/mTLS/HSM export, bearer material or HTTP/TLS/socket outside the
+broker TCB, caller-owned claim, redirect/diagnostic/crash memory leak,
 clock rollback, uncertain-start retransmission, provider
 acceptance plus lost response, idempotency expiry, forged success/
 resolution source, operator assessment presented as provider truth, late
@@ -127,19 +142,32 @@ it cannot return a reusable plaintext credential or authorize an unclaimed
 socket operation. Hosted connector profiles preserve the same deny-by-default
 egress/TLS/DNS/redirect controls and publish their remaining credential and
 executor-compromise blast radius.
+The handle also binds the current authoritative profile generation and profile/
+account/credential/broker-policy epochs. Redemption rechecks them, rotation
+atomically disables the predecessor, and restore never revives an old handle.
+The manifest selects non-exportable signing/mTLS/HSM operation, brokered bearer
+transmission, or unsupported. In the bearer profile, the hardened broker owns
+authorization serialization, redirects, TLS, claim, and socket; temporary bearer
+bytes stay inside that broker TCB and its memory-canary boundary.
 Define plugins as stateless by default; any state capability is explicitly
 tenant/plugin/instance namespaced, schema-versioned, quota-bound, exportable,
 erasable, migratable, and registered in `0.51.2`. Goal: least-authority plugins. Deliverables:
 manifest/evaluator, non-extractable secret-operation broker, authenticated HTTP/
 signing/token/certificate host operations, provider-execution-profile evaluator,
 scoped-handle redemption receipts, and optional plugin-state port.
+Include profile/account/credential/broker epoch guards, atomic rotation, the
+credential-operation-profile evaluator, brokered-bearer TCB declaration, and
+HTTP/TLS/redirect/diagnostic/crash memory canaries.
 Verification: forging, scope escalation, state namespace collision, quota/
 migration/deletion failure, handle extraction/reuse, guest-memory secret
 canaries, broker confused deputy, derived-header leakage, stale/revoked handles,
 claimed-receipt/request/account/action/destination substitution, arbitrary
 unclaimed socket use, cross-tenant handle redemption, unrestricted shared
 credential, egress/TLS/DNS/redirect/general-proxy bypass, and policy change
-pass. Exit criteria: plaintext credentials never enter guest
+pass; include emergency revocation, account suspension, credential ABA, stale/
+restored handle, epoch rollback, key export, bearer escape from the hardened
+broker, caller-owned claim/socket, and memory-canary failures. Exit criteria:
+plaintext credentials never enter guest
 memory through any supported plugin API; exceptions are separate hosted
 products and cannot inherit this plugin-security claim; no supported profile
 turns a credential broker or executor into a general secret, database, or
@@ -212,7 +240,10 @@ immutable authenticated instruction/status RPC to a trusted executor that owns
 claim plus provider socket; no transferable permit API is exposed. It also
 models immutable `ProviderExecutionProfile` admission, exact claim-bound opaque
 secret operations, pool trust-domain partitioning, and deny-by-default
-destination/TLS/DNS/redirect policy. Goal: safe integration development.
+destination/TLS/DNS/redirect policy. It includes authoritative profile/account/
+credential/broker epochs, rotation/restore fixtures, non-exportable key-operation
+profiles, and a brokered-bearer simulator that owns header/redirect/TLS/claim/
+socket while instrumenting memory canaries. Goal: safe integration development.
 Deliverables: private SDK/testkit, broker-operation mocks, guest-memory canary
 harness, provider-execution/egress fixtures, and conformance suite.
 Verification: principal/tenant/
@@ -228,7 +259,10 @@ permit replay/reconstruction/transport, digest authorization, duplicate
 instruction, executor failover/compromise, arbitrary unclaimed socket use,
 secret-handle/account substitution, cross-tenant credential reuse, unrestricted
 shared-credential admission, egress/TLS/DNS/redirect/general-proxy bypass, and
-uncertain retransmission pass.
+profile/account/credential/broker epoch rollback, emergency revocation, account
+suspension, credential ABA, stale/restored handle, signing/mTLS key export,
+bearer escape/caller-owned claim/socket/memory-canary failure, and uncertain
+retransmission pass.
 Exit criteria:
 connectors pass conformance before
 activation and cannot request plaintext credentials, arbitrary provider
@@ -325,6 +359,13 @@ resolved-address/DNS-rebinding, and redirect enforcement are deny-by-default;
 the agent cannot become a general proxy. Agent executor pools are partitioned
 by the supported bounded trust domain, and each profile documents its residual
 compromise radius.
+The spool also pins profile generation and profile/account/credential/broker
+epochs; the local claim/redemption rechecks them. Rotation, suspension,
+revocation, broker-policy change, and restore make stale work non-redeemable.
+Non-exportable key profiles expose operations only. Bearer/API-key profiles put
+authorization serialization, redirects, TLS, claim, and private-system socket
+inside the hardened agent broker/executor TCB; bearer bytes never enter the
+spool, central service, general agent components, or diagnostics.
 Offline replay cannot refresh, weaken, substitute, or consume another exception,
 extend a deadline, return or transport a permit, authorize from its digest, or
 retransmit a claimed/possibly started request. Capacity-policy
@@ -344,6 +385,9 @@ executor failover/compromise, uncertain transmission retry, and offline limits
 pass; also test arbitrary unclaimed socket use, secret-handle/account
 substitution, cross-tenant credential reuse, unrestricted shared-credential
 rejection, and egress/TLS/DNS/redirect/general-proxy bypass.
+Also test epoch substitution/rollback, emergency revocation, account suspension,
+rotation/ABA, stale/restored handle, signing/mTLS export, bearer material outside
+the broker TCB, caller-owned claim/socket, and memory-canary failure.
 Exit criteria: agent
 compromise is bounded and revocable without making Vitheim a general OAuth
 issuer, credential oracle, database writer, or network proxy.

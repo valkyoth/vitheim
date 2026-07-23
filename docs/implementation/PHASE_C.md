@@ -24,6 +24,13 @@ instructions/status and never permit authority. Its `ProviderExecutionProfile`
 must prove no master-key/general write access, claim-bound scoped secret
 operations, least-privilege credentials, bounded executor trust domains, and
 deny-by-default destination/TLS/DNS/redirect egress without a general proxy.
+Co-locate the authoritative profile-lineage generation and never-reused profile,
+provider-account, credential-version, and broker-policy epochs with the start-
+claim guard; claim and handle redemption recheck them and restore cannot roll
+them back. The negotiated credential-operation profile must distinguish non-
+exportable signing/mTLS/HSM operations from brokered bearer transmission. The
+bearer broker joins the executor TCB and owns header serialization, redirects,
+TLS, claim, and socket; credential-exporting general connectors are unsupported.
 Every current-target profile must also co-locate
 the target owner, authoritative `DispatchTargetFence`, and effect work bundle;
 same-aggregate targets use the expected stream version/digest, while different-
@@ -55,7 +62,10 @@ conservation without overflow. Multi-parent changes use a hierarchy-root-owned
 canonical membership manifest, root epoch CAS, one active rollout generation,
 complete prepared-receipt set, fresh local post-finalization parent activation
 CAS, atomic successor supersession, and conservative process-manager rollout,
-not a distributed transaction. Each delayed transfer transition
+not a distributed transaction. Cancellation after any preparation creates one
+complete root-owned recovery successor over actual parent limits, with
+idempotent restore-safe receipts, conservative parents, no independent restore,
+current-state/authority rechecks, and deadline escalation. Each delayed transfer transition
 rechecks current local tenant/principal/policy epochs.
 
 ## `0.21.0` — Storage Capability Negotiation
@@ -73,7 +83,9 @@ one-time permit return, floor-governance/cross-command-separation capability,
 platform-floor profile/admission/ratchet semantics, root-manifest complete-
 membership rollout plus active-generation successor semantics and fresh local
 parent activation, typed floor-key migration, trusted `TransmissionExecutor`/
-instruction-only split protocol and `ProviderExecutionProfile`, bounded
+instruction-only split protocol, revocable `ProviderExecutionProfile` lineage/
+epoch guards, explicit credential-operation/TCB placement, cancellation-recovery
+successor semantics, bounded
 deadlock-retry semantics, and fail-closed behavior.
 
 Goal: prevent adapters from silently weakening correctness.
@@ -96,6 +108,11 @@ instruction/ambiguous-delivery/executor-failover or clock-rollback behavior,
 missing executor credential/egress profile, master-key/general-write access,
 unclaimed or cross-tenant credential-handle use, unrestricted shared privileged
 credential, destination/TLS/DNS/redirect/general-proxy bypass,
+missing/stale/reused profile/account/credential/broker epoch, non-atomic
+rotation, restored revoked generation or handle, stale queued instruction after
+suspension, credential export from signing/mTLS/HSM, bearer serialization/TLS/
+socket outside the broker TCB, separate broker caller claiming transmission,
+missing HTTP/TLS/redirect/diagnostic/crash memory canaries,
 mutable existing capacity class, tenant-invokable capacity policy, multiple
 parents per policy lineage, non-co-located policy owner/parent ledger/floor set,
 policy-controlled validation floor, shared floor/policy authority, missing
@@ -103,7 +120,9 @@ platform minimum or operational fences, coordinator-discovered/partial parent
 set, missing root epoch/manifest conservation, finalization treated as stale
 parent authority, missing/ambiguous active generation or successor supersession,
 independent parent rollback, missing local activation CAS or blocked/
-reconciliation state, unversioned or scalar floor profile/ratchet, incomplete/
+reconciliation state, prepared cancellation without one complete recovery
+successor, independent prepared-parent restore, non-idempotent recovery receipt,
+missing overdue-recovery escalation, unversioned or scalar floor profile/ratchet, incomplete/
 lossy/overflowing key migration, stale/lower-floor node admission, weak mixed-
 version floor, unsafe partial rollout, missing delayed-transition authority
 recheck,
@@ -158,11 +177,15 @@ or transport permit material, expose it to an upstream/split worker, serialize
 or clone it, treat its digest as authority, separate claim from the executor-
 owned provider socket, let a replacement worker transmit, classify a lost claim
 response or post-claim crash as definitely unstarted, give an executor master-
-key/general database authority, expose plaintext or reusable provider
-credentials, redeem a handle without the exact claim or for another tenant/
+key/general database authority, expose bearer/API-key material outside the
+hardened broker TCB, redeem a handle without the exact claim or for another tenant/
 account/action/request/destination, bypass TLS/DNS/redirect/destination controls,
 expose a general proxy, share one unrestricted privileged credential across
-tenants, rewrite an existing
+tenants, omit or roll back profile/account/credential/broker epochs, resurrect a
+revoked profile or rotated handle, allow credential ABA, export key material
+from a signing/mTLS/HSM profile, let a general connector serialize bearer auth
+or own TLS/socket, let a separate broker caller claim transmission, omit HTTP/
+TLS/redirect/diagnostic/crash memory canaries, rewrite an existing
 capacity class, use a cross-class adjustment, activate capacity policy without
 its one owner or atomic co-located parent/floor transaction, let a policy lower
 its own floor, reuse floor approvers to spend released capacity, ignore
@@ -175,7 +198,10 @@ during upgrade/downgrade/restore, use a scalar/incomplete floor key, omit or
 duplicate a key, accept lossy/rounded/overflowing unit conversion or incompatible
 period/region/settlement migration, activate a historically finalized but
 superseded rollout, independently roll back one parent, or restore a superseded
-generation,
+generation, cancel after preparation without atomically creating one complete
+recovery successor, restore a prepared parent independently, accept duplicate/
+non-idempotent recovery receipts, skip current-state/authority recovery checks,
+or omit stuck-recovery deadline escalation,
 or execute a network/provider call inside the transaction.
 
 Verification: prove every deliberately incomplete bundle adapter and adapters
@@ -205,10 +231,14 @@ permit restore/reconstruction, uncertain retransmit,
 split-executor duplicate instruction, permit RPC/IPC/queue/log/crash-dump
 exposure, executor failover/compromise, digest-as-authority,
 arbitrary unclaimed socket request, credential-handle tenant/provider/account/
-action/request/destination substitution, reusable/plaintext credential, master-
+action/request/destination substitution, reusable credential or bearer material
+outside the hardened broker TCB, master-
 key/general-write authority, egress allowlist/TLS/DNS/redirect/general-proxy
 bypass, cross-tenant executor compromise, unrestricted shared credential, missing
-residual-blast-radius evidence,
+residual-blast-radius evidence, profile/account/credential/broker epoch rollback/
+reuse, emergency revocation/account suspension/rotation/ABA race, stale/restored
+handle, signing/mTLS key export, caller-owned bearer claim/socket, HTTP/TLS/
+redirect/log/diagnostic/crash memory-canary failure,
 protected-class conversion by adjustment, capacity-policy owner ambiguity,
 non-atomic parent update, concurrent allocation, stale parent high-watermark,
 delta/simulation/floor-version substitution, floor-update race, floor reduction
@@ -226,7 +256,9 @@ lower-floor startup, mixed-version/downgrade/rollback/lower-default weakening,
 concurrent successor creation, root cancellation/finalization race, partial
 activation then rollback, late predecessor preparation/finalization/activation,
 active-generation substitution, blocked-parent recovery, coordinator failover or
-restore during supersession, policy replay/floor violation, partial rollout/
+restore during supersession, cancellation after each preparation, lost/duplicate
+cancellation/recovery delivery, missing or duplicate recovery successor/
+receipt, independent parent restore, recovery drift/deadline escalation, policy replay/floor violation, partial rollout/
 rollback/restore,
 tenant-suspension/principal/policy change during delayed
 activation or acknowledgement, missing/substituted authority fence,
@@ -288,7 +320,8 @@ floor-set rows, exact deltas/simulation records, atomic activation constraints,
 atomic policy-event/parent-CAS/audit/outbox commit, conservative prepared/
 finalized rollout receipts, root membership manifests/digests/epochs and total-
 conservation constraints, active-rollout-generation/successor/cancellation/
-supersession state, protected-floor history/reduction receipts/platform floor
+supersession/cancellation-recovery state, idempotent recovery receipts/deadlines,
+protected-floor history/reduction receipts/platform floor
 profile/version/digest and fully typed keyed admission ratchet, total key-set
 migration evidence, and cross-command separation records, prepared/activated/
 blocked/reconciliation parent states and fresh active-generation guards,
@@ -299,7 +332,10 @@ claim transitions with unique claimant/worker-instance/lease-fence/permit-digest
 columns and no persisted permit material, executor/instruction audit binding and
 an enforced prohibition on permit transport, immutable provider-execution-
 profile ID/version, exact-claim secret-handle redemption receipts, denied
-executor key/database capabilities, and scoped egress/pool partition evidence,
+executor key/database capabilities, authoritative profile lineage/generation
+plus monotonic profile/account/credential/broker-policy epoch rows and guards,
+atomic credential-rotation state, credential-operation-profile/TCB placement,
+and scoped egress/pool partition evidence,
 canonical composite lock-order/deadlock-retry implementation,
 integrity commitment, and configuration adapters; migrations, operator guide,
 backup/restore, and observability. Startup fails capability negotiation if any
@@ -331,10 +367,15 @@ bypass, floor-profile/ratchet downgrade through startup, mixed-version upgrade,
 rollback or restore, permit transport/digest authorization, duplicate
 instruction/executor failover, arbitrary unclaimed provider request, credential-
 handle/cross-tenant/account substitution, unrestricted shared credential,
-destination/TLS/DNS/redirect/general-proxy bypass, floor-key omission/
+profile/account/credential/broker epoch race/rollback/ABA/restore, signing/mTLS
+key export, bearer serialization/TLS/socket outside the broker, broker caller
+claim, HTTP/TLS/redirect/diagnostic/crash memory leakage, destination/TLS/DNS/
+redirect/general-proxy bypass, floor-key omission/
 substitution/unit-period-region conversion/overflow, concurrent successor
 creation, partial activation rollback, stale/superseded rollout messages/restore,
-blocked-parent successor recovery, composite lock-order inversion and bounded retry,
+cancel-before-preparation, cancellation after every preparation point, lost/
+duplicate recovery receipt, independent parent restore, parent drift and overdue
+cancelled/prepared recovery, blocked-parent successor recovery, composite lock-order inversion and bounded retry,
 cross-partition rejection, tenant bypass, pool exhaustion, migration rollback,
 restore, and conformance pass.
 
@@ -483,6 +524,11 @@ zeroization, panic/error redaction, crash/core-dump policy, swap and locked-
 memory profiles where supported, and plugin/worker isolation. Document where
 compiler, allocator, copies, platform dumps, or runtime behavior prevent a
 perfect erasure guarantee.
+Define the hardened `BrokeredBearerTransmission` memory path explicitly:
+authorization-header construction, HTTP serialization, redirect processing, TLS
+plaintext staging, socket write, response/error handling, and drop/zeroization.
+Bearer bytes may briefly exist inside that broker/executor TCB; this milestone
+must not claim otherwise.
 
 Goal: reduce exposure after secrets enter process memory without making false
 claims about guaranteed physical erasure.
@@ -490,18 +536,21 @@ claims about guaranteed physical erasure.
 Deliverables: project-owned secret-handle/value interfaces, scoped reveal API,
 redacted error/diagnostic types, bounded expiring cache, admitted best-effort
 zeroization adapter, platform hardening matrix and operator guide, crash-policy
-checks, and secret-sink test harness.
+checks, bearer HTTP/TLS/redirect memory-flow map, and secret-sink test harness.
 
 Verification: compile-fail formatting/clone/serialization cases; panic, error,
 audit, log, metric, trace, crash-report, heap-dump fixture, swap-profile,
-cache-expiry, cancellation, worker/plugin memory, and fault-path tests; canary
+cache-expiry, cancellation, worker/plugin memory, bearer header serialization,
+TLS buffers, redirect/error paths, and fault-path tests; canary
 scans prove plaintext does not enter prohibited sinks.
 
 Exit criteria: each supported platform states its exact memory assurance and
 limitations, and no secret can enter audit, telemetry, crash reports, plugin
 linear memory, or durable configuration through a supported API. Integrations
 requiring plaintext run only as separately isolated hosted profiles and are not
-ordinary Wasm plugins. `v0.28.3
+ordinary Wasm plugins. Bearer material is confined to the admitted hardened
+broker/executor TCB for the shortest practical lifetime and cannot enter a
+general connector process. `v0.28.3
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.29.0` — Migration Registry And Resumable Migrations
@@ -523,7 +572,10 @@ Goal: make schema evolution auditable, interruptible, and recoverable.
 
 Deliverables: registry, planner, dry run, resumable executor, rollback evidence,
 adapter migration contract, and floor-profile ratchet migration/compatibility
-gate with total key-set mapping manifest and proof.
+gate with total key-set mapping manifest and proof; preserve never-reused
+provider-profile/account/credential/broker epochs, non-redeemable predecessor
+generations, and cancellation-recovery lineage/receipts across every schema
+change.
 
 Verification: reorder/substitution, partial failure, concurrent runner, lease loss,
 downgrade, malicious input, retry, backup restore, floor-profile conflict,
@@ -531,6 +583,9 @@ interrupted higher-floor admission, lower-default binary, and stale-node startup
 tests pass; include accounting owner/root, quota-kind, unit/scale, daily/hourly
 period, class/lane, region/residency, settlement-version substitution, omitted/
 duplicate key, rounding, overflow, and lossy mapping.
+Include epoch rollback/reuse, credential/profile resurrection, credential ABA,
+missing operation-profile discriminator, cancelled-prepared recovery receipt
+loss/duplication, and restored independent-parent-release cases.
 
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
 `v0.29.0 implementation stop reached. Run pentest for this exact commit.`
@@ -585,9 +640,13 @@ return a second permit, extend the deadline, or retry a claimed/possibly started
 transmission. Preserve the immutable `ProviderExecutionProfile`, exact-claim-
 bound scoped credential-handle operation, denied master-key/general-write
 authority, executor trust-domain partition, egress policy, and residual-blast-
-radius evidence across redelivery. Preserve
-the immutable
-authorization binding and freshness profile across queues; a worker must record
+radius evidence across redelivery. Preserve the authoritative profile lineage,
+exact active generation, profile/account/credential/broker-policy epochs,
+credential-operation profile, and brokered-bearer TCB placement. Redelivery
+cannot revive a suspended/revoked profile, rotated credential, stale handle, or
+old broker policy; queue payloads never contain bearer material. Preserve
+the immutable authorization binding and freshness profile across queues; a
+worker must record
 the required current dispatch decision, authenticate as itself, and redeem the
 bound `LiveSubjectAuthority`, `ApprovedExecutionGrant`, or
 `ServicePrincipalAuthority`; it cannot inherit business authority from queue or
@@ -617,7 +676,9 @@ ratchet plus total overflow-checked key-set migration mapping, root manifest/
 digest/membership epoch, complete canonical parent identities, total
 conservation, one active rollout generation, atomic successor/cancellation/
 supersession state, finalization receipt, and each parent's fresh active-
-generation prepared-to-activated/blocked/reconciliation CAS evidence;
+generation prepared-to-activated/blocked/reconciliation CAS evidence. Preserve
+the single cancellation-recovery successor, actual-limit manifest, idempotent
+receipts, deadline/escalation state, and no-independent-parent-release rule;
 workers never reacquire individual quota members, release encumbrance on
 capacity-lease expiry, or open a cross-partition transaction. Preserve and
 atomically lock the complete
@@ -641,6 +702,8 @@ policy owner/parent-ledger/floor activation and conservative-rollout handler,
 protected-floor governance/cross-command separation and root-manifest complete-
 rollout handler, delayed-transfer authority gate, transmission-window/unique-
 claimant/trusted-executor/instruction-only/provider-execution-profile handler,
+profile/account/credential/broker epoch and credential-operation/bearer-broker
+handler,
 floor-key/ratchet migration and active-generation successor/fresh post-
 finalization parent-activation handler, canonical lock-order/deadlock-retry
 implementation, capability report, and operational metrics.
@@ -668,10 +731,14 @@ claimant/claim/lease/permit substitution, claim-response loss, stale-worker
 takeover, same-claim replay, pre/post-start-claim crash, expired/restored/
 reconstructed permit, permit transport/logging/digest authorization, duplicate
 instruction, executor failover/compromise, arbitrary unclaimed provider request,
-master-key/general-write/plaintext-credential exposure, claim-bound secret-handle
+master-key/general-write or out-of-broker bearer exposure, claim-bound secret-handle
 substitution/reuse, cross-tenant executor compromise, unrestricted shared
 credential, destination/TLS/DNS/redirect/general-proxy bypass, missing residual-
-blast-radius evidence, uncertain retransmission, mixed
+blast-radius evidence, stale/reused/substituted profile/account/credential/
+broker epochs, emergency revocation, account suspension, credential rotation/
+ABA, stale queued instruction, restored handle, signing/mTLS key export, bearer
+material outside the broker TCB or in queue/log/diagnostic/crash state, caller-
+owned bearer claim/TLS/socket, missing memory canary, uncertain retransmission, mixed
 quota-claim split,
 overlapping-set deadlock/livelock, partial
 reservation/recovery, token/digest/membership substitution, cross-partition set,
@@ -702,7 +769,9 @@ region/settlement mapping or overflow, stale/lower-floor startup, mixed-version/
 downgrade/rollback/lower-default/restore ratchet weakening, concurrent successor
 creation, partial activation rollback, delayed superseded preparation/
 finalization/activation, active-generation substitution, blocked-parent recovery,
-superseded-receipt restore, policy replay, stale
+superseded-receipt restore, cancellation before/after each preparation, lost/
+duplicate cancellation delivery, missing/duplicate recovery successor/receipt,
+independent parent restore, recovery drift/deadline escalation, policy replay, stale
 tenant/principal/policy epoch during activation/acknowledgement/reclaim, parent
 reclaim racing failover,
 target deletion/merge/migration/supersession/restore racing dispatch, stale
@@ -731,7 +800,9 @@ exchanges only immutable instructions/status across process boundaries, routes
 duplicate instructions, ambiguous claims, executor failover, and uncertain
 starts to reconciliation, and permits provider authentication only through the
 exact claim-bound scoped credential/egress profile without cross-tenant reusable
-authority; keeps existing capacity class-immutable, atomically
+authority; rechecks monotonic profile/account/credential/broker epochs, keeps
+rotated/revoked handles non-redeemable after restore, and confines bearer
+material to the broker/executor TCB; keeps existing capacity class-immutable, atomically
 activates each one-parent future-allocation policy under independently governed
 floors, authenticates the complete root manifest before multi-parent
 finalization, then freshly CAS-revalidates every parent or leaves it
@@ -739,6 +810,8 @@ blocked/reconciling; enforces floor-policy cross-command separation and the
 durable versioned, fully typed-key platform-floor ratchet across complete
 overflow-checked migration/upgrade/rollback/restore; enforces one active root
 generation and successor-only rollback so late/restored predecessors fail; and
+uses one complete recovery successor after prepared cancellation, with
+conservative parents, idempotent restore-safe receipts, and deadline escalation;
 rechecks delayed-transition authority; retries composite deadlocks without
 identity drift, keeps fair recovery available under hostile tenant exhaustion,
 and has no process-local queue dependency.

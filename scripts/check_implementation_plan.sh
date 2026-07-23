@@ -161,8 +161,17 @@ require_text docs/implementation/PHASE_B.md \
     'Every executor runs under an immutable, versioned `ProviderExecutionProfile`' \
     'scoped provider execution authority'
 require_text docs/implementation/PHASE_B.md \
+    'Every admitted profile scope has exactly one authoritative' \
+    'revocable provider execution profile lineage'
+require_text docs/implementation/PHASE_B.md \
+    'Credential operations use one explicit `ProviderCredentialOperationProfile`.' \
+    'explicit bearer versus non-exportable credential profile'
+require_text docs/implementation/PHASE_B.md \
     'The root also owns a monotonic `ActiveRolloutGeneration`' \
     'single active successor rollout generation'
+require_text docs/implementation/PHASE_B.md \
+    'Cancellation with no prepared parent may terminate the generation directly.' \
+    'prepared rollout cancellation recovery'
 require_text docs/implementation/PHASE_B.md \
     'Each parent-side reserve/send/reclaim transition' \
     'delayed capacity transfer rechecks current authority'

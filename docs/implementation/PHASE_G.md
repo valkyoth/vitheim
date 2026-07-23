@@ -82,7 +82,13 @@ executor failover, lost claim response, ambiguous permit delivery, or crash
 after the start claim becomes `OutcomeUnknown`, not a timer retry. Executor
 authentication uses the exact timer-claim-bound scoped secret operation and
 provider destination/TLS/DNS/redirect profile; timer or queue possession cannot
-redeem credentials or access a general proxy.
+redeem credentials or access a general proxy. Start claim and handle redemption
+also recheck the active profile lineage generation and monotonic profile/
+provider-account/credential/broker-policy epochs, so suspension, revocation,
+rotation, policy change, and restore invalidate stale timer instructions.
+Non-exportable signing/mTLS exposes operations only; a bearer/API-key broker is
+the executor TCB and owns authorization serialization, redirects, TLS, claim,
+and socket.
 Remote work executes only after committed authorized dispatch and
 returns through a separate activity-result/consumer bundle. Goal: crash-safe
 time and authority behavior without a distributed exactly-once claim.
@@ -92,6 +98,9 @@ bridge, authority-fence-set and target-fence evidence, canonical lock-order/dead
 fixtures, remote-target conditional-mutation and exception-guard fixtures, and
 transmission-window/unique-claimant/executor-boundary fixtures plus atomic-
 variant and provider credential/egress profile integration fixtures.
+Include profile-lineage/epoch/revocation/rotation ordering, credential-operation
+profile, brokered-bearer ownership, and HTTP/TLS/redirect/diagnostic/crash memory
+canary fixtures.
 Verification: clock jumps,
 retry storms, duplicate wakeups/results,
 cancellation/revocation races, not-before/expiry boundaries, grant replay and
@@ -114,14 +123,18 @@ substitution, claim-response loss, stale-worker takeover, same-claim replay,
 restored/reconstructed/transported permit, digest authorization, duplicate
 instruction, split executor failover/compromise, arbitrary unclaimed provider
 request, secret-handle/account substitution, cross-tenant credential reuse,
-egress/TLS/DNS/redirect/general-proxy bypass, uncertain retransmission,
+egress/TLS/DNS/redirect/general-proxy bypass, stale/reused profile/account/
+credential/broker epoch, provider-account suspension, credential ABA, restored
+handle, signing/mTLS key export, bearer material or serialization/TLS/socket
+outside the broker TCB, caller-owned claim, memory-canary failure, uncertain retransmission,
 lock-order inversion, retry identity drift/exhaustion, dispatch/completion
 collapse, receipt/effect split,
 remote-call-in-transaction rejection, overflow, and replay pass.
 Exit criteria: timers cannot create uncontrolled or unreceipted work, and remote
 execution remains independently authorized, bounded between redemption and
 transmission start, and explicitly at least once only where its outcome contract
-permits it.
+permits it. Timers cannot preserve revoked profile/credential authority or move
+bearer material outside the hardened broker/executor TCB.
 `v0.64.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.65.0` — Parallel Branches And Joins
@@ -195,6 +208,9 @@ typed-key platform-floor ratchet, active-root-generation successor rollout,
 delayed-transition current-authority rechecks, dispatch-transmission windows/
 unique claimant/executor-owned start claims, immutable instruction-only split
 protocol and provider credential/egress profile, canonical composite acquisition/retry behavior,
+revocable provider profile/account/credential/broker epochs and explicit
+credential-operation/bearer-broker TCB placement, cancellation-recovery
+successor semantics,
 and `0.51.2`
 tenant-data-surface registry entries, Phase E workflow contract fixtures, and
 `0.39.1–0.39.3` on-call/
@@ -211,6 +227,7 @@ outcome handler, remote-mutation-exception guard/attempt handler, capacity-
 policy-lineage/parent-ledger atomic activation and conservative-rollout process
 manager with root manifest validation and fresh prepared-to-activated/blocked
 active-generation parent CAS plus successor/cancellation/supersession handling,
+cancellation-recovery generation/idempotent receipt/deadline escalation,
 protected-floor governance/cross-command separation and durable typed-key
 profile ratchet, delayed-transition authority rechecker, transmission-window/
 unique-claimant/trusted-executor/instruction-only/scoped-credential-egress
@@ -241,9 +258,13 @@ worker/lease-generation/fence/permit substitution, claim-response loss, stale-
 worker takeover, same-claim replay, expired/restored/reconstructed start permit,
 permit transport/logging or digest authorization, duplicate instruction,
 executor failover/compromise, arbitrary unclaimed provider request, master-key/
-general-write/plaintext credential access, scoped-handle substitution/reuse,
+general-write or out-of-broker bearer access, scoped-handle substitution/reuse,
 cross-tenant executor compromise, unrestricted shared credential, egress/TLS/
-DNS/redirect/general-proxy bypass, pre/post-claim crash, uncertain retransmission,
+DNS/redirect/general-proxy bypass, profile/account/credential/broker epoch
+substitution/rollback, emergency revocation, account suspension, rotation/ABA,
+stale instruction/restored handle, signing/mTLS export, bearer serialization/
+TLS/socket outside the broker TCB, caller-owned claim, HTTP/TLS/redirect/log/
+diagnostic/crash memory leak, pre/post-claim crash, uncertain retransmission,
 mixed quota-claim atomicity,
 overlapping-set deadlock/livelock,
 partial reservation/recovery, token/digest/membership substitution, cross-
@@ -278,7 +299,9 @@ region mapping, stale/lower-floor startup, mixed-version/downgrade/rollback/
 restore weakening, concurrent successor creation, partial activation rollback,
 late superseded preparation/finalization/activation, active-generation
 substitution, blocked-parent recovery, superseded restore, partial rollout/
-rollback/restore,
+rollback/restore, cancellation before/after every preparation, lost cancellation
+delivery, missing/duplicate recovery successor or receipt, independent parent
+restore, parent drift and overdue recovery,
 tenant suspension or principal/policy revocation during delayed activation/
 acknowledgement/reclaim,
 tenant/subject/session/delegation/policy/service-principal authority changes
@@ -312,7 +335,11 @@ executor that owns the provider socket; upstream/split workers receive status
 only. Duplicate instruction, executor failover, replacement worker, ambiguous
 delivery, or a possibly started request enters reconciliation instead of
 ordinary retry. Provider authentication is exact-claim-bound and scoped; the
-executor lacks master-key/general-write authority and arbitrary egress.
+executor lacks master-key/general-write authority and arbitrary egress. Profile,
+account, credential, and broker-policy epochs are current at claim/redemption
+and cannot be resurrected by restore. Non-exportable key profiles expose only
+operations; bearer material is confined to the hardened broker/executor TCB
+that owns serialization, TLS, claim, and socket.
 Every current-target dispatch linearizes on the target stream version/digest or
 co-located authoritative target-fence row without advancing a second stream.
 Remote provider mutation preserves its separate concurrency profile and exact
@@ -335,8 +362,11 @@ authenticates the complete unchanged root manifest but only permits activation;
 each parent validates the active generation and freshly CAS-revalidates ledger,
 floor ratchet/set, obligations, root generation/manifest, and current fences or
 stays blocked/reconciling. Successor creation permanently supersedes the prior
-root generation and rollback is a complete successor over actual limits. The
-fully typed-key floor ratchet survives total overflow-checked migration, rolling
+root generation and rollback is a complete successor over actual limits.
+Cancellation after preparation creates exactly one complete recovery successor;
+parents stay conservative, never restore independently, use current-state/
+authority checks and idempotent restore-safe receipts, and escalate overdue
+recovery. The fully typed-key floor ratchet survives total overflow-checked migration, rolling
 upgrade, rollback, failover, and restore. Delayed
 transitions recheck current local authority. Eligible refunds occur exactly once,
 administrative write-off remains distinct, compensation is separately

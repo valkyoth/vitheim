@@ -440,7 +440,13 @@ transport boundary, digest-as-evidence-only rule, and unsupported transferable
 general-write authority, exact-claim-bound tenant/provider/account/action/
 request/destination opaque credential operations, provider credential privilege/
 lifetime, executor trust-domain partition, destination/TLS/DNS/redirect/no-
-general-proxy policy, and documented residual blast radius.
+general-proxy policy, and documented residual blast radius. Register exactly one
+authoritative profile lineage, active/suspended/superseded/revoked generations,
+never-reused profile/account/credential/broker-policy epochs, rotation and
+restore behavior, and revocation-versus-redemption ordering. Register the exact
+credential-operation profile: non-exportable signing/mTLS/HSM, brokered bearer
+transmission with broker-owned header/redirect/TLS/claim/socket TCB, or
+unsupported credential-exporting connector.
 Register the control-plane-only `QuotaCapacityPolicy` command, its exact one-
 parent lineage owner, co-located parent-ledger activation point, independently
 governed protected-floor owner/history/capability, floor-reduction receipt and
@@ -452,7 +458,8 @@ hierarchy-root rollout manifest/membership epoch/complete parent set/
 conservation policy, one active rollout generation plus successor/cancellation/
 supersession rules, fresh post-finalization active-generation parent activation
 CAS and blocked/reconciliation states, fully typed floor keys and total migration
-mapping, and the current tenant/source/
+mapping, cancellation-recovery generation/actual-limit manifest/idempotent
+receipt/deadline/escalation and no-independent-parent-release rules, and the current tenant/source/
 destination-principal/policy fences required by every delayed capacity-transfer
 transition. No existing-capacity class transition is registrable.
 Classify any external-only fact by staleness bound and forbid it from privileged
@@ -491,16 +498,22 @@ binding, audience-only claimant, missing worker/lease/claim/permit binding,
 duplicate, persisted, or transported permit, ambiguous-claim retransmission,
 digest-as-authority, missing executor/socket co-ownership, duplicate-instruction/
 executor-failover retry, missing provider execution profile, arbitrary unclaimed
-request, master-key/general-write/plaintext credential access, scoped-handle
+request, master-key/general-write or out-of-broker bearer access, scoped-handle
 substitution/reuse, cross-tenant executor compromise, unrestricted shared
 credential, destination/TLS/DNS/redirect/general-proxy bypass, missing residual-
-blast-radius record, tenant-invoked capacity
+blast-radius record, profile/account/credential/broker epoch omission/rollback,
+revocation/account-suspension/rotation/ABA race, stale instruction/restored
+handle, signing/mTLS/HSM export, bearer escape/caller-owned claim/socket/memory-
+canary failure, tenant-invoked capacity
 policy, ambiguous policy owner/parent, non-atomic activation, shared floor/policy
 authority, missing cross-command separation/operational fences/platform-floor
 ratchet, lower-profile startup or mixed-version/rollback weakening, incomplete
 or incompatible floor key/migration, incomplete root manifest, missing active
 generation/successor supersession, stale or superseded post-finalization parent
 activation, independent parent rollback, missing blocked/reconciliation state,
+prepared cancellation without one complete recovery successor, independent
+parent restore, missing/duplicate recovery receipt, omitted current recovery
+revalidation or deadline escalation,
 unsafe partial rollout, reserve-floor/simulation replay,
 stale delayed-transfer authority, and
 revocation pass.
@@ -554,8 +567,11 @@ profiles, immutable validators, provider capability evidence, and typed
 precondition outcomes independently of local fences; enumerate exception owner/
 guard/attempt/revocation cases, dispatch-transmission windows/start claims/
 claimants/executor/instruction-only/provider-execution-profile/permits, and
-capacity-policy owner/parent/floor-governance/typed-key-ratchet/root-manifest/
-active-generation-successor/fresh-parent-activation/current-authority cases.
+provider profile/account/credential/broker epoch and credential-operation/TCB
+placement cases, and capacity-policy owner/parent/floor-governance/typed-key-
+ratchet/root-manifest/
+active-generation-successor/cancellation-recovery/fresh-parent-activation/
+current-authority cases.
 Goal: prove
 equivalent deny-by-default policy independent of authentication mechanism and
 make later registration mechanically mandatory. Deliverables: generated
@@ -566,9 +582,11 @@ target-fence race fixtures, external-staleness classifications, and coverage/
 evidence report; include remote-validator/provider-downgrade/ABA, exception-
 guard, transmission duplicate-worker/claim-response/lease-takeover fixtures,
 executor/split-service/duplicate-instruction/no-permit-transport fixtures, and
-provider credential/egress/executor-compromise fixtures, and capacity-policy
+provider credential/egress/executor-compromise/profile-lineage/epoch/revocation/
+rotation/credential-operation and bearer-memory fixtures, and capacity-policy
 floor-governance/key-migration/ratchet/root-membership/active-generation/
-successor/post-finalization-activation/delayed-transfer authority fixtures.
+successor/cancellation-recovery/post-finalization-activation/delayed-transfer
+authority fixtures.
 Verification: mutation and read parity, tenant pairs, stale policy/credential,
 wrong audience/scope, false sender constraint, bearer-to-privileged escalation,
 replay-cache limitations, cache/index lag, commit-to-lease-to-dispatch policy/
@@ -597,7 +615,11 @@ reconstruction/transport/logging, digest authorization, duplicate instruction,
 executor failover/compromise, arbitrary unclaimed request, key-ring/general-write
 access, secret-handle substitution/reuse, cross-tenant executor compromise,
 unrestricted shared credential, egress/TLS/DNS/redirect/general-proxy bypass,
-uncertain retransmit, protected-class adjustment,
+profile/account/credential/broker epoch substitution/rollback, emergency
+revocation, provider-account suspension, rotation/ABA, stale queued instruction,
+restored handle, signing/mTLS/HSM export, bearer serialization/TLS/socket outside
+the broker TCB, caller-owned claim, HTTP/TLS/redirect/log/diagnostic/crash memory
+leak, uncertain retransmit, protected-class adjustment,
 policy owner/
 parent/floor co-location, concurrent allocation, stale high-watermark, floor
 reduction/spend cross-command identity or approval reuse, operational-fence/
@@ -610,7 +632,9 @@ floor-key/unit/period/kind/region substitution or lossy/overflowing migration,
 lower-profile startup, mixed-version/downgrade/rollback/restore weakening,
 concurrent successor creation, partial activation rollback, late superseded
 preparation/finalization/activation, active-generation substitution, blocked-
-parent recovery, superseded restore, partial rollout/rollback/restore, policy
+parent recovery, superseded restore, cancellation after each preparation, lost
+cancellation delivery, missing/duplicate recovery successor/receipt, independent
+parent restore, recovery drift/deadline escalation, partial rollout/rollback/restore, policy
 floor/simulation replay, tenant
 suspension or principal/policy revocation during transfer, worker confused
 deputy, unsafe low-risk profile, break-glass, and differential adapters pass.
@@ -630,7 +654,10 @@ socket, exposes only immutable instructions/status across process boundaries,
 and treats duplicate instruction, executor failover, ambiguous claim, or possible
 start as unknown rather than retryable. It denies general key/database authority
 and permits provider authentication only through exact-claim-bound scoped
-credentials and egress policy with bounded tenant/account trust domains.
+credentials and egress policy with bounded tenant/account trust domains. It
+rechecks monotonic profile/account/credential/broker epochs, prevents rotation/
+revocation resurrection, and admits bearer work only when the hardened broker
+owns serialization, TLS, claim, and socket and its memory canaries pass.
 Capacity policy cannot rewrite existing
 classes; each one-parent activation atomically updates its co-located ledger
 under independently governed floors, floor reductions cannot share authority
@@ -639,5 +666,8 @@ complete typed-key migration/upgrade/rollback/restore, multi-parent finalization
 proves the complete current root manifest and active generation but every parent
 still freshly CAS-revalidates or remains blocked/reconciling, successor-only root
 rollback permanently rejects late/restored predecessor work, and delayed
-transfer steps prove current local authority.
+transfer steps prove current local authority. Prepared cancellation creates one
+complete recovery successor with conservative parents, idempotent restore-safe
+receipts, no independent release, current-state/authority rechecks, and deadline
+escalation.
 `v0.60.0 implementation stop reached. Run pentest for this exact commit.`

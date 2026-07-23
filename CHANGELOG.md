@@ -140,4 +140,16 @@ All notable Vitheim changes are documented here. The format follows
   kind, unit/scale, period, lane/class, region/residency, and settlement-policy
   version; every key-set change requires a total overflow-checked non-lossy
   migration or startup fails.
+- Made provider execution and credential authority revocable through one
+  authoritative profile lineage, monotonic profile/account/credential/broker-
+  policy epochs, atomic rotation, claim/redemption ordering, and restore anti-
+  resurrection.
+- Replaced the impossible blanket no-plaintext executor claim with explicit
+  credential-operation profiles: signing/mTLS/HSM keys stay non-exportable,
+  while bearer authorization serialization, TLS, claim, and socket live inside
+  one hardened broker/executor TCB with memory canaries and honest limitations.
+- Added root-owned recovery for pre-finalization cancellation after preparation:
+  one complete successor over actual limits, conservative parents, no
+  independent restore, idempotent restore-safe receipts, current-state/
+  authority rechecks, and deadline escalation.
 - Added local and GitHub verification gates without a crate publication path.
