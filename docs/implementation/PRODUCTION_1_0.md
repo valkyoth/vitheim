@@ -23,9 +23,11 @@ Deliverables:
   rollback, health, live/grant/service-principal execution authority, multi-kind
   quota settlement/fair recovery capacity, guarded grant-attempt claims, local
   authority-fence epochs, guarded remote-mutation exceptions, canonical
-  composite transaction retry, quota partitions/hierarchical per-kind capacity
-  encumbrances, immutable existing capacity classes, protected-floor capacity
-  policy, current delayed-transfer authority, authoritative-region failover,
+  composite transaction retry, bounded transmission-start permits, quota
+  partitions/hierarchical per-kind capacity encumbrances, immutable existing
+  capacity classes, atomic one-parent protected-floor capacity policy,
+  conservative multi-parent rollout, current delayed-transfer authority,
+  authoritative-region failover,
   backpressure, incident, and DR runbooks. Active/active authoritative
   multi-region writes are explicitly unsupported.
 - Signed source/artifacts/checksums, SBOM, provenance, licenses, compatibility
@@ -103,6 +105,13 @@ Verification:
   advancing the exception stream; revocation, expiry, supersession, provider-
   capability change, final-attempt concurrency, retry, and restore cannot make
   stale exception authority redeemable.
+  Every admitted dispatch receipt binds immutable `redeemed_at` and
+  `transmit_before`, effect attempt, authenticated worker/service audience,
+  provider/account/request digest, and admitted epochs. Immediately before I/O,
+  it rechecks current fences and claims one bounded monotonic start permit.
+  Definite expiry requires fresh authority; an uncertain post-claim start is
+  `OutcomeUnknown` and cannot be ordinarily retransmitted. Pause, failover,
+  restore, or clock rollback cannot extend or replay the permit.
   Quota evidence proves bounded atomic claim sets and correct settlement for
   concurrency leases, consumable operations, provider-rate tokens, estimated
   liabilities, and retained bytes across their exact boundaries. Only provider-
@@ -134,9 +143,14 @@ Verification:
   emergency/security-cleanup/reconciliation capacity into business capacity.
   Existing capacity never changes class. Only future unallocated parent capacity
   can be resized through a fenced, simulated, separation-of-duties
-  `QuotaCapacityPolicy` change that preserves protected floors and cannot be
-  tenant invoked. Each delayed transfer transition rechecks current local
-  tenant/principal/policy epochs rather than trusting historical decisions.
+  `QuotaCapacityPolicy` change that cannot be tenant invoked. Each policy
+  lineage owns one parent; activation atomically appends its event and CAS-
+  updates the co-located parent ledger using the base policy epoch, parent
+  epoch/high-watermark, exact deltas, simulation digest, and independently
+  governed floor-set version. It cannot lower its own floor. Multi-parent
+  changes use conservative process-manager rollout. Each delayed transfer
+  transition rechecks current local tenant/principal/policy epochs rather than
+  trusting historical decisions.
   Cross-partition set, distributed work transaction, and
   active/active authoritative-write requests fail closed. Composite transactions
   use the canonical stream/authority-fence/target-fence/remote-exception-guard/

@@ -102,6 +102,12 @@ reviewed unconditional exception applies. The exception is one-owner,
 revocable, scoped, expiring, provider/policy-versioned, and attempt-bounded; a
 co-located guard serializes revocation/capability change/final-attempt use while
 dispatch advances only the effect stream. Response loss stays unknown.
+Every admitted dispatch receipt also binds `redeemed_at`, immutable
+`transmit_before`, effect attempt, worker/service audience, provider/account/
+request digest, and admitted epochs. Immediately before I/O, a local current-
+fence `ClaimTransmissionStart` issues one bounded monotonic permit. Definite
+expiry requires fresh authority; uncertain start becomes `OutcomeUnknown`
+without ordinary retry, and restore or clock rollback cannot extend the window.
 Each effect carries a bounded atomic set of typed quota claims with independent
 amount/unit, settlement policy, and admission/lease/dispatch/transmission/
 storage boundary. Concurrency releases with the local lease; operation, rate,
@@ -134,9 +140,11 @@ and authorization decisions. Ordinary transfer cannot cross tenant, hierarchy,
 period, lane, class, or residency. Existing capacity never changes class, and
 protected-to-business conversion has no privileged escape hatch. Only future
 unallocated parent capacity may be resized through versioned, simulated,
-separation-of-duties `QuotaCapacityPolicy` activation that preserves protected
-floors. Delayed transfer steps recheck current local tenant, principal, and
-policy epochs.
+separation-of-duties `QuotaCapacityPolicy` activation. Each policy lineage owns
+one parent and atomically CAS-updates its co-located parent ledger under an
+independently governed floor-set version; it cannot lower that floor. Multi-
+parent changes use conservative process-manager rollout. Delayed transfer steps
+recheck current local tenant, principal, and policy epochs.
 Composite transactions use one order—stream head, authority fences, target
 fence, remote-mutation-exception guard, grant guard, quota lease/keys,
 uniqueness claims, then receipts—and retry only
@@ -176,8 +184,9 @@ linearization, quota partition/capacity-lease/encumbrance-transfer topology,
 target-fence owner/epoch/co-location/placement, receipt-idempotent capacity-
 transfer delivery/conservation/classification, remote-target concurrency
 profile/provider capability/precondition outcome, remote-mutation-exception
-owner/guard/attempt, capacity-policy/floor/simulation/current-transition
-authority, canonical composite lock/retry behavior,
+owner/guard/attempt, transmission-window/start-claim/time/uncertainty behavior,
+capacity-policy owner/parent-ledger/high-watermark/independent-floor/simulation/
+rollout/current-transition authority, canonical composite lock/retry behavior,
 refund/write-off evidence, and
 compensation/recovery-capacity behavior.
 

@@ -46,15 +46,17 @@ capacity leases/per-kind encumbrances, complete dispatch-authority fence sets,
 typed target fences, receipt-idempotent at-least-once capacity-transfer process
 management with immutable accounting classification, remote-target concurrency
 profiles and exception guards, class-immutable existing capacity, versioned
-unallocated-parent capacity policy, delayed-transition authority rechecks,
-canonical composite acquisition/retry, and fair partitioned control-plane
-capacity.
+one-parent capacity-policy atomic activation and conservative multi-parent
+rollout, delayed-transition authority rechecks, bounded dispatch-transmission
+windows/start claims, canonical composite acquisition/retry, and fair
+partitioned control-plane capacity.
 Goal: prevent split-brain effects. Deliverables: HA orchestration, work-variant
 fault matrix, dispatch/grant-lineage/redemption-guard/authority-fence evidence,
 exact-set/capacity-lease/encumbrance/transfer quota evidence, target-fence
 evidence, remote conditional-mutation evidence, composite-lock/retry evidence,
-exception-guard/attempt evidence, capacity-policy/floor/current-authority
-evidence, fair-capacity evidence, and runbooks.
+exception-guard/attempt evidence, transmission-window/current-fence start-claim/
+uncertainty evidence, capacity-policy owner/parent/floor/rollout/current-
+authority evidence, fair-capacity evidence, and runbooks.
 Verification: partitions, clock skew, stale leader/fence,
 receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
 activity work, timer dispatch/result separation, multi-aggregate/remote-call
@@ -89,7 +91,13 @@ root/parent/period/lane/class/region/authorization substitution, emergency/
 security-cleanup/reconciliation-to-business reclassification through transfer
 or adjustment, exception scope/request substitution, revocation/expiry/provider-
 capability/final-attempt race, missing guard, restore resurrection, existing-
-class rewrite, tenant-invoked capacity policy, reserve-floor/policy replay,
+class rewrite, long pause after admission, authority/target/provider-capability
+change before start claim, deadline/audience/request substitution, clock
+rollback, pre/post-claim crash, permit replay/restore, uncertain retransmission,
+tenant-invoked capacity policy, ambiguous owner/parent, non-co-located or non-
+atomic activation, concurrent allocation/stale high-watermark, delta/
+simulation/floor substitution, self-lowered floor, partial rollout/rollback/
+restore, reserve-floor/policy replay,
 stale tenant/principal/policy authority during transfer, tenant/subject/session/
 delegation/policy/principal
 revocation racing dispatch, missing/substituted/reordered authority fences,
@@ -104,7 +112,9 @@ mutated/cross-partition set, overdraw or falsely reclaim a capacity lease, lose
 an encumbrance, expose capacity at both transfer ends, bypass an authority or
 target fence, weaken remote conditional mutation, reclassify transferred
 capacity, use a stale/unfenced unconditional exception, rewrite existing class,
-bypass protected floors/current transfer authority, duplicate through deadlock retry,
+bypass a transmission deadline/current-fence start claim, retry an uncertain
+start, bypass policy ownership/atomic parent activation/independent floors/
+conservative rollout/current transfer authority, duplicate through deadlock retry,
 duplicate a refund, or starve fair bounded recovery.
 `v0.143.0
 implementation stop reached. Run pentest for this exact commit.`
@@ -126,8 +136,10 @@ fence, remote provider/account/resource/region substitution, conditional-
 capability downgrade, duplicated/conflicting capacity transfer, transfer
 residency/region reclassification, lost acknowledgement, stale source/
 destination or provider-capability/policy epoch, exception-guard split across
-regions, unregistered surface, failover bypass, and policy
-changes pass.
+regions, dispatch-receipt/start-claim split across regions, transmission
+deadline extended during failover, policy-lineage/parent-ledger/floor split,
+unsafe partial multi-parent rollout, unregistered surface, failover bypass, and
+policy changes pass.
 Exit criteria: placement violations, unsupported active/active writes, or
 incomplete surface mapping fail closed.
 `v0.144.0 implementation stop reached. Run pentest for this exact commit.`
@@ -151,13 +163,16 @@ receipt, every target-fence version/digest/lifecycle/deletion/supersession epoch
 every remote-target profile, validator provenance/strength, provider capability/
 version and monotonic epoch, request/idempotency binding, exception owner/scope/
 approval/time/attempt/revocation/supersession state, guard version/claims/
-receipts, and reviewed exception,
+receipts, reviewed exception, dispatch `redeemed_at`/`transmit_before`, admitted
+bindings/epochs, start-claim state and permit,
 whole quota claim-set digest/member restoration with partial-set
 quarantine, hierarchical capacity-lease epoch/allocation/unreserved-remainder/
 per-kind encumbrance/transfer state/receipt/acknowledgement/original-claim-and-
 transfer-lineage plus accounting owner/root/parent/period/lane/class/region/
 authorization restoration, capacity-policy version/simulation/protected floors,
-delayed-transition authority epochs, rebuild/workflow continuation pass.
+one-parent lineage/parent epoch/high-watermark/exact deltas/independent floor-
+set version, multi-parent rollout receipts, delayed-transition authority epochs,
+rebuild/workflow continuation pass.
 Exit criteria: claimed RPO/RTO is demonstrated; recovery neither retains data
 past a controlling mandatory deletion obligation nor promotes an unverified
 rollup to authority; grant revocation/supersession cannot be resurrected; quota
@@ -169,8 +184,10 @@ uncertain transfers stay conservatively charged, and a restored transfer can
 never make capacity free in both partitions or change classification. Recovery
 cannot refresh a remote validator, promote weak to strong, or invent a reviewed
 unconditional exception; cannot resurrect an exception attempt, reclassify
-existing capacity, roll back capacity policy/floors, or authorize a delayed
-transition from historical decisions alone; and every related
+existing capacity, extend/replay a transmission window or classify an uncertain
+start as unsent, roll back a policy lineage/parent high-watermark/floor set/
+rollout receipt, or authorize a delayed transition from historical decisions
+alone; and every related
 surface has its own disposition proof.
 `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -185,7 +202,8 @@ capacity-lease allocation/expiry/reclamation/fencing, global fair share,
 per-kind encumbrance/transfer/late settlement, canonical composite lock order
 and bounded deadlock retry, target-fence contention, remote-target conditional-
 provider profiles and exception-guard contention, immutable transfer
-classification, capacity-policy floor/simulation contention, delayed-transition
+classification, transmission-window/start-claim/permit contention, one-parent
+policy activation and multi-parent rollout contention, delayed-transition
 authority epochs, starvation bounds, emergency reserve, baselines, failure
 scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
@@ -194,8 +212,9 @@ settlement and exact-set linearization oracles, partition/fairness/reserve
 monitors, hierarchical-capacity-lease conservation and per-kind encumbrance-
 transfer oracles, composite-lock/retry contention harness, target-change-versus-
 dispatch and remote-conditional-mutation harnesses, transfer-classification
-and exception-guard harnesses, capacity-policy/floor/current-authority oracle,
-leak/escalation evidence, and signed reports. Verification: atomic
+and exception-guard harnesses, transmission-pause/deadline/clock/uncertainty
+harness, policy owner/parent/floor/rollout oracle, leak/escalation evidence, and
+signed reports. Verification: atomic
 bounded claim sets across every work bundle, concurrent overlapping-set
 canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
 failover, immutable token/digest/membership, whole-set restore/reconciliation,
@@ -211,8 +230,11 @@ substitution, weak/strong/ABA confusion, conditional downgrade/ignore, silent
 refresh, precondition and response-loss outcome confusion,
 exception revocation/expiry/provider-capability/final-attempt races, guard
 omission/restore resurrection, protected-class adjustment, existing-class
-rewrite, tenant-invoked capacity policy, floor/simulation replay, stale
-activation/acknowledgement authority,
+rewrite, transmission deadline and current-fence start-claim races, long pause,
+clock rollback, permit restore/replay, uncertain retransmission, tenant-invoked
+capacity policy, owner/parent ambiguity, concurrent allocation, stale high-
+watermark, self-lowered floor, partial rollout/rollback/restore, floor/
+simulation replay, stale activation/acknowledgement authority,
 composite lock-order contention, retry exhaustion/identity preservation,
 concurrency release independent of remote outcome,
 consumable-operation evidence rules, non-refundable transmitted rate tokens,
@@ -230,7 +252,9 @@ acceptance, capacity-lease over-allocation, deadlock/livelock, unbounded quota
 liability, lost/duplicated encumbrance, capacity free at both transfer ends,
 capacity reclassification, target-fence or remote-conditional race failure,
 stale/unfenced exception use, existing-class rewrite, protected-floor/policy or
-delayed-authority bypass, retry-driven duplicate work, unfair or blocked
+transmission-window/start-claim bypass, uncertain-start retry, non-atomic policy
+activation, unsafe partial rollout, delayed-authority bypass, retry-driven
+duplicate work, unfair or blocked
 recovery, and unsafe saturation block release.
 `v0.146.0
 implementation stop reached. Run pentest for this exact commit.`

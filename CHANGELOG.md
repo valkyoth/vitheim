@@ -100,4 +100,12 @@ All notable Vitheim changes are documented here. The format follows
   revocable, attempt-bounded guarded exception, while existing capacity classes
   are immutable and only future unallocated parent capacity can be resized by a
   fenced, simulated, separation-of-duties policy that preserves protected floors.
+- Bounded the interval between dispatch authorization and provider transmission:
+  admitted receipts now expire, recheck current fences at a single-use start
+  claim, bind the exact worker/provider/request attempt, and treat an uncertain
+  start as `OutcomeUnknown` instead of retryable work.
+- Gave every capacity-policy lineage one parent and one atomic activation
+  boundary over its co-located ledger and independently governed floor set;
+  multi-parent rollout now remains conservatively under-allocated until each
+  parent transition is durably acknowledged.
 - Added local and GitHub verification gates without a crate publication path.

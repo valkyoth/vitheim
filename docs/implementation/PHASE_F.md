@@ -428,8 +428,14 @@ narrow `UnconditionalReviewed` exception. Register each first-class
 attempt contract, provider-capability epoch, co-located guard, revocation/
 supersession update, and attempt receipt. This remote provider contract is never
 registered as a local target fence.
-Register the control-plane-only `QuotaCapacityPolicy` command, protected reserve
-floors, separation-of-duties approval, simulation digest, monotonic epoch, and
+Register each effectful capability's maximum admission-to-transmission interval,
+deadline inputs, authoritative-time profile, `ClaimTransmissionStart` current-
+fence set, permitted worker/service audience, provider/account/request binding,
+and uncertain-start reconciliation path.
+Register the control-plane-only `QuotaCapacityPolicy` command, its exact one-
+parent lineage owner, co-located parent-ledger activation point, independently
+governed protected-floor set, separation-of-duties approval, simulation/delta
+digest, parent high-watermark, monotonic epoch, multi-parent rollout policy, and
 the current tenant/source/destination-principal/policy fences required by every
 delayed capacity-transfer transition. No existing-capacity class transition is
 registrable.
@@ -446,7 +452,8 @@ linearization, authority-fence registry/codec/update contract, and provider-
 dispatch enforcement points; include target-fence registry/codec/owner-update
 and co-location enforcement plus remote-target concurrency profile/provider-
 capability/precondition-outcome enforcement, remote-mutation-exception owner/
-guard/attempt enforcement, and capacity-policy/delayed-transfer authority cases.
+guard/attempt enforcement, transmission-window/start-claim enforcement, and
+capacity-policy owner/parent/floor/rollout plus delayed-transfer authority cases.
 Verification: API/search/report/export/notification/cache/AI leakage, derived inference,
 missing effect freshness/binding registration, unsafe `CommitBound`
 classification, missing/ambiguous execution-authority mode, approval grant
@@ -462,10 +469,15 @@ remote account/resource/validator substitution, ABA recreation, weak/strong
 confusion, provider downgrade/ignored conditional, unsafe refresh, response-
 loss misclassification, exception scope/reuse, revocation/expiry/provider-
 capability/final-attempt race, guard omission/restore resurrection, existing-
-capacity reclassification, tenant-invoked capacity policy, reserve-floor/
-simulation replay, stale delayed-transfer authority, and revocation pass.
+capacity reclassification, missing/extendable transmission deadline, stale
+receipt after revocation, unregistered start-claim fence/audience/provider
+binding, uncertain retransmission, tenant-invoked capacity policy, ambiguous
+policy owner/parent, non-atomic activation, self-lowered floor, unsafe partial
+rollout, reserve-floor/simulation replay, stale delayed-transfer authority, and
+revocation pass.
 Exit criteria: hidden data cannot reappear downstream, and no external effect
-can bypass its declared commit/grant/redemption/dispatch authorization gates.
+can bypass its declared commit/grant/redemption/dispatch/transmission-start
+authorization gates.
 `v0.58.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.59.0` — Delegation And Break-Glass Access
@@ -511,7 +523,8 @@ version/digest, lifecycle, deletion/supersession epoch, owner update, placement,
 and canonical acquisition case; enumerate remote-target conditional/unconditional
 profiles, immutable validators, provider capability evidence, and typed
 precondition outcomes independently of local fences; enumerate exception owner/
-guard/attempt/revocation cases and capacity-policy/floor/simulation/current-
+guard/attempt/revocation cases, dispatch-transmission windows/start claims/
+permits, and capacity-policy owner/parent/floor/simulation/rollout/current-
 authority cases. Goal: prove
 equivalent deny-by-default policy independent of authentication mechanism and
 make later registration mechanically mandatory. Deliverables: generated
@@ -520,7 +533,8 @@ connector/agent/measurement-source cases, delayed-effect authorization state
 machine, scheduled-offline grant fixtures, authority-fence race fixtures,
 target-fence race fixtures, external-staleness classifications, and coverage/
 evidence report; include remote-validator/provider-downgrade/ABA, exception-
-guard, and delayed-transfer policy/authority fixtures.
+guard, transmission-pause/clock/uncertainty, and capacity-policy activation/
+rollout/delayed-transfer authority fixtures.
 Verification: mutation and read parity, tenant pairs, stale policy/credential,
 wrong audience/scope, false sender constraint, bearer-to-privileged escalation,
 replay-cache limitations, cache/index lag, commit-to-lease-to-dispatch policy/
@@ -541,7 +555,12 @@ projection, cross-shard current target, remote validator/account/resource
 substitution, weak/strong confusion, ABA recreation, provider downgrade or
 ignored condition, silent refresh, exception scope/request substitution,
 revocation/expiry/provider-capability/final-attempt race, missing guard,
-restored exception, protected-class adjustment, policy floor/simulation replay,
+restored exception, long pause after redemption, revocation/expiry/capability
+change before transmission claim, deadline/audience/request substitution, clock
+rollback, permit replay/restore, uncertain retransmit, protected-class
+adjustment, policy owner/parent/floor co-location, concurrent allocation, stale
+high-watermark, self-lowered floor, partial rollout/rollback/restore, policy
+floor/simulation replay,
 tenant suspension or principal/policy revocation during transfer, worker confused
 deputy, unsafe low-risk profile, break-glass, and differential adapters pass.
 Exit criteria: no principal kind or
@@ -553,6 +572,10 @@ cannot satisfy it. Every current-target dispatch proves its authoritative target
 fence or fails closed before provider I/O. Every remote mutation proves its
 separate admitted concurrency profile without implying local freshness.
 Unconditional mutation also proves the exact live guarded exception attempt.
-Capacity policy cannot rewrite existing classes, and delayed transfer steps
-prove current local authority.
+Every admitted dispatch expires, rechecks current authority at its single-use
+bounded transmission-start claim, and treats a possibly started request as
+unknown rather than retryable. Capacity policy cannot rewrite existing classes;
+each one-parent activation atomically updates its co-located ledger under an
+independent floor version, multi-parent rollout remains conservative, and
+delayed transfer steps prove current local authority.
 `v0.60.0 implementation stop reached. Run pentest for this exact commit.`

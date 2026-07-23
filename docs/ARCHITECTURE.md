@@ -114,6 +114,15 @@ authorization semantics.
    epochs, time, and attempts; a co-located guard serializes revocation,
    supersession, capability change, and attempt claims while dispatch advances
    only the effect stream. Response loss remains unknown and reconciling.
+   A committed authorization receipt is not permanent transmission authority.
+   It binds `redeemed_at`, an immutable `transmit_before` derived from the
+   earliest authority/exception/target/provider bound and a platform maximum,
+   one effect attempt, worker/service audience, provider/account, request
+   digest, and admitted epochs. Immediately before I/O, a local
+   `ClaimTransmissionStart` rechecks current fences and issues one short,
+   monotonic single-use permit. Definite expiry before transmission requires
+   fresh authority; uncertainty after the start claim becomes `OutcomeUnknown`,
+   never ordinary redelivery. Restore and clock rollback cannot extend it.
    Each effect carries a bounded atomic set of typed quota claims rather than
    one universal reservation. Concurrency releases with its local lease;
    consumable operations follow declared evidence rules; provider-rate tokens
@@ -146,9 +155,13 @@ authorization semantics.
    Existing capacity never changes class; protected-to-business transitions are
    structurally invalid regardless of privilege. Only future unallocated parent
    capacity may be resized by a versioned, simulated, separation-of-duties
-   `QuotaCapacityPolicy` change that preserves protected floors. Every delayed
-   transfer transition rechecks its current local tenant, principal, and policy
-   epochs; historical decisions are evidence, not authority.
+   `QuotaCapacityPolicy`. Each policy lineage owns exactly one parent; activation
+   atomically appends its event and CAS-updates the co-located parent ledger
+   under the current independently governed floor-set version. The policy cannot
+   lower its own floor. Multi-parent changes are conservative process-manager
+   rollouts, never distributed commands. Every delayed transfer transition
+   rechecks its current local tenant, principal, and policy epochs; historical
+   decisions are evidence, not authority.
    Composite transactions acquire stream head, authority fences, target fence,
    remote-mutation-exception guard, grant guard, quota lease/keys, uniqueness
    claims, then receipts in one canonical order.

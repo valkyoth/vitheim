@@ -116,6 +116,12 @@ require_text docs/implementation/PHASE_B.md \
     '`RemoteMutationExceptionGuard`. Dispatch advances only the effect stream' \
     'revocable guarded unconditional mutation authority'
 require_text docs/implementation/PHASE_B.md \
+    'Every `CommitAndDispatch` authorization receipt carries a bounded' \
+    'bounded redemption-to-transmission authority window'
+require_text docs/implementation/PHASE_B.md \
+    'Immediately before adapter I/O, the worker executes a local' \
+    'current-fence transmission-start claim'
+require_text docs/implementation/PHASE_B.md \
     'manager drives `QuotaCapacityTransferState` through `ReservedAtParent`' \
     'explicit capacity-transfer process manager'
 require_text docs/implementation/PHASE_B.md \
@@ -127,6 +133,9 @@ require_text docs/implementation/PHASE_B.md \
 require_text docs/implementation/PHASE_B.md \
     'There is no cross-class adjustment command for existing capacity' \
     'existing capacity has no cross-class adjustment escape hatch'
+require_text docs/implementation/PHASE_B.md \
+    'Each policy lineage has exactly one authoritative owner stream and is scoped to' \
+    'one-parent atomic capacity-policy authority'
 require_text docs/implementation/PHASE_B.md \
     'Each parent-side reserve/send/reclaim transition' \
     'delayed capacity transfer rechecks current authority'

@@ -40,7 +40,10 @@ approver, refresh a remote validator, downgrade strong conditional mutation,
 claim a remote validator is a local target fence, select unconditional mode
 without the exact live `RemoteMutationExceptionGuard`, invoke
 `QuotaCapacityPolicy`, reclassify existing capacity, or spend control-plane
-emergency reserve. Goal:
+emergency reserve. The host broker, never guest code, owns the immutable
+`DispatchTransmissionWindow`, current-fence `ClaimTransmissionStart`, and
+single-use bounded start permit; a plugin cannot delay, extend, replay, or
+reinterpret uncertain transmission. Goal:
 controlled hosted extension
 effects with truthful remote outcomes. Deliverables: host-call broker, typed
 effect-capability descriptors, distinct lifecycle/outcome/resolution/
@@ -49,7 +52,8 @@ authorized manual-resolution boundary; single-use dispatch-authorization
 receipts, grant/service-principal redemption, and per-kind quota settlement/
 compensation accounting integration; include conditional-write broker,
 precondition outcome mapping, provider capability validation, and reviewed-
-unconditional-exception owner/guard/attempt enforcement.
+unconditional-exception owner/guard/attempt enforcement plus transmission-
+window/start-claim enforcement.
 Verification: unauthorized calls, replay, commit-to-dispatch revocation,
 forged/stale dispatch receipt, worker/plugin confused deputy, cross-tenant
 handles, target/request-digest substitution, unsafe freshness downgrade,
@@ -60,15 +64,18 @@ refresh, precondition failure retried, response loss treated as non-acceptance,
 unreviewed unconditional mutation, exception scope/request substitution,
 revocation/expiry/provider-capability/final-attempt race, missing guard, restored
 exception, capacity-policy invocation or protected-class conversion,
-provider acceptance plus lost response, idempotency expiry, forged success/
+expired/substituted transmission deadline, revocation after receipt, long guest
+pause, permit replay, clock rollback, uncertain-start retransmission, provider
+acceptance plus lost response, idempotency expiry, forged success/
 resolution source, operator assessment presented as provider truth, late
 callback versus manual resolution, forbidden blind retry, privileged resolver
 impersonation, mixed claim-set split, cross-kind hold/refund/write-off confusion,
 duplicate refund, compensation claim reuse, control-plane-reserve access, and
 partial failure pass. Exit criteria:
 every effect passes independent commit-time and declared dispatch-time policy;
-its exact binding/authority, execution, provider truth, knowledge source,
-operational disposition, per-kind quota state, and compensation remain
+its transmission begins only through the host-owned bounded current-fence
+permit, and its exact binding/authority, execution, provider truth, knowledge
+source, operational disposition, per-kind quota state, and compensation remain
 independently attributable.
 `v0.113.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -154,7 +161,9 @@ schemas, rate/backoff, host-brokered authenticated operations, and test
 simulation. Expose the typed remote-target concurrency descriptor, strong/weak
 validator fixtures, conditional-write/precondition outcome contract, and
 explicit unsupported/unconditional-reviewed profiles plus exception ID/guard/
-attempt fixtures; the SDK exposes no raw-secret read. Goal: safe integration
+attempt fixtures. Include host-owned transmission-window/start-claim fixtures;
+the SDK exposes neither a raw-secret read nor a way to mint, extend, or replay a
+start permit. Goal: safe integration
 development. Deliverables: private SDK/testkit, broker-operation mocks, guest-
 memory canary harness, and conformance suite. Verification: principal/tenant/
 audience confusion, SSRF, token replay, impersonation, handle extraction,
@@ -162,7 +171,9 @@ plaintext credential in guest memory, pagination loops, secret logs, and
 malformed remote data, validator/resource/account substitution, ABA recreation,
 provider conditional downgrade or ignored header, silent refresh, and response-
 loss ambiguity, exception scope/revocation/expiry/final-attempt/restore, and
-unguarded unconditional selection pass. Exit criteria: connectors pass conformance before
+unguarded unconditional selection, long pause, expired/substituted deadline,
+revocation before start claim, clock rollback, permit replay, and uncertain
+retransmission pass. Exit criteria: connectors pass conformance before
 activation and cannot request plaintext credentials. `v0.117.0 implementation
 stop reached. Run pentest for this exact commit.`
 
@@ -241,9 +252,11 @@ short-lived sender-constrained device/workload credential, audience-bound mTLS,
 capability policy, encrypted spool, update, revoke, compromise response, and no
 inbound listener. Spool records preserve the complete remote-target concurrency
 profile, validator and provider capability evidence, request digest, idempotency
-key, and exact exception/guard/attempt receipt; offline replay cannot refresh,
-weaken, substitute, or consume another exception. Capacity-policy authority is
-never present in an agent spool.
+key, exact exception/guard/attempt receipt, `redeemed_at`, `transmit_before`,
+effect attempt, audience/provider/account binding, and transmission-start state.
+Offline replay cannot refresh, weaken, substitute, or consume another exception,
+extend a deadline, reuse a start permit, or retransmit a possibly started
+request. Capacity-policy authority is never present in an agent spool.
 This is not an OAuth authorization-server or token-endpoint claim. Goal: reach
 private systems safely. Deliverables: agent enrollment/credential protocol,
 runtime, and operator controls. Verification: takeover, identity cloning/
@@ -251,7 +264,9 @@ remapping, enrollment replay, credential/spool extraction, audience/scope
 inflation, downgrade, revocation, validator/profile substitution, stale or
 silently refreshed validator, conditional-capability downgrade, exception guard/
 attempt substitution, revoked/expired exception replay, capacity-policy
-injection, and offline limits pass. Exit criteria: agent
+injection, long offline pause, stale admission, deadline/audience/request
+substitution, clock rollback, start-permit replay/restore, uncertain
+transmission retry, and offline limits pass. Exit criteria: agent
 compromise is bounded and revocable without making Vitheim a general OAuth
 issuer.
 `v0.119.0 implementation stop reached. Run pentest for this exact commit.`
