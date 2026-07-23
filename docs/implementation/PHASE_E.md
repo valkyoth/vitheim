@@ -155,8 +155,10 @@ provider-capability change, or attempt exhaustion denies. It cannot imply local
 target fencing. Every external publication receipt also carries the `0.18.2`
 bounded transmission window and exact audience/provider/account/request
 binding; publication rechecks current fences at its single-use start claim,
-cannot transmit after the immutable deadline, and routes an uncertain start to
-reconciliation rather than redelivery.
+binds the exact worker instance and lease generation, returns non-persisted
+permit material only once, cannot transmit after the immutable deadline, and
+routes ambiguous permit delivery or an uncertain start to reconciliation rather
+than redelivery.
 
 Goal: turn the `0.48.1` publication port and fake into a supported hosted status
 surface without exposing the private incident or service-health authority.
@@ -177,8 +179,9 @@ misclassification, exception scope/request substitution, revocation/expiry/
 provider-capability/final-attempt race, missing guard, restored exception,
 long worker pause, revocation or provider-capability change after admission,
 expired/substituted/replayed transmission permit, clock rollback, uncertain
-start retransmission, accessibility, load, and fake-versus-hosted differential
-tests pass.
+start retransmission, concurrent shared-credential publishers, claim/worker/
+lease/permit substitution, claim-response loss, stale-worker takeover,
+accessibility, load, and fake-versus-hosted differential tests pass.
 
 Exit criteria: at least the selected built-in hosted profile publishes and
 corrects status with reproducible approval/source/receipt history; external

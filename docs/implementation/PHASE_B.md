@@ -192,26 +192,37 @@ never inferred to be a precondition failure.
 
 Every `CommitAndDispatch` authorization receipt carries a bounded
 `DispatchTransmissionWindow`. It binds `redeemed_at`, `transmit_before`, one
-effect/attempt identity, authenticated worker or service audience, provider,
-account, request digest, and the exact authority, target, exception, and
-provider-capability versions admitted at redemption. `transmit_before` is the
-earliest applicable authority, grant, exception, target, or provider-capability
-validity bound, further capped by a platform maximum admission-to-transmission
-interval. An authority source that cannot provide an enforceable bound or
-co-located current epoch is unsupported for privileged work.
+effect/attempt identity, permitted service audience, provider, account, request
+digest, and the exact authority, target, exception, and provider-capability
+versions admitted at redemption. `transmit_before` is the earliest applicable
+authority, grant, exception, target, or provider-capability validity bound,
+further capped by a platform maximum admission-to-transmission interval. An
+authority source that cannot provide an enforceable bound or co-located current
+epoch is unsupported for privileged work.
 
 Immediately before adapter I/O, the worker executes a local
 `ClaimTransmissionStart` transition. It rechecks the current authority-fence
 set, target fence, grant/exception guard state, and provider-capability epoch,
 validates authoritative transaction time against `transmit_before`, and
-atomically changes the exact receipt from `Admitted` to
-`TransmissionStartClaimed`. The resulting single-use permit carries only the
-remaining bounded start interval; the adapter enforces it with a monotonic
-elapsed-time source and cannot write the first provider-request byte after it
-expires. If trustworthy remaining time cannot be established, the claim fails
-closed. A revocation or epoch change that wins before this transition denies
-transmission; a change after it is ordered after a narrowly bounded started
-attempt.
+atomically compare-and-swaps the exact receipt from `Admitted` to
+`TransmissionStartClaimed`. The transition binds a globally unique
+`TransmissionStartClaimId`, exact authenticated `WorkerInstanceId`, permitted
+service audience, work-lease generation/fencing token, receipt/effect-attempt
+identity, and permit digest. A shared service credential never identifies the
+claimant. The opaque, non-cloneable, non-serializable permit material is
+returned exactly once to that claimant; durable state stores only its digest
+and claim status. Every later call, including same-claim replay, returns status
+and never another usable permit.
+
+The permit carries only the remaining bounded start interval; the adapter
+enforces it with a monotonic elapsed-time source and cannot write the first
+provider-request byte after it expires. If trustworthy remaining time cannot be
+established, the claim fails closed. If delivery of the one returned permit or
+the claim response is ambiguous, the effect enters `OutcomeUnknown`. A
+replacement worker or stale lease holder that observes
+`TransmissionStartClaimed` must reconcile and cannot transmit. A revocation or
+epoch change that wins before this transition denies transmission; a change
+after it is ordered after a narrowly bounded started attempt.
 
 If transmission is definitely not started before the bound, the receipt becomes
 `DefinitelyNotStarted`; its consumed grant/exception attempt is never restored,
@@ -220,8 +231,9 @@ If a crash, failover, cancellation, or lost local evidence makes it uncertain
 whether any request byte was transmitted after the start claim, the effect
 enters `OutcomeUnknown` and ordinary queue retry is forbidden. Restore cannot
 extend a deadline, reset `redeemed_at`, replay a start permit, or convert
-uncertainty into a definitely-not-started result. Wall-clock rollback cannot
-lengthen the interval.
+uncertainty into a definitely-not-started result. Persisted state, backup, or
+restore cannot reconstruct live permit material from its digest. Wall-clock
+rollback cannot lengthen the interval.
 
 Quota accounting is an independent collection of state machines. Each effect
 owns a bounded `QuotaClaimSet`; each `QuotaClaim` has an opaque reservation ID,
@@ -305,23 +317,51 @@ locks the policy-lineage head, current authority fences, independently governed
 base policy epoch, parent-capacity epoch/high-watermark, exact allocation
 deltas, simulation digest, and floor-set version; appends the policy event;
 compare-and-swaps the parent ledger; records audit evidence; and creates any
-outbox intents. The floor set has its own authoritative owner and distinct
-change command; policy activation cannot define, lower, or version the floor
-against which it is evaluated.
+outbox intents. The floor set has its own authoritative owner stream and
+distinct `ManageQuotaProtectedFloors` capability. Its append-only history uses
+never-reused monotonic epochs and cannot be rewritten by rollback or restore.
+Every change rechecks current tenant, hierarchy, incident/emergency, and policy
+fences and simulates impact against outstanding reconciliation, security-
+cleanup, incident, emergency, and other protected obligations. A selected
+production profile defines a non-configurable per-class `PlatformSafetyFloor`;
+configured floors can never fall below it.
+
+A floor reduction requires its own quorum, risk owner, approval lineage, and
+separation of duties, distinct from `ActivateQuotaCapacityPolicy`. It records a
+`FloorReductionReceipt` binding old/new floors, released capacity, simulation,
+obligations, fences, and epoch. Any policy activation that consumes capacity
+released by that reduction must bind the receipt and prove cross-command
+separation: no actor, approver, risk-owner identity, or approval lineage may
+both lower the floor and authorize spending the released capacity. Policy
+activation cannot define, lower, or version the floor against which it is
+evaluated.
 
 Policy activation requires control-plane authority, separation of duties,
 minimum reconciliation/security/emergency reserve floors, bounded impact
 simulation, and current tenant/principal/policy authority fences. Tenant-
 triggered work cannot invoke it; replay binds every version and digest.
 Multi-parent changes are explicitly non-atomic process-manager rollouts of
-independent one-parent policies. Each parent first records an idempotent prepared
-receipt and applies the conservative per-class intersection of old and new
-limits. Only after the coordinator has authenticated every current parent epoch
-and prepared receipt may it record `RolloutFinalized`; parent activation of the
-new limits then proceeds idempotently. Crash, cancellation, or rollback may
-reduce availability but cannot transiently over-allocate. Rollback is a new
-monotonic policy version revalidated against the current parent and
-independently governed floor set. The destination
+independent one-parent policies. A `QuotaCapacityRolloutRoot` has one
+authoritative hierarchy-root owner and freezes a canonical parent-membership
+manifest/digest: root ID and membership epoch; exact unique parent IDs,
+generations, regions, capacity classes, and accounting periods; and total per-
+class conservation constraints. Duplicate aliases or ambiguous parent identity
+deny preparation. Parent creation, removal, reparenting, generation change, or
+reclassification increments the root membership epoch and invalidates every
+older manifest.
+
+Each manifest member first records an idempotent prepared receipt binding
+rollout ID, manifest digest, exact parent identity/generation, old/new limits,
+and current parent epoch, then applies the conservative per-class intersection
+of old and new limits. Finalization compare-and-swaps the root membership epoch
+and requires exactly one valid prepared receipt from every canonical manifest
+member. Only then may the root owner record `RolloutFinalized`. Parent
+activation accepts only that finalized rollout and manifest digest, then applies
+new limits idempotently. Coordinator failover cannot discover, omit, alias, or
+add parents. Crash, cancellation, or rollback may reduce availability but cannot
+transiently over-allocate. Rollback is a new monotonic policy version
+revalidated against the current parent and independently governed floor set.
+The destination
 acknowledgement principal must be authorized for that exact tenant, hierarchy,
 parent lineage, lane, class, period, region, and destination epoch.
 The parent reserves capacity before committing the outbox intent; the child
@@ -721,13 +761,22 @@ atomically appends that lineage event, compare-and-swaps the co-located parent
 ledger using its epoch/high-watermark, validates exact allocation deltas and the
 simulation digest against an independently governed
 `QuotaProtectedFloorSet` version, records audit evidence, and creates outbox
-intents. The floor set has a distinct one-owner lineage and command; a policy
-cannot lower its own validation floor. Model multi-parent changes as process-
-manager rollouts of independent commands. Each parent prepares the conservative
-per-class intersection of old/new limits; a coordinator authenticates all
-current parent epochs and prepared receipts before `RolloutFinalized`, after
-which new limits activate idempotently. Rollback is a new monotonic version,
-never epoch reuse. Require exact-destination-hierarchy
+intents. The floor set has a distinct one-owner lineage,
+`ManageQuotaProtectedFloors` capability, quorum/approval lifecycle, current
+tenant/hierarchy/incident/emergency/policy fences, obligation-aware simulation,
+append-only epochs, and non-configurable platform minimum. A reduction emits a
+`FloorReductionReceipt`; policy spending newly released capacity binds it and
+proves actor/approver/risk-owner/approval-lineage separation from the reduction.
+Model multi-parent changes as process-manager rollouts of independent commands
+under one root-owned `QuotaCapacityRolloutRoot` manifest. The canonical digest
+binds membership epoch, every unique parent ID/generation/region/class/period,
+and total conservation constraints. Each parent prepares the conservative per-
+class intersection and a receipt bound to rollout plus manifest. Finalization
+CAS-validates the unchanged root epoch and exactly one receipt for every
+manifest member; parent activation accepts only the finalized manifest.
+Creation, removal, reparenting, generation change, or aliases cannot be omitted
+or discovered by the coordinator. Rollback is a new monotonic version, never
+epoch reuse. Require exact-destination-hierarchy
 authorization for acknowledgement and current local tenant/principal/policy
 epoch checks at every delayed transition. Require parent reserve before outbox,
 idempotent child inbox activation, conservative in-transit
@@ -755,9 +804,11 @@ commands/receipts, authenticated acknowledgement and old-epoch-fence proof,
 immutable accounting-hierarchy/classification binding, structural no-
 reclassification matrix, versioned unallocated-parent `QuotaCapacityPolicy`
 lineage/state machine, parent-ledger CAS and high-watermark contract,
-independently governed protected-floor set, simulation/approval/floor
-enforcement, multi-parent conservative-rollout process manager with prepared/
-finalized receipts, delayed-transition authority-fence contract, double-entry
+independently governed protected-floor owner/history/capability, floor-reduction
+receipt/cross-command separation guard, platform-safety-floor and obligation-
+simulation contract, multi-parent hierarchy-root manifest/epoch/conservation
+codec and conservative-rollout process manager with prepared/finalized receipts,
+delayed-transition authority-fence contract, double-entry
 conservation oracle, late-settlement lineage mapping, partitioned fair control-
 plane capacity, deterministic memory adapter, recovery reconciler, leak/
 escalation monitor, and contention model.
@@ -791,10 +842,17 @@ two policies for one parent; non-co-located policy owner/parent ledger; stale
 base-policy or parent-capacity epoch/high-watermark; concurrent allocation;
 exact-delta or simulation substitution; policy lowering its own floor; floor-
 set update racing activation; crash after any activation component; partial
-multi-parent rollout; missing/forged/stale prepared or finalization receipt;
-parent epoch change before finalization; rollback epoch reuse; restore of an old
-policy, parent ledger, floor set, or rollout step; late evidence against original
-claim/transfer lineage; accidental
+multi-parent rollout; omitted parent; concurrent parent add/remove/reparent/
+generation change; duplicate/aliased parent identity; stale root manifest or
+membership epoch; incorrect per-class total; missing/forged/stale prepared or
+finalization receipt; parent epoch change before finalization; coordinator
+failover; parent activation under a different manifest; floor reduction followed
+by policy activation from the same actor, approver, risk owner, or approval
+lineage; floor capability/approval substitution; stale tenant/hierarchy/
+incident/emergency/policy fence; outstanding protected obligation; platform-
+minimum violation; concurrent floor changes; floor-history rollback/restore;
+rollback epoch reuse; restore of an old policy, parent ledger, floor set, or
+rollout step; late evidence against original claim/transfer lineage; accidental
 cross-shard/cross-region transaction, incompatible active/active write topology,
 provider-outage exhaustion, one-tenant reconciliation monopolization, tenant
 attempts to consume emergency reserve, global/per-tenant starvation, lease loss,
@@ -815,9 +873,13 @@ ends or change owner, hierarchy, period, lane, capacity class, residency, or
 authorization lineage. Existing capacity can never change class; only future
 unallocated parent capacity may be resized by a fenced, simulated, separation-
 of-duties policy change. Each one-parent lineage atomically changes its co-
-located parent ledger under the independent current floor set; multi-parent
-rollout can under-allocate but cannot transiently over-allocate or lower its own
-floor. Every delayed transfer transition rechecks current local authority; and
+located parent ledger under the independently governed current floor set. Multi-
+parent rollout authenticates a complete root-owned membership manifest and can
+under-allocate but cannot omit a parent or transiently over-allocate. Floor
+reduction has separate authority, append-only history, current operational
+fences, obligation simulation, a platform minimum, and cross-command separation
+from spending released capacity. Every delayed transfer transition rechecks
+current local authority; and
 exhausted or abusive tenants cannot block fair bounded reconciliation or
 security cleanup.
 `v0.18.1 implementation stop reached. Run pentest for this exact commit.`
@@ -885,12 +947,18 @@ provider-dependent claim kinds. Refund/release/actual-cost settlement requires
 the exact eligible evidence and an idempotent ledger transition. Compensation
 binds its own authorization decision, effect identity, and bounded claim set.
 The receipt also records the exact `DispatchTransmissionWindow`, including
-`redeemed_at`, derived `transmit_before`, effect/attempt, worker/service
+`redeemed_at`, derived `transmit_before`, effect/attempt, permitted service
 audience, provider/account/request digest, and admitted authority/target/
 exception/provider-capability versions. Immediately before adapter I/O, a
 separate local `ClaimTransmissionStart` transition rechecks current fences and
-guards, uses authoritative transaction time, and issues one bounded single-use
-start permit. Expiry before a definite first byte produces
+guards, uses authoritative transaction time, and CAS-binds one globally unique
+`TransmissionStartClaimId` to the exact authenticated worker instance, work-
+lease generation/fencing token, receipt/effect attempt, permitted service
+audience, and permit digest. Opaque permit material is returned only on the
+successful first claim and is never persisted; same-claim replay returns status.
+Ambiguous permit delivery or claim response, and every replacement worker that
+observes a claimed receipt, enter reconciliation without transmission. Expiry
+before a definite first byte produces
 `DefinitelyNotStarted` and requires fresh authority; uncertainty after the
 claim produces `OutcomeUnknown`, never ordinary redelivery. The permit cannot
 survive clock rollback, restore, worker change, or failover as reusable
@@ -930,10 +998,13 @@ capability contract and typed precondition outcome, remote-mutation-exception
 owner/approval/scope/epoch codec, guard/attempt/receipt state machine, provider-
 capability authority-fence entry, transaction-domain placement/capability
 contract, dispatch-transmission-window/receipt/start-claim/permit state machine,
-authoritative-time and monotonic-start enforcement contract, and
+claimant/worker-instance/lease-generation binding, at-most-once permit-return
+and ambiguous-delivery contract, authoritative-time and monotonic-start
+enforcement contract, and
 exact-token bounded per-kind quota-disposition/refund/settlement/
-capacity-transfer and one-parent capacity-policy/floor/rollout codecs/state
-machines. Phase G workflow workers later specialize the activity payload
+capacity-transfer, one-parent capacity-policy, protected-floor governance, and
+root-manifest rollout codecs/state machines. Phase G workflow workers later
+specialize the activity payload
 without weakening this commit boundary. The contract
 states at-least-once external execution explicitly and makes no distributed
 exactly-once claim. It distinguishes local commit/delivery success, provider
@@ -989,7 +1060,13 @@ after admission but before transmission claim; substitute worker/service
 audience, provider/account/request digest, effect attempt, deadline, or admitted
 epochs; roll wall time backward; restore or replay an old start permit; crash
 before versus after the start claim; prove no first byte before expiry; lose
-evidence of whether a first byte was written; retransmit an uncertain attempt;
+the claim response or one-time permit delivery; race duplicate workers using
+shared service credentials; substitute worker instance, lease generation/
+fencing token, claim ID, receipt, effect attempt, or permit digest; replay the
+same claim; let a stale/replacement worker transmit from
+`TransmissionStartClaimed`; reconstruct permit material from persisted or
+restored state; lose evidence of whether a first byte was written; retransmit
+an uncertain attempt;
 reuse consumed authority after `DefinitelyNotStarted`; use worker identity as
 business authority; split or partially restore a mixed quota claim set; reserve
 overlapping sets concurrently in opposite input order; deadlock/livelock; crash
@@ -1011,10 +1088,17 @@ activate a policy without its one owner stream or co-located parent ledger;
 race parent allocation or independent floor update; substitute base policy/
 parent high-watermark/deltas/simulation/floor version; lower a floor through the
 policy under review; transiently over-allocate during partial multi-parent
-rollout; reuse an epoch on rollback; restore a stale rollout;
+rollout; omit or alias a manifest parent; race parent add/remove/reparent/
+generation change; substitute root membership epoch, parent identity/region/
+class/period, conservation total, manifest digest, prepared receipt, or
+finalization receipt; activate a parent under another manifest; lower a floor
+and spend it with the same actor/approver/risk owner/approval lineage; substitute
+floor capability or approval; ignore incident/emergency/obligation fences or
+platform minimum; roll back floor history; reuse an epoch on rollback; restore
+a stale rollout;
 activate/acknowledge/reclaim after tenant suspension, principal revocation, or
-policy-epoch change; settle late evidence without original transfer lineage; release
-concurrency based on remote uncertainty;
+policy-epoch change; settle late evidence without original transfer lineage;
+release concurrency based on remote uncertainty;
 refund a transmitted rate token; duplicate or forge a refund/provider
 settlement; disguise administrative write-off as provider evidence; leak an
 unknown-outcome liability; expire/reclaim a capacity lease while retained bytes,
@@ -1042,8 +1126,10 @@ revocation cannot lose to stale guard state, and restore cannot resurrect a
 consumed attempt.
 No admitted receipt remains transmissible indefinitely: a current-fence start
 claim must win before the immutable deadline, the adapter must begin within its
-bounded monotonic permit, definitely unstarted work requires fresh authority,
-and uncertain start is reconciled as `OutcomeUnknown` without ordinary retry.
+bounded monotonic permit, and exactly one worker instance/lease generation may
+receive that non-persisted permit once. Claim-response ambiguity, replacement
+workers, and uncertain start reconcile as `OutcomeUnknown` without ordinary
+retry; definitely unstarted work requires fresh authority.
 Every applicable authority change linearizes against dispatch through the
 complete co-located monotonic fence set; unsupported external staleness cannot
 authorize privileged effects. Every current-target dispatch also linearizes
@@ -1074,9 +1160,11 @@ reclassified by transfer or adjustment. Existing capacity is class-immutable;
 future unallocated-parent policy changes are control-plane-only, fenced,
 simulated, separation-of-duties approved, and reserve-floor preserving. Every
 policy lineage owns one parent and atomically updates its co-located ledger
-under a separately governed floor version; multi-parent partial rollout uses
-conservative limits. Delayed transfer transitions recheck current local
-authority and fail conservatively.
+under a separately governed floor version. Multi-parent rollout proves a
+complete unchanged root manifest before finalization. Floor reductions have
+separate cross-command authority and cannot bypass operational fences, protected
+obligations, or the platform minimum. Delayed transfer transitions recheck
+current local authority and fail conservatively.
 `v0.18.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface

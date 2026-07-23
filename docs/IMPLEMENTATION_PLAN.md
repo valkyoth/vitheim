@@ -103,11 +103,13 @@ revocable, scoped, expiring, provider/policy-versioned, and attempt-bounded; a
 co-located guard serializes revocation/capability change/final-attempt use while
 dispatch advances only the effect stream. Response loss stays unknown.
 Every admitted dispatch receipt also binds `redeemed_at`, immutable
-`transmit_before`, effect attempt, worker/service audience, provider/account/
+`transmit_before`, effect attempt, permitted service audience, provider/account/
 request digest, and admitted epochs. Immediately before I/O, a local current-
-fence `ClaimTransmissionStart` issues one bounded monotonic permit. Definite
-expiry requires fresh authority; uncertain start becomes `OutcomeUnknown`
-without ordinary retry, and restore or clock rollback cannot extend the window.
+fence `ClaimTransmissionStart` binds a unique claim to one exact worker instance
+and lease generation/fence. It returns non-persisted permit material once;
+duplicate/replacement workers receive status, while ambiguous delivery or start
+becomes `OutcomeUnknown`. Restore cannot reconstruct the permit, and clock
+rollback cannot extend the window.
 Each effect carries a bounded atomic set of typed quota claims with independent
 amount/unit, settlement policy, and admission/lease/dispatch/transmission/
 storage boundary. Concurrency releases with the local lease; operation, rate,
@@ -142,9 +144,13 @@ protected-to-business conversion has no privileged escape hatch. Only future
 unallocated parent capacity may be resized through versioned, simulated,
 separation-of-duties `QuotaCapacityPolicy` activation. Each policy lineage owns
 one parent and atomically CAS-updates its co-located parent ledger under an
-independently governed floor-set version; it cannot lower that floor. Multi-
-parent changes use conservative process-manager rollout. Delayed transfer steps
-recheck current local tenant, principal, and policy epochs.
+independently governed floor-set version. Floor reduction has a separate
+capability/approval lineage, cross-command separation, operational fences,
+obligation simulation, append-only history, and platform minimum. Multi-parent
+finalization CAS-validates a root-owned canonical parent manifest, unchanged
+membership epoch, complete prepared-receipt set, and total conservation before
+conservative rollout. Delayed transfer steps recheck current local tenant,
+principal, and policy epochs.
 Composite transactions use one order—stream head, authority fences, target
 fence, remote-mutation-exception guard, grant guard, quota lease/keys,
 uniqueness claims, then receipts—and retry only
@@ -185,7 +191,9 @@ target-fence owner/epoch/co-location/placement, receipt-idempotent capacity-
 transfer delivery/conservation/classification, remote-target concurrency
 profile/provider capability/precondition outcome, remote-mutation-exception
 owner/guard/attempt, transmission-window/start-claim/time/uncertainty behavior,
-capacity-policy owner/parent-ledger/high-watermark/independent-floor/simulation/
+unique claimant/worker-instance/lease-fence/one-time-permit behavior, capacity-
+policy owner/parent-ledger/high-watermark, independent-floor governance/cross-
+command separation/platform minimum, root-manifest membership/conservation/
 rollout/current-transition authority, canonical composite lock/retry behavior,
 refund/write-off evidence, and
 compensation/recovery-capacity behavior.

@@ -122,6 +122,9 @@ require_text docs/implementation/PHASE_B.md \
     'Immediately before adapter I/O, the worker executes a local' \
     'current-fence transmission-start claim'
 require_text docs/implementation/PHASE_B.md \
+    '`TransmissionStartClaimId`, exact authenticated `WorkerInstanceId`, permitted' \
+    'unique worker-instance transmission claimant'
+require_text docs/implementation/PHASE_B.md \
     'manager drives `QuotaCapacityTransferState` through `ReservedAtParent`' \
     'explicit capacity-transfer process manager'
 require_text docs/implementation/PHASE_B.md \
@@ -136,6 +139,12 @@ require_text docs/implementation/PHASE_B.md \
 require_text docs/implementation/PHASE_B.md \
     'Each policy lineage has exactly one authoritative owner stream and is scoped to' \
     'one-parent atomic capacity-policy authority'
+require_text docs/implementation/PHASE_B.md \
+    'distinct `ManageQuotaProtectedFloors` capability' \
+    'independently governed protected-floor capability'
+require_text docs/implementation/PHASE_B.md \
+    'A `QuotaCapacityRolloutRoot` has one' \
+    'root-owned complete parent rollout manifest'
 require_text docs/implementation/PHASE_B.md \
     'Each parent-side reserve/send/reclaim transition' \
     'delayed capacity transfer rechecks current authority'

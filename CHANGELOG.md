@@ -108,4 +108,15 @@ All notable Vitheim changes are documented here. The format follows
   boundary over its co-located ledger and independently governed floor set;
   multi-parent rollout now remains conservatively under-allocated until each
   parent transition is durably acknowledged.
+- Bound every transmission-start claim to one globally unique claim, exact
+  worker instance and lease generation/fence; non-persisted permit material is
+  returned once, while ambiguous delivery, duplicate workers, or takeover route
+  to reconciliation.
+- Made multi-parent capacity rollout depend on a hierarchy-root-owned canonical
+  membership manifest, unchanged root epoch, complete prepared-receipt set, and
+  total per-class conservation before finalization.
+- Added independent protected-floor governance with a separate capability and
+  approval lineage, operational-state fences, obligation simulation, platform
+  minima, append-only history, and cross-command separation from policies that
+  spend released capacity.
 - Added local and GitHub verification gates without a crate publication path.

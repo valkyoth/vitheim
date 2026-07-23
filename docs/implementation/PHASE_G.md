@@ -71,9 +71,12 @@ provider-capability epoch, and final-attempt use serialize with dispatch.
 The timer's admitted receipt carries immutable `redeemed_at` and
 `transmit_before`; immediately before remote I/O it must recheck current fences
 through `ClaimTransmissionStart` and obtain one bounded start permit. A timer
-waking after the deadline cannot transmit with old authority. A crash after the
-start claim that obscures whether bytes were sent becomes `OutcomeUnknown`, not
-a timer retry.
+waking after the deadline cannot transmit with old authority. The claim binds
+one unique claim ID, exact worker instance and lease generation/fence, receipt/
+effect attempt, and permit digest; non-persisted permit material is returned
+once. Duplicate workers or a replacement lease holder receive status only. A
+lost claim response, ambiguous permit delivery, or crash after the start claim
+becomes `OutcomeUnknown`, not a timer retry.
 Remote work executes only after committed authorized dispatch and
 returns through a separate activity-result/consumer bundle. Goal: crash-safe
 time and authority behavior without a distributed exactly-once claim.
@@ -81,7 +84,7 @@ Deliverables: timer dispatch/result effects, execution-authority/grant reference
 codec, redemption-guard/attempt-claim and cancellation evidence, scheduler
 bridge, authority-fence-set and target-fence evidence, canonical lock-order/deadlock-retry
 fixtures, remote-target conditional-mutation and exception-guard fixtures, and
-transmission-window/start-claim fixtures, and atomic-variant integration
+transmission-window/unique-claimant fixtures plus atomic-variant integration
 fixtures. Verification: clock jumps,
 retry storms, duplicate wakeups/results,
 cancellation/revocation races, not-before/expiry boundaries, grant replay and
@@ -99,7 +102,9 @@ exception scope/request substitution, revocation/expiry/provider-capability/
 final-attempt race, missing guard, restore resurrection,
 long scheduler/worker pause, revocation or capability change after receipt,
 expired/substituted deadline or audience, wall-clock rollback, pre/post-start-
-claim crash, restored permit, uncertain retransmission,
+claim crash, concurrent shared-credential workers, claim/worker/lease/permit
+substitution, claim-response loss, stale-worker takeover, same-claim replay,
+restored/reconstructed permit, uncertain retransmission,
 lock-order inversion, retry identity drift/exhaustion, dispatch/completion
 collapse, receipt/effect split,
 remote-call-in-transaction rejection, overflow, and replay pass.
@@ -174,9 +179,10 @@ remote-target concurrency profiles, immutable capacity-transfer owner/
 hierarchy/parent/period/lane/class/region/authorization bindings,
 remote-mutation-exception guards, class-immutable existing capacity, versioned
 one-parent unallocated-capacity policy with atomic parent-ledger/floor
-activation, conservative multi-parent rollout, delayed-transition current-
-authority rechecks, dispatch-transmission windows/start claims, canonical
-composite acquisition/retry behavior, and `0.51.2`
+activation, protected-floor governance/cross-command separation, root-manifest
+complete-parent rollout, delayed-transition current-authority rechecks,
+dispatch-transmission windows/unique claimant start claims, canonical composite
+acquisition/retry behavior, and `0.51.2`
 tenant-data-surface registry entries, Phase E workflow contract fixtures, and
 `0.39.1–0.39.3` on-call/
 paging/notification process-manager scenarios. Goal: durable multi-worker
@@ -190,8 +196,9 @@ authority-fence and target-fence validators, capacity-transfer outbox/inbox
 process manager and reconciler, remote-target conditional-mutation validator/
 outcome handler, remote-mutation-exception guard/attempt handler, capacity-
 policy-lineage/parent-ledger atomic activation and conservative-rollout process
-manager, delayed-transition authority rechecker, transmission-window/start-
-claim/permit handler, bounded identity-
+manager with root manifest validation, protected-floor governance/cross-command
+separation, delayed-transition authority rechecker, transmission-window/unique-
+claimant/one-time-permit handler, bounded identity-
 preserving deadlock retry, fair
 partitioned recovery lanes, and operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
@@ -213,8 +220,11 @@ drift, consumed-attempt failover/restore, grant/effect two-stream mutation,
 service-principal scope confusion, worker confused deputy or target/request
 substitution, long pause after redemption, revocation/expiry/target/provider-
 capability change before start claim, deadline/worker/audience/provider/request
-substitution, clock rollback, expired/restored start permit, pre/post-claim
-crash, uncertain retransmission, mixed quota-claim atomicity, overlapping-set deadlock/livelock,
+substitution, clock rollback, concurrent shared-credential workers, claim/
+worker/lease-generation/fence/permit substitution, claim-response loss, stale-
+worker takeover, same-claim replay, expired/restored/reconstructed start permit,
+pre/post-claim crash, uncertain retransmission, mixed quota-claim atomicity,
+overlapping-set deadlock/livelock,
 partial reservation/recovery, token/digest/membership substitution, cross-
 partition claim set, hierarchical capacity-lease over-allocation/reclamation/
 failover, incompatible active/active region, failover between reservation and
@@ -234,7 +244,11 @@ protected-to-business conversion through adjustment, existing-
 class rewrite, tenant-invoked capacity policy, reserve-floor/policy replay,
 ambiguous policy owner/parent, non-co-located or partial activation, concurrent
 parent allocation, stale high-watermark, substituted delta/simulation/floor
-version, self-lowered floor, partial rollout/rollback/restore,
+version, self-lowered floor, floor reduction/spend actor or approval-lineage
+reuse, operational-fence/obligation/platform-minimum bypass, omitted/aliased
+parent, add/remove/reparent/generation race, stale root manifest/membership
+epoch, conservation-total mismatch, coordinator failover, wrong-manifest
+activation, partial rollout/rollback/restore,
 tenant suspension or principal/policy revocation during delayed activation/
 acknowledgement/reclaim,
 tenant/subject/session/delegation/policy/service-principal authority changes
@@ -262,8 +276,10 @@ successor creation; every attempt is claimed through a co-located fenced guard
 while only the effect stream advances. Every authority change linearizes through
 the complete local monotonic fence set, and composite retries preserve identity.
 Every admitted receipt has an immutable deadline; a worker rechecks current
-fences at one bounded transmission-start claim, and a possibly started request
-enters reconciliation instead of ordinary retry.
+fences at one bounded transmission-start claim. Exactly one worker instance/
+lease generation receives non-persisted permit material once; duplicate or
+replacement workers receive status, and ambiguous delivery or a possibly
+started request enters reconciliation instead of ordinary retry.
 Every current-target dispatch linearizes on the target stream version/digest or
 co-located authoritative target-fence row without advancing a second stream.
 Remote provider mutation preserves its separate concurrency profile and exact
@@ -279,9 +295,11 @@ hierarchy, parent, period, lane, capacity class, region, or authorization
 lineage. Existing capacity class never changes; only fenced, simulated,
 separation-of-duties changes to future unallocated parent capacity are allowed.
 Each one-parent policy activation atomically changes its co-located parent
-ledger under an independent protected-floor version; multi-parent partial
-rollout uses conservative limits, and delayed transitions recheck current local
-authority. Eligible refunds occur exactly once,
+ledger under independently governed floors. A floor reduction cannot share
+actors or approval lineage with spending released capacity and cannot bypass
+operational fences, obligations, or platform minima. Multi-parent finalization
+authenticates the complete unchanged root manifest before activation; delayed
+transitions recheck current local authority. Eligible refunds occur exactly once,
 administrative write-off remains distinct, compensation is separately
 accounted, fair recovery remains available under hostile tenant exhaustion, and
 every workflow interface/data surface is registered.

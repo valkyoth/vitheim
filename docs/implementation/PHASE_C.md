@@ -15,7 +15,10 @@ co-locate every claim set with its work bundle, and any wider limit must consume
 a fenced hierarchical capacity lease already allocated to that local partition.
 Every privileged dispatch profile must co-locate its complete
 `DispatchAuthorityFenceSet`, persisted `DispatchTransmissionWindow`, and
-`ClaimTransmissionStart` state. Every current-target profile must also co-locate
+`ClaimTransmissionStart` state. Its CAS must bind one globally unique claim ID,
+exact worker instance and lease generation/fence, receipt/effect attempt,
+service audience, and permit digest, while persisting no reconstructable permit
+material. Every current-target profile must also co-locate
 the target owner, authoritative `DispatchTargetFence`, and effect work bundle;
 same-aggregate targets use the expected stream version/digest, while different-
 aggregate targets use a fence row updated atomically with target events. Remote,
@@ -38,9 +41,12 @@ capacity is class-immutable. Only future unallocated parent capacity can be
 resized through a versioned, fenced `QuotaCapacityPolicy`. Each policy lineage
 owns exactly one parent and must co-locate its stream head, parent-capacity
 ledger, and independently governed floor-set row for atomic activation.
-Multi-parent changes use conservative process-manager rollout, not a distributed
-transaction. Each delayed transfer transition rechecks current local tenant/
-principal/policy epochs.
+Floor management requires its own capability/history, operational fences,
+platform minimum, and cross-command separation from policy activation. Multi-
+parent changes use a hierarchy-root-owned canonical membership manifest, root
+epoch CAS, complete prepared-receipt set, and conservative process-manager
+rollout, not a distributed transaction. Each delayed transfer transition
+rechecks current local tenant/principal/policy epochs.
 
 ## `0.21.0` — Storage Capability Negotiation
 
@@ -52,8 +58,10 @@ authority-fence and target-fence freshness/co-location, capacity-transfer
 receipt/delivery and immutable-classification semantics, remote-target provider
 capability/validator evidence, exception-guard/provider-capability-epoch
 co-location, transmission-window/start-claim/time capability, one-parent policy-
-owner/parent-ledger/floor-set activation atomicity, conservative multi-parent
-rollout, bounded deadlock-retry semantics, and fail-closed behavior.
+owner/parent-ledger/floor-set activation atomicity, unique claimant/lease-bound
+one-time permit return, floor-governance/cross-command-separation capability,
+root-manifest complete-membership rollout, bounded deadlock-retry semantics, and
+fail-closed behavior.
 
 Goal: prevent adapters from silently weakening correctness.
 
@@ -68,11 +76,15 @@ projection-only local current target, false strong-conditional provider claim,
 ignored/weakened conditional mechanism, unauthorized unconditional profile,
 missing/non-co-located exception guard, stale provider-capability epoch,
 unbounded/reusable exception attempt, missing/extendable transmission deadline,
-non-atomic start claim, replayable permit, unsupported clock-rollback behavior,
+non-atomic start claim, audience-only claimant, duplicate permit return,
+persisted/reconstructable permit, unsupported ambiguous-delivery or clock-
+rollback behavior,
 mutable existing capacity class, tenant-invokable capacity policy, multiple
 parents per policy lineage, non-co-located policy owner/parent ledger/floor set,
-policy-controlled validation floor, unsafe partial rollout, missing delayed-
-transition authority recheck,
+policy-controlled validation floor, shared floor/policy authority, missing
+platform minimum or operational fences, coordinator-discovered/partial parent
+set, missing root epoch/manifest conservation, unsafe partial rollout, missing
+delayed-transition authority recheck,
 cross-partition transaction requirement,
 distributed-exactly-once capacity-transfer claim, unbounded or identity-changing
 deadlock retry, and optional-performance fallback tests pass.
@@ -119,11 +131,15 @@ strong, treat unconditional review as an unguarded flag, mutate exception and
 effect streams together, project an exception guard eventually, resurrect an
 exception attempt, allow an admitted receipt to transmit without a bounded
 window/current-fence start claim, extend a deadline on retry/restore, reuse a
-start permit, classify a post-claim crash as definitely unstarted, rewrite an
-existing capacity class, use a cross-class adjustment, activate capacity policy
-without its one owner or atomic co-located parent/floor transaction, let a
-policy lower its own floor, transiently over-allocate during multi-parent
-rollout, activate from historical authorization IDs without current epochs,
+start permit, return a permit twice or to an audience-sharing replica, persist
+permit material, let a replacement worker transmit, classify a lost claim
+response or post-claim crash as definitely unstarted, rewrite an existing
+capacity class, use a cross-class adjustment, activate capacity policy without
+its one owner or atomic co-located parent/floor transaction, let a policy lower
+its own floor, reuse floor approvers to spend released capacity, ignore
+operational fences/obligations/platform minimum, finalize from a discovered or
+incomplete parent set, transiently over-allocate during multi-parent rollout,
+activate from historical authorization IDs without current epochs,
 or execute a network/provider call inside the transaction.
 
 Verification: prove every deliberately incomplete bundle adapter and adapters
@@ -146,11 +162,19 @@ misclassification, exception revocation/expiry/provider-capability/final-attempt
 races, exception scope/request substitution, guard omission, restore
 resurrection, long pause before transmission, revocation/expiry/capability
 change after receipt, deadline/worker/audience/request substitution, clock
-rollback, pre/post-start-claim crash, old-permit restore, uncertain retransmit,
+rollback, concurrent duplicate workers with shared credentials, claim ID/
+worker-instance/lease-generation/permit-digest substitution, same-claim replay,
+claim-response loss, stale lease takeover, pre/post-start-claim crash, old-
+permit restore/reconstruction, uncertain retransmit,
 protected-class conversion by adjustment, capacity-policy owner ambiguity,
 non-atomic parent update, concurrent allocation, stale parent high-watermark,
-delta/simulation/floor-version substitution, floor-update race, policy replay/
-floor violation, partial rollout/rollback/restore, tenant-suspension/principal/policy change during delayed
+delta/simulation/floor-version substitution, floor-update race, floor reduction
+then spend by the same actor/approval lineage, approval substitution, stale
+incident/emergency/obligation fence, platform-minimum violation, omitted parent,
+add/remove/reparent race, duplicate alias, stale root manifest/epoch, incorrect
+conservation total, coordinator failover, parent activation under another
+manifest, policy replay/floor violation, partial rollout/rollback/restore,
+tenant-suspension/principal/policy change during delayed
 activation or acknowledgement, missing/substituted authority fence,
 missing/substituted target fence, target deletion/merge/migration/supersession/
 restore and target-change-versus-dispatch races, stale projection and cross-
@@ -208,10 +232,14 @@ constraints, no-reclassification constraints, versioned unallocated-parent
 capacity-policy lineage heads, parent-ledger epochs/high-watermarks, independent
 floor-set rows, exact deltas/simulation records, atomic activation constraints,
 atomic policy-event/parent-CAS/audit/outbox commit, conservative prepared/
-finalized rollout receipts, delayed-transition current-epoch guards,
+finalized rollout receipts, root membership manifests/digests/epochs and total-
+conservation constraints, protected-floor history/reduction receipts/platform
+minimum/cross-command separation records, delayed-transition current-epoch
+guards,
 co-located remote-mutation-exception guard/attempt receipts and provider-
 capability epochs, immutable transmission-window receipts and atomic start-
-claim/permit transitions,
+claim transitions with unique claimant/worker-instance/lease-fence/permit-digest
+columns and no persisted permit material,
 canonical composite lock-order/deadlock-retry implementation,
 integrity commitment, and configuration adapters; migrations, operator guide,
 backup/restore, and observability. Startup fails capability negotiation if any
@@ -233,9 +261,13 @@ class adjustment rejection, existing-class immutability, capacity-policy floor/
 simulation/replay, owner/parent/floor co-location, concurrent allocation/
 activation, partial rollout/rollback/restore, delayed-transition stale-authority,
 transmission-window expiry, current-fence start-claim concurrency, clock
-rollback, post-claim crash/unknown outcome, permit restore/replay, composite lock-order inversion and
-bounded retry, cross-partition rejection, tenant bypass, pool exhaustion,
-migration rollback, restore, and conformance pass.
+rollback, duplicate shared-credential workers, lease takeover, claim-response
+loss, claimant/claim/permit substitution, post-claim crash/unknown outcome,
+permit restore/replay/reconstruction, omitted/aliased parent, membership epoch
+race, manifest/conservation substitution, floor-approval/cross-command-
+separation/operational-fence/platform-minimum bypass, composite lock-order
+inversion and bounded retry, cross-partition rejection, tenant bypass, pool
+exhaustion, migration rollback, restore, and conformance pass.
 
 Exit criteria: production claims match tested deployment profiles only.
 `v0.24.0 implementation stop reached. Run pentest for this exact commit.`
@@ -461,11 +493,13 @@ worker cannot refresh the validator or reinterpret precondition failure or
 response loss. Preserve the exact `RemoteMutationExceptionId`, owner generation,
 scope/request digest, epochs, guard version, attempt identity/ceiling, and
 receipt; redelivery cannot select or consume a different exception attempt.
-Preserve `redeemed_at`, immutable `transmit_before`, effect/attempt, worker/
-service audience, provider/account/request digest, admitted epochs, start-claim
-state, and single-use transmission permit. Redelivery rechecks current fences
-before a bounded start; it cannot extend the deadline or retry a possibly
-started transmission. Preserve the immutable
+Preserve `redeemed_at`, immutable `transmit_before`, effect/attempt, permitted
+service audience, provider/account/request digest, admitted epochs, unique
+transmission-start claim, exact worker instance, lease generation/fence, permit
+digest, and claim status—but never reconstructable permit material. Redelivery
+rechecks current fences before a bounded start; it cannot return a second permit,
+extend the deadline, or retry a claimed/possibly started transmission. Preserve
+the immutable
 authorization binding and freshness profile across queues; a worker must record
 the required current dispatch decision, authenticate as itself, and redeem the
 bound `LiveSubjectAuthority`, `ApprovedExecutionGrant`, or
@@ -490,10 +524,12 @@ destination authorization through at-least-once queue delivery. Preserve
 principal/policy epoch requirements for every delayed transition. Preserve
 one-parent policy lineage, parent epoch/high-watermark, exact deltas, independent
 floor-set version, and conservative multi-parent prepared/finalized rollout
-receipts; workers
-never reacquire individual quota
-members, release encumbrance on capacity-lease expiry, or open a cross-partition
-transaction. Preserve and atomically lock the complete
+receipts. Preserve floor history/reduction authority and cross-command
+separation, platform minimum, root manifest/digest/membership epoch, complete
+canonical parent identities, total conservation, and finalization receipt;
+workers never reacquire individual quota members, release encumbrance on
+capacity-lease expiry, or open a cross-partition transaction. Preserve and
+atomically lock the complete
 `DispatchAuthorityFenceSet`, required `DispatchTargetFence`, and canonical
 composite acquisition order across redelivery/failover.
 
@@ -511,10 +547,10 @@ validator, target-fence validator, capacity-transfer outbox/inbox process
 manager and reconciler, remote-target concurrency validator and precondition-
 outcome handler, remote-mutation-exception guard/attempt handler, capacity-
 policy owner/parent-ledger/floor activation and conservative-rollout handler,
-delayed-transfer authority gate, transmission-window/start-claim/permit handler,
-canonical lock-order/deadlock-retry
-implementation, capability
-report, and operational metrics.
+protected-floor governance/cross-command separation and root-manifest complete-
+rollout handler, delayed-transfer authority gate, transmission-window/unique-
+claimant/one-time-permit handler, canonical lock-order/deadlock-retry
+implementation, capability report, and operational metrics.
 
 Verification: enqueue/commit crashes, duplicate delivery, receipt/effect split,
 stale ack/fence, lease loss, dead-letter/effect split, quota/effect split,
@@ -534,8 +570,11 @@ failure retried, response loss treated as rejection, exception scope/guard/
 attempt substitution, revocation/expiry/provider-capability/final-attempt race,
 restore resurrection, long worker pause, revocation/expiry/target/provider-
 capability change after receipt, transmission deadline/audience/request
-substitution, wall-clock rollback, pre/post-start-claim crash, expired or
-restored permit, uncertain retransmission, mixed quota-claim split, overlapping-set deadlock/livelock, partial
+substitution, wall-clock rollback, concurrent shared-credential workers,
+claimant/claim/lease/permit substitution, claim-response loss, stale-worker
+takeover, same-claim replay, pre/post-start-claim crash, expired/restored/
+reconstructed permit, uncertain retransmission, mixed quota-claim split,
+overlapping-set deadlock/livelock, partial
 reservation/recovery, token/digest/membership substitution, cross-partition set,
 hierarchical lease over-allocation/reclamation/failover, failover before exact-
 set consumption, concurrency lease held by remote uncertainty,
@@ -552,10 +591,14 @@ substitution, recovery/emergency-to-business reclassification through transfer
 or adjustment, existing-class rewrite, tenant-invoked capacity policy, reserve-
 floor violation, policy owner/parent ambiguity, stale parent high-watermark,
 concurrent allocation, delta/simulation/floor substitution, self-lowered floor,
-partial rollout/rollback/restore, policy replay, stale tenant/principal/policy epoch during
-activation/acknowledgement/reclaim, parent reclaim racing failover, target deletion/merge/
-migration/supersession/restore racing dispatch, stale target projection, cross-
-shard target placement, missing/substituted target fence,
+floor reduction and spend by shared actor/approval lineage, stale operational
+fence/obligation state, platform-minimum violation, omitted/aliased parent,
+parent add/remove/reparent/generation race, stale root manifest/epoch, incorrect
+conservation total, coordinator failover, wrong-manifest activation, partial
+rollout/rollback/restore, policy replay, stale tenant/principal/policy epoch
+during activation/acknowledgement/reclaim, parent reclaim racing failover,
+target deletion/merge/migration/supersession/restore racing dispatch, stale
+target projection, cross-shard target placement, missing/substituted target fence,
 single-tenant reserve monopolization, global/per-tenant starvation, emergency-
 reserve misuse, partition/failover, drain/restart, and model/conformance tests
 pass.
@@ -574,10 +617,12 @@ idempotent conservative accounting without classification drift, preserves
 remote validator semantics without treating them as a local fence, redeems
 unconditional authority only through its co-located revocable attempt guard,
 expires admitted transmission authority, rechecks current fences before a
-bounded single-use start, routes uncertain starts to reconciliation, keeps
-existing capacity class-immutable, atomically activates each one-parent future-
-allocation policy under its independent floor set, keeps partial multi-parent
-rollout conservative, and
+bounded single-use start, returns non-persisted permit material exactly once to
+one worker instance/lease generation, routes ambiguous claims and uncertain
+starts to reconciliation, keeps existing capacity class-immutable, atomically
+activates each one-parent future-allocation policy under independently governed
+floors, authenticates the complete root manifest before multi-parent
+finalization, enforces floor-policy cross-command separation, and
 rechecks delayed-transition authority; retries composite deadlocks without
 identity drift, keeps fair recovery available under hostile tenant exhaustion,
 and has no process-local queue dependency.

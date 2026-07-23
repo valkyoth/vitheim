@@ -117,12 +117,15 @@ authorization semantics.
    A committed authorization receipt is not permanent transmission authority.
    It binds `redeemed_at`, an immutable `transmit_before` derived from the
    earliest authority/exception/target/provider bound and a platform maximum,
-   one effect attempt, worker/service audience, provider/account, request
+   one effect attempt, permitted service audience, provider/account, request
    digest, and admitted epochs. Immediately before I/O, a local
-   `ClaimTransmissionStart` rechecks current fences and issues one short,
-   monotonic single-use permit. Definite expiry before transmission requires
-   fresh authority; uncertainty after the start claim becomes `OutcomeUnknown`,
-   never ordinary redelivery. Restore and clock rollback cannot extend it.
+   `ClaimTransmissionStart` rechecks current fences and CAS-binds one globally
+   unique claim to the exact authenticated worker instance, lease generation/
+   fence, receipt/effect attempt, and permit digest. Non-persisted permit
+   material is returned only once; replay returns status. Duplicate or
+   replacement workers and ambiguous claim delivery reconcile as
+   `OutcomeUnknown`. Restore cannot reconstruct the permit, and clock rollback
+   cannot extend it.
    Each effect carries a bounded atomic set of typed quota claims rather than
    one universal reservation. Concurrency releases with its local lease;
    consumable operations follow declared evidence rules; provider-rate tokens
@@ -157,11 +160,16 @@ authorization semantics.
    capacity may be resized by a versioned, simulated, separation-of-duties
    `QuotaCapacityPolicy`. Each policy lineage owns exactly one parent; activation
    atomically appends its event and CAS-updates the co-located parent ledger
-   under the current independently governed floor-set version. The policy cannot
-   lower its own floor. Multi-parent changes are conservative process-manager
-   rollouts, never distributed commands. Every delayed transfer transition
-   rechecks its current local tenant, principal, and policy epochs; historical
-   decisions are evidence, not authority.
+   under the current independently governed floor-set version. Floor reductions
+   have a separate capability/approval lineage, operational fences, obligation
+   simulation, append-only history, a platform minimum, and cross-command
+   separation from policy spending. Multi-parent changes freeze a root-owned
+   canonical parent manifest and membership epoch; finalization requires one
+   bound prepared receipt from every exact member plus total per-class
+   conservation. Membership change invalidates preparation. Rollout remains a
+   conservative process manager, never a distributed command. Every delayed
+   transfer transition rechecks its current local tenant, principal, and policy
+   epochs; historical decisions are evidence, not authority.
    Composite transactions acquire stream head, authority fences, target fence,
    remote-mutation-exception guard, grant guard, quota lease/keys, uniqueness
    claims, then receipts in one canonical order.

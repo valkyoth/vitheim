@@ -96,12 +96,15 @@ audit decision.
   guard serializes revocation, expiry, supersession, provider-capability change,
   and final-attempt claims while dispatch advances only the effect stream.
   The resulting receipt is bounded by immutable `redeemed_at` and
-  `transmit_before` plus effect/attempt, worker/service audience, provider/
+  `transmit_before` plus effect/attempt, permitted service audience, provider/
   account/request, and admitted epochs. Immediately before I/O,
-  `ClaimTransmissionStart` rechecks current fences and issues one short
-  monotonic permit. Definite expiry requires fresh authority; uncertainty after
-  the claim is `OutcomeUnknown`, not retryable queue work. Restore, failover,
-  worker pause, or clock rollback cannot extend or replay the permit.
+  `ClaimTransmissionStart` rechecks current fences and binds one globally unique
+  claim to the exact authenticated worker instance, lease generation/fence,
+  receipt/effect attempt, and permit digest. Non-persisted permit material is
+  returned once; replay returns status. Duplicate/replacement workers and
+  ambiguous claim delivery are `OutcomeUnknown`, not retryable queue work.
+  Restore cannot reconstruct the permit; failover, pause, or clock rollback
+  cannot extend it.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown
@@ -134,8 +137,13 @@ audit decision.
   future unallocated parent capacity can change allocation through a fenced,
   simulated, separation-of-duties `QuotaCapacityPolicy` command. Each policy
   lineage owns one parent and atomically updates its co-located parent ledger
-  under an independently governed floor-set version; the policy cannot lower
-  that floor. Multi-parent changes use conservative process-manager rollout.
+  under an independently governed floor-set version. Floor reductions use a
+  separate capability and approval lineage, current tenant/hierarchy/incident/
+  emergency/policy fences, obligation simulation, append-only epochs, a
+  platform minimum, and cross-command separation from spending released
+  capacity. Multi-parent finalization proves one prepared receipt for every
+  member of a root-owned canonical manifest under an unchanged membership epoch
+  and per-class conservation constraints; rollout remains conservative.
   Tenant work cannot invoke it, and every delayed transfer transition rechecks
   current local tenant/principal/policy epochs.
   Composite transactions use the canonical stream/authority-fence/target-fence/
