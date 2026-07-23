@@ -9,21 +9,50 @@ Status: planned. Setup: version node/opcode schemas, graph validity, types, capa
 Status: planned. Setup: define state, step budget, yielded effects, replay inputs, and failure. Goal: pure durable execution. Deliverables: interpreter, traces, reference fixtures. Verification: infinite loops, nondeterministic ordering, exhaustion, replay divergence, malformed state, and model tests pass. Exit criteria: equal histories yield equal effects. `v0.62.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.63.0` — Human Tasks And Approvals
-Status: planned. Setup: bind task actor eligibility, claim, completion schema, approval separation, expiry. Goal: safe human workflow stops. Deliverables: activity models and command integration. Verification: theft, self-approval, stale claim, duplicate completion, hidden fields, tenant isolation pass. Exit criteria: human effects require current authority. `v0.63.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: bind task actor eligibility, claim, completion schema,
+approval separation, expiry, approval decision identity/version, quorum, and
+assurance. A designated approval node may emit an `ApprovedExecutionGrant`
+through the authorized `0.18.2` grant-issuance command only when it binds the
+exact effect/request/target and target version, tenant, purpose, not-before/
+expiry, attempts, policy version, revocation conditions, and separation of
+duties. Ordinary task completion emits no execution authority. Approver session
+expiry after issuance does not require worker impersonation or invalidate the
+grant by itself; approver eligibility loss and policy drift require the defined
+fail-closed successor-grant revalidation.
+Goal: safe human workflow stops that can authorize bounded scheduled work
+without preserving an interactive login session.
+Deliverables: activity/approval models, grant issuance/revalidation/revocation
+commands and receipts, and workflow integration.
+Verification: theft, self-approval, stale claim, duplicate completion, grant
+issuance from a non-approval task, missing quorum/separation, expired approver
+session, approver departure, approval-version drift, grant replay/attempt
+exhaustion, target substitution, hidden fields, and tenant isolation pass.
+Exit criteria: human decisions require current authority when made; later work
+uses only an exact independently redeemable grant, never an offline human
+identity. `v0.63.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.64.0` — Timers, Deadlines, And Retries
 Status: planned. Setup: define logical deadlines, scheduled IDs, retry/backoff,
 jitter input, cancellation, quotas, and specialize the `0.18.2` atomic timer
 dispatch and later result variants without weakening their fence/receipt/local-
-effect boundaries. Remote work executes only after committed dispatch and
+effect boundaries. A scheduled item binds its execution-authority reference,
+not-before/expiry, remaining attempts, effect/request/target digest, and target
+version. A timer supplies time and wakeup only: it cannot create authority.
+Dispatch redeems live-subject, approved-grant, or service-principal authority
+under current rules; grant-backed work does not require an approver's expired
+session. Remote work executes only after committed authorized dispatch and
 returns through a separate activity-result/consumer bundle. Goal: crash-safe
-time behavior without a distributed exactly-once claim. Deliverables: timer
-dispatch/result effects, scheduler bridge, and atomic-variant integration
+time and authority behavior without a distributed exactly-once claim.
+Deliverables: timer dispatch/result effects, execution-authority/grant reference
+codec, redemption/cancellation evidence, scheduler bridge, and atomic-variant integration
 fixtures. Verification: clock jumps, retry storms, duplicate wakeups/results,
-cancellation races, stale fence, dispatch/completion collapse, receipt/effect
-split, remote-call-in-transaction rejection, overflow, and replay pass.
+cancellation/revocation races, not-before/expiry boundaries, grant replay and
+attempt exhaustion, session expiry, approver/policy/target-version drift, stale
+fence, dispatch/completion collapse, receipt/effect split, remote-call-in-
+transaction rejection, overflow, and replay pass.
 Exit criteria: timers cannot create uncontrolled or unreceipted work, and remote
-execution remains explicitly at least once. `v0.64.0 implementation stop reached. Run pentest for this exact commit.`
+execution remains explicitly at least once and independently authorized.
+`v0.64.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.65.0` — Parallel Branches And Joins
 Status: planned. Setup: define branch identity, join policy, failure/cancel propagation, ordering, and bounds. Goal: deterministic concurrency semantics. Deliverables: fork/join IR and interpreter support. Verification: premature/duplicate join, late events, branch leaks, cancellation, permutations, and state-model pass. Exit criteria: scheduling order cannot change result. `v0.65.0 implementation stop reached. Run pentest for this exact commit.`
@@ -36,8 +65,8 @@ Reconcile an `EffectExecutionState::OutcomeUnknown` original before deciding
 whether compensation is applicable. Compensation has its own
 `CompensationEffectId`, `CompensationState`, external-effect lifecycle, remote
 outcome, resolution evidence, `CommitAndDispatch` authorization decisions, and
-quota reservation linked to—but never mutating or borrowing quota from—the
-original.
+bounded quota claim set linked to—but never mutating or borrowing claims from—
+the original.
 Goal: bounded auditable recovery from partial workflows without inventing
 certainty about provider state.
 Deliverables: compensation IR and state machine, canonical codecs,
@@ -50,8 +79,8 @@ compensation after an unknown original, unknown compensation result, crash
 windows, non-compensable effects, operator assessment forged as provider
 outcome, late provider evidence racing manual/compensation decisions,
 unauthorized, revoked, or self-approved privileged compensation, reuse of the
-original quota reservation, duplicate compensation refund, target substitution,
-and replay pass.
+original quota claims, duplicate compensation refund, target substitution,
+cross-kind settlement confusion, and replay pass.
 Exit criteria: incomplete rollback or uncertain provider state is explicit,
 never hidden, overwritten, or converted into assumed provider success; every
 compensation remains linked, independently authorized, independently quota-
@@ -79,15 +108,17 @@ Status: planned. Setup: one canonical source model, round-trip policy, provenanc
 ## `0.70.0` — HA Workflow Workers
 Status: planned. Setup: define leases/fencing, activity idempotency, specialize
 the `0.18.2` activity/poison variants, `0.30.1` queue semantics, poison policy,
-drain, failover, commit-and-dispatch authorization freshness, immutable effect
-bindings, quota-disposition/control-plane-reserve semantics, and `0.51.2`
+drain, failover, commit-and-dispatch authorization freshness, all three typed
+execution authorities, immutable effect bindings, bounded multi-kind quota
+claim settlement, fair partitioned control-plane capacity, and `0.51.2`
 tenant-data-surface registry entries, Phase E workflow contract fixtures, and
 `0.39.1–0.39.3` on-call/
 paging/notification process-manager scenarios. Goal: durable multi-worker
 execution. Deliverables: hosted worker orchestration, authorization cases,
 external-effect reconciler/manual queue, ITSM and response-delivery integration
-retests, single-use fenced dispatch-authorization receipts, quota hold/refund
-reconciliation, isolated recovery lanes, and operational evidence.
+retests, worker-self-authenticated execution-authority redemption, single-use
+fenced dispatch receipts, per-kind quota settlement, fair partitioned recovery
+lanes, and operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
 receipt/effect split, network-call-in-transaction rejection, crash points,
 stale fencing commits, poison/dead-letter split, quota/effect split, poison
@@ -98,16 +129,24 @@ escalation, direct/callback/query evidence racing manual assessment, forbidden
 blind retry of an unknown privileged/non-compensable effect, unauthorized
 privileged resolution, policy/delegation/employment/tenant/target changes from
 commit through lease and dispatch, forged/replayed dispatch authorization,
-worker confused deputy or target/request substitution, duplicate/forged refund,
-unknown-outcome quota leak, compensation quota reuse, provider outage under
-tenant exhaustion, control-plane-reserve abuse, Phase E fake-versus-real
-differential, rolling upgrades, and soak pass.
+worker impersonation of an offline approver, valid scheduled grant after session
+expiry, grant replay/attempt exhaustion, approval/policy/approver/target-version
+drift, service-principal scope confusion, worker confused deputy or target/
+request substitution, mixed quota-claim atomicity, concurrency release under
+unknown remote outcome, transmitted rate-token refund, estimated-to-actual cost
+settlement, retained-byte accounting, write-off/provider-evidence confusion,
+duplicate/forged refund, unknown-liability leak, compensation claim reuse,
+provider outage under tenant exhaustion, per-tenant/global recovery starvation
+or reserve abuse, Phase E fake-versus-real differential, rolling upgrades, and
+soak pass.
 Exit criteria: HA preserves documented at-least-once delivery while the atomic
 work variants prevent duplicate local protected commits and detect/reconcile
 possible remote duplication. Execution state, provider outcome, resolution
 evidence, manual workflow, and compensation remain distinguishable through
 failover. Every dispatch proves its declared authorization freshness and exact
-binding; unknown work remains charged/held, eligible refunds occur exactly
-once, compensation is separately accounted, recovery remains available under
-tenant exhaustion, and every workflow interface/data surface is registered.
+binding by redeeming typed authority without human impersonation. Every bounded
+quota claim settles by kind, eligible refunds occur exactly once,
+administrative write-off remains distinct, compensation is separately
+accounted, fair recovery remains available under hostile tenant exhaustion, and
+every workflow interface/data surface is registered.
 `v0.70.0 implementation stop reached. Run pentest for this exact commit.`

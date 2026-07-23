@@ -62,18 +62,30 @@ authorization semantics.
    late provider evidence and manual decisions are retained and resolved under
    fenced concurrency rules. Intent creation always requires authorization and
    immutably binds tenant, initiator, delegation, capability, target, purpose,
-   request, policy, and authentication assurance. A reviewed capability declares
-   `CommitBound` or `CommitAndDispatch`, with the latter as default; privileged,
-   destructive, secret-bearing, containment, and compensation effects always
-   reauthorize current policy,
-   subject/delegation/tenant/target state at a fenced single-use dispatch gate.
-   Worker or lease identity never grants business authority, and a changed
-   binding requires a new intent. Each capability also declares whether quota is
-   consumed at admission or dispatch. Unknown outcomes remain charged/held;
-   only pre-dispatch cancellation or admissible definitely-not-accepted evidence
-   can refund/release exactly once. Compensation is accounted separately.
-   Strictly scoped control-plane reserve keeps reconciliation and security
-   cleanup available under tenant exhaustion and cannot admit tenant work.
+   request, policy, authentication assurance, and typed execution authority. A
+   dispatch redeems current `LiveSubjectAuthority`, immutable
+   `ApprovedExecutionGrant`, or current `ServicePrincipalAuthority`. An approval
+   grant binds exact effect/request/target/version, purpose, quorum, separation,
+   assurance at approval, not-before/expiry, attempts, policy version, and
+   revocation rules. The worker authenticates as itself, never as an offline
+   human; session expiry alone does not invalidate a valid grant, while target
+   drift, explicit revocation, tenant suspension, exhausted window/attempts, and
+   required approver/policy revalidation fail closed. A reviewed capability
+   declares `CommitBound` or `CommitAndDispatch`, with the latter as default;
+   privileged, destructive, secret-bearing, containment, and compensation
+   effects always use the fenced single-use dispatch gate. Worker or lease
+   identity never grants business authority, and a changed binding requires a
+   new intent.
+   Each effect carries a bounded atomic set of typed quota claims rather than
+   one universal reservation. Concurrency releases with its local lease;
+   consumable operations follow declared evidence rules; provider-rate tokens
+   become non-refundable at transmission; estimated liabilities hold and settle
+   to actual cost or distinct audited write-off; retained bytes follow verified
+   local allocation/deletion. Only provider-dependent claims remain held for
+   unknown outcomes. Compensation is accounted separately. Tenant/work-class
+   partitioning, fair share, ceilings, starvation bounds, and a scoped emergency
+   reserve keep reconciliation/security cleanup available without admitting
+   tenant work or allowing one tenant to monopolize recovery.
 9. Every untrusted parser, query, workflow, plugin, attachment, import, report,
    and export has explicit size, depth, time, memory, and work budgets.
 10. Every important result is explainable from commands, events, policy,

@@ -50,12 +50,31 @@ expiry bypass, fake-port visibility pass; real search differential repeats at
 ## `0.46.0` — Change Management
 Status: planned. Setup: freeze risk, plans, window, affected-topology port/fake,
 conflicts, approval, implementation, validation, backout, and emergency rules;
-Phase I graph is not yet an implementation dependency. Goal: govern service change.
-Deliverables: change aggregate, assessment, calendar/conflict integration, and
-deterministic topology fixtures.
+Phase I graph is not yet an implementation dependency. An approval command for
+scheduled implementation may issue an `ApprovedExecutionGrant` only after
+freezing the change/plan version, exact effect/request/target digests, affected
+target version, purpose, window/not-before/expiry, permitted attempts,
+approvers/quorum, approval assurance, separation of duties, policy version, and
+revocation conditions. A worker later authenticates as itself and redeems that
+grant; it never adopts an offline approver's identity. Human session expiry
+alone does not revoke the grant, while target drift, explicit revocation,
+tenant suspension, attempt/expiry exhaustion, approver eligibility loss, or
+authorization-policy drift follows the fail-closed `0.18.2` rules and requires
+a successor approval/revalidation grant.
+Goal: govern service change and scheduled execution without turning an old
+interactive session into ambient worker authority.
+Deliverables: change aggregate, assessment, calendar/conflict integration,
+approval-to-execution-grant command/receipt, revocation/revalidation transitions,
+and deterministic topology/authority fixtures.
 Verification: approval/window/backout bypass, self-approval, conflict races,
-emergency abuse, fake topology differential, and replay pass; real graph
-integration repeats at `0.88.0`. Exit criteria: execution needs a valid approved plan. `v0.46.0 implementation stop reached. Run pentest for this exact commit.`
+expired human session during valid scheduled execution, worker impersonation,
+grant replay/attempt exhaustion, approval or policy-version drift, approver
+departure, target-version/request substitution, revocation immediately before
+dispatch, emergency abuse, fake topology differential, and replay pass; real
+graph integration repeats at `0.88.0`.
+Exit criteria: execution needs an exact valid approved plan and redeemable
+authority; no worker relies on an approving human remaining logged in.
+`v0.46.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.47.0` — Release And Deployment Records
 Status: planned. Setup: define release contents, environment, artifact identity,

@@ -33,39 +33,81 @@ and quota-consumption boundary. It never collapses these typed dimensions:
 Authorization is required when the command commits an effect intent. The intent
 immutably binds tenant, initiating subject, delegation chain and version,
 capability/action, exact target identity and version/digest, purpose, request
-digest, policy decision/version, and authentication assurance/expiry. Its typed
-freshness profile is either `CommitBound` or `CommitAndDispatch`; there is no
-dispatch-only profile. `CommitAndDispatch` is the default. `CommitBound` is
-permitted only for a reviewed immutable-target, non-privileged, non-destructive,
-non-secret-bearing action
-whose semantics do not depend on continuing authority. Privileged, destructive,
-secret-bearing, containment, and compensation effects always use
-`CommitAndDispatch`.
+digest, policy decision/version, authentication assurance/expiry, and one typed
+`EffectExecutionAuthority`:
 
-A `CommitAndDispatch` worker independently reevaluates current policy, tenant
-status, subject/employment status, delegation validity, authentication
-assurance, capability, and target identity immediately before external I/O. It
-commits a fenced, single-use dispatch-authorization receipt for that exact
-attempt and binding. A change before that receipt denies/cancels dispatch,
-records the reason and audit evidence, and makes no provider call; a concurrent
-change after the receipt is retained as a race with an already admitted
-attempt, never rewritten as unauthorized worker discretion. Lease ownership or
-worker identity grants no business capability. A worker cannot substitute
-tenant, subject, delegation, capability, target, purpose, or request bytes; any
-binding mismatch requires a new authorized effect intent.
+- `LiveSubjectAuthority` requires the initiating human's current authenticated
+  session, employment/subject status, delegation, and policy at dispatch;
+- `ApprovedExecutionGrant` is an immutable integrity-bound grant created only by
+  an authorized approval command. It binds tenant, grant and effect identity,
+  exact request/target digest and target version, purpose, approver decision IDs
+  and quorum, separation of duties, assurance at approval, not-before/expiry,
+  permitted attempts, policy version, and revocation conditions; and
+- `ServicePrincipalAuthority` binds a tenant service principal, exact capability
+  scope, audience/proof identity, credential/assurance profile, policy version,
+  and expiry for narrowly scoped automation.
 
-Quota accounting is another independent state machine. A capability declares
-whether its reservation becomes consumed at admission or at the fenced dispatch
-transition. `QuotaReservationState` distinguishes `Reserved`, `Consumed`,
-`HeldPendingOutcome`, `RefundEligible`, `Refunded`, and `Released`;
-`HeldPendingOutcome` continues to count against the governed limit. A
-pre-dispatch cancellation or admissible `DefinitelyNotAccepted` evidence may
-produce one evidence-bound refund/release transition. `OutcomeUnknown` remains
-consumed/held until reconciliation supplies admissible evidence; operator
-assessment cannot create refund eligibility. Compensation uses a separate
-reservation and ledger identity. Reconciliation and security-cleanup work use
-strictly scoped, audited control-plane reserve capacity that tenant exhaustion
-cannot consume and that cannot admit new tenant business work.
+The intent's typed freshness profile is either `CommitBound` or
+`CommitAndDispatch`; there is no dispatch-only profile. The default is `CommitAndDispatch`.
+`CommitBound` is permitted only for a reviewed immutable-target,
+non-privileged, non-destructive, non-secret-bearing action whose semantics do
+not depend on continuing authority. Privileged, destructive, secret-bearing,
+containment, and compensation effects always use `CommitAndDispatch`.
+
+A `CommitAndDispatch` worker authenticates as its own service identity and
+independently redeems the selected execution authority immediately before
+external I/O; it never impersonates an initiating or approving human.
+`LiveSubjectAuthority` rechecks the live subject/session facts.
+`ServicePrincipalAuthority` rechecks the current principal, credential/proof,
+scope, and policy. `ApprovedExecutionGrant` validates its integrity receipt,
+exact bindings, window, remaining attempts, current tenant state, and current
+policy compatibility without requiring an approver's login session to remain
+alive. Session expiry alone does not revoke a grant. Explicit revocation, tenant
+suspension, grant expiry/attempt exhaustion, or effect/request/target-version
+mismatch always denies redemption. Approver employment/eligibility loss or an
+authorization-relevant policy-version change revokes an unredeemed grant unless
+a new authorized revalidation command creates a successor grant.
+
+Successful redemption commits a fenced, single-use dispatch-authorization
+receipt for that exact attempt and binding. A change before that receipt denies/
+cancels dispatch, records the reason and audit evidence, and makes no provider
+call; a concurrent change after the receipt is retained as a race with an
+already admitted attempt, never rewritten as worker discretion. Lease ownership
+or worker identity grants no business capability. A worker cannot substitute
+tenant, subject, delegation, execution authority, capability, target, purpose,
+or request bytes; any binding mismatch requires a new authorized effect intent.
+
+Quota accounting is an independent collection of state machines. Each effect
+owns a bounded `QuotaClaimSet`; each `QuotaClaim` has an opaque reservation ID,
+typed amount/unit, `QuotaKind`, settlement policy, and admission/lease/dispatch/
+transmission/storage boundary. `QuotaReservationState` distinguishes
+`Reserved`, `Consumed`, `HeldPendingOutcome`, `RefundEligible`, `Refunded`, and
+`Released`. Required kinds and semantics are:
+
+- `ConcurrencyLease`: release when the fenced local lease ends, independent of
+  remote outcome;
+- `ConsumableOperation`: consume at its declared admission/dispatch boundary and
+  refund only under its declared evidence-backed policy;
+- `ProviderRateToken`: release before transmission but become non-refundable
+  once transmission begins;
+- `EstimatedLiability`: remain charged/held for an unknown provider outcome and
+  reconcile to evidence-backed actual cost, including explicit overage rather
+  than capping it to the estimate, or a distinct administrative write-off; and
+- `RetainedBytes`: follow verified local allocation and deletion, not remote
+  outcome.
+
+Only claims whose settlement policy depends on provider acceptance enter
+`HeldPendingOutcome`; such a claim continues to count against its governed
+limit. Pre-dispatch cancellation may release unconsumed claims, and admissible
+`DefinitelyNotAccepted` evidence may make eligible claim kinds refundable
+exactly once. Operator assessment cannot create refund eligibility.
+Administrative write-off is a separately typed, authorized, audited adjustment
+that never becomes provider evidence or rewrites `RemoteOutcome`. Compensation
+uses a separate bounded claim set. Reconciliation and security-cleanup capacity
+is partitioned by tenant and work class with per-tenant ceilings, global
+fair-share scheduling, starvation bounds, and a strictly scoped audited
+emergency reserve; tenant exhaustion cannot consume it, one tenant's unknown
+outcomes cannot monopolize it, and it cannot admit new tenant business work.
 
 Every capability sets a reconciliation deadline and escalation path. An
 operator assessment may choose a safe local resolution or abandonment but
@@ -216,7 +258,8 @@ Each effect intent records its capability declaration, initial
 immutable authorization binding and freshness profile before dispatch. The
 binding covers tenant, initiating subject, delegation chain/version, capability,
 exact target identity/version/digest, purpose, request digest, policy decision/
-version, and authentication assurance/expiry. Denied/rejected commands atomically
+version, authentication assurance/expiry, and selected
+`EffectExecutionAuthority`. Denied/rejected commands atomically
 commit their idempotent outcome plus audit fact but no domain events, stream
 advance, business outbox, or state effect.
 Outbox routing contains protected references rather than pre-rendered sensitive
@@ -230,7 +273,8 @@ remote-outcome, resolution-source/evidence, operational-resolution, and
 compensation types, command-commit unit including audit authority, atomic
 memory implementation, dispatcher claim/ack protocol, outcome query/
 reconciliation port, authorization-binding/freshness types, dispatch-
-authorization receipt contract, and failure fixtures.
+authorization and durable execution-grant receipt contracts, and failure
+fixtures.
 
 Verification: fail before/during/after every event/receipt/audit/outbox write,
 successful mutation without audit, denied mutation with domain events, duplicate
@@ -238,14 +282,15 @@ dispatch/audit, crash before ack, provider acceptance followed by lost response,
 idempotency-key expiry/scope mismatch, execution state presented as remote
 outcome, forged remote outcome, operator assessment presented as verified
 provider evidence, forged resolution source, stale policy/delegation/
-authentication binding, target or request substitution, lease-holder confused
+authentication binding, expired/replayed/substituted execution grant, offline-
+human impersonation, target or request substitution, lease-holder confused
 deputy, poison payload, tenant routing, and rollback pass.
 
 Exit criteria: no successful protected mutation exists without its authoritative
 audit intent, no rejected mutation produces business state or effects, and
 transport acknowledgement is never represented as a known provider outcome.
 No effect can exist without a complete immutable commit-time authorization
-binding and an explicit freshness profile.
+binding, typed execution authority, and explicit freshness profile.
 `v0.16.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.16.1` — Atomic Command Commit Bundle
@@ -364,37 +409,49 @@ Exit criteria: expired or unfenced workers cannot commit protected work.
 Status: planned.
 
 Setup: define tenant/resource quota identity, opaque `QuotaReservationId`,
-reservation digest, `QuotaReservationState`, per-capability admission-versus-
-dispatch consumption boundary, atomic reserve/consume/hold/refund/release,
-concurrent-use leases, retry/idempotency binding, fairness, reconciliation,
-overflow behavior, administrator adjustment evidence, and separate strictly
-scoped control-plane reserve capacity for reconciliation and security cleanup.
-`HeldPendingOutcome` counts against the governed limit. Refund eligibility
-requires pre-dispatch cancellation or admissible `DefinitelyNotAccepted`
-evidence and is applied exactly once; manual assessment cannot create it.
-Compensation has a distinct quota reservation and accounting identity. The
-consumed reservation representation is finalized into work bundles only at
-`0.18.2`, after these semantics exist.
+reservation digest, bounded `QuotaClaimSet`, `QuotaKind`, settlement policy,
+typed amount/unit, `QuotaReservationState`, and per-claim admission/lease/
+dispatch/transmission/storage boundary. Define atomic reserve/consume/hold/
+refund/release/settle, concurrent-use leases, retry/idempotency binding,
+fairness, reconciliation, overflow behavior, and separately typed administrator
+adjustment/write-off evidence. Concurrency claims release with the local lease;
+provider rate tokens are non-refundable after transmission; consumable
+operations follow declared evidence rules; estimated liabilities hold and
+settle to actual cost/overage or audited write-off; retained-byte claims follow
+verified local allocation/deletion. Only provider-dependent claim kinds use
+`HeldPendingOutcome`. Compensation has a distinct bounded claim set.
+Partition reconciliation/security-cleanup capacity by tenant/work class with
+ceilings, global fair-share/starvation bounds, and a strictly scoped emergency
+reserve. The bounded claim-set representation is finalized into work bundles
+only at `0.18.2`, after these semantics exist.
 
 Goal: make resource limits durable correctness controls rather than process-local
 counters.
 
-Deliverables: project-owned quota ledger/reservation port and state machine,
-capability accounting policy, evidence-bound refund/release command, isolated
-control-plane reserve, deterministic memory adapter, recovery reconciler,
-leak/escalation monitor, and contention model.
+Deliverables: project-owned quota ledger/reservation port and per-kind state
+machines, bounded claim-set/amount/unit types, capability settlement policies,
+evidence-bound refund/release/actual-cost settlement commands, distinct
+administrative adjustment/write-off command, partitioned fair control-plane
+capacity, deterministic memory adapter, recovery reconciler, leak/escalation
+monitor, and contention model.
 
 Verification: concurrent oversubscription, crash after reserve/use/refund,
 duplicate retry and refund, cancel/dispatch/refund races, indefinite held-
-reservation leak and escalation, provider-outage exhaustion, tenant attempts to
-consume control-plane reserve, lease loss, starvation, integer overflow, forged
-refund/adjustment evidence, cross-tenant accounting, separate compensation
-accounting, and reconciliation tests pass.
+reservation leak and escalation, concurrency release while provider outcome is
+unknown, rate-token refund after transmission, estimated-to-actual settlement,
+underestimated-cost overage, retained-byte deletion accounting, mixed multi-
+claim atomicity, claim-set bound overflow, provider-outage exhaustion, one-
+tenant reconciliation monopolization,
+tenant attempts to consume emergency reserve, global/per-tenant starvation,
+lease loss, integer overflow, forged refund/provider evidence, write-off
+misrepresented as provider refund, cross-tenant accounting, separate
+compensation accounting, and reconciliation tests pass.
 
 Exit criteria: admitted work cannot exceed a durable quota through concurrency
-or retry; unknown outcomes cannot free capacity without admissible evidence,
-and exhausted tenant capacity cannot block bounded reconciliation or security
-cleanup. `v0.18.1 implementation stop reached. Run pentest for this exact commit.`
+or retry; every claim kind settles at its documented boundary without treating
+all unknown outcomes alike; administrative adjustment remains visibly distinct
+from provider evidence; and exhausted or abusive tenants cannot block fair
+bounded reconciliation or security cleanup. `v0.18.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.18.2` — Atomic Timer, Activity, And Work Commit Family
 
@@ -407,8 +464,9 @@ work/message/timer/activity identity and input digest, current fencing token,
 at most one authoritative aggregate stream and its exact expected version,
 events, command/inbox/timer/activity receipt,
 mandatory audit intent, outbox, integrity commitment, uniqueness claims, and
-the typed consumed `0.18.1` quota reservation. Cross-aggregate continuation is
-an outbox-driven process-manager decision. Timer dispatch atomically records
+the bounded atomic `0.18.1` quota claim set and per-claim transitions. Cross-
+aggregate continuation is an outbox-driven process-manager decision. Timer
+dispatch atomically records
 the due/fenced dispatch transition and its outbox work intent; timer or remote
 work completion is a separate later activity-result/consumer transition that
 atomically records its own result receipt and local effects. Fence validation
@@ -419,16 +477,22 @@ workflow, deadlines/escalation, late-evidence conflict handling, privileged-
 resolver authorization, and authorized/manual resolution commands. A resolution
 command changes operational state; without admissible provider evidence it
 cannot manufacture or replace `RemoteOutcome`.
-Finalize authorization freshness and quota disposition in the same state
-family. Intent creation always requires commit-time authorization. For a
-`CommitAndDispatch` capability, dispatch atomically validates the immutable
-authorization/request/target bindings against current authority and records a
-single-use fenced dispatch-authorization receipt before provider I/O. A failed
-current-authority check records denial/cancellation and performs no remote call.
-The declared quota boundary atomically consumes the reservation with admission
-or dispatch. Unknown outcomes enter `HeldPendingOutcome`; refund/release requires
-the exact eligible evidence and idempotent ledger transition. Compensation
-binds its own authorization decision, effect identity, and quota reservation.
+Finalize authorization freshness, execution-authority redemption, and quota
+disposition in the same state family. Intent creation always requires commit-
+time authorization. For a `CommitAndDispatch` capability, dispatch atomically
+validates the immutable authorization/request/target bindings and redeems
+`LiveSubjectAuthority`, `ApprovedExecutionGrant`, or
+`ServicePrincipalAuthority` under its exact current rules before recording a
+single-use fenced dispatch-authorization receipt. A failed redemption records
+denial/cancellation and performs no remote call. Each claim transition occurs
+atomically at its own declared boundary; remote unknown outcomes hold only the
+provider-dependent claim kinds. Refund/release/actual-cost settlement requires
+the exact eligible evidence and an idempotent ledger transition. Compensation
+binds its own authorization decision, effect identity, and bounded claim set.
+Grant issuance, revalidation/supersession, explicit revocation, redemption, and
+attempt consumption are distinct audited commands/transitions; only an
+authorized approval command can issue or supersede a grant, and a timer/queue/
+worker can only redeem it.
 
 Goal: prevent retries, lease loss, or crashes from separating asynchronous work
 completion evidence from the effects it emits.
@@ -439,8 +503,9 @@ timer/activity/poison receipt types, dead-letter evidence, and deterministic
 failure/interleaving harness; distinct execution/outcome/evidence/workflow
 codecs and state machines; reconciliation scheduler/escalation contract; and
 privileged-resolution policy facts; authorization-binding/freshness descriptors,
-dispatch receipts, and quota-disposition/refund codecs and state machines.
-Phase G workflow workers later specialize
+execution-authority/grant codecs, issuance/revalidation/revocation commands,
+redemption receipts, and bounded per-kind quota-disposition/refund/settlement
+codecs and state machines. Phase G workflow workers later specialize
 the activity payload without weakening this commit boundary. The contract
 states at-least-once external execution explicitly and makes no distributed
 exactly-once claim. It distinguishes local commit/delivery success, provider
@@ -448,17 +513,22 @@ outcome, how that outcome became known, and operational disposition.
 
 Verification: independently omit or split every variant component; crash
 between timer fire/completion, activity effect/receipt, inbox/dead-letter
-transition, fence check/commit, and quota consume/effect; replay stale fencing
-tokens; attempt a second aggregate stream or remote call in one bundle;
+transition, fence check/commit, and quota-claim transition/effect; replay stale
+fencing tokens; attempt a second aggregate stream or remote call in one bundle;
 lose a response after provider acceptance; expire a provider idempotency key;
 return conflicting status queries; attempt blind retry of unknown privileged or
 non-compensable work; race direct response/signed callback/provider query
 against manual assessment and deadline escalation; attempt unauthorized or
 self-approved privileged resolution; receive late provider evidence after
 abandonment; revoke policy/delegation/employment/tenant authority between
-commit, lease, authorization receipt, and dispatch; substitute target or request
-bytes; use worker identity as business authority; duplicate or forge a refund;
-leak an unknown-outcome hold; exhaust tenant quota during reconciliation;
+commit, lease, authority redemption, authorization receipt, and dispatch; expire
+a human session for valid scheduled grant work; depart an approver; drift policy
+or approval version; replay/exhaust/revoke a grant immediately before dispatch;
+substitute target or request bytes; use worker identity as business authority;
+split a mixed quota claim set; release concurrency based on remote uncertainty;
+refund a transmitted rate token; duplicate or forge a refund/provider
+settlement; disguise administrative write-off as provider evidence; leak an
+unknown-outcome liability; monopolize reconciliation capacity with one tenant;
 redeliver poison work; race cancellation/lease loss; and run rollback, recovery,
 model, state-machine, and property tests.
 
@@ -468,10 +538,12 @@ variant report it unsupported. Every external outcome is terminally known,
 durably unknown and reconciling, or operationally abandoned/assigned for
 authorized manual resolution rather than inferred from delivery state. A
 manual conclusion remains visibly assessed and cannot become verified provider
-truth. Every dispatch obeys its declared freshness profile and exact immutable
-binding. Quota release is evidence-bound and exactly once, uncertain work stays
-accounted, compensation is accounted separately, and reserved recovery capacity
-cannot be borrowed for tenant business work.
+truth. Every dispatch obeys its declared freshness profile, typed execution
+authority, and exact immutable binding without impersonating an offline human.
+Every bounded quota claim settles by kind at its declared boundary; refunds are
+evidence-bound and exactly once, write-offs remain distinct, compensation is
+accounted separately, and fair partitioned recovery capacity cannot be
+monopolized or borrowed for tenant business work.
 `v0.18.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface

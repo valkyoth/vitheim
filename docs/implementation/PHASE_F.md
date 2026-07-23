@@ -375,17 +375,25 @@ plugin hosts, attachments, AI retrieval schemas, external-effect intent
 creation, and provider dispatch. For each external-effect capability, register
 the immutable tenant/initiator/delegation/capability/target/purpose/request/
 policy/assurance binding, its `CommitBound` or `CommitAndDispatch` profile, and
-whether dispatch authority is mandatory. Only interfaces implemented through
-Phase F are instantiated now; later surfaces must register themselves before
-their own milestone can exit. Goal: preserve policy end to end.
+whether dispatch authority is mandatory. Also register each permitted
+`EffectExecutionAuthority` (`LiveSubjectAuthority`,
+`ApprovedExecutionGrant`, or `ServicePrincipalAuthority`), its issuer/
+redemption/revocation enforcement points, offline-human behavior, current-policy
+facts, and required approval/quorum/separation rules. Only interfaces
+implemented through Phase F are instantiated now; later surfaces must register
+themselves before their own milestone can exit. Goal: preserve policy end to end.
 Deliverables: redaction engine, typed visible DTOs, obligation executor, and
 compile/registration gate requiring an authorization case for every interface
-and both effect authorization enforcement points.
+and effect intent, grant issuance/revalidation/revocation, authority redemption,
+and provider-dispatch enforcement points.
 Verification: API/search/report/export/notification/cache/AI leakage, derived inference,
 missing effect freshness/binding registration, unsafe `CommitBound`
-classification, dispatch revocation, target substitution, and revocation pass.
+classification, missing/ambiguous execution-authority mode, approval grant
+issued without quorum or separation, offline-human impersonation, dispatch
+revocation, target substitution, and revocation pass.
 Exit criteria: hidden data cannot reappear downstream, and no external effect
-can bypass its declared commit/dispatch authorization gates. `v0.58.0 implementation stop reached. Run pentest for this exact commit.`
+can bypass its declared commit/grant/redemption/dispatch authorization gates.
+`v0.58.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.59.0` — Delegation And Break-Glass Access
 Status: planned. Setup: require delegation to be a non-amplifying subset with
@@ -395,14 +403,19 @@ short session, reason, notifications, live monitoring, and immutable usage.
 Effect intents bind the complete delegation chain/version/expiry. Revocation or
 expiry invalidates any required dispatch-time authorization; a queued worker
 cannot retain or amplify the delegator's capability merely by holding a lease.
+An `ApprovedExecutionGrant` is not redelegation: only the registered approval
+command and current policy may create or revalidate its exact authority. It
+cannot expand the approvers' intersection of capabilities, survive a revocation
+condition, or be converted into a general service-principal credential.
 Goal: exceptional access without permanent privilege or waiver of tenant,
 audit, key, or evidence-custody invariants.
 Deliverables: exception aggregate, challenge/approval workflow, delayed-effect
-delegation validation, and heightened audit.
+delegation and execution-grant validation, and heightened audit.
 Verification: self-approval, broad scope, non-expiry, replay, hidden use, stale session,
-commit/dispatch revocation race, worker confused deputy, and revocation tests
-pass. Exit criteria: every exception is bounded and visible, and no delayed
-effect outlives authority where current dispatch authorization is required.
+commit/dispatch revocation race, grant-as-redelegation or capability
+amplification, worker confused deputy, and revocation tests pass. Exit criteria:
+every exception is bounded and visible, and no delayed effect outlives its
+selected execution authority or declared revocation conditions.
 `v0.59.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.60.0` — Authorization Conformance Suite
@@ -411,19 +424,24 @@ read/field/search/export/blob/notification/admin/ingest interface currently
 implemented and every declared future interface schema from the generated
 registry; include token audiences, credential/policy versions, external-effect
 commit/dispatch enforcement points, immutable effect bindings, and freshness
-profiles. Goal: prove
+profiles; enumerate live-subject, approved-grant, and service-principal
+execution-authority issuance/redemption/revocation cases. Goal: prove
 equivalent deny-by-default policy independent of authentication mechanism and
 make later registration mechanically mandatory. Deliverables: generated
 matrix, negative corpus, human-versus-service-principal differential tests,
 connector/agent/measurement-source cases, delayed-effect authorization state
-machine, revocation-race fixtures, and coverage/evidence report.
+machine, scheduled-offline grant fixtures, revocation-race fixtures, and
+coverage/evidence report.
 Verification: mutation and read parity, tenant pairs, stale policy/credential,
 wrong audience/scope, false sender constraint, bearer-to-privileged escalation,
 replay-cache limitations, cache/index lag, commit-to-lease-to-dispatch policy/
 delegation/employment/tenant/target changes, forged dispatch receipt, target or
-request substitution, worker confused deputy, unsafe low-risk profile, break-
-glass, and differential adapters pass. Exit criteria: no principal kind or
+request substitution, expired human session, grant forgery/replay/attempt
+exhaustion, approval/quorum/separation drift, approver departure, policy-version
+revalidation, service-principal scope/audience confusion, worker confused
+deputy, unsafe low-risk profile, break-glass, and differential adapters pass.
+Exit criteria: no principal kind or
 authority-bearing interface lacks a negative case, and every delayed effect is
-proven against both its commit-time decision and declared dispatch-freshness
-policy.
+proven against its commit-time decision, selected execution-authority model, and
+declared dispatch-freshness policy.
 `v0.60.0 implementation stop reached. Run pentest for this exact commit.`

@@ -64,4 +64,9 @@ All notable Vitheim changes are documented here. The format follows
   risk-based current dispatch authorization, and tied quota hold/refund/
   compensation semantics plus protected recovery capacity to the typed
   external-effect lifecycle through HA and production acceptance.
+- Refined delayed execution without adding versions: scheduled work now redeems
+  typed live-subject, immutable approval-grant, or scoped service-principal
+  authority without impersonating offline humans; quota accounting now uses
+  bounded multi-kind claims with distinct concurrency/rate/cost/storage
+  settlement and fairly partitioned recovery capacity.
 - Added local and GitHub verification gates without a crate publication path.

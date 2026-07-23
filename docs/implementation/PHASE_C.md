@@ -42,8 +42,9 @@ Deliverables: reusable adapter harness, mandatory capability matrix, randomized
 state machine, machine-readable conformance report, and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
-audit intent, outbox, commitment, uniqueness claim, consumed quota, timer
-dispatch/result receipt, activity completion, or dead-letter transition.
+audit intent, outbox, commitment, uniqueness claim, bounded quota claim-set/
+per-kind transition, timer dispatch/result receipt, activity completion, or
+dead-letter transition.
 Include invalid reference adapters that accept two authoritative aggregate
 streams or execute a network/provider call inside the transaction.
 
@@ -316,11 +317,14 @@ idempotency/replay horizon, and each typed execution, remote-outcome,
 resolution-evidence, operational-workflow, and compensation state across lease
 expiry, redelivery, failover, and dead-letter movement. Preserve the immutable
 authorization binding and freshness profile across queues; a worker must record
-the required current dispatch decision and cannot inherit business authority
-from queue or lease possession. Preserve `QuotaReservationState`, the declared
-consumption boundary, held-unknown disposition, evidence-bound exactly-once
-refund/release, separate compensation accounting, and isolated control-plane
-reconciliation capacity.
+the required current dispatch decision, authenticate as itself, and redeem the
+bound `LiveSubjectAuthority`, `ApprovedExecutionGrant`, or
+`ServicePrincipalAuthority`; it cannot inherit business authority from queue or
+lease possession or impersonate an offline approver. Preserve every bounded
+quota claim's `QuotaKind`, settlement policy, amount/unit, reservation state,
+declared boundary, evidence-backed transition, and separate compensation claim
+set. Partition reconciliation/security lanes by tenant and work class with
+ceilings, global fair-share scheduling, starvation bounds, and emergency reserve.
 
 Goal: own an HA-capable durable queue profile without requiring a separate
 message broker for correctness.
@@ -328,23 +332,30 @@ message broker for correctness.
 Deliverables: project-owned queue port, journal/outbox-backed PostgreSQL adapter,
 memory fake, worker protocol, external-effect reconciliation scheduling and
 manual-resolution queue, dispatch-authorization gate, quota-disposition
-reconciler, control-plane reserve lane, capability report, and operational
-metrics.
+reconciler, execution-grant redemption/revocation handling, fair partitioned
+control-plane lanes, capability report, and operational metrics.
 
 Verification: enqueue/commit crashes, duplicate delivery, receipt/effect split,
 stale ack/fence, lease loss, dead-letter/effect split, quota/effect split,
 poison loops, starvation, cross-tenant routing, sensitive payload leakage,
 provider acceptance with lost worker response, blind retry after idempotency-key
 expiry, unknown-outcome dead-letter or quota-hold loss, stale authority after
-enqueue/lease, target substitution, worker confused deputy, duplicate refund,
-provider outage with exhausted tenant quota, misuse/starvation of control-plane
-reserve, partition/failover, drain/restart, and model/conformance tests pass.
+enqueue/lease, expired initiating session with a valid scheduled grant, grant
+replay/attempt exhaustion/revocation, approval/policy/approver/target-version
+drift, target substitution, offline-human impersonation, worker confused deputy,
+mixed quota-claim split, concurrency lease held by remote uncertainty,
+transmitted rate-token refund, cost settlement/write-off confusion, retained-
+byte drift, duplicate refund, provider outage with exhausted tenant quota,
+single-tenant reserve monopolization, global/per-tenant starvation, emergency-
+reserve misuse, partition/failover, drain/restart, and model/conformance tests
+pass.
 
 Exit criteria: HA work dispatch has documented at-least-once delivery and
 idempotent local-commit semantics, preserves the `0.18.2` external-effect
 authorization, resolution, and quota contracts without collapsing their typed
-dimensions, keeps recovery available under tenant exhaustion, and has no
-process-local queue dependency.
+dimensions, redeems durable grants without impersonation, preserves per-kind
+settlement, keeps fair recovery available under hostile tenant exhaustion, and
+has no process-local queue dependency.
 `v0.30.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.30.2` — Cache Semantics And Hosted Adapter

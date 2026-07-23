@@ -47,8 +47,13 @@ machine-to-machine profiles. Review `private_key_jwt`/mTLS choice, workload
 token lifetime/audience/proof, exact sender-constraint profile, privileged
 workload requirements, any restricted-bearer action matrix, external issuer/
 key rotation and revocation, replay-cache limitations, authentication-assurance
-expiry/freshness at external-effect dispatch, and the separate local-agent
-enrollment profile. Confirm that Vitheim remains an
+expiry/freshness at interactive dispatch, assurance captured when an approval
+creates `ApprovedExecutionGrant`, current service-principal proof at automation
+dispatch, and the separate local-agent enrollment profile. Freeze the rule that
+a worker authenticates as itself and never impersonates an offline approver;
+normal approver-session expiry does not invalidate a valid grant, while the
+grant's exact current revocation/revalidation rules remain mandatory. Confirm
+that Vitheim remains an
 OAuth resource server, stores no client private credentials, exposes no token
 endpoint, and keeps personal access tokens/static API keys disabled.
 Goal: revalidate and freeze production authentication profiles independently of authorization.
@@ -57,13 +62,15 @@ WebAuthn RP/origin/challenge/credential rules, selected workload-auth profile,
 external-issuer trust and mapping rules, separate agent-enrollment rules,
 sender-constrained privileged profile, any lower-assurance restricted-bearer
 profile, explicit no-authorization-server/PAT/API-key/token-exchange
-disposition, and unsupported combinations. Any future Vitheim OAuth authorization server
+disposition, live-subject/service-principal/grant assurance mapping, and
+unsupported combinations. Any future Vitheim OAuth authorization server
 requires a new implementation milestone and cannot be selected here.
 Verification: protocol conformance, mix-up/replay/fixation/recovery, false
 sender constraint, proof/token substitution, bearer privilege escalation,
 first-use stolen bearer behavior, effect dispatch after credential/session/
-assurance expiry or revocation, key rotation, enumeration, and degraded-provider
-behavior are independently reviewed.
+assurance expiry or revocation, valid scheduled grant after approver-session
+expiry, offline-human impersonation, grant assurance substitution, key rotation,
+enumeration, and degraded-provider behavior are independently reviewed.
 Exit criteria: production auth never falls back to the `0.40.0` test profile.
 `v0.140.3 implementation stop reached. Run pentest for this exact commit.`
 
@@ -75,18 +82,21 @@ container isolation, host metering, egress proxy, update, sandbox operations,
 catalog/storefront trust, publisher admission, offline mirrors, rollout, and
 the invariant that plaintext credentials never enter Wasm guest memory. Freeze
 the broker profile that enforces immutable effect bindings, mandatory current
-dispatch authorization for high-risk capabilities, typed quota disposition, and
-denial of plugin access to control-plane reserve.
+dispatch authorization for high-risk capabilities, service-principal or exact
+approved-grant redemption, bounded typed quota claim sets and settlement, and
+denial of plugin access to control-plane emergency reserve.
 Goal: revalidate and freeze a bounded plugin profile with defense in depth.
 Deliverables: runtime/version pin, disabled default imports, worker identity,
 OS limits, egress/DNS/TLS policy, capability-handle, catalog/storefront trust,
 host-brokered authenticated HTTP/signing/token/certificate operations,
 publisher/mirror, permission-diff, connector-support, effect-dispatch gate,
-quota/recovery-reserve isolation, and upgrade decisions.
+grant/service-principal redemption, quota-claim/recovery-reserve isolation, and
+upgrade decisions.
 Verification: sandbox escape, metering bypass, host-call amplification, DNS
 rebinding, redirect, cross-plugin/tenant, guest-memory secret canaries, broker
 confused-deputy/target substitution, stale dispatch authority, quota/refund/
-reserve abuse, and cancellation evidence is reviewed.
+cross-kind settlement/reserve abuse, grant replay/impersonation, and cancellation
+evidence is reviewed.
 Exit criteria: cryptography is not claimed to enforce resource isolation.
 `v0.140.4 implementation stop reached. Run pentest for this exact commit.`
 
@@ -135,19 +145,24 @@ Status: planned.
 Setup: compare modular all-in-one, split services, single-node, HA, regional,
 orchestrator, package/image, authoritative-region, and recovery choices. Every
 profile must preserve the single-use dispatch-authorization gate, current
-policy/identity/delegation/tenant/target reads, quota transition atomicity, and
-strictly isolated reconciliation/security-cleanup capacity; topology may tune
-capacity and consistency implementation but may not omit these controls.
+policy/identity/delegation/tenant/target reads, typed execution-authority
+redemption, bounded multi-kind quota transition atomicity, and tenant/work-class
+partitioned fair reconciliation/security-cleanup capacity with a scoped
+emergency reserve; topology may tune capacity and consistency implementation
+but may not omit these controls.
 Goal: select the exact profiles Phase O must certify.
 Deliverables: support matrix, trust/network boundaries, fencing/quorum model,
 dispatch-authorization consistency/failure model, quota consumption/refund
-boundary mapping, recovery-reserve sizing/isolation, RPO/RTO, upgrade/rollback,
-observability, and operator responsibility decisions.
+and per-kind settlement mapping, grant-revalidation/revocation behavior,
+per-tenant/global fair-share and starvation policy, emergency-reserve sizing/
+isolation, RPO/RTO, upgrade/rollback, observability, and operator responsibility
+decisions.
 Verification: failure-mode analysis covers partitions, split brain, key/service
 loss, policy/delegation revocation during dispatch, stale/forged dispatch
-receipts, duplicate refunds, provider-outage tenant exhaustion, recovery-reserve
-starvation/borrowing, degraded dependencies, restore, capacity, and incident
-operations.
+receipts, grant replay/offline-human impersonation, duplicate refunds, cross-
+kind settlement, provider-outage tenant exhaustion, one-tenant unknown-outcome
+floods, per-tenant/global starvation, emergency-reserve borrowing, degraded
+dependencies, restore, capacity, and incident operations.
 Exit criteria: every `1.0.0` deployment claim maps to a Phase O test profile.
 `v0.140.6 implementation stop reached. Run pentest for this exact commit.`
 

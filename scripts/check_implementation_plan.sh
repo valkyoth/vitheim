@@ -77,20 +77,32 @@ require_text docs/implementation/PHASE_B.md \
 require_text docs/implementation/PHASE_B.md \
     '`ResolutionSource`:' 'resolution source'
 require_text docs/implementation/PHASE_B.md \
-    '`CommitAndDispatch` is the default.' \
+    'The default is `CommitAndDispatch`.' \
     'current dispatch authorization default'
 require_text docs/implementation/PHASE_B.md \
-    '`HeldPendingOutcome` continues to count' \
-    'unknown-outcome quota liability'
+    '`EffectExecutionAuthority`:' \
+    'typed delayed execution authority'
+require_text docs/implementation/PHASE_B.md \
+    'bounded `QuotaClaimSet`' \
+    'bounded multi-kind quota claims'
+require_text docs/implementation/PHASE_B.md \
+    '`ProviderRateToken`:' \
+    'provider-rate quota settlement'
 require_text docs/implementation/PHASE_D.md \
     'Every related derived surface receives an independent' \
     'independent derived-surface disposition'
+require_text docs/implementation/PHASE_E.md \
+    'approval-to-execution-grant command/receipt' \
+    'scheduled change execution grant'
 require_text docs/implementation/PHASE_G.md \
     'network-call-in-transaction rejection, crash points' \
     'Phase G network/crash verification'
 require_text docs/implementation/PHASE_G.md \
     'original-to-compensation linkage' \
     'complete compensation deliverables'
+require_text docs/implementation/PHASE_G.md \
+    'A timer supplies time and wakeup only: it cannot create authority.' \
+    'timer cannot create authority'
 
 if [ "$failed" -ne 0 ]; then
     exit 1

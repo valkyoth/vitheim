@@ -52,18 +52,27 @@ audit decision.
   provider truth; unknown privileged or non-compensable work is never retried
   blindly. Effect intent always requires commit-time authorization and binds
   tenant, initiator, delegation, capability, target, purpose, request, policy,
-  and authentication assurance. Reviewed low-risk immutable effects may be
-  `CommitBound`; privileged, destructive, secret-bearing, containment, and
-  compensation effects are `CommitAndDispatch` and require a current fenced
-  single-use dispatch authorization. Workers and leases confer no business
-  authority, and binding substitution is forbidden.
-- Durable quota states declare admission/dispatch consumption, keep unknown
-  provider outcomes charged/held, permit exactly one evidence-bound refund or
-  release for pre-dispatch cancellation or definitely-not-accepted proof, and
-  account compensation separately. Manual assessment cannot mint refund
-  evidence. Audited, strictly scoped control-plane reserves keep reconciliation
-  and security cleanup available under tenant exhaustion and cannot serve new
-  tenant work.
+  authentication assurance, and typed live-subject, approved-grant, or service-
+  principal execution authority. Approved grants bind exact effect/request/
+  target/version, purpose, approvers/quorum/separation, assurance at approval,
+  window, attempts, policy, and revocation. Workers authenticate as themselves
+  and never impersonate offline humans. Reviewed low-risk immutable effects may
+  be `CommitBound`; privileged, destructive, secret-bearing, containment, and
+  compensation effects are `CommitAndDispatch` and require fenced single-use
+  authority redemption. Session expiry alone does not invalidate a grant;
+  revocation, target drift, tenant suspension, grant exhaustion, and required
+  approver/policy revalidation fail closed. Workers and leases confer no
+  business authority, and binding substitution is forbidden.
+- Durable quota accounting uses a bounded atomic claim set with typed
+  concurrency, consumable-operation, provider-rate, estimated-liability, and
+  retained-byte settlement. Only provider-dependent claims hold for unknown
+  outcomes; concurrency releases with its lease, rate tokens become
+  non-refundable at transmission, liabilities reconcile to actual cost or a
+  distinct audited write-off, and byte claims follow local allocation/deletion.
+  Refunds are evidence-bound and exactly once; manual assessment cannot mint
+  provider evidence; compensation has separate claims. Per-tenant/work-class
+  ceilings, fair share, starvation bounds, and a scoped emergency reserve keep
+  recovery available without tenant borrowing or monopolization.
 - Capability-limited plugins and integrations; opaque secret handles and
   host-brokered authenticated operations; plaintext credentials never enter
   Wasm guest memory.

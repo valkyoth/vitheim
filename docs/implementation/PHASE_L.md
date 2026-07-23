@@ -25,32 +25,38 @@ ambient authority. `v0.112.0 implementation stop reached. Run pentest for this e
 Status: planned. Setup: capability calls, stable `EffectId`/request digest,
 commit-time authorization, immutable tenant/initiator/delegation/capability/
 target/purpose/request/policy/assurance bindings, declared authorization
-freshness, current dispatch authorization where required, provider idempotency-
+freshness, exact live-subject/approved-grant/service-principal execution
+authority, current redemption where required, provider idempotency-
 key scope/retention, status-query and reconciliation support, retry/replay
-horizon, compensation, privilege/non-compensability, quota disposition, and
-audit. Each capability maps exactly onto the `0.18.2`
+horizon, compensation, privilege/non-compensability, bounded typed quota-claim
+settlement, and audit. Each capability maps exactly onto the `0.18.2`
 execution state, remote outcome, resolution source/evidence, operational
 resolution workflow, and separate compensation state; plugins cannot select a
 stronger capability, synthesize provider evidence, close a privileged manual
 workflow, reinterpret `OutcomeUnknown`, downgrade `CommitAndDispatch`, reuse
-another effect's quota reservation, or spend control-plane reserve. Goal:
+another effect's quota claims, confuse settlement kinds, impersonate an offline
+approver, or spend control-plane emergency reserve. Goal:
 controlled hosted extension
 effects with truthful remote outcomes. Deliverables: host-call broker, typed
 effect-capability descriptors, distinct lifecycle/outcome/resolution/
 compensation receipts, reconciliation deadline/escalation boundary, and
 authorized manual-resolution boundary; single-use dispatch-authorization
-receipts and quota hold/refund/compensation accounting integration.
+receipts, grant/service-principal redemption, and per-kind quota settlement/
+compensation accounting integration.
 Verification: unauthorized calls, replay, commit-to-dispatch revocation,
 forged/stale dispatch receipt, worker/plugin confused deputy, cross-tenant
 handles, target/request-digest substitution, unsafe freshness downgrade,
+grant replay/attempt exhaustion/target drift, offline-human impersonation,
 provider acceptance plus lost response, idempotency expiry, forged success/
 resolution source, operator assessment presented as provider truth, late
 callback versus manual resolution, forbidden blind retry, privileged resolver
-impersonation, unknown-outcome refund, duplicate refund, compensation quota
-reuse, control-plane-reserve access, and partial failure pass. Exit criteria:
+impersonation, mixed claim-set split, cross-kind hold/refund/write-off confusion,
+duplicate refund, compensation claim reuse, control-plane-reserve access, and
+partial failure pass. Exit criteria:
 every effect passes independent commit-time and declared dispatch-time policy;
-its exact binding, execution, provider truth, knowledge source, operational
-disposition, quota state, and compensation remain independently attributable.
+its exact binding/authority, execution, provider truth, knowledge source,
+operational disposition, per-kind quota state, and compensation remain
+independently attributable.
 `v0.113.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.114.0` — Capability And Secret Handles
