@@ -10,7 +10,10 @@ manifest-digest mismatch are release blockers. Any Phase O status transition
 resolves its proposal in the same commit.
 
 ## `0.141.0` — Single-Node Production Packaging
-Status: planned. Setup: supported OS/arch, packages/images, users/paths,
+Status: planned.
+<!-- vitheim-invariant VIT-INV-060 0.141.0 -->
+
+Setup: supported OS/arch, packages/images, users/paths,
 permissions, secure defaults, upgrades, compiled
 `PlatformSafetyFloorProfile` identity/version/digest, and durable admitted
 fully typed `PlatformSafetyFloorKey` high-watermarks plus total key-migration
@@ -44,10 +47,23 @@ enforcement/negative, storage-capability, test, recovery, and owner-fence
 contracts. Every law has one declaration, definition/lifecycle row, versioned
 dependency/recovery contracts, proof fence, and resolved contributor placement.
 Both registries prove supersession/mixed-version/migration/rollback behavior.
+Before any split-service or HA topology is legal, perform the one-time
+artifact-authorized handoff from `CompiledStaticPlacementTopologyV1` to
+`VIT-INV-060 PlacementTopologyGenerationState`. Persist one
+`PlacementTopologyGenerationRow` for the deployment with expected-version CAS,
+the complete sorted singleton membership manifest/digest, monotonic topology
+and member placement generations, predecessor fences, permanent tombstones,
+and transactional fence outbox. The rollout root is a reader: it accepts an
+authenticated `CurrentPlacementTopologyReceiptV1` and cannot issue membership,
+generation, or fence authority. Activate and realize `VIT-LAW-008@g02` only
+after the topology handoff is verified. Package startup rejects a dynamic
+membership request while only the compiled bootstrap exists.
 Goal: hardened repeatable single-node install.
 Deliverables: signed packages, startup floor-profile compatibility gate,
 active-evaluator binary/corpus/language compatibility gate, governed higher-
-floor and key-set migration/drain tooling, and runbook.
+floor and key-set migration/drain tooling, topology bootstrap/handoff tool,
+`VIT-CAP-060` persistence probe, generation-2 law realization/catalog artifact,
+and runbook.
 Verification: clean
 install, permissions, rootless/non-root, secrets, restart, rolling upgrade,
 downgrade/rollback to a lower compiled floor, lower-default release, conflicting
@@ -68,9 +84,13 @@ borrowing, cleared quarantine/old-work revival,
 remediation-lineage merge, self-approved/circular recovery, lost channel/KMS/
 quorum/exercise state, stale recovery epoch, or lost manual-only limitation,
 credential-operation-profile mismatch,
-and restore pass. Exit criteria: the
+forged/mutable topology bootstrap, rollout-authored generation, expected-version
+race, missing member/fence/tombstone, older-topology restore, discovery treated
+as authority, and restore pass. Exit criteria: the
 documented profile is operable securely and no package change can start below or
-lower the durable admitted platform-floor ratchet. `v0.141.0 implementation stop
+lower the durable admitted platform-floor ratchet; no split deployment starts
+without exactly one current `VIT-INV-060` owner and verified
+`VIT-LAW-008@g02`. `v0.141.0 implementation stop
 reached. Run pentest for this exact commit.`
 
 ## `0.142.0` — Split Service Deployments
@@ -80,10 +100,15 @@ version compatibility, and the immutable authenticated
 `TransmissionInstruction`/status protocol. Allocate one canonical catalog
 owner key to every law-enforcing API/worker/ingest/executor placement:
 deployment, region, service role, enforcement partition, and placement
-generation. Bind its non-clonable workload identity, boot/continuity ID,
+generation only through typed `VIT-INV-060` join/leave/move/replace/service-
+role/split/merge successor commands. Discovery and orchestrator observations
+cannot allocate a key. Bind its selected `WorkloadIdentityProofProfileV1`,
+issuer/subject/audience, key thumbprint/attestation, issuance/expiry/revocation,
+single-active lease/fence where required, boot/continuity ID,
 binary-capability digest, semantic-set digest, local fence, and catalog
 ratchets. Route rollout prepare/activation/revocation through transactional
-outbox/inbox and return exact identity-bound receipts to the separate rollout
+outbox/inbox and return canonically authenticated, exact identity-bound
+receipts—not bare receipt digests—to the separate rollout
 root. Replacement, autoscaling identity reuse, disk/VM/pod clone, service-role
 change, and region move fence the predecessor generation and require a fresh
 global rollout receipt; copied storage never creates readiness. The executor owns both
@@ -125,7 +150,9 @@ operation/TCB profile, bearer-memory canaries, profile lifecycle/approval/
 tombstone routing, rotation reconciler/evidence/deadline ownership, capability-
 snapshot observer/freshness ownership, status/reconciliation protocol, no-
 permit-transport evidence, evaluator/quarantine/remediation owner-routing and
-readiness evidence, and service runbook. Verification: service/executor
+readiness evidence, topology successor/fence/tombstone routing,
+workload-identity issuance/renewal/rotation/revocation/clone-detection evidence,
+receipt-authentication evidence, and service runbook. Verification: service/executor
 impersonation, confused deputy,
 network bypass, instruction replay/substitution, duplicate RPC, claim-response
 loss, executor failover/stale process/compromise, socket/claim ownership split,
@@ -143,7 +170,12 @@ executor readiness, unsafe quarantine clear/old-work revival, remediation
 authority in executor or business path,
 stale instruction/restored handle, epoch rollback, signing/mTLS key export,
 bearer escape, caller-owned claim/socket, and HTTP/TLS/redirect/log/diagnostic/
-crash memory-canary failure. Exit criteria:
+crash memory-canary failure. Also clone disk-held mTLS material, race
+simultaneous identity use and lease renewal, substitute issuer/subject/audience/
+key/attestation/placement fields, forge a receipt digest without its
+workload-bound authenticator, replay an attested channel transcript, mutate
+topology through discovery, and race every topology successor command with
+prepare/convergence. Exit criteria:
 split mode preserves modular semantics, moves only
 instructions/status across services, and routes every ambiguous claimed start
 to reconciliation; executor compromise remains bounded to the admitted provider
@@ -214,9 +246,12 @@ capacity.
 Catalog HA is the `VIT-LAW-008` process manager, not a quorum write or
 distributed transaction. Exercise immutable topology/placement manifests,
 `Candidate`, `Preparing`, `GloballyActivated`, `Converging`, `Completed`,
-`Blocked`, `Revoked`, and `Abandoned`; prepare and convergence receipt
+`Blocked`, `Revoked`, `Abandoned`, and `Superseded`; monotonic per-lineage
+`ActiveRolloutGeneration`; authenticated prepare and convergence receipt
 uniqueness; activation-authorization consumption by the global CAS; and
-deadline reconciliation. The selected baseline is `AllRequired`. Any approved
+deadline reconciliation. `VIT-INV-060`, not rollout or discovery, owns current
+topology generation, placement successors, fences, and tombstones. The selected
+baseline is `AllRequired`. Any approved
 quorum must durably fence every unprepared placement first. Join, leave,
 replacement, split/merge, region movement, and topology-generation change
 block the affected manifest and create a successor. Emergency distrust advances
@@ -242,11 +277,16 @@ lineage/audit/epoch/cleanup-quota/manual-limit evidence, cancellation-recovery/d
 evidence,
 fair-capacity evidence, and runbooks.
 Include catalog rollout-root/global-lineage/local-owner placement, immutable
-manifest, outbox/inbox, receipt, topology-generation, non-clonable identity,
+manifest, outbox/inbox, authenticated receipt, independent topology-generation
+owner, active-rollout generation, superseded tombstone, typed workload-
+identity proof,
 fence, convergence, revocation, and recovery evidence.
 Verification: crash and fail over before/after every catalog manifest/prepare/
 receipt/authorization/global-CAS/activation/convergence/finalize/revoke step;
-race topology change and replacement; clone every local identity/storage form;
+race two prepared rollout candidates, lose both global-CAS responses, restart
+both coordinators, and prove one winner plus a permanently fenced
+`Superseded` loser; race every topology command and replacement; clone every
+local identity/storage form and its transport credentials;
 inject missing/duplicate/reordered/contradictory receipts; isolate a placement
 during activation and emergency distrust; then reconcile without invented
 completion. Also test partitions, clock skew, stale leader/fence,
@@ -366,7 +406,11 @@ bounded recovery.
 Status: planned. Setup: tenant authoritative region, one authoritative write
 region per transaction domain, allowed read/DR replicas, fenced failover,
 policy labels, failover approval, encryption/keys, and every `0.51.2`
-registered surface including external copies. Active/active authoritative
+registered surface including external copies. A regional move is a typed
+`VIT-INV-060` complete topology successor: it increments topology/member
+placement generations, tombstones the old regional placement, emits its fence,
+and blocks any rollout bound to the predecessor. Residency discovery or a
+rollout receipt cannot make a region current. Active/active authoritative
 multi-region writes are unsupported for `1.0.0`. Goal: enforce data residency
 without implying distributed work transactions. Deliverables: placement engine,
 transaction-domain map, incompatible-capability rejection, zero-unmapped-
@@ -395,7 +439,9 @@ crypto-erasure consequences, external checkpoint anchors and drills. Bind each
 backup/checkpoint to the `VIT-INV-057` global lineage/revocation/emergency-
 distrust separately from every `VIT-INV-058` local catalog/distrust/time
 ratchet and the `VIT-INV-059` rollout root/state/immutable topology-placement
-manifest/outbox/inbox/receipts/deadlines; the active catalog ID/epoch,
+manifest/outbox/inbox/receipts/deadlines; and the independent `VIT-INV-060`
+topology owner/current generation/canonical membership digest/member placement
+generations/fences/tombstones/fence outbox; the active catalog ID/epoch,
 recomputed payload/envelope and actual
 predecessor digests, exact profile, activation floor, product/edition/
 compatibility scope, validity policy/times/maximum uncertainty, signer/key/
@@ -404,7 +450,10 @@ effective tuple in its predecessor closures; and the selected semantic-
 realization set. Restore invokes the shared project verifier and reacquires
 trustworthy time before readiness. It merges the greatest externally retained
 local ratchets and expiry tombstone, so an older backup cannot extend a bounded
-window. A restored local row is non-authoritative until the current placement
+window. It separately restores the greatest externally evidenced topology and
+member placement generations, replays topology fence delivery, and treats
+older rows/tombstoned members as historical evidence only. A restored local row
+is non-authoritative until the current placement
 generation fences its predecessor and a fresh workload/boot identity obtains a
 new verified global/rollout receipt. A clone cannot inherit a convergence
 receipt, and recovery cannot invent rollout completion. Missing time or
@@ -479,7 +528,11 @@ state, recovers the greatest distrust/high-watermark state, rejects future
 planning tuples and self-consistent manifests outside the milestone-scoped
 active set, enumerates every ancestor rather than trusting only `@gNN`, and
 fails on an ambiguous profile, envelope-field mismatch, or unknown/missing
-semantic realization.
+semantic realization. It also revalidates the current authenticated topology
+receipt and workload/receipt assurance profile; an older topology generation,
+missing tombstone/fence, stale active rollout generation, late superseded
+message, exported identity key, expired lease, or unauthenticated digest keeps
+the restored placement unready.
 Exit criteria: claimed RPO/RTO is demonstrated; recovery neither retains data
 past a controlling mandatory deletion obligation nor promotes an unverified
 rollup to authority; grant revocation/supersession cannot be resurrected; quota

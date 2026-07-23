@@ -85,8 +85,16 @@ catalog/distrust/trusted-time ratchets. `VIT-LAW-007` composes both with
 platform safety-floor, dispatch, and transmission-start roots.
 `VIT-INV-059`/`VIT-LAW-008` add a separate durable rollout process manager:
 immutable topology/placement manifests, closed prepare/activate/converge/
-complete/block/revoke/abandon states, transactional outbox/inbox delivery, and
-identity/fence-bound receipts without a distributed transaction. Every
+complete/block/revoke/abandon/supersede states, one monotonic active rollout
+generation per lineage, transactional outbox/inbox delivery, and authenticated
+identity/fence-bound receipts without a distributed transaction. `0.18.3`
+permits only the compiled immutable single-placement topology; `0.141.0`
+introduces independent `VIT-INV-060` current-topology authority and
+`VIT-LAW-008@g02` before split-service deployment. Rollout consumes topology
+receipts and cannot create membership or fences. `0.140.1` selects a typed
+hardware-attested or orchestrator-attested single-active-lease workload-
+identity proof and receipt-authentication profile; a disk key or digest is not
+authority. Every
 artifact is canonically decoded and cryptographically verified by one project-
 owned core shared by runtime and release CLI. No clone, startup, restore,
 migration, failover, import, law activation, dispatch, or transmission start

@@ -132,6 +132,22 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
                 esac
             done
             ;;
+        VIT-LAW-008@g01)
+            for symbol in ActiveRolloutGeneration CatalogReceiptAuthenticationV1 Superseded; do
+                case "$transitions" in
+                    *"\`$symbol\`"*) ;;
+                    *) fail "$semantic omits catalog rollout symbol $symbol" ;;
+                esac
+            done
+            ;;
+        VIT-LAW-008@g02)
+            for symbol in CurrentPlacementTopologyReceiptV1 FencePlacementGeneration CatalogTopologyChanged; do
+                case "$transitions" in
+                    *"\`$symbol\`"*) ;;
+                    *) fail "$semantic omits topology rollout symbol $symbol" ;;
+                esac
+            done
+            ;;
     esac
 
     gate_version=$(awk -v effective="$effective" '

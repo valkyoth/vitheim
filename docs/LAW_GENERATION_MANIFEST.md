@@ -99,8 +99,9 @@ released meaning requires a successor generation, not an in-place edit.
   verification, strict field/parser and composite-structure checks, global
   `VIT-INV-057` catalog lineage, separate `VIT-INV-058` local
   identity/catalog/distrust/trusted-time ratchets, `VIT-INV-059` durable
-  rollout process manager and `VIT-LAW-008`, immutable placement manifests and
-  receipt-bound state, planning/active separation, gap-free activation-floor
+  serialized rollout process manager and `VIT-LAW-008@g01`, compiled static
+  singleton placement, authenticated receipt-bound state, planning/active
+  separation, gap-free activation-floor
   selection, fully bound payload/envelope, one runtime/CLI cryptographic
   verifier, closed stage-aware P/N/M/F semantic-realization registry, and
   in-memory round-trip/golden fixtures.
@@ -119,6 +120,9 @@ released meaning requires a successor generation, not an in-place edit.
   generation-qualified manifests.
 - `0.140.1–0.140.6`: freeze digest, storage, identity, deployment, HA, and
   recovery profiles.
+- `0.141.0`: hand the compiled singleton to independent
+  `VIT-INV-060` topology authority and activate `VIT-LAW-008@g02`, whose
+  rollout manifests consume authenticated current-topology receipts.
 - `0.141.0–1.0.0`: restore, failover, compatibility, release evidence, and
   pentest reports prove manifest/digest continuity with no future-generation
   claim.

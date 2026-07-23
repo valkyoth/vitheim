@@ -20,9 +20,11 @@ ID exhaustively resolves to compiled Rust transitions, typed outcomes, recovery
 logic, and concrete P/N/M/F tests. No unknown, prose-interpreted, or unresolved
 realization ships.
 The planning superset is absent from runtime authority. `VIT-INV-057` has one
-evidenced global owner; `VIT-INV-059` has one durable rollout-root owner; every
+evidenced global owner; `VIT-INV-059` has one durable rollout-root owner;
+`VIT-INV-060` has one independent current topology-generation owner; every
 local `VIT-INV-058` is exactly one enforcement-partition placement generation
-with non-clonable workload/boot identity, binary/semantic digests, and fencing.
+with the selected attested/fenced workload proof, authenticated receipts,
+boot identity, binary/semantic digests, and fencing.
 `VIT-LAW-007` proves admission composition and `VIT-LAW-008` proves the
 manifest/prepare/global-activation/convergence/revocation process manager.
 Every
@@ -33,9 +35,12 @@ revocation, and successor envelope, and remains applicable only until explicit
 successor activation. The project-owned verifier used by runtime and release
 tooling canonically decodes and cryptographically proves every shipped
 artifact. The complete implementation ladder has exactly one applicable
-catalog per milestone. Every rollout has one immutable topology/placement
-manifest, legal closed state, transactional messages, exact identity-bound
-receipts, bounded reconciliation, and no distributed-transaction claim.
+catalog per milestone. Every rollout has one monotonic active generation, one
+immutable topology/placement manifest read from topology authority, legal
+closed state including permanent losing `Superseded`, transactional messages,
+exact workload-authenticated identity-bound receipts, bounded reconciliation,
+and no distributed-transaction claim. Rollout/discovery cannot create
+topology, and restore cannot resurrect a placement tombstone.
 
 Goal: release the first production-supported Vitheim platform with claims no
 broader than its evidence.
@@ -433,10 +438,15 @@ Verification:
   The report proves the planning superset was never loaded as runtime
   authority, every global active-catalog transition was owned/CAS-fenced, every
   local admission was independently identity/fence-bound and ratcheted, and
-  every rollout root preserved its immutable placement generation, legal state,
-  outbox/inbox, prepare/activation/convergence/revocation receipts, deadlines,
-  and reconciliation. Cloned disks/VMs/pods/partitions and replacement/region-
-  moved predecessor identities never inherit admission. Each artifact passed the
+  every topology change had one expected-version owner/complete successor/
+  fence/tombstone, and every rollout root preserved its active generation,
+  immutable placement generation, legal state including losing-candidate
+  supersession, outbox/inbox, authenticated prepare/activation/convergence/
+  revocation receipts, deadlines, and reconciliation. Competing coordinator
+  recovery proves one winner and rejects all late loser messages. Cloned
+  disks/VMs/pods/partitions/transport keys and replacement/region-moved
+  predecessor identities never inherit admission. A receipt digest alone never
+  authenticates authority. Each artifact passed the
   shared canonical verifier for digest, ancestry, actual predecessor, profile,
   signature/compiled trust, and exact build scope. `BoundedWindow` evidence
   proves admitted time/uncertainty, rollback/suspend behavior, expiry tombstone,
@@ -464,9 +474,11 @@ noncanonical manifest, digest mismatch, untrusted catalog tuple, incomplete
 ancestry, future active tuple, planning/active confusion, global/local owner
 collision, coverage gap/overlap, text-only or cryptographically unverified
 artifact, wrong predecessor/scope/profile, rollbackable catalog/time ratchet,
-expiry extension, mutable rollout membership, illegal rollout state, missing/
-contradictory receipt, unfenced quorum, cloned local identity, invented
-convergence, incomplete envelope, or unknown/unrealized semantic contract, the
+expiry extension, mutable or rollout-authored topology, topology-generation or
+tombstone rollback, illegal rollout state, concurrent nonterminal rollout,
+late superseded authorization, missing/contradictory/unauthenticated receipt,
+unfenced quorum, cloned local identity/key/lease, invented convergence,
+incomplete envelope, or unknown/unrealized semantic contract, the
 final exact commit and artifacts pass the final independent pentest, stop for
 explicit maintainer authorization before creating `v1.0.0`; publishing crates
 remains forbidden except for a separately approved SDK. `v1.0.0 implementation

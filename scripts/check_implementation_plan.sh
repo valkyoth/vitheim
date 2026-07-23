@@ -232,6 +232,18 @@ require_text docs/LAW_ACTIVE_CATALOGS.md \
 require_text docs/LAW_ACTIVE_CATALOGS.md \
     '## Durable Distributed Rollout' \
     'durable distributed catalog rollout protocol'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '### Workload Identity And Receipt Assurance' \
+    'executable workload identity and receipt assurance'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '## Placement Topology Authority' \
+    'independent placement topology authority'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    'monotonic `ActiveRolloutGeneration`' \
+    'serialized catalog rollout generation'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '`Superseded` is the permanent losing-candidate state' \
+    'permanent competing-rollout loser state'
 require_text docs/implementation/PHASE_B.md \
     '<!-- vitheim-invariant VIT-INV-057 0.18.3 -->' \
     'owned global active law catalog lineage'
@@ -247,6 +259,9 @@ require_text docs/implementation/PHASE_B.md \
 require_text docs/implementation/PHASE_B.md \
     '<!-- vitheim-law VIT-LAW-008 0.18.3 -->' \
     'catalog rollout composite law'
+require_text docs/implementation/PHASE_O.md \
+    '<!-- vitheim-invariant VIT-INV-060 0.141.0 -->' \
+    'independent dynamic placement topology owner'
 require_text docs/LAW_SEMANTIC_REALIZATIONS.md \
     '# Law Semantic Realization Registry' \
     'executable law semantic realization registry'

@@ -1926,6 +1926,17 @@ replacement workload cannot inherit authority. Replacement and region movement
 advance placement generation, fence the predecessor, and require fresh
 identity plus a new verified rollout receipt. Neither owner may update the
 other's row.
+Define the closed `WorkloadIdentityProofProfileV1` and
+`CatalogReceiptAuthenticationV1` contracts now; `0.140.1` selects the
+production mechanism. The identity contract binds issuer, subject, audience,
+owner key, public-key thumbprint, attestation policy/version, issue/expiry/
+revocation, and either a non-exportable hardware-attested key or a key-bound
+short-lived orchestrator identity with one single-active lease/fence and
+simultaneous-use detection. Prepare, convergence, revocation, and topology
+receipts authenticate their canonical bytes with that workload-bound profile
+or an equivalently protected attested channel plus durable trusted admission.
+A bare digest, ordinary disk-held mTLS key, bearer token, hostname, or observed
+pod/VM identity is neither identity nor receipt authority.
 `VIT-LAW-007` connects both owners to the platform safety-floor, dispatch-
 receipt, and transmission-start roots. Startup, restore, migration, failover,
 import, readiness, law activation, dispatch, and transmission start bind and
@@ -1934,7 +1945,13 @@ Recovery obtains global trust only from compiled artifact provenance or a
 separately authenticated dedicated platform-law signature root, then merges
 the greatest local ratchets; database content can never reconstruct trust.
 The first reviewed `CompiledCatalog` and `VIT-LAW-007@g01` realization seed the
-global and local rows from artifact provenance. They also seed the empty
+global and local rows from artifact provenance. The same artifact contains
+`CompiledStaticPlacementTopologyV1`: exactly one immutable generation-one
+deployment/region/service-role/enforcement-partition placement. Dynamic join,
+leave, move, replacement, split/merge, role change, and autoscaling identity
+reuse are unsupported and fail closed until the one-time `0.141.0`
+`VIT-INV-060` handoff. Rollout may consume the compiled topology but cannot
+mutate it. The artifact also seeds the empty
 `VIT-INV-059` rollout root and compiled `VIT-LAW-008@g01` realization; only
 successors use the established protocol, avoiding self-admission from mutable
 state.
@@ -1944,9 +1961,13 @@ Implement the durable catalog rollout described in
 transaction. `LawCatalogRolloutId` and an immutable, digested catalog/placement
 manifest bind topology generation, every required canonical local owner,
 catalog/predecessor, capability/semantic requirements, owner fences, activation
-policy, and deadlines. The closed states are `Candidate`, `Preparing`,
+policy, and deadlines. Each catalog lineage owns one monotonic
+`ActiveRolloutGeneration`; candidate creation claims the next generation by
+expected-version CAS and permits at most one current nonterminal rollout. The
+closed states are `Candidate`, `Preparing`,
 `GloballyActivated`, `Converging`, `Completed`, `Blocked`, `Revoked`, and
-`Abandoned`. Transactional outbox/inbox delivery carries prepare, global
+`Abandoned`, plus terminal losing-candidate state `Superseded`. Transactional
+outbox/inbox delivery carries prepare, global
 activation, convergence, revocation, and reconciliation messages.
 
 Each `CatalogPrepareReceipt` binds rollout/manifest, canonical owner key,
@@ -1958,13 +1979,19 @@ consumes that authorization in its separate CAS. Completion then requires
 every convergence receipt. A topology join/leave/replace/move/split/merge
 blocks the affected rollout and requires a newly sealed manifest generation.
 Deadline escalation and reconciliation retain missing or contradictory
-receipts visibly. Abandonment is pre-activation only.
+receipts visibly. Abandonment is explicit pre-activation cancellation only.
+Pre-activation supersession atomically advances `ActiveRolloutGeneration` and
+tombstones the loser; a globally activated/converging rollout must complete or
+be revoked. Global and local owners permanently reject late receipts and
+activation authorization from a non-current or `Superseded` generation.
 
 Revocation and emergency distrust bypass normal preparation: global distrust
 advances first, high-priority outbox/inbox delivery ratchets connected local
 owners, and an unreachable/stale partition fails its current-global-authority
 recheck and becomes unready. Recovery replays messages/receipts and re-reads
-all three owner classes. It cannot infer completion. A future `FencedQuorum`
+global, rollout, and local owners plus the compiled topology source. It
+reconciles competing candidates to one winner and permanent loser tombstones
+and cannot infer completion. A future `FencedQuorum`
 profile is unsupported unless `0.140.6` proves every unprepared placement is
 durably fenced before activation.
 
@@ -1992,9 +2019,10 @@ names cannot satisfy it. Every law-effective milestone creates the next
 immutable catalog in the checked schedule.
 Checkpoint and backup binding is completed at `0.19.0` and `0.145.0`; exact
 profile, time source, and maximum uncertainty are frozen before production at
-`0.140.1`, separate global/rollout/local storage at `0.140.2`, and HA rollout
-policy, topology evolution, revocation propagation, time loss, and recovery at
-`0.140.6`.
+`0.140.1`, separate global/rollout/future-topology/local storage at `0.140.2`,
+and HA rollout policy, topology evolution, revocation propagation, time loss,
+and recovery at `0.140.6`. `0.141.0` introduces the independently owned dynamic
+topology root and `VIT-LAW-008@g02` before any split-service deployment.
 
 Implement the closed `LawSemanticId` enum and exhaustive
 `LawSemanticRealization` dispatch table from
@@ -2202,10 +2230,16 @@ global and exact local owners. Exercise every state and crash boundary:
 manifest seal, prepare-outbox commit, local prepare receipt, root admission,
 activation authorization, global CAS/receipt, convergence delivery/receipt,
 completion, block/reconcile, pre-activation abandon, revocation, and response
-loss. Race each boundary with join, leave, replacement, region move, topology
-generation, global/local/rollout failover, and restore. Test unreachable
+loss. Race two candidates through preparation and global CAS, lose both
+responses, restart both coordinators, and require exactly one winner while the
+loser becomes permanently `Superseded`; reject every late losing receipt and
+authorization. Because the bootstrap topology is static, join, leave,
+replacement, region move, and topology mutation requests fail closed here;
+dynamic versions are exercised after `VIT-INV-060` at `0.141.0`. Race every
+boundary with global/local/rollout failover and restore. Test unreachable
 placements, stale local catalog/distrust/time/fence state, cloned owner
-identity, binary/semantic mismatch, activation followed by revocation, and
+identity, forged receipt digest or transport transcript, binary/semantic
+mismatch, activation followed by revocation, and
 revocation propagation/reconciliation after reconnection. A placement lacking
 the exact current identity-bound admission remains unready for affected
 dispatch and transmission start; platform version and copied storage confer no

@@ -38,10 +38,13 @@ audit decision.
 - Law-manifest trust independent from mutable storage: exact admitted
   `(LawId, Generation, Digest)` tuples, compiled or dedicated-platform-law
   signed activation-floor catalogs, planning-superset separation, one global
-  lineage, one rollout-root process manager, and exact non-clonable local
-  placement owners with catalog/distrust/trusted-time fences; immutable
-  topology/placement manifests; transactional prepare/activation/convergence/
-  revocation delivery and identity-bound receipts; expected-version explicit
+  lineage, one rollout-root process manager, one independent dynamic-topology
+  generation owner, and exact attested/fenced local placement owners with
+  catalog/distrust/trusted-time fences; compiled static bootstrap and immutable
+  successor topology/placement manifests; one active rollout generation with
+  permanent loser supersession; transactional prepare/activation/convergence/
+  revocation delivery and workload-authenticated receipts rather than digest
+  authority; expected-version explicit
   succession; gap-free milestone selection; shared runtime/CLI canonical
   cryptographic verification; complete scope/validity/uncertainty/signer/root/
   revocation/successor binding; catalog-bound checkpoint/backup/restore

@@ -43,7 +43,16 @@ owners are exact enforcement-partition placement generations and maintain
 identity-fence/catalog/distrust/trusted-time ratchets. A third owner runs the
 durable catalog rollout process manager over immutable placement manifests,
 transactional messages, and prepare/convergence receipts; it coordinates but
-never turns the operation into a distributed transaction. One project-owned
+never turns the operation into a distributed transaction or topology
+authority. The bootstrap topology is a compiled immutable singleton.
+`VIT-INV-060` later becomes the sole dynamic topology-generation owner with
+expected-version successor manifests, monotonic member placement generations,
+fences, and tombstones; rollout generation 2 consumes its authenticated
+snapshot. Each catalog lineage has one monotonic active rollout generation and
+permanent `Superseded` loser state. Workload identity is an executable
+hardware-attested or orchestrator-attested single-active-lease profile, and
+canonical receipts require workload-bound authentication—a disk key, digest,
+or transport transcript is not authority. One project-owned
 canonical verifier serves runtime and release tooling. Stored manifests,
 cloned runtimes, field-shaped text, untrusted clocks, and database
 administrators cannot extend or reconstruct that authority.

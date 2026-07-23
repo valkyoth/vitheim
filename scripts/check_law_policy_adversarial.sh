@@ -175,6 +175,12 @@ expect_realization_failure "a missing semantic realization"
 sed -i 's/, `OutcomeUnknown`//g' "$realizations"
 expect_realization_failure "a missing typed transmission outcome"
 
+sed -i 's/, `Superseded`//' "$realizations"
+expect_realization_failure "a missing catalog-rollout loser state"
+
+sed -i 's/`CurrentPlacementTopologyReceiptV1`, //' "$realizations"
+expect_realization_failure "a missing topology-authority receipt"
+
 sed -i 's/, VIT-LST-001-g01-N//' "$realizations"
 expect_realization_failure "a missing negative semantic contract"
 
@@ -189,6 +195,9 @@ expect_active_catalog_failure "an incomplete effective law frontier"
 
 sed -i '/^| 1 |/s/, VIT-LAW-008@g01//' "$active_catalogs"
 expect_active_catalog_failure "a missing catalog-rollout law frontier"
+
+sed -i '/^| 12 |/s/VIT-LAW-008@g02/VIT-LAW-008@g01/' "$active_catalogs"
+expect_active_catalog_failure "a stale pre-topology rollout generation"
 
 sed -i '/^| 2 | VIT-LAWCAT-ACTIVE-/d' "$active_catalogs"
 expect_active_catalog_failure "a skipped catalog successor"

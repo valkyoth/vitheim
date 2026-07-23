@@ -17,7 +17,8 @@ runtime trust. Active catalogs use exactly one profile enum:
 is a design choice description and is never serialized as an active profile.
 `VIT-INV-057` owns global proposal, activation, succession, revocation,
 emergency distrust, and active epoch/digest. `VIT-INV-058` separately owns each
-local catalog/distrust/trusted-time ratchet.
+local catalog/distrust/trusted-time ratchet. `VIT-INV-059` owns rollout proof
+state, while dynamic topology is later owned only by `VIT-INV-060`.
 
 Database access alone must never authorize either profile. Startup, adapter
 admission, migration, restore, failover, import, and recovery reject a
@@ -32,7 +33,7 @@ Planning catalog revision: `1`
 
 Trust profile: `planning-superset-not-runtime-v1`
 
-Planning catalog digest: `sha256:9655221e3fd6ad24a0d30baed76ef306abb4365b59db70b4b5c7b2591da1b129`
+Planning catalog digest: `sha256:dde9f5f419f8ff218cfa32f21f0f66e8908552c627af27a94648051ae62e1e9c`
 
 The planning-catalog digest uses the length-prefixed encoding defined by
 `docs/LAW_GENERATION_MANIFEST.md`. Encode, in order, the ASCII format literal
@@ -73,20 +74,24 @@ Markdown presentation are excluded.
 | VIT-LAW-006@g09 | sha256:44b4e01d4de263d630fbf5ea97e52fcfa1a06f0d63056ba4a9af0aeb2e0cc12f |
 | VIT-LAW-006@g10 | sha256:54280761c256d867005a953f5c2f46d6e0d0ed018ac4b3ad47326d859f47d338 |
 | VIT-LAW-007@g01 | sha256:d36ba8b53e831437107f1f78610dfa889ccdfdd9288a58f90b01affb4caee5d7 |
-| VIT-LAW-008@g01 | sha256:42665f921b126c4a8bf6f250833d04a484216c66e8859bda5aca2d8914282d52 |
+| VIT-LAW-008@g01 | sha256:8d092451ada06140be3da033dfa34a08421fcd2284babdc1559508e9e178541a |
+| VIT-LAW-008@g02 | sha256:4ea71d300c6b3eee27f1f91dc46868dadba45562b8d4ee72a5b351142e635e63 |
 
 `0.18.3` implements planning-superset validation and generation of the first
 active activation-floor catalog. Each later law-effective milestone generates
 one immutable explicit successor containing complete effective ancestry and no
 planned future tuple; between those floors the previously activated catalog
-remains applicable. The first catalog embeds `VIT-LAW-008@g01` and seeds its
-empty rollout root without self-admission. `0.18.4` proves the first predecessor
-transition through the durable process manager. `0.19.0` binds the verified
+remains applicable. The first catalog embeds `VIT-LAW-008@g01`, the compiled
+static singleton topology, and its empty serialized rollout root without self-
+admission. `0.18.4` proves the first predecessor transition and competing-
+candidate recovery through the durable process manager. `0.19.0` binds the verified
 envelope, immutable placement manifest, receipts, and exact local identities/
 ratchets into signed checkpoints. `0.21.0–0.22.0` negotiate and conform catalog
 global/rollout/local ownership, trusted-time ratchets, persistence, and
 admission; `0.29.0–0.30.0`
 preserve them through migration, export, and import. `0.140.1`, `0.140.2`, and
 `0.140.6` freeze exact cryptographic/time, storage, and deployment profiles.
-Phase O and `1.0.0` require verifier-bound backup/restore/failover evidence and
-an exact-commit pentest.
+`0.141.0` activates `VIT-LAW-008@g02` after the one-time handoff to independent
+`VIT-INV-060` topology authority. Phase O and `1.0.0` require verifier-bound
+topology/identity/receipt/backup/restore/failover evidence and an exact-commit
+pentest.

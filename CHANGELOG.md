@@ -8,6 +8,18 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added independent dynamic placement-topology authority (`VIT-INV-060`) with
+  an artifact-authorized singleton handoff at `0.141.0`, expected-version
+  successor manifests, monotonic member generations, fences, tombstones, and
+  `VIT-LAW-008@g02` consumption before split-service deployment.
+- Defined executable `WorkloadIdentityProofProfileV1` and
+  `CatalogReceiptAuthenticationV1` decisions: hardware-attested or
+  orchestrator-attested single-active-lease identity, complete lifecycle and
+  clone detection, and authenticated canonical receipts rather than digest or
+  transport-success authority.
+- Serialized catalog candidates with per-lineage `ActiveRolloutGeneration`,
+  terminal `Superseded` losers, permanent late-message rejection, and
+  two-coordinator lost-response/restart testing before the first successor.
 - Added durable distributed catalog rollout ownership (`VIT-INV-059`) and
   composition (`VIT-LAW-008`): immutable catalog/topology/placement manifests,
   closed process-manager states, exact prepare/convergence receipts,

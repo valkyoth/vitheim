@@ -51,8 +51,22 @@ Freeze the workload-identity and receipt-integrity inputs used by catalog
 rollout: canonical deployment/region/service-role/partition/placement IDs,
 non-clonable workload identity, boot/continuity evidence, binary and semantic-
 set digests, local fencing token, and domain-separated prepare/convergence/
-revocation receipt digest. Disk-derived or cloneable bearer identity cannot
-support a production local catalog owner.
+revocation receipt digest. Select one closed
+`WorkloadIdentityProofProfileV1`: `HardwareAttestedKey` requires a
+non-exportable key and current measured-workload attestation;
+`OrchestratorAttestedFencedLease` requires a key-bound short-lived identity,
+one single-active lease/fence, and simultaneous-use detection. Freeze issuer,
+subject, audience, deployment/region/service-role/partition/placement binding,
+public-key thumbprint, attestation policy/version, issuance/renewal/rotation/
+expiry/revocation, clone detection, replacement, restore, and compromise
+recovery. Freeze `CatalogReceiptAuthenticationV1`: canonical prepare,
+convergence, revocation, and topology receipt bytes require a workload-bound
+signature/MAC or equivalently protected attested channel plus durable trusted
+admission; a digest or transport success alone never proves authenticity.
+Recovery revalidates issuer, key, attestation, revocation, lease, and fence
+state. Disk-held ordinary mTLS keys, disk-derived or cloneable bearer identity,
+host/pod names, and unauthenticated receipt digests cannot support a production
+local catalog owner.
 Freeze the credential-operation mechanism used by every
 `ProviderExecutionProfile`: external KMS/secret services retain master keys;
 upstream and general executor components receive only opaque tenant/provider/
@@ -176,7 +190,12 @@ expiry tombstone, under the exact placement-generation key and workload/boot/
 binary/semantic/fence bindings. Map `VIT-INV-059` separately: rollout root,
 immutable topology/placement manifest, closed state, outbox/inbox, prepare/
 activation/convergence/revocation receipts, deadlines, escalation, and
-reconciliation. The three update domains cannot share an authority row.
+reconciliation. Reserve a fourth independent deployment topology-control
+partition for `VIT-INV-060`: expected-version current-generation row, canonical
+membership manifest/digest, monotonic member placement generations,
+predecessor fences, permanent tombstones, and transactional fence outbox. The
+global, rollout, topology, and local update domains cannot share an authority
+row. Discovery/orchestrator state is non-authoritative.
 Planning-superset storage is non-authoritative and physically/logically
 distinguishable from active catalogs. No storage topology may make active trust
 reconstructible from the database after compiled/signed provenance is lost or
@@ -588,19 +607,28 @@ upgrade, failover, and restore. In particular, transmission start distinguishes
 `DefinitelyNotStarted`, `OutcomeUnknown`, and `StartClaimedReconciling`; only
 the first permits an ordinary retry.
 Freeze catalog distribution and refresh as a fenced control-plane operation:
-the rollout root seals one topology/placement manifest and gathers exact
-identity/capability/semantic/fence-bound prepare receipts; the global owner
-consumes rollout authorization through CAS; each independent local owner invokes
-the shared verifier and emits convergence; the rollout root finalizes from
-durable receipts.
+`VIT-INV-060` alone advances current topology and member placement generations
+through expected-version successor activation, canonical manifests, fences, and
+tombstones. The rollout root consumes its authenticated current-topology
+receipt, CAS-claims one monotonic `ActiveRolloutGeneration` per catalog lineage,
+seals one topology/placement manifest, and gathers exact authenticated identity/
+capability/semantic/fence-bound prepare receipts; the global owner consumes
+rollout authorization through CAS; each independent local owner invokes the
+shared verifier and emits authenticated convergence; the rollout root finalizes
+from durable receipts. A digest alone is not receipt authentication.
+Exactly one rollout generation is current and nonterminal. Pre-activation
+supersession atomically tombstones the loser as `Superseded`; post-activation
+rollouts must complete or be revoked. Late losing receipts and authorization
+are permanently rejected.
 Failover, rollback, isolated-node startup, restore, and mixed-version operation
 reject stale, revoked, unknown, partial, scope-mismatched, time-untrusted, or
 database-invented catalogs. RPO/RTO
 evidence states how the active catalog ID/epoch/digest is recovered without
 granting the backup medium signing authority.
 The HA profile names the single global lineage owner, single rollout-root
-owner, separate local-ratchet transactions, expected-version activation,
-topology-generation authority, prepare/convergence acknowledgements, deadline
+owner, single independent `VIT-INV-060` topology-generation owner, separate
+local-ratchet transactions, expected-version activation, topology successor
+commands/fences/tombstones, authenticated prepare/convergence acknowledgements, deadline
 escalation, partial-rollout/unreachable-placement readiness, replacement/
 region-move fencing, revocation/emergency-distrust priority, maximum tolerated
 staleness, trusted-time continuity after suspend/failover, and behavior when
@@ -609,6 +637,11 @@ default. Selecting `FencedQuorum` requires proof that unprepared placements are
 durably fenced before global activation. A node never
 continues dispatch or transmission start merely because its planned-superset
 tuple or mutable cached envelope remains self-consistent.
+It also names the selected `WorkloadIdentityProofProfileV1`, attestation/key/
+lease issuer and failover domain, renewal/rotation/revocation and simultaneous-
+use response, plus receipt-authenticator key/epoch recovery. Failover cannot
+turn an exported mTLS key, stale lease, digest, or replayed channel transcript
+into workload or receipt authority.
 Goal: select the exact profiles Phase O must certify.
 Deliverables: support matrix, trust/network boundaries, fencing/quorum model,
 dispatch-authorization consistency/failure model, quota consumption/refund

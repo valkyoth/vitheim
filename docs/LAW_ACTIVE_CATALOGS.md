@@ -8,6 +8,9 @@ directly. `VIT-INV-057` owns the single global
 that lineage into exact enforcement-partition placement generations and retain
 monotonic catalog, distrust, identity-fence, and validity-time ratchets.
 `VIT-INV-059` separately owns durable multi-partition rollout coordination.
+From `0.141.0`, `VIT-INV-060` independently owns the current dynamic placement
+topology generation; rollout consumes its fenced snapshot and never becomes a
+topology writer.
 None of these transaction domains may update another's authority row.
 
 Every active catalog is immutable and complete for all law generations
@@ -159,11 +162,74 @@ key, obtains a fresh identity and boot/continuity binding, and performs a new
 admission from a verified global rollout receipt. Rollback cannot make a
 predecessor placement current again.
 
+### Workload Identity And Receipt Assurance
+
+`WorkloadIdentityProofProfileV1` is a closed production assurance profile, not
+the assertion that an ordinary mTLS key is “non-clonable.” Every admitted
+profile binds issuer, subject, audience, deployment, region, service role,
+enforcement partition, placement generation, public-key thumbprint, attestation
+policy/version, issuance and expiry, revocation epoch, and the active
+workload-identity fence. It defines issuance, renewal, rotation, simultaneous-
+use detection, replacement, restore, and compromise recovery.
+
+The selectable mechanisms at `0.140.1` are:
+
+1. `HardwareAttestedKey`: the identity key is non-exportable and its current
+   attestation binds the complete catalog-owner key and measured workload; or
+2. `OrchestratorAttestedFencedLease`: a key-bound, short-lived orchestrator
+   identity is usable only with one current single-active lease/fencing token.
+   Duplicate renewal or simultaneous use permanently fences the older
+   incarnation.
+
+Raw disk-held mTLS keys, bearer tokens, host names, pod names, VM identities
+without key-bound attestation, and receipt digests alone are unsupported.
+`CatalogReceiptAuthenticationV1` binds every prepare, convergence, revocation,
+and topology receipt to the complete canonical receipt bytes with either a
+workload-bound signature/MAC under the selected profile or an equivalently
+protected attested channel plus a durable trusted admission record. Transport
+authentication is revalidated against issuer/key/revocation/fence state during
+receipt admission and again during recovery; copying a digest or transport
+transcript cannot authenticate a receipt.
+
+## Placement Topology Authority
+
+`0.18.3` bootstraps only
+`CompiledStaticPlacementTopologyV1`: an immutable, reviewed artifact containing
+exactly one deployment/region/service-role/enforcement-partition placement at
+generation one. It supports no dynamic join, leave, move, replacement,
+split/merge, autoscaling identity reuse, or topology mutation. Any such request
+before the governed handoff fails closed; the rollout root may snapshot this
+artifact but cannot edit or supersede it.
+
+`0.141.0` performs a one-time artifact-authorized handoff to
+`VIT-INV-060 PlacementTopologyGenerationState` before split-service or HA
+deployment and activates `VIT-LAW-008@g02`. One
+`PlacementTopologyGenerationRow` per deployment owns expected-version CAS over
+the current monotonic topology generation, canonical sorted membership
+manifest/digest, and each member's monotonic placement generation, predecessor
+fence, and permanent tombstone. Typed join, leave, move, replacement,
+service-role change, split, and merge commands create a complete successor
+manifest; activation atomically makes it current and emits durable fence
+intents for every removed or superseded placement. Restore takes the greatest
+externally evidenced topology and placement-generation ratchets and cannot
+resurrect a tombstone.
+
+The rollout process manager reads an authenticated
+`CurrentPlacementTopologyReceiptV1`, seals its exact topology generation and
+manifest digest into the rollout manifest, and later revalidates that receipt.
+It cannot issue topology generations or placement fences. A topology change
+blocks the affected rollout and requires a new rollout manifest; a rollout
+message cannot make topology current. Search, discovery, orchestration APIs,
+and observed pods/nodes are evidence inputs only, never topology authority.
+
 ## Durable Distributed Rollout
 
 `0.18.3` introduces `VIT-INV-059`/`VIT-LAW-008` and the durable
 `LawCatalogRolloutRootRow`; `0.18.4` uses it for the first real successor.
-`LawCatalogRolloutId` is globally unique. Its immutable
+`LawCatalogRolloutId` is globally unique. Each catalog lineage also owns a
+monotonic `ActiveRolloutGeneration`. Candidate creation uses expected-version
+CAS to claim the next generation, so at most one rollout for that lineage is
+current and nonterminal. Its immutable
 `CatalogPlacementManifestV1` binds the candidate catalog ID/epoch/envelope
 digest, predecessor epoch/digest, topology generation, sorted required local
 owner keys, required binary capability and semantic-realization profiles,
@@ -177,13 +243,26 @@ The closed rollout states are:
 Candidate -> Preparing -> GloballyActivated -> Converging -> Completed
                     \-> Blocked
 Candidate/Preparing/Blocked(pre-activation) -> Abandoned
+stale or losing Candidate/Preparing/Blocked -> Superseded
 any nonterminal state or Completed -> Revoked
 ```
 
 `Blocked` records its source phase and may resume only that phase after the same
 manifest's contradiction or availability issue is reconciled. After global
 activation, abandonment is forbidden; the rollout must converge, remain
-visibly blocked, or be revoked. `Revoked` and `Abandoned` are terminal.
+visibly blocked, or be revoked. `Abandoned` is an explicit pre-activation
+operator cancellation. `Superseded` is the permanent losing-candidate state;
+`Revoked`, `Abandoned`, and `Superseded` are terminal.
+
+Creating an ordinary successor is allowed only when the current rollout is
+`Completed`, `Revoked`, `Abandoned`, or `Superseded`. An explicit pre-activation
+supersession CAS may replace `Candidate`, `Preparing`, or pre-activation
+`Blocked`, atomically advance `ActiveRolloutGeneration`, and tombstone the old
+rollout. A globally activated or converging rollout must complete or be
+revoked. Local inboxes and the global owner accept prepare, activation-
+authorization, convergence, and revocation messages only from the exact current
+rollout generation. Late receipts or authorization from a losing generation
+are permanently rejected and retained as audit evidence.
 
 The normal protocol is an at-least-once process manager, not a distributed
 transaction:
@@ -237,6 +316,11 @@ receipt admission, completion, topology change, revocation, abandonment, and
 every response-loss boundary. Duplicate/reordered delivery is idempotent;
 ambiguous state never invents preparation, activation, convergence, or
 revocation completion.
+The first-successor suite also races two candidates through preparation, lets
+one current generation win the global activation CAS, loses both responses,
+and restarts both coordinators. Exactly one reconciles toward convergence; the
+other becomes permanently `Superseded`, and none of its late messages can
+change global or local authority.
 
 ## Project-Owned Artifact Verification
 
@@ -278,7 +362,8 @@ context to both entry points and requires the same typed result.
 The first catalog has a deliberately narrow bootstrap: its
 `CompiledCatalog` payload/envelope, compiled expected envelope digest, and
 `VIT-LAW-007@g01` realization are embedded in the reviewed artifact. Provenance
-establishes the initial global owner row and each local admission row. Mutable
+establishes the initial global owner row, the static single-placement topology,
+and each local admission row. Mutable
 state cannot self-admit the law that validates it. The same bootstrap seeds the
 empty rollout root and compiled `VIT-LAW-008@g01` realization, so the first
 `0.18.4` successor is governed without circular self-admission. After that
@@ -310,6 +395,7 @@ when the activation milestone leaves planned status.
 | 9 | VIT-LAWCAT-ACTIVE-e009-v1 | `0.56.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e008-envelope-v1 | VIT-LAW-001@g09, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g08, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e009-v1.catalog` |
 | 10 | VIT-LAWCAT-ACTIVE-e010-v1 | `0.57.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e009-envelope-v1 | VIT-LAW-001@g10, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g09, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e010-v1.catalog` |
 | 11 | VIT-LAWCAT-ACTIVE-e011-v1 | `0.59.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e010-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e011-v1.catalog` |
+| 12 | VIT-LAWCAT-ACTIVE-e012-v1 | `0.141.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e011-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g01, VIT-LAW-008@g02 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e012-v1.catalog` |
 
 `0.18.3` delivers the canonical codec, shared verification core, CLI, first
 compiled artifact, exact local owner identity, split global/rollout/local
@@ -320,11 +406,15 @@ and local identity/ratchets into checkpoints.
 `0.21.0–0.22.0` negotiate and destructively conform storage without making it a
 trust root. `0.29.0–0.30.0` prove migration/import with the real verifier.
 `0.140.1` freezes compiled versus signed profile, signature suite/root ceremony,
-time source, and maximum uncertainty. `0.140.2` freezes separate global,
-rollout-root, and local row placement. `0.140.6` freezes `AllRequired` or a
-fully fenced quorum, topology evolution, distribution, failover, revocation,
-time loss, and recovery. `0.145.0` proves backup/restore cannot clone a local
-owner, invent a receipt, or roll back catalog/validity state. Phase O and
+time source, maximum uncertainty, workload-identity proof, and receipt
+authentication. `0.140.2` freezes separate global, rollout-root, future
+topology, and local row placement. `0.140.6` freezes `AllRequired` or a fully
+fenced quorum, topology evolution, distribution, failover, revocation, time
+loss, and recovery. `0.141.0` hands the compiled static topology to
+`VIT-INV-060` and activates `VIT-LAW-008@g02`; `0.142.0–0.143.0` prove split
+service and HA behavior. `0.145.0` proves backup/restore cannot clone a local
+owner, invent a receipt, resurrect topology, or roll back catalog/validity
+state. Phase O and
 `1.0.0` require zero unresolved rollout receipts, identity clones, coverage
 gaps, overlaps, future tuples, incomplete closures, unrealized semantics,
 text-only artifact checks, or envelope fields outside cryptographic
