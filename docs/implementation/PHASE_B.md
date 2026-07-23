@@ -7,7 +7,7 @@ implementations establish ordering, replay, idempotency, and integrity.
 
 Status: planned.
 
-Setup: define stream identity, tenant binding, expected version, atomic batch,
+Setup: define tenant-scoped stream kind/identity, expected version, atomic batch,
 ordered range read, append receipt, and explicit unsupported semantics.
 
 Goal: make persistence requirements precise without generic CRUD.
@@ -48,8 +48,10 @@ and command/idempotency interaction.
 
 Goal: prevent lost updates and duplicated facts under concurrent writers.
 
-Deliverables: compare-and-append semantics, conflict results, race test harness,
-and stale-writer documentation.
+Deliverables: compare-and-append semantics, conflict results, request-digest-bound
+command receipts, race test harness, and stale-writer documentation. Normal
+writes require `ExpectedVersion::Exact`; `Any` is restricted to authorized
+recovery/import under an exclusive fenced lease.
 
 Verification: two-writer interleavings, replayed commands, stale snapshots,
 failed-retry nonmutation, and model-checked linearization cases pass.
@@ -97,8 +99,9 @@ Exit criteria: projections can be erased and recreated exactly from authority.
 
 Status: planned.
 
-Setup: bind event append, outbox entries, idempotency receipt, destination,
-payload version, attempt policy, and commit boundary.
+Setup: bind exact-version CAS, consecutive events, stream head, request-digest
+receipt, outbox entries, integrity links, authority-owned uniqueness indexes,
+destination, payload version, attempt policy, and one database transaction.
 
 Goal: prevent committed business facts from losing required asynchronous work.
 
@@ -125,6 +128,9 @@ receipt query, and recovery fixtures.
 
 Verification: concurrent duplicates, crash windows, forged IDs, cross-tenant
 receipts, expired/replayed messages, and atomic effect tests pass.
+Expiry cannot re-enable non-idempotent work unless the upstream replay horizon
+is independently bounded. The same command ID and digest returns the stored
+outcome; the same ID with a different digest is a conflict without side effects.
 
 Exit criteria: retries cannot repeat protected effects or hide duplicates.
 `v0.17.0 implementation stop reached. Run pentest for this exact commit.`
@@ -151,16 +157,19 @@ Exit criteria: expired or unfenced workers cannot commit protected work.
 
 Status: planned.
 
-Setup: choose canonical chained fields, domain-separated digest/signature ports,
-checkpoint cadence, key identifiers, rotation metadata, and verification limits.
+Setup: bind tenant, partition, stream, sequence, event/schema IDs, payload digest,
+predecessor, and key ID; define partition Merkle commitments, external signed
+anchors, checkpoint cadence, rotation, independent timestamp option, and limits.
 
 Goal: make event deletion, replacement, and reordering detectable.
 
-Deliverables: integrity-link model, crypto-provider interface only, checkpoint
-format, verification report, and corruption locator.
+Deliverables: integrity-link model, crypto-provider interface only, partition
+commitment, externally retained checkpoint format, cross-signed rotation,
+verification report, and corruption locator.
 
-Verification: deletion/reorder/substitution/splice, wrong stream/tenant/key,
-rotation, truncated chain, digest collision fixture, and bounded verify pass.
+Verification: deletion of an entire stream, reorder/substitution/splice, wrong
+stream/tenant/key, anchor loss, rotation, timestamp semantics, truncated chain,
+recovery verification, digest collision fixture, and bounded verify pass.
 
 Exit criteria: tamper evidence is deterministic without inventing cryptography.
 `v0.19.0 implementation stop reached. Run pentest for this exact commit.`
@@ -182,4 +191,3 @@ repair attempts, report injection, rebuild equivalence, and operator UX pass.
 
 Exit criteria: verification cannot mutate state and repair never runs implicitly.
 `v0.20.0 implementation stop reached. Run pentest for this exact commit.`
-

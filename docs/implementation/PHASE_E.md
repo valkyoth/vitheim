@@ -1,11 +1,16 @@
 # Phase E — IT Service Management
 
-Scope: `0.41.0–0.50.0`. Typed domains compose the work foundation.
+Scope: `0.41.0–0.50.0`. Typed domains compose the work foundation. Every domain
+owns sealed transition commands/events and rejects invalid transitions without
+events, receipts, outbox work, notifications, or other side effects; no generic
+status setter or cross-domain patch command is permitted.
 
 ## `0.41.0` — Incident Management
 Status: planned. Setup: freeze incident lifecycle, impact/urgency, service impact,
-major flag, assignment, resolution, and reopen rules. Goal: production-shaped
-incident decisions. Deliverables: aggregate, commands/events, projections, audit.
+major flag, assignment, resolution, and reopen rules as typed transition commands
+with explicit preconditions and rejection results. Goal: production-shaped
+incident decisions. Deliverables: aggregate, sealed commands/events, projections,
+audit, and no-side-effect rejection fixtures.
 Verification: unauthorized assignment/closure, invalid resolution, severity abuse,
 reopen races, tenant and replay tests pass. Exit criteria: incident invariants hold. `v0.41.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -71,4 +76,3 @@ representative scenarios. Goal: prove coherent end-to-end ITSM behavior.
 Deliverables: integrated workspace, migrations, fixtures, operator/admin docs.
 Verification: cross-module authorization, chained workflows, search parity,
 upgrade/rollback, load, recovery, and full phase pentest pass. Exit criteria: beta claims and limitations are exact. `v0.50.0 implementation stop reached. Run pentest for this exact commit.`
-

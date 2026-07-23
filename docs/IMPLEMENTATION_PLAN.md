@@ -51,8 +51,12 @@ versions contain corrections only and follow the same process.
 - [Phase L — WASM And Integrations (`0.111.0–0.120.0`)](implementation/PHASE_L.md)
 - [Phase M — Optional AI (`0.121.0–0.130.0`)](implementation/PHASE_M.md)
 - [Phase N — Product Experience (`0.131.0–0.140.0`)](implementation/PHASE_N.md)
+- [Pre-Production Option Decisions (`0.140.1–0.140.8`)](implementation/OPTION_DECISIONS.md)
 - [Phase O — Production Hardening (`0.141.0–0.150.0`)](implementation/PHASE_O.md)
 - [`1.0.0` — Production Acceptance](implementation/PRODUCTION_1_0.md)
+
+The integration decisions and sequencing changes resulting from the roadmap
+review are tracked in [Roadmap Gap Dispositions](ROADMAP_GAP_DISPOSITIONS.md).
 
 ## First-Ten Crate Graph
 
@@ -69,4 +73,3 @@ vitheim facade
 N0 crates use neither `std` nor an allocator. N1 may use explicit `alloc` but
 not OS facilities. Hosted crates expose project-owned interfaces and never leak
 runtime, database, protocol, plugin-host, or UI implementation types inward.
-

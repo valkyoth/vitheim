@@ -6,7 +6,7 @@ domain crates.
 
 ## `0.1.0` — Repository And Security Baseline
 
-Status: implemented; pentest not run.
+Status: implementation reopened by security review; pentest not run.
 
 Setup: initialize EUPL-1.2 workspace policy, Rust/tool pins, private manifests,
 CI, CodeQL-default guidance, threat model, SBOM, and release evidence layout.
@@ -17,9 +17,16 @@ third-party Cargo sources or crate publication.
 Deliverables:
 - Private `no_std` facade plus ID, time, error, and budget foundation crates.
 - Local/CI gates for code, docs, dependencies, line limits, SBOM, and releases.
+- Strict numeric SemVer parsing; normalized semantic SBOM comparison; release
+  evidence cryptographically binding candidate tree, toolchain, SBOM, and any
+  artifacts through a signed detached attestation or constrained evidence-only
+  child commit whose reviewed parent and allowed tree delta are verified.
 
 Verification: run all gates and core target checks; prove Cargo metadata has
 only workspace paths and both publication and incomplete readiness are denied.
+Negative tests reject arbitrary 40-hex reviewed commits, self-referential or
+wrong-parent reports, malformed/prerelease-incompatible inputs, stale SBOM
+versions/licenses/relationships, changed candidate trees, and changed artifacts.
 
 Exit criteria: baseline claims match evidence and no release gate is bypassed.
 `v0.1.0 implementation stop reached. Run pentest for this exact commit.`
@@ -37,9 +44,14 @@ deterministic decisions.
 Deliverables:
 - Non-interchangeable tenant, record, stream, command, event, and actor IDs.
 - Checked durations/timestamps, injected time facts, and stable error codes.
+- Validated nonzero `TenantId`; tenant-scoped authority IDs; explicit N0/N1/H
+  crate metadata and checked dependency DAG forbidding allocator use in N0,
+  inward violations, build scripts, proc macros, FFI, and thick facades unless
+  a versioned exception is reviewed.
 
 Verification: round-trip, malformed/canonical form, compile-fail domain mix-up,
-zero/min/max/overflow, redaction, property, and parser fuzz tests pass.
+zero/min/max/overflow, crate-layer negative fixtures, redaction, property, and
+parser fuzz tests pass.
 
 Exit criteria: no core API creates IDs randomly, reads time, or leaks host
 errors. `v0.2.0 implementation stop reached. Run pentest for this exact commit.`
@@ -132,6 +144,8 @@ Goal: bind every requested mutation to complete security context.
 Deliverables:
 - Typestated decision context and immutable versioned command envelope.
 - Canonical codec integration and redacted diagnostics.
+- Immutable `TenantScope` embedded in every authority-bearing target and port
+  request; there is no tenantless overload or bare-record return path.
 
 Verification: missing/mismatched tenant, spoofed actor, duplicate key, wrong
 target/version, oversized payload, compile-fail builder, and codec tests pass.
@@ -192,7 +206,7 @@ Deliverables:
 
 Verification: unauthorized/wrong-tenant/stale/duplicate commands, corrupt replay,
 rebuild equivalence, exhaustion, golden scenarios, and sequence fuzzing pass.
+Twin tenants deliberately reuse local IDs to prove scope is structural.
 
 Exit criteria: the vertical slice is deterministic and truthfully in-memory.
 `v0.10.0 implementation stop reached. Run pentest for this exact commit.`
-

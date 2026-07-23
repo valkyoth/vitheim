@@ -170,7 +170,8 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | --- | --- | --- |
 | `0.51.0` | Formal tenant isolation model | Cross-tenant reads/writes/caches/indexes/blobs/logs |
 | `0.52.0` | Subjects, identities, and service principals | Identity confusion, impersonation, lifecycle gaps |
-| `0.53.0` | Hosted OIDC and WebAuthn integration | Token validation, replay, downgrade, session fixation |
+| `0.53.0` | Hosted OIDC integration | Discovery, mix-up, token validation, replay, downgrade, session fixation |
+| `0.53.1` | Hosted WebAuthn profile and credential lifecycle | RP/origin/challenge binding, attestation, counters, recovery |
 | `0.54.0` | Directory and group synchronization | Group takeover, stale privilege, deletion/recreation |
 | `0.55.0` | RBAC engine | Role escalation, inherited cycles, hidden grants |
 | `0.56.0` | ABAC engine | Missing attributes, type confusion, fail-open decisions |
@@ -331,6 +332,22 @@ Phase exit: administrators and external portal users pass full boundary review.
 | `0.138.0` | Stable API, SDKs, import, and export | Mass assignment and export-policy bypass |
 | `0.139.0` | Accessibility, localization, mobile layouts | Localization injection and client-state leakage |
 | `0.140.0` | Operator and tenant administration console | Administrative privilege and support boundaries |
+
+## Pre-Production Option Decisions
+
+These evidence-producing patch milestones freeze supported production choices
+before Phase O. An unselected option remains unsupported at `1.0.0`.
+
+| Version | Goal and deliverable | Release-specific verification / pentest target |
+| --- | --- | --- |
+| `0.140.1` | Dependency, cryptography, KMS, and timestamp profile decision | Auditability, maintenance, license, key lifecycle, replacement boundary, no improvised security protocol |
+| `0.140.2` | Tenant and storage topology decision | Backend-specific structural enforcement, twin tenants, pool state, administrator boundary, no weak fallback |
+| `0.140.3` | OIDC, WebAuthn, session, and recovery profile decision | Pinned conformance profiles, mix-up/replay/fixation/recovery/key-rotation evidence |
+| `0.140.4` | Component runtime, worker isolation, and egress decision | Escape, metering, host amplification, DNS/redirect, OS limit, and cross-tenant evidence |
+| `0.140.5` | Privacy, retention, legal hold, erasure, evidence, and residency decision | Conflict precedence, derived copies, backups, crypto-erasure, disposition, regional boundaries |
+| `0.140.6` | Deployment, HA, regional, and recovery profile decision | Trust boundaries, fencing, partition, capacity, upgrade/rollback, RPO/RTO evidence |
+| `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
+| `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 
 ## Phase O — Production Hardening
 

@@ -4,12 +4,15 @@ Scope: `0.31.0–0.40.0`. Every mutation is a command; reads are policy-filtered
 
 ## `0.31.0` — Shared Work-Item Components
 Status: planned.
-Setup: freeze identity, lifecycle, ownership, timing, labels, relationships,
-collaboration, compliance, and custom-field composition.
+Setup: freeze domain-specific identity, lifecycle, ownership, timing, labels,
+relationships, collaboration, compliance, and namespaced/versioned custom-field
+composition; `WorkItem` remains value components, never an aggregate or table.
 Goal: share behavior without a universal mutable ticket table.
-Deliverables: bounded component models, invariants, codecs, and builders.
-Verification: cross-type confusion, invalid composition, field budget, tenant,
-round-trip, and property tests pass.
+Deliverables: bounded component models, invariants, codecs, and builders; no
+public `WorkItemId`, generic patch/setter/status command, or polymorphic write port.
+Verification: compile-fail domain ID/command/event/stream mixing, cross-type
+confusion, invalid composition, protected custom-field namespaces, field budget,
+tenant, round-trip, and property tests pass.
 Exit criteria: domain types retain independent invariants. `v0.31.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.32.0` — Generic Task Aggregate
@@ -32,7 +35,9 @@ Exit criteria: invalid definitions cannot activate. `v0.33.0 implementation stop
 
 ## `0.34.0` — Assignment Groups And Ownership
 Status: planned.
-Setup: define group/member facts, assignment authority, queues, delegation, and history.
+Setup: define group/member facts and version, eligibility proof, assignment
+authority, queues, delegation scope, policy decision/version, and history;
+assignment itself grants no authority.
 Goal: route work without privilege escalation.
 Deliverables: ownership commands/events, candidate policy facts, and audit explanations.
 Verification: forged/stale membership, cross-tenant groups, unauthorized transfer,
@@ -41,7 +46,9 @@ Exit criteria: every assignment explains actor and policy. `v0.34.0 implementati
 
 ## `0.35.0` — Comments, Mentions, Watchers, And Activity
 Status: planned.
-Setup: define bounded content, visibility labels, immutable edits, mention resolution, and notification intent.
+Setup: define bounded content, visibility labels, immutable edits, mention
+resolution, and notification intent; dispatch reauthorizes current recipient and
+field visibility instead of trusting command-time authority.
 Goal: enable collaboration without content or permission leaks.
 Deliverables: collaboration events, safe rendering contract, watchers, and activity projection.
 Verification: stored injection, hidden-field mention, notification amplification,
@@ -85,11 +92,12 @@ delivery replay, and hidden-field tests pass.
 Exit criteria: approvals and deliveries remain attributable. `v0.39.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.40.0` — Authenticated API And Service-Desk UI
-Status: planned; hosted dependencies require approval.
-Setup: define session/token facts, CSRF/origin policy, command endpoints, read DTOs, field redaction, and limits.
-Goal: expose the first safely authenticated vertical slice.
-Deliverables: HTTP/API boundary, minimal UI, secure headers/cookies, and end-to-end audit.
+Status: planned; internal test slice only until Phase F identity passes.
+Setup: define static/fake test authentication facts, CSRF/origin policy, command
+endpoints, typed policy-limited read DTOs, field classification, and limits.
+Goal: expose the first internal API/UI vertical slice without a production authentication claim.
+Deliverables: HTTP/API boundary, minimal UI, secure headers/cookies, and end-to-end audit; no fetch-everything-then-redact path.
 Verification: IDOR, CSRF, XSS, fixation, enumeration, body/rate exhaustion,
 field leakage, logout/revocation, and DAST pass.
-Exit criteria: the UI has no direct mutation bypass. `v0.40.0 implementation stop reached. Run pentest for this exact commit.`
-
+Exit criteria: the UI has no direct mutation bypass and cannot be deployed with
+the test identity profile as production. `v0.40.0 implementation stop reached. Run pentest for this exact commit.`

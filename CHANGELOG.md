@@ -14,4 +14,7 @@ All notable Vitheim changes are documented here. The format follows
 - Expanded every planned milestone from `0.1.0` through `0.150.0` and `1.0.0`
   into a version-specific implementation handoff with mechanically checked
   setup, goal, deliverables, verification, and pentest exit criteria.
+- Incorporated the roadmap gap review by reopening `0.1.0`, moving structural
+  tenant and release-evidence controls earlier, splitting WebAuthn review, and
+  adding eight pre-production option-decision releases before Phase O.
 - Added local and GitHub verification gates without a crate publication path.

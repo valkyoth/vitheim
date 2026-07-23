@@ -26,7 +26,8 @@ Exit criteria: correctness never depends on an unverified optional capability.
 Status: planned.
 
 Setup: derive tests from every semantic port, define fault injection, concurrency
-schedule, tenant corpus, cleanup, and evidence format.
+schedule, adversarial twin tenants with colliding local IDs, connection-session
+state reuse, cleanup, administrator threat boundary, and evidence format.
 
 Goal: make production-support claims depend on identical observable behavior.
 
@@ -43,8 +44,9 @@ Exit criteria: an adapter cannot claim support by skipping or weakening tests.
 
 Status: planned; blocked until a safe hosted implementation is approved.
 
-Setup: document single-node limits, file ownership, journal mode, transactions,
-busy handling, migrations, backup, cancellation, and tenant keys.
+Setup: document single-node limits, dedicated database-file-per-tenant strong
+profile, shared-file evaluation-only profile, ownership, secure paths, journal
+mode, transactions, busy handling, migrations, backup, cancellation, and keys.
 
 Goal: support development, evaluation, tests, and documented single-node use.
 
@@ -61,8 +63,9 @@ Exit criteria: no HA claim and all single-node semantics are evidenced.
 
 Status: planned; blocked until a safe hosted implementation is approved.
 
-Setup: define TLS/authentication, least-privilege roles, transaction/isolation
-levels, prepared queries, tenant partitioning, migrations, and cancellation.
+Setup: define TLS/authentication, non-owner least-privilege role, composite keys/
+foreign keys, `ENABLE` plus `FORCE ROW LEVEL SECURITY`, transaction-local tenant
+binding with pool cleanup/startup probes, prepared queries, migrations, and cancellation.
 
 Goal: establish the deepest-tested reference production backend.
 
@@ -79,8 +82,10 @@ Exit criteria: production claims match tested deployment profiles only.
 
 Status: planned; blocked until a safe hosted implementation is approved.
 
-Setup: map isolation, locking, encodings/collations, identifier limits, TLS/auth,
-transactions, migrations, and cancellation against canonical semantics.
+Setup: prefer database-per-tenant strong isolation; otherwise require composite
+tenant constraints, generated statements, least-privilege views/routines, and
+explicitly weaker non-production classification; map isolation, locking,
+encodings/collations, TLS/auth, migrations, and cancellation.
 
 Goal: provide equal business correctness despite backend differences.
 
@@ -97,8 +102,9 @@ Exit criteria: no backend-specific behavior leaks into domain correctness.
 
 Status: planned; blocked until a safe hosted implementation is approved.
 
-Setup: map sessions/transactions, collections, indexes, write concerns, tenant
-keys, migrations, retry semantics, and topology limits.
+Setup: bind tenant into every document ID, unique index, shard key, session and
+transaction; co-locate stream head/events/receipts/outbox for atomicity; define
+write concern, migrations, retry semantics, and topology limits.
 
 Goal: preserve canonical event-journal behavior on a document backend.
 
@@ -115,7 +121,8 @@ Exit criteria: document flexibility never weakens mandatory journal semantics.
 
 Status: planned; blocked until a safe hosted implementation is approved.
 
-Setup: map namespace/database selection, transactions, graph features, auth,
+Setup: use strict tenant namespaces/databases, schema and record permissions,
+least-privilege non-system application identity, transactions, graph features,
 query parameters, migrations, capability probes, and version support.
 
 Goal: use graph capabilities as optimization without changing correctness.
@@ -133,8 +140,9 @@ Exit criteria: optional graph behavior is replaceable and policy equivalent.
 
 Status: planned.
 
-Setup: define immutable blob ID/digest, tenant namespace, staged upload, size and
-ratio limits, quarantine, atomic publish, deletion policy, and filesystem root.
+Setup: define immutable blob ID/digest, tenant/case scope, envelope encryption
+and tenant/data-class keys, staged upload, limits, quarantine, atomic publish,
+retention/legal hold/disposition hooks, deletion verification, and filesystem root.
 
 Goal: store large content outside event streams without path-based authority.
 
@@ -182,4 +190,3 @@ resume, blob mismatch, exhaustion, round-trip, and cross-adapter conformance pas
 
 Exit criteria: successful import proves complete semantic and integrity parity.
 `v0.30.0 implementation stop reached. Run pentest for this exact commit.`
-
