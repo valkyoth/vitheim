@@ -8,6 +8,21 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added durable distributed catalog rollout ownership (`VIT-INV-059`) and
+  composition (`VIT-LAW-008`): immutable catalog/topology/placement manifests,
+  closed process-manager states, exact prepare/convergence receipts,
+  transactional outbox/inbox delivery, global activation CAS, deadline
+  reconciliation, topology fencing, and emergency-distrust propagation without
+  implying a distributed transaction.
+- Made every `VIT-INV-058` admission owner an exact enforcement-partition
+  placement generation keyed by deployment, region, service role, partition,
+  and placement generation, with non-clonable workload/continuity identity,
+  binary/semantic bindings, and fresh fenced admission after clone, restore,
+  replacement, or region movement.
+- Staged rollout bootstrap and proof across `0.18.3–0.30.0`, froze identity,
+  placement, activation-policy, topology, and HA decisions at `0.140.1`,
+  `0.140.2`, and `0.140.6`, and carried split-service, failover, disaster
+  recovery, pentest, and production evidence through `0.142.0–1.0.0`.
 - Split global platform-law lineage (`VIT-INV-057`) from independently updated
   local catalog admission, distrust, and trusted-time ratchets
   (`VIT-INV-058`); strengthened `VIT-LAW-007` with partial-rollout,

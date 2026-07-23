@@ -1832,7 +1832,9 @@ and fail conservatively.
 Status: planned.
 <!-- vitheim-invariant VIT-INV-057 0.18.3 -->
 <!-- vitheim-invariant VIT-INV-058 0.18.3 -->
+<!-- vitheim-invariant VIT-INV-059 0.18.3 -->
 <!-- vitheim-law VIT-LAW-007 0.18.3 -->
+<!-- vitheim-law VIT-LAW-008 0.18.3 -->
 
 Setup: adopt `docs/INVARIANT_OWNERSHIP.md` as the canonical registry for every
 authority-bearing invariant and formally backfill all authority declared from
@@ -1910,11 +1912,20 @@ Typed `ProposeLawCatalog`, `ActivateLawCatalog`, `SupersedeLawCatalog`,
 `RevokeLawCatalog`, and `EmergencyDistrustLawCatalog` commands/events govern
 the active epoch/digest, predecessor/successor/revocation state, expected-
 version activation CAS in the dedicated global partition only. Independent
-`VIT-INV-058` `CatalogAdmissionRatchetRow` owners govern each local node or
-enforcement partition. Typed `AdmitLawCatalogLocally` and
+`VIT-INV-058` `CatalogAdmissionRatchetRow` owners govern exactly one
+enforcement-partition placement generation keyed by deployment, region,
+service role, partition ID, and placement generation. Typed
+`AdmitLawCatalogLocally` and
 `ObserveTrustedCatalogTime` transitions advance the local catalog
-epoch/digest, distrust epoch, last trusted lower bound, continuity identity,
-and expiry tombstone. Neither owner may update the other's row.
+epoch/envelope digest, distrust epoch, local fence, last trusted lower bound,
+continuity identity, and expiry tombstone. Admission binds non-clonable workload
+identity, fresh boot/continuity identity, binary capability digest, complete
+semantic-realization-set digest, current topology/placement manifest, and both
+global and rollout owner fences. A cloned disk/VM/pod/partition, copied row, or
+replacement workload cannot inherit authority. Replacement and region movement
+advance placement generation, fence the predecessor, and require fresh
+identity plus a new verified rollout receipt. Neither owner may update the
+other's row.
 `VIT-LAW-007` connects both owners to the platform safety-floor, dispatch-
 receipt, and transmission-start roots. Startup, restore, migration, failover,
 import, readiness, law activation, dispatch, and transmission start bind and
@@ -1923,8 +1934,39 @@ Recovery obtains global trust only from compiled artifact provenance or a
 separately authenticated dedicated platform-law signature root, then merges
 the greatest local ratchets; database content can never reconstruct trust.
 The first reviewed `CompiledCatalog` and `VIT-LAW-007@g01` realization seed the
-global and local rows from artifact provenance; only successors use the newly
-established lineage, avoiding self-admission from mutable state.
+global and local rows from artifact provenance. They also seed the empty
+`VIT-INV-059` rollout root and compiled `VIT-LAW-008@g01` realization; only
+successors use the established protocol, avoiding self-admission from mutable
+state.
+
+Implement the durable catalog rollout described in
+`docs/LAW_ACTIVE_CATALOGS.md` as a process manager, never a distributed
+transaction. `LawCatalogRolloutId` and an immutable, digested catalog/placement
+manifest bind topology generation, every required canonical local owner,
+catalog/predecessor, capability/semantic requirements, owner fences, activation
+policy, and deadlines. The closed states are `Candidate`, `Preparing`,
+`GloballyActivated`, `Converging`, `Completed`, `Blocked`, `Revoked`, and
+`Abandoned`. Transactional outbox/inbox delivery carries prepare, global
+activation, convergence, revocation, and reconciliation messages.
+
+Each `CatalogPrepareReceipt` binds rollout/manifest, canonical owner key,
+workload/continuity identity, catalog envelope digest, previous local epoch,
+binary capability and semantic-set digests, topology/placement generations,
+and local/global/rollout fences. The rollout root authorizes global activation
+only after the `AllRequired` policy has every current receipt; the global owner
+consumes that authorization in its separate CAS. Completion then requires
+every convergence receipt. A topology join/leave/replace/move/split/merge
+blocks the affected rollout and requires a newly sealed manifest generation.
+Deadline escalation and reconciliation retain missing or contradictory
+receipts visibly. Abandonment is pre-activation only.
+
+Revocation and emergency distrust bypass normal preparation: global distrust
+advances first, high-priority outbox/inbox delivery ratchets connected local
+owners, and an unreachable/stale partition fails its current-global-authority
+recheck and becomes unready. Recovery replays messages/receipts and re-reads
+all three owner classes. It cannot infer completion. A future `FencedQuorum`
+profile is unsupported unless `0.140.6` proves every unprepared placement is
+durably fenced before activation.
 
 Each active envelope serializes exactly `CompiledCatalog` or `SignedCatalog`
 and content-binds payload/predecessor digests, epoch, activation floor,
@@ -1950,8 +1992,9 @@ names cannot satisfy it. Every law-effective milestone creates the next
 immutable catalog in the checked schedule.
 Checkpoint and backup binding is completed at `0.19.0` and `0.145.0`; exact
 profile, time source, and maximum uncertainty are frozen before production at
-`0.140.1`, separate global/local storage at `0.140.2`, and HA distribution,
-revocation propagation, time loss, and recovery at `0.140.6`.
+`0.140.1`, separate global/rollout/local storage at `0.140.2`, and HA rollout
+policy, topology evolution, revocation propagation, time loss, and recovery at
+`0.140.6`.
 
 Implement the closed `LawSemanticId` enum and exhaustive
 `LawSemanticRealization` dispatch table from
@@ -2028,11 +2071,14 @@ cross-check contract, test-contract realization index, and generated restore/
 migration monotonic-state manifest contract; canonical law-manifest schema,
 codec/API contract, semantic IDs, content digests, strict canonical parser,
 golden fixtures, planning-superset validator, owned milestone-scoped active
-catalog lineage, separate local admission/time ratchets, complete envelope
-codecs, compiled/signed admission ports, shared runtime/CLI cryptographic
-verifier, gap-free activation-floor schedule, catalog lifecycle, exhaustive
-semantic-realization table, and digest/admission-verifying in-memory
-persistence. The checker rejects unregistered
+catalog lineage, canonical local owner/placement identity and anti-clone fence,
+separate local admission/time ratchets, durable rollout-root process manager,
+immutable placement manifest, typed rollout states, transactional outbox/inbox
+messages, prepare/activation/convergence/revocation receipts, deadlines and
+reconciliation, complete envelope codecs, compiled/signed admission ports,
+shared runtime/CLI cryptographic verifier, gap-free activation-floor schedule,
+catalog lifecycle, exhaustive semantic-realization table, and digest/admission-
+verifying in-memory persistence. The checker rejects unregistered
 declarations or rows, duplicate IDs, mismatched introduction versions, absent
 or alternative authoritative owners, guards without an owner-maintained update
 path, empty transaction placement, enforcement points without stable contracts
@@ -2054,10 +2100,12 @@ dependency deltas, coordinator absence, fewer than two resolved roots,
 malformed canonical fields, self-consistent-but-untrusted manifests, catalog
 tamper/rollback, planning-superset use at runtime, future tuple activation,
 combined profiles, unsigned envelope-field mutation, missing/separated global
-or local active-catalog owner, milestone coverage gap/overlap, text-only
-artifact evidence, scope mismatch, unverified predecessor/digest/signature,
-untrusted or rollback-prone bounded-window time, unknown semantic realizations,
-and ancestry omission. Later
+rollout/local active-catalog owner, ambiguous local ownership grain, cloned
+identity, mutable placement manifest, invalid rollout transition, missing or
+contradictory receipt, unfenced topology change, quorum without fencing,
+milestone coverage gap/overlap, text-only artifact evidence, scope mismatch,
+unverified predecessor/digest/signature, untrusted or rollback-prone bounded-
+window time, unknown semantic realizations, and ancestry omission. Later
 milestones must declare and
 register new invariants and the corresponding law generation in the same
 commit. The authority-review checker rejects any post-`0.18.3` milestone
@@ -2097,8 +2145,14 @@ submit field-shaped text instead of canonical bytes; alter either digest,
 tuple ancestry, actual predecessor, compiled digest, signature/root, or build
 scope; admit a bounded window with excessive uncertainty, unavailable time,
 clock rollback, lost suspend continuity, or restored older observation; restore
-below a local catalog/distrust/time high-watermark; fail to propagate revocation
-to an unreachable or partially rolled-out node; add an unknown semantic ID;
+below a local catalog/distrust/time high-watermark; clone a disk/VM/pod/
+partition or reuse workload/boot/placement identity; mutate the placement
+manifest in flight; omit, duplicate, contradict, or cross-bind a prepare or
+convergence receipt; crash before/after every prepare/authorize/global-CAS/
+converge/finalize transition; change topology or placement generation during
+rollout; abandon after global activation; satisfy activation with an unfenced
+quorum; fail to propagate/reconcile revocation to an unreachable or partially
+rolled-out placement; add an unknown semantic ID;
 remove a typed transition/outcome, recovery path, or P/N/M/F contract; mark a
 realization gate implemented while its file, enum/dispatch entry, symbol, or
 test ID is missing; change a planned proposed
@@ -2120,8 +2174,11 @@ phase, adapter, test suite, restore, migration, mixed-version deployment, or
 owner transfer can silently omit the invariant, select a second owner, or lose
 required monotonic state. Every manifest is self-consistent, effective,
 realized, cryptographically verified by the shared core, and trusted by the one
-global lineage plus distinct local admission owners; every implementation
-milestone has exactly one applicable activation-floor catalog; every shipped
+global lineage, one durable rollout root, and exact non-clonable local admission
+owners; every rollout has an immutable placement manifest, legal state,
+identity/fence-bound receipts, bounded reconciliation, and no distributed
+transaction; every implementation milestone has exactly one applicable
+activation-floor catalog; every shipped
 semantic ID resolves exhaustively to code/recovery/P-N-M-F tests; every
 generation claim proves its admitted predecessor closure; bounded validity
 cannot be extended by time failure or restore; and future planning tuples
@@ -2140,12 +2197,19 @@ Status: planned.
 
 Catalog checkpoint: generate `VIT-LAWCAT-ACTIVE-e002-v1` with the shared Rust
 verifier, bind its predecessor to the first artifact's recomputed envelope
-digest, and activate it through the separate global and local owners. Exercise
-partial rollout, an unreachable node, stale local catalog/distrust/time
-ratchets, activation followed by revocation, revocation propagation after
-reconnection, and failover/restore at each boundary. A node lacking the second
-local admission proof remains unready for affected dispatch and transmission
-start; it cannot infer admission from its platform version.
+digest, and activate it through the `VIT-INV-059` process manager plus separate
+global and exact local owners. Exercise every state and crash boundary:
+manifest seal, prepare-outbox commit, local prepare receipt, root admission,
+activation authorization, global CAS/receipt, convergence delivery/receipt,
+completion, block/reconcile, pre-activation abandon, revocation, and response
+loss. Race each boundary with join, leave, replacement, region move, topology
+generation, global/local/rollout failover, and restore. Test unreachable
+placements, stale local catalog/distrust/time/fence state, cloned owner
+identity, binary/semantic mismatch, activation followed by revocation, and
+revocation propagation/reconciliation after reconnection. A placement lacking
+the exact current identity-bound admission remains unready for affected
+dispatch and transmission start; platform version and copied storage confer no
+authority.
 
 Setup: implement `VIT-INV-008` on the `0.18.0–0.18.2` lease, quota, fence, and
 atomic-work contracts. Evaluator activation, supersession, suspension, ordinary

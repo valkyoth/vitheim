@@ -108,7 +108,13 @@ owner, expected-version activation CAS, and predecessor/successor/revocation/
 emergency-distrust state. Separately require `VIT-CAP-058` for each local
 catalog/distrust ratchet, admitted trusted-time interval and uncertainty,
 continuity/boot identity, last-observed lower bound, expiry tombstone, and
-startup/restore enforcement. Negotiate the planning
+startup/restore enforcement. The local capability uses exactly one canonical
+deployment/region/service-role/enforcement-partition/placement-generation key
+and binds workload identity, boot/continuity ID, binary/semantic digests, and
+local fence. Require `VIT-CAP-059` for rollout ID/root, immutable catalog/
+placement/topology manifest, closed state, transactional outbox/inbox,
+prepare/activation/convergence/revocation receipts, deadlines, reconciliation,
+and `AllRequired` policy. Negotiate the planning
 superset separately from immutable active payload/envelope support. Exact
 `CompiledCatalog` and `SignedCatalog` capabilities report independently; no
 combined capability is valid. The adapter consumes only the typed result of the
@@ -245,7 +251,7 @@ digest rather than only the latest law view. Expand every cited `@gNN` into
 authority disposition cites
 exactly `VIT-LAW-001@g02`, `VIT-LAW-002@g01`, `VIT-LAW-003@g01`,
 `VIT-LAW-004@g01`, `VIT-LAW-005@g04`, `VIT-LAW-006@g01`, and
-`VIT-LAW-007@g01`; later Phase F generations are not valid `0.22.0`
+`VIT-LAW-007@g01`, and `VIT-LAW-008@g01`; later Phase F generations are not valid `0.22.0`
 conformance claims. Define
 fault injection, concurrency
 schedule, adversarial twin tenants with colliding local IDs, connection-session
@@ -265,7 +271,11 @@ digest mismatch, text-only artifact, wrong product/edition/compatibility scope,
 global/local owner collision, partial rollout/unreachable node, revocation-
 propagation lag, excessive time uncertainty, rollback/suspend/time loss,
 revocation-versus-readiness/dispatch/start, and local catalog/distrust/time-
-ratchet rollback fixtures;
+ratchet rollback fixtures; cloned workload/boot/placement identity, copied
+ratchet, mutable topology manifest, illegal rollout transition, missing/
+duplicate/contradictory/cross-generation receipt, topology join/leave/replace/
+move race, post-activation abandon, unfenced quorum, and crash at every
+prepare/activate/converge/finalize/revoke boundary;
 and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
@@ -820,7 +830,12 @@ and verify the `VIT-INV-057` global lineage separately from every
 ID/epoch, recomputed payload/envelope digests, exact profile, activation floor,
 actual predecessor, exact scope, validity/maximum uncertainty, signer/root
 epoch, revocation/successor state, every tuple in both ancestry closures, and
-each closed semantic realization through the shared verifier.
+each closed semantic realization through the shared verifier. Independently
+preserve `VIT-INV-059` rollout root/state, immutable topology/placement
+manifest generation, outbox/inbox, prepare/global/convergence/revocation
+receipts, deadlines/escalation, exact local owner identities, and all fences.
+Replacement creates a successor placement generation and fresh admission;
+migration never clones authority from a copied local row.
 Migration authority cannot come from a manifest or catalog stored under the
 same mutable database authority; a missing, stale, revoked, or untrusted
 catalog blocks activation and rollback.
@@ -894,7 +909,9 @@ integrity checkpoints, planning-superset provenance, separate `VIT-INV-057`
 global lineage and `VIT-INV-058` local catalog/distrust/time ratchets, active
 catalog identity/epoch/recomputed payload-and-envelope digests/exact profile/
 activation floor/actual predecessor/scope/validity/maximum uncertainty/signer/
-root epoch/revocation/successor fields and full generation ancestry,
+root epoch/revocation/successor fields and full generation ancestry; the
+`VIT-INV-059` rollout root, immutable placement manifest, exact local owner
+keys/fences, messages, receipts, and deadline/reconciliation state,
 encryption/signing ports, position mapping, and budgets.
 
 Goal: migrate between backends without claiming direct database interchange.

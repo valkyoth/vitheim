@@ -226,6 +226,12 @@ require_text docs/LAW_ACTIVE_CATALOGS.md \
 require_text docs/LAW_ACTIVE_CATALOGS.md \
     '## Trustworthy Bounded-Window Time' \
     'bounded-window authoritative time contract'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '## Canonical Local Admission Owner' \
+    'canonical non-clonable local catalog owner'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '## Durable Distributed Rollout' \
+    'durable distributed catalog rollout protocol'
 require_text docs/implementation/PHASE_B.md \
     '<!-- vitheim-invariant VIT-INV-057 0.18.3 -->' \
     'owned global active law catalog lineage'
@@ -233,8 +239,14 @@ require_text docs/implementation/PHASE_B.md \
     '<!-- vitheim-invariant VIT-INV-058 0.18.3 -->' \
     'independently owned local catalog admission ratchet'
 require_text docs/implementation/PHASE_B.md \
+    '<!-- vitheim-invariant VIT-INV-059 0.18.3 -->' \
+    'durable catalog rollout process-manager owner'
+require_text docs/implementation/PHASE_B.md \
     '<!-- vitheim-law VIT-LAW-007 0.18.3 -->' \
     'catalog admission composite law'
+require_text docs/implementation/PHASE_B.md \
+    '<!-- vitheim-law VIT-LAW-008 0.18.3 -->' \
+    'catalog rollout composite law'
 require_text docs/LAW_SEMANTIC_REALIZATIONS.md \
     '# Law Semantic Realization Registry' \
     'executable law semantic realization registry'

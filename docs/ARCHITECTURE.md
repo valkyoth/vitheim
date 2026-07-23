@@ -39,10 +39,14 @@ payload/envelope. It remains applicable until explicit successor activation,
 and the release checker proves exactly one applies to every milestone.
 `PlatformLawCatalogLineage` has one global owner and expected-version
 activation/succession/revocation/emergency-distrust commands; separate local
-owners maintain catalog/distrust/trusted-time ratchets. One project-owned
+owners are exact enforcement-partition placement generations and maintain
+identity-fence/catalog/distrust/trusted-time ratchets. A third owner runs the
+durable catalog rollout process manager over immutable placement manifests,
+transactional messages, and prepare/convergence receipts; it coordinates but
+never turns the operation into a distributed transaction. One project-owned
 canonical verifier serves runtime and release tooling. Stored manifests,
-field-shaped text, untrusted clocks, and database administrators cannot extend
-or reconstruct that authority.
+cloned runtimes, field-shaped text, untrusted clocks, and database
+administrators cannot extend or reconstruct that authority.
 Canonical semantic prose is never interpreted at runtime: a closed Rust
 realization table binds every supported semantic ID to typed transitions,
 outcomes, recovery, and tests. Every terminal generation reference includes its

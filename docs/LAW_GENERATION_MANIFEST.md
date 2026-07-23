@@ -98,10 +98,12 @@ released meaning requires a successor generation, not an in-place edit.
 - `0.18.3`: implement the `no_std`/N1 manifest type, canonical codec, digest
   verification, strict field/parser and composite-structure checks, global
   `VIT-INV-057` catalog lineage, separate `VIT-INV-058` local
-  catalog/distrust/trusted-time ratchets, planning/active separation, gap-free
-  activation-floor selection, fully bound payload/envelope, one runtime/CLI
-  cryptographic verifier, closed stage-aware P/N/M/F semantic-realization
-  registry, and in-memory round-trip/golden fixtures.
+  identity/catalog/distrust/trusted-time ratchets, `VIT-INV-059` durable
+  rollout process manager and `VIT-LAW-008`, immutable placement manifests and
+  receipt-bound state, planning/active separation, gap-free activation-floor
+  selection, fully bound payload/envelope, one runtime/CLI cryptographic
+  verifier, closed stage-aware P/N/M/F semantic-realization registry, and
+  in-memory round-trip/golden fixtures.
 - `0.19.0`: signed checkpoints bind the active admission-catalog identity,
   epoch, digest, and trust profile.
 - `0.21.0`: storage capability negotiation declares manifest, digest,

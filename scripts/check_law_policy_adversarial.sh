@@ -187,6 +187,9 @@ expect_active_catalog_failure "a combined runtime trust profile"
 sed -i '/^| 1 |/s/, VIT-LAW-007@g01//' "$active_catalogs"
 expect_active_catalog_failure "an incomplete effective law frontier"
 
+sed -i '/^| 1 |/s/, VIT-LAW-008@g01//' "$active_catalogs"
+expect_active_catalog_failure "a missing catalog-rollout law frontier"
+
 sed -i '/^| 2 | VIT-LAWCAT-ACTIVE-/d' "$active_catalogs"
 expect_active_catalog_failure "a skipped catalog successor"
 

@@ -80,13 +80,18 @@ future tuple, and an activation-floor fence; it remains applicable until the
 global owner explicitly activates a verified successor. `VIT-INV-057` owns only
 that global lineage, expected-version activation, succession, revocation,
 emergency distrust, and epoch/digest. Independent `VIT-INV-058` local owners
-hold catalog/distrust/trusted-time ratchets. `VIT-LAW-007` composes both with
-platform safety-floor, dispatch, and transmission-start roots. Every artifact
-is canonically decoded and cryptographically verified by one project-owned
-core shared by runtime and release CLI. No startup, restore, migration,
-failover, import, law activation, dispatch, or transmission start may infer
-trust from mutable storage, field-shaped text, platform version, or an
-untrusted clock.
+are exact enforcement-partition placement generations and hold identity fence,
+catalog/distrust/trusted-time ratchets. `VIT-LAW-007` composes both with
+platform safety-floor, dispatch, and transmission-start roots.
+`VIT-INV-059`/`VIT-LAW-008` add a separate durable rollout process manager:
+immutable topology/placement manifests, closed prepare/activate/converge/
+complete/block/revoke/abandon states, transactional outbox/inbox delivery, and
+identity/fence-bound receipts without a distributed transaction. Every
+artifact is canonically decoded and cryptographically verified by one project-
+owned core shared by runtime and release CLI. No clone, startup, restore,
+migration, failover, import, law activation, dispatch, or transmission start
+may infer trust from mutable storage, copied identity, field-shaped text,
+platform version, or an untrusted clock.
 Canonical semantic prose is review evidence, not executable input. The
 [Law Semantic Realization Registry](LAW_SEMANTIC_REALIZATIONS.md) exhaustively
 binds every `VIT-LSEM-*` to compiled Rust transitions, typed outcomes, recovery

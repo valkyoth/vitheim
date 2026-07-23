@@ -38,12 +38,14 @@ audit decision.
 - Law-manifest trust independent from mutable storage: exact admitted
   `(LawId, Generation, Digest)` tuples, compiled or dedicated-platform-law
   signed activation-floor catalogs, planning-superset separation, one global
-  lineage plus distinct local catalog/distrust/trusted-time owners,
-  expected-version explicit succession, gap-free milestone selection, shared
-  runtime/CLI canonical cryptographic verification, complete scope/validity/
-  uncertainty/signer/root/revocation/successor binding, catalog-bound
-  checkpoint/backup/restore evidence, and rollback/suspend/expiry/emergency-
-  distrust handling.
+  lineage, one rollout-root process manager, and exact non-clonable local
+  placement owners with catalog/distrust/trusted-time fences; immutable
+  topology/placement manifests; transactional prepare/activation/convergence/
+  revocation delivery and identity-bound receipts; expected-version explicit
+  succession; gap-free milestone selection; shared runtime/CLI canonical
+  cryptographic verification; complete scope/validity/uncertainty/signer/root/
+  revocation/successor binding; catalog-bound checkpoint/backup/restore
+  evidence; and rollback/suspend/expiry/emergency-distrust handling.
 - Closed law-semantic dispatch: prose is evidence only; supported IDs
   exhaustively resolve to compiled transitions, typed outcomes, recovery, and
   positive/negative/model/fault tests, with stage-aware file/symbol/test

@@ -77,7 +77,16 @@ reached. Run pentest for this exact commit.`
 Status: planned. Setup: API/worker/ingest/index and
 `TransmissionExecutor` identities, mTLS/authz, network policy, discovery,
 version compatibility, and the immutable authenticated
-`TransmissionInstruction`/status protocol. The executor owns both
+`TransmissionInstruction`/status protocol. Allocate one canonical catalog
+owner key to every law-enforcing API/worker/ingest/executor placement:
+deployment, region, service role, enforcement partition, and placement
+generation. Bind its non-clonable workload identity, boot/continuity ID,
+binary-capability digest, semantic-set digest, local fence, and catalog
+ratchets. Route rollout prepare/activation/revocation through transactional
+outbox/inbox and return exact identity-bound receipts to the separate rollout
+root. Replacement, autoscaling identity reuse, disk/VM/pod clone, service-role
+change, and region move fence the predecessor generation and require a fresh
+global rollout receipt; copied storage never creates readiness. The executor owns both
 `ClaimTransmissionStart` and the provider socket; permit material remains a
 sealed process-local value and never appears in RPC, IPC, queues, service logs,
 or caller memory. It runs under an immutable `ProviderExecutionProfile`, has no
@@ -202,6 +211,17 @@ rollout generation with permanent successor supersession, complete-successor
 rollback, prepared-cancellation recovery successor, and fully typed floor-key migration,
 canonical composite acquisition/retry, and fair partitioned control-plane
 capacity.
+Catalog HA is the `VIT-LAW-008` process manager, not a quorum write or
+distributed transaction. Exercise immutable topology/placement manifests,
+`Candidate`, `Preparing`, `GloballyActivated`, `Converging`, `Completed`,
+`Blocked`, `Revoked`, and `Abandoned`; prepare and convergence receipt
+uniqueness; activation-authorization consumption by the global CAS; and
+deadline reconciliation. The selected baseline is `AllRequired`. Any approved
+quorum must durably fence every unprepared placement first. Join, leave,
+replacement, split/merge, region movement, and topology-generation change
+block the affected manifest and create a successor. Emergency distrust advances
+globally before delivery; an unreachable placement cannot recheck current
+authority and is unready.
 Goal: prevent split-brain effects. Deliverables: HA orchestration, work-variant
 fault matrix, dispatch/grant-lineage/redemption-guard/authority-fence evidence,
 exact-set/capacity-lease/encumbrance/transfer quota evidence, target-fence
@@ -221,7 +241,15 @@ consistency/new-generation/tombstone evidence, remediation profile/credential-
 lineage/audit/epoch/cleanup-quota/manual-limit evidence, cancellation-recovery/deadline
 evidence,
 fair-capacity evidence, and runbooks.
-Verification: partitions, clock skew, stale leader/fence,
+Include catalog rollout-root/global-lineage/local-owner placement, immutable
+manifest, outbox/inbox, receipt, topology-generation, non-clonable identity,
+fence, convergence, revocation, and recovery evidence.
+Verification: crash and fail over before/after every catalog manifest/prepare/
+receipt/authorization/global-CAS/activation/convergence/finalize/revoke step;
+race topology change and replacement; clone every local identity/storage form;
+inject missing/duplicate/reordered/contradictory receipts; isolate a placement
+during activation and emergency distrust; then reconcile without invented
+completion. Also test partitions, clock skew, stale leader/fence,
 receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
 activity work, timer dispatch/result separation, multi-aggregate/remote-call
 transaction rejection, provider acceptance plus lost response, unknown-outcome
@@ -366,7 +394,9 @@ retention-hold set, envelope encryption, immutability, rotation/revocation,
 crypto-erasure consequences, external checkpoint anchors and drills. Bind each
 backup/checkpoint to the `VIT-INV-057` global lineage/revocation/emergency-
 distrust separately from every `VIT-INV-058` local catalog/distrust/time
-ratchet; the active catalog ID/epoch, recomputed payload/envelope and actual
+ratchet and the `VIT-INV-059` rollout root/state/immutable topology-placement
+manifest/outbox/inbox/receipts/deadlines; the active catalog ID/epoch,
+recomputed payload/envelope and actual
 predecessor digests, exact profile, activation floor, product/edition/
 compatibility scope, validity policy/times/maximum uncertainty, signer/key/
 signature profile, trust-root epoch, revocation/successor policy; every
@@ -374,7 +404,11 @@ effective tuple in its predecessor closures; and the selected semantic-
 realization set. Restore invokes the shared project verifier and reacquires
 trustworthy time before readiness. It merges the greatest externally retained
 local ratchets and expiry tombstone, so an older backup cannot extend a bounded
-window. Missing time or continuity fails closed. The
+window. A restored local row is non-authoritative until the current placement
+generation fences its predecessor and a fresh workload/boot identity obtains a
+new verified global/rollout receipt. A clone cannot inherit a convergence
+receipt, and recovery cannot invent rollout completion. Missing time or
+continuity fails closed. The
 planning superset and backup medium never become platform-law trust roots. Goal:
 verified recoverability. Deliverables: backup/restore tools and DR evidence.
 Verification: substitution, partial/stale backup, lost/rotated key, held/erased

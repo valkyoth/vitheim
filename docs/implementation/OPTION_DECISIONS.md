@@ -47,6 +47,12 @@ executor that owns the provider socket. A transferable cryptographic permit is
 unsupported; enabling one later requires a new milestone and independent design
 review for entropy, authentication, channel/audience binding, constant-time
 verification, zeroization, and durable replay prevention.
+Freeze the workload-identity and receipt-integrity inputs used by catalog
+rollout: canonical deployment/region/service-role/partition/placement IDs,
+non-clonable workload identity, boot/continuity evidence, binary and semantic-
+set digests, local fencing token, and domain-separated prepare/convergence/
+revocation receipt digest. Disk-derived or cloneable bearer identity cannot
+support a production local catalog owner.
 Freeze the credential-operation mechanism used by every
 `ProviderExecutionProfile`: external KMS/secret services retain master keys;
 upstream and general executor components receive only opaque tenant/provider/
@@ -166,7 +172,11 @@ Map the one global `VIT-INV-057` owner, expected-version activation row, and
 predecessor/successor/revocation/emergency-distrust lineage. Separately map
 every `VIT-INV-058` local `CatalogAdmissionRatchetRow`, including catalog
 epoch/digest, distrust epoch, trusted-time lower bound/continuity identity, and
-expiry tombstone. The two update domains cannot share an authority row.
+expiry tombstone, under the exact placement-generation key and workload/boot/
+binary/semantic/fence bindings. Map `VIT-INV-059` separately: rollout root,
+immutable topology/placement manifest, closed state, outbox/inbox, prepare/
+activation/convergence/revocation receipts, deadlines, escalation, and
+reconciliation. The three update domains cannot share an authority row.
 Planning-superset storage is non-authoritative and physically/logically
 distinguishable from active catalogs. No storage topology may make active trust
 reconstructible from the database after compiled/signed provenance is lost or
@@ -578,21 +588,25 @@ upgrade, failover, and restore. In particular, transmission start distinguishes
 `DefinitelyNotStarted`, `OutcomeUnknown`, and `StartClaimedReconciling`; only
 the first permits an ordinary retry.
 Freeze catalog distribution and refresh as a fenced control-plane operation:
-the global owner activates through CAS and each independent local owner invokes
-the shared verifier over the selected compiled/signed profile, actual
-predecessor artifact, exact build scope, complete predecessor closure, and
-exhaustive semantic realizations before readiness.
+the rollout root seals one topology/placement manifest and gathers exact
+identity/capability/semantic/fence-bound prepare receipts; the global owner
+consumes rollout authorization through CAS; each independent local owner invokes
+the shared verifier and emits convergence; the rollout root finalizes from
+durable receipts.
 Failover, rollback, isolated-node startup, restore, and mixed-version operation
 reject stale, revoked, unknown, partial, scope-mismatched, time-untrusted, or
 database-invented catalogs. RPO/RTO
 evidence states how the active catalog ID/epoch/digest is recovered without
 granting the backup medium signing authority.
-The HA profile names the single global catalog-lineage leader/owner, separate
-local-ratchet transactions, expected-version activation, propagation
-acknowledgement, partial-rollout/unreachable-node readiness, revocation/
-emergency-distrust priority, maximum tolerated staleness, trusted-time
-continuity after suspend/failover, and behavior when signer/root/validity/time
-evidence is unavailable. A node never
+The HA profile names the single global lineage owner, single rollout-root
+owner, separate local-ratchet transactions, expected-version activation,
+topology-generation authority, prepare/convergence acknowledgements, deadline
+escalation, partial-rollout/unreachable-placement readiness, replacement/
+region-move fencing, revocation/emergency-distrust priority, maximum tolerated
+staleness, trusted-time continuity after suspend/failover, and behavior when
+signer/root/validity/time evidence is unavailable. `AllRequired` remains the
+default. Selecting `FencedQuorum` requires proof that unprepared placements are
+durably fenced before global activation. A node never
 continues dispatch or transmission start merely because its planned-superset
 tuple or mutable cached envelope remains self-consistent.
 Goal: select the exact profiles Phase O must certify.
