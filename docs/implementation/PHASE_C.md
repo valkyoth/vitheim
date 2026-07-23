@@ -21,14 +21,21 @@ aggregate targets use a fence row updated atomically with target events. Remote,
 cross-shard, or projection-only current-target semantics are not a capability.
 Provider-owned mutable targets use the separate negotiated
 `RemoteTargetConcurrencyProfile`; conditional provider mutation is post-commit
-I/O and never satisfies or weakens local target-fence placement.
+I/O and never satisfies or weakens local target-fence placement. A claimed
+unconditional profile must co-locate the one-owner
+`RemoteMutationExceptionGuard`, effect work bundle, and provider-capability/
+policy epoch rows so dispatch can claim an attempt without advancing the
+exception stream.
 Cross-shard/region distributed work transactions are not a capability. Capacity
 movement uses the receipt-idempotent, at-least-once-delivered
 `QuotaCapacityTransferState` process manager, not a distributed exactly-once
 claim. All adapters use the canonical composite acquisition order and bounded
 identity-preserving deadlock retry contract. Capacity-transfer persistence
 freezes accounting owner, hierarchy root/parent lease, period, work/recovery
-lane, capacity class, residency/region, and authorization lineage.
+lane, capacity class, residency/region, and authorization lineage. Existing
+capacity is class-immutable. Only future unallocated parent capacity can be
+resized through a versioned, fenced `QuotaCapacityPolicy`; each delayed transfer
+transition rechecks current local tenant/principal/policy epochs.
 
 ## `0.21.0` — Storage Capability Negotiation
 
@@ -38,8 +45,9 @@ Setup: classify mandatory/optional capabilities, evidence version, startup
 probe, downgrade policy, transaction-domain placement/topology compatibility,
 authority-fence and target-fence freshness/co-location, capacity-transfer
 receipt/delivery and immutable-classification semantics, remote-target provider
-capability/validator evidence, bounded deadlock-retry semantics, and fail-closed
-behavior.
+capability/validator evidence, exception-guard/provider-capability-epoch
+co-location, capacity-policy version/floor/fence capability, bounded deadlock-
+retry semantics, and fail-closed behavior.
 
 Goal: prevent adapters from silently weakening correctness.
 
@@ -52,6 +60,9 @@ write claim, missing/non-co-located authority fence, stale external authority
 offered for privileged dispatch, missing/non-co-located target fence, remote or
 projection-only local current target, false strong-conditional provider claim,
 ignored/weakened conditional mechanism, unauthorized unconditional profile,
+missing/non-co-located exception guard, stale provider-capability epoch,
+unbounded/reusable exception attempt, mutable existing capacity class, tenant-
+invokable capacity policy, missing delayed-transition authority recheck,
 cross-partition transaction requirement,
 distributed-exactly-once capacity-transfer claim, unbounded or identity-changing
 deadlock retry, and optional-performance fallback tests pass.
@@ -94,7 +105,10 @@ acknowledgement and old-epoch fencing, make transfer capacity free at both ends,
 reclassify transfer owner/root/parent/period/lane/class/region, authorize an
 acknowledgement for a different destination hierarchy, refresh a remote
 validator after precondition failure, treat weak/ignored conditional mutation as
-strong,
+strong, treat unconditional review as an unguarded flag, mutate exception and
+effect streams together, project an exception guard eventually, resurrect an
+exception attempt, rewrite an existing capacity class, use a cross-class
+adjustment, activate from historical authorization IDs without current epochs,
 or execute a network/provider call inside the transaction.
 
 Verification: prove every deliberately incomplete bundle adapter and adapters
@@ -113,7 +127,11 @@ authorization-substitution case, emergency/security-cleanup-to-business
 reclassification, remote validator/account/resource substitution, ABA
 delete/recreate, weak/strong confusion, provider downgrade/ignored conditional,
 unsafe automatic refresh, precondition-failure and response-loss outcome
-misclassification, missing/substituted authority fence,
+misclassification, exception revocation/expiry/provider-capability/final-attempt
+races, exception scope/request substitution, guard omission, restore
+resurrection, protected-class conversion by adjustment, capacity-policy replay/
+floor violation, tenant-suspension/principal/policy change during delayed
+activation or acknowledgement, missing/substituted authority fence,
 missing/substituted target fence, target deletion/merge/migration/supersession/
 restore and target-change-versus-dispatch races, stale projection and cross-
 shard target placement, every authority-change-versus-dispatch race, composite
@@ -166,7 +184,10 @@ co-located authority-fence epochs/sets, per-kind quota encumbrance and transfer
 accounting, co-located target-fence rows and owner-update triggers,
 `QuotaCapacityTransferState` outbox/inbox process manager and receipt ledger,
 immutable capacity-transfer hierarchy/classification/authorization columns and
-constraints,
+constraints, no-reclassification constraints, versioned unallocated-parent
+capacity-policy/floor/simulation records, delayed-transition current-epoch
+guards, co-located remote-mutation-exception guard/attempt receipts and provider-
+capability epochs,
 canonical composite lock-order/deadlock-retry implementation,
 integrity commitment, and configuration adapters; migrations, operator guide,
 backup/restore, and observability. Startup fails capability negotiation if any
@@ -182,7 +203,10 @@ epoch revocation races, target deletion/merge/migration/supersession and current
 target dispatch races, stale target projection, target-fence restore,
 capacity-transfer crash/duplicate/reorder/lost-ack/source-destination-failover/
 stale-epoch/conflict/late-evidence and accounting-owner/hierarchy/parent/period/
-lane/class/region/authorization-substitution cases, composite lock-order inversion and
+lane/class/region/authorization-substitution cases, exception revocation/
+expiry/provider-capability/final-attempt concurrency and restore, protected-
+class adjustment rejection, existing-class immutability, capacity-policy floor/
+simulation/replay and delayed-transition stale-authority cases, composite lock-order inversion and
 bounded retry, cross-partition rejection, tenant bypass, pool exhaustion,
 migration rollback, restore, and conformance pass.
 
@@ -407,7 +431,9 @@ expiry, redelivery, failover, and dead-letter movement. Preserve the immutable
 kind/strength/provenance/observation time, provider capability/version, request
 digest, idempotency key, and reviewed-exception identity across redelivery. A
 worker cannot refresh the validator or reinterpret precondition failure or
-response loss.
+response loss. Preserve the exact `RemoteMutationExceptionId`, owner generation,
+scope/request digest, epochs, guard version, attempt identity/ceiling, and
+receipt; redelivery cannot select or consume a different exception attempt.
 Preserve the immutable
 authorization binding and freshness profile across queues; a worker must record
 the required current dispatch decision, authenticate as itself, and redeem the
@@ -428,7 +454,9 @@ claim/transfer transition idempotency. Preserve stable capacity-transfer ID,
 source/destination epochs, digest, sequence, state, acknowledgements, and
 original claim/transfer lineage plus accounting owner, hierarchy root/parent
 lease, period, work/recovery lane, capacity class, region, and source/
-destination authorization through at-least-once queue delivery; workers
+destination authorization through at-least-once queue delivery. Preserve
+`QuotaCapacityPolicy` version/simulation/floor evidence and current local tenant/
+principal/policy epoch requirements for every delayed transition; workers
 never reacquire individual quota
 members, release encumbrance on capacity-lease expiry, or open a cross-partition
 transaction. Preserve and atomically lock the complete
@@ -447,7 +475,9 @@ redemption-guard/attempt-claim handler, exact-token local quota-set and
 hierarchical-capacity-lease/encumbrance-transfer handlers, authority-fence-set
 validator, target-fence validator, capacity-transfer outbox/inbox process
 manager and reconciler, remote-target concurrency validator and precondition-
-outcome handler, canonical lock-order/deadlock-retry implementation, capability
+outcome handler, remote-mutation-exception guard/attempt handler, capacity-
+policy and delayed-transfer authority gate, canonical lock-order/deadlock-retry
+implementation, capability
 report, and operational metrics.
 
 Verification: enqueue/commit crashes, duplicate delivery, receipt/effect split,
@@ -464,7 +494,9 @@ during claim, consumed-attempt failover/restore, grant/effect two-stream
 mutation, target substitution, offline-human impersonation, worker confused
 deputy, remote validator/account/resource substitution, weak/strong or ABA
 confusion, ignored/downgraded conditional write, silent refresh, precondition
-failure retried, response loss treated as rejection, mixed quota-claim split, overlapping-set deadlock/livelock, partial
+failure retried, response loss treated as rejection, exception scope/guard/
+attempt substitution, revocation/expiry/provider-capability/final-attempt race,
+restore resurrection, mixed quota-claim split, overlapping-set deadlock/livelock, partial
 reservation/recovery, token/digest/membership substitution, cross-partition set,
 hierarchical lease over-allocation/reclamation/failover, failover before exact-
 set consumption, concurrency lease held by remote uncertainty,
@@ -477,8 +509,10 @@ liability/spent token, child loss, late settlement, duplicate encumbrance
 transfer, transfer crash/duplicate/reorder/lost acknowledgement, source or
 destination failover, stale epoch, conflicting transfer, forbidden free-at-
 both-ends state, owner/root/parent/period/lane/class/region/authorization
-substitution, recovery/emergency-to-business reclassification, parent reclaim
-racing failover, target deletion/merge/
+substitution, recovery/emergency-to-business reclassification through transfer
+or adjustment, existing-class rewrite, tenant-invoked capacity policy, reserve-
+floor violation, policy replay, stale tenant/principal/policy epoch during
+activation/acknowledgement/reclaim, parent reclaim racing failover, target deletion/merge/
 migration/supersession/restore racing dispatch, stale target projection, cross-
 shard target placement, missing/substituted target fence,
 single-tenant reserve monopolization, global/per-tenant starvation, emergency-
@@ -496,7 +530,10 @@ capacity and per-kind encumbrances through fenced local leases, linearizes every
 applicable authority and current-target change through the complete authority
 and target fences, moves capacity with at-least-once messages and receipt-
 idempotent conservative accounting without classification drift, preserves
-remote validator semantics without treating them as a local fence, retries composite deadlocks without
+remote validator semantics without treating them as a local fence, redeems
+unconditional authority only through its co-located revocable attempt guard,
+keeps existing capacity class-immutable, fences future-allocation policy, and
+rechecks delayed-transition authority; retries composite deadlocks without
 identity drift, keeps fair recovery available under hostile tenant exhaustion,
 and has no process-local queue dependency.
 `v0.30.1 implementation stop reached. Run pentest for this exact commit.`

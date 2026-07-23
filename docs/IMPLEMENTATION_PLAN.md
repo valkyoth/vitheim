@@ -98,7 +98,10 @@ validator kind/bytes/strength/provenance/time, admitted provider capability,
 request digest, and idempotency key. Precondition failure is typed non-
 acceptance and cannot trigger automatic validator refresh; privileged,
 destructive, and containment work requires a strong validator unless a narrow
-reviewed unconditional exception applies. Response loss stays unknown.
+reviewed unconditional exception applies. The exception is one-owner,
+revocable, scoped, expiring, provider/policy-versioned, and attempt-bounded; a
+co-located guard serializes revocation/capability change/final-attempt use while
+dispatch advances only the effect stream. Response loss stays unknown.
 Each effect carries a bounded atomic set of typed quota claims with independent
 amount/unit, settlement policy, and admission/lease/dispatch/transmission/
 storage boundary. Concurrency releases with the local lease; operation, rate,
@@ -128,10 +131,15 @@ entry recovery never exposes capacity at both ends; late evidence retains its
 original claim/transfer lineage. Transfer freezes accounting owner, hierarchy
 root/parent lease, period, work/recovery lane, capacity class, residency/region,
 and authorization decisions. Ordinary transfer cannot cross tenant, hierarchy,
-period, lane, class, or residency; cross-class movement is a separate authorized
-audited adjustment.
+period, lane, class, or residency. Existing capacity never changes class, and
+protected-to-business conversion has no privileged escape hatch. Only future
+unallocated parent capacity may be resized through versioned, simulated,
+separation-of-duties `QuotaCapacityPolicy` activation that preserves protected
+floors. Delayed transfer steps recheck current local tenant, principal, and
+policy epochs.
 Composite transactions use one order—stream head, authority fences, target
-fence, grant guard, quota lease/keys, uniqueness claims, then receipts—and retry only
+fence, remote-mutation-exception guard, grant guard, quota lease/keys,
+uniqueness claims, then receipts—and retry only
 classified deadlocks under a bounded identity/digest/version-preserving policy.
 Tenant/work-class
 partitioning, fair share, ceilings, starvation bounds, and a scoped emergency
@@ -167,7 +175,9 @@ bounded quota-claim kinds/boundaries/settlement, exact-set token/digest/
 linearization, quota partition/capacity-lease/encumbrance-transfer topology,
 target-fence owner/epoch/co-location/placement, receipt-idempotent capacity-
 transfer delivery/conservation/classification, remote-target concurrency
-profile/provider capability/precondition outcome, canonical composite lock/retry behavior,
+profile/provider capability/precondition outcome, remote-mutation-exception
+owner/guard/attempt, capacity-policy/floor/simulation/current-transition
+authority, canonical composite lock/retry behavior,
 refund/write-off evidence, and
 compensation/recovery-capacity behavior.
 

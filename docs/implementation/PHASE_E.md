@@ -149,7 +149,10 @@ Any external channel mutation uses the `0.18.2`
 `RemoteTargetConcurrencyProfile`: exact provider/account/resource and strong
 validator are immutable, precondition failure is typed non-acceptance, workers
 never refresh automatically, and response loss remains unknown. A reviewed
-unconditional channel is explicit and cannot imply local target fencing.
+unconditional channel names one exact `RemoteMutationException`; publication
+claims its co-located guard attempt at dispatch, and revocation, expiry,
+provider-capability change, or attempt exhaustion denies. It cannot imply local
+target fencing.
 
 Goal: turn the `0.48.1` publication port and fake into a supported hosted status
 surface without exposing the private incident or service-health authority.
@@ -166,8 +169,9 @@ receipt, duplicate/out-of-order update, correction-history loss, provider
 outage/retry, subscription flood, domain/TLS takeover, restore/rebuild,
 validator/resource/account substitution, ABA delete/recreate, weak/strong
 confusion, ignored/downgraded conditional writes, silent refresh, response-loss
-misclassification, accessibility, load, and fake-versus-hosted differential
-tests pass.
+misclassification, exception scope/request substitution, revocation/expiry/
+provider-capability/final-attempt race, missing guard, restored exception,
+accessibility, load, and fake-versus-hosted differential tests pass.
 
 Exit criteria: at least the selected built-in hosted profile publishes and
 corrects status with reproducible approval/source/receipt history; external

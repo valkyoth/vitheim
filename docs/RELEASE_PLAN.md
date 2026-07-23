@@ -97,13 +97,13 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.14.0` | Snapshots and validation | Stale, forged, truncated, cross-tenant, or poisoned snapshots |
 | `0.15.0` | Projection engine and checkpoints | Skipped, duplicated, reordered events and invalid checkpoints |
 | `0.15.1` | Security audit envelope and durable intent | Missing/forged audit authority, command/audit mismatch, duplicate rejection, metadata leakage |
-| `0.16.0` | Transactional event/receipt/audit/outbox and authority/remote-concurrency-bound effect intent | Mutation without audit/message, authority impersonation, target/validator substitution, weak/ABA/downgraded provider condition, outcome collapse |
+| `0.16.0` | Transactional effect intent with authority, remote concurrency, and exception identity | Missing audit/authority, target/validator substitution, weak provider condition, exception ID/scope reuse, outcome collapse |
 | `0.16.1` | Atomic command commit bundle | Missing/split command component, audit/receipt digest deletion, denial-chain splice |
 | `0.17.0` | Inbox and idempotent consumer model | Replay, duplicate local commits, poisoned receipts, remote-duplication ambiguity |
 | `0.17.1` | Atomic consumer commit bundle | Receipt/local-commit split, redelivery duplication, hidden multi-stream or remote-in-transaction work |
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
-| `0.18.1` | Exact quota sets with classified hierarchical leases and explicit transfer process management | Transfer crash/reorder/lost ack plus owner/root/parent/period/lane/class/region/authorization substitution and emergency-to-business reclassification |
-| `0.18.2` | Atomic effect work with grants, local fences, remote concurrency, exact quotas, and canonical commits | Authority/local-target races plus remote validator/ABA/downgrade/refresh/outcome confusion and transfer classification drift |
+| `0.18.1` | Exact quota sets, class-immutable capacity, transfer processing, and future-allocation policy | Protected-class conversion, existing-class rewrite, tenant policy invocation, floor/simulation replay, stale delayed-transition authority |
+| `0.18.2` | Atomic work with grants, local fences, remote exception guards, and exact quotas | Exception revocation/expiry/capability/final-attempt races, guard restore, canonical lock order, capacity-policy/transition authority bypass |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
 | `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
@@ -121,10 +121,10 @@ implementations remain blocked rather than being implemented casually.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.21.0` | Storage, fence, remote-target, transfer, and transaction-topology capability negotiation | Missing local fence, false strong provider condition, unauthorized unconditional mode, transfer-class drift, active-active downgrade |
-| `0.22.0` | Destructive local-fence, remote-concurrency, composite-lock, grant, and quota conformance | Local TOCTOU, remote ABA/refresh/outcome confusion, transfer acknowledgement/fencing/classification loss, test bypass |
+| `0.21.0` | Storage, fence, exception-guard, capacity-policy, and transaction-topology negotiation | Missing/non-local guard or epoch, mutable class, tenant policy path, missing delayed authority check, active-active downgrade |
+| `0.22.0` | Destructive local/remote authority, composite-lock, and quota conformance | Exception scope/revocation/final-attempt/restore, protected-class adjustment, policy floor/replay, stale activation authority |
 | `0.23.0` | SQLite single-node adapter | Locking, rollback, injection, file permissions, tenant partition |
-| `0.24.0` | PostgreSQL reference production adapter | Authority/target races, canonical retry, guard restore, immutable transfer hierarchy/classification and late-lineage settlement |
+| `0.24.0` | PostgreSQL reference production adapter | Exception-guard concurrency/restore, immutable capacity class, policy floors/simulation, delayed-transition current epochs |
 | `0.25.0` | Experimental MySQL adapter | Isolation/encoding differences, rollback, tenant enforcement, no default v1 claim |
 | `0.26.0` | Experimental MongoDB adapter | Transaction boundaries, query injection, collection isolation, no default v1 claim |
 | `0.27.0` | Experimental SurrealDB adapter | Namespace/graph/query isolation, capability truthfulness, no default v1 claim |
@@ -134,7 +134,7 @@ implementations remain blocked rather than being implemented casually.
 | `0.28.3` | In-process secret handling | Formatting/diagnostic/plugin leakage, stale cache, crash/core-dump policy, overstated erasure |
 | `0.29.0` | Migration registry and resumable migrations | Interrupted/malicious migrations, downgrade and rollback safety |
 | `0.30.0` | Cross-backend export and import | Substitution, truncation, tenant mix-up, integrity loss |
-| `0.30.1` | Durable queue preserving local fences, remote validators, attempts, exact quotas, and classified transfer lineage | Redelivery/failover plus validator refresh/downgrade/outcome confusion and transfer hierarchy/class substitution |
+| `0.30.1` | Durable queue preserving exception attempts, class-immutable capacity, and transfer authority | Redelivery/failover plus exception guard substitution, protected-class conversion, policy replay, stale activation authority |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 
 ## Phase D — Universal Work Platform
@@ -183,7 +183,7 @@ integration is deferred to `0.70.0` and `0.100.0`.
 | `0.47.0` | Release and deployment records | False status, unauthorized linkage, evidence forgery |
 | `0.48.0` | Major-incident command process | Role takeover, notification floods, hidden decisions |
 | `0.48.1` | Stakeholder communications and status publishing | Premature/false publication, audience leakage, stale status, correction-history loss |
-| `0.48.2` | Hosted status publication with remote conditional mutation and reconciliation | Hidden-field leakage, false receipts, validator/account/resource substitution, ABA/downgrade/refresh, response-loss ambiguity |
+| `0.48.2` | Hosted status publication with conditional or guarded-exception mutation | Validator confusion plus exception scope/revocation/expiry/provider-capability/final-attempt/restore races |
 | `0.49.0` | Postmortems and corrective actions | Sensitive publication, deletion, blame/identity leakage |
 | `0.50.0` | Integrated ITSM beta with later-phase port fakes | Cross-module authorization, fake-port contracts, replay and upgrades |
 
@@ -210,9 +210,9 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.56.0` | ABAC engine | Missing attributes, type confusion, fail-open decisions |
 | `0.56.1` | Policy lifecycle, bootstrap, recovery, and monotonic epoch | Activation/rollback racing dispatch, epoch reuse, self-approval, lockout, recovery abuse |
 | `0.57.0` | Relationship authorization with fact epochs | Edge change racing dispatch, epoch reuse, malicious paths, ownership spoofing, traversal bounds |
-| `0.58.0` | Authority enforcement registry with local-target and remote-provider concurrency profiles | Missing/substituted local fence, stale projection, remote validator/capability downgrade, unsafe unconditional mode |
+| `0.58.0` | Authority registry with local fences, remote exception guards, and capacity-policy cases | Missing guard/epoch, exception reuse, existing-class transition registration, stale delayed-transfer authority |
 | `0.59.0` | Delegation/break-glass with enforcement epoch | Delegation revoke racing dispatch, epoch reuse, unbounded privilege, grant amplification, weak audit |
-| `0.60.0` | Complete delayed-authority, local-target, and remote-concurrency conformance suite | Every authority/local-target race plus remote ABA/validator refresh/downgrade/outcome confusion and interface parity |
+| `0.60.0` | Complete delayed-authority, remote-exception, and capacity-policy conformance suite | Exception races/restore plus protected-class conversion, policy floors/replay, tenant/principal/policy transfer races |
 
 ## Phase G — Durable Workflows
 
@@ -226,13 +226,13 @@ commit, and external-outcome semantics.
 | `0.61.0` | Workflow intermediate representation | Invalid graphs, instruction/depth bombs, hidden behavior |
 | `0.62.0` | Deterministic workflow interpreter | Infinite loops, nondeterminism, replay divergence |
 | `0.63.0` | Human approvals with grant-lineage issuance and redemption-guard maintenance | Self-approval, owner ambiguity, issuance reorder, pre-revocation, successor fork, omitted/stale guard |
-| `0.64.0` | Timers, fenced local targets, immutable remote validators, and bounded retries | Timer races plus missing local fences, remote ABA/downgrade/refresh/precondition retry, response-loss confusion |
+| `0.64.0` | Timers with fenced targets, remote validators, and exception guards | Exception scope/revocation/expiry/capability/final-attempt/restore plus validator and timer races |
 | `0.65.0` | Parallel branches and joins | Premature joins, duplicate completion, branch leaks |
 | `0.66.0` | Linked, independently authorized and multi-claim-accounted compensation mechanics | State/linkage collapse, unknown original/compensation, evidence/authority race, claim reuse/cross-kind settlement, double rollback |
 | `0.67.0` | Signals and subworkflows | Signal spoofing, cross-tenant routing, recursion exhaustion |
 | `0.68.0` | Workflow history, versioning, and migration | Unbounded history, corrupt checkpoint, orphan activity, unsafe remap |
 | `0.69.0` | Visual/configuration-as-code compiler | Hidden flags, generated privilege escalation, divergence |
-| `0.70.0` | HA workers with local fences, remote concurrency, exact quotas, and classified transfers | Failover plus local/remote target races, validator/outcome drift, transfer delivery/ack/fencing/class substitution, attempt restore |
+| `0.70.0` | HA workers with remote exception guards and class-immutable transfer policy | Failover plus exception races/restore, protected-class conversion, policy floor/replay, stale delayed-transition authority |
 
 ## Phase H — Alerts And Security Operations
 
@@ -337,16 +337,16 @@ Phase exit: cross-plugin/tenant isolation and compatibility suite pass pentest.
 | --- | --- | --- |
 | `0.111.0` | Versioned WIT component interfaces | ABI confusion and malformed components |
 | `0.112.0` | Deterministic component execution | Fuel bypass, nondeterminism, covert host access |
-| `0.113.0` | Authority/quota/remote-concurrency-bound effectful component execution | Revocation, confused deputy, validator/account/resource substitution, weak/ABA/downgraded condition, refresh, outcome collapse |
+| `0.113.0` | Effectful components with guarded remote exceptions and immutable quota classes | Exception selection/revocation/final-attempt/restore, capacity-policy invocation, protected-class conversion |
 | `0.114.0` | Capability and non-extractable secret-operation model | Capability escalation, broker confused deputy, plaintext secret in Wasm memory |
 | `0.115.0` | Memory/CPU/network/output metering | Resource-limit bypass and host denial of service |
 | `0.116.0` | Signed plugin registry and rollout | Signature downgrade, malicious update, rollback |
 | `0.116.1` | Governed plugin catalog and storefront | Publisher/listing/package impersonation, hidden capabilities, review bypass |
-| `0.117.0` | Connector SDK and remote-target concurrency testkit | Principal/audience confusion, SSRF, impersonation, provider validator/conditional-write downgrade and refresh |
+| `0.117.0` | Connector SDK with remote-exception conformance testkit | Validator/provider confusion plus exception scope/revocation/expiry/final-attempt/guard/restore |
 | `0.118.0` | Mail, webhook, and collaboration connectors | Header injection, spoofing, action-link abuse |
 | `0.118.1` | Microsoft Defender and Sentinel connector pack | Provider/workspace confusion, cursor/webhook replay, schema drift, action escalation |
 | `0.118.2` | Tenable vulnerability connector pack | Asset/finding confusion, forged fixed state, score drift, coverage gaps |
-| `0.119.0` | Outbound-only integration agent preserving remote validators | Agent takeover, spool extraction, identity cloning, validator/profile substitution, conditional downgrade, offline refresh |
+| `0.119.0` | Outbound agent preserving remote validator and exception-attempt authority | Spool takeover plus exception guard/attempt substitution, revoked/expired replay, capacity-policy injection |
 | `0.120.0` | Plugin compatibility/isolation suite | Cross-plugin and cross-tenant interference |
 
 ## Organization Federation
@@ -421,11 +421,11 @@ the first technology decision. An unselected option remains unsupported at
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.140.1` | Dependency, cryptography, KMS, and timestamp profile decision | Auditability, maintenance, license, key lifecycle, replacement boundary, no improvised security protocol |
-| `0.140.2` | Tenant, storage, target-fence, and transaction-domain topology decision | Guard/authority-fence/target/effect and quota/work co-location, remote-target/cross-partition/active-active rejection |
+| `0.140.2` | Tenant/storage topology for target, exception, quota, and policy authority | Guard/epoch/effect co-location, immutable-class schema, atomic policy floor/version, transition epochs, active-active rejection |
 | `0.140.3` | Human/workload/session local-revocation profile decision | Co-located epochs, external-staleness classification, privileged-profile rejection, sender constraint, offline-human non-impersonation |
-| `0.140.4` | Component runtime, effect-broker, egress, and provider-concurrency decision | Escape/metering plus provider validator/conditional profile downgrade, refresh, unconditional exception, quota/reserve abuse |
+| `0.140.4` | Component runtime, effect-broker, guarded-exception, and egress decision | Escape/metering plus exception owner/scope/guard/attempt/revocation/restore and capacity-policy isolation |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, retention precedence, omitted derived surfaces, tombstone/evidence inflation |
-| `0.140.6` | Deployment/HA local/remote-target, composite-lock, and classified-transfer decision | Local linearization; remote validator/outcome semantics; transfer receipt/fence/double-entry/hierarchy/class; failover/RPO/RTO |
+| `0.140.6` | Deployment/HA exception-guard and class-immutable capacity-policy decision | Guard co-location/epochs; no-reclassification matrix; policy floors/simulation; delayed authority; failover/RPO/RTO |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |
@@ -442,10 +442,10 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | `0.141.0` | Single-node production packaging | Permissions, defaults, secret exposure, clean install |
 | `0.142.0` | Split API/worker/ingest/index deployments | Service identity and network authorization |
 | `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
-| `0.143.0` | HA atomic work with local fences, remote concurrency, and classified transfers | Split brain plus local TOCTOU, remote ABA/refresh/outcome confusion, free/reclassified transfer capacity, failover loss |
-| `0.144.0` | Authoritative-region placement and residency | Cross-region local-fence split, remote account/resource/region substitution, transfer-region reclassification, external-copy leakage |
-| `0.145.0` | Backup, restore, and disaster recovery | Authority/target rollback, remote validator/profile promotion, transfer hierarchy/class/authorization loss, capacity recreation |
-| `0.146.0` | Performance, local/remote-target contention, and transfer-safe quota certification | Remote conditional races, lock/retry duplication, live-claim expiry, transfer ack/fence/double-entry/classification race |
+| `0.143.0` | HA atomic work with guarded exceptions and class-immutable capacity | Split brain plus stale exception use, protected-class conversion, floor/current-authority bypass, failover loss |
+| `0.144.0` | Authoritative-region placement and residency | Cross-region exception-guard split, stale capability/policy epochs, transfer-region reclassification, leakage |
+| `0.145.0` | Backup, restore, and disaster recovery | Exception attempt resurrection, capability/policy rollback, class rewrite, floor/current-authority loss |
+| `0.146.0` | Performance, exception-guard contention, and capacity-policy certification | Guard final-attempt races, protected-class conversion, policy floor/replay, stale activation authority |
 | `0.147.0` | Final security, secret-memory, and supply-chain hardening | Diagnostic/crash/plugin secret leakage and artifact/dependency/CI/builder/key compromise |
 | `0.148.0` | API/event/plugin/pack compatibility freeze | Downgrade and version confusion |
 | `0.149.0` | Release candidate and external pentest remediation | Complete platform attack paths and clean retest |
@@ -499,7 +499,9 @@ are independently evidenced as production-ready.
   remote provider/account/resource/validator binding, weak/strong/ABA
   semantics, conditional downgrade/ignore, refresh prohibition, typed
   precondition failure, response-loss ambiguity, reviewed unconditional
-  exceptions, and worker confused-deputy attempts.
+  exception owner/scope/approval/time/attempt/epochs, co-located guard,
+  revocation/expiry/supersession/provider-capability/final-attempt races,
+  retry/restore behavior, and worker confused-deputy attempts.
 - Every untrusted parser is fuzzed; cryptography is independently reviewed;
   plugin escape and AI injection/tool-abuse suites pass.
 - Atomic audit-intent crash tests, protected-read release receipts, exact
@@ -511,8 +513,11 @@ are independently evidenced as production-ready.
   receipt-idempotent capacity-transfer state over at-least-once delivery,
   authenticated acknowledgement and old-epoch fence proof, conservative double-
   entry conservation, original transfer lineage, immutable owner/hierarchy/
-  parent/period/lane/class/region/authorization binding, cross-class adjustment,
-  and emergency/security-cleanup isolation,
+  parent/period/lane/class/region/authorization binding, no cross-class adjustment,
+  existing-capacity class immutability, forbidden protected-to-business
+  transitions, unallocated-parent-only capacity policy with separation/floors/
+  simulation, current delayed-transition authority, and emergency/security-
+  cleanup/reconciliation isolation,
   canonical composite lock order and bounded identity-preserving retry,
   active/active authoritative-write rejection, per-kind settlement, exactly-once
   refunds, write-off separation, compensation claims, provider-outage fairness/

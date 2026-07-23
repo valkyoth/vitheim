@@ -90,7 +90,11 @@ audit decision.
   request digest, and idempotency key. Precondition failure is typed non-
   acceptance and cannot silently refresh; response loss remains unknown.
   Privileged/destructive/containment unconditional mutation requires a narrow
-  expiring reviewed exception.
+  expiring reviewed `RemoteMutationException`. It has one owner stream and exact
+  tenant/provider/account/resource/action/request, approvals/quorum/separation,
+  policy/provider epochs, assurance, time, and attempt bindings. Its co-located
+  guard serializes revocation, expiry, supersession, provider-capability change,
+  and final-attempt claims while dispatch advances only the effect stream.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown
@@ -118,11 +122,15 @@ audit decision.
   Transfer also freezes accounting owner, hierarchy root/parent lease, period,
   work/recovery lane, capacity class, residency/region, and source/destination
   authorization. A transfer cannot change tenant, parent, period, region, lane,
-  or turn emergency/security-cleanup capacity into business capacity; such
-  movement requires a distinct authorized audited adjustment.
+  or turn emergency/security-cleanup/reconciliation capacity into business
+  capacity. Existing capacity class is immutable regardless of privilege. Only
+  future unallocated parent capacity can change allocation through a fenced,
+  simulated, separation-of-duties `QuotaCapacityPolicy` command that preserves
+  protected floors. Tenant work cannot invoke it, and every delayed transfer
+  transition rechecks current local tenant/principal/policy epochs.
   Composite transactions use the canonical stream/authority-fence/target-fence/
-  guard/quota/uniqueness/receipt order with bounded identity-preserving deadlock
-  retry.
+  remote-exception-guard/grant-guard/quota/uniqueness/receipt order with bounded
+  identity-preserving deadlock retry.
   Per-tenant/work-class
   ceilings, fair share, starvation bounds, and a scoped emergency reserve keep
   recovery available without tenant borrowing or monopolization.

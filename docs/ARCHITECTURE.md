@@ -109,8 +109,11 @@ authorization semantics.
    The provider enforces the precondition after local commit; failure is typed
    non-acceptance, never silent validator refresh. Privileged/destructive/
    containment work requires strong conditional mutation unless an exact,
-   expiring reviewed unconditional exception applies. Response loss remains
-   unknown and reconciling.
+   expiring reviewed unconditional exception applies. That exception is first-
+   class one-owner authority binding exact scope, approvals, policy/provider
+   epochs, time, and attempts; a co-located guard serializes revocation,
+   supersession, capability change, and attempt claims while dispatch advances
+   only the effect stream. Response loss remains unknown and reconciling.
    Each effect carries a bounded atomic set of typed quota claims rather than
    one universal reservation. Concurrency releases with its local lease;
    consumable operations follow declared evidence rules; provider-rate tokens
@@ -140,12 +143,15 @@ authorization semantics.
    and late evidence retains the original claim/transfer lineage. Transfer also
    freezes accounting owner, hierarchy root/parent lease, period, work/recovery
    lane, capacity class, residency/region, and source/destination authorization.
-   Ordinary transfer cannot reclassify emergency or recovery capacity as
-   business capacity; cross-class movement requires a distinct audited
-   adjustment.
+   Existing capacity never changes class; protected-to-business transitions are
+   structurally invalid regardless of privilege. Only future unallocated parent
+   capacity may be resized by a versioned, simulated, separation-of-duties
+   `QuotaCapacityPolicy` change that preserves protected floors. Every delayed
+   transfer transition rechecks its current local tenant, principal, and policy
+   epochs; historical decisions are evidence, not authority.
    Composite transactions acquire stream head, authority fences, target fence,
-   grant guard, quota lease/keys, uniqueness claims, then receipts in one
-   canonical order.
+   remote-mutation-exception guard, grant guard, quota lease/keys, uniqueness
+   claims, then receipts in one canonical order.
    Only classified deadlocks receive bounded, identity-preserving retries.
    Compensation is accounted separately. Tenant/work-class
    partitioning, fair share, ceilings, starvation bounds, and a scoped emergency

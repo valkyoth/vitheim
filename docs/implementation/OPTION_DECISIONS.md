@@ -31,7 +31,9 @@ MySQL database-per-tenant/composite enforcement, MongoDB partitioning, and
 SurrealDB namespace/permission profiles against the same conformance suite.
 Map local transaction domains for aggregate streams, redemption guards, effect
 work bundles, dispatch-authority fence rows, quota partitions, and hierarchical
-capacity leases. Map target owners and authoritative `DispatchTargetFence` rows
+capacity leases. Map remote-mutation-exception owners/guards/provider-capability
+epochs and capacity-policy/floor/current-transition-authority rows. Map target
+owners and authoritative `DispatchTargetFence` rows
 with the effect bundle, including same-aggregate expected-version handling.
 Reject any profile that needs remote, cross-shard, or projection-only current-
 target semantics or a cross-shard/region distributed work transaction. Compare
@@ -48,6 +50,8 @@ constraint, non-co-located grant guard/effect bundle, cross-partition claim set,
 missing/non-co-located authority fence, stale/duplicated capacity lease,
 missing/non-co-located target fence, target owner/fence/effect split, remote or
 projection-only current target, distributed-exactly-once transfer claim,
+non-co-located exception guard/effect/epoch, mutable existing-class schema,
+non-atomic capacity-policy floor/version update, missing transition epoch,
 advertised active/active authoritative writes, backup/export, and fail-closed
 capability evidence is reviewed.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
@@ -109,23 +113,28 @@ approved-grant redemption, bounded typed quota claim sets and settlement, and
 denial of plugin access to control-plane emergency reserve. Freeze provider-
 mutation profiles: admitted strong conditional mechanisms and validator
 semantics, explicit unsupported cases, and narrowly reviewed unconditional
-exceptions. A plugin cannot refresh a validator, weaken a profile, or represent
-provider concurrency as a local target fence.
+exceptions. Freeze unconditional exceptions as one-owner, revocable, scoped,
+expiring, attempt-bounded authority with co-located guards and provider-
+capability epochs. A plugin cannot refresh a validator, weaken a profile,
+represent provider concurrency as a local target fence, select an exception
+without its guard, invoke capacity policy, or reclassify existing capacity.
 Goal: revalidate and freeze a bounded plugin profile with defense in depth.
 Deliverables: runtime/version pin, disabled default imports, worker identity,
 OS limits, egress/DNS/TLS policy, capability-handle, catalog/storefront trust,
 host-brokered authenticated HTTP/signing/token/certificate operations,
 publisher/mirror, permission-diff, connector-support, effect-dispatch gate,
-grant/service-principal redemption, quota-claim/recovery-reserve isolation, and
-remote-target conditional-write/precondition-outcome gate, and upgrade
-decisions.
+grant/service-principal redemption, quota-claim/recovery-reserve isolation,
+remote-target conditional-write/precondition-outcome gate, remote-mutation-
+exception guard/attempt gate, and upgrade decisions.
 Verification: sandbox escape, metering bypass, host-call amplification, DNS
 rebinding, redirect, cross-plugin/tenant, guest-memory secret canaries, broker
 confused-deputy/target substitution, stale dispatch authority, quota/refund/
 cross-kind settlement/reserve abuse, grant replay/impersonation, and cancellation
 evidence is reviewed; include provider/account/resource/validator substitution,
 weak/strong and ABA confusion, ignored/downgraded conditional writes, silent
-refresh, response-loss ambiguity, and unconditional-exception misuse.
+refresh, response-loss ambiguity, exception scope/reuse, revocation/expiry/
+provider-capability/final-attempt race, guard omission/restore, capacity-policy
+access, and protected-class conversion.
 Exit criteria: cryptography is not claimed to enforce resource isolation.
 `v0.140.4 implementation stop reached. Run pentest for this exact commit.`
 
@@ -182,8 +191,13 @@ reconciliation/security-cleanup capacity with a scoped emergency reserve;
 redemption uses a co-located fenced `GrantRedemptionGuard` so dispatch advances
 only the effect stream. Dispatch also locks a bounded complete
 `DispatchAuthorityFenceSet` of applicable monotonic local epochs. Every quota
-set is local to its work transaction;
-global/regional limits allocate fenced hierarchical capacity leases into local
+set is local to its work transaction.
+Unconditional remote mutation co-locates its one-owner exception guard, effect
+bundle, and provider-capability/policy epochs. Existing capacity class is
+immutable; only future unallocated parent capacity can be resized by a fenced,
+simulated, separation-of-duties policy that preserves protected floors, and
+every delayed transfer step rechecks current local authority.
+Global/regional limits allocate fenced hierarchical capacity leases into local
 partitions while retaining per-kind encumbrances after lease expiry. Every
 composite transaction uses the canonical acquisition order and bounded
 identity-preserving deadlock retry. Topology may tune capacity and consistency
@@ -203,14 +217,17 @@ lock order/deadlock-retry policy, target-fence owner/update/co-location/
 lifecycle/deletion/supersession profile,
 remote-target concurrency profile with exact provider/version, validator
 strength/ABA properties, conditional request mapping, precondition outcome,
-idempotency/query/reconciliation behavior, and reviewed unconditional exceptions,
+idempotency/query/reconciliation behavior, and reviewed unconditional-exception
+owner/scope/approval/time/attempt/epoch/guard topology,
 quota partition map and hierarchical capacity-lease allocation/reclamation/
 per-kind encumbrance/transfer/late-settlement conservation profile, including
 stable transfer ID, source/destination epochs, outbox/inbox receipts,
 authenticated acknowledgement, old-epoch fence proof, conservative double-
 entry recovery, original lineage, immutable accounting owner/hierarchy root/
 parent lease/period/work or recovery lane/capacity class/residency/region, and
-source/destination authorization decisions,
+source/destination authorization decisions, structural no-reclassification
+matrix, unallocated-parent capacity-policy version/floors/simulation/approval,
+and delayed-transition current-authority rechecks,
 active/active rejection/capability behavior, per-tenant/
 global fair-share and starvation policy, emergency-reserve sizing/isolation,
 RPO/RTO, upgrade/rollback, observability, and operator responsibility decisions.
@@ -232,10 +249,13 @@ deletion/merge/migration/supersession/restore race, stale projection, cross-
 shard target placement, missing/non-co-located target fence, reclamation/
 failover race, remote validator/account/resource substitution, weak/strong/ABA
 confusion, ignored or downgraded conditional writes, unsafe refresh,
-precondition/response-loss misclassification, transfer owner/root/parent/period/
+precondition/response-loss misclassification, exception scope/request
+substitution, revocation/expiry/provider-capability/final-attempt race, missing
+guard, restore resurrection, transfer owner/root/parent/period/
 lane/class/region/authorization substitution, emergency/security-cleanup-to-
-business reclassification, incompatible
-active/active topology,
+business conversion through adjustment, existing-class rewrite, tenant-invoked
+capacity policy, protected-floor/simulation replay, stale transfer-transition
+tenant/principal/policy authority, incompatible active/active topology,
 provider-outage tenant exhaustion, one-tenant unknown-outcome floods, per-
 tenant/global starvation, emergency-reserve borrowing, degraded dependencies,
 restore, capacity, and incident operations.

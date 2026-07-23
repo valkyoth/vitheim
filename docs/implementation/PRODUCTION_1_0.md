@@ -22,9 +22,11 @@ Deliverables:
 - Supported single-node/HA/regional profiles; backup, restore, rebuild, upgrade,
   rollback, health, live/grant/service-principal execution authority, multi-kind
   quota settlement/fair recovery capacity, guarded grant-attempt claims, local
-  authority-fence epochs, canonical composite transaction retry, quota
-  partitions/hierarchical per-kind capacity encumbrances, authoritative-region
-  failover, backpressure, incident, and DR runbooks. Active/active authoritative
+  authority-fence epochs, guarded remote-mutation exceptions, canonical
+  composite transaction retry, quota partitions/hierarchical per-kind capacity
+  encumbrances, immutable existing capacity classes, protected-floor capacity
+  policy, current delayed-transfer authority, authoritative-region failover,
+  backpressure, incident, and DR runbooks. Active/active authoritative
   multi-region writes are explicitly unsupported.
 - Signed source/artifacts/checksums, SBOM, provenance, licenses, compatibility
   evidence, pentest report, and complete release notes.
@@ -95,7 +97,12 @@ Verification:
   version, request digest, and idempotency key. Provider precondition failure is
   typed non-acceptance and cannot trigger validator refresh; response loss
   remains unknown. Every privileged/destructive/containment unconditional path
-  cites its narrow expiring reviewed exception and compensating controls.
+  cites one exact `RemoteMutationException` with one owner, exact scope,
+  approvers/quorum/separation, policy/provider epochs, assurance, time, attempts,
+  and compensating controls. Dispatch claims its co-located guard without
+  advancing the exception stream; revocation, expiry, supersession, provider-
+  capability change, final-attempt concurrency, retry, and restore cannot make
+  stale exception authority redeemable.
   Quota evidence proves bounded atomic claim sets and correct settlement for
   concurrency leases, consumable operations, provider-rate tokens, estimated
   liabilities, and retained bytes across their exact boundaries. Only provider-
@@ -124,11 +131,16 @@ Verification:
   capacity. Transfer binds accounting owner, hierarchy root/parent lease,
   period, work/recovery lane, capacity class, residency/region, and source/
   destination authorization; ordinary transfer cannot change them or convert
-  emergency/security-cleanup capacity into business capacity. Cross-class
-  movement requires a distinct audited authorized adjustment. Cross-partition set, distributed work transaction, and
+  emergency/security-cleanup/reconciliation capacity into business capacity.
+  Existing capacity never changes class. Only future unallocated parent capacity
+  can be resized through a fenced, simulated, separation-of-duties
+  `QuotaCapacityPolicy` change that preserves protected floors and cannot be
+  tenant invoked. Each delayed transfer transition rechecks current local
+  tenant/principal/policy epochs rather than trusting historical decisions.
+  Cross-partition set, distributed work transaction, and
   active/active authoritative-write requests fail closed. Composite transactions
-  use the canonical stream/authority-fence/target-fence/guard/quota/uniqueness/
-  receipt order; bounded
+  use the canonical stream/authority-fence/target-fence/remote-exception-guard/
+  grant-guard/quota/uniqueness/receipt order; bounded
   retries preserve identity/digest/version/fence state and never repeat I/O.
   Provider-outage and hostile-tenant tests prove per-tenant/work-class ceilings,
   global fair share, starvation bounds, and scoped non-borrowable emergency

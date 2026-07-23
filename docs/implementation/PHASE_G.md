@@ -64,15 +64,18 @@ Remote, cross-shard, and projection-only current-target timers fail closed.
 Provider-owned mutations instead preserve the immutable
 `RemoteTargetConcurrencyProfile`; a conditional timer sends the exact admitted
 validator, never refreshes it, and treats precondition failure as typed non-
-acceptance while post-transmission response loss remains unknown.
+acceptance while post-transmission response loss remains unknown. An
+unconditional timer must claim the exact co-located
+`RemoteMutationExceptionGuard`; exception revocation/expiry/supersession,
+provider-capability epoch, and final-attempt use serialize with dispatch.
 Remote work executes only after committed authorized dispatch and
 returns through a separate activity-result/consumer bundle. Goal: crash-safe
 time and authority behavior without a distributed exactly-once claim.
 Deliverables: timer dispatch/result effects, execution-authority/grant reference
 codec, redemption-guard/attempt-claim and cancellation evidence, scheduler
 bridge, authority-fence-set and target-fence evidence, canonical lock-order/deadlock-retry
-fixtures, remote-target conditional-mutation fixtures, and atomic-variant
-integration fixtures. Verification: clock jumps,
+fixtures, remote-target conditional-mutation and exception-guard fixtures, and
+atomic-variant integration fixtures. Verification: clock jumps,
 retry storms, duplicate wakeups/results,
 cancellation/revocation races, not-before/expiry boundaries, grant replay and
 attempt exhaustion, concurrent final attempt, crash after claim before provider
@@ -85,6 +88,8 @@ stale target fence, stale target projection, cross-shard target placement,
 remote validator/account/resource substitution, ABA recreation, weak/strong
 confusion, ignored/downgraded provider condition, silent refresh, precondition
 failure retry, response-loss misclassification,
+exception scope/request substitution, revocation/expiry/provider-capability/
+final-attempt race, missing guard, restore resurrection,
 lock-order inversion, retry identity drift/exhaustion, dispatch/completion
 collapse, receipt/effect split,
 remote-call-in-transaction rejection, overflow, and replay pass.
@@ -152,10 +157,12 @@ claim-set token linearization, grant-lineage ownership/process management, fair
 partitioned control-plane capacity, grant-redemption-guard and hierarchical
 quota-capacity-lease topology/per-kind encumbrance transfer, complete dispatch-
 authority fence sets, typed target fences, receipt-idempotent
-`QuotaCapacityTransferState` processing with at-least-once delivery, canonical
+`QuotaCapacityTransferState` processing with at-least-once delivery,
 remote-target concurrency profiles, immutable capacity-transfer owner/
-hierarchy/parent/period/lane/class/region/authorization bindings, canonical
-composite acquisition/retry behavior, and `0.51.2`
+hierarchy/parent/period/lane/class/region/authorization bindings,
+remote-mutation-exception guards, class-immutable existing capacity, versioned
+unallocated-parent capacity policy, delayed-transition current-authority
+rechecks, canonical composite acquisition/retry behavior, and `0.51.2`
 tenant-data-surface registry entries, Phase E workflow contract fixtures, and
 `0.39.1–0.39.3` on-call/
 paging/notification process-manager scenarios. Goal: durable multi-worker
@@ -167,7 +174,9 @@ co-located redemption-guard/attempt-claim handling, exact-token local per-kind
 quota settlement with hierarchical capacity leases/encumbrance transfer,
 authority-fence and target-fence validators, capacity-transfer outbox/inbox
 process manager and reconciler, remote-target conditional-mutation validator/
-outcome handler, capacity-transfer classification guard, bounded identity-
+outcome handler, remote-mutation-exception guard/attempt handler, capacity-
+transfer classification guard and capacity-policy/floor/simulation gate,
+delayed-transition authority rechecker, bounded identity-
 preserving deadlock retry, fair
 partitioned recovery lanes, and operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
@@ -203,6 +212,10 @@ transfer crash/duplicate/reorder/lost acknowledgement, source/destination
 failover, stale epoch, conflicting transfer, forbidden free-at-both-ends state,
 accounting-owner/hierarchy-root/parent/period/lane/class/region/authorization
 substitution, emergency/security-cleanup-to-business reclassification,
+protected-to-business conversion through adjustment, existing-
+class rewrite, tenant-invoked capacity policy, reserve-floor/policy replay,
+tenant suspension or principal/policy revocation during delayed activation/
+acknowledgement/reclaim,
 tenant/subject/session/delegation/policy/service-principal authority changes
 racing dispatch, missing/substituted/reordered fence entries, epoch reuse, stale
 external authority for privileged work, target deletion/merge/migration/
@@ -211,6 +224,8 @@ projection, cross-shard target placement, remote validator/account/resource
 substitution, ABA recreation, weak/strong
 confusion, provider downgrade/ignored conditional, silent refresh, typed
 precondition failure retried, response-loss misclassification,
+exception scope/request substitution, revocation/expiry/provider-capability/
+final-attempt race, guard omission, restore resurrection,
 lock-order inversion, retry exhaustion/identity drift,
 provider outage under tenant exhaustion, per-tenant/global recovery starvation
 or reserve abuse, Phase E fake-versus-real differential, rolling upgrades, and
@@ -228,7 +243,8 @@ the complete local monotonic fence set, and composite retries preserve identity.
 Every current-target dispatch linearizes on the target stream version/digest or
 co-located authoritative target-fence row without advancing a second stream.
 Remote provider mutation preserves its separate concurrency profile and exact
-validator or reviewed exception without claiming local target freshness.
+validator without claiming local target freshness; unconditional work also
+claims its exact live exception guard while advancing only the effect stream.
 Every exact immutable quota set remains local transactional authority in one
 partition, reserves all-or-none, and settles by kind; hierarchical leases
 conserve wider capacity and per-kind encumbrances through expiry/failover/
@@ -236,7 +252,10 @@ transfer without a distributed work transaction; local transfer transitions are
 receipt-idempotent, message delivery is at least once, and conservative double-
 entry accounting never exposes capacity at both ends or changes owner,
 hierarchy, parent, period, lane, capacity class, region, or authorization
-lineage; eligible refunds occur exactly once,
+lineage. Existing capacity class never changes; only fenced, simulated,
+separation-of-duties changes to future unallocated parent capacity are allowed,
+protected floors remain intact, and delayed transitions recheck current local
+authority; eligible refunds occur exactly once,
 administrative write-off remains distinct, compensation is separately
 accounted, fair recovery remains available under hostile tenant exhaustion, and
 every workflow interface/data surface is registered.

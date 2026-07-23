@@ -95,4 +95,9 @@ All notable Vitheim changes are documented here. The format follows
   immutable validator without pretending to be locally fenced, while capacity
   transfer freezes its complete accounting hierarchy, lane, class, residency,
   and authorization lineage.
+- Closed the remaining unconditional-mutation and capacity-class escape hatches
+  without new versions: reviewed unconditional mutations now redeem a one-owner,
+  revocable, attempt-bounded guarded exception, while existing capacity classes
+  are immutable and only future unallocated parent capacity can be resized by a
+  fenced, simulated, separation-of-duties policy that preserves protected floors.
 - Added local and GitHub verification gates without a crate publication path.
