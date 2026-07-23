@@ -119,4 +119,13 @@ All notable Vitheim changes are documented here. The format follows
   approval lineage, operational-state fences, obligation simulation, platform
   minima, append-only history, and cross-command separation from policies that
   spend released capacity.
+- Made root rollout finalization permission-only: every parent must freshly
+  CAS-revalidate its ledger, unallocated capacity, floors, obligations, manifest,
+  and current operational authority or remain conservatively blocked/reconciling.
+- Located non-persisted start permits inside a trusted transmission executor
+  that owns both claim and provider socket; split services exchange immutable
+  instructions/status only, and transferable permit profiles remain unsupported.
+- Versioned and durably ratcheted platform safety floors so stale/lower nodes,
+  mixed-version rollout, downgrade, rollback, lower defaults, failover, and
+  restore cannot silently release protected capacity.
 - Added local and GitHub verification gates without a crate publication path.

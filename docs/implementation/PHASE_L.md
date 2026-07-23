@@ -43,9 +43,13 @@ without the exact live `RemoteMutationExceptionGuard`, invoke
 emergency reserve. The host broker, never guest code, owns the immutable
 `DispatchTransmissionWindow`, current-fence `ClaimTransmissionStart`, and
 single-use bounded start permit. The broker binds the claim to one host worker
-instance and lease generation, returns non-persisted permit material once, and
-never exposes it to guest memory; a plugin cannot delay, extend, replay, select
-the claimant, or reinterpret uncertain transmission. Goal:
+instance and lease generation. Its trusted `TransmissionExecutor` owns the claim
+and provider socket, accepts an immutable authenticated instruction from the
+guest-facing broker, consumes the sealed process-local permit by value, and
+never exposes permit material or an authorizing digest to guest memory, RPC,
+IPC, or queues. A plugin cannot delay, extend, replay, select the claimant, or
+reinterpret duplicate instruction, executor failover, or uncertain transmission.
+Goal:
 controlled hosted extension
 effects with truthful remote outcomes. Deliverables: host-call broker, typed
 effect-capability descriptors, distinct lifecycle/outcome/resolution/
@@ -55,7 +59,7 @@ receipts, grant/service-principal redemption, and per-kind quota settlement/
 compensation accounting integration; include conditional-write broker,
 precondition outcome mapping, provider capability validation, and reviewed-
 unconditional-exception owner/guard/attempt enforcement plus transmission-
-window/unique-claimant/one-time-permit enforcement.
+window/unique-claimant/executor-boundary/no-permit-transport enforcement.
 Verification: unauthorized calls, replay, commit-to-dispatch revocation,
 forged/stale dispatch receipt, worker/plugin confused deputy, cross-tenant
 handles, target/request-digest substitution, unsafe freshness downgrade,
@@ -69,7 +73,8 @@ exception, capacity-policy invocation or protected-class conversion,
 expired/substituted transmission deadline, revocation after receipt, long guest
 pause, concurrent shared-credential hosts, claim/worker/lease/permit
 substitution, claim-response loss, stale-host takeover, permit replay/
-reconstruction, clock rollback, uncertain-start retransmission, provider
+reconstruction/transport, digest authorization, duplicate instruction, executor
+failover/compromise, clock rollback, uncertain-start retransmission, provider
 acceptance plus lost response, idempotency expiry, forged success/
 resolution source, operator assessment presented as provider truth, late
 callback versus manual resolution, forbidden blind retry, privileged resolver
@@ -167,10 +172,12 @@ simulation. Expose the typed remote-target concurrency descriptor, strong/weak
 validator fixtures, conditional-write/precondition outcome contract, and
 explicit unsupported/unconditional-reviewed profiles plus exception ID/guard/
 attempt fixtures. Include host-owned transmission-window/start-claim fixtures;
-the SDK exposes neither a raw-secret read nor a way to mint, extend, or replay a
-start permit. Its testkit requires unique claim/worker/lease/permit-digest
-binding, status-only replay, ambiguous-delivery reconciliation, and no persisted
-permit representation. Goal: safe integration
+the SDK exposes neither a raw-secret read nor a way to mint, extend, replay, or
+transport a start permit. Its testkit requires unique claim/worker/lease/permit-
+digest binding, status-only replay, ambiguous-delivery reconciliation, and no
+persisted permit representation. It models the supported split profile as
+immutable authenticated instruction/status RPC to a trusted executor that owns
+claim plus provider socket; no transferable permit API is exposed. Goal: safe integration
 development. Deliverables: private SDK/testkit, broker-operation mocks, guest-
 memory canary harness, and conformance suite. Verification: principal/tenant/
 audience confusion, SSRF, token replay, impersonation, handle extraction,
@@ -181,7 +188,9 @@ loss ambiguity, exception scope/revocation/expiry/final-attempt/restore, and
 unguarded unconditional selection, long pause, expired/substituted deadline,
 revocation before start claim, clock rollback, duplicate shared-credential
 workers, claim-response loss, lease takeover, claimant/permit substitution,
-permit replay/reconstruction, and uncertain retransmission pass. Exit criteria:
+permit replay/reconstruction/transport, digest authorization, duplicate
+instruction, executor failover/compromise, and uncertain retransmission pass.
+Exit criteria:
 connectors pass conformance before
 activation and cannot request plaintext credentials. `v0.117.0 implementation
 stop reached. Run pentest for this exact commit.`
@@ -264,9 +273,12 @@ profile, validator and provider capability evidence, request digest, idempotency
 key, exact exception/guard/attempt receipt, `redeemed_at`, `transmit_before`,
 effect attempt, audience/provider/account binding, unique claim ID, worker/
 device instance, lease generation/fence, permit digest, and transmission-start
-status—but never permit material. Offline replay cannot refresh, weaken,
-substitute, or consume another exception, extend a deadline, return a second
-permit, or retransmit a claimed/possibly started request. Capacity-policy
+status—but never permit material. The agent-local trusted executor owns claim
+plus private-system socket and consumes its sealed permit locally; the central
+service and spool exchange immutable authenticated instructions/status only.
+Offline replay cannot refresh, weaken, substitute, or consume another exception,
+extend a deadline, return or transport a permit, authorize from its digest, or
+retransmit a claimed/possibly started request. Capacity-policy
 authority is never present in an agent spool.
 This is not an OAuth authorization-server or token-endpoint claim. Goal: reach
 private systems safely. Deliverables: agent enrollment/credential protocol,
@@ -278,7 +290,9 @@ attempt substitution, revoked/expired exception replay, capacity-policy
 injection, long offline pause, stale admission, deadline/audience/request
 substitution, clock rollback, concurrent agent instance, claim/worker/lease/
 permit substitution, claim-response loss, takeover, start-permit replay/
-restore/reconstruction, uncertain transmission retry, and offline limits pass.
+restore/reconstruction/transport, digest authorization, duplicate instruction,
+executor failover/compromise, uncertain transmission retry, and offline limits
+pass.
 Exit criteria: agent
 compromise is bounded and revocable without making Vitheim a general OAuth
 issuer.

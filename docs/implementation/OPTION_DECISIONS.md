@@ -21,11 +21,18 @@ profiles and adapter boundaries. The timestamp profile must define authoritative
 transaction time, persisted `redeemed_at`/`transmit_before`, monotonic
 transmission-start enforcement, maximum admission-to-transmission intervals,
 rollback/suspend behavior, and fail-closed handling when remaining time cannot
-be trusted.
+be trusted. Freeze the `1.0.0` decision that permit material remains a sealed,
+consumed-by-value, best-effort-zeroized process-local value inside a trusted
+executor that owns the provider socket. A transferable cryptographic permit is
+unsupported; enabling one later requires a new milestone and independent design
+review for entropy, authentication, channel/audience binding, constant-time
+verification, zeroization, and durable replay prevention.
 Verification: independent supply-chain and cryptographic design review proves
 N0/N1 remain isolated and no protocol is improvised to avoid dependencies;
 deadline extension, wall-clock rollback, host suspend, restore, and monotonic-
-clock failure cannot make an expired dispatch permit usable.
+clock failure cannot make an expired dispatch permit usable; cloning,
+serialization, IPC/RPC/queue/log/core-dump exposure, digest authorization, or an
+unreviewed transferable-capability profile fails the decision.
 Exit criteria: Phase O has one approved, replaceable crypto/key profile.
 `v0.140.1 implementation stop reached. Run pentest for this exact commit.`
 
@@ -40,8 +47,9 @@ work bundles, dispatch-authority fence rows, quota partitions, and hierarchical
 capacity leases. Map remote-mutation-exception owners/guards/provider-capability
 epochs, transmission-window/start-claim rows, and capacity-policy lineage owner/
 one-parent ledger/high-watermark, protected-floor history/reduction/separation/
-platform-minimum rows, hierarchy-root manifest/membership/conservation/rollout
-rows, and current-transition-authority rows. Map target
+platform-floor profile/admission/ratchet rows, hierarchy-root manifest/
+membership/conservation/rollout rows, prepared-to-activated/blocked parent CAS,
+and current-transition-authority rows. Map target
 owners and authoritative `DispatchTargetFence` rows
 with the effect bundle, including same-aggregate expected-version handling.
 Reject any profile that needs remote, cross-shard, or projection-only current-
@@ -62,11 +70,13 @@ projection-only current target, distributed-exactly-once transfer claim,
 non-co-located exception guard/effect/epoch, mutable existing-class schema,
 non-co-located receipt/start-claim state, audience-only claimant, duplicate or
 persisted/reconstructable start permit, missing worker-instance/lease-fence/
-claim/permit binding,
+claim/permit binding, permit transport or digest authorization,
 ambiguous or multi-parent policy owner, non-co-located policy stream/parent
 ledger/floor row, non-atomic activation, shared floor/policy authority, missing
 operational fences/platform minimum/cross-command separation, incomplete or
 coordinator-discovered parent set, missing root manifest/epoch/conservation,
+root finalization used as stale parent authority, missing fresh local activation
+CAS/blocked state, lower-floor node or lost ratchet during upgrade/restore,
 unsafe partial rollout, missing transition epoch,
 advertised active/active authoritative writes, backup/export, and fail-closed
 capability evidence is reviewed.
@@ -153,7 +163,10 @@ Freeze the host-owned bounded transmission window, current-fence start claim,
 unique worker-instance/lease-bound claim, at-most-once non-persisted monotonic
 start permit, and ambiguous-claim/uncertain-start reconciliation boundary;
 guest code cannot control their claimant, clock, deadline, state, permit, or
-retry classification.
+retry classification. Freeze the supported split boundary: the host
+`TransmissionExecutor` owns both claim and provider socket, guest/broker traffic
+contains only immutable authenticated instruction/status, and no permit or
+authorizing digest crosses guest/RPC/IPC/queue memory.
 Goal: revalidate and freeze a bounded plugin profile with defense in depth.
 Deliverables: runtime/version pin, disabled default imports, worker identity,
 OS limits, egress/DNS/TLS policy, capability-handle, catalog/storefront trust,
@@ -161,8 +174,8 @@ host-brokered authenticated HTTP/signing/token/certificate operations,
 publisher/mirror, permission-diff, connector-support, effect-dispatch gate,
 grant/service-principal redemption, quota-claim/recovery-reserve isolation,
 remote-target conditional-write/precondition-outcome gate, remote-mutation-
-exception guard/attempt gate, dispatch-transmission claimant/one-time-permit
-gate, and upgrade decisions.
+exception guard/attempt gate, dispatch-transmission claimant/trusted-executor/
+one-time-permit/no-transport gate, and upgrade decisions.
 Verification: sandbox escape, metering bypass, host-call amplification, DNS
 rebinding, redirect, cross-plugin/tenant, guest-memory secret canaries, broker
 confused-deputy/target substitution, stale dispatch authority, quota/refund/
@@ -174,7 +187,9 @@ provider-capability/final-attempt race, guard omission/restore, capacity-policy
 access, protected-class conversion, delayed guest execution, deadline/permit
 substitution, shared-credential duplicate hosts, claim-response loss, lease
 takeover, persisted permit, clock rollback, permit replay/restore, and uncertain
-retransmit.
+retransmit; include permit IPC/RPC/queue/log exposure, digest authorization,
+duplicate instruction, executor failover/compromise, and socket/claim ownership
+split.
 Exit criteria: cryptography is not claimed to enforce resource isolation.
 `v0.140.4 implementation stop reached. Run pentest for this exact commit.`
 
@@ -236,13 +251,20 @@ Unconditional remote mutation co-locates its one-owner exception guard, effect
 bundle, and provider-capability/policy epochs. Every admitted receipt persists
 an immutable deadline and co-located start-claim state; workers recheck current
 fences before one exact worker instance/lease generation receives non-persisted
-permit material once; ambiguous claims and uncertain starts reconcile without
-ordinary retry. Existing capacity class is immutable. Each future-allocation
-policy lineage owns exactly one parent and atomically changes its co-located
-ledger under an independently governed floor set. Floor reduction has separate
+permit material once inside a trusted executor that also owns the provider
+socket. Other services exchange immutable authenticated instructions/status
+only; ambiguous/duplicate instruction, executor failover, and uncertain starts
+reconcile without ordinary retry. Existing capacity class is immutable. Each
+future-allocation policy lineage owns exactly one parent and atomically changes
+its co-located ledger under an independently governed floor set. Floor reduction has separate
 cross-command authority, operational fences, obligation simulation, and a
-platform minimum. Multi-parent rollout finalizes only against a complete
-unchanged hierarchy-root manifest and uses conservative intermediate limits;
+durable versioned/digested platform-floor admission ratchet. Nodes below the
+ratchet reject startup, mixed versions use the stricter profile, and rollback/
+restore/lower defaults cannot release capacity. Multi-parent rollout finalizes
+only against a complete unchanged hierarchy-root manifest and uses conservative
+intermediate limits; finalization only permits activation, after which each
+parent freshly CAS-revalidates its prepared state, ledger, floor, obligations,
+root manifest, and current operational fences or stays blocked/reconciling;
 every delayed transfer step rechecks current local authority.
 Global/regional limits allocate fenced hierarchical capacity leases into local
 partitions while retaining per-kind encumbrances after lease expiry. Every
@@ -265,7 +287,9 @@ lifecycle/deletion/supersession profile,
 transmission-window derivation, authoritative-time/start-claim placement,
 claim/worker-instance/lease-fence/audience/provider/request binding, one-time
 non-persisted monotonic permit, and ambiguous-claim/uncertain-start
-reconciliation profile,
+reconciliation profile, trusted executor claim-plus-socket placement, immutable
+instruction/status service protocol, sealed consumed-by-value/no-transport
+permit profile,
 remote-target concurrency profile with exact provider/version, validator
 strength/ABA properties, conditional request mapping, precondition outcome,
 idempotency/query/reconciliation behavior, and reviewed unconditional-exception
@@ -279,9 +303,11 @@ parent lease/period/work or recovery lane/capacity class/residency/region, and
 source/destination authorization decisions, structural no-reclassification
 matrix, one-parent capacity-policy owner, co-located parent epoch/high-watermark,
 independent floor-set owner/history/reduction/cross-command separation/platform
-minimum, exact deltas/simulation/approval, hierarchy-root canonical parent
-manifest/membership epoch/conservation constraints, conservative multi-parent
-rollout, and delayed-transition current-authority rechecks,
+floor profile ID/version/digest/per-class durable admission ratchet, exact
+deltas/simulation/approval, hierarchy-root canonical parent manifest/membership
+epoch/conservation constraints, conservative multi-parent rollout, fresh local
+post-finalization activation CAS and blocked/reconciliation state, and delayed-
+transition current-authority rechecks,
 active/active rejection/capability behavior, per-tenant/
 global fair-share and starvation policy, emergency-reserve sizing/isolation,
 RPO/RTO, upgrade/rollback, observability, and operator responsibility decisions.
@@ -309,17 +335,22 @@ guard, restore resurrection, long pause after receipt, authority/capability
 change before start claim, deadline/audience/request substitution, clock
 rollback, shared-credential duplicate workers, claim/worker/lease/permit
 substitution, claim-response loss, stale-worker takeover, restored/reconstructed
-permit, uncertain retransmission, transfer owner/root/parent/period/
-lane/class/region/authorization substitution, emergency/security-cleanup-to-
+permit, permit transport/logging or digest authorization, duplicate instruction,
+executor failover/compromise, uncertain retransmission, transfer owner/root/
+parent/period/lane/class/region/authorization substitution, emergency/security-cleanup-to-
 business conversion through adjustment, existing-class rewrite, tenant-invoked
 capacity policy, ambiguous policy owner/parent, non-atomic activation,
 concurrent allocation/stale high-watermark, policy-lowered floor, protected-
 floor/simulation replay, floor-reduction/spend approval reuse, operational-
 fence/obligation/platform-minimum bypass, omitted/aliased parent, membership
 change race, stale manifest/root epoch, conservation mismatch, coordinator
-failover, wrong-manifest activation, partial rollout/rollback/restore, stale
-transfer-transition tenant/principal/policy authority, incompatible active/
-active topology,
+failover, wrong-manifest activation, stale
+post-finalization parent state after allocation/reclamation/floor/obligation/
+incident/tenant/principal/policy/failover change, missing blocked/reconciliation
+state, floor-profile/ratchet substitution, lower-floor startup, mixed-version/
+downgrade/rollback/lower-default/restore weakening, partial rollout/rollback/
+restore, stale transfer-transition tenant/principal/policy authority,
+incompatible active/active topology,
 provider-outage tenant exhaustion, one-tenant unknown-outcome floods, per-
 tenant/global starvation, emergency-reserve borrowing, degraded dependencies,
 restore, capacity, and incident operations.

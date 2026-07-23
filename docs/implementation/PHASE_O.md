@@ -3,10 +3,38 @@
 Scope: `0.141.0–0.150.0`. Claims require operational evidence, not schedule.
 
 ## `0.141.0` — Single-Node Production Packaging
-Status: planned. Setup: supported OS/arch, packages/images, users/paths, permissions, secure defaults, upgrades. Goal: hardened repeatable single-node install. Deliverables: signed packages and runbook. Verification: clean install, permissions, rootless/non-root, secrets, restart, upgrade/rollback pass. Exit criteria: documented profile is operable securely. `v0.141.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: supported OS/arch, packages/images, users/paths,
+permissions, secure defaults, upgrades, compiled
+`PlatformSafetyFloorProfile` identity/version/digest, and durable admitted
+per-class floor high-watermarks. Goal: hardened repeatable single-node install.
+Deliverables: signed packages, startup floor-profile compatibility gate,
+governed higher-floor migration/drain tooling, and runbook. Verification: clean
+install, permissions, rootless/non-root, secrets, restart, rolling upgrade,
+downgrade/rollback to a lower compiled floor, lower-default release, conflicting
+profile, interrupted floor migration, and restore pass. Exit criteria: the
+documented profile is operable securely and no package change can start below or
+lower the durable admitted platform-floor ratchet. `v0.141.0 implementation stop
+reached. Run pentest for this exact commit.`
 
 ## `0.142.0` — Split Service Deployments
-Status: planned. Setup: API/worker/ingest/index identities, mTLS/authz, network policy, discovery, version compatibility. Goal: optional process separation. Deliverables: deploy manifests and service protocol evidence. Verification: service impersonation, confused deputy, network bypass, skew, partial outage, rotation pass. Exit criteria: split mode preserves modular semantics. `v0.142.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: API/worker/ingest/index and
+`TransmissionExecutor` identities, mTLS/authz, network policy, discovery,
+version compatibility, and the immutable authenticated
+`TransmissionInstruction`/status protocol. The executor owns both
+`ClaimTransmissionStart` and the provider socket; permit material remains a
+sealed process-local value and never appears in RPC, IPC, queues, service logs,
+or caller memory. Goal: optional process separation without inventing a
+transferable start capability. Deliverables: deploy manifests, executor
+placement/isolation profile, instruction codec/authentication and duplicate
+handling, status/reconciliation protocol, no-permit-transport evidence, and
+service runbook. Verification: service/executor impersonation, confused deputy,
+network bypass, instruction replay/substitution, duplicate RPC, claim-response
+loss, executor failover/stale process/compromise, socket/claim ownership split,
+permit or digest authorization leakage, version skew, partial outage, and
+rotation pass. Exit criteria: split mode preserves modular semantics, moves only
+instructions/status across services, and routes every ambiguous claimed start
+to reconciliation.
+`v0.142.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.142.1` — Production Telemetry Exporters And Graceful Drain
 
@@ -47,8 +75,10 @@ typed target fences, receipt-idempotent at-least-once capacity-transfer process
 management with immutable accounting classification, remote-target concurrency
 profiles and exception guards, class-immutable existing capacity, versioned
 one-parent capacity-policy atomic activation, protected-floor governance,
-hierarchy-root complete-manifest rollout, delayed-transition authority rechecks,
-bounded dispatch-transmission windows with unique worker/lease claimants,
+durable platform-floor profile ratchet, hierarchy-root complete-manifest rollout
+with fresh local post-finalization activation, delayed-transition authority
+rechecks, bounded dispatch-transmission windows with unique executor/lease
+claimants and instruction-only split boundaries,
 canonical composite acquisition/retry, and fair partitioned control-plane
 capacity.
 Goal: prevent split-brain effects. Deliverables: HA orchestration, work-variant
@@ -56,9 +86,9 @@ fault matrix, dispatch/grant-lineage/redemption-guard/authority-fence evidence,
 exact-set/capacity-lease/encumbrance/transfer quota evidence, target-fence
 evidence, remote conditional-mutation evidence, composite-lock/retry evidence,
 exception-guard/attempt evidence, transmission-window/current-fence start-claim/
-claimant/one-time-permit/uncertainty evidence, capacity-policy owner/parent/
-floor-governance/root-manifest/rollout/current-authority evidence, fair-capacity
-evidence, and runbooks.
+claimant/trusted-executor/no-permit-transport/uncertainty evidence, capacity-
+policy owner/parent/floor-governance/ratchet/root-manifest/fresh-activation/
+current-authority evidence, fair-capacity evidence, and runbooks.
 Verification: partitions, clock skew, stale leader/fence,
 receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
 activity work, timer dispatch/result separation, multi-aggregate/remote-call
@@ -98,7 +128,9 @@ change before start claim, deadline/audience/request substitution, clock
 rollback, concurrent shared-credential workers, claim/worker/lease/permit
 substitution, claim-response loss, stale-worker takeover, same-claim replay,
 pre/post-claim crash, permit replay/restore/reconstruction, uncertain
-retransmission,
+retransmission, duplicate instruction RPC, permit IPC/queue/log/core-dump
+exposure, digest authorization, executor failover/stale process/compromise,
+socket/claim ownership split,
 tenant-invoked capacity policy, ambiguous owner/parent, non-co-located or non-
 atomic activation, concurrent allocation/stale high-watermark, delta/
 simulation/floor substitution, self-lowered floor, partial rollout/rollback/
@@ -106,7 +138,12 @@ restore, floor-reduction/spend actor or approval-lineage reuse, stale
 incident/emergency/obligation fences, platform-minimum violation, omitted/
 aliased parent, parent add/remove/reparent/generation race, stale root manifest/
 epoch, conservation mismatch, coordinator failover, wrong-manifest activation,
-reserve-floor/policy replay,
+allocation/reclamation/floor increase/new protected obligation or incident/
+tenant suspension/principal revocation/policy supersession/parent failover
+between root finalization and activation, stale prepared activation instead of
+blocked reconciliation, floor-profile ID/version/digest/admission-epoch
+substitution, stale/lower-floor startup, mixed-version/downgrade/rollback/lower-
+default/restore ratchet weakening, reserve-floor/policy replay,
 stale tenant/principal/policy authority during transfer, tenant/subject/session/
 delegation/policy/principal
 revocation racing dispatch, missing/substituted/reordered authority fences,
@@ -123,9 +160,12 @@ target fence, weaken remote conditional mutation, reclassify transferred
 capacity, use a stale/unfenced unconditional exception, rewrite existing class,
 bypass a transmission deadline/current-fence start claim, retry an uncertain
 start, return/reconstruct a permit for a second worker or lease generation,
-bypass policy ownership/atomic parent activation/floor governance/root-manifest
-completeness/conservative rollout/current transfer authority, duplicate through
-deadlock retry, duplicate a refund, or starve fair bounded recovery.
+bypass trusted executor claim-plus-socket ownership or move permit authority
+across a service boundary, bypass policy ownership/atomic parent activation/
+floor governance/platform-floor ratchet/root-manifest completeness/fresh post-
+finalization parent revalidation/conservative rollout/current transfer
+authority, duplicate through deadlock retry, duplicate a refund, or starve fair
+bounded recovery.
 `v0.143.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.144.0` — Regional Placement And Residency
@@ -175,16 +215,19 @@ version and monotonic epoch, request/idempotency binding, exception owner/scope/
 approval/time/attempt/revocation/supersession state, guard version/claims/
 receipts, reviewed exception, dispatch `redeemed_at`/`transmit_before`, admitted
 bindings/epochs, claim ID, worker instance, lease generation/fence, permit
-digest and status—but no live permit material,
+digest, immutable instruction/executor identity, and status—but no live permit
+material or transferable capability,
 whole quota claim-set digest/member restoration with partial-set
 quarantine, hierarchical capacity-lease epoch/allocation/unreserved-remainder/
 per-kind encumbrance/transfer state/receipt/acknowledgement/original-claim-and-
 transfer-lineage plus accounting owner/root/parent/period/lane/class/region/
 authorization restoration, capacity-policy version/simulation/protected floors,
 one-parent lineage/parent epoch/high-watermark/exact deltas/independent floor-
-set owner/history/reduction receipts/cross-command separation/platform minimum,
-root manifest/digest/membership epoch/complete parent set/conservation totals,
-multi-parent rollout receipts, delayed-transition authority epochs, rebuild/
+set owner/history/reduction receipts/cross-command separation, platform-floor
+profile ID/version/digest and per-class admission epoch/high-watermark, root
+manifest/digest/membership epoch/complete parent set/conservation
+totals, multi-parent prepared/finalized/activated/blocked/reconciliation receipts
+and local activation evidence, delayed-transition authority epochs, rebuild/
 workflow continuation pass.
 Exit criteria: claimed RPO/RTO is demonstrated; recovery neither retains data
 past a controlling mandatory deletion obligation nor promotes an unverified
@@ -198,11 +241,14 @@ never make capacity free in both partitions or change classification. Recovery
 cannot refresh a remote validator, promote weak to strong, or invent a reviewed
 unconditional exception; cannot resurrect an exception attempt, reclassify
 existing capacity, extend/replay a transmission window or classify an uncertain
-start as unsent, reconstruct or return permit authority from a stored claim,
+start as unsent, reconstruct, transport, or return permit authority from a
+stored claim/digest,
 roll back a policy lineage/parent high-watermark/floor history/root manifest/
-membership epoch/rollout receipt, erase cross-command separation evidence, or
-authorize a delayed transition from historical decisions alone; and every related
-surface has its own disposition proof.
+membership epoch/rollout/parent-activation receipt, erase cross-command
+separation evidence, lower/omit the durable platform-floor ratchet, start a
+restored node below it, activate stale prepared parent state, or authorize a
+delayed transition from historical decisions alone; and every related surface
+has its own disposition proof.
 `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification
@@ -217,8 +263,9 @@ per-kind encumbrance/transfer/late settlement, canonical composite lock order
 and bounded deadlock retry, target-fence contention, remote-target conditional-
 provider profiles and exception-guard contention, immutable transfer
 classification, transmission-window/start-claim/permit contention, one-parent
-policy activation, protected-floor governance, and complete-root-manifest
-rollout contention, delayed-transition authority epochs, starvation bounds,
+policy activation, protected-floor governance/platform-floor ratchet, and
+complete-root-manifest/fresh-parent-activation rollout contention, delayed-
+transition authority epochs, starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
 Deliverables: multi-claim quota-lifecycle/load/fault harnesses, per-kind
@@ -227,9 +274,10 @@ monitors, hierarchical-capacity-lease conservation and per-kind encumbrance-
 transfer oracles, composite-lock/retry contention harness, target-change-versus-
 dispatch and remote-conditional-mutation harnesses, transfer-classification
 and exception-guard harnesses, transmission-pause/deadline/clock/uncertainty
-harness with duplicate claimants/lease takeover/claim-response loss, policy
-owner/parent/floor-governance/root-manifest/rollout oracle, leak/escalation
-evidence, and signed reports. Verification: atomic
+harness with duplicate claimants/lease takeover/claim-response loss, split-
+executor duplicate-instruction/no-permit-transport/failover harness, policy
+owner/parent/floor-governance/ratchet/root-manifest/fresh-activation oracle,
+leak/escalation evidence, and signed reports. Verification: atomic
 bounded claim sets across every work bundle, concurrent overlapping-set
 canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
 failover, immutable token/digest/membership, whole-set restore/reconciliation,
@@ -248,13 +296,18 @@ omission/restore resurrection, protected-class adjustment, existing-class
 rewrite, transmission deadline and current-fence start-claim races, long pause,
 clock rollback, concurrent shared-credential workers, claim/worker/lease/permit
 substitution, claim-response loss, takeover, permit restore/replay/
-reconstruction, uncertain retransmission, tenant-invoked capacity policy,
+reconstruction/transport, digest authorization, duplicate instruction, executor
+failover/compromise, uncertain retransmission, tenant-invoked capacity policy,
 owner/parent ambiguity, concurrent allocation, stale high-watermark, self-
 lowered floor, floor-reduction/spend approval reuse, stale operational fences/
 obligations, platform-minimum violation, omitted/aliased parent, membership
 race, stale manifest/root epoch, conservation mismatch, coordinator failover,
-wrong-manifest activation, partial rollout/rollback/restore, floor/simulation
-replay, stale activation/acknowledgement authority,
+wrong-manifest activation, post-finalization allocation/reclamation/floor/
+obligation/incident/tenant/principal/policy/parent drift, stale activation
+instead of blocked reconciliation, floor-profile/ratchet substitution, lower-
+floor startup, mixed-version/downgrade/rollback/restore weakening, partial
+rollout/rollback/restore, floor/simulation replay, stale activation/
+acknowledgement authority,
 composite lock-order contention, retry exhaustion/identity preservation,
 concurrency release independent of remote outcome,
 consumable-operation evidence rules, non-refundable transmitted rate tokens,
@@ -274,9 +327,10 @@ capacity reclassification, target-fence or remote-conditional race failure,
 stale/unfenced exception use, existing-class rewrite, protected-floor/policy or
 transmission-window/start-claim bypass, uncertain-start retry, non-atomic policy
 activation, duplicate/reconstructed permit authority, floor-governance/cross-
-command separation/root-manifest completeness bypass, unsafe partial rollout,
-delayed-authority bypass, retry-driven duplicate work, unfair or blocked
-recovery, and unsafe saturation block release.
+command separation/platform-floor ratchet/root-manifest completeness/fresh
+parent activation bypass, permit transport or claim/socket split, unsafe partial
+rollout, delayed-authority bypass, retry-driven duplicate work, unfair or
+blocked recovery, and unsafe saturation block release.
 `v0.146.0
 implementation stop reached. Run pentest for this exact commit.`
 
@@ -284,27 +338,44 @@ implementation stop reached. Run pentest for this exact commit.`
 Status: planned. Setup: complete threat model, dependency/tool/action inventory,
 semantic SBOM, reproducibility, full key generation/storage/use/rotation/revocation/
 recovery/destruction lifecycle, `0.28.3` in-process memory assurance, crash/
-core-dump/swap profile, provenance and secret scanning. Goal: close build and
-runtime supply-chain paths. Deliverables: audits, candidate-tree/artifact-bound
-signed evidence, SBOM/provenance, reproducible artifacts, hardening guide.
+core-dump/swap profile, sealed transmission-permit construction/consumption/drop
+assurance, executor isolation, provenance and secret scanning. Goal: close build
+and runtime supply-chain paths. Deliverables: audits, candidate-tree/artifact-
+bound signed evidence, SBOM/provenance, reproducible artifacts, permit-memory/
+diagnostic exposure report, and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
-tree/artifact, substitution and unsafe delta pass.
+tree/artifact, permit clone/serialization/log/core-dump/swap canaries, failed
+zeroization, executor compromise, substitution, and unsafe delta pass.
 Exit criteria: every trusted input is pinned/accounted. `v0.147.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.148.0` — Compatibility Freeze
 Status: planned. Setup: freeze API/event/workflow/policy/plugin/pack/export/agent
 versions and support windows, immutable event-schema registry, complete pure
-upcaster chains, original-byte hash authority, and unknown-event quarantine.
+upcaster chains, original-byte hash authority, unknown-event quarantine, and the
+platform-floor profile compatibility/admission matrix.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
 golden mixed-version event corpus, migration/rebuild suites, and deprecation
 rules. Verification: downgrade/skew/unknown versions, upcaster determinism,
-original-byte mutation, rolling upgrades, old data/plugins/agents, rollback pass.
-Exit criteria: supported combinations are exact. `v0.148.0 implementation stop
-reached. Run pentest for this exact commit.`
+original-byte mutation, rolling upgrades, old data/plugins/agents, stricter
+mixed-version floor selection, stale/lower-floor node rejection, lower-default
+release, interrupted higher-floor migration, and rollback/restore ratchet pass.
+Exit criteria: supported combinations are exact and no compatible version path
+can lower the durable platform floor.
+`v0.148.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.149.0` — External Pentest Remediation Candidate
 Status: planned. Setup: freeze scope/artifacts/environment and engage independent testers across all trust boundaries. Goal: remediate complete attack paths. Deliverables: findings, fixes, regression tests, clean retest evidence. Verification: external pentest plus tenant/auth/plugin/AI/storage/operations/supply-chain regression pass. Exit criteria: all critical/high findings are fixed and retested. `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.150.0` — Final Production-Readiness Candidate
-Status: planned. Setup: candidate from remediated freeze; exact install/upgrade/restore/rollback/failover artifacts and evidence. Goal: final pre-RC readiness proof. Deliverables: complete candidate bundle, runbooks, acceptance report. Verification: clean install, rolling upgrade, restore, rollback, failover, load, compatibility, evidence reproducibility pass. Exit criteria: no known blocking gap remains. `v0.150.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: candidate from remediated freeze; exact install/upgrade/
+restore/rollback/failover artifacts and evidence, selected trusted-executor
+deployment, and durable floor-profile ratchet state. Goal: final pre-RC readiness
+proof. Deliverables: complete candidate bundle, runbooks, acceptance report,
+no-permit-transport proof, fresh-parent-activation evidence, and floor-ratchet
+compatibility evidence. Verification: clean install, split executor, duplicate
+instruction/response loss/failover, rolling upgrade, higher-floor migration,
+lower-floor downgrade rejection, restore, rollback, parent-state drift after
+root finalization, load, compatibility, and evidence reproducibility pass. Exit criteria:
+no known blocking gap remains.
+`v0.150.0 implementation stop reached. Run pentest for this exact commit.`

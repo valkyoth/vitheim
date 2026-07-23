@@ -102,8 +102,8 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.17.0` | Inbox and idempotent consumer model | Replay, duplicate local commits, poisoned receipts, remote-duplication ambiguity |
 | `0.17.1` | Atomic consumer commit bundle | Receipt/local-commit split, redelivery duplication, hidden multi-stream or remote-in-transaction work |
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
-| `0.18.1` | One-parent policy, governed floors, and root-manifest capacity rollout | Floor-reduction/spend approval reuse, omitted/aliased parents, membership races, stale manifests, conservation mismatch |
-| `0.18.2` | Atomic work with claimant-bound transmission authority | Shared-credential duplicate workers, claim-response loss, lease takeover, permit reconstruction/replay, uncertain retransmit |
+| `0.18.1` | Fresh parent activation and durable platform-floor ratchet for governed capacity rollout | Post-finalization ledger/floor/obligation/authority drift; blocked reconciliation; lower-floor startup, mixed-version rollback/restore weakening |
+| `0.18.2` | Atomic work with trusted-executor claimant-bound transmission | Shared-credential workers, duplicate instructions, claim loss/executor failover, permit transport/digest authorization, uncertain retransmit |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
 | `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
@@ -121,10 +121,10 @@ implementations remain blocked rather than being implemented casually.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.21.0` | Storage negotiation for claimant, floor governance, and root-manifest rollout | Audience-only claimant, persisted permit, shared floor/policy authority, incomplete membership, active-active downgrade |
-| `0.22.0` | Destructive claimant, floor, rollout, lock, and quota conformance | Duplicate workers/lease takeover/claim loss plus cross-command floor and add/remove/reparent/finalization races |
+| `0.21.0` | Storage negotiation for executor-bound claimant, floor ratchet, and fresh rollout activation | Permit transport/digest authority, lower-floor node, stale finalized parent authority, active-active downgrade |
+| `0.22.0` | Destructive executor, floor-ratchet, rollout, lock, and quota conformance | Duplicate instruction/executor failover plus mixed-version floor and post-finalization parent-state races |
 | `0.23.0` | SQLite single-node adapter | Locking, rollback, injection, file permissions, tenant partition |
-| `0.24.0` | PostgreSQL reference production adapter | Unique claimant/lease CAS and non-persisted permit; floor history/SoD; complete root manifest/finalization |
+| `0.24.0` | PostgreSQL reference production adapter | Claim/executor audit without permit persistence; floor ratchet; complete manifest plus fresh parent activation CAS |
 | `0.25.0` | Experimental MySQL adapter | Isolation/encoding differences, rollback, tenant enforcement, no default v1 claim |
 | `0.26.0` | Experimental MongoDB adapter | Transaction boundaries, query injection, collection isolation, no default v1 claim |
 | `0.27.0` | Experimental SurrealDB adapter | Namespace/graph/query isolation, capability truthfulness, no default v1 claim |
@@ -132,9 +132,9 @@ implementations remain blocked rather than being implemented casually.
 | `0.28.1` | S3-compatible object-storage adapter | Tenant/object confusion, endpoint spoofing, multipart races, retention/deletion |
 | `0.28.2` | KMS and secret-provider adapters | Key/tenant confusion, rotation/destruction, outage, secret leakage |
 | `0.28.3` | In-process secret handling | Formatting/diagnostic/plugin leakage, stale cache, crash/core-dump policy, overstated erasure |
-| `0.29.0` | Migration registry and resumable migrations | Interrupted/malicious migrations, downgrade and rollback safety |
+| `0.29.0` | Resumable migrations preserving monotonic floor admission | Interrupted higher-floor migration, conflicting profile, lower-default downgrade/rollback/restore |
 | `0.30.0` | Cross-backend export and import | Substitution, truncation, tenant mix-up, integrity loss |
-| `0.30.1` | Durable queue preserving claimant and complete rollout authority | Redelivery cannot return permits or transfer claims; floor/root manifest/preparation/finalization state remains complete |
+| `0.30.1` | Durable queue preserving instruction-only transmission and fresh rollout authority | No permit in queue/RPC; duplicate instruction/executor failover reconcile; floor ratchet and parent activation evidence remain complete |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 
 ## Phase D — Universal Work Platform
@@ -183,7 +183,7 @@ integration is deferred to `0.70.0` and `0.100.0`.
 | `0.47.0` | Release and deployment records | False status, unauthorized linkage, evidence forgery |
 | `0.48.0` | Major-incident command process | Role takeover, notification floods, hidden decisions |
 | `0.48.1` | Stakeholder communications and status publishing | Premature/false publication, audience leakage, stale status, correction-history loss |
-| `0.48.2` | Hosted status publication with claimant-bound remote transmission | Duplicate publishers, claim/lease/permit substitution, lost claim response, stale takeover, uncertain publication |
+| `0.48.2` | Hosted status publication through a trusted transmission executor | Duplicate instruction, claim/socket split, permit leakage/digest authority, executor failover, uncertain publication |
 | `0.49.0` | Postmortems and corrective actions | Sensitive publication, deletion, blame/identity leakage |
 | `0.50.0` | Integrated ITSM beta with later-phase port fakes | Cross-module authorization, fake-port contracts, replay and upgrades |
 
@@ -210,9 +210,9 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.56.0` | ABAC engine | Missing attributes, type confusion, fail-open decisions |
 | `0.56.1` | Policy lifecycle, bootstrap, recovery, and monotonic epoch | Activation/rollback racing dispatch, epoch reuse, self-approval, lockout, recovery abuse |
 | `0.57.0` | Relationship authorization with fact epochs | Edge change racing dispatch, epoch reuse, malicious paths, ownership spoofing, traversal bounds |
-| `0.58.0` | Authority registry with claimant, floor-governance, and root-rollout cases | Missing worker/lease/claim/permit binding, cross-command SoD, platform minimum, complete parent manifest |
+| `0.58.0` | Authority registry with executor boundary, floor ratchet, and fresh rollout activation | Missing claim/socket ownership, permit transport, ratchet/profile omission, stale post-finalization parent authority |
 | `0.59.0` | Delegation/break-glass with enforcement epoch | Delegation revoke racing dispatch, epoch reuse, unbounded privilege, grant amplification, weak audit |
-| `0.60.0` | Complete claimant, floor-governance, and rollout conformance suite | Shared credentials/claim loss/takeover plus floor-reduction spend and membership/finalization races |
+| `0.60.0` | Complete executor, floor-ratchet, and rollout-activation conformance suite | Duplicate instruction/executor failover plus floor downgrade and preparation-to-activation drift |
 
 ## Phase G — Durable Workflows
 
@@ -226,13 +226,13 @@ commit, and external-outcome semantics.
 | `0.61.0` | Workflow intermediate representation | Invalid graphs, instruction/depth bombs, hidden behavior |
 | `0.62.0` | Deterministic workflow interpreter | Infinite loops, nondeterminism, replay divergence |
 | `0.63.0` | Human approvals with grant-lineage issuance and redemption-guard maintenance | Self-approval, owner ambiguity, issuance reorder, pre-revocation, successor fork, omitted/stale guard |
-| `0.64.0` | Timers with unique claimant-bound transmission starts | Duplicate wakeup workers, shared credentials, claim-response loss, stale lease takeover, permit reconstruction |
+| `0.64.0` | Timers with executor-owned transmission starts | Duplicate wakeup instruction, executor failover, stale lease, permit transport/digest authorization |
 | `0.65.0` | Parallel branches and joins | Premature joins, duplicate completion, branch leaks |
 | `0.66.0` | Linked, independently authorized and multi-claim-accounted compensation mechanics | State/linkage collapse, unknown original/compensation, evidence/authority race, claim reuse/cross-kind settlement, double rollback |
 | `0.67.0` | Signals and subworkflows | Signal spoofing, cross-tenant routing, recursion exhaustion |
 | `0.68.0` | Workflow history, versioning, and migration | Unbounded history, corrupt checkpoint, orphan activity, unsafe remap |
 | `0.69.0` | Visual/configuration-as-code compiler | Hidden flags, generated privilege escalation, divergence |
-| `0.70.0` | HA workers with claimant-bound transmission and complete capacity rollout | Duplicate workers/lease takeover plus floor-governance and root-membership/finalization races |
+| `0.70.0` | HA workers with trusted transmission executors and fresh capacity activation | Duplicate instruction/executor failover plus floor-ratchet and post-finalization parent-state races |
 
 ## Phase H — Alerts And Security Operations
 
@@ -337,16 +337,16 @@ Phase exit: cross-plugin/tenant isolation and compatibility suite pass pentest.
 | --- | --- | --- |
 | `0.111.0` | Versioned WIT component interfaces | ABI confusion and malformed components |
 | `0.112.0` | Deterministic component execution | Fuel bypass, nondeterminism, covert host access |
-| `0.113.0` | Effectful components with host-owned claimant-bound transmission | Guest/replica claimant control, shared-credential duplication, claim loss, permit persistence, uncertain retry |
+| `0.113.0` | Effectful components with host-executor-owned transmission | Guest claimant/socket control, duplicate instruction, permit transport/digest authority, executor failover |
 | `0.114.0` | Capability and non-extractable secret-operation model | Capability escalation, broker confused deputy, plaintext secret in Wasm memory |
 | `0.115.0` | Memory/CPU/network/output metering | Resource-limit bypass and host denial of service |
 | `0.116.0` | Signed plugin registry and rollout | Signature downgrade, malicious update, rollback |
 | `0.116.1` | Governed plugin catalog and storefront | Publisher/listing/package impersonation, hidden capabilities, review bypass |
-| `0.117.0` | Connector SDK with unique-claimant transmission testkit | Worker/lease/claim/permit binding, status-only replay, ambiguous delivery, takeover, no permit persistence |
+| `0.117.0` | Connector SDK with executor/instruction-only transmission testkit | Claim/socket binding, duplicate RPC, ambiguous delivery, failover, no permit API/persistence/transport |
 | `0.118.0` | Mail, webhook, and collaboration connectors | Header injection, spoofing, action-link abuse |
 | `0.118.1` | Microsoft Defender and Sentinel connector pack | Provider/workspace confusion, cursor/webhook replay, schema drift, action escalation |
 | `0.118.2` | Tenable vulnerability connector pack | Asset/finding confusion, forged fixed state, score drift, coverage gaps |
-| `0.119.0` | Outbound agent preserving claimant-bound transmission authority | Concurrent instances, claim loss/takeover, spool permit reconstruction, stale lease, uncertain retransmit |
+| `0.119.0` | Outbound agent with local executor-owned transmission authority | Concurrent instances, duplicate instructions, executor failover, spool permit reconstruction/transport, uncertain retransmit |
 | `0.120.0` | Plugin compatibility/isolation suite | Cross-plugin and cross-tenant interference |
 
 ## Organization Federation
@@ -420,12 +420,12 @@ the first technology decision. An unselected option remains unsupported at
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.140.1` | Dependency, cryptography, KMS, and transmission-time profile decision | Authoritative transaction time, monotonic start enforcement, rollback/suspend/restore failure, no improvised protocol |
-| `0.140.2` | Storage topology for claimant, floor authority, and root-manifest rollout | Claim state/no permit material; floor history/SoD/minimum; manifest epoch/completeness/conservation; active-active rejection |
+| `0.140.1` | Cryptography/time and process-local permit profile decision | Sealed consumed-by-value permit; no IPC/log exposure or transferable `1.0.0` capability; monotonic time |
+| `0.140.2` | Storage topology for claimant, floor ratchet, and fresh parent activation | Claim state/no permit; durable floor admission; manifest completeness plus post-finalization CAS; active-active rejection |
 | `0.140.3` | Human/workload/session and worker-instance identity decision | Co-located epochs, enforceable expiry, unique per-runtime claimant, lease-fence binding, restart/takeover invalidation |
-| `0.140.4` | Component runtime, effect-broker, guarded-exception, and claimant decision | Escape/metering plus host-owned claimant/one-time non-persisted permit/ambiguity and capacity-policy isolation |
+| `0.140.4` | Component runtime, effect-broker, and executor-bound claimant decision | Host executor owns claim/socket; immutable instruction/status only; guest permit isolation and ambiguity |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, retention precedence, omitted derived surfaces, tombstone/evidence inflation |
-| `0.140.6` | Deployment/HA claimant, floor-governance, and root-rollout decision | Worker/lease/claim identity; floor cross-command SoD/minimum; complete manifest/finalization; failover/RPO/RTO |
+| `0.140.6` | Deployment/HA executor, floor-ratchet, and rollout-activation decision | Claim/socket placement; no permit transport; strict mixed-version floor; fresh parent activation; failover/RPO/RTO |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |
@@ -439,17 +439,17 @@ exit: production candidate has passed external pentest and all acceptance tests.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.141.0` | Single-node production packaging | Permissions, defaults, secret exposure, clean install |
-| `0.142.0` | Split API/worker/ingest/index deployments | Service identity and network authorization |
+| `0.141.0` | Single-node packaging with platform-floor startup ratchet | Lower-floor binary/default rejection, higher-floor migration, rollback/restore |
+| `0.142.0` | Split deployments with a trusted transmission executor | Instruction authentication/replay, claim/socket co-ownership, no permit transport, executor failover |
 | `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
-| `0.143.0` | HA atomic work with claimant-bound transmission and complete rollout | Split brain, duplicate claimant/takeover, floor-governance bypass, omitted parent, stale root finalization |
+| `0.143.0` | HA atomic work with executor-bound transmission and fresh capacity activation | Split brain, duplicate instruction/executor failover, floor-ratchet bypass, stale post-finalization parent state |
 | `0.144.0` | Authoritative-region placement and residency | Cross-region worker/lease identity collision, receipt/start split, floor owner split, omitted regional parent |
-| `0.145.0` | Backup, restore, and disaster recovery | Permit reconstruction, claimant reuse, floor-history/SoD loss, root-manifest/membership rollback |
-| `0.146.0` | Claimant, floor-governance, and root-rollout contention certification | Duplicate claims/response loss/takeover plus floor reduction/spend and membership/finalization races |
-| `0.147.0` | Final security, secret-memory, and supply-chain hardening | Diagnostic/crash/plugin secret leakage and artifact/dependency/CI/builder/key compromise |
-| `0.148.0` | API/event/plugin/pack compatibility freeze | Downgrade and version confusion |
+| `0.145.0` | Backup, restore, and disaster recovery | Permit reconstruction/transport, floor-ratchet rollback, stale prepared parent activation |
+| `0.146.0` | Executor, floor-ratchet, and fresh-rollout contention certification | Duplicate instruction/failover plus mixed-version floors and finalization-to-activation races |
+| `0.147.0` | Final security, permit-memory, and supply-chain hardening | Permit clone/serialization/log/core-dump exposure, zeroization and executor compromise |
+| `0.148.0` | Compatibility and platform-floor profile freeze | Stricter mixed-version floor, stale/lower node, lower-default downgrade and rollback |
 | `0.149.0` | Release candidate and external pentest remediation | Complete platform attack paths and clean retest |
-| `0.150.0` | Final production-readiness candidate | Install, upgrade, restore, rollback, failover, evidence |
+| `0.150.0` | Final production-readiness candidate | Executor boundary, fresh parent activation, floor ratchet, install/upgrade/restore/rollback/failover evidence |
 
 ## `1.0.0` — Serious Production Release
 
@@ -504,10 +504,13 @@ are independently evidenced as production-ready.
   retry/restore behavior, immutable redemption/transmission deadline,
   current-fence start claim, globally unique claim/exact worker instance/lease
   generation/fence/effect/audience/provider/request/permit-digest binding,
-  at-most-once non-persisted permit return, status-only replay, shared-credential
-  duplicate workers, claim-response loss, takeover, reconstruction/restore,
-  long pauses, clock rollback, uncertain-start no-retry, and worker confused-
-  deputy attempts.
+  trusted executor co-owning claim plus provider socket, immutable authenticated
+  instruction/status-only split protocol, sealed non-`Clone`/non-serializable
+  consumed-by-value permit, digest-as-evidence-only, at-most-once process-local
+  return, status-only replay, shared-credential duplicate workers/instructions,
+  claim-response loss, executor failover/compromise, permit transport/log/core-
+  dump exposure, takeover, reconstruction/restore, long pauses, clock rollback,
+  uncertain-start no-retry, and worker confused-deputy attempts.
 - Every untrusted parser is fuzzed; cryptography is independently reviewed;
   plugin escape and AI injection/tool-abuse suites pass.
 - Atomic audit-intent crash tests, protected-read release receipts, exact
@@ -524,10 +527,16 @@ are independently evidenced as production-ready.
   transitions, one-parent capacity-policy lineage with co-located parent-ledger
   CAS, base/parent high-watermark/exact-delta/simulation binding, independent
   floor capability/history/reduction receipts, operational fences/obligation
-  simulation/platform minimum, floor-policy cross-command separation, root-
-  owned canonical parent manifest/membership epoch, complete bound preparations,
-  total conservation, conservative finalized rollout, current delayed-transition
-  authority, and emergency/security-cleanup/reconciliation isolation,
+  simulation, stable platform-floor profile ID/version/digest and durable per-
+  class admission epoch/high-watermark, strict mixed-version floor, lower-node
+  startup rejection, governed higher-floor migration, downgrade/rollback/
+  restore/lower-default no-release behavior, floor-policy cross-command
+  separation, root-owned canonical parent manifest/membership epoch, complete
+  bound preparations, total conservation, root finalization as permission only,
+  fresh local parent activation CAS over ledger/unallocated capacity/floor/
+  obligations/root/current fences, conservative blocked/reconciliation state on
+  drift, current delayed-transition authority, and emergency/security-cleanup/
+  reconciliation isolation,
   canonical composite lock order and bounded identity-preserving retry,
   active/active authoritative-write rejection, per-kind settlement, exactly-once
   refunds, write-off separation, compensation claims, provider-outage fairness/

@@ -101,10 +101,14 @@ audit decision.
   `ClaimTransmissionStart` rechecks current fences and binds one globally unique
   claim to the exact authenticated worker instance, lease generation/fence,
   receipt/effect attempt, and permit digest. Non-persisted permit material is
-  returned once; replay returns status. Duplicate/replacement workers and
-  ambiguous claim delivery are `OutcomeUnknown`, not retryable queue work.
-  Restore cannot reconstruct the permit; failover, pause, or clock rollback
-  cannot extend it.
+  returned once only inside the trusted `TransmissionExecutor` that owns the
+  provider socket. Split workers submit immutable authenticated instructions and
+  receive status; permits never cross RPC/IPC/queues. The sealed non-`Clone`,
+  non-serializable value is consumed by the write and best-effort zeroized; its
+  digest is never authority. Duplicate instruction, executor failover,
+  replacement worker, and ambiguous delivery are `OutcomeUnknown`, not retryable
+  queue work. Restore cannot reconstruct the permit; failover, pause, or clock
+  rollback cannot extend it. `1.0.0` supports no transferable permit profile.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown
@@ -140,10 +144,15 @@ audit decision.
   under an independently governed floor-set version. Floor reductions use a
   separate capability and approval lineage, current tenant/hierarchy/incident/
   emergency/policy fences, obligation simulation, append-only epochs, a
-  platform minimum, and cross-command separation from spending released
-  capacity. Multi-parent finalization proves one prepared receipt for every
-  member of a root-owned canonical manifest under an unchanged membership epoch
-  and per-class conservation constraints; rollout remains conservative.
+  versioned/digested durable platform-floor ratchet, and cross-command separation
+  from spending released capacity. Nodes below the admitted floor reject
+  startup; mixed versions use the stricter profile, and downgrade/restore cannot
+  release capacity. Multi-parent finalization proves one prepared receipt for
+  every member of a root-owned canonical manifest under an unchanged membership
+  epoch and per-class conservation constraints. It only permits activation:
+  every parent freshly CAS-revalidates its ledger/unallocated capacity, floor
+  ratchet/set, obligations, root generation/manifest, and current operational
+  fences or remains conservatively blocked/reconciling.
   Tenant work cannot invoke it, and every delayed transfer transition rechecks
   current local tenant/principal/policy epochs.
   Composite transactions use the canonical stream/authority-fence/target-fence/

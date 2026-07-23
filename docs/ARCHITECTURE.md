@@ -122,10 +122,15 @@ authorization semantics.
    `ClaimTransmissionStart` rechecks current fences and CAS-binds one globally
    unique claim to the exact authenticated worker instance, lease generation/
    fence, receipt/effect attempt, and permit digest. Non-persisted permit
-   material is returned only once; replay returns status. Duplicate or
-   replacement workers and ambiguous claim delivery reconcile as
-   `OutcomeUnknown`. Restore cannot reconstruct the permit, and clock rollback
-   cannot extend it.
+   material exists only inside a trusted `TransmissionExecutor` that owns both
+   the claim and provider socket. Split-service workers send immutable
+   authenticated instructions and receive status, never permits. The sealed,
+   non-`Clone`, non-serializable permit is consumed by value and best-effort
+   zeroized; its stored digest is evidence, not authority. Replay returns status.
+   Duplicate instructions, executor failover, replacement workers, and ambiguous
+   delivery reconcile as `OutcomeUnknown`. Restore cannot reconstruct the permit,
+   and clock rollback cannot extend it. Transferable start capabilities are
+   unsupported for `1.0.0`.
    Each effect carries a bounded atomic set of typed quota claims rather than
    one universal reservation. Concurrency releases with its local lease;
    consumable operations follow declared evidence rules; provider-rate tokens
@@ -162,11 +167,18 @@ authorization semantics.
    atomically appends its event and CAS-updates the co-located parent ledger
    under the current independently governed floor-set version. Floor reductions
    have a separate capability/approval lineage, operational fences, obligation
-   simulation, append-only history, a platform minimum, and cross-command
-   separation from policy spending. Multi-parent changes freeze a root-owned
-   canonical parent manifest and membership epoch; finalization requires one
-   bound prepared receipt from every exact member plus total per-class
-   conservation. Membership change invalidates preparation. Rollout remains a
+   simulation, append-only history, a versioned/digested durable platform-floor
+   ratchet, and cross-command separation from policy spending. Nodes below the
+   admitted minimum reject startup; mixed versions use the stricter profile, and
+   upgrade, rollback, restore, or lower defaults cannot release capacity.
+   Multi-parent changes freeze a root-owned canonical parent manifest and
+   membership epoch; finalization requires one bound prepared receipt from every
+   exact member plus total per-class conservation. Membership change invalidates
+   preparation. Finalization only permits activation: every parent then locks
+   its prepared state and freshly CAS-revalidates its ledger/unallocated
+   capacity, floor ratchet/set, obligations, root generation/manifest, and
+   current operational fences. Drift remains conservatively
+   `ActivationBlocked` or `ReconciliationRequired`. Rollout remains a
    conservative process manager, never a distributed command. Every delayed
    transfer transition rechecks its current local tenant, principal, and policy
    epochs; historical decisions are evidence, not authority.

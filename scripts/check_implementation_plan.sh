@@ -125,6 +125,12 @@ require_text docs/implementation/PHASE_B.md \
     '`TransmissionStartClaimId`, exact authenticated `WorkerInstanceId`, permitted' \
     'unique worker-instance transmission claimant'
 require_text docs/implementation/PHASE_B.md \
+    'The claiming worker is the trusted `TransmissionExecutor` instance' \
+    'trusted executor owns transmission claim and socket'
+require_text docs/implementation/PHASE_B.md \
+    'Transferable cryptographic start capabilities are unsupported for `1.0.0`' \
+    'no unsupported permit transport profile'
+require_text docs/implementation/PHASE_B.md \
     'manager drives `QuotaCapacityTransferState` through `ReservedAtParent`' \
     'explicit capacity-transfer process manager'
 require_text docs/implementation/PHASE_B.md \
@@ -145,6 +151,12 @@ require_text docs/implementation/PHASE_B.md \
 require_text docs/implementation/PHASE_B.md \
     'A `QuotaCapacityRolloutRoot` has one' \
     'root-owned complete parent rollout manifest'
+require_text docs/implementation/PHASE_B.md \
+    'Each parent activation is a new local transaction that locks its `Prepared`' \
+    'fresh post-finalization parent activation'
+require_text docs/implementation/PHASE_B.md \
+    '`PlatformSafetyFloorAdmission` state records a never-reused per-class' \
+    'durable platform safety floor ratchet'
 require_text docs/implementation/PHASE_B.md \
     'Each parent-side reserve/send/reclaim transition' \
     'delayed capacity transfer rechecks current authority'

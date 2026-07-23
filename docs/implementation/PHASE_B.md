@@ -209,10 +209,25 @@ atomically compare-and-swaps the exact receipt from `Admitted` to
 `TransmissionStartClaimId`, exact authenticated `WorkerInstanceId`, permitted
 service audience, work-lease generation/fencing token, receipt/effect-attempt
 identity, and permit digest. A shared service credential never identifies the
-claimant. The opaque, non-cloneable, non-serializable permit material is
-returned exactly once to that claimant; durable state stores only its digest
-and claim status. Every later call, including same-claim replay, returns status
-and never another usable permit.
+claimant. The claiming worker is the trusted `TransmissionExecutor` instance
+that owns both this transition and the provider socket. An upstream queue worker
+may submit only an immutable, authenticated `TransmissionInstruction`; in a
+split deployment it never receives permit material over RPC, IPC, or a queue.
+The executor rechecks, claims, and transmits in one process-local boundary. An
+in-process worker may embed that boundary, but the same ownership rule applies.
+
+The opaque permit type has a sealed constructor, implements neither `Clone` nor
+serialization, is consumed by value by the provider-write operation, and
+best-effort zeroizes its memory on drop under the `0.28.3` process-memory
+assurance profile. It is returned exactly once inside the claiming executor;
+durable state stores only its digest and claim status. The digest is audit and
+reconciliation evidence, never sufficient authorization. Every later call,
+including same-claim replay, returns status and never another usable permit.
+Transferable cryptographic start capabilities are unsupported for `1.0.0`; any
+future profile requires a separate implementation milestone and production
+decision covering entropy, keyed authentication, channel/audience binding,
+constant-time verification, zeroization, and durable replay prevention, while
+honestly dropping the literal non-cloneable claim.
 
 The permit carries only the remaining bounded start interval; the adapter
 enforces it with a monotonic elapsed-time source and cannot write the first
@@ -223,6 +238,9 @@ replacement worker or stale lease holder that observes
 `TransmissionStartClaimed` must reconcile and cannot transmit. A revocation or
 epoch change that wins before this transition denies transmission; a change
 after it is ordered after a narrowly bounded started attempt.
+Duplicate instruction RPC, executor failover, or loss of the executor response
+after claim never moves permit material to another process: the caller receives
+status/unknown disposition and reconciliation owns the outcome.
 
 If transmission is definitely not started before the bound, the receipt becomes
 `DefinitelyNotStarted`; its consumed grant/exception attempt is never restored,
@@ -324,7 +342,23 @@ Every change rechecks current tenant, hierarchy, incident/emergency, and policy
 fences and simulates impact against outstanding reconciliation, security-
 cleanup, incident, emergency, and other protected obligations. A selected
 production profile defines a non-configurable per-class `PlatformSafetyFloor`;
-configured floors can never fall below it.
+configured floors can never fall below it. The floor has a stable profile ID,
+version, canonical digest, and exact class/unit minima. Durable
+`PlatformSafetyFloorAdmission` state records a never-reused per-class minimum
+epoch/high-watermark. The effective floor is the strictest applicable compiled
+profile, durable admitted minimum, and mixed-version cluster profile.
+
+A node advertising any floor below the durable admitted minimum fails startup
+and cannot lead, allocate, activate, or reconcile quota work. Rolling upgrades
+use the stricter old/new profile until a coordinated activation durably admits
+the new profile on every eligible authority node. Raising a floor beyond
+immediately unallocated capacity enters a governed migration that conservatively
+withholds new business allocation and reclaims capacity without violating
+existing protected obligations. Software downgrade, rollback, or a newer binary
+with a lower default never releases capacity or lowers the durable ratchet.
+Backup, restore, and failover preserve the profile digest and high-watermark.
+Lowering the durable platform minimum is not an ordinary configuration or floor-
+governance operation and requires a future explicit security-design milestone.
 
 A floor reduction requires its own quorum, risk owner, approval lineage, and
 separation of duties, distinct from `ActivateQuotaCapacityPolicy`. It records a
@@ -352,15 +386,28 @@ older manifest.
 
 Each manifest member first records an idempotent prepared receipt binding
 rollout ID, manifest digest, exact parent identity/generation, old/new limits,
-and current parent epoch, then applies the conservative per-class intersection
-of old and new limits. Finalization compare-and-swaps the root membership epoch
-and requires exactly one valid prepared receipt from every canonical manifest
-member. Only then may the root owner record `RolloutFinalized`. Parent
-activation accepts only that finalized rollout and manifest digest, then applies
-new limits idempotently. Coordinator failover cannot discover, omit, alias, or
-add parents. Crash, cancellation, or rollback may reduce availability but cannot
-transiently over-allocate. Rollback is a new monotonic policy version
-revalidated against the current parent and independently governed floor set.
+current parent epoch/high-watermark, floor profile and floor-set version,
+protected-obligation digest, and authority fences, then applies the conservative
+per-class intersection of old and new limits. Finalization compare-and-swaps the
+root membership epoch and requires exactly one valid prepared receipt from every
+canonical manifest member. Only then may the root owner record
+`RolloutFinalized`; this is permission to attempt parent activation, not
+authority to apply stale prepared values.
+
+Each parent activation is a new local transaction that locks its `Prepared`
+state; validates the finalized root generation and exact manifest digest;
+revalidates the parent ledger epoch/high-watermark and proven unallocated
+capacity; revalidates the current floor-set version, durable platform-floor
+ratchet, and protected obligations; and rechecks current tenant, hierarchy,
+incident/emergency, principal, and policy fences. It CAS-transitions
+`Prepared` to `Activated` while applying only the current safe delta bounded by
+the finalized target. Any drift leaves the conservative intersection in force
+and records `ActivationBlocked` or `ReconciliationRequired`; it never applies
+the stale delta. Coordinator failover cannot discover, omit, alias, or add
+parents. Crash, cancellation, rollback, or blocked activation may reduce
+availability but cannot transiently over-allocate. Rollback is a new monotonic
+policy version revalidated against the current parent, independently governed
+floor set, and durable platform-floor ratchet.
 The destination
 acknowledgement principal must be authorized for that exact tenant, hierarchy,
 parent lineage, lane, class, period, region, and destination epoch.
@@ -764,16 +811,26 @@ simulation digest against an independently governed
 intents. The floor set has a distinct one-owner lineage,
 `ManageQuotaProtectedFloors` capability, quorum/approval lifecycle, current
 tenant/hierarchy/incident/emergency/policy fences, obligation-aware simulation,
-append-only epochs, and non-configurable platform minimum. A reduction emits a
-`FloorReductionReceipt`; policy spending newly released capacity binds it and
-proves actor/approver/risk-owner/approval-lineage separation from the reduction.
+append-only epochs, and a non-configurable versioned/digested platform-minimum
+profile with durable per-class admission epochs/high-watermarks. Nodes below
+that ratchet reject startup; mixed-version operation uses the stricter profile,
+raising it is a governed capacity migration, and downgrade/rollback cannot
+release capacity. A reduction emits a `FloorReductionReceipt`; policy spending
+newly released capacity binds it and proves actor/approver/risk-owner/approval-
+lineage separation from the reduction.
 Model multi-parent changes as process-manager rollouts of independent commands
 under one root-owned `QuotaCapacityRolloutRoot` manifest. The canonical digest
 binds membership epoch, every unique parent ID/generation/region/class/period,
 and total conservation constraints. Each parent prepares the conservative per-
 class intersection and a receipt bound to rollout plus manifest. Finalization
 CAS-validates the unchanged root epoch and exactly one receipt for every
-manifest member; parent activation accepts only the finalized manifest.
+manifest member. Finalization permits but does not authorize activation: each
+parent locks `Prepared`, validates the finalized root generation/manifest, and
+freshly CAS-rechecks its ledger epoch/high-watermark/unallocated capacity, floor
+profile/set, protected obligations, and tenant/hierarchy/incident/emergency/
+principal/policy fences. Drift records `ActivationBlocked` or
+`ReconciliationRequired` under the conservative intersection instead of
+applying stale limits.
 Creation, removal, reparenting, generation change, or aliases cannot be omitted
 or discovered by the coordinator. Rollback is a new monotonic version, never
 epoch reuse. Require exact-destination-hierarchy
@@ -806,8 +863,10 @@ reclassification matrix, versioned unallocated-parent `QuotaCapacityPolicy`
 lineage/state machine, parent-ledger CAS and high-watermark contract,
 independently governed protected-floor owner/history/capability, floor-reduction
 receipt/cross-command separation guard, platform-safety-floor and obligation-
-simulation contract, multi-parent hierarchy-root manifest/epoch/conservation
-codec and conservative-rollout process manager with prepared/finalized receipts,
+simulation contract, platform-floor profile/admission/ratchet and governed-
+migration state machine, multi-parent hierarchy-root manifest/epoch/conservation
+codec and conservative-rollout process manager with prepared/finalized/
+activation-blocked/reconciliation receipts and local activation CAS,
 delayed-transition authority-fence contract, double-entry
 conservation oracle, late-settlement lineage mapping, partitioned fair control-
 plane capacity, deterministic memory adapter, recovery reconciler, leak/
@@ -846,11 +905,18 @@ multi-parent rollout; omitted parent; concurrent parent add/remove/reparent/
 generation change; duplicate/aliased parent identity; stale root manifest or
 membership epoch; incorrect per-class total; missing/forged/stale prepared or
 finalization receipt; parent epoch change before finalization; coordinator
-failover; parent activation under a different manifest; floor reduction followed
-by policy activation from the same actor, approver, risk owner, or approval
-lineage; floor capability/approval substitution; stale tenant/hierarchy/
-incident/emergency/policy fence; outstanding protected obligation; platform-
-minimum violation; concurrent floor changes; floor-history rollback/restore;
+failover; parent activation under a different manifest; allocation, reclamation,
+floor increase, new protected obligation/incident, tenant suspension, principal
+revocation, policy supersession, or parent failover after root finalization but
+before activation; stale prepared ledger/floor/obligation/fence state; floor
+reduction followed by policy activation from the same actor, approver, risk
+owner, or approval lineage; floor capability/approval substitution; stale
+tenant/hierarchy/incident/emergency/policy fence; outstanding protected
+obligation; platform-minimum violation; profile ID/version/digest substitution;
+node startup below the admitted minimum; mixed-version rolling upgrade,
+downgrade/rollback to a lower compiled floor, conflicting floor profiles,
+higher-floor capacity migration, lower software default, backup/restore of the
+floor ratchet; concurrent floor changes; floor-history rollback/restore;
 rollback epoch reuse; restore of an old policy, parent ledger, floor set, or
 rollout step; late evidence against original claim/transfer lineage; accidental
 cross-shard/cross-region transaction, incompatible active/active write topology,
@@ -875,11 +941,16 @@ unallocated parent capacity may be resized by a fenced, simulated, separation-
 of-duties policy change. Each one-parent lineage atomically changes its co-
 located parent ledger under the independently governed current floor set. Multi-
 parent rollout authenticates a complete root-owned membership manifest and can
-under-allocate but cannot omit a parent or transiently over-allocate. Floor
-reduction has separate authority, append-only history, current operational
-fences, obligation simulation, a platform minimum, and cross-command separation
-from spending released capacity. Every delayed transfer transition rechecks
-current local authority; and
+under-allocate but cannot omit a parent or transiently over-allocate. Root
+finalization never authorizes stale parent state: every parent activation
+freshly CAS-revalidates its ledger, floor ratchet/set, obligations, root
+generation/manifest, and operational authority or remains conservatively
+blocked/reconciling. Floor reduction has separate authority, append-only
+history, current operational fences, obligation simulation, a durable versioned
+platform-minimum ratchet, and cross-command separation from spending released
+capacity. Mixed-version deployment, rollback, and restore cannot lower that
+ratchet or release capacity. Every delayed transfer transition rechecks current
+local authority; and
 exhausted or abusive tenants cannot block fair bounded reconciliation or
 security cleanup.
 `v0.18.1 implementation stop reached. Run pentest for this exact commit.`
@@ -955,9 +1026,14 @@ guards, uses authoritative transaction time, and CAS-binds one globally unique
 `TransmissionStartClaimId` to the exact authenticated worker instance, work-
 lease generation/fencing token, receipt/effect attempt, permitted service
 audience, and permit digest. Opaque permit material is returned only on the
-successful first claim and is never persisted; same-claim replay returns status.
-Ambiguous permit delivery or claim response, and every replacement worker that
-observes a claimed receipt, enter reconciliation without transmission. Expiry
+successful first claim inside the trusted `TransmissionExecutor` that also owns
+the provider socket, and is never persisted or transported across RPC/IPC/
+queues; same-claim replay returns status. Upstream workers submit immutable
+authenticated instructions only. The sealed permit is non-`Clone`, non-
+serializable, consumed by value, best-effort zeroized on drop, and its stored
+digest grants no authority. Ambiguous permit delivery or claim response,
+duplicate instruction RPC, executor failover, and every replacement worker that
+observes a claimed receipt enter reconciliation without transmission. Expiry
 before a definite first byte produces
 `DefinitelyNotStarted` and requires fresh authority; uncertainty after the
 claim produces `OutcomeUnknown`, never ordinary redelivery. The permit cannot
@@ -999,8 +1075,10 @@ owner/approval/scope/epoch codec, guard/attempt/receipt state machine, provider-
 capability authority-fence entry, transaction-domain placement/capability
 contract, dispatch-transmission-window/receipt/start-claim/permit state machine,
 claimant/worker-instance/lease-generation binding, at-most-once permit-return
-and ambiguous-delivery contract, authoritative-time and monotonic-start
-enforcement contract, and
+and ambiguous-delivery contract, `TransmissionInstruction`/
+`TransmissionExecutor` ownership boundary, sealed consumed-by-value permit and
+zeroization contract, explicit no-transferable-capability production profile,
+authoritative-time and monotonic-start enforcement contract, and
 exact-token bounded per-kind quota-disposition/refund/settlement/
 capacity-transfer, one-parent capacity-policy, protected-floor governance, and
 root-manifest rollout codecs/state machines. Phase G workflow workers later
@@ -1065,8 +1143,13 @@ shared service credentials; substitute worker instance, lease generation/
 fencing token, claim ID, receipt, effect attempt, or permit digest; replay the
 same claim; let a stale/replacement worker transmit from
 `TransmissionStartClaimed`; reconstruct permit material from persisted or
-restored state; lose evidence of whether a first byte was written; retransmit
-an uncertain attempt;
+restored state; send a permit over RPC, IPC, queue, log, diagnostic, crash dump,
+or connector memory; duplicate an immutable instruction; fail over or compromise
+the executor; let an upstream worker or split connector claim or hold permit
+authority; treat the stored digest as authority; violate sealed construction,
+non-`Clone`/non-serialization, consumed-by-value, or zeroize-on-drop properties;
+lose evidence of whether a first byte was written; retransmit an uncertain
+attempt;
 reuse consumed authority after `DefinitelyNotStarted`; use worker identity as
 business authority; split or partially restore a mixed quota claim set; reserve
 overlapping sets concurrently in opposite input order; deadlock/livelock; crash
@@ -1094,8 +1177,14 @@ class/period, conservation total, manifest digest, prepared receipt, or
 finalization receipt; activate a parent under another manifest; lower a floor
 and spend it with the same actor/approver/risk owner/approval lineage; substitute
 floor capability or approval; ignore incident/emergency/obligation fences or
-platform minimum; roll back floor history; reuse an epoch on rollback; restore
-a stale rollout;
+platform minimum; allocate/reclaim/change a floor or obligation, open an
+incident, suspend the tenant, revoke a principal, supersede policy, or fail over
+a parent between preparation, root finalization, and activation; apply stale
+prepared values instead of blocking; substitute platform-floor profile ID/
+version/digest or per-class admission epoch/high-watermark; start a stale/lower-
+floor node; weaken the effective floor during a mixed-version upgrade,
+downgrade, rollback, lower-default release, or restore; roll back floor history;
+reuse an epoch on rollback; restore a stale rollout or floor ratchet;
 activate/acknowledge/reclaim after tenant suspension, principal revocation, or
 policy-epoch change; settle late evidence without original transfer lineage;
 release concurrency based on remote uncertainty;
@@ -1127,9 +1216,13 @@ consumed attempt.
 No admitted receipt remains transmissible indefinitely: a current-fence start
 claim must win before the immutable deadline, the adapter must begin within its
 bounded monotonic permit, and exactly one worker instance/lease generation may
-receive that non-persisted permit once. Claim-response ambiguity, replacement
-workers, and uncertain start reconcile as `OutcomeUnknown` without ordinary
-retry; definitely unstarted work requires fresh authority.
+receive that non-persisted permit once inside the executor that owns the provider
+socket. Upstream and split-service callers exchange immutable instructions and
+status only; no supported production boundary serializes or transfers a permit,
+and its stored digest is never authority. Claim-response ambiguity, duplicate
+instruction delivery, executor failover, replacement workers, and uncertain
+start reconcile as `OutcomeUnknown` without ordinary retry; definitely unstarted
+work requires fresh authority.
 Every applicable authority change linearizes against dispatch through the
 complete co-located monotonic fence set; unsupported external staleness cannot
 authorize privileged effects. Every current-target dispatch also linearizes
@@ -1163,8 +1256,13 @@ policy lineage owns one parent and atomically updates its co-located ledger
 under a separately governed floor version. Multi-parent rollout proves a
 complete unchanged root manifest before finalization. Floor reductions have
 separate cross-command authority and cannot bypass operational fences, protected
-obligations, or the platform minimum. Delayed transfer transitions recheck
-current local authority and fail conservatively.
+obligations, or the durable versioned platform-floor ratchet. Finalization only
+permits an activation attempt: every parent freshly CAS-revalidates its ledger,
+floor, obligations, root generation/manifest, and current authority or remains
+under the conservative intersection as blocked/reconciling. Upgrade, downgrade,
+rollback, failover, and restore cannot lower the admitted platform minimum or
+release capacity. Delayed transfer transitions recheck current local authority
+and fail conservatively.
 `v0.18.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface

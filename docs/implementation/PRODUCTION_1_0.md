@@ -111,11 +111,15 @@ Verification:
   provider/account/request digest, and admitted epochs. Immediately before I/O,
   it rechecks current fences and CAS-binds one globally unique claim to the exact
   authenticated worker instance, lease generation/fence, receipt/effect attempt,
-  and permit digest. Non-persisted permit material is returned exactly once;
-  replay returns status. Duplicate/replacement workers, ambiguous claim delivery,
-  and uncertain post-claim start are `OutcomeUnknown` and cannot be ordinarily
-  retransmitted. Pause, failover, restore, or clock rollback cannot extend,
-  reconstruct, or replay the permit.
+  and permit digest. The trusted `TransmissionExecutor` owns the claim and
+  provider socket; upstream/split-service workers submit immutable authenticated
+  instructions and receive status, never permit material. Its sealed non-
+  `Clone`, non-serializable permit is consumed by value and best-effort zeroized,
+  while its stored digest is evidence only. Duplicate instruction, executor
+  failover, replacement worker, ambiguous claim delivery, and uncertain post-
+  claim start are `OutcomeUnknown` and cannot be ordinarily retransmitted.
+  Pause, failover, restore, or clock rollback cannot extend, reconstruct, or
+  replay the permit. Transferable permit profiles are unsupported for `1.0.0`.
   Quota evidence proves bounded atomic claim sets and correct settlement for
   concurrency leases, consumable operations, provider-rate tokens, estimated
   liabilities, and retained bytes across their exact boundaries. Only provider-
@@ -153,13 +157,22 @@ Verification:
   epoch/high-watermark, exact deltas, simulation digest, and independently
   governed floor-set version. Floor reductions require a separate capability/
   approval lineage, current tenant/hierarchy/incident/emergency/policy fences,
-  protected-obligation simulation, append-only epochs, platform minimum, and
-  cross-command separation from spending released capacity. Multi-parent
+  protected-obligation simulation, append-only epochs, a stable profile ID/
+  version/digest and durable per-class platform-floor admission ratchet, and
+  cross-command separation from spending released capacity. Nodes below the
+  admitted floor reject startup; mixed versions use the stricter profile, a
+  higher floor uses a governed capacity migration, and downgrade/rollback/
+  restore or lower software defaults cannot release capacity. Multi-parent
   finalization CAS-validates a root-owned canonical manifest, unchanged
   membership epoch, every exact parent preparation, and total per-class
-  conservation before conservative activation. Each delayed transfer transition
-  rechecks current local tenant/principal/policy epochs rather than trusting
-  historical decisions.
+  conservation, but only permits activation. Each parent then locks its prepared
+  state and freshly CAS-revalidates ledger epoch/high-watermark/unallocated
+  capacity, floor ratchet/set, protected obligations, finalized root generation/
+  manifest, and current tenant/hierarchy/incident/emergency/principal/policy
+  fences. Drift remains at the conservative intersection as
+  `ActivationBlocked` or `ReconciliationRequired`. Each delayed transfer
+  transition rechecks current local tenant/principal/policy epochs rather than
+  trusting historical decisions.
   Cross-partition set, distributed work transaction, and
   active/active authoritative-write requests fail closed. Composite transactions
   use the canonical stream/authority-fence/target-fence/remote-exception-guard/

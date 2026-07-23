@@ -432,14 +432,20 @@ Register each effectful capability's maximum admission-to-transmission interval,
 deadline inputs, authoritative-time profile, `ClaimTransmissionStart` current-
 fence set, permitted service audience, unique claim and worker-instance identity,
 lease generation/fence, permit digest, exactly-once non-persisted return, and
-ambiguous-claim reconciliation path.
+ambiguous-claim reconciliation path. Register the trusted
+`TransmissionExecutor` that owns claim plus provider socket, immutable
+instruction issuer/binding, sealed consumed-by-value permit, explicit no-permit-
+transport boundary, digest-as-evidence-only rule, and unsupported transferable
+`1.0.0` profile.
 Register the control-plane-only `QuotaCapacityPolicy` command, its exact one-
 parent lineage owner, co-located parent-ledger activation point, independently
 governed protected-floor owner/history/capability, floor-reduction receipt and
 cross-command separation, operational fences/obligation simulation/platform
-minimum, separation-of-duties approval, simulation/delta digest, parent high-
-watermark, monotonic epoch, hierarchy-root rollout manifest/membership epoch/
-complete parent set/conservation policy, and the current tenant/source/
+floor profile ID/version/digest/per-class admission ratchet, separation-of-
+duties approval, simulation/delta digest, parent high-watermark, monotonic epoch,
+hierarchy-root rollout manifest/membership epoch/complete parent set/
+conservation policy, fresh post-finalization parent activation CAS and blocked/
+reconciliation states, and the current tenant/source/
 destination-principal/policy fences required by every delayed capacity-transfer
 transition. No existing-capacity class transition is registrable.
 Classify any external-only fact by staleness bound and forbid it from privileged
@@ -475,11 +481,15 @@ capability/final-attempt race, guard omission/restore resurrection, existing-
 capacity reclassification, missing/extendable transmission deadline, stale
 receipt after revocation, unregistered start-claim fence/audience/provider
 binding, audience-only claimant, missing worker/lease/claim/permit binding,
-duplicate or persisted permit, ambiguous-claim retransmission, tenant-invoked
-capacity policy, ambiguous policy owner/parent, non-atomic activation, shared
-floor/policy authority, missing cross-command separation/operational fences/
-platform minimum, incomplete root manifest, unsafe partial rollout, reserve-
-floor/simulation replay, stale delayed-transfer authority, and
+duplicate, persisted, or transported permit, ambiguous-claim retransmission,
+digest-as-authority, missing executor/socket co-ownership, duplicate-instruction/
+executor-failover retry, tenant-invoked capacity
+policy, ambiguous policy owner/parent, non-atomic activation, shared floor/policy
+authority, missing cross-command separation/operational fences/platform-floor
+ratchet, lower-profile startup or mixed-version/rollback weakening, incomplete
+root manifest, stale post-finalization parent activation, missing blocked/
+reconciliation state, unsafe partial rollout, reserve-floor/simulation replay,
+stale delayed-transfer authority, and
 revocation pass.
 Exit criteria: hidden data cannot reappear downstream, and no external effect
 can bypass its declared commit/grant/redemption/dispatch/transmission-start
@@ -530,8 +540,9 @@ and canonical acquisition case; enumerate remote-target conditional/unconditiona
 profiles, immutable validators, provider capability evidence, and typed
 precondition outcomes independently of local fences; enumerate exception owner/
 guard/attempt/revocation cases, dispatch-transmission windows/start claims/
-claimants/permits, and capacity-policy owner/parent/floor-governance/root-
-manifest/rollout/current-authority cases. Goal: prove
+claimants/executor/instruction-only/permits, and capacity-policy owner/parent/
+floor-governance/ratchet/root-manifest/fresh-parent-activation/current-authority
+cases. Goal: prove
 equivalent deny-by-default policy independent of authentication mechanism and
 make later registration mechanically mandatory. Deliverables: generated
 matrix, negative corpus, human-versus-service-principal differential tests,
@@ -540,8 +551,9 @@ machine, scheduled-offline grant fixtures, authority-fence race fixtures,
 target-fence race fixtures, external-staleness classifications, and coverage/
 evidence report; include remote-validator/provider-downgrade/ABA, exception-
 guard, transmission duplicate-worker/claim-response/lease-takeover fixtures,
-and capacity-policy floor-governance/root-membership/rollout/delayed-transfer
-authority fixtures.
+executor/split-service/duplicate-instruction/no-permit-transport fixtures, and
+capacity-policy floor-governance/ratchet/root-membership/post-finalization-
+activation/delayed-transfer authority fixtures.
 Verification: mutation and read parity, tenant pairs, stale policy/credential,
 wrong audience/scope, false sender constraint, bearer-to-privileged escalation,
 replay-cache limitations, cache/index lag, commit-to-lease-to-dispatch policy/
@@ -566,15 +578,20 @@ restored exception, long pause after redemption, revocation/expiry/capability
 change before transmission claim, deadline/audience/request substitution, clock
 rollback, shared-credential duplicate workers, claim/worker/lease/permit
 substitution, claim-response loss, stale-worker takeover, permit replay/restore/
-reconstruction, uncertain retransmit, protected-class adjustment, policy owner/
+reconstruction/transport/logging, digest authorization, duplicate instruction,
+executor failover/compromise, uncertain retransmit, protected-class adjustment,
+policy owner/
 parent/floor co-location, concurrent allocation, stale high-watermark, floor
 reduction/spend cross-command identity or approval reuse, operational-fence/
 obligation/platform-minimum bypass, omitted/aliased parent, parent membership
 race, stale manifest/root epoch, conservation mismatch, coordinator failover,
-wrong-manifest activation, partial rollout/rollback/restore, policy floor/
-simulation replay, tenant suspension or principal/policy revocation during
-transfer, worker confused deputy, unsafe low-risk profile, break-glass, and
-differential adapters pass.
+wrong-manifest activation, allocation/reclamation/floor/obligation/incident/
+tenant/principal/policy/parent change between finalization and activation, stale
+activation instead of blocked reconciliation, floor-profile/ratchet substitution,
+lower-profile startup, mixed-version/downgrade/rollback/restore weakening,
+partial rollout/rollback/restore, policy floor/simulation replay, tenant
+suspension or principal/policy revocation during transfer, worker confused
+deputy, unsafe low-risk profile, break-glass, and differential adapters pass.
 Exit criteria: no principal kind or
 authority-bearing interface lacks a negative case, and every delayed effect is
 proven against its commit-time decision, selected execution-authority model, and
@@ -586,11 +603,14 @@ separate admitted concurrency profile without implying local freshness.
 Unconditional mutation also proves the exact live guarded exception attempt.
 Every admitted dispatch expires, rechecks current authority at its single-use
 bounded transmission-start claim, returns non-reconstructable permit authority
-once to one worker instance/lease generation, and treats ambiguous claim or
-possible start as unknown rather than retryable. Capacity policy cannot rewrite
-existing classes; each one-parent activation atomically updates its co-located
-ledger under independently governed floors, floor reductions cannot share
-authority with spending released capacity, multi-parent finalization proves the
-complete current root manifest, and delayed transfer steps prove current local
-authority.
+once only inside the executor instance/lease generation that owns the provider
+socket, exposes only immutable instructions/status across process boundaries,
+and treats duplicate instruction, executor failover, ambiguous claim, or possible
+start as unknown rather than retryable. Capacity policy cannot rewrite existing
+classes; each one-parent activation atomically updates its co-located ledger
+under independently governed floors, floor reductions cannot share authority
+with spending released capacity, the durable platform-floor ratchet survives
+upgrade/rollback/restore, multi-parent finalization proves the complete current
+root manifest but every parent still freshly CAS-revalidates or remains
+blocked/reconciling, and delayed transfer steps prove current local authority.
 `v0.60.0 implementation stop reached. Run pentest for this exact commit.`
