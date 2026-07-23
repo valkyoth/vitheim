@@ -219,6 +219,8 @@ may submit only an immutable, authenticated `TransmissionInstruction`; in a
 split deployment it never receives permit material over RPC, IPC, or a queue.
 The executor rechecks, claims, and transmits in one process-local boundary. An
 in-process worker may embed that boundary, but the same ownership rule applies.
+`VIT-INV-006` is the canonical owner, placement, storage, and recovery record
+for this start-claim authority.
 
 Every executor runs under an immutable, versioned `ProviderExecutionProfile`
 bound to the instruction, receipt, claim, and audit evidence. The executor has
@@ -301,7 +303,8 @@ provider idempotency key, and request digest. A typed
 `ProviderCredentialCount` quota claim accounts for active, pending, and orphan
 credentials against the provider limit; no capacity is released until
 revocation is evidenced. Backup and restore preserve the guard, orphan state,
-provider-count encumbrance, and late-callback fences.
+provider-count encumbrance, and late-callback fences. `VIT-INV-004` is the
+canonical ownership and storage-capability record.
 
 Every credential generation also owns a versioned
 `ProviderCredentialCapabilitySnapshot`: exact provider/account/principal,
@@ -324,7 +327,8 @@ Unsupported constructs, ambiguous conditions, evaluator failure, or exceeded
 expansion/work/depth budgets return `Unknown` and fail closed. The snapshot also
 binds the raw provider-policy evidence digest, normalized permission-AST digest,
 evaluator implementation identity/version, provider policy language/version,
-comparison result, and explanation-evidence digest.
+comparison result, and explanation-evidence digest. `VIT-INV-002` is the
+canonical ownership and storage-capability record for this snapshot authority.
 
 Evaluator code is authority-bearing. Each provider owns one authoritative
 `ProviderPermissionEvaluatorLineage` whose generations are `Proposed`, `Active`,
@@ -342,6 +346,7 @@ epoch is committed. A node that cannot execute or validate the active evaluator,
 binary digest, corpus digest, or policy-language version rejects startup or
 readiness; mixed-version deployment cannot silently select an older evaluator.
 Restore cannot roll back evaluator lineage or make superseded output current.
+`VIT-INV-001` is the canonical ownership and storage-capability record.
 
 Only `Equal` or `StrictSubset` can be admissible. `StrictSubset` enters a
 distinct `CredentialCapabilityReduced` drift state; continuing an operation is
@@ -381,7 +386,8 @@ evaluator, fresh authenticated provider evidence with a strong policy revision,
 `Equal` or explicitly safe `StrictSubset`, current profile/account/credential/
 broker/evaluator epochs, and the provider's required repeated observations or
 consistency barrier. Incident closure is downstream evidence and cannot clear
-credential quarantine.
+credential quarantine. `VIT-INV-003` is the canonical ownership and
+storage-capability record.
 
 Resolution atomically creates a new never-reused local capability generation
 and permanently tombstones all pre-resolution handles, receipts, queued
@@ -406,7 +412,9 @@ Provider-count exhaustion does not erase accounting: remediation must revoke or
 obtain provider-evidenced recovery capacity before creation. A supported-
 provider profile declares its independent recovery channel and residual risk;
 if none exists, the rotation enters `ManualInterventionRequired` without
-break-glass reuse of the quarantined credential.
+break-glass reuse of the quarantined credential. `VIT-INV-005` is its canonical
+authority record; the bootstrap and loss-recovery ceremony is completed at
+`0.18.5`.
 
 Credential operations use one explicit `ProviderCredentialOperationProfile`.
 `NonExportableSigning`, `NonExportableMtls`, and equivalent HSM-backed profiles
@@ -489,7 +497,8 @@ transmission/storage boundary. `QuotaReservationState` distinguishes
 - `RetainedBytes`: follow verified local allocation and deletion, not remote
   outcome.
 
-Quota ledgers and claim sets are local transactional authorities, like inbox/
+Quota ledgers and claim sets are local transactional authorities
+(`VIT-INV-007`), like inbox/
 outbox receipts and uniqueness claims, not additional aggregate streams. A
 `QuotaClaimSetId` and canonical digest bind the complete canonically ordered set
 of normalized unique resource keys and claim descriptors. Reservation acquires
@@ -1760,6 +1769,157 @@ rollback, failover, and restore cannot lower the admitted platform minimum or
 release capacity. Delayed transfer transitions recheck current local authority
 and fail conservatively.
 `v0.18.2 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.18.3` — Machine-Checkable Invariant Ownership Registry
+
+Status: planned.
+
+Setup: adopt `docs/INVARIANT_OWNERSHIP.md` as the canonical registry for every
+authority-bearing invariant. Each stable `VIT-INV-NNN` row names exactly one
+owning stream or state machine, its owner-maintained transactional guard or
+authority row, first milestone, local transaction-domain placement, every
+enforcement point, required semantic storage capabilities, positive/negative/
+model/fault tests, and restore/migration obligations. Phase prose may explain a
+rule but cannot create an alternate owner. An owner change is a governed
+migration with old/new fencing and rollback rejection, never an editorial
+rename. Seed the evaluator lineage, capability snapshot, quarantine lineage,
+rotation guard, remediation authority, transmission-start guard, quota
+authority, reevaluation scheduler, and remediation-recovery ceremony entries.
+
+Goal: turn distributed architectural laws into one executable ownership and
+storage contract before adapters implement them.
+
+Deliverables: stable invariant-ID namespace, normative ownership matrix,
+dependency-free checker, phase-document references, owner-transfer/supersession
+procedure, storage-capability cross-check contract, and generated restore/
+migration monotonic-state manifest contract. The checker rejects missing or
+duplicate IDs, absent or alternative authoritative owners, guards without an
+owner-maintained update path, empty transaction placement, enforcement points
+without negative tests, missing semantic storage requirements, absent positive/
+negative/model/fault classes, and restore or migration paths that omit their
+obligations. Later milestones must register new invariants in the same commit.
+
+Verification: delete or duplicate an owner; name two owners; omit a guard update
+path, transaction domain, negative test, semantic capability, model/fault case,
+restore duty, or migration duty; add an enforcement point without its negative
+case; advertise a storage profile without a required capability; transfer an
+owner without mixed-version fencing; omit an epoch, cursor, tombstone, quota
+state, or recovery fact from restore/migration; and prove the repository gate
+fails each mutation.
+
+Exit criteria: every authority-bearing invariant introduced through `0.18.5`
+has one machine-checked canonical row, and no phase, adapter, restore, or
+migration can silently select a second owner or omit required monotonic state.
+`v0.18.3 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.18.4` — Bounded Evaluator Re-evaluation Scheduler
+
+Status: planned.
+
+Setup: implement `VIT-INV-008` on the `0.18.0–0.18.2` lease, quota, fence, and
+atomic-work contracts. Evaluator activation, supersession, suspension, ordinary
+revocation, or emergency revocation creates stable, idempotent jobs partitioned
+by tenant, provider, and provider account. Each job binds credential-capability
+lineage, old and required evaluator generations/epochs, snapshot generation,
+raw-evidence digest and freshness deadline, priority class, retry budget, and a
+never-reused job generation. Its durable state is `Pending`,
+`FetchingFreshEvidence`, `Evaluating`, `BlockedOnProvider`, `Completed`, or
+`Escalated`. Durable partition cursors, leases, fencing, checkpoints, poison
+handling, and successor tombstones make crash, failover, repeated evaluator
+replacement, and replay deterministic.
+
+Queued or running work never authorizes use of the old evaluator output:
+`ReevaluationRequired` remains a credential-use fence until the current job
+commits a complete snapshot and new capability epoch. Evidence older than its
+declared freshness bound must be re-fetched through authenticated provider
+reconciliation; a retained digest alone cannot refresh it. Scheduling uses
+bounded global concurrency, per-provider rate claims, retry and elapsed-time
+budgets, global fair share, per-tenant ceilings, and starvation bounds. A
+non-borrowable security-cleanup lane protects emergency revocation and
+quarantine recovery. Within admissible fairness, privileged credentials and
+near-term scheduled work receive priority; one tenant or provider outage cannot
+consume the fleet. A newer evaluator generation permanently supersedes stale
+pending or in-flight job generations and schedules current work exactly once.
+
+Goal: preserve fail-closed evaluator replacement without allowing a broad
+security update to become an unbounded fleet-wide surge or starvation event.
+
+Deliverables: bounded job/state codecs, stable identity and successor rules,
+partitioned durable queue and cursor port, memory implementation, fair scheduler
+and priority policy, provider-rate and cleanup-lane quota integration, evidence-
+freshness/refetch contract, lease/fence/retry/escalation model, backlog and
+expiry monitoring, operator controls that cannot bypass `ReevaluationRequired`,
+and deterministic scheduling/model testkit.
+
+Verification: emergency revocation across millions of snapshots; provider
+outage, rate limit, and eventual consistency; one hostile or oversized tenant;
+privileged versus ordinary priority; near-term scheduled work; global and
+per-tenant starvation; cleanup-lane exhaustion or business borrowing; repeated
+replacement while jobs are pending/fetching/evaluating; stale retained evidence;
+duplicate enqueue/dequeue/completion; crash after every transition; lease loss,
+worker takeover, queue-partition failover, cursor rollback, backup/restore,
+poison escalation, and mixed-version nodes pass without old-output use,
+unbounded concurrency, duplicate capability advancement, or lost work.
+
+Exit criteria: evaluator invalidation immediately denies old snapshots while
+all affected credentials progress through bounded, durable, fair, restart-safe
+re-evaluation or visible escalation under the current generation.
+`v0.18.4 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.18.5` — Remediation Authority Bootstrap And Recovery
+
+Status: planned.
+
+Setup: complete `VIT-INV-005` and `VIT-INV-009` with a root-of-trust ceremony
+that never depends on the credential being provisioned or recovered. The first
+`ProviderCredentialRemediationAuthority` is admitted from authenticated
+provider-administrator evidence, an exact cleanup-only profile, signed
+implementation admission, current provider/account facts, independently
+recorded risk ownership, and separated quorum approval. Its lineage uses
+`Uninitialized`, `CeremonyPending`, `Active`, `Rotating`, `Compromised`, `Lost`,
+`RecoveryPending`, `Recovered`, `ManualInterventionRequired`, and terminal
+superseded/revoked states with a never-reused recovery epoch.
+
+Automatic production recovery requires two independently administered recovery
+channels where the provider can supply them, separated operators/approvers, and
+storage/KMS/identity failure domains independent from ordinary business
+credentials where practical. Rotation and recovery require quorum and
+separation of requestor, approvers, executor, and risk owner. Offline/manual
+recovery uses provider-native administrator or support ceremony that does not
+authenticate through the lost authority. A remediation credential cannot
+self-approve, rotate itself alone, declare its own compromise resolved, recover
+itself through its own secret/KMS path, or use business credentials as a hidden
+fallback. Providers without an independent channel remain explicitly
+manual-only; availability consequences are accepted before support is enabled.
+Expiry, channel health, KMS reachability, administrator availability, and
+exercise age are monitored without exposing secrets. Periodic recovery
+exercises create evidence, rotate test material safely, and cannot be reported
+successful from a paper review alone.
+
+Goal: make cleanup authority initially trustworthy, continuously available, and
+recoverable after loss or compromise without a circular or self-approved root.
+
+Deliverables: bootstrap/recovery state machine and codecs, signed ceremony
+manifest, provider evidence-strength profile, quorum/separation policy,
+independent-channel and KMS-domain declarations, offline/manual runbook,
+rotation/compromise/loss commands, expiry/availability/exercise monitors,
+exercise receipts and overdue escalation, restore/migration ratchet, memory
+implementation, and provider-without-independent-channel limitation template.
+
+Verification: first bootstrap with forged, stale, or partial provider evidence;
+self-approval and self-remediation; shared administrator, KMS, secret store, or
+identity failure domain disguised as independence; simultaneous loss of
+business and remediation credentials; remediation compromise during rotation;
+circular recovery dependency; provider-administrator loss; one or both recovery
+channels unavailable; KMS outage; expired authority; provider support delay;
+duplicate or conflicting ceremonies; crash at every transition; stale backup,
+rollback, import, and migration; false exercise success; and manual-only
+provider behavior all fail closed or reach bounded visible escalation.
+
+Exit criteria: each supported provider has either a tested, quorum-controlled,
+non-circular recovery root with the required independent channels or an
+explicitly accepted manual-only limitation; no authority can approve or recover
+its own compromise. `v0.18.5 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface
 

@@ -94,7 +94,9 @@ rechecks current local tenant/principal/policy epochs.
 
 Status: planned.
 
-Setup: classify mandatory/optional capabilities, evidence version, startup
+Setup: derive mandatory invariant capabilities from
+`docs/INVARIANT_OWNERSHIP.md`, then classify mandatory/optional capabilities,
+evidence version, startup
 probe, downgrade policy, transaction-domain placement/topology compatibility,
 authority-fence and target-fence freshness/co-location, capacity-transfer
 receipt/delivery and immutable-classification semantics, remote-target provider
@@ -112,7 +114,10 @@ reconciler, credential-lineage/rotation-guard/takeover/orphan/count-quota state,
 semantic permission-evaluator/evidence/result/reduced/quarantine/incident state,
 evaluator-lineage/admission/epoch/reevaluation/startup state, owned quarantine-
 resolution/new-generation/tombstone evidence, independent remediation lineage/
-approval/audit/quota or manual-only recovery state,
+approval/audit/quota or manual-only recovery state, remediation bootstrap/
+recovery ceremony/quorum/channel/KMS-independence/epoch state, evaluator
+re-evaluation queue/job-generation/cursor/lease/fair-share/provider-rate/
+cleanup-lane state,
 explicit credential-operation/TCB placement, cancellation-recovery
 successor semantics, bounded
 deadlock-retry semantics, and fail-closed behavior.
@@ -120,7 +125,9 @@ deadlock-retry semantics, and fail-closed behavior.
 Goal: prevent adapters from silently weakening correctness.
 
 Deliverables: capability vocabulary, signed/probed report model, compatibility
-decision engine, and operator diagnostics.
+decision engine, invariant-ID-to-capability coverage report, and operator
+diagnostics. A claimed storage profile fails admission when any applicable
+registry `requires:` capability is missing.
 
 Verification: false/missing/conflicting claims, version skew, downgrade, probe
 failure, non-co-located grant guard or quota set, active/active authoritative
@@ -153,8 +160,12 @@ epoch rollback, unsigned binary/corpus activation, stale
 snapshot after evaluator revocation, incompatible-node startup, partial
 reevaluation, generic or incident-only quarantine clear, weak/stale/
 inconsistent resolution, missing resolver separation, old-work revival,
-remediation/business lineage merge, circular remediation authority, or false
-automatic recovery without an independent provider path, remote permission
+remediation/business lineage merge, circular remediation authority, self-
+approved bootstrap/recovery, shared channel/KMS dependency presented as
+independent, stale recovery epoch, or false automatic recovery without an
+independent provider path; missing evaluator job uniqueness, durable cursor,
+fair-share ceiling, protected cleanup lane, current generation fence, or
+fresh-evidence refetch; remote permission
 discovery in dispatch, restored revoked generation
 or handle, stale queued instruction after
 suspension, credential export from signing/mTLS/HSM, bearer serialization/TLS/
@@ -184,14 +195,15 @@ Exit criteria: correctness never depends on an unverified optional capability.
 
 Status: planned.
 
-Setup: derive tests from every semantic port, define fault injection, concurrency
+Setup: derive tests from every semantic port and every applicable stable
+invariant ID, define fault injection, concurrency
 schedule, adversarial twin tenants with colliding local IDs, connection-session
 state reuse, cleanup, administrator threat boundary, and evidence format.
 
 Goal: make production-support claims depend on identical observable behavior.
 
 Deliverables: reusable adapter harness, mandatory capability matrix, randomized
-state machine, machine-readable conformance report, and destructive reference
+state machine, machine-readable invariant coverage/conformance report, and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
 audit intent, outbox, commitment, uniqueness claim, bounded quota claim-set/
@@ -240,8 +252,12 @@ administrator flag or incident closure, resolve without strong revision/
 consistency/resolver separation/current epochs, reuse the pre-resolution
 capability generation or revive old work, merge remediation and business
 credential lineages, derive remediation from quarantine, expose remediation
-business operations, omit its cleanup quota, or claim automated recovery without
-an independent provider path, rewrite an existing
+business operations, omit its cleanup quota, self-bootstrap or self-recover,
+share the lost credential/KMS/channel dependency, roll back the recovery epoch,
+or claim automated recovery without an independent provider path; lose or
+duplicate evaluator jobs/cursors, use old output while queued, let one tenant
+starve others, lend the cleanup lane to business work, or complete against a
+superseded evaluator generation; rewrite an existing
 capacity class, use a cross-class adjustment, activate capacity policy without
 its one owner or atomic co-located parent/floor transaction, let a policy lower
 its own floor, reuse floor approvers to spend released capacity, ignore

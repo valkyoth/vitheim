@@ -307,6 +307,22 @@ authorization semantics.
     handles and host-brokered authenticated operations; an unavoidable
     plaintext integration is a separately isolated hosted profile outside the
     ordinary plugin claim.
+24. Every authority-bearing invariant has one stable ID and exactly one owner
+    in `docs/INVARIANT_OWNERSHIP.md`. Its guard update path, transaction domain,
+    enforcement points, semantic storage capabilities, positive/negative/model/
+    fault tests, and restore/migration monotonic state are machine checked.
+    Phase prose and projections cannot become alternate authority.
+25. Evaluator replacement remains immediately fail closed but re-evaluation is
+    bounded and durable. Tenant/provider/account queues, stable job generations,
+    leases/cursors, provider-rate claims, global fair share, tenant ceilings,
+    starvation bounds, and a non-borrowable cleanup lane prevent a fleet surge
+    or hostile tenant from denying recovery. Queued work never uses old output,
+    and stale retained evidence is fetched again.
+26. Remediation authority begins and recovers through a separate root-of-trust
+    ceremony. Automatic recovery requires admitted independently administered
+    channels, quorum and separation, and a path that does not authenticate
+    through the authority being recovered. It cannot self-approve or
+    self-remediate; providers without that path are explicitly manual-only.
 
 ## Layers
 

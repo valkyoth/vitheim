@@ -8,6 +8,12 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added `0.18.3–0.18.5` corrective passes for a machine-checkable stable-ID
+  invariant ownership registry, bounded fair evaluator re-evaluation scheduling,
+  and quorum-controlled non-circular remediation-authority bootstrap/recovery.
+- Added production option freezes and acceptance evidence for invariant storage
+  capability coverage, evaluator surge/outage/failover behavior, independent
+  recovery channels/KMS domains, manual-only providers, and recovery exercises.
 - Initialized the dependency-free Rust workspace and security baseline.
 - Added private `no_std` foundation crates and the `vitheim` facade.
 - Added architecture, implementation, release, security, and tooling policy.

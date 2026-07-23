@@ -136,17 +136,35 @@ audit decision.
   Neither automatic profile widening nor break-glass may bypass it. The system
   cannot roll back the evaluator's signed binary/corpus-admitted lineage or
   monotonic epoch; evaluator change/revocation immediately requires
-  re-evaluation and incompatible nodes reject startup. Quarantine clears only
+  re-evaluation and incompatible nodes reject startup. Re-evaluation uses
+  durable tenant/provider/account-partitioned jobs with stable generations,
+  bounded concurrency/retry/provider-rate claims, global and tenant fairness,
+  starvation bounds, privileged/near-term priority, and a non-borrowable
+  security-cleanup lane. Old output remains unusable while queued, stale
+  evidence is fetched again, and repeated replacement, crash, failover, or a
+  hostile tenant cannot lose, duplicate, or monopolize work. Quarantine clears only
   through separated, current-evidence remediation/revalidation that creates a
   fresh capability generation and tombstones old work. Credential recovery uses
   an independently admitted cleanup-only remediation credential/channel through
   rotation/takeover, or enters manual intervention when no independent provider
-  recovery path exists. Restore cannot resurrect any of this authority.
+  recovery path exists. Its first admission, rotation, loss, and compromise
+  recovery use a signed separated-quorum ceremony, two independently
+  administered recovery channels for automatic profiles, offline/manual
+  recovery independent of the lost authority, independent KMS/identity failure
+  domains where practical, expiry/availability monitoring, and tested recovery
+  exercises. It cannot self-approve or recover its own compromise. Restore
+  cannot resurrect any of this authority.
   Signing/mTLS/HSM key material remains non-
   exportable. Bearer/API-key profiles put HTTP authorization serialization, TLS,
   claim, and socket inside the hardened broker/executor TCB; bearer bytes may
   briefly exist only there and are prohibited from upstream, plugin, general
   connector, durable, log, diagnostic, and crash surfaces.
+- Stable invariant IDs in `docs/INVARIANT_OWNERSHIP.md` bind every authority
+  owner to one owner-updated guard, transaction placement, enforcement points,
+  semantic storage requirements, P/N/M/F tests, and restore/migration duties.
+  CI rejects unowned, multiply owned, untested, unsupported, or recovery-
+  incomplete rows; adapters cannot claim support without every applicable
+  semantic capability.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown

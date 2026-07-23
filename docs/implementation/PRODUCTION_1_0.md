@@ -186,6 +186,16 @@ Verification:
   authorizes. Nodes unable to execute or validate the active binary, corpus, or
   language version reject startup/readiness, including mixed-version,
   downgrade, rollback, and restore cases.
+  Re-evaluation is itself durable and bounded under `VIT-INV-008`. Stable jobs
+  bind tenant/provider/account, snapshot and evaluator generations, evidence
+  freshness, priority, attempts, and retry budget. Partitioned queues and
+  cursors use leases/fences, bounded concurrency, provider-rate claims, global
+  fair share, per-tenant ceilings, starvation bounds, and a non-borrowable
+  security-cleanup lane; privileged credentials and near-term scheduled work
+  receive priority within those bounds. A newer evaluator permanently
+  supersedes older job generations, stale evidence is authenticated and fetched
+  again, crash/failover resumes safely, and queued credentials never use old
+  output.
   It proves the credential-capability owner alone advances
   `CredentialCapabilityQuarantined` → `Investigating` →
   `RemediationPending` → (`ReplacementVerified` |
@@ -209,13 +219,28 @@ Verification:
   accounting. If the provider has no independent recovery path, the supported
   profile records that limitation and transitions to
   `ManualInterventionRequired` without break-glass credential reuse.
+  Under `VIT-INV-009`, first admission, rotation, loss, and compromise recovery
+  use a signed root-of-trust ceremony independent from the authority being
+  recovered. Automatic recovery requires two independently administered
+  channels, separated requestor/approver/executor/risk-owner quorum, and
+  independent KMS/secret/identity failure domains where practical. Offline
+  manual recovery cannot authenticate through the lost credential. The
+  remediation lineage cannot self-approve or self-remediate; monotonic recovery
+  epochs, expiry/availability monitoring, and exercised recovery evidence
+  survive restore. Providers unable to meet the independent-channel profile
+  remain explicitly manual-only.
   Acceptance tests cover evaluator security fixes, semantic/corpus changes,
-  mixed-version and downgrade nodes, emergency revocation, partial reevaluation,
-  restore; every quarantine transition, stale/weak/inconsistent evidence,
+  mixed-version and downgrade nodes, emergency revocation, millions of
+  snapshots, provider outage/rate limits, hostile tenants, repeated evaluator
+  replacement, partial reevaluation, stale evidence, queue crash/failover and
+  starvation, restore; every quarantine transition, stale/weak/inconsistent evidence,
   resolver collusion, generic/incident-only clear, old-handle/receipt/queue/
-  effect replay; sole-credential quarantine, remediation credential compromise,
-  circular dependency, provider outage/response loss, cross-tenant substitution,
-  credential-count exhaustion, and providers without an independent path.
+  effect replay; sole-credential quarantine, simultaneous business/remediation
+  loss, remediation credential compromise, circular dependency, self-approval,
+  provider-administrator loss, KMS/channel outage, stale remediation restore,
+  provider outage/response loss, cross-tenant substitution, credential-count
+  exhaustion, false recovery exercise, and providers without an independent
+  path.
   Non-exportable signing/
   mTLS/HSM profiles expose operations only. Bearer/API-key profiles put
   authorization serialization, redirects, TLS, start claim, and socket in the
@@ -330,6 +355,12 @@ Verification:
   secure defaults, accessibility, localization, and disaster-recovery exercises.
 - Decision-record conformance proves each shipped artifact and deployment
   matches the reviewed `0.140.1–0.140.10` choices without silent fallback.
+- The generated `docs/INVARIANT_OWNERSHIP.md` conformance report covers every
+  selected production storage/deployment profile. Every applicable stable ID
+  has exactly one owner, owner-maintained guard, local transaction placement,
+  enforcement-point negative tests, required semantic storage capabilities,
+  P/N/M/F evidence, and complete restore/migration monotonic state; no waiver or
+  prose-only alternative owner is accepted.
 - Every selected interchange, semantic-index, and embedding-generation profile
   cites its earlier implementation admission, conformance corpus, pentest, and
   operational owner; missing profiles and unselected SCIM/STIX/SIEM/CMDB

@@ -104,6 +104,9 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
 | `0.18.1` | Active-generation successor/cancellation recovery and typed floor ratchet | Prepared cancellation creates one complete recovery successor; no independent restore; idempotent receipts/deadline; successor/key migration races |
 | `0.18.2` | Atomic work with governed evaluators, serialized rotation/remediation, and evidence-backed quarantine | Evaluator lineage/reevaluation, quarantine resolution/no revival, independent remediation/no-path manual state, existing rotation/TCB cases |
+| `0.18.3` | Machine-checkable invariant ownership registry | Single owners, owner-updated guards, transaction placement, semantic storage requirements, P/N/M/F tests, restore/migration completeness |
+| `0.18.4` | Bounded evaluator re-evaluation scheduler | Millions of snapshots, emergency revocation, hostile tenant, provider outage/rate limits, repeated replacement, failover, starvation |
+| `0.18.5` | Remediation-authority bootstrap and recovery root | First admission, independent channels/KMS, quorum/separation, simultaneous loss, compromise, circularity, stale restore, manual-only providers |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
 | `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
@@ -420,12 +423,12 @@ the first technology decision. An unselected option remains unsupported at
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.140.1` | Cryptography/time and exact credential-operation/rotation profile decision | Existing rotation/idempotency/orphan/count and signing/bearer TCB freeze plus independent remediation channel/quota or manual-only recovery |
-| `0.140.2` | Storage topology for governed provider state and cancellation recovery | Existing rotation/quarantine/cancellation placement plus evaluator lineage/reevaluation, new-generation tombstones, remediation lineage/audit/quota |
+| `0.140.1` | Cryptography/time and exact credential-operation/rotation/recovery-root profile decision | Existing rotation/idempotency/orphan/count and signing/bearer TCB freeze plus remediation bootstrap, independent channel/KMS/quorum profile or manual-only recovery |
+| `0.140.2` | Storage topology for registered invariant and governed provider state | Registry capability matrix plus rotation/quarantine/cancellation placement, evaluator queue/cursors/fairness, new-generation tombstones, remediation ceremony/lineage/audit/quota |
 | `0.140.3` | Human/workload/session and worker-instance identity decision | Co-located epochs, enforceable expiry, unique per-runtime claimant, lease-fence binding, restart/takeover invalidation |
 | `0.140.4` | Component runtime and governed credential-broker TCB decision | Evaluator binary/corpus admission and upgrade; quarantine-resolution evidence; non-composable remediation authority; existing TCB |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, retention precedence, omitted derived surfaces, tombstone/evidence inflation |
-| `0.140.6` | Deployment/HA provider-authority and successor/cancellation decision | Existing provider/rollout recovery plus evaluator/quarantine owner HA, remediation isolation/failover, reevaluation/manual-recovery RPO/RTO |
+| `0.140.6` | Deployment/HA invariant-owner and recovery decision | Existing provider/rollout recovery plus evaluator queue fairness/HA, quarantine ownership, remediation-root isolation/exercises, and reevaluation/manual-recovery RPO/RTO |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |

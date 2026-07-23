@@ -19,7 +19,7 @@ if [ "$production_count" -ne 1 ]; then
 fi
 
 extra_versions="
-0.8.1 0.15.1 0.16.1 0.17.1 0.18.1 0.18.2 0.20.1 0.20.2 0.20.3
+0.8.1 0.15.1 0.16.1 0.17.1 0.18.1 0.18.2 0.18.3 0.18.4 0.18.5 0.20.1 0.20.2 0.20.3
 0.28.1 0.28.2 0.28.3 0.30.1 0.30.2 0.36.1
 0.38.1 0.38.2 0.38.3 0.39.1 0.39.2 0.39.3 0.39.4 0.40.1 0.48.1 0.48.2
 0.51.1 0.51.2 0.52.1 0.53.1 0.53.2 0.53.3 0.54.1 0.56.1
@@ -55,8 +55,8 @@ pentest_count="$(
         docs/implementation |
         wc -l
 )"
-if [ "$pentest_count" -ne 225 ]; then
-    echo "implementation plan: expected 225 exact-commit pentest stops, found $pentest_count" >&2
+if [ "$pentest_count" -ne 228 ]; then
+    echo "implementation plan: expected 228 exact-commit pentest stops, found $pentest_count" >&2
     failed=1
 fi
 
@@ -194,6 +194,15 @@ require_text docs/implementation/PHASE_B.md \
     'Credential operations use one explicit `ProviderCredentialOperationProfile`.' \
     'explicit bearer versus non-exportable credential profile'
 require_text docs/implementation/PHASE_B.md \
+    '## `0.18.3` — Machine-Checkable Invariant Ownership Registry' \
+    'invariant ownership corrective milestone'
+require_text docs/implementation/PHASE_B.md \
+    '## `0.18.4` — Bounded Evaluator Re-evaluation Scheduler' \
+    'bounded evaluator reevaluation milestone'
+require_text docs/implementation/PHASE_B.md \
+    '## `0.18.5` — Remediation Authority Bootstrap And Recovery' \
+    'remediation root-of-trust milestone'
+require_text docs/implementation/PHASE_B.md \
     'The root also owns a monotonic `ActiveRolloutGeneration`' \
     'single active successor rollout generation'
 require_text docs/implementation/PHASE_B.md \
@@ -233,3 +242,5 @@ require_text docs/implementation/PHASE_O.md \
 if [ "$failed" -ne 0 ]; then
     exit 1
 fi
+
+scripts/check_invariant_ownership.sh

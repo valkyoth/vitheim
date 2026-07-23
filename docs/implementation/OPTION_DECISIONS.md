@@ -51,6 +51,16 @@ audit/epochs/egress/security-cleanup quota, rotation/takeover-only redemption,
 and no derivation from quarantine or business-operation authority. If the
 provider has no independent path, freeze an explicit manual-intervention-only
 limitation and outage consequence.
+Freeze its `0.18.5` root-of-trust profile separately: first-admission evidence,
+required requestor/approver/executor/risk-owner separation and quorum, whether
+two independently administered provider recovery channels exist, KMS/secret/
+identity failure-domain independence, offline/manual recovery that does not
+authenticate through the authority being recovered, compromise/loss epoch
+ratchet, expiry and availability monitoring, and recovery-exercise cadence and
+evidence. Automatic recovery support requires both admitted independent
+channels; otherwise the provider profile is manual-only. No profile may
+self-approve, self-remediate, or describe two names for one shared dependency
+as independence.
 Freeze `ProviderCredentialOperationProfile`:
 non-exportable signing/mTLS/HSM exposes operations only; brokered bearer/API-key
 transmission places authorization serialization, redirects, TLS, start claim,
@@ -102,7 +112,14 @@ strong-revision/consistency/resolver-separation evidence, new capability
 generation, permanent pre-resolution tombstones, and incident linkage. Map the
 independent remediation profile/credential lineage/approval/audit/epochs/egress/
 security-cleanup quota and rotation/takeover redemption guard separately from
-the business credential.
+the business credential. Map remediation bootstrap/recovery ceremony,
+channel/KMS bindings, quorum receipts, compromise/loss/recovery epochs, exercise
+evidence, and offline/manual state. Map durable evaluator re-evaluation job
+generation, tenant/provider/account queue, cursors, leases, provider-rate and
+fair-share counters, priority, cleanup lane, freshness/refetch state, and
+escalation. Produce a complete stable-invariant-ID coverage matrix from
+`docs/INVARIANT_OWNERSHIP.md`; a selected storage profile missing an applicable
+`requires:` capability is unsupported rather than waived.
 Map capacity-policy lineage owner/
 one-parent ledger/high-watermark, protected-floor history/reduction/separation/
 platform-floor profile/admission/ratchet rows, hierarchy-root manifest/
@@ -419,7 +436,13 @@ freshness owner, credential-lineage/rotation-guard/takeover/orphan/count-quota
 owner, permission-evaluator lineage/generation/admission/epoch/reevaluation
 owner, capability-quarantine investigation/remediation/verification/resolution/
 new-generation/tombstone owner, and independent remediation-profile/credential-
-lineage/approval/audit/quota owner, and their HA/failover behavior. Only local credential
+lineage/approval/audit/quota owner, remediation bootstrap/recovery ceremony and
+independent channel/KMS recovery epoch, and their HA/failover behavior. Freeze
+the evaluator re-evaluation scheduler topology: tenant/provider/account
+partitions, stable job generations and durable cursors, global/per-tenant
+fairness and starvation bounds, provider-rate claims, bounded concurrency/retry,
+non-borrowable cleanup capacity, privileged/near-term priority, fresh-evidence
+fetch, successor cancellation, and failover/RPO/RTO. Only local credential
 activation is atomic; remote create/revoke is explicitly asynchronous.
 Signing/mTLS/HSM is non-exportable;
 bearer/API-key serialization, redirects, TLS, claim, and socket reside together

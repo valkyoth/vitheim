@@ -38,6 +38,13 @@ planes. All fact-bearing domains reuse the shared N1 provenance, correction,
 confidence, and four-clock vocabulary rather than creating local substitutes.
 Semantic index storage and embedding generation are independently replaceable
 and independently admitted.
+Authority-bearing invariants are indexed by stable IDs in
+[Invariant Ownership Registry](INVARIANT_OWNERSHIP.md). From `0.18.3` onward,
+every invariant must register exactly one owner, its owner-maintained guard,
+transaction placement, enforcement points, semantic storage requirements,
+positive/negative/model/fault tests, and restore/migration obligations before
+its milestone may exit. Phase prose supplies context but cannot establish a
+second owner.
 Before `0.51.2`, every milestone that creates or changes tenant-bearing durable,
 cached, indexed, backed-up, or external-copy state must supply the neutral
 `0.8.1` lifecycle descriptor and inventory fixture without depending outward on
@@ -263,7 +270,7 @@ versions contain corrections only and follow the same process.
 ## Phase Documents
 
 - [Phase A — Pure Foundation (`0.1.0–0.10.0`)](implementation/PHASE_A.md)
-- [Phase B — Journal And Projections (`0.11.0–0.20.0`)](implementation/PHASE_B.md)
+- [Phase B — Journal And Projections (`0.11.0–0.20.3`, including corrective `0.18.3–0.18.5` passes)](implementation/PHASE_B.md)
 - [Phase C — Storage Portability (`0.21.0–0.30.0`)](implementation/PHASE_C.md)
 - [Phase D — Universal Work (`0.31.0–0.40.0`)](implementation/PHASE_D.md)
 - [Phase E — IT Service Management (`0.41.0–0.50.0`)](implementation/PHASE_E.md)
