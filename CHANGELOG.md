@@ -8,6 +8,13 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added source-side evaluator-membership delivery proof at `0.18.4`: canonical
+  source topology, monotonic outbox watermarks, exact inbox receipts, topology
+  fencing, and visible `MembershipDeliveryBlocked` before shard completion.
+- Added declarations and full lifecycle/version/recovery governance for
+  composite laws, explicit semantic enforcement-to-negative child mappings,
+  split identity/provider authority roots, and the end-to-end
+  `VIT-LAW-006` transmission-start boundary.
 - Incorporated the latest gap review by separating one-owner invariant roots
   from composite security laws, adding independently updated authority roots,
   per-enforcement negative-test child contracts, all-document declaration

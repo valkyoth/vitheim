@@ -130,7 +130,14 @@ authorization semantics.
    Duplicate instructions, executor failover, replacement workers, and ambiguous
    delivery reconcile as `OutcomeUnknown`. Restore cannot reconstruct the permit,
    and clock rollback cannot extend it. Transferable start capabilities are
-   unsupported for `1.0.0`. A bound `ProviderExecutionProfile` gives the executor
+   unsupported for `1.0.0`. Declared `VIT-LAW-006` makes this one complete
+   boundary over the exact dispatch/authority, grant-or-exception, target,
+   provider profile/
+   account/credential/broker, capability/evaluator/quarantine, lease/claimant,
+   deadline/time, and quota roots. The start claim coordinates proof but never
+   owns those roots; missing proof is `TransmissionStartUnproven`, and possible
+   start without proven absence remains non-retriable `OutcomeUnknown`. A bound
+   `ProviderExecutionProfile` gives the executor
    neither master-key nor general database authority; exact-claim-bound opaque
    credential handles, provider-native least privilege, tenant/account trust-
    domain partitioning, destination/TLS/DNS/redirect enforcement, and no general
@@ -317,12 +324,14 @@ authorization semantics.
     count. Phase prose and projections cannot become alternate authority.
 25. Evaluator replacement remains immediately fail closed but re-evaluation is
     bounded, durable, and complete. Epoch activation/revocation atomically
-    creates an invalidation-campaign root. Authoritative append-only membership
-    shard journals with sealed generations/high-watermarks, fenced source-first
-    moves, one fenced scan and receipt per manifest shard, a final membership
-    barrier, and capability-owner mismatch reconciliation ensure no affected
-    credential is missed. Search and projection indexes are accelerators only
-    and never evidence of completeness.
+    creates an invalidation-campaign root. A canonical capability-owner source
+    manifest, monotonic outbox sequences/high-watermarks, exact destination
+    receipts, and fenced source topology prove delivery before authoritative
+    membership journals seal generations/high-watermarks. One fenced scan and
+    receipt per membership-manifest shard, final barriers, and capability-owner
+    mismatch reconciliation ensure no affected credential is missed. Missing
+    source delivery is visibly `MembershipDeliveryBlocked`; search/projection
+    indexes are accelerators only and never evidence of completeness.
     Tenant/provider/account queues, stable job generations,
     leases/cursors, provider-rate claims, global fair share, tenant ceilings,
     starvation bounds, and a non-borrowable cleanup lane prevent a fleet surge

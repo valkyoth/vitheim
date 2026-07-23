@@ -106,9 +106,12 @@ audit decision.
   receive status; permits never cross RPC/IPC/queues. The sealed non-`Clone`,
   non-serializable value is consumed by the write and best-effort zeroized; its
   digest is never authority. Duplicate instruction, executor failover,
-  replacement worker, and ambiguous delivery are `OutcomeUnknown`, not retryable
-  queue work. Restore cannot reconstruct the permit; failover, pause, or clock
-  rollback cannot extend it. `1.0.0` supports no transferable permit profile.
+  replacement worker, or possible start without proven absence remains
+  non-retriable `OutcomeUnknown`. `VIT-LAW-006` registers the complete start
+  dependency set; the claim coordinates proof without owning any authority
+  root, and a missing contributor is `TransmissionStartUnproven`.
+  Restore cannot reconstruct the permit; failover, pause, or clock rollback
+  cannot extend it. `1.0.0` supports no transferable permit profile.
   A bound `ProviderExecutionProfile` denies master-key/general database access,
   uses exact-claim-bound tenant/provider/account/action/request/destination
   opaque credential operations, provider-native least privilege, short lifetime
@@ -138,13 +141,16 @@ audit decision.
   monotonic epoch; evaluator change/revocation immediately requires
   re-evaluation and incompatible nodes reject startup. Re-evaluation uses
   an invalidation campaign root created atomically with the evaluator epoch,
-  authoritative append-only membership shard journals, sealed generations and
-  high-watermarks, fenced cross-shard moves, one scan receipt per manifest
-  shard, a final membership barrier, generation-bound idempotent jobs, explicit
+  a canonical capability-owner source manifest, monotonic outbox sequences and
+  campaign high-watermarks, exact destination receipts, fenced source topology,
+  authoritative membership shard journals, sealed generations/high-watermarks,
+  one scan receipt per membership-manifest shard, delivery and membership
+  barriers, generation-bound idempotent jobs, explicit
   create/move/delete/quarantine/rotation dispositions, and authoritative
   capability-owner mismatch reconciliation. Search/projection indexes cannot
-  prove completeness. A successor campaign tombstones older
-  enumeration and cannot inherit its counts. Re-evaluation then uses
+  prove completeness. Missing delivery is `MembershipDeliveryBlocked`; mismatch
+  reconciliation remains an independent backstop. A successor campaign
+  tombstones older enumeration and cannot inherit its counts. Re-evaluation then uses
   durable tenant/provider/account-partitioned jobs with stable generations,
   bounded concurrency/retry/provider-rate claims, global and tenant fairness,
   starvation bounds, privileged/near-term priority, and a non-borrowable

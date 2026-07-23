@@ -121,16 +121,20 @@ escalation. Produce a complete stable-invariant-ID coverage matrix from
 `docs/INVARIANT_OWNERSHIP.md`; a selected storage profile missing an applicable
 `VIT-CAP-*` capability is unsupported rather than waived. Coverage begins from
 all phase and production declarations and resolves every ownership/lifecycle
-row, composite `VIT-LAW-*`, per-point `VIT-ENF-*`/negative-child contract,
+row, declared composite `VIT-LAW-*` plus its dependency/recovery versions and
+lifecycle, explicit semantic per-point `VIT-ENF-*`/negative-child contract,
 `VIT-RCV-*` recovery field, and `VIT-FEN-*` owner-transfer fence. Freeze
 acyclic, version-ordered symmetric supersession, mixed-version behavior,
 migration contract, and rollback floor for every selected invariant; zero
 unregistered or prose-only authority is permitted.
 Map the evaluator invalidation-campaign root in the same transaction domain as
-evaluator epoch activation/revocation. Separately map authoritative append-only
-membership shard journals/generations/high-watermarks, atomic capability
-membership intents, source-first fenced moves, the canonical sealed manifest,
-one fenced scan/receipt per shard, final membership barrier, idempotent
+evaluator epoch activation/revocation. Separately map the canonical capability-
+owner source/topology manifest, monotonic outbox sequences/cutoff high-
+watermarks, exact destination receipts, source lifecycle fencing, and
+`MembershipDeliveryBlocked`; then map authoritative append-only membership
+shard journals/generations/high-watermarks, source-first fenced credential
+moves, the canonical sealed membership manifest, one fenced scan/receipt per
+shard, final membership barrier, idempotent
 materialization/dispositions, capability-owner mismatch reconciliation,
 successor tombstones, and stuck state. Search and projections are never
 completeness authority.
@@ -171,9 +175,11 @@ missing/non-co-located rotation guard, two non-terminal rotations, lost orphan/
 count encumbrance, capability snapshot/epoch/quarantine/claim split, cleared
 quarantine on restore, evaluator lineage/epoch/reevaluation split, old evaluator
 output surviving activation/revocation, split epoch/campaign root, projection-
-authoritative discovery, missing membership intent/journal/generation/high-
-watermark/manifest/scan/receipt/barrier/disposition/reconciliation state,
-unfenced cross-shard move, predecessor campaign reuse, incompatible-node
+authoritative discovery, missing source manifest/partition/sequence/high-
+watermark/inbox receipt/topology lineage/delivery barrier or membership journal/
+generation/manifest/scan/receipt/barrier/disposition/reconciliation state,
+premature source retirement, unfenced cross-shard move, predecessor campaign
+reuse, incompatible-node
 startup, partial
 quarantine transition or old-work tombstone loss, generic/incident-only clear,
 missing strong revision/consistency barrier/resolver separation, remediation
@@ -468,16 +474,22 @@ fairness and starvation bounds, provider-rate claims, bounded concurrency/retry,
 non-borrowable cleanup capacity, privileged/near-term priority, fresh-evidence
 fetch, successor cancellation, and failover/RPO/RTO. Freeze the crash-atomic
 evaluator-epoch-plus-invalidation-campaign-root placement; authoritative
-membership-journal shards/generations/high-watermarks; capability mutation
-intents; source-first move fencing; manifest and one scan receipt per shard;
-final barrier; concurrent lifecycle dispositions; capability-owner mismatch
-proof; predecessor/successor fencing; stuck escalation; and campaign RPO/RTO.
+capability-owner source/topology manifest, outbox sequences/high-watermarks,
+exact destination receipts and delivery-blocked RPO; membership-journal shards/
+generations/high-watermarks; source-first credential move fencing; manifest and
+one scan receipt per shard; final barrier; concurrent lifecycle dispositions;
+capability-owner mismatch proof; predecessor/successor fencing; stuck
+escalation; and campaign RPO/RTO.
 Reject projection/search authority and any HA design needing a fleet-wide
 atomic freeze.
 The HA profile also resolves every declaration-derived invariant owner,
 transaction domain, stable contract ID, lifecycle/supersession fence, mixed-
 version rule, recovery field, and rollback floor. Only local credential
 activation is atomic; remote create/revoke is explicitly asynchronous.
+It resolves `VIT-LAW-006` end to end on every failover path: no node may claim
+transmission start unless it can recheck the exact independent authority,
+target, provider, capability, lease/claimant, time, and quota roots, while
+ambiguous starts remain `OutcomeUnknown`.
 Signing/mTLS/HSM is non-exportable;
 bearer/API-key serialization, redirects, TLS, claim, and socket reside together
 in the hardened broker/executor TCB. Existing capacity class is immutable. Each

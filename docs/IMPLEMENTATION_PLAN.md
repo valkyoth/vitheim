@@ -45,10 +45,12 @@ ownership row, one lifecycle/supersession row, an owner-maintained guard,
 transaction placement, and stable enforcement/capability/test/recovery/fence
 contract IDs before its milestone may exit. Bidirectional checks derive coverage
 from declarations across every implementation document rather than a static
-expected count. Cross-owner guarantees use registered `VIT-LAW-*` records with
-one proof coordinator, explicit contributors, local linearization points,
-fail-closed state, and end-to-end recovery; they never invent a shared owner.
-Every enforcement point derives its own stable negative-test child ID. Phase
+expected count. Cross-owner guarantees use declared, lifecycle-governed
+`VIT-LAW-*` records with one proof coordinator, explicit contributors, local
+linearization points, fail-closed state, versioned dependency/recovery contracts,
+and end-to-end recovery; they never invent a shared owner. Every enforcement
+point explicitly binds a stable semantic child ID to its negative test and
+active/retired status; textual order has no authority. Phase
 prose supplies context but cannot establish a second owner; storage profiles,
 concrete tests, recovery manifests, owner transfers, mixed-version behavior,
 and rollback floors must resolve the stable contracts instead of relying on

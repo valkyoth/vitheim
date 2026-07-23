@@ -119,16 +119,19 @@ retention decision.
 `v0.51.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.52.0` — Subjects And Service Principals
-Status: planned. Setup: define human/service/device identities, issuer binding,
 <!-- vitheim-invariant VIT-INV-037 0.52.0 -->
+<!-- vitheim-invariant VIT-INV-048 0.52.0 -->
+Status: planned. Setup: define human/service/device identities, issuer binding,
 lifecycle, credential facts, and impersonation prohibition. Define an
 external-identity-link aggregate keyed only by compound issuer plus immutable
 external subject ID; never auto-link email, display name, or mutable username.
 Specify controlled JIT provisioning, OIDC/SAML/SCIM correlation, reviewable
 merge/split/unlink and IdP-migration operations, deprovision-versus-login race
 policy, identity recreation protection, complete provenance/audit history, and
-monotonic subject/service-principal/credential/mapping authority epochs updated
-atomically with their owning lifecycle events.
+separate monotonic subject/service-principal authority (`VIT-INV-037`) and
+external-identity mapping (`VIT-INV-048`) epochs, each updated only with its own
+lifecycle event. A mapping change cannot advance or impersonate principal
+lifecycle authority, and principal disablement cannot rewrite mapping history.
 Goal: stable actor identity without unsafe account correlation. Deliverables:
 subject model, external-identity-link aggregate, mapping/review workflows,
 disable/revoke events plus local enforcement epochs, migration tooling, and
@@ -144,6 +147,7 @@ complete.
 
 ## `0.52.1` — OAuth Resource-Server Workload Authentication
 
+<!-- vitheim-invariant VIT-INV-050 0.52.1 -->
 Status: planned as an OAuth resource-server profile; blocked until the exact
 token-validation/mTLS/TLS implementations and external-issuer conformance
 profile are admitted. Vitheim does not operate an OAuth authorization server or
@@ -168,8 +172,11 @@ credential operations, plugin lifecycle, containment, broad export, federation
 trust, or other privileged commands. Policy receives the assurance class and
 proof identity as typed facts and cannot upgrade bearer assurance.
 Define external issuer/key rotation and compromise response, mapping disable/
-revoke, monotonic local workload credential/mapping revocation epochs, policy
-re-evaluation, replay restrictions, and connector workload identities.
+revoke, the independent monotonic `VIT-INV-050` workload-credential mapping
+epoch, policy re-evaluation, replay restrictions, and connector workload
+identities. This epoch belongs to the workload binding transaction; it cannot be
+advanced by or substituted for interactive sessions, authenticators, or the
+principal lifecycle epoch.
 A replay cache may detect a repeated token/proof tuple but is not claimed to
 prevent the first use of a stolen bearer token.
 Vitheim stores public validation material and external identity mappings, never
@@ -215,22 +222,27 @@ unsupported for that action class. `v0.52.1
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.53.0` — OIDC Integration
-Status: planned; blocked until this milestone admits an audited OIDC/client/TLS
 <!-- vitheim-invariant VIT-INV-038 0.53.0 -->
+Status: planned; blocked until this milestone admits an audited OIDC/client/TLS
 implementation and exact conformance profile. Setup: pin an exact
 OIDC conformance profile covering discovery, issuer/JWKS rotation, exact redirect
 matching, authorization code plus PKCE, state/nonce, mix-up defenses, token type,
 algorithm, `iss`/`aud`/`azp`/time checks, session rotation, logout, and revocation.
+`VIT-INV-038` is exclusively the interactive-session lifecycle epoch; external
+mapping and authenticator credential epochs remain independent inputs.
 Goal: strong hosted authentication without granting authorization. Deliverables:
 OIDC identity adapter and session lifecycle. Verification: token/key/algorithm
 confusion, replay, fixation, mix-up, redirect, rotation, logout and revocation pass.
 Exit criteria: invalid or stale authentication fails closed. `v0.53.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.53.1` — WebAuthn Profile And Credential Lifecycle
+<!-- vitheim-invariant VIT-INV-049 0.53.1 -->
 Status: planned; blocked until this milestone admits an audited WebAuthn
 implementation. Setup: pin the exact WebAuthn specification/profile, RP ID,
 origins, single-use challenges, user presence/verification, attestation,
 counter, backup eligibility/state, recovery, revocation, and enumeration policy.
+`VIT-INV-049` advances only with authenticator registration, counter/backup
+state, rotation, or revocation and cannot be replaced by a session refresh.
 Goal: review WebAuthn independently from OIDC rather than over-bundle protocols.
 Deliverables: credential ceremonies/lifecycle, conformance fixtures, and recovery
 runbook. Verification: origin/RP confusion, challenge replay, cloned counters,
@@ -337,20 +349,26 @@ cannot silently create Vitheim roles or capabilities. `v0.54.1 implementation
 stop reached. Run pentest for this exact commit.`
 
 ## `0.55.0` — RBAC Engine
-Status: planned. Setup: define platform, tenant, workspace, shared-space, and
 <!-- vitheim-invariant VIT-INV-040 0.55.0 -->
+<!-- vitheim-invariant VIT-INV-051 0.55.0 -->
+<!-- vitheim-invariant VIT-INV-052 0.55.0 -->
+Status: planned. Setup: define platform, tenant, workspace, shared-space, and
 resource role/capability scopes; custom role templates, inheritance,
 separation-of-duties, explicit deny precedence, assignment provenance, expiry,
-versions, explanation, and monotonic role/assignment enforcement epochs updated
-with authority-changing events. Layouts, dashboards, navigation, saved views,
+versions, explanation, and independent monotonic role-definition
+(`VIT-INV-051`), role-assignment (`VIT-INV-040`), and admitted group-membership
+(`VIT-INV-052`) epochs updated only by their owning events. Raw SCIM group facts
+cannot advance admitted group authority. Layouts, dashboards, navigation, saved views,
 and plugin installation never grant capabilities. Goal: deterministic deny-by-
 default roles across API and UI composition.
 Deliverables: pure evaluator, validated role graph, built-in least-authority
 role templates, custom-role compiler, effective-access explanation, enforcement-
-epoch transitions, and decision trace. Verification: cycles, hidden grants,
+epoch transitions for all three roots, and decision trace. Verification: cycles,
+hidden grants,
 scope confusion, dashboard/action
 discovery leaks, shared-space escalation, stale/expired roles, unsafe custom
-roles, assignment-versus-dispatch races, epoch reuse, and property tests pass.
+roles, definition/assignment/group-change-versus-evaluation or dispatch races,
+raw SCIM fact promotion, epoch reuse, and property tests pass.
 Exit criteria: every permit cites the exact role path. `v0.55.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.56.0` — ABAC Engine
@@ -612,6 +630,8 @@ profiles, immutable validators, provider capability evidence, and typed
 precondition outcomes independently of local fences; enumerate exception owner/
 guard/attempt/revocation cases, dispatch-transmission windows/start claims/
 claimants/executor/instruction-only/provider-execution-profile/permits, and
+declared `VIT-LAW-001` dispatch-completeness plus `VIT-LAW-006` end-to-end
+transmission-start dependencies/failure/recovery cases, and
 provider profile/account/credential/broker epoch and credential-operation/TCB
 placement cases, profile lifecycle command/approval/tombstone cases, credential-
 rotation state/guard/idempotency/takeover/orphan/count/evidence/unknown/deadline

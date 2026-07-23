@@ -120,6 +120,13 @@ Verification:
   claim start are `OutcomeUnknown` and cannot be ordinarily retransmitted.
   Pause, failover, restore, or clock rollback cannot extend, reconstruct, or
   replay the permit. Transferable permit profiles are unsupported for `1.0.0`.
+  Declared, lifecycle-governed `VIT-LAW-006` proves the exact applicable
+  dispatch and underlying authority roots, grant/redemption or exception guard,
+  target, provider profile/account/credential/broker roots, capability/
+  evaluator/quarantine, lease/claimant, deadline/authoritative time, and quota
+  boundary at the final claim. No combined epoch may stand in for those roots.
+  A missing contributor is `TransmissionStartUnproven`; possible start without
+  definite-absence evidence remains non-retriable `OutcomeUnknown`.
   The executor proves one immutable `ProviderExecutionProfile`: no master-key or
   general database-write access; exact-claim-bound tenant/provider/account/
   action/request/destination opaque credential operations; provider-native least
@@ -197,12 +204,17 @@ Verification:
   again, crash/failover resumes safely, and queued credentials never use old
   output. Composite `VIT-LAW-004`, coordinated by `VIT-INV-027`, additionally
   proves the evaluator epoch and one durable invalidation-campaign root commit
-  atomically. `VIT-INV-046` authoritative append-only membership shard journals
+  atomically. `VIT-INV-056` binds the canonical capability-owner source/topology
+  manifest, monotonic outbox sequences and cutoff high-watermarks, exact
+  destination receipts, and both complete delivery or visible
+  `MembershipDeliveryBlocked`. `VIT-INV-046` authoritative append-only
+  membership shard journals
   bind sealed generations/high-watermarks, capability mutation intents, and
   fenced source-first move lineage. `VIT-INV-047` supplies one fenced scan and
   exactly one completion receipt per canonical manifest shard. Terminal
-  completion requires every receipt, a final membership barrier, and continuous
-  capability-owner reconciliation with zero unexplained epoch mismatch. Search
+  completion requires the source delivery barrier, every scan receipt, a final
+  membership barrier, and continuous capability-owner reconciliation with zero
+  unexplained epoch mismatch. Search
   and projection indexes remain rebuildable accelerators, never proof.
   Repeated evaluator replacement tombstones predecessor campaigns; their counts
   cannot satisfy the successor. Crash, failover, restore, or stuck enumeration
@@ -243,8 +255,10 @@ Verification:
   Acceptance tests cover evaluator security fixes, semantic/corpus changes,
   mixed-version and downgrade nodes, emergency revocation, millions of
   snapshots, provider outage/rate limits, hostile tenants, repeated evaluator
-  replacement, epoch/campaign atomicity, membership-intent/journal/generation/
-  high-watermark/manifest/scan/receipt/barrier omission, fenced moves,
+  replacement, epoch/campaign atomicity, source partition/topology/outbox
+  sequence/high-watermark/destination-receipt/delivery-barrier omission,
+  membership-intent/journal/generation/high-watermark/manifest/scan/receipt/
+  barrier omission, fenced moves,
   concurrent credential lifecycle during enumeration, projection-authoritative
   or premature completion, capability-owner mismatch, stuck/superseded campaign,
   partial reevaluation, stale evidence, queue crash/failover and starvation,
@@ -373,11 +387,16 @@ Verification:
 - The generated `docs/INVARIANT_OWNERSHIP.md` conformance report covers every
   selected production storage/deployment profile. Coverage is derived
   bidirectionally from introducing phase declarations. Every applicable stable
-  ID has exactly one ownership row, one lifecycle row, owner-maintained guard,
-  local transaction placement, resolved `VIT-ENF-*` enforcement and negative
-  cases, `VIT-CAP-*` storage support, concrete `VIT-TST-*` P/N/M/F evidence,
+  invariant ID has exactly one ownership row, one lifecycle row, owner-
+  maintained guard, local transaction placement, explicit semantic
+  `VIT-ENF-*` enforcement/negative mappings, `VIT-CAP-*` storage support,
+  concrete `VIT-TST-*` P/N/M/F evidence,
   generated `VIT-RCV-*` restore/migration fields, and `VIT-FEN-*` owner-transfer
-  fencing. Supersession is symmetric and preserves history; mixed-version
+  fencing. Every law ID has one introducing declaration, coordinator,
+  contributor set, linearization/failure/recovery definition, lifecycle row,
+  versioned dependency and recovery contracts, proof fence, migration, and
+  rollback floor. Invariant and law supersession are symmetric and preserve
+  history; mixed-version
   behavior and rollback floors fail closed. No missing declaration, waiver,
   unresolved contract, static-count assumption, or prose-only alternative
   owner is accepted.

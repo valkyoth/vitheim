@@ -103,9 +103,9 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.17.1` | Atomic consumer commit bundle | Receipt/local-commit split, redelivery duplication, hidden multi-stream or remote-in-transaction work |
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
 | `0.18.1` | Active-generation successor/cancellation recovery and typed floor ratchet | Prepared cancellation creates one complete recovery successor; no independent restore; idempotent receipts/deadline; successor/key migration races |
-| `0.18.2` | Atomic work with governed evaluators, serialized rotation/remediation, and evidence-backed quarantine | Evaluator lineage/reevaluation, quarantine resolution/no revival, independent remediation/no-path manual state, existing rotation/TCB cases |
-| `0.18.3` | Complete ownership-root, composite-law, and lifecycle registry | All-document bidirectional declarations; independent roots; per-point negative IDs; law dependencies/recovery; acyclic version-ordered supersession; mixed-version/migration/rollback completeness |
-| `0.18.4` | Journal-complete bounded evaluator re-evaluation scheduler | Atomic epoch/campaign root, authoritative membership journals, sealed shard high-watermarks, fenced moves, one receipt per shard, final barrier/reconciliation, millions of credentials, outage/failover/starvation |
+| `0.18.2` | Atomic work, independent provider epochs, and complete transmission-start law | Profile/account/credential/broker root separation; exact dispatch/grant-or-exception/target/provider/capability/evaluator/quarantine/lease/claimant/time/quota start proof; unproven start and `OutcomeUnknown`; existing evaluator/rotation/remediation cases |
+| `0.18.3` | Declared ownership-root, composite-law, enforcement, and lifecycle registry | All-document bidirectional invariant/law declarations; explicit semantic enforcement/negative IDs; versioned law dependencies/recovery; acyclic version-ordered supersession; mixed-version/migration/rollback completeness |
+| `0.18.4` | Source-delivery- and journal-complete bounded evaluator re-evaluation | Atomic epoch/campaign root; source manifest/outbox watermarks/exact inbox receipts/topology fencing; `MembershipDeliveryBlocked`; membership journals, shard receipts, final barriers/reconciliation; outage/failover/starvation |
 | `0.18.5` | Remediation-authority bootstrap and recovery root | First admission, independent channels/KMS, quorum/separation, simultaneous loss, compromise, circularity, stale restore, manual-only providers |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
@@ -124,8 +124,8 @@ implementations remain blocked rather than being implemented casually.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.21.0` | Stable-invariant storage negotiation for provider and foundational authority | Missing/false/downgraded `VIT-CAP-*` claims, unregistered roots/laws, membership-journal/campaign/scan-receipt placement, existing provider state |
-| `0.22.0` | Declaration-derived destructive invariant and storage conformance | Concrete per-point `VIT-ENF/TST/RCV-*` resolution, law recovery, atomicity/isolation, journal/barrier campaign completeness, lifecycle/supersession, existing provider cases |
+| `0.21.0` | Stable-invariant/law storage negotiation for provider and foundational authority | Missing/downgraded `VIT-CAP-*`; unregistered roots/laws; independent provider epochs; source outbox/inbox watermarks, delivery barrier, membership/campaign/scan placement |
+| `0.22.0` | Declaration-derived destructive invariant and law conformance | Explicit semantic `VIT-ENF/TST/RCV-*`; law declaration/dependency/recovery lifecycle; transmission-start law; source-delivery/journal barriers; lifecycle/supersession |
 | `0.23.0` | SQLite single-node adapter | Locking, rollback, injection, file permissions, tenant partition |
 | `0.24.0` | PostgreSQL reference production adapter | Atomic evaluator/quarantine-generation transitions, rotation/remediation lineage separation and quotas, existing recovery/floors |
 | `0.25.0` | Experimental MySQL adapter | Isolation/encoding differences, rollback, tenant enforcement, no default v1 claim |
@@ -201,15 +201,15 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.51.0` | Formal tenant isolation model | Cross-tenant reads/writes/caches/indexes/blobs/logs |
 | `0.51.1` | Tenant lifecycle, topology migration, and enforcement epoch | Suspension/resume racing dispatch, epoch reuse, partial provision/delete, cleanup/key-destroy ordering |
 | `0.51.2` | Tenant data-surface lifecycle registry | Backfill/outward-dependency/gate bypass, inherited retention, partial cleanup, evidence inflation |
-| `0.52.0` | Subjects, service principals, identity links, and local enforcement epochs | Disable/mapping/principal revocation racing dispatch, epoch reuse, unsafe linking, identity recreation |
-| `0.52.1` | OAuth resource-server workload authentication | Credential/mapping epoch race, stale external privileged fact, false sender constraint, bearer escalation, issuer confusion |
-| `0.53.0` | Hosted OIDC integration | Discovery, mix-up, token validation, replay, downgrade, session fixation |
-| `0.53.1` | Hosted WebAuthn profile and credential lifecycle | RP/origin/challenge binding, attestation, counters, recovery |
+| `0.52.0` | Subjects, service principals, and independent external-identity mapping epochs | Principal/mapping revocation racing dispatch, unsafe linking, immutable issuer-subject identity, epoch reuse, recreation |
+| `0.52.1` | OAuth resource-server workload authentication and mapping epoch | Workload remap/revoke race, stale external privileged fact, false sender constraint, bearer escalation, issuer/audience confusion |
+| `0.53.0` | Hosted OIDC integration and independent interactive-session epoch | Discovery, mix-up, token validation, replay, downgrade, fixation, logout/assurance racing dispatch |
+| `0.53.1` | Hosted WebAuthn credential lifecycle and authenticator epoch | RP/origin/challenge binding, attestation, counters, revoke/rotate racing assertion or dispatch, recovery |
 | `0.53.2` | Distributed session store with local session epoch | Logout/revocation racing dispatch, epoch reuse, fixation/replay, node failure, partition |
 | `0.53.3` | SAML identity profile and adapter | XML signature wrapping, audience/destination mix-up, assertion replay, metadata rollback |
 | `0.54.0` | Directory/group synchronization with authorization-fact epoch | Group change racing dispatch, epoch reuse, takeover, stale privilege, deletion/recreation |
 | `0.54.1` | SCIM provisioning profile and adapter | External-ID collision, filter/PATCH abuse, group takeover, pagination/bulk bombs |
-| `0.55.0` | RBAC engine with role/assignment epochs | Assignment racing dispatch, epoch reuse, escalation, inherited cycles, hidden grants |
+| `0.55.0` | RBAC with independent role-definition, assignment, and admitted-group epochs | Definition/assignment/membership racing evaluation or dispatch, raw-SCIM grant, epoch reuse, cycles, hidden grants |
 | `0.56.0` | ABAC engine | Missing attributes, type confusion, fail-open decisions |
 | `0.56.1` | Policy lifecycle, bootstrap, recovery, and monotonic epoch | Activation/rollback racing dispatch, epoch reuse, self-approval, lockout, recovery abuse |
 | `0.57.0` | Relationship authorization with fact epochs | Edge change racing dispatch, epoch reuse, malicious paths, ownership spoofing, traversal bounds |
@@ -424,11 +424,11 @@ the first technology decision. An unselected option remains unsupported at
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.140.1` | Cryptography/time and exact credential-operation/rotation/recovery-root profile decision | Existing rotation/idempotency/orphan/count and signing/bearer TCB freeze plus remediation bootstrap, independent channel/KMS/quorum profile or manual-only recovery |
-| `0.140.2` | Storage topology for complete registered invariants and governed provider state | Zero-missing root/law/capability matrix plus rotation/quarantine/cancellation placement, evaluator membership journals/campaign/scan receipts/barrier/queue/fairness, tombstones, remediation ceremony |
+| `0.140.2` | Storage topology for complete registered invariants/laws and governed provider state | Zero-missing root/law/capability matrix; independent provider epochs; source outbox/inbox watermarks/delivery barrier; evaluator membership/campaign/scan/barriers; transmission law; remediation |
 | `0.140.3` | Human/workload/session and worker-instance identity decision | Co-located epochs, enforceable expiry, unique per-runtime claimant, lease-fence binding, restart/takeover invalidation |
 | `0.140.4` | Component runtime and governed credential-broker TCB decision | Evaluator binary/corpus admission and upgrade; quarantine-resolution evidence; non-composable remediation authority; existing TCB |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, retention precedence, omitted derived surfaces, tombstone/evidence inflation |
-| `0.140.6` | Deployment/HA invariant-owner and recovery decision | Complete owner/law/fence placement plus atomic evaluator campaign root, membership journal/scan-receipt/barrier/fairness HA, quarantine/remediation isolation, RPO/RTO |
+| `0.140.6` | Deployment/HA invariant-owner, law, and recovery decision | Complete owner/law lifecycle/fence placement; transmission-start failover; campaign source delivery and membership scan barriers/fairness HA; quarantine/remediation; RPO/RTO |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |

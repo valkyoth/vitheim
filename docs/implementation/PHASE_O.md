@@ -20,18 +20,23 @@ credential lineage/audit/epoch/cleanup quota or manual-only limitation.
 Persist the `0.18.4` evaluator-job generations, tenant/provider/account queue
 partitions, durable cursors, attempts, leases, priority, freshness/refetch,
 fair-share/provider-rate/cleanup-lane accounting, and escalation; also persist
-the atomic invalidation-campaign root, authoritative membership mutation intents
-and append-only shard journals, sealed generations/high-watermarks, fenced move
-lineage, canonical manifest, per-shard scan cursors and single receipts, final
-membership barrier, materialization/dispositions, capability-owner mismatch
-proof, successor tombstones, and stuck state. Projection/search state is
+the atomic invalidation-campaign root, canonical capability-owner source/
+topology manifest, monotonic outbox sequences and cutoff high-watermarks, exact
+destination receipts, delivery barrier and `MembershipDeliveryBlocked`,
+authoritative membership intents and append-only shard journals, sealed
+generations/high-watermarks, fenced move lineage, canonical membership manifest,
+per-shard scan cursors and single receipts, final membership barrier,
+materialization/dispositions, capability-owner mismatch proof, successor
+tombstones, and stuck state. Projection/search state is
 rebuildable and cannot certify completeness. Persist the
 `0.18.5` remediation ceremony manifest, channel/KMS bindings, quorum receipts,
 compromise/loss/recovery epoch, expiry, exercise evidence, and manual-only
 limitation. Package a declaration-derived report proving every applicable stable
-invariant ID has exactly one ownership/lifecycle row and resolved enforcement,
-storage capability, test, recovery, and owner-fence contracts, including
-supersession/mixed-version/migration/rollback behavior.
+invariant ID has exactly one ownership/lifecycle row and explicit semantic
+enforcement/negative, storage-capability, test, recovery, and owner-fence
+contracts. Every law has one declaration, definition/lifecycle row, versioned
+dependency/recovery contracts, proof fence, and resolved contributor placement.
+Both registries prove supersession/mixed-version/migration/rollback behavior.
 Goal: hardened repeatable single-node install.
 Deliverables: signed packages, startup floor-profile compatibility gate,
 active-evaluator binary/corpus/language compatibility gate, governed higher-
@@ -46,9 +51,11 @@ handle restore, unauthorized/stale profile activation, lost tombstone/rotation
 evidence/deadline, restored dual redemption, stale/restored capability snapshot,
 evaluator admission/epoch rollback or incompatible binary startup, partial
 reevaluation, queued old-output use, lost/duplicated evaluator job or cursor,
-missing/split campaign root, lost membership intent, journal/generation/high-
-watermark/manifest/scan/receipt/barrier corruption, projection-authoritative
-completion, unfenced move, late mismatch, premature or predecessor campaign
+missing/split campaign root, lost source partition/intent/outbox sequence/high-
+watermark/inbox receipt/topology transition, premature source retirement,
+delivery or membership journal/generation/high-watermark/manifest/scan/receipt/
+barrier corruption, projection-authoritative completion, unfenced move, late
+mismatch, premature or predecessor campaign
 completion, tenant starvation/cleanup-lane
 borrowing, cleared quarantine/old-work revival,
 remediation-lineage merge, self-approved/circular recovery, lost channel/KMS/
@@ -390,9 +397,10 @@ consistency/new-capability-generation/pre-resolution-tombstone state,
 independent remediation profile/credential-lineage/approval/audit/epoch/egress/
 cleanup-quota/manual-only limitation, evaluator re-evaluation job generations/
 queue partitions/cursors/attempts/leases/freshness/priority/fairness/provider-
-rate/cleanup-lane/escalation, invalidation-campaign root/membership journals/
-generations/high-watermarks/fenced moves/shard scans/receipts/final barrier/
-materialization-dispositions/mismatch proof/successor tombstones/stuck state,
+rate/cleanup-lane/escalation, invalidation-campaign root/source topology/outbox
+watermarks/destination receipts/delivery barrier/blocked state/membership
+journals/generations/high-watermarks/fenced moves/shard scans/receipts/final
+barrier/materialization-dispositions/mismatch proof/successor tombstones/stuck state,
 remediation ceremony/channel/KMS/quorum/
 compromise-loss-recovery epoch/expiry/exercise evidence, and the complete
 declaration-derived stable-invariant ownership/lifecycle/contract/fence and

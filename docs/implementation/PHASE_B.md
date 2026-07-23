@@ -861,6 +861,7 @@ authoritative audit intent that can commit atomically with its outcome.
 ## `0.16.0` — Transactional Outbox Model
 
 Status: planned.
+<!-- vitheim-law VIT-LAW-001 0.16.0 -->
 <!-- vitheim-invariant VIT-INV-016 0.16.0 -->
 <!-- vitheim-invariant VIT-INV-019 0.16.0 -->
 <!-- vitheim-invariant VIT-INV-021 0.16.0 -->
@@ -927,6 +928,7 @@ binding, typed execution authority, and explicit freshness profile.
 ## `0.16.1` — Atomic Command Commit Bundle
 
 Status: planned.
+<!-- vitheim-law VIT-LAW-005 0.16.1 -->
 <!-- vitheim-invariant VIT-INV-012 0.16.1 -->
 
 Setup: freeze one project-owned `AtomicCommandCommitBundle` containing tenant
@@ -1051,6 +1053,8 @@ Status: planned.
 <!-- vitheim-invariant VIT-INV-043 0.18.1 -->
 <!-- vitheim-invariant VIT-INV-044 0.18.1 -->
 <!-- vitheim-invariant VIT-INV-045 0.18.1 -->
+<!-- vitheim-law VIT-LAW-002 0.18.1 -->
+<!-- vitheim-law VIT-LAW-003 0.18.1 -->
 
 Setup: define tenant/resource quota identity, opaque `QuotaReservationId`,
 reservation digest, `QuotaClaimSetId`, opaque `QuotaClaimSetToken`, canonical
@@ -1288,6 +1292,10 @@ Status: planned.
 <!-- vitheim-invariant VIT-INV-004 0.18.2 -->
 <!-- vitheim-invariant VIT-INV-005 0.18.2 -->
 <!-- vitheim-invariant VIT-INV-006 0.18.2 -->
+<!-- vitheim-invariant VIT-INV-053 0.18.2 -->
+<!-- vitheim-invariant VIT-INV-054 0.18.2 -->
+<!-- vitheim-invariant VIT-INV-055 0.18.2 -->
+<!-- vitheim-law VIT-LAW-006 0.18.2 -->
 <!-- vitheim-invariant VIT-INV-020 0.18.2 -->
 <!-- vitheim-invariant VIT-INV-028 0.18.2 -->
 
@@ -1722,7 +1730,11 @@ database authority; every provider credential operation is an opaque, exact-
 claim-bound, tenant/provider/account/action/request/destination-scoped handle
 under least-privilege credential and deny-by-default egress policy. Its
 authoritative profile/account/credential/broker-policy epochs are current at
-claim and redemption. Profile activation is a separately approved, signed,
+claim and redemption. They are independent roots: `VIT-INV-028` owns only the
+execution-profile lineage, while `VIT-INV-053`, `VIT-INV-054`, and
+`VIT-INV-055` respectively own provider-account, provider-credential, and
+broker-policy epochs. No combined epoch or profile update may advance or stand
+in for the others. Profile activation is a separately approved, signed,
 digest-bound, semantic-diff-classified control-plane mutation with current
 fences and a revocation tombstone. Rotation is an evidence-driven asynchronous
 provider process; only local successor activation is atomic and makes the
@@ -1753,6 +1765,22 @@ radius is explicit. Claim-response ambiguity, duplicate instruction delivery,
 executor failover, replacement workers, and uncertain start reconcile as
 `OutcomeUnknown` without ordinary retry; definitely unstarted work requires
 fresh authority.
+
+`VIT-LAW-006` registers the end-to-end transmission-start boundary rather than
+letting these checks remain a prose list. `VIT-INV-006` coordinates only the
+unique start claim. The dispatch-fence receipt and all applicable underlying
+tenant/principal/session/authenticator/workload/delegation/role-assignment/
+role-definition/group/relationship/policy epochs; grant/redemption or exception
+guard; target fence; provider profile, account, credential, and broker-policy
+epochs; capability/evaluator/quarantine state; lease/fence and exact claimant;
+immutable transmission deadline and authoritative time; and quota transmission
+boundary remain owned by their independent roots. The executor locks or
+freshly validates the complete applicable dependency set immediately before
+provider I/O. Missing, stale, unknown, differently scoped, or unrestorable
+contributors produce `TransmissionStartUnproven`. Once a start may have
+occurred, absence must be proven from claim plus provider evidence; otherwise
+the result is non-retriable `OutcomeUnknown`, never a blind resend.
+
 Every applicable authority change linearizes against dispatch through the
 complete co-located monotonic fence set; unsupported external staleness cannot
 authorize privileged effects. Every current-target dispatch also linearizes
@@ -1828,12 +1856,17 @@ entries.
 
 Give every row stable `VIT-ENF-*`, `VIT-CAP-*`, `VIT-TST-*`, and `VIT-RCV-*`
 contract IDs. Keep one-owner `VIT-INV-*` roots distinct from cross-owner
-`VIT-LAW-*` security laws. Each law names one proof coordinator without
+`VIT-LAW-*` security laws. Each law has an introducing `vitheim-law`
+declaration and lifecycle row. It names one proof coordinator without
 transferring contributor ownership, resolves every contributing root, lists
 local linearization points, defines a typed fail-closed state, and supplies an
-end-to-end recovery proof. Derive an append-stable child pair for every
-enforcement point—`VIT-ENF-NNN-A` to `VIT-TST-NNN-N-A`, then `-B`, and so
-on—so an umbrella negative test cannot conceal an untested check.
+end-to-end recovery proof. Dependency-set and recovery-proof versions, proof
+fences, mixed-version behavior, migration, rollback floor, and acyclic
+supersession make contributor or linearization changes explicit. Bind every
+enforcement point to an explicit append-stable child pair and semantic
+description—`VIT-ENF-NNN-X` to `VIT-TST-NNN-N-X`—so reordering prose cannot
+silently redefine a contract and an umbrella negative test cannot conceal an
+untested check.
 
 The checker scans every implementation document, including
 `PRODUCTION_1_0.md` and future phases, validates declaration-to-row and row-to-
@@ -1857,7 +1890,7 @@ Deliverables: stable invariant/law/declaration/enforcement/capability/test/
 recovery/fence ID namespaces, complete authority-root backfill including
 independently updated local-floor, transfer-side, dispatch-authority, and
 campaign-shard roots, normative ownership/composite-law/lifecycle matrices,
-derived per-enforcement negative-child map, dependency-free bidirectional
+explicit per-enforcement negative-child mappings, dependency-free bidirectional
 checker across all implementation documents, phase-document
 declarations, owner-transfer/supersession procedure, storage-capability
 cross-check contract, test-contract realization index, and generated restore/
@@ -1870,8 +1903,10 @@ positive/negative/model/fault contracts, recovery obligations without stable
 manifest IDs, unknown/asymmetric/cyclic/non-increasing or rollback-unsafe
 supersession, inconsistent active/superseded/retired semantics, missing owner-
 transfer fences, unsafe mixed-version behavior, and lifecycle migration/
-rollback omissions. It also rejects incomplete composite-law dependencies or
-proof fields and enforcement points without their derived negative children.
+rollback omissions. It also rejects undeclared or lifecycle-incomplete laws,
+incomplete composite-law dependencies/proof fields, law graph/version/rollback
+violations, and enforcement points without explicit matching negative children
+or valid active/retired status.
 Later milestones
 must declare and register new invariants in the same commit.
 
@@ -1905,6 +1940,8 @@ Status: planned.
 <!-- vitheim-invariant VIT-INV-027 0.18.4 -->
 <!-- vitheim-invariant VIT-INV-046 0.18.4 -->
 <!-- vitheim-invariant VIT-INV-047 0.18.4 -->
+<!-- vitheim-invariant VIT-INV-056 0.18.4 -->
+<!-- vitheim-law VIT-LAW-004 0.18.4 -->
 
 Setup: implement `VIT-INV-008` on the `0.18.0–0.18.2` lease, quota, fence, and
 atomic-work contracts. Evaluator activation, supersession, suspension, ordinary
@@ -1938,6 +1975,23 @@ source-first protocol: the source remains campaign-eligible until its tombstone,
 destination lineage, and handoff receipt are durable. No fictitious cross-shard
 transaction or provider-wide freeze is required.
 
+`VIT-INV-056` closes the source-to-membership delivery gap. A campaign binds a
+canonical manifest of every capability-owner source partition and its topology
+generation. Each source assigns monotonic outbox sequence numbers to atomic
+membership intents and seals a campaign high-watermark. `VIT-INV-017`
+destination inbox receipts acknowledge the exact source partition, sequence,
+intent digest, and membership-shard generation; `VIT-INV-016` source state
+retains the intent until that receipt is authoritative. The delivery barrier
+proves every sequence through every source high-watermark was received or
+explicitly superseded by a lineage-bound successor. Source creation, split,
+merge, move, and retirement update a fenced topology lineage: predecessor
+partitions remain in the manifest until successor coverage and handoff receipts
+are complete. Missing, stuck, digest-conflicting, or topologically ambiguous
+delivery enters visible `MembershipDeliveryBlocked`; a membership shard cannot
+declare the missing source absent. Capability-owner mismatch reconciliation is
+an independent backstop over the canonical source manifest, not the sole
+discovery mechanism.
+
 Campaign creation obtains a canonical manifest of membership shards and their
 sealed generations/high-watermarks. `VIT-INV-047` owns one fenced scan state per
 campaign/shard. It advances a durable journal cursor, records one job or typed
@@ -1948,10 +2002,11 @@ shard high-watermark bind the active evaluator before use. Delete, quarantine,
 rotation, regeneration, and move outcomes remain explicit; obsolete work never
 satisfies a successor generation.
 
-The campaign root may enter `Complete` only after it has exactly one valid
-receipt for every manifest shard, a final membership barrier proves all
-mutation intents through the campaign cutoff were journaled or explicitly
-post-cutoff, and authoritative capability-owner reconciliation finds zero
+The campaign root may enter `Complete` only after the source delivery barrier
+proves every source sequence through the cutoff, it has exactly one valid
+receipt for every membership-manifest shard, a final membership barrier proves
+all delivered mutation intents were journaled or explicitly post-cutoff, and
+authoritative capability-owner reconciliation finds zero
 unexplained evaluator-epoch mismatch. Reconciliation remains continuous so a
 late journal mutation or inconsistency reopens/escalates the proof rather than
 hiding behind terminal counts. Other states are visibly `Enumerating`,
@@ -1976,7 +2031,11 @@ pending or in-flight job generations and schedules current work exactly once.
 Goal: preserve fail-closed evaluator replacement without allowing a broad
 security update to become an unbounded fleet-wide surge or starvation event.
 
-Deliverables: campaign-root and composite-law contracts; authoritative
+Deliverables: campaign-root and composite-law contracts; canonical capability-
+owner source-partition/topology manifest; monotonic source outbox sequences and
+sealed high-watermarks; exact-sequence/digest destination receipts; source
+creation/split/merge/move/retirement protocol; visible delivery-blocked state;
+authoritative
 membership-journal/shard-generation/high-watermark interfaces; atomic
 capability-change-plus-membership-intent; fenced source-first move protocol;
 canonical sealed shard manifest; per-shard scan state, cursor, disposition, and
@@ -1992,9 +2051,13 @@ scheduling/model testkit.
 
 Verification: emergency revocation across millions of credentials; crash between
 evaluator epoch advancement and campaign creation; crash or failover before,
-during, and after capability mutation intent, membership intake, generation
-seal, every journal page, job/disposition materialization, scan receipt, final
-barrier, and root completion; projection or search-index omission; omitted,
+during, and after capability mutation intent, source outbox append, source
+high-watermark seal, destination receipt, topology change, delivery barrier,
+membership intake, generation seal, every journal page, job/disposition
+materialization, scan receipt, final membership barrier, and root completion;
+stuck or disappeared source intent; missing source partition; sequence gap,
+digest substitution, premature source retirement, split/merge/move ambiguity;
+projection or search-index omission; omitted,
 duplicated, reordered, aliased, or cross-generation shard/receipt; high-
 watermark or manifest substitution; unfenced and interrupted cross-shard moves;
 credentials created, moved, deleted, quarantined, rotated, or regenerated
@@ -2013,9 +2076,11 @@ poison escalation, and mixed-version nodes pass without old-output use,
 unbounded concurrency, duplicate capability advancement, or lost work.
 
 Exit criteria: evaluator invalidation atomically establishes both the fail-
-closed epoch and a durable campaign root; authoritative journals—not
-projections—produce a sealed shard manifest, exactly one receipt per shard, and
-a final barrier with zero unexplained capability-owner mismatch. The terminal
+closed epoch and a durable campaign root; the canonical source manifest and
+delivery barrier prove every source sequence through its cutoff before
+authoritative journals—not projections—produce a sealed membership-shard
+manifest, exactly one receipt per shard, and a final barrier with zero
+unexplained capability-owner mismatch. The terminal
 manifest accounts for every affected lineage/generation through materialized
 work or an explicit terminal disposition. All credentials progress through
 bounded, durable, fair,
