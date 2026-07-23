@@ -103,13 +103,18 @@ capabilities for every law generation effective at the adapter milestone.
 Also require `LawManifestAdmissionSetV1` catalog ID/epoch/digest/trust-profile
 persistence and independent admission, plus exhaustive
 `LawSemanticRealization` support for every tuple in each claimed generation's
-predecessor closure. Require `VIT-CAP-057` for the one catalog-lineage owner,
-expected-version activation CAS, predecessor/successor/revocation/emergency-
-distrust state, and local monotonic high-watermarks. Negotiate the planning
+predecessor closure. Require `VIT-CAP-057` for the one global catalog-lineage
+owner, expected-version activation CAS, and predecessor/successor/revocation/
+emergency-distrust state. Separately require `VIT-CAP-058` for each local
+catalog/distrust ratchet, admitted trusted-time interval and uncertainty,
+continuity/boot identity, last-observed lower bound, expiry tombstone, and
+startup/restore enforcement. Negotiate the planning
 superset separately from immutable active payload/envelope support. Exact
 `CompiledCatalog` and `SignedCatalog` capabilities report independently; no
-combined capability is valid. Payload/envelope codecs cover every scope,
-validity, signer/root-epoch, revocation, and successor field,
+combined capability is valid. The adapter consumes only the typed result of the
+shared `LawCatalogVerifierV1`, never decoded field presence. Payload/envelope
+codecs cover activation floor, exact scope, validity/maximum uncertainty,
+signer/root-epoch, revocation, and successor fields,
 evidence version, startup
 probe, downgrade policy, transaction-domain placement/topology compatibility,
 authority-fence and target-fence freshness/co-location, capacity-transfer
@@ -255,8 +260,12 @@ trusted-catalog round-trip/admission, ancestry enumeration, realization
 dispatch, tamper, self-consistent-untrusted, noncanonical encoding,
 semantic-drift, unknown-semantic, future-generation, planning-superset-as-
 runtime, future-planning-tuple-in-active-catalog, combined-profile, omitted-
-envelope-field, signer/root-substitution, activation-CAS, revocation-versus-
-readiness/dispatch/start, and local-ratchet-rollback fixtures;
+envelope-field, signer/root-substitution, activation-CAS, actual-predecessor-
+digest mismatch, text-only artifact, wrong product/edition/compatibility scope,
+global/local owner collision, partial rollout/unreachable node, revocation-
+propagation lag, excessive time uncertainty, rollback/suspend/time loss,
+revocation-versus-readiness/dispatch/start, and local catalog/distrust/time-
+ratchet rollback fixtures;
 and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
@@ -806,10 +815,12 @@ rolling deployment, and prevent rollback below the generation floor.
 Persist the canonical predecessor and successor `LawGenerationManifestV1`
 bytes/digests, verify both before each checkpoint or recovery transition, and
 never synthesize a manifest from only the flattened latest law view. Preserve
-and verify the `VIT-INV-057` lineage/high-watermarks, active catalog ID/epoch,
-payload/envelope digests, exact profile, activation/max versions, predecessor,
-scope, validity, signer/root epoch, revocation/successor state, every tuple in
-both ancestry closures, and each closed semantic realization.
+and verify the `VIT-INV-057` global lineage separately from every
+`VIT-INV-058` local catalog/distrust/time ratchet; preserve active catalog
+ID/epoch, recomputed payload/envelope digests, exact profile, activation floor,
+actual predecessor, exact scope, validity/maximum uncertainty, signer/root
+epoch, revocation/successor state, every tuple in both ancestry closures, and
+each closed semantic realization through the shared verifier.
 Migration authority cannot come from a manifest or catalog stored under the
 same mutable database authority; a missing, stale, revoked, or untrusted
 catalog blocks activation and rollback.
@@ -879,9 +890,10 @@ Exit criteria: interrupted migrations cannot leave unclassified partial state.
 Status: planned.
 
 Setup: freeze canonical export version, tenant scope, event/blob manifests,
-integrity checkpoints, planning-superset provenance, `VIT-INV-057` lineage/
-ratchets, active catalog identity/epoch/payload-and-envelope digests/exact
-profile/activation floor/maximum platform/predecessor/scope/validity/signer/
+integrity checkpoints, planning-superset provenance, separate `VIT-INV-057`
+global lineage and `VIT-INV-058` local catalog/distrust/time ratchets, active
+catalog identity/epoch/recomputed payload-and-envelope digests/exact profile/
+activation floor/actual predecessor/scope/validity/maximum uncertainty/signer/
 root epoch/revocation/successor fields and full generation ancestry,
 encryption/signing ports, position mapping, and budgets.
 
@@ -889,8 +901,10 @@ Goal: migrate between backends without claiming direct database interchange.
 
 Deliverables: streaming exporter/importer, preflight verifier, reconciliation
 report, resumable checkpoints, source/destination mapping, and explicit
-manifest/admission/semantic-realization closure. Import never infers, upgrades,
-or trusts a law generation from mutable payload content.
+manifest/admission/semantic-realization closure. Import calls the shared
+canonical verifier with destination build scope and the actual predecessor
+artifact; it never infers, upgrades, or trusts a law generation from mutable
+payload content.
 
 Verification: truncation/substitution/reorder, wrong tenant/key/version, duplicate
 resume, blob mismatch, exhaustion, catalog or ancestor omission/substitution,

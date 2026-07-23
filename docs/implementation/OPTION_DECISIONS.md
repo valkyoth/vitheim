@@ -26,11 +26,16 @@ profiles and adapter boundaries. Freeze the law-manifest trust profile here:
 select exactly `CompiledCatalog` or `SignedCatalog` for each active runtime
 artifact; a combined serialized profile is prohibited. Freeze the canonical
 payload and envelope digest preimages, predecessor envelope digest, catalog
-epoch, activation floor/maximum platform version, product/edition/compatibility
-scope, validity policy/window, signer/key ID, signature profile, trust-root
+epoch, activation floor and explicit-successor semantics, exact product/
+edition/compatibility scope, validity policy/window and maximum uncertainty,
+signer/key ID, signature profile, trust-root
 epoch, revocation/successor policy, dedicated platform-law roots, signer
 quorum/separation, root rotation and compromise recovery, artifact binding, and
-independently reviewed digest/signature implementations. Mutable database/
+independently reviewed digest/signature implementations. Freeze the project-
+owned runtime/CLI verifier and compiled expected-digest generation path. For
+`BoundedWindow`, select the admitted `TrustedCatalogTime` source, platform
+uncertainty ceiling, continuity/re-attestation rules, rollback and suspend
+handling, and fail-closed behavior when time is unavailable. Mutable database/
 configuration authority alone can neither add a tuple, activate a planning-
 superset entry, nor replace a trust root. The timestamp profile must define authoritative
 transaction time, persisted `redeemed_at`/`transmit_before`, monotonic
@@ -157,12 +162,15 @@ semantic realizations and their transition/outcome/recovery/P/N/M/F evidence.
 Reject any topology where database administration can admit a new tuple,
 where restore can select an untrusted catalog, or where only a terminal
 generation is retained.
-Map the one `VIT-INV-057` owner, expected-version activation row, predecessor/
-successor/revocation/emergency-distrust lineage, local epoch/digest high-
-watermarks, and complete payload/envelope fields. Planning-superset storage is
-non-authoritative and physically/logically distinguishable from active
-catalogs. No storage topology may make active trust reconstructible from the
-database after compiled/signed provenance is lost.
+Map the one global `VIT-INV-057` owner, expected-version activation row, and
+predecessor/successor/revocation/emergency-distrust lineage. Separately map
+every `VIT-INV-058` local `CatalogAdmissionRatchetRow`, including catalog
+epoch/digest, distrust epoch, trusted-time lower bound/continuity identity, and
+expiry tombstone. The two update domains cannot share an authority row.
+Planning-superset storage is non-authoritative and physically/logically
+distinguishable from active catalogs. No storage topology may make active trust
+reconstructible from the database after compiled/signed provenance is lost or
+allow backup rollback to extend bounded validity.
 Map the evaluator invalidation-campaign root in the same transaction domain as
 evaluator epoch activation/revocation. Separately map the canonical capability-
 owner source/topology manifest, monotonic outbox sequences/cutoff high-
@@ -570,16 +578,21 @@ upgrade, failover, and restore. In particular, transmission start distinguishes
 `DefinitelyNotStarted`, `OutcomeUnknown`, and `StartClaimedReconciling`; only
 the first permits an ordinary retry.
 Freeze catalog distribution and refresh as a fenced control-plane operation:
-each node verifies the selected compiled/signed trust profile, complete
-predecessor closure, and exhaustive semantic realizations before readiness.
+the global owner activates through CAS and each independent local owner invokes
+the shared verifier over the selected compiled/signed profile, actual
+predecessor artifact, exact build scope, complete predecessor closure, and
+exhaustive semantic realizations before readiness.
 Failover, rollback, isolated-node startup, restore, and mixed-version operation
-reject stale, revoked, unknown, partial, or database-invented catalogs. RPO/RTO
+reject stale, revoked, unknown, partial, scope-mismatched, time-untrusted, or
+database-invented catalogs. RPO/RTO
 evidence states how the active catalog ID/epoch/digest is recovered without
 granting the backup medium signing authority.
-The HA profile names the single catalog-lineage leader/owner, expected-version
-activation and local-ratchet transactions, propagation acknowledgement,
-revocation/emergency-distrust priority, maximum tolerated staleness, and
-behavior when signer/root/validity evidence is unavailable. A node never
+The HA profile names the single global catalog-lineage leader/owner, separate
+local-ratchet transactions, expected-version activation, propagation
+acknowledgement, partial-rollout/unreachable-node readiness, revocation/
+emergency-distrust priority, maximum tolerated staleness, trusted-time
+continuity after suspend/failover, and behavior when signer/root/validity/time
+evidence is unavailable. A node never
 continues dispatch or transmission start merely because its planned-superset
 tuple or mutable cached envelope remains self-consistent.
 Goal: select the exact profiles Phase O must certify.

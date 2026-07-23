@@ -8,6 +8,19 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Split global platform-law lineage (`VIT-INV-057`) from independently updated
+  local catalog admission, distrust, and trusted-time ratchets
+  (`VIT-INV-058`); strengthened `VIT-LAW-007` with partial-rollout,
+  unreachable-node, revocation-propagation, failover, and restore contracts.
+- Replaced ambiguous catalog maximum versions with explicit-successor
+  activation floors and a checker that proves exactly one applicable catalog
+  for every implementation milestone through `1.0.0`.
+- Required non-planned catalog artifacts to pass a project-owned Rust verifier
+  shared with runtime, including canonical decode, digest/ancestry/predecessor,
+  profile, compiled/signature trust, and exact product-scope verification.
+- Defined trustworthy `BoundedWindow` time intervals, maximum uncertainty,
+  clock-rollback and suspend handling, local validity ratchets, expiry
+  tombstones, restore rules, and fail-closed time unavailability.
 - Added `VIT-INV-057` and `VIT-LAW-007` so the active platform-law catalog has
   one lifecycle owner, expected-version activation, succession/revocation/
   emergency-distrust commands, local rollback ratchets, and explicit

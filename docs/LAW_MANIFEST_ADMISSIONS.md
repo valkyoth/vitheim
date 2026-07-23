@@ -6,16 +6,18 @@ This file is the append-only planning superset of every reviewed
 `(LawId, Generation, Digest)` tuple, including future generations. It is input
 to release tooling and is never an active runtime catalog. Presence here proves
 reviewed planning identity, not effectiveness, implementation, or activation.
-Runtime admits only an immutable milestone-scoped catalog from
+Runtime admits only an immutable activation-floor catalog from
 [Active Law Catalogs](LAW_ACTIVE_CATALOGS.md), whose tuple closure contains no
-generation effective after that catalog's maximum platform version.
+generation effective after its activation floor and which remains applicable
+only until its verified successor is explicitly activated.
 
 A valid manifest or planning-superset digest proves content integrity, not
 runtime trust. Active catalogs use exactly one profile enum:
 `CompiledCatalog` or `SignedCatalog`. The combined phrase “compiled or signed”
 is a design choice description and is never serialized as an active profile.
-`VIT-INV-057` owns proposal, activation, succession, revocation, emergency
-distrust, active epoch/digest, and local high-watermark ratchets.
+`VIT-INV-057` owns global proposal, activation, succession, revocation,
+emergency distrust, and active epoch/digest. `VIT-INV-058` separately owns each
+local catalog/distrust/trusted-time ratchet.
 
 Database access alone must never authorize either profile. Startup, adapter
 admission, migration, restore, failover, import, and recovery reject a
@@ -30,7 +32,7 @@ Planning catalog revision: `1`
 
 Trust profile: `planning-superset-not-runtime-v1`
 
-Planning catalog digest: `sha256:63a74bc688414c1b5220e0399279f1c8759fc5473eec6b39cfc945255964f758`
+Planning catalog digest: `sha256:466a7ae2274abce51346e60443bacb4d62eb1bf040469bc65420a0f8f4bf3bd3`
 
 The planning-catalog digest uses the length-prefixed encoding defined by
 `docs/LAW_GENERATION_MANIFEST.md`. Encode, in order, the ASCII format literal
@@ -70,14 +72,17 @@ Markdown presentation are excluded.
 | VIT-LAW-006@g08 | sha256:1831ab3a258cc5cc6cbc50a579cae326973bd4406749c6cb3ed9e665be27e095 |
 | VIT-LAW-006@g09 | sha256:44b4e01d4de263d630fbf5ea97e52fcfa1a06f0d63056ba4a9af0aeb2e0cc12f |
 | VIT-LAW-006@g10 | sha256:54280761c256d867005a953f5c2f46d6e0d0ed018ac4b3ad47326d859f47d338 |
-| VIT-LAW-007@g01 | sha256:b688c69e958c3d2a4296e30280d8a1228f962ea1613aefdccf3869a5bdc7198c |
+| VIT-LAW-007@g01 | sha256:d36ba8b53e831437107f1f78610dfa889ccdfdd9288a58f90b01affb4caee5d7 |
 
 `0.18.3` implements planning-superset validation and generation of the first
-active catalog, which stops exactly at `0.18.3`. Each later law-effective
-milestone generates one immutable successor containing the complete effective
-ancestry and no planned future tuple. `0.19.0` binds the active envelope into
-signed checkpoints. `0.21.0–0.22.0` negotiate and conform catalog ownership,
-ratchets, persistence, and admission; `0.29.0–0.30.0` preserve them through
-migration, export, and import. `0.140.1`, `0.140.2`, and `0.140.6` freeze the
-exact trust, storage, and deployment profiles. Phase O and `1.0.0` require
-catalog-bound backup/restore/failover evidence and an exact-commit pentest.
+active activation-floor catalog. Each later law-effective milestone generates
+one immutable explicit successor containing complete effective ancestry and no
+planned future tuple; between those floors the previously activated catalog
+remains applicable. `0.18.4` proves the first predecessor transition and
+partial rollout. `0.19.0` binds the verified envelope and separate local
+ratchets into signed checkpoints. `0.21.0–0.22.0` negotiate and conform catalog
+ownership, trusted-time ratchets, persistence, and admission; `0.29.0–0.30.0`
+preserve them through migration, export, and import. `0.140.1`, `0.140.2`, and
+`0.140.6` freeze exact cryptographic/time, storage, and deployment profiles.
+Phase O and `1.0.0` require verifier-bound backup/restore/failover evidence and
+an exact-commit pentest.

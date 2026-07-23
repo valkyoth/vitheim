@@ -364,12 +364,17 @@ incomplete surface mapping fail closed.
 Status: planned. Setup: RPO/RTO profiles and consistent DB/blob/key/config/
 retention-hold set, envelope encryption, immutability, rotation/revocation,
 crypto-erasure consequences, external checkpoint anchors and drills. Bind each
-backup/checkpoint to `VIT-INV-057` lineage/revocation/emergency-distrust and
-local high-watermarks; the active catalog ID/epoch, payload/envelope and
-predecessor digests, exact profile, activation floor/maximum platform,
-product/edition/compatibility scope, validity policy/times, signer/key/signature
-profile, trust-root epoch, revocation/successor policy; every effective tuple
-in its predecessor closures; and the selected semantic-realization set. The
+backup/checkpoint to the `VIT-INV-057` global lineage/revocation/emergency-
+distrust separately from every `VIT-INV-058` local catalog/distrust/time
+ratchet; the active catalog ID/epoch, recomputed payload/envelope and actual
+predecessor digests, exact profile, activation floor, product/edition/
+compatibility scope, validity policy/times/maximum uncertainty, signer/key/
+signature profile, trust-root epoch, revocation/successor policy; every
+effective tuple in its predecessor closures; and the selected semantic-
+realization set. Restore invokes the shared project verifier and reacquires
+trustworthy time before readiness. It merges the greatest externally retained
+local ratchets and expiry tombstone, so an older backup cannot extend a bounded
+window. Missing time or continuity fails closed. The
 planning superset and backup medium never become platform-law trust roots. Goal:
 verified recoverability. Deliverables: backup/restore tools and DR evidence.
 Verification: substitution, partial/stale backup, lost/rotated key, held/erased

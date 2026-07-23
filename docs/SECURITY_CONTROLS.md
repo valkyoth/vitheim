@@ -37,11 +37,13 @@ audit decision.
 - Secure configuration defaults and startup validation.
 - Law-manifest trust independent from mutable storage: exact admitted
   `(LawId, Generation, Digest)` tuples, compiled or dedicated-platform-law
-  signed milestone-scoped active catalogs, planning-superset separation, one
-  owned lineage, expected-version activation, local epoch/digest ratchets,
-  strict canonical payload/envelope parsing, complete scope/validity/signer/
-  root/revocation/successor digest binding, catalog-bound checkpoint/backup/
-  restore evidence, and rollback/emergency-distrust handling.
+  signed activation-floor catalogs, planning-superset separation, one global
+  lineage plus distinct local catalog/distrust/trusted-time owners,
+  expected-version explicit succession, gap-free milestone selection, shared
+  runtime/CLI canonical cryptographic verification, complete scope/validity/
+  uncertainty/signer/root/revocation/successor binding, catalog-bound
+  checkpoint/backup/restore evidence, and rollback/suspend/expiry/emergency-
+  distrust handling.
 - Closed law-semantic dispatch: prose is evidence only; supported IDs
   exhaustively resolve to compiled transitions, typed outcomes, recovery, and
   positive/negative/model/fault tests, with stage-aware file/symbol/test

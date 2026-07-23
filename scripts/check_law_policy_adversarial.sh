@@ -190,6 +190,11 @@ expect_active_catalog_failure "an incomplete effective law frontier"
 sed -i '/^| 2 | VIT-LAWCAT-ACTIVE-/d' "$active_catalogs"
 expect_active_catalog_failure "a skipped catalog successor"
 
+sed -i \
+    '/^| 2 | VIT-LAWCAT-ACTIVE-/s/`0.18.4`/`0.18.3`/' \
+    "$active_catalogs"
+expect_active_catalog_failure "an overlapping catalog activation floor"
+
 implementation_copy="$tmp_dir/implementation"
 mkdir "$implementation_copy"
 cp docs/implementation/*.md "$implementation_copy/"
@@ -204,6 +209,20 @@ fi
 if scripts/check_law_active_catalogs.sh \
     "$generations" "$active_catalogs" "$implementation_copy" >/dev/null 2>&1; then
     echo "adversarial law policy: stage gate ignored missing catalog artifact" >&2
+    exit 1
+fi
+
+fake_workspace="$tmp_dir/fake-workspace"
+mkdir -p "$fake_workspace/release/law-catalogs"
+printf '%s\n' \
+    'catalog_id=VIT-LAWCAT-ACTIVE-e001-v1' \
+    'payload_digest=sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' \
+    'envelope_digest=sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' \
+    >"$fake_workspace/release/law-catalogs/VIT-LAWCAT-ACTIVE-e001-v1.catalog"
+if scripts/check_law_active_catalogs.sh \
+    "$generations" "$active_catalogs" "$implementation_copy" \
+    "$fake_workspace" >/dev/null 2>&1; then
+    echo "adversarial law policy: stage gate accepted field-shaped text" >&2
     exit 1
 fi
 

@@ -1831,6 +1831,7 @@ and fail conservatively.
 
 Status: planned.
 <!-- vitheim-invariant VIT-INV-057 0.18.3 -->
+<!-- vitheim-invariant VIT-INV-058 0.18.3 -->
 <!-- vitheim-law VIT-LAW-007 0.18.3 -->
 
 Setup: adopt `docs/INVARIANT_OWNERSHIP.md` as the canonical registry for every
@@ -1897,34 +1898,60 @@ normalize to the latest resolved semantics and manifest digest.
 
 Treat `docs/LAW_MANIFEST_ADMISSIONS.md` only as a planning superset. Implement
 the milestone-scoped `LawManifestAdmissionSetV1` payload and envelope from
-`docs/LAW_ACTIVE_CATALOGS.md`; the initial active catalog stops exactly at
-`0.18.3`, contains complete effective ancestry, and excludes every future
-tuple even when that tuple is reviewed in the planning superset.
+`docs/LAW_ACTIVE_CATALOGS.md`; the initial active catalog activates at
+`0.18.3`, contains complete effective ancestry, excludes every future tuple,
+and remains applicable until its explicit `0.18.4` successor is activated.
+There is no maximum-version field. The checker enumerates every implementation
+milestone from `0.18.3` through `1.0.0` and proves that the greatest
+not-greater activation floor selects exactly one planned catalog.
 
 `VIT-INV-057` gives `PlatformLawCatalogLineage` exactly one authority owner.
 Typed `ProposeLawCatalog`, `ActivateLawCatalog`, `SupersedeLawCatalog`,
 `RevokeLawCatalog`, and `EmergencyDistrustLawCatalog` commands/events govern
 the active epoch/digest, predecessor/successor/revocation state, expected-
-version activation CAS, and local monotonic admission high-watermarks.
-`VIT-LAW-007` connects that owner to the platform safety-floor/local-ratchet,
-dispatch-receipt, and transmission-start roots. Startup, restore, migration,
-failover, import, law activation, dispatch, and transmission start bind and
-recheck the active catalog epoch/digest. Recovery obtains trust only from
-compiled artifact provenance or a separately authenticated dedicated
-platform-law signature root; database content can never reconstruct it.
+version activation CAS in the dedicated global partition only. Independent
+`VIT-INV-058` `CatalogAdmissionRatchetRow` owners govern each local node or
+enforcement partition. Typed `AdmitLawCatalogLocally` and
+`ObserveTrustedCatalogTime` transitions advance the local catalog
+epoch/digest, distrust epoch, last trusted lower bound, continuity identity,
+and expiry tombstone. Neither owner may update the other's row.
+`VIT-LAW-007` connects both owners to the platform safety-floor, dispatch-
+receipt, and transmission-start roots. Startup, restore, migration, failover,
+import, readiness, law activation, dispatch, and transmission start bind and
+recheck the global authority and its independently admitted local proof.
+Recovery obtains global trust only from compiled artifact provenance or a
+separately authenticated dedicated platform-law signature root, then merges
+the greatest local ratchets; database content can never reconstruct trust.
 The first reviewed `CompiledCatalog` and `VIT-LAW-007@g01` realization seed the
-owner from artifact provenance; only successors use the newly established
-lineage, avoiding self-admission from mutable state.
+global and local rows from artifact provenance; only successors use the newly
+established lineage, avoiding self-admission from mutable state.
 
 Each active envelope serializes exactly `CompiledCatalog` or `SignedCatalog`
 and content-binds payload/predecessor digests, epoch, activation floor,
-maximum platform version, product/edition/compatibility scope, validity policy
-and times, signer/key/signature profile, trust-root epoch, revocation policy,
-and successor policy. A combined profile is invalid. Every law-effective
-milestone creates the next immutable catalog in the checked schedule.
+exact product/edition/compatibility scope, validity policy and times, maximum
+time uncertainty, signer/key/signature profile, trust-root epoch, revocation
+policy, and successor policy. A combined profile or profile-inapplicable field
+is invalid. `BoundedWindow` uses admitted `TrustedCatalogTime` intervals:
+earliest must be at or after not-before, latest strictly before not-after, and
+reported uncertainty no greater than both envelope and platform ceilings.
+Clock rollback, lost continuity, unaccounted suspend, excessive uncertainty,
+unavailable time, or a restore below the last observation fails closed and
+cannot extend an expired catalog. `NoExpiry` uses exact `none` time fields.
+
+Implement one project-owned `no_std` `LawCatalogVerifierV1` core and call it
+from runtime startup/restore/import/admission and the hosted
+`vitheim-law-catalog-verify` release CLI. It canonically decodes binary
+artifacts, recomputes both digests, verifies complete tuple ancestry, compares
+the predecessor's actual recomputed envelope digest, enforces profile-specific
+fields, verifies the compiled expected digest or signed signature/root, and
+matches exact build scope. Once an activation milestone leaves planned status,
+the repository gate invokes this tool; arbitrary text containing expected field
+names cannot satisfy it. Every law-effective milestone creates the next
+immutable catalog in the checked schedule.
 Checkpoint and backup binding is completed at `0.19.0` and `0.145.0`; exact
-profile selection is frozen before production at `0.140.1`, storage at
-`0.140.2`, and HA distribution/recovery at `0.140.6`.
+profile, time source, and maximum uncertainty are frozen before production at
+`0.140.1`, separate global/local storage at `0.140.2`, and HA distribution,
+revocation propagation, time loss, and recovery at `0.140.6`.
 
 Implement the closed `LawSemanticId` enum and exhaustive
 `LawSemanticRealization` dispatch table from
@@ -2001,9 +2028,11 @@ cross-check contract, test-contract realization index, and generated restore/
 migration monotonic-state manifest contract; canonical law-manifest schema,
 codec/API contract, semantic IDs, content digests, strict canonical parser,
 golden fixtures, planning-superset validator, owned milestone-scoped active
-catalog lineage, complete envelope codecs, compiled/signed admission ports,
-catalog lifecycle/ratchets, exhaustive semantic-realization table, and digest/admission-
-verifying in-memory persistence. The checker rejects unregistered
+catalog lineage, separate local admission/time ratchets, complete envelope
+codecs, compiled/signed admission ports, shared runtime/CLI cryptographic
+verifier, gap-free activation-floor schedule, catalog lifecycle, exhaustive
+semantic-realization table, and digest/admission-verifying in-memory
+persistence. The checker rejects unregistered
 declarations or rows, duplicate IDs, mismatched introduction versions, absent
 or alternative authoritative owners, guards without an owner-maintained update
 path, empty transaction placement, enforcement points without stable contracts
@@ -2024,8 +2053,11 @@ generations. It also rejects generation-one removal, overlapping or no-effect
 dependency deltas, coordinator absence, fewer than two resolved roots,
 malformed canonical fields, self-consistent-but-untrusted manifests, catalog
 tamper/rollback, planning-superset use at runtime, future tuple activation,
-combined profiles, unsigned envelope-field mutation, missing active-catalog
-owner/ratchet, unknown semantic realizations, and ancestry omission. Later
+combined profiles, unsigned envelope-field mutation, missing/separated global
+or local active-catalog owner, milestone coverage gap/overlap, text-only
+artifact evidence, scope mismatch, unverified predecessor/digest/signature,
+untrusted or rollback-prone bounded-window time, unknown semantic realizations,
+and ancestry omission. Later
 milestones must declare and
 register new invariants and the corresponding law generation in the same
 commit. The authority-review checker rejects any post-`0.18.3` milestone
@@ -2059,7 +2091,14 @@ semantic realization; trust the planning superset directly; place a reviewed
 future tuple in the `0.18.3` active catalog; omit or mutate any payload/envelope
 scope, validity, signer, root-epoch, revocation, successor, or predecessor field;
 serialize a combined profile; race activation/supersession/revocation/emergency
-distrust; restore below a local high-watermark; add an unknown semantic ID;
+distrust; let global and local catalog state share an authority row; leave
+`0.19.0`, `0.30.2`, or any milestone without exactly one applicable catalog;
+submit field-shaped text instead of canonical bytes; alter either digest,
+tuple ancestry, actual predecessor, compiled digest, signature/root, or build
+scope; admit a bounded window with excessive uncertainty, unavailable time,
+clock rollback, lost suspend continuity, or restored older observation; restore
+below a local catalog/distrust/time high-watermark; fail to propagate revocation
+to an unreachable or partially rolled-out node; add an unknown semantic ID;
 remove a typed transition/outcome, recovery path, or P/N/M/F contract; mark a
 realization gate implemented while its file, enum/dispatch entry, symbol, or
 test ID is missing; change a planned proposed
@@ -2080,10 +2119,13 @@ manually; no unresolved proposal survives a milestone status transition; no
 phase, adapter, test suite, restore, migration, mixed-version deployment, or
 owner transfer can silently omit the invariant, select a second owner, or lose
 required monotonic state. Every manifest is self-consistent, effective,
-realized, and trusted by the one owned active lineage; every shipped semantic
-ID resolves exhaustively to code/recovery/P-N-M-F tests; every generation claim
-proves its admitted predecessor closure; and future planning tuples remain
-inert.
+realized, cryptographically verified by the shared core, and trusted by the one
+global lineage plus distinct local admission owners; every implementation
+milestone has exactly one applicable activation-floor catalog; every shipped
+semantic ID resolves exhaustively to code/recovery/P-N-M-F tests; every
+generation claim proves its admitted predecessor closure; bounded validity
+cannot be extended by time failure or restore; and future planning tuples
+remain inert.
 `v0.18.3 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.18.4` — Bounded Evaluator Re-evaluation Scheduler
@@ -2095,6 +2137,15 @@ Status: planned.
 <!-- vitheim-invariant VIT-INV-047 0.18.4 -->
 <!-- vitheim-invariant VIT-INV-056 0.18.4 -->
 <!-- vitheim-law VIT-LAW-004 0.18.4 -->
+
+Catalog checkpoint: generate `VIT-LAWCAT-ACTIVE-e002-v1` with the shared Rust
+verifier, bind its predecessor to the first artifact's recomputed envelope
+digest, and activate it through the separate global and local owners. Exercise
+partial rollout, an unreachable node, stale local catalog/distrust/time
+ratchets, activation followed by revocation, revocation propagation after
+reconnection, and failover/restore at each boundary. A node lacking the second
+local admission proof remains unready for affected dispatch and transmission
+start; it cannot infer admission from its platform version.
 
 Setup: implement `VIT-INV-008` on the `0.18.0–0.18.2` lease, quota, fence, and
 atomic-work contracts. Evaluator activation, supersession, suspension, ordinary
@@ -2306,8 +2357,12 @@ admission record for every hash, signing, KMS, and timestamp implementation.
 Setup: bind tenant, partition, stream, sequence, event/schema IDs, payload digest,
 the `0.18.2` work-variant/audit-intent/receipt/commit digests, predecessor, and
 key ID, plus active law-catalog ID, epoch, payload/envelope digests, exact
-profile, activation/max versions, predecessor digest, scope, validity,
-signer/root epoch, and revocation/successor policy; define
+profile, activation floor, predecessor digest, exact scope, validity window and
+maximum uncertainty, signer/root epoch, revocation/successor policy, global
+lineage receipt, and independent local catalog/distrust/time ratchets. The
+checkpoint verifier invokes the same canonical `LawCatalogVerifierV1` used at
+runtime and records its typed result; textual field presence is not evidence.
+Define
 domain-stream and denial-only audit sequences, partition Merkle
 commitments, external signed anchors, checkpoint cadence, rotation, independent
 timestamp option, and limits.

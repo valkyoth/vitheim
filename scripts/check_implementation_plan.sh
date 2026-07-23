@@ -220,9 +220,18 @@ require_text docs/LAW_ACTIVE_CATALOGS.md \
 require_text docs/LAW_ACTIVE_CATALOGS.md \
     'exact profile enum: `CompiledCatalog` or `SignedCatalog`' \
     'unambiguous active catalog profile'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '## Project-Owned Artifact Verification' \
+    'shared runtime and release catalog verifier'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '## Trustworthy Bounded-Window Time' \
+    'bounded-window authoritative time contract'
 require_text docs/implementation/PHASE_B.md \
     '<!-- vitheim-invariant VIT-INV-057 0.18.3 -->' \
-    'owned active law catalog lineage'
+    'owned global active law catalog lineage'
+require_text docs/implementation/PHASE_B.md \
+    '<!-- vitheim-invariant VIT-INV-058 0.18.3 -->' \
+    'independently owned local catalog admission ratchet'
 require_text docs/implementation/PHASE_B.md \
     '<!-- vitheim-law VIT-LAW-007 0.18.3 -->' \
     'catalog admission composite law'

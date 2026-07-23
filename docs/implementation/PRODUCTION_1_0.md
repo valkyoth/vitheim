@@ -20,12 +20,17 @@ ID exhaustively resolves to compiled Rust transitions, typed outcomes, recovery
 logic, and concrete P/N/M/F tests. No unknown, prose-interpreted, or unresolved
 realization ships.
 The planning superset is absent from runtime authority. `VIT-INV-057` has one
-evidenced owner and monotonic local ratchets; `VIT-LAW-007` proves its
-safety-floor, dispatch, and transmission-start composition. Every active
-catalog is milestone-scoped, excludes future tuples, serializes exactly
-`CompiledCatalog` or `SignedCatalog`, and content-binds its complete payload,
-predecessor, version floor/ceiling, scope, validity, signer/root epoch,
-revocation, and successor envelope.
+evidenced global owner; every independent local node/partition has its own
+`VIT-INV-058` catalog/distrust/trusted-time ratchet. `VIT-LAW-007` proves both
+owners' safety-floor, dispatch, and transmission-start composition. Every
+active catalog excludes future tuples, serializes exactly `CompiledCatalog` or
+`SignedCatalog`, content-binds its complete payload, actual predecessor,
+activation floor, exact scope, validity/maximum uncertainty, signer/root epoch,
+revocation, and successor envelope, and remains applicable only until explicit
+successor activation. The project-owned verifier used by runtime and release
+tooling canonically decodes and cryptographically proves every shipped
+artifact. The complete implementation ladder has exactly one applicable
+catalog per milestone.
 
 Goal: release the first production-supported Vitheim platform with claims no
 broader than its evidence.
@@ -421,9 +426,13 @@ Verification:
   and every semantic contract has executable transition/recovery/P/N/M/F
   evidence. Database authority cannot mint or replace law trust.
   The report proves the planning superset was never loaded as runtime
-  authority, every active-catalog transition was owned/CAS-fenced and locally
-  ratcheted, each payload/envelope field was content-bound, and every semantic
-  realization passed stage-aware P/N/M/F file/symbol/test resolution.
+  authority, every global active-catalog transition was owned/CAS-fenced, every
+  local admission was independently ratcheted, and each artifact passed the
+  shared canonical verifier for digest, ancestry, actual predecessor, profile,
+  signature/compiled trust, and exact build scope. `BoundedWindow` evidence
+  proves admitted time/uncertainty, rollback/suspend behavior, expiry tombstone,
+  revocation propagation, and restore non-extension. Every semantic realization
+  passed stage-aware P/N/M/F file/symbol/test resolution.
   `VIT-LAW-006` evidence distinguishes `DefinitelyNotStarted`,
   `OutcomeUnknown`, and `StartClaimedReconciling`; possible or claimed start
   never permits ordinary retransmission. Invariant and law supersession are
@@ -443,9 +452,11 @@ authority-review report proves exactly one resolved disposition per later
 milestone with zero proposals, and the law-generation report proves zero
 future-effective dependency, future-generation claim, semantic drift,
 noncanonical manifest, digest mismatch, untrusted catalog tuple, incomplete
-ancestry, future active tuple, planning/active confusion, ownerless or
-rollbackable catalog lineage, ambiguous profile, incomplete envelope, or
-unknown/unrealized semantic contract, the
+ancestry, future active tuple, planning/active confusion, global/local owner
+collision, coverage gap/overlap, text-only or cryptographically unverified
+artifact, wrong predecessor/scope/profile, rollbackable catalog/time ratchet,
+expiry extension, incomplete envelope, or unknown/unrealized semantic contract,
+the
 final exact commit and artifacts pass the final independent pentest, stop for
 explicit maintainer authorization before creating `v1.0.0`; publishing crates
 remains forbidden except for a separately approved SDK. `v1.0.0 implementation

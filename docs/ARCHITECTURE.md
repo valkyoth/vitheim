@@ -33,12 +33,16 @@ Composite-law content and authority are separate boundaries. Canonical manifest
 digests detect alteration, while only an independently anchored compiled or
 platform-law-signed active admission catalog can trust an exact generation
 tuple. The reviewed planning superset is never a runtime catalog. Every
-milestone-scoped active catalog has complete effective ancestry, excludes
-future tuples, carries one exact profile, and content-binds its complete
-payload/envelope. `PlatformLawCatalogLineage` has one owner, expected-version
-activation, succession/revocation/emergency-distrust commands, and local
-monotonic high-watermarks. Stored manifests and database administrators cannot
-extend or reconstruct that authority.
+activation-floor catalog has complete effective ancestry, excludes future
+tuples, carries one exact profile, and content-binds its complete
+payload/envelope. It remains applicable until explicit successor activation,
+and the release checker proves exactly one applies to every milestone.
+`PlatformLawCatalogLineage` has one global owner and expected-version
+activation/succession/revocation/emergency-distrust commands; separate local
+owners maintain catalog/distrust/trusted-time ratchets. One project-owned
+canonical verifier serves runtime and release tooling. Stored manifests,
+field-shaped text, untrusted clocks, and database administrators cannot extend
+or reconstruct that authority.
 Canonical semantic prose is never interpreted at runtime: a closed Rust
 realization table binds every supported semantic ID to typed transitions,
 outcomes, recovery, and tests. Every terminal generation reference includes its
