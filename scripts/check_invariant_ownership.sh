@@ -133,7 +133,7 @@ FILENAME == registry && mode == "law_lifecycle" &&
         rollback !~ /^`[0-9]+\.[0-9]+\.[0-9]+`$/) {
         fail(id " law lifecycle versions must be strict numeric SemVer")
     }
-    if (dependency_contract !~ ("^VIT-LDEP-" suffix "-v[0-9]+$")) {
+    if (dependency_contract !~ ("^VIT-LDEP-" suffix "-g[0-9][0-9]-v[0-9]+$")) {
         fail(id " has no versioned dependency-set contract")
     }
     if (fence !~ ("^VIT-LFEN-" suffix ":")) {
@@ -142,7 +142,7 @@ FILENAME == registry && mode == "law_lifecycle" &&
     if (migration !~ ("^VIT-LMIG-" suffix "-v[0-9]+$")) {
         fail(id " has no versioned law migration contract")
     }
-    if (recovery_contract !~ ("^VIT-LRCV-" suffix "-v[0-9]+$")) {
+    if (recovery_contract !~ ("^VIT-LRCV-" suffix "-g[0-9][0-9]-v[0-9]+$")) {
         fail(id " has no versioned recovery-proof contract")
     }
     law_lifecycle_status[id] = status

@@ -8,6 +8,16 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added canonical generation-by-generation composite-law history with exact
+  effective dependencies, coordinators, semantics, activation/migration/
+  rollback/recovery bindings, and CI rejection of future-root or latest-view
+  drift.
+- Added one checked authority disposition for every milestone after `0.18.3`,
+  including all pre-production option decisions and `1.0.0`; proposals must
+  resolve before implementation and cannot enter Phase O or production.
+- Split transmission-start failure into `DefinitelyNotStarted`,
+  `OutcomeUnknown`, and `StartClaimedReconciling`, with ordinary retransmission
+  allowed only for proven pre-claim failure.
 - Added source-side evaluator-membership delivery proof at `0.18.4`: canonical
   source topology, monotonic outbox watermarks, exact inbox receipts, topology
   fencing, and visible `MembershipDeliveryBlocked` before shard completion.

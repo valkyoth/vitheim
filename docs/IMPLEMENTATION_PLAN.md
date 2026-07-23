@@ -55,6 +55,19 @@ prose supplies context but cannot establish a second owner; storage profiles,
 concrete tests, recovery manifests, owner transfers, mixed-version behavior,
 and rollback floors must resolve the stable contracts instead of relying on
 prose. Supersession is acyclic and version ordered.
+The [Composite Security Law Generations](LAW_GENERATIONS.md) registry is the
+canonical historical law contract: each generation binds its effective
+milestone, predecessor, coordinator, exact dependency delta, linearization/
+failure/recovery semantics, mixed-version intersection, activation fence,
+migration, rollback, dependency contract, and recovery contract. A later root
+cannot be inserted into an earlier law generation. The ownership registry is
+only the latest resolved view.
+The [Milestone Authority Reviews](AUTHORITY_REVIEWS.md) registry gives every
+milestone after `0.18.3` exactly one `declares`, `extends`, `none`, or
+conservative `proposed` disposition. Before implementation begins, `proposed`
+must resolve to exact stable declarations, exact extended roots/laws, or a
+reviewed non-authority reason; no milestone, option decision, release
+candidate, or production gate may silently omit that review.
 Before `0.51.2`, every milestone that creates or changes tenant-bearing durable,
 cached, indexed, backed-up, or external-copy state must supply the neutral
 `0.8.1` lifecycle descriptor and inventory fixture without depending outward on

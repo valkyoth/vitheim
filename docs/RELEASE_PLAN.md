@@ -48,6 +48,11 @@ verification/pentest target. It is additive to all of these gates:
 - authorization, tenant isolation, resource exhaustion, audit, and failure
   tests for every affected boundary;
 - forward/rollback migration and backup/restore evidence where data changes;
+- exact composite-law generation conformance, with no dependency effective
+  after its generation and no drift between historical and latest views;
+- exactly one authority disposition for every post-`0.18.3` milestone;
+  conservative proposals must resolve before implementation and cannot enter a
+  release candidate;
 - release notes, known limitations, CI, CodeQL default setup, and signed
   release-evidence review.
 
@@ -104,7 +109,7 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
 | `0.18.1` | Active-generation successor/cancellation recovery and typed floor ratchet | Prepared cancellation creates one complete recovery successor; no independent restore; idempotent receipts/deadline; successor/key migration races |
 | `0.18.2` | Atomic work, independent provider epochs, and complete transmission-start law | Profile/account/credential/broker root separation; exact dispatch/grant-or-exception/target/provider/capability/evaluator/quarantine/lease/claimant/time/quota start proof; unproven start and `OutcomeUnknown`; existing evaluator/rotation/remediation cases |
-| `0.18.3` | Declared ownership-root, composite-law, enforcement, and lifecycle registry | All-document bidirectional invariant/law declarations; explicit semantic enforcement/negative IDs; versioned law dependencies/recovery; acyclic version-ordered supersession; mixed-version/migration/rollback completeness |
+| `0.18.3` | Declared ownership-root, historical composite-law generation, enforcement, lifecycle, and milestone-authority registry | All-document bidirectional invariant/law declarations; exact generation-effective dependencies/coordinator/semantics/contracts; future-dependency and latest-view drift rejection; one authority disposition per later milestone; acyclic supersession and mixed-version/migration/rollback completeness |
 | `0.18.4` | Source-delivery- and journal-complete bounded evaluator re-evaluation | Atomic epoch/campaign root; source manifest/outbox watermarks/exact inbox receipts/topology fencing; `MembershipDeliveryBlocked`; membership journals, shard receipts, final barriers/reconciliation; outage/failover/starvation |
 | `0.18.5` | Remediation-authority bootstrap and recovery root | First admission, independent channels/KMS, quorum/separation, simultaneous loss, compromise, circularity, stale restore, manual-only providers |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
@@ -125,7 +130,7 @@ implementations remain blocked rather than being implemented casually.
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.21.0` | Stable-invariant/law storage negotiation for provider and foundational authority | Missing/downgraded `VIT-CAP-*`; unregistered roots/laws; independent provider epochs; source outbox/inbox watermarks, delivery barrier, membership/campaign/scan placement |
-| `0.22.0` | Declaration-derived destructive invariant and law conformance | Explicit semantic `VIT-ENF/TST/RCV-*`; law declaration/dependency/recovery lifecycle; transmission-start law; source-delivery/journal barriers; lifecycle/supersession |
+| `0.22.0` | Declaration-derived destructive invariant and generation-specific law conformance | Explicit semantic `VIT-ENF/TST/RCV-*`; exact law generation/dependency/recovery/activation contracts; typed transmission-start outcomes; source-delivery/journal barriers; lifecycle/supersession |
 | `0.23.0` | SQLite single-node adapter | Locking, rollback, injection, file permissions, tenant partition |
 | `0.24.0` | PostgreSQL reference production adapter | Atomic evaluator/quarantine-generation transitions, rotation/remediation lineage separation and quotas, existing recovery/floors |
 | `0.25.0` | Experimental MySQL adapter | Isolation/encoding differences, rollback, tenant enforcement, no default v1 claim |
@@ -135,7 +140,7 @@ implementations remain blocked rather than being implemented casually.
 | `0.28.1` | S3-compatible object-storage adapter | Tenant/object confusion, endpoint spoofing, multipart races, retention/deletion |
 | `0.28.2` | KMS and secret-provider adapters | Serialized provisioning/inventory/orphan/count controls plus governed evaluator upgrade/reevaluation, strong-resolution evidence, independent recovery or manual limitation |
 | `0.28.3` | In-process secret and brokered-bearer memory handling | HTTP/TLS/redirect/error/log/crash/core-dump/swap canaries, stale cache, honest transient-memory/erasure limits |
-| `0.29.0` | Resumable invariant-owner migrations preserving monotonic authority | Existing authority/floor/provider state plus symmetric supersession, owner fences, mixed-version behavior, rollback floors, recovery fields, campaign anti-resurrection |
+| `0.29.0` | Resumable invariant-owner and law-generation migrations preserving monotonic authority | Existing authority/floor/provider state plus symmetric supersession, law generation activation/intersection, owner fences, mixed-version behavior, rollback floors, recovery fields, campaign anti-resurrection |
 | `0.30.0` | Cross-backend export and import | Substitution, truncation, tenant mix-up, integrity loss |
 | `0.30.1` | Durable queue preserving governed provider and cancellation-recovery authority | Existing guard/orphan/count/recovery state remains complete; evaluator revocation/resolution never revives work; queues cannot evaluate, clear, or remediate |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
@@ -199,22 +204,22 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.51.0` | Formal tenant isolation model | Cross-tenant reads/writes/caches/indexes/blobs/logs |
-| `0.51.1` | Tenant lifecycle, topology migration, and enforcement epoch | Suspension/resume racing dispatch, epoch reuse, partial provision/delete, cleanup/key-destroy ordering |
+| `0.51.1` | Tenant lifecycle, topology migration, enforcement epoch, and law-generation expansion | Activate `VIT-LAW-001` g03 and `VIT-LAW-006` g02 only after tenant-root migration/fence proof; suspension/resume racing dispatch, epoch reuse, partial provision/delete, cleanup/key-destroy ordering |
 | `0.51.2` | Tenant data-surface lifecycle registry | Backfill/outward-dependency/gate bypass, inherited retention, partial cleanup, evidence inflation |
-| `0.52.0` | Subjects, service principals, and independent external-identity mapping epochs | Principal/mapping revocation racing dispatch, unsafe linking, immutable issuer-subject identity, epoch reuse, recreation |
-| `0.52.1` | OAuth resource-server workload authentication and mapping epoch | Workload remap/revoke race, stale external privileged fact, false sender constraint, bearer escalation, issuer/audience confusion |
-| `0.53.0` | Hosted OIDC integration and independent interactive-session epoch | Discovery, mix-up, token validation, replay, downgrade, fixation, logout/assurance racing dispatch |
-| `0.53.1` | Hosted WebAuthn credential lifecycle and authenticator epoch | RP/origin/challenge binding, attestation, counters, revoke/rotate racing assertion or dispatch, recovery |
+| `0.52.0` | Subjects, service principals, independent external-identity mapping epochs, and law-generation expansion | Activate `VIT-LAW-001` g04/`VIT-LAW-006` g03; principal/mapping revocation racing dispatch, unsafe linking, immutable issuer-subject identity, epoch reuse, recreation |
+| `0.52.1` | OAuth resource-server workload authentication, mapping epoch, and law-generation expansion | Activate `VIT-LAW-001` g05/`VIT-LAW-006` g04; workload remap/revoke race, stale external privileged fact, false sender constraint, bearer escalation, issuer/audience confusion |
+| `0.53.0` | Hosted OIDC integration, independent interactive-session epoch, and law-generation expansion | Activate `VIT-LAW-001` g06/`VIT-LAW-006` g05; discovery, mix-up, replay, downgrade, fixation, logout/assurance racing dispatch |
+| `0.53.1` | Hosted WebAuthn lifecycle, authenticator epoch, and law-generation expansion | Activate `VIT-LAW-001` g07/`VIT-LAW-006` g06; RP/origin/challenge binding, counters, revoke/rotate racing assertion or dispatch, recovery |
 | `0.53.2` | Distributed session store with local session epoch | Logout/revocation racing dispatch, epoch reuse, fixation/replay, node failure, partition |
 | `0.53.3` | SAML identity profile and adapter | XML signature wrapping, audience/destination mix-up, assertion replay, metadata rollback |
 | `0.54.0` | Directory/group synchronization with authorization-fact epoch | Group change racing dispatch, epoch reuse, takeover, stale privilege, deletion/recreation |
 | `0.54.1` | SCIM provisioning profile and adapter | External-ID collision, filter/PATCH abuse, group takeover, pagination/bulk bombs |
-| `0.55.0` | RBAC with independent role-definition, assignment, and admitted-group epochs | Definition/assignment/membership racing evaluation or dispatch, raw-SCIM grant, epoch reuse, cycles, hidden grants |
-| `0.56.0` | ABAC engine | Missing attributes, type confusion, fail-open decisions |
+| `0.55.0` | RBAC with independent role-definition, assignment, admitted-group epochs, and law-generation expansion | Activate `VIT-LAW-001` g08/`VIT-LAW-006` g07; definition/assignment/membership races, raw-SCIM grant, epoch reuse, cycles, hidden grants |
+| `0.56.0` | ABAC engine and law-generation expansion | Activate `VIT-LAW-001` g09/`VIT-LAW-006` g08; missing attributes, type confusion, fail-open decisions |
 | `0.56.1` | Policy lifecycle, bootstrap, recovery, and monotonic epoch | Activation/rollback racing dispatch, epoch reuse, self-approval, lockout, recovery abuse |
-| `0.57.0` | Relationship authorization with fact epochs | Edge change racing dispatch, epoch reuse, malicious paths, ownership spoofing, traversal bounds |
+| `0.57.0` | Relationship authorization with fact epochs and law-generation expansion | Activate `VIT-LAW-001` g10/`VIT-LAW-006` g09; edge-change races, epoch reuse, malicious paths, ownership spoofing, traversal bounds |
 | `0.58.0` | Authority registry for governed profiles, serialized credential state, TCB, and rollout recovery | Evaluator lineage/epoch/start fence, quarantine owner/resolver/tombstones, remediation profile/lineage/audit/quota, existing boundaries |
-| `0.59.0` | Delegation/break-glass with enforcement epoch | Delegation revoke racing dispatch, epoch reuse, unbounded privilege, grant amplification, weak audit |
+| `0.59.0` | Delegation/break-glass with enforcement epoch and final planned law-generation expansion | Activate `VIT-LAW-001` g11/`VIT-LAW-006` g10; delegation revoke racing dispatch, epoch reuse, unbounded privilege, grant amplification, weak audit |
 | `0.60.0` | Complete governed-executor and successor/cancellation conformance suite | Existing profile/rotation/TCB/recovery cases plus evaluator upgrade/mixed nodes, invalid quarantine exits/revival, remediation compromise/circularity/no-path |
 
 ## Phase G — Durable Workflows
@@ -424,11 +429,11 @@ the first technology decision. An unselected option remains unsupported at
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.140.1` | Cryptography/time and exact credential-operation/rotation/recovery-root profile decision | Existing rotation/idempotency/orphan/count and signing/bearer TCB freeze plus remediation bootstrap, independent channel/KMS/quorum profile or manual-only recovery |
-| `0.140.2` | Storage topology for complete registered invariants/laws and governed provider state | Zero-missing root/law/capability matrix; independent provider epochs; source outbox/inbox watermarks/delivery barrier; evaluator membership/campaign/scan/barriers; transmission law; remediation |
+| `0.140.2` | Storage topology for complete registered invariant/law generations and governed provider state | Zero-missing root/generation/capability matrix; exact activation/intersection/rollback placement; independent provider epochs; source delivery/membership/campaign barriers; typed transmission-start law; remediation |
 | `0.140.3` | Human/workload/session and worker-instance identity decision | Co-located epochs, enforceable expiry, unique per-runtime claimant, lease-fence binding, restart/takeover invalidation |
 | `0.140.4` | Component runtime and governed credential-broker TCB decision | Evaluator binary/corpus admission and upgrade; quarantine-resolution evidence; non-composable remediation authority; existing TCB |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Missing copies, retention precedence, omitted derived surfaces, tombstone/evidence inflation |
-| `0.140.6` | Deployment/HA invariant-owner, law, and recovery decision | Complete owner/law lifecycle/fence placement; transmission-start failover; campaign source delivery and membership scan barriers/fairness HA; quarantine/remediation; RPO/RTO |
+| `0.140.6` | Deployment/HA invariant-owner, law-generation, and recovery decision | Complete owner/generation lifecycle/fence placement; typed transmission-start failover/reconciliation; campaign source delivery and membership scan barriers/fairness HA; quarantine/remediation; RPO/RTO |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |

@@ -1868,6 +1868,29 @@ description—`VIT-ENF-NNN-X` to `VIT-TST-NNN-N-X`—so reordering prose cannot
 silently redefine a contract and an umbrella negative test cannot conceal an
 untested check.
 
+Adopt `docs/LAW_GENERATIONS.md` as the canonical historical law record. Every
+generation binds one effective milestone and predecessor to its actual proof
+coordinator, dependency additions/removals, canonical linearization/failure/
+recovery semantics, conservative mixed-version intersection, activation fence,
+migration contract, rollback floor, dependency-set contract, and recovery-proof
+contract. The current law table is a resolved latest view, never a retroactive
+definition. A dependency cannot appear before its invariant lifecycle is
+effective, and activation fails closed when any node or storage profile cannot
+validate the generation intersection. For `VIT-LAW-006`, record the distinct
+start outcomes: failed pre-claim validation/CAS is `DefinitelyNotStarted`;
+ambiguous claim or permit delivery is `OutcomeUnknown`; a committed claim enters
+`StartClaimedReconciling`. The last two require reconciliation and never
+authorize ordinary retransmission.
+
+Adopt `docs/AUTHORITY_REVIEWS.md` as the complete post-bootstrap milestone
+review registry. Every milestone after `0.18.3`, including option decisions and
+`1.0.0`, has exactly one disposition: exact new declarations, exact existing
+roots/laws extended, reviewed `none`, or a stable conservative proposal. A
+proposal is planning evidence only and must resolve before that milestone
+starts. CI derives the milestone set from all implementation documents, rejects
+missing/duplicate/orphan reviews, and requires a `declares` disposition to match
+the declaration markers exactly.
+
 The checker scans every implementation document, including
 `PRODUCTION_1_0.md` and future phases, validates declaration-to-row and row-to-
 declaration coverage rather than a static count, verifies the introducing
@@ -1906,9 +1929,13 @@ transfer fences, unsafe mixed-version behavior, and lifecycle migration/
 rollback omissions. It also rejects undeclared or lifecycle-incomplete laws,
 incomplete composite-law dependencies/proof fields, law graph/version/rollback
 violations, and enforcement points without explicit matching negative children
-or valid active/retired status.
-Later milestones
-must declare and register new invariants in the same commit.
+or valid active/retired status. It also rejects noncontiguous law generations,
+future dependencies, incorrect predecessors, contract/generation mismatches,
+latest-view drift, incomplete typed semantics, unsafe mixed-version
+intersections, and rollback below activation. Later milestones must declare and
+register new invariants and the corresponding law generation in the same
+commit. The authority-review checker rejects any post-`0.18.3` milestone
+without exactly one resolved or explicitly proposed disposition.
 
 Verification: delete a declaration, ownership row, or lifecycle row in every
 direction; duplicate an ID; mismatch the introducing version; name two owners;
@@ -1920,14 +1947,22 @@ case after its implementation milestone; transfer an owner without a stable
 fence, symmetric acyclic and version-ordered supersession, safe mixed-version
 rule, migration contract, or rollback floor; mark active/superseded/retired
 state inconsistently; remove a contributor or coordinator from a composite law;
-add a later-phase or production declaration without rows; omit an epoch,
+add a later-phase or production declaration without rows; add a dependency to a
+law generation before that invariant is effective; mutate a historical
+generation, predecessor, coordinator, semantic contract, activation fence,
+migration, rollback, dependency, or recovery binding without detection; omit or
+duplicate a later milestone authority review; misclassify declarations as
+`none`/`extends`/`proposed`; omit an epoch,
 cursor, tombstone, quota state, or recovery fact from the generated manifest;
 and prove the repository gate fails each mutation. Review phase declaration
 markers systematically so the backfill cannot be reduced to a favored subset.
 
 Exit criteria: every authority-bearing invariant declared through `0.18.5` has
 one machine-checked ownership row, one lifecycle row, and resolvable stable
-contract IDs; declaration coverage is derived rather than counted manually; no
+contract IDs; every composite law has a contiguous historically accurate
+generation chain and every later milestone has exactly one authority
+disposition; declaration/review coverage is derived rather than counted
+manually; no
 phase, adapter, test suite, restore, migration, mixed-version deployment, or
 owner transfer can silently omit the invariant, select a second owner, or lose
 required monotonic state.

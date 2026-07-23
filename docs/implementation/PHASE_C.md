@@ -213,7 +213,10 @@ Status: planned.
 
 Setup: derive tests from every semantic port and every applicable stable
 invariant declaration, `VIT-ENF-*` enforcement contract, `VIT-TST-*`
-verification contract, `VIT-RCV-*` recovery field, and lifecycle row; define
+verification contract, `VIT-RCV-*` recovery field, lifecycle row, and exact
+effective `VIT-LAW-*` generation. Validate generation coordinator, resolved
+dependency set, activation fence, mixed-version intersection, migration,
+rollback, and recovery binding rather than only the latest law view; define
 fault injection, concurrency
 schedule, adversarial twin tenants with colliding local IDs, connection-session
 state reuse, cleanup, administrator threat boundary, and evidence format.
@@ -222,7 +225,7 @@ Goal: make production-support claims depend on identical observable behavior.
 
 Deliverables: reusable adapter harness, mandatory capability matrix, randomized
 state machine, machine-readable declaration/enforcement/test/recovery/lifecycle
-coverage and conformance report, and destructive reference
+and law-generation coverage and conformance report, and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
 audit intent, outbox, commitment, uniqueness claim, bounded quota claim-set/
@@ -763,6 +766,11 @@ and new `VIT-INV-*` lifecycle rows must contain symmetric supersession, stable
 history to make the new owner appear original, activate both owners, or remove
 the superseded row. The generated recovery manifest includes every applicable
 stable invariant field before the new owner becomes authoritative.
+Treat every law-generation activation as a registered migration as well. It
+must preserve the predecessor record, resolve the exact dependency delta only
+after every added root is effective, persist the activation fence and contract
+digests, enforce the conservative predecessor/successor intersection during
+rolling deployment, and prevent rollback below the generation floor.
 
 Goal: make schema evolution auditable, interruptible, and recoverable.
 
@@ -785,7 +793,8 @@ mixed-version admission, rollback floor, evaluator campaign root/source
 manifest/topology/outbox sequences/high-watermarks/inbox receipts/delivery
 barrier/blocked state/membership journals/generations/high-watermarks/fenced
 moves/scan receipts/final barrier/mismatch proof/stuck state, composite-law
-dependency/recovery lifecycle, explicit per-point negative-child realization,
+generation/predecessor/coordinator/dependency/activation/migration/rollback/
+recovery lifecycle, explicit per-point negative-child realization,
 and concrete `VIT-RCV-*` fields.
 
 Verification: reorder/substitution, partial failure, concurrent runner, lease loss,
@@ -807,6 +816,9 @@ asymmetric/unknown/cyclic or version-regressing invariant supersession,
 inconsistent active/superseded/retired state,
 missing owner fence, unsafe mixed-version admission, unresolved recovery
 contract, rollback below the declared floor, deleted superseded history,
+future-effective law dependency, skipped or rewritten law generation, latest-
+view drift, missing generation activation fence/digest, unsafe generation
+intersection,
 missing campaign membership journal/scan receipt/final barrier/mismatch state,
 missing operation-profile discriminator, cancelled-prepared recovery receipt
 loss/duplication, and restored independent-parent-release cases.

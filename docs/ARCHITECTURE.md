@@ -135,8 +135,10 @@ authorization semantics.
    provider profile/
    account/credential/broker, capability/evaluator/quarantine, lease/claimant,
    deadline/time, and quota roots. The start claim coordinates proof but never
-   owns those roots; missing proof is `TransmissionStartUnproven`, and possible
-   start without proven absence remains non-retriable `OutcomeUnknown`. A bound
+   owns those roots. Failed validation/CAS before a claim is
+   `DefinitelyNotStarted`; ambiguous claim/permit delivery is
+   `OutcomeUnknown`; a committed claim is `StartClaimedReconciling`. The last
+   two reconcile without ordinary retransmission. A bound
    `ProviderExecutionProfile` gives the executor
    neither master-key nor general database authority; exact-claim-bound opaque
    credential handles, provider-native least privilege, tenant/account trust-
@@ -322,6 +324,12 @@ authorization semantics.
     storage profiles, restore/migration monotonic state, mixed-version behavior,
     and rollback floor. Coverage is declaration-derived, not a hand-written
     count. Phase prose and projections cannot become alternate authority.
+    `docs/LAW_GENERATIONS.md` preserves the exact historical coordinator,
+    dependency delta, semantics, activation/migration/rollback, and recovery
+    contract for every composite law generation; the latest view cannot import
+    a future invariant into an earlier release. Every milestone after the
+    registry bootstrap also has exactly one checked authority disposition in
+    `docs/AUTHORITY_REVIEWS.md`.
 25. Evaluator replacement remains immediately fail closed but re-evaluation is
     bounded, durable, and complete. Epoch activation/revocation atomically
     creates an invalidation-campaign root. A canonical capability-owner source

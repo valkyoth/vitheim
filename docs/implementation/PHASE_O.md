@@ -1,6 +1,11 @@
 # Phase O — Production Hardening
 
 Scope: `0.141.0–0.150.0`. Claims require operational evidence, not schedule.
+Before any Phase O milestone starts, resolve its one
+`docs/AUTHORITY_REVIEWS.md` disposition and every prerequisite option-decision
+disposition. Production evidence must cover the exact effective
+`docs/LAW_GENERATIONS.md` contracts; flattened latest-law claims, future
+dependencies, or unresolved proposed authority are release blockers.
 
 ## `0.141.0` — Single-Node Production Packaging
 Status: planned. Setup: supported OS/arch, packages/images, users/paths,

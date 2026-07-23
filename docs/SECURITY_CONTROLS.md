@@ -106,10 +106,13 @@ audit decision.
   receive status; permits never cross RPC/IPC/queues. The sealed non-`Clone`,
   non-serializable value is consumed by the write and best-effort zeroized; its
   digest is never authority. Duplicate instruction, executor failover,
-  replacement worker, or possible start without proven absence remains
-  non-retriable `OutcomeUnknown`. `VIT-LAW-006` registers the complete start
+  replacement worker, or possible start without proven absence is typed:
+  pre-claim validation/CAS failure is `DefinitelyNotStarted`; ambiguous claim/
+  permit delivery is `OutcomeUnknown`; committed claim is
+  `StartClaimedReconciling`. The last two reconcile without ordinary
+  retransmission. `VIT-LAW-006` registers the exact generation-specific start
   dependency set; the claim coordinates proof without owning any authority
-  root, and a missing contributor is `TransmissionStartUnproven`.
+  root.
   Restore cannot reconstruct the permit; failover, pause, or clock rollback
   cannot extend it. `1.0.0` supports no transferable permit profile.
   A bound `ProviderExecutionProfile` denies master-key/general database access,
@@ -182,6 +185,13 @@ audit decision.
   rejects unregistered, multiply owned, untested, unsupported, asymmetrically
   superseded, or recovery-incomplete invariants; adapters cannot claim support
   without every applicable semantic capability.
+- Canonical composite-law generations bind the actual effective milestone,
+  predecessor, proof coordinator, dependency delta, linearization/failure/
+  recovery semantics, mixed-version intersection, activation fence, migration,
+  rollback, and contract versions. CI rejects future-effective dependencies,
+  broken chains, and drift from the latest resolved view. A separate complete
+  milestone review registry rejects undeclared authority work or missing option/
+  production decisions.
 - Durable quota accounting uses a bounded atomic claim set with typed
   concurrency, consumable-operation, provider-rate, estimated-liability, and
   retained-byte settlement. Only provider-dependent claims hold for unknown

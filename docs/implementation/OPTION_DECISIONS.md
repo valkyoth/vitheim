@@ -6,6 +6,10 @@ created at each first consuming milestone. They are never the first dependency,
 protocol, backend, or runtime selection and cannot retroactively legitimize
 unreviewed code. Phase O may certify only selected profiles; unselected profiles
 remain unsupported at `1.0.0`.
+Each decision must also resolve its `docs/AUTHORITY_REVIEWS.md` entry before
+work begins. A decision that changes authority names the exact existing
+`VIT-INV-*`/`VIT-LAW-*` contracts and any new law generation; it cannot hide an
+authority change inside a topology, dependency, or support-profile choice.
 
 ## `0.140.1` — Dependency, Cryptography, And KMS Decision
 
@@ -127,6 +131,11 @@ lifecycle, explicit semantic per-point `VIT-ENF-*`/negative-child contract,
 acyclic, version-ordered symmetric supersession, mixed-version behavior,
 migration contract, and rollback floor for every selected invariant; zero
 unregistered or prose-only authority is permitted.
+Resolve every selected law generation from `docs/LAW_GENERATIONS.md`, including
+its historically effective dependency set, coordinator, semantics, activation
+fence, migration/recovery contracts, conservative rolling-version
+intersection, and rollback floor. Reject a topology that supports only the
+latest flattened law view or admits an invariant before its effective version.
 Map the evaluator invalidation-campaign root in the same transaction domain as
 evaluator epoch activation/revocation. Separately map the canonical capability-
 owner source/topology manifest, monotonic outbox sequences/cutoff high-
@@ -524,6 +533,11 @@ not omit these controls or introduce a distributed work transaction. The
 `1.0.0` profile supports one authoritative write region per transaction domain
 with fenced failover; active/active authoritative multi-region writes are
 explicitly unsupported.
+Every profile maps each effective composite-law generation to its local proof
+coordinator, dependency placement, activation fence, recovery contract, and
+typed failure state. In particular, transmission start distinguishes
+`DefinitelyNotStarted`, `OutcomeUnknown`, and `StartClaimedReconciling`; only
+the first permits an ordinary retry.
 Goal: select the exact profiles Phase O must certify.
 Deliverables: support matrix, trust/network boundaries, fencing/quorum model,
 dispatch-authorization consistency/failure model, quota consumption/refund
@@ -657,7 +671,9 @@ incompatible active/active topology,
 provider-outage tenant exhaustion, one-tenant unknown-outcome floods, per-
 tenant/global starvation, emergency-reserve borrowing, degraded dependencies,
 restore, capacity, and incident operations.
-Exit criteria: every `1.0.0` deployment claim maps to a Phase O test profile.
+Exit criteria: every `1.0.0` deployment claim maps to a Phase O test profile;
+all ten option-decision authority reviews are resolved and no proposed
+authority candidate can enter Phase O.
 `v0.140.6 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.140.7` — API, SDK, And Publication Decision

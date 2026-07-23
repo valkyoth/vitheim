@@ -202,6 +202,12 @@ require_text docs/implementation/PHASE_B.md \
 require_text docs/INVARIANT_OWNERSHIP.md \
     '## Lifecycle And Supersession Registry' \
     'machine-readable invariant lifecycle'
+require_text docs/LAW_GENERATIONS.md \
+    '# Composite Security Law Generations' \
+    'canonical historical composite-law generations'
+require_text docs/AUTHORITY_REVIEWS.md \
+    '# Milestone Authority Reviews' \
+    'post-bootstrap milestone authority dispositions'
 require_text docs/implementation/PHASE_B.md \
     '## `0.18.4` — Bounded Evaluator Re-evaluation Scheduler' \
     'bounded evaluator reevaluation milestone'
@@ -253,3 +259,5 @@ if [ "$failed" -ne 0 ]; then
 fi
 
 scripts/check_invariant_ownership.sh
+scripts/check_law_generations.sh
+scripts/check_authority_reviews.sh
