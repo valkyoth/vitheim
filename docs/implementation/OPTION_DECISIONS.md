@@ -1,8 +1,11 @@
-# Pre-Production Option Decisions
+# Pre-Production Profile Freeze Decisions
 
-Scope: `0.140.1–0.140.8`. These are evidence-producing decision releases, not
-implementation shortcuts. Phase O may certify only the profiles selected here;
-unselected profiles remain unsupported at `1.0.0`.
+Scope: `0.140.1–0.140.9`. These evidence-producing releases revalidate and
+freeze production profiles from version-bound implementation-admission records
+created at each first consuming milestone. They are never the first dependency,
+protocol, backend, or runtime selection and cannot retroactively legitimize
+unreviewed code. Phase O may certify only selected profiles; unselected profiles
+remain unsupported at `1.0.0`.
 
 ## `0.140.1` — Dependency, Cryptography, And KMS Decision
 
@@ -10,9 +13,11 @@ Status: planned.
 Setup: inventory TLS, identity, database, WASM, crypto, timestamp, secret, and
 KMS needs; compare audited implementations, maintenance, licenses, features,
 unsafe/native code, replacement boundaries, and first-party risk.
-Goal: resolve the global zero-dependency/production-security tension explicitly.
-Deliverables: approved hosted dependency allowlist or documented blocked
-features; crypto/KMS/key-rotation/timestamp profiles and adapter boundaries.
+Goal: freeze the production subset of previously admitted implementations and
+resolve any remaining zero-dependency/production-security conflict explicitly.
+Deliverables: revalidated admission-record inventory, approved production
+dependency allowlist or blocked features, crypto/KMS/key-rotation/timestamp
+profiles and adapter boundaries.
 Verification: independent supply-chain and cryptographic design review proves
 N0/N1 remain isolated and no protocol is improvised to avoid dependencies.
 Exit criteria: Phase O has one approved, replaceable crypto/key profile.
@@ -24,7 +29,8 @@ Status: planned.
 Setup: compare dedicated/shared tenancy for SQLite, PostgreSQL forced RLS,
 MySQL database-per-tenant/composite enforcement, MongoDB partitioning, and
 SurrealDB namespace/permission profiles against the same conformance suite.
-Goal: select exact production storage and tenant-isolation profiles.
+Goal: freeze exact production storage and tenant-isolation profiles from tested
+adapters; default candidates are SQLite single-node and PostgreSQL HA.
 Deliverables: supported/rejected profile matrix, capability probes, application
 and administrator threat boundaries, migration and portability consequences.
 Verification: twin-tenant collision, superuser/non-owner, pooling-state,
@@ -37,7 +43,7 @@ Exit criteria: weaker isolation is rejected, not relabeled supported.
 Status: planned.
 Setup: compare exact OIDC conformance profiles/providers, WebAuthn level and
 attestation/counter policy, session stores, recovery, logout, and service identity.
-Goal: freeze production authentication profiles independently of authorization.
+Goal: revalidate and freeze production authentication profiles independently of authorization.
 Deliverables: selected issuer/discovery/PKCE/token/session/logout rules,
 WebAuthn RP/origin/challenge/credential rules, and unsupported combinations.
 Verification: protocol conformance, mix-up/replay/fixation/recovery, key rotation,
@@ -50,7 +56,7 @@ Exit criteria: production auth never falls back to the `0.40.0` test profile.
 Status: planned.
 Setup: compare Component Model runtimes, supported WIT/WASI level, process or
 container isolation, host metering, egress proxy, update, and sandbox operations.
-Goal: select a bounded plugin profile with defense in depth.
+Goal: revalidate and freeze a bounded plugin profile with defense in depth.
 Deliverables: runtime/version pin, disabled default imports, worker identity,
 OS limits, egress/DNS/TLS policy, capability-handle and upgrade decisions.
 Verification: sandbox escape, metering bypass, host-call amplification, DNS
@@ -110,3 +116,21 @@ cache partition, proposal non-execution, disable, and incident exercises pass.
 Exit criteria: absence of sufficient evidence selects disabled-by-default.
 `v0.140.8 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.140.9` — Interchange Profile Freeze Decision
+
+Status: planned.
+Setup: inventory implemented and requested identity, vulnerability, SBOM,
+threat-intelligence, logging, webhook, and document interchange profiles plus
+their exact specification versions, extensions, codecs, licenses, trust and
+update models.
+Goal: freeze an explicit support/defer matrix rather than implying generic
+standards compatibility.
+Deliverables: supported/deferred/rejected matrix for SCIM/SAML, CVSS/VEX,
+SPDX/CycloneDX, STIX/TAXII, syslog/webhook and any shipped profile; conformance
+corpora, version policy, admission records, and truthful compatibility wording.
+Verification: namespace/version/extension confusion, parser differentials,
+downgrade, signature/source spoofing, round trips, lossiness, bombs, tenant/
+policy mapping, and source-drift review pass for every selected profile.
+Exit criteria: `1.0.0` names only exact independently evidenced interchange
+profiles; generic family claims are forbidden. `v0.140.9 implementation stop
+reached. Run pentest for this exact commit.`

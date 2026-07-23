@@ -16,5 +16,9 @@ All notable Vitheim changes are documented here. The format follows
   setup, goal, deliverables, verification, and pentest exit criteria.
 - Incorporated the roadmap gap review by reopening `0.1.0`, moving structural
   tenant and release-evidence controls earlier, splitting WebAuthn review, and
-  adding eight pre-production option-decision releases before Phase O.
+  adding pre-production option-decision releases before Phase O.
+- Incorporated the second roadmap review with first-consumer technology
+  admission, early sensitive-payload and security-audit architecture, explicit
+  hosted HA adapters, corrected cross-phase integration gates, separated API/
+  SDK/import/export milestones, and nine production-profile freeze decisions.
 - Added local and GitHub verification gates without a crate publication path.

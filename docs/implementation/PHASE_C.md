@@ -1,7 +1,10 @@
 # Phase C — Storage Portability
 
 Scope: `0.21.0–0.30.0`. Domain code sees semantic ports only. Each hosted
-adapter requires an independently approved safe implementation strategy.
+adapter requires an independently approved implementation-admission record
+before code begins. The default `1.0.0` target is in-memory for semantics,
+SQLite for single-node, and PostgreSQL for HA; MySQL, MongoDB, and SurrealDB are
+experimental unless `0.140.2` promotes an evidenced profile.
 
 ## `0.21.0` — Storage Capability Negotiation
 
@@ -42,11 +45,13 @@ Exit criteria: an adapter cannot claim support by skipping or weakening tests.
 
 ## `0.23.0` — SQLite Adapter
 
-Status: planned; blocked until a safe hosted implementation is approved.
+Status: planned; blocked until this milestone approves the exact SQLite driver,
+bundling/native-code policy, maintenance, license, and file-encryption strategy.
 
 Setup: document single-node limits, dedicated database-file-per-tenant strong
 profile, shared-file evaluation-only profile, ownership, secure paths, journal
-mode, transactions, busy handling, migrations, backup, cancellation, and keys.
+mode, transactions, busy handling, migrations, backup, cancellation, keys, and
+the version-bound implementation-admission record.
 
 Goal: support development, evaluation, tests, and documented single-node use.
 
@@ -61,11 +66,13 @@ Exit criteria: no HA claim and all single-node semantics are evidenced.
 
 ## `0.24.0` — PostgreSQL Reference Adapter
 
-Status: planned; blocked until a safe hosted implementation is approved.
+Status: planned; blocked until this milestone approves the exact PostgreSQL
+driver, TLS stack/profile, pool, maintenance, license, and native-code policy.
 
 Setup: define TLS/authentication, non-owner least-privilege role, composite keys/
 foreign keys, `ENABLE` plus `FORCE ROW LEVEL SECURITY`, transaction-local tenant
 binding with pool cleanup/startup probes, prepared queries, migrations, and cancellation.
+Record the version-bound implementation admission before adapter code begins.
 
 Goal: establish the deepest-tested reference production backend.
 
@@ -80,14 +87,16 @@ Exit criteria: production claims match tested deployment profiles only.
 
 ## `0.25.0` — MySQL Adapter
 
-Status: planned; blocked until a safe hosted implementation is approved.
+Status: planned experimental; blocked until a concrete requirement and
+implementation-admission record approve the exact driver/TLS profile.
 
 Setup: prefer database-per-tenant strong isolation; otherwise require composite
 tenant constraints, generated statements, least-privilege views/routines, and
 explicitly weaker non-production classification; map isolation, locking,
 encodings/collations, TLS/auth, migrations, and cancellation.
 
-Goal: provide equal business correctness despite backend differences.
+Goal: evaluate portable business correctness without making a `1.0.0`
+production-support claim by default.
 
 Deliverables: semantic adapter, migration/operation guide, capability profile,
 and portability discrepancy register.
@@ -100,13 +109,15 @@ Exit criteria: no backend-specific behavior leaks into domain correctness.
 
 ## `0.26.0` — MongoDB Adapter
 
-Status: planned; blocked until a safe hosted implementation is approved.
+Status: planned experimental; blocked until a concrete requirement and
+implementation-admission record approve the exact driver/TLS profile.
 
 Setup: bind tenant into every document ID, unique index, shard key, session and
 transaction; co-locate stream head/events/receipts/outbox for atomicity; define
 write concern, migrations, retry semantics, and topology limits.
 
-Goal: preserve canonical event-journal behavior on a document backend.
+Goal: evaluate canonical event-journal behavior on a document backend without a
+`1.0.0` production-support claim by default.
 
 Deliverables: semantic adapter, collection/index definitions, capability profile,
 backup/restore procedure, and divergence notes.
@@ -119,13 +130,15 @@ Exit criteria: document flexibility never weakens mandatory journal semantics.
 
 ## `0.27.0` — SurrealDB Adapter
 
-Status: planned; blocked until a safe hosted implementation is approved.
+Status: planned experimental; blocked until a concrete requirement and
+implementation-admission record approve the exact client/TLS profile.
 
 Setup: use strict tenant namespaces/databases, schema and record permissions,
 least-privilege non-system application identity, transactions, graph features,
 query parameters, migrations, capability probes, and version support.
 
-Goal: use graph capabilities as optimization without changing correctness.
+Goal: evaluate graph capabilities as optimization without changing correctness
+or claiming default `1.0.0` support.
 
 Deliverables: semantic adapter, schema/migrations, capability profile, graph
 optimization boundary, and operational guide.
@@ -138,7 +151,8 @@ Exit criteria: optional graph behavior is replaceable and policy equivalent.
 
 ## `0.28.0` — Blob-Store API And Filesystem Adapter
 
-Status: planned.
+Status: planned; encryption work is blocked until this milestone approves its
+hash/encryption implementation admission.
 
 Setup: define immutable blob ID/digest, tenant/case scope, envelope encryption
 and tenant/data-class keys, staged upload, limits, quarantine, atomic publish,
@@ -155,12 +169,59 @@ partial writes, quota exhaustion, tenant confusion, and restore pass.
 Exit criteria: callers never control storage paths and content is verified.
 `v0.28.0 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.28.1` — S3-Compatible Object-Storage Adapter
+
+Status: planned; blocked until the exact client, TLS stack/profile, signing
+scheme, maintenance, license, and native-code admission record is approved.
+
+Setup: bind tenant/object namespace, immutable digest identity, multipart upload,
+conditional publish, encryption metadata, retention/legal hold, versioning,
+deletion verification, credentials, endpoints, redirects, cancellation, quotas,
+backup/restore, and eventual-consistency limits to the `0.28.0` port.
+
+Goal: provide HA-capable object storage without leaking S3 wire/client types
+into inner crates.
+
+Deliverables: S3-compatible adapter, capability probes, credential broker
+integration, lifecycle configuration, conformance fixtures, and operator guide.
+
+Verification: bucket/key confusion, cross-tenant access, SSRF/endpoint spoofing,
+TLS downgrade, multipart races, stale versions, retention bypass, credential
+leakage, partial delete, restore, and object-store conformance pass.
+
+Exit criteria: multi-node blob claims use a tested immutable object profile, not
+the local filesystem adapter. `v0.28.1 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.28.2` — KMS And Secret-Provider Adapters
+
+Status: planned; blocked until exact KMS/secret clients, authentication, TLS,
+cryptographic profiles, maintenance, licenses, and failure semantics are admitted.
+
+Setup: bind tenant/data-class key hierarchy, key IDs/versions, wrap/unwrap/sign/
+verify operations, rotation, revocation, recovery, destruction, caching limits,
+service identity, audit, rate limits, outages, and provider substitution.
+
+Goal: keep master keys and long-lived secrets outside Vitheim processes while
+preserving provider-neutral inner ports.
+
+Deliverables: KMS and secret-provider ports/adapters, fake provider, envelope-key
+broker, capability probes, migration/rotation tooling, and operator runbook.
+
+Verification: tenant/key confusion, stale/revoked keys, substitution, rollback,
+cache leakage, confused deputy, outage/timeout/retry storms, rotation, destruction,
+recovery, audit failure, and fail-closed behavior pass.
+
+Exit criteria: no production encryption/signing path depends on filesystem keys
+or plaintext configuration secrets. `v0.28.2 implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.29.0` — Migration Registry And Resumable Migrations
 
 Status: planned.
 
 Setup: define immutable migration identity/hash, ordering, preconditions,
-forward/rollback steps, leases, checkpoints, signatures, and operator approval.
+forward/rollback steps, leases, checkpoints, signatures, operator approval, and
+an explicit ban on rewriting original event bytes; event evolution uses the
+`0.8.0` registry and pure `0.14.0` upcasters.
 
 Goal: make schema evolution auditable, interruptible, and recoverable.
 
@@ -190,3 +251,47 @@ resume, blob mismatch, exhaustion, round-trip, and cross-adapter conformance pas
 
 Exit criteria: successful import proves complete semantic and integrity parity.
 `v0.30.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.30.1` — Durable Journal-Backed Work Queue
+
+Status: planned.
+
+Setup: define queue/topic identity, tenant scope, ordered/unordered semantics,
+enqueue transaction, visibility lease/fencing, retry/backoff, dead-letter,
+priority/fairness, payload references, cancellation, drain, and quotas.
+
+Goal: own an HA-capable durable queue profile without requiring a separate
+message broker for correctness.
+
+Deliverables: project-owned queue port, journal/outbox-backed PostgreSQL adapter,
+memory fake, worker protocol, capability report, and operational metrics.
+
+Verification: enqueue/commit crashes, duplicate delivery, stale ack, lease loss,
+poison loops, starvation, cross-tenant routing, sensitive payload leakage,
+partition/failover, drain/restart, and model/conformance tests pass.
+
+Exit criteria: HA work dispatch has documented at-least-once/idempotent
+semantics and no process-local queue dependency. `v0.30.1 implementation stop
+reached. Run pentest for this exact commit.`
+
+## `0.30.2` — Cache Semantics And Hosted Adapter
+
+Status: planned; hosted implementation is blocked until its exact client/TLS/
+server profile and admission record are approved.
+
+Setup: classify cacheable values, tenant/policy/version key material, TTL and
+invalidation, revocation propagation, stampede control, size/entry quotas,
+serialization, outage behavior, and authoritative fallback.
+
+Goal: make caches disposable performance layers that cannot grant authority,
+preserve erased data, or weaken read consistency.
+
+Deliverables: cache semantic port, bounded memory adapter, optional hosted
+adapter, invalidation protocol, capability probes, and conformance suite.
+
+Verification: cross-tenant/policy-key collision, stale authorization, erasure/
+retention leak, poisoning, stampede, eviction, outage, serialization ambiguity,
+oversized values, and fallback-equivalence tests pass.
+
+Exit criteria: disabling or losing a cache changes performance only and never
+security or correctness. `v0.30.2 implementation stop reached. Run pentest for this exact commit.`

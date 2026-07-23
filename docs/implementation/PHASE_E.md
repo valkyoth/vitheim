@@ -2,8 +2,10 @@
 
 Scope: `0.41.0–0.50.0`. Typed domains compose the work foundation. Every domain
 owns sealed transition commands/events and rejects invalid transitions without
-events, receipts, outbox work, notifications, or other side effects; no generic
-status setter or cross-domain patch command is permitted.
+domain events, business receipts, outbox work, notifications, or state effects.
+The separate `0.20.1` security-audit sink and idempotent rejection receipt may
+record the attempt without changing the aggregate. No generic status setter or
+cross-domain patch command is permitted.
 
 ## `0.41.0` — Incident Management
 Status: planned. Setup: freeze incident lifecycle, impact/urgency, service impact,
@@ -73,6 +75,10 @@ action orphaning, and export tests pass. Exit criteria: published reports retain
 ## `0.50.0` — Integrated ITSM Beta
 Status: planned. Setup: pin all ITSM schemas/APIs, upgrade path, permissions, and
 representative scenarios. Goal: prove coherent end-to-end ITSM behavior.
-Deliverables: integrated workspace, migrations, fixtures, operator/admin docs.
-Verification: cross-module authorization, chained workflows, search parity,
-upgrade/rollback, load, recovery, and full phase pentest pass. Exit criteria: beta claims and limitations are exact. `v0.50.0 implementation stop reached. Run pentest for this exact commit.`
+Deliverables: integrated workspace, migrations, deterministic workflow/search
+port fakes, fixtures, and operator/admin docs; no Phase G/J implementation claim.
+Verification: cross-module authorization, fake-port orchestration/search
+contracts, upgrade/rollback, load, recovery, and full phase pentest pass. Real
+workflow and search integration is repeated at `0.70.0` and `0.100.0`.
+Exit criteria: beta claims and unavailable later-phase integrations are exact.
+`v0.50.0 implementation stop reached. Run pentest for this exact commit.`

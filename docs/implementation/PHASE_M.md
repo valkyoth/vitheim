@@ -49,4 +49,12 @@ its proposal. `v0.128.0 implementation stop reached. Run pentest for this exact 
 Status: planned. Setup: immutable datasets, access, metrics, baseline, reviewer identity, drift thresholds. Goal: measurable quality/safety gates. Deliverables: evaluation runner and provenance reports. Verification: dataset/score tamper, leakage, hidden model drift, feedback poisoning, reproducibility pass. Exit criteria: regressions block activation. `v0.129.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.130.0` — AI Governance And NIST AI RMF Pack
-Status: planned. Setup: approved uses, owners, risks, controls, evidence, monitoring, incident/disable process. Goal: govern optional AI lifecycle. Deliverables: signed governance pack and dashboards. Verification: unregistered model/purpose, missing evidence, autonomous-mode attempt, disable/revoke pass. Exit criteria: AI remains optional and policy controlled. `v0.130.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: approved uses, owners, risks, controls, evidence,
+monitoring, incident/disable process, and mandatory `0.58.0` authority/tenant/
+audit registry entries for retrieval, context, inference, citation, evaluation,
+feedback, and proposals. Goal: govern optional AI lifecycle. Deliverables:
+signed governance pack, authorization cases, and dashboards. Verification:
+unregistered interface/model/purpose, missing evidence, autonomous-mode attempt,
+disable/revoke pass. Exit criteria: AI remains optional, policy controlled, and
+fully represented in the conformance registry. `v0.130.0 implementation stop
+reached. Run pentest for this exact commit.`

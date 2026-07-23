@@ -57,12 +57,37 @@ Exit criteria: collaboration preserves visibility everywhere. `v0.35.0 implement
 
 ## `0.36.0` — Attachment Quarantine Lifecycle
 Status: planned.
-Setup: bind staged blobs, content claims, scanning result, quarantine, release, and download policy.
+Setup: bind staged blobs, content claims, scanning result, scanner engine/
+signature/version, scan time, verdict expiry/reevaluation policy, quarantine,
+release, and download policy.
 Goal: prevent untrusted files becoming trusted attachments implicitly.
 Deliverables: attachment aggregate, scanner port, safe disposition, and audit evidence.
 Verification: archive bombs, type mismatch, malicious names, replayed verdicts,
 unauthorized download, deletion, and quota tests pass.
 Exit criteria: only policy-approved verified blobs become downloadable. `v0.36.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.36.1` — Malware-Scanner Adapter And Isolation
+
+Status: planned; blocked until the exact scanner/service, update source,
+protocol/client, maintenance, license, and sandbox admission record is approved.
+
+Setup: define scanner worker identity, content handoff without path authority,
+engine/signature/version attestation, timeouts, archive/decompression budgets,
+network policy, result authentication, update/rollback, reevaluation, quarantine
+retention, and outage behavior.
+
+Goal: turn the `0.36.0` scanner port into an isolated production-capable verdict
+source without treating a scanner result as permanent truth.
+
+Deliverables: scanner adapter/worker, authenticated verdict envelope, update and
+health probes, reevaluation scheduler, fake scanner, and operator runbook.
+
+Verification: scanner compromise/impersonation, signature downgrade, stale/
+replayed verdict, archive bomb, parser crash, timeout, worker escape, network
+egress, result tamper, outage, and re-scan tests pass.
+
+Exit criteria: no attachment becomes downloadable from an unauthenticated,
+stale, or unbounded scan. `v0.36.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.37.0` — Priority, Severity, And Impact Models
 Status: planned.
@@ -86,7 +111,9 @@ Exit criteria: identical pinned calendars yield identical results. `v0.38.0 impl
 Status: planned.
 Setup: define approver eligibility, separation of duties, quorum, expiry, immutable decisions, and delivery intents.
 Goal: prevent self-approval and duplicated notification effects.
-Deliverables: approval aggregate, notification model, templates, and idempotent routing port.
+Deliverables: approval aggregate, notification model storing protected record/
+field references and render-time policy context rather than pre-rendered
+sensitive bodies, templates, and idempotent routing port.
 Verification: self/stale/duplicate approval, quorum races, expiry, template injection,
 delivery replay, and hidden-field tests pass.
 Exit criteria: approvals and deliveries remain attributable. `v0.39.0 implementation stop reached. Run pentest for this exact commit.`
@@ -94,10 +121,13 @@ Exit criteria: approvals and deliveries remain attributable. `v0.39.0 implementa
 ## `0.40.0` — Authenticated API And Service-Desk UI
 Status: planned; internal test slice only until Phase F identity passes.
 Setup: define static/fake test authentication facts, CSRF/origin policy, command
-endpoints, typed policy-limited read DTOs, field classification, and limits.
+endpoints with exact expected-version/ETag behavior, externally returned
+projection consistency tokens, typed policy-limited read DTOs, field
+classification, and limits.
 Goal: expose the first internal API/UI vertical slice without a production authentication claim.
 Deliverables: HTTP/API boundary, minimal UI, secure headers/cookies, and end-to-end audit; no fetch-everything-then-redact path.
 Verification: IDOR, CSRF, XSS, fixation, enumeration, body/rate exhaustion,
-field leakage, logout/revocation, and DAST pass.
+field leakage, stale ETag, read-your-write token misuse, logout/revocation, and
+DAST pass.
 Exit criteria: the UI has no direct mutation bypass and cannot be deployed with
 the test identity profile as production. `v0.40.0 implementation stop reached. Run pentest for this exact commit.`

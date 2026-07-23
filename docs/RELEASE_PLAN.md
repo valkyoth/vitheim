@@ -79,6 +79,7 @@ exact-commit pentest.
 | `0.6.0` | Deterministic bounded internal codec | Truncation, non-canonical bytes, trailing data, decoder differential and fuzz tests |
 | `0.7.0` | Context and command envelope | Spoofed actor, missing tenant, duplicate command/idempotency key, target confusion |
 | `0.8.0` | Immutable event envelope | Metadata/tenant/stream confusion, schema abuse, causality gaps, tamper attempts |
+| `0.8.1` | Sensitive payload lifecycle | Classification downgrade, plaintext metadata leakage, tombstone/erasure/rebuild failure |
 | `0.9.0` | Pure aggregate `decide`/`evolve` framework | Invalid transitions, rejection mutation, nondeterminism, bounded replay |
 | `0.10.0` | In-memory incident CLI vertical slice | End-to-end tenant/authorization assumptions, replay, projection rebuild, audit completeness |
 
@@ -98,13 +99,16 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.16.0` | Transactional outbox model | Event without message, message without event, rollback gaps |
 | `0.17.0` | Inbox and idempotent consumer model | Replay, duplicate effects, poisoned receipts, crash windows |
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
+| `0.18.1` | Durable quota accounting | Concurrent oversubscription, retry/refund races, tenant unfairness, reconciliation |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Event deletion, reordering, substitution, domain separation |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
+| `0.20.1` | Security audit facts and audit journal | Denial/read/export/plugin/AI audit gaps, audit outage, leakage, duplicate rejection receipts |
 
 ## Phase C — Storage Portability
 
-Setup: approve each hosted boundary independently; no wire protocol is exposed
-to domain code. Goal: identical semantic behavior across documented backends.
+Setup: approve each hosted boundary at its first consuming milestone; no wire
+protocol is exposed to domain code. Goal: identical semantic behavior across
+documented backends.
 Phase exit: export/import and the conformance suite preserve tenant and event
 integrity. Under the current no-third-party policy, unavailable safe backend
 implementations remain blocked rather than being implemented casually.
@@ -115,12 +119,16 @@ implementations remain blocked rather than being implemented casually.
 | `0.22.0` | Mandatory storage conformance testkit | Test bypass, weak adapters, backend-specific divergence |
 | `0.23.0` | SQLite single-node adapter | Locking, rollback, injection, file permissions, tenant partition |
 | `0.24.0` | PostgreSQL reference production adapter | Transactions, authentication, injection, tenant isolation |
-| `0.25.0` | MySQL adapter | Isolation/encoding differences, rollback, tenant enforcement |
-| `0.26.0` | MongoDB adapter | Transaction boundaries, query injection, collection isolation |
-| `0.27.0` | SurrealDB adapter | Namespace/graph/query isolation and capability truthfulness |
+| `0.25.0` | Experimental MySQL adapter | Isolation/encoding differences, rollback, tenant enforcement, no default v1 claim |
+| `0.26.0` | Experimental MongoDB adapter | Transaction boundaries, query injection, collection isolation, no default v1 claim |
+| `0.27.0` | Experimental SurrealDB adapter | Namespace/graph/query isolation, capability truthfulness, no default v1 claim |
 | `0.28.0` | Blob-store API and filesystem adapter | Traversal, symlinks, races, content mismatch, quotas |
+| `0.28.1` | S3-compatible object-storage adapter | Tenant/object confusion, endpoint spoofing, multipart races, retention/deletion |
+| `0.28.2` | KMS and secret-provider adapters | Key/tenant confusion, rotation/destruction, outage, secret leakage |
 | `0.29.0` | Migration registry and resumable migrations | Interrupted/malicious migrations, downgrade and rollback safety |
 | `0.30.0` | Cross-backend export and import | Substitution, truncation, tenant mix-up, integrity loss |
+| `0.30.1` | Durable journal-backed work queue | Duplicate delivery, stale ack, poison loops, partition, fairness |
+| `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 
 ## Phase D — Universal Work Platform
 
@@ -136,6 +144,7 @@ the first authenticated UI/API slice passes cross-module isolation testing.
 | `0.34.0` | Assignment groups and ownership | Assignment privilege escalation and stale ownership |
 | `0.35.0` | Comments, mentions, watchers, and activity | Stored content injection, field leaks, notification abuse |
 | `0.36.0` | Attachment quarantine lifecycle | Malware, archive bombs, type confusion, download authorization |
+| `0.36.1` | Malware-scanner adapter and isolation | Scanner impersonation/downgrade, stale verdicts, worker escape, outage |
 | `0.37.0` | Priority, severity, and impact models | Manipulation, overflow, inconsistent derived priority |
 | `0.38.0` | Calendars, targets, and SLA calculations | Time zones, holidays, DST, clock boundaries, exhaustion |
 | `0.39.0` | Approval and notification foundations | Self-approval, duplicate decision, delivery replay |
@@ -144,8 +153,9 @@ the first authenticated UI/API slice passes cross-module isolation testing.
 ## Phase E — IT Service Management
 
 Setup: reuse work foundations; domain invariants stay in focused crates. Goal:
-complete a coherent ITSM beta. Phase exit: cross-module workflows and policy
-matrices pass the phase pentest.
+complete a coherent ITSM beta against deterministic workflow/search port fakes.
+Phase exit: current cross-module policy matrices pass; real workflow/search
+integration is deferred to `0.70.0` and `0.100.0`.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
@@ -158,7 +168,7 @@ matrices pass the phase pentest.
 | `0.47.0` | Release and deployment records | False status, unauthorized linkage, evidence forgery |
 | `0.48.0` | Major-incident command process | Role takeover, notification floods, hidden decisions |
 | `0.49.0` | Postmortems and corrective actions | Sensitive publication, deletion, blame/identity leakage |
-| `0.50.0` | Integrated ITSM beta | Cross-module authorization, workflow chaining, replay and upgrades |
+| `0.50.0` | Integrated ITSM beta with later-phase port fakes | Cross-module authorization, fake-port contracts, replay and upgrades |
 
 ## Phase F — Identity, Tenancy, And Policy
 
@@ -169,12 +179,15 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.51.0` | Formal tenant isolation model | Cross-tenant reads/writes/caches/indexes/blobs/logs |
+| `0.51.1` | Tenant lifecycle and topology migration | Partial provision/delete, ID reuse, held data, cleanup/key-destroy ordering |
 | `0.52.0` | Subjects, identities, and service principals | Identity confusion, impersonation, lifecycle gaps |
 | `0.53.0` | Hosted OIDC integration | Discovery, mix-up, token validation, replay, downgrade, session fixation |
 | `0.53.1` | Hosted WebAuthn profile and credential lifecycle | RP/origin/challenge binding, attestation, counters, recovery |
+| `0.53.2` | Distributed session store | Fixation/replay, revocation lag, node failure, partition, cross-tenant collision |
 | `0.54.0` | Directory and group synchronization | Group takeover, stale privilege, deletion/recreation |
 | `0.55.0` | RBAC engine | Role escalation, inherited cycles, hidden grants |
 | `0.56.0` | ABAC engine | Missing attributes, type confusion, fail-open decisions |
+| `0.56.1` | Policy lifecycle, bootstrap, and recovery | Self-approval, stale simulation, lockout, recovery abuse, rollback downgrade |
 | `0.57.0` | Relationship-based authorization | Malicious paths, ownership spoofing, traversal bounds |
 | `0.58.0` | Field redaction and policy obligations | Hidden-field leaks through APIs, search, export, notification |
 | `0.59.0` | Delegation and break-glass access | Unbounded/non-expiring privilege, weak approval/audit |
@@ -195,7 +208,7 @@ HA workers preserve exactly documented at-least-once/idempotent semantics.
 | `0.65.0` | Parallel branches and joins | Premature joins, duplicate completion, branch leaks |
 | `0.66.0` | Compensation mechanics | Double compensation and incomplete rollback |
 | `0.67.0` | Signals and subworkflows | Signal spoofing, cross-tenant routing, recursion exhaustion |
-| `0.68.0` | Workflow versioning and migration | State corruption, unsafe remap, downgrade |
+| `0.68.0` | Workflow history, versioning, and migration | Unbounded history, corrupt checkpoint, orphan activity, unsafe remap |
 | `0.69.0` | Visual/configuration-as-code compiler | Hidden flags, generated privilege escalation, divergence |
 | `0.70.0` | HA workflow workers | Lease loss, duplicate activity, poison work, failover |
 
@@ -211,12 +224,12 @@ Phase exit: integrated SecOps isolation and evidence custody pass pentest.
 | `0.72.0` | Alert normalization | Parser confusion, field smuggling, oversized records |
 | `0.73.0` | Deduplication engine | Collision abuse and evidence loss |
 | `0.74.0` | Suppression and maintenance windows | Malicious suppression and expiry bypass |
-| `0.75.0` | Topology and temporal correlation | Poisoning, hidden-node inference, graph exhaustion |
+| `0.75.0` | Topology-port and temporal correlation | Poisoning, hidden-node inference, graph exhaustion, no premature graph claim |
 | `0.76.0` | Alert-to-incident orchestration | Incident flooding, unauthorized linking, feedback loops |
 | `0.77.0` | Security-incident domain | Evidence access and containment privilege |
 | `0.78.0` | Vulnerability findings and remediation | Finding spoofing and risk-score manipulation |
 | `0.79.0` | Forensic timeline and evidence custody | Timestamp tamper, custody gaps, export leakage |
-| `0.80.0` | Integrated SecOps workspace | Cross-source/tenant leakage and authorization equivalence |
+| `0.80.0` | Integrated SecOps workspace with search fake | Cross-source/tenant leakage, current authorization, no premature search claim |
 
 ## Phase I — Assets, Configuration, And Services
 
@@ -248,6 +261,7 @@ Phase exit: search/API conformance proves identical visibility.
 | `0.91.0` | Canonical query AST | Complexity, malformed query, type and parser abuse |
 | `0.92.0` | Search projection pipeline | Stale permissions, missing/duplicate indexing |
 | `0.93.0` | Lexical and full-text search | Query injection and document-size exhaustion |
+| `0.93.1` | PostgreSQL full-text search adapter | Injection, tenant/policy leakage, tokenizer drift, rebuild/failover |
 | `0.94.0` | Facets, queues, and saved views | Unauthorized counts and shared-view leakage |
 | `0.95.0` | Permission-aware indexing | Field/snippet/cache leakage and reindex revocation |
 | `0.96.0` | Temporal and history search | Historical access bypass and event inference |
@@ -329,14 +343,19 @@ Phase exit: administrators and external portal users pass full boundary review.
 | `0.135.0` | Dashboards and bounded report builder | Query exhaustion and aggregate inference |
 | `0.136.0` | Request portal and generic cases | External-user isolation and enumeration |
 | `0.137.0` | Configuration-as-code and signed changes | Substitution, unauthorized activation, rollback abuse |
-| `0.138.0` | Stable API, SDKs, import, and export | Mass assignment and export-policy bypass |
+| `0.138.0` | External API v1 candidate | Mass assignment, cursor/ETag/token confusion, decompression, cancellation, compatibility |
+| `0.138.1` | Private SDK candidate | Generated-code substitution, secret logging, retry/version differential |
+| `0.138.2` | Import staging and validation | Parser bombs, mass assignment, stale plan, partial promotion, erased-data resurrection |
+| `0.138.3` | Export policy snapshots and manifests | Authorization drift, hidden fields, truncation, delivery/retention lifecycle |
 | `0.139.0` | Accessibility, localization, mobile layouts | Localization injection and client-state leakage |
 | `0.140.0` | Operator and tenant administration console | Administrative privilege and support boundaries |
 
-## Pre-Production Option Decisions
+## Pre-Production Profile Freeze Decisions
 
-These evidence-producing patch milestones freeze supported production choices
-before Phase O. An unselected option remains unsupported at `1.0.0`.
+These evidence-producing patch milestones revalidate implementation-admission
+records and freeze supported production choices before Phase O. They are not
+the first technology decision. An unselected option remains unsupported at
+`1.0.0`.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
@@ -348,6 +367,7 @@ before Phase O. An unselected option remains unsupported at `1.0.0`.
 | `0.140.6` | Deployment, HA, regional, and recovery profile decision | Trust boundaries, fencing, partition, capacity, upgrade/rollback, RPO/RTO evidence |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
+| `0.140.9` | Interchange profile freeze decision | Exact SCIM/SAML, CVSS/VEX, SPDX/CycloneDX, STIX/TAXII, syslog/webhook support/defer evidence |
 
 ## Phase O — Production Hardening
 
@@ -359,6 +379,7 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | --- | --- | --- |
 | `0.141.0` | Single-node production packaging | Permissions, defaults, secret exposure, clean install |
 | `0.142.0` | Split API/worker/ingest/index deployments | Service identity and network authorization |
+| `0.142.1` | Production telemetry exporters and graceful drain | Tenant/secret leakage, cardinality, exporter failure, readiness and drain |
 | `0.143.0` | HA leases, failover, and partitions | Split brain, duplicate processing, fencing |
 | `0.144.0` | Regional placement and residency | Cross-region leakage and unsafe failover |
 | `0.145.0` | Backup, restore, and disaster recovery | Substitution, incomplete restore, RPO/RTO claims |

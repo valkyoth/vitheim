@@ -18,7 +18,15 @@ if [ "$production_count" -ne 1 ]; then
     failed=1
 fi
 
-for version in 0.53.1 0.140.1 0.140.2 0.140.3 0.140.4 0.140.5 0.140.6 0.140.7 0.140.8; do
+extra_versions="
+0.8.1 0.18.1 0.20.1 0.28.1 0.28.2 0.30.1 0.30.2 0.36.1
+0.51.1 0.53.1 0.53.2 0.56.1 0.93.1
+0.138.1 0.138.2 0.138.3
+0.140.1 0.140.2 0.140.3 0.140.4 0.140.5 0.140.6 0.140.7 0.140.8 0.140.9
+0.142.1
+"
+
+for version in $extra_versions; do
     count="$(rg -l "^## \`$version\`" docs/implementation | wc -l)"
     if [ "$count" -ne 1 ]; then
         echo "implementation plan: expected one heading for $version, found $count" >&2
@@ -28,15 +36,15 @@ done
 
 for field in Status Setup Goal Deliverables Verification 'Exit criteria'; do
     count="$(rg -o "$field:" docs/implementation | wc -l)"
-    if [ "$count" -lt 160 ]; then
+    if [ "$count" -lt 177 ]; then
         echo "implementation plan: field '$field' appears only $count times" >&2
         failed=1
     fi
 done
 
 pentest_count="$(rg -o 'Run (final )?pentest for this exact commit' docs/implementation | wc -l)"
-if [ "$pentest_count" -ne 160 ]; then
-    echo "implementation plan: expected 160 exact-commit pentest stops, found $pentest_count" >&2
+if [ "$pentest_count" -ne 177 ]; then
+    echo "implementation plan: expected 177 exact-commit pentest stops, found $pentest_count" >&2
     failed=1
 fi
 

@@ -99,13 +99,17 @@ bounded. `v0.4.0 implementation stop reached. Run pentest for this exact commit.
 Status: planned.
 
 Setup: define schema/field identity, compatibility classes, validation order,
-constraint composition, recursion limits, and migration non-goals.
+constraint composition, recursion limits, migration non-goals, field-level data
+classification, retention class, secrecy, indexing/export eligibility, and
+erasability before any schema can become durable.
 
 Goal: validate versioned custom records without scripts or host access.
 
 Deliverables:
 - Field kinds, requiredness, ranges, lengths, cardinality, and references.
 - Schema self-validation and deterministic compatibility reports.
+- Mandatory lifecycle metadata whose compatibility rules cannot silently make a
+  sensitive field public, permanent, searchable, or non-erasable.
 
 Verification: missing/extra/wrong fields, contradictory constraints, duplicate
 IDs, recursive schema bombs, deterministic diagnostics, and properties pass.
@@ -158,19 +162,45 @@ Exit criteria: incomplete or ambiguous commands are unrepresentable.
 Status: planned.
 
 Setup: define event authority, stream/partition ordering, valid/recorded times,
-causality, schema version, integrity predecessor, and metadata budgets.
+causality, immutable schema identity/version, integrity predecessor, metadata
+budgets, and a strict ban on sensitive values in searchable/integrity metadata.
 
 Goal: represent immutable attributable facts without accepting caller forgery.
 
 Deliverables:
 - Event envelope and accepted-event construction boundary.
-- Canonical representation and event-schema compatibility policy.
+- Immutable event-schema registry, canonical representation, compatibility
+  policy, and unknown-schema quarantine contract.
 
 Verification: tenant/stream mismatch, invalid positions/times, missing causality,
 metadata exhaustion, tamper, ordering properties, and round trips pass.
 
 Exit criteria: facts are immutable, attributable, ordered, and tenant-bound.
 `v0.8.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.8.1` — Sensitive Payload Lifecycle
+
+Status: planned.
+
+Setup: separate immutable event metadata from encrypted or externally erasable
+sensitive payloads; define classification, retention, tombstone, crypto-erasure,
+payload-key destruction, original plaintext/ciphertext hashes, legal holds, and
+rebuild behavior without erased plaintext.
+
+Goal: make privacy and erasure structural before event schemas become permanent.
+
+Deliverables: sensitive-payload reference/value model, classification enforcement,
+erasable store port with memory fake, tombstone proof, and redacted rebuild
+placeholder. Idempotency records, integrity links, outbox routing metadata,
+telemetry labels, and search keys may contain only explicitly safe references.
+
+Verification: classification downgrade, plaintext in metadata/log/index/receipt,
+hash substitution, held-data erasure, key destruction, double erasure, missing
+payload replay, and rebuild-after-erasure tests pass.
+
+Exit criteria: erasure can remove recoverable plaintext without rewriting event
+authority or hiding that a classified payload existed. `v0.8.1 implementation
+stop reached. Run pentest for this exact commit.`
 
 ## `0.9.0` — Pure Aggregate Framework
 

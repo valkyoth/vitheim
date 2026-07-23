@@ -101,7 +101,7 @@ and licensing decision. See [Publication Policy](docs/PUBLICATION_POLICY.md).
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
-- [Implementation Plan — all 160 milestones](docs/IMPLEMENTATION_PLAN.md)
+- [Implementation Plan — all 177 milestones](docs/IMPLEMENTATION_PLAN.md)
 - [Release Plan](docs/RELEASE_PLAN.md)
 - [Roadmap Gap Dispositions](docs/ROADMAP_GAP_DISPOSITIONS.md)
 - [Modularity Policy](docs/MODULARITY_POLICY.md)

@@ -46,7 +46,8 @@ Status: planned. Setup: tenant-partitioned adjacency; authorize edge, endpoints,
 and every intermediate node before traversal; purpose-specific edge allowlists;
 depth/node/path/time/work bounds, cycles, staleness and uncertainty. Goal: bounded
 pre-change impact without post-hoc redaction. Deliverables: impact planner and
-policy-safe proof paths. Verification: hidden-node count/path/timing inference,
+policy-safe proof paths plus a Phase H topology-port adapter and differential
+fixtures. Verification: hidden-node count/path/timing inference,
 cycles, path explosion, stale graph, cross-tenant edge, ranking pass. Exit criteria: reports never reveal unauthorized topology. `v0.88.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.89.0` — Software And License Inventory

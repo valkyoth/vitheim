@@ -24,11 +24,27 @@ Status: planned. Setup: define compensable effects, stack/order, idempotency, re
 Status: planned. Setup: bind signal tenant/instance/type/version, subscriptions, recursion depth, correlation, and authorization. Goal: safe composition and external wakeups. Deliverables: signal/subworkflow IR and routing. Verification: spoofing, cross-tenant routing, replay, recursion exhaustion, orphan signals, version mismatch pass. Exit criteria: signals cannot escape scoped authority. `v0.67.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.68.0` — Workflow Versioning And Migration
-Status: planned. Setup: pin running versions; define node mapping, preconditions, dry run, approval, rollback. Goal: evolve definitions without corrupting instances. Deliverables: compatibility analyzer and migration engine. Verification: removed/renamed nodes, unsafe state mapping, interruption, downgrade, mixed versions, replay pass. Exit criteria: instances never migrate implicitly. `v0.68.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: pin running versions; define history size/work limits,
+checkpoints, continue-as-new, archive/replay, activity heartbeats, orphan/late
+completion handling, node mapping, preconditions, dry run, approval, and rollback.
+Goal: evolve and bound long-running definitions without corrupting instances.
+Deliverables: compatibility analyzer, migration engine, history compactor/
+archiver, checkpoint format, and continuation protocol. Verification: removed/
+renamed nodes, unsafe state mapping, unbounded history, checkpoint corruption,
+orphan/late activity, interruption, downgrade, mixed versions, replay pass.
+Exit criteria: instances never migrate implicitly or accumulate unbounded active
+history. `v0.68.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.69.0` — Visual And Config-As-Code Compiler
 Status: planned. Setup: one canonical source model, round-trip policy, provenance, signing, and no hidden flags. Goal: equivalent visual/text authoring. Deliverables: compiler, decompiler, simulator integration, review diff. Verification: hidden behavior, injection, privilege generation, round-trip drift, huge graphs, signature substitution pass. Exit criteria: generated IR is fully reviewable. `v0.69.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.70.0` — HA Workflow Workers
-Status: planned. Setup: define leases/fencing, activity idempotency, queues, poison policy, drain, and failover. Goal: durable multi-worker execution. Deliverables: hosted worker orchestration and operational evidence. Verification: lease loss, partitions, duplicate activity, crash points, poison loops, rolling upgrades, soak pass. Exit criteria: HA preserves documented at-least-once semantics. `v0.70.0 implementation stop reached. Run pentest for this exact commit.`
-
+Status: planned. Setup: define leases/fencing, activity idempotency, `0.30.1`
+queue semantics, poison policy, drain, failover, authorization/tenant registry
+entries, and Phase E workflow contract fixtures. Goal: durable multi-worker
+execution. Deliverables: hosted worker orchestration, authorization cases,
+ITSM integration retest, and operational evidence. Verification: lease loss,
+partitions, duplicate activity, crash points, poison loops, cross-tenant/
+unauthorized effects, Phase E fake-versus-real differential, rolling upgrades,
+and soak pass. Exit criteria: HA preserves documented at-least-once semantics
+and every workflow interface is registered. `v0.70.0 implementation stop reached. Run pentest for this exact commit.`

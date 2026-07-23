@@ -12,7 +12,14 @@ version/type confusion, oversized values pass. Exit criteria: unknown ABI or
 ambient import fails closed. `v0.111.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.112.0` — Deterministic Component Execution
-Status: planned; audited runtime required. Setup: fuel, memory, imports, deterministic clock/random inputs, output, cancellation. Goal: sandboxed pure extensions. Deliverables: runtime port/adapter and determinism harness. Verification: fuel/memory bypass, nondeterminism, traps, covert imports, escape tests pass. Exit criteria: pure components have no ambient authority. `v0.112.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned; blocked until this milestone admits the exact audited Component
+Model runtime/version, maintenance, license, unsafe/native code, and isolation
+profile. Setup: fuel, memory, imports, deterministic clock/random inputs, output,
+cancellation, and version-bound admission record. Goal: sandboxed pure
+extensions. Deliverables: runtime port/adapter, admission evidence, and
+determinism harness. Verification: fuel/memory bypass, nondeterminism, traps,
+covert imports, escape tests pass. Exit criteria: pure components have no
+ambient authority. `v0.112.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.113.0` — Effectful Component Execution
 Status: planned. Setup: capability calls, effect IDs, authorization, idempotency, replay, audit. Goal: controlled hosted extension effects. Deliverables: host-call broker and event receipts. Verification: unauthorized calls, replay, confused deputy, cross-tenant handles, partial failure pass. Exit criteria: every effect passes independent policy. `v0.113.0 implementation stop reached. Run pentest for this exact commit.`
@@ -22,8 +29,12 @@ Status: planned. Setup: manifests bind plugin digest, tenant, instance, action,
 target, expiry, nonce, and policy version; opaque authenticated handles recheck
 all bindings/current policy at redemption. External KMS/secret service retains
 master keys, and brokered operations are preferred over plaintext release.
-Goal: least-authority plugins. Deliverables: manifest/evaluator and secret
-operation broker. Verification: forging, scope escalation, extraction, reuse,
+Define plugins as stateless by default; any state capability is explicitly
+tenant/plugin/instance namespaced, schema-versioned, quota-bound, exportable,
+erasable, and migratable. Goal: least-authority plugins. Deliverables:
+manifest/evaluator, secret operation broker, and optional plugin-state port.
+Verification: forging, scope escalation, state namespace collision, quota/
+migration/deletion failure, extraction, reuse,
 stale/revoked handles and policy change pass. Exit criteria: plaintext secrets
 never enter guest memory unless explicitly unavoidable/reviewed. `v0.114.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -55,4 +66,11 @@ input has no implicit command authority. `v0.118.0 implementation stop reached. 
 Status: planned. Setup: device identity, enrollment, mTLS, capability policy, encrypted spool, update, revoke, no inbound listener. Goal: reach private systems safely. Deliverables: agent protocol/runtime and operator controls. Verification: takeover, identity cloning, spool extraction, replay, downgrade, offline limits pass. Exit criteria: agent compromise is bounded and revocable. `v0.119.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.120.0` — Plugin Compatibility And Isolation Suite
-Status: planned. Setup: ABI/runtime/version matrix, tenants, concurrent plugins, failures, upgrades. Goal: prove isolation and compatibility. Deliverables: adversarial suite and evidence matrix. Verification: cross-plugin/tenant state, resource starvation, handle confusion, upgrade/rollback, sandbox escapes pass. Exit criteria: every supported profile has evidence. `v0.120.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: ABI/runtime/version matrix, tenants, concurrent plugins,
+failures, upgrades, and mandatory authority/tenant registry entries for every
+host call/state surface. Goal: prove isolation and compatibility. Deliverables:
+adversarial suite, authorization cases, and evidence matrix. Verification:
+cross-plugin/tenant state, resource starvation, handle confusion, unregistered
+interface, upgrade/rollback, sandbox escapes pass. Exit criteria: every supported
+profile and authority-bearing interface has evidence. `v0.120.0 implementation
+stop reached. Run pentest for this exact commit.`

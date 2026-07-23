@@ -8,7 +8,10 @@ implementations establish ordering, replay, idempotency, and integrity.
 Status: planned.
 
 Setup: define tenant-scoped stream kind/identity, expected version, atomic batch,
-ordered range read, append receipt, and explicit unsupported semantics.
+ordered range read, append receipt, one aggregate stream per transaction, and
+explicit unsupported semantics. Cross-aggregate work uses versioned process-
+manager decisions and transactional outbox messages, never multi-aggregate
+mutation hidden behind the port.
 
 Goal: make persistence requirements precise without generic CRUD.
 
@@ -64,12 +67,13 @@ Exit criteria: exactly one conflicting append wins with complete evidence.
 Status: planned.
 
 Setup: define snapshot identity, stream/version binding, codec/schema version,
-integrity metadata, size limits, and rebuild fallback.
+integrity metadata, size limits, original event-byte hash authority, pure
+versioned upcasters, unknown-event quarantine, and rebuild fallback.
 
 Goal: accelerate replay without letting snapshots become authority.
 
-Deliverables: snapshot port/model, pure validation, memory adapter, and safe
-discard/rebuild behavior.
+Deliverables: snapshot port/model, pure validation, memory adapter, golden
+mixed-version event corpus, upcaster chain, and safe discard/rebuild behavior.
 
 Verification: stale, future, forged, truncated, cross-stream/tenant, corrupted,
 oversized, and schema-incompatible snapshots all fail safely.
@@ -87,7 +91,8 @@ rebuild namespace, consistency token, and poison policy.
 Goal: create disposable read models without losing or duplicating facts.
 
 Deliverables: projection runner, checkpoint port, memory read model, rebuild
-command, and lag/consistency reporting.
+command, and externally serializable consistency/read-your-write token plus
+lag reporting.
 
 Verification: duplicates, gaps, reorder, crash windows, corrupt checkpoints,
 rebuild equivalence, tenant isolation, and bounded batch tests pass.
@@ -102,6 +107,8 @@ Status: planned.
 Setup: bind exact-version CAS, consecutive events, stream head, request-digest
 receipt, outbox entries, integrity links, authority-owned uniqueness indexes,
 destination, payload version, attempt policy, and one database transaction.
+Outbox routing contains protected references rather than pre-rendered sensitive
+bodies and cannot copy fields forbidden by the `0.8.1` lifecycle.
 
 Goal: prevent committed business facts from losing required asynchronous work.
 
@@ -153,9 +160,31 @@ retry storms, overflow, cancellation, and model interleavings pass.
 Exit criteria: expired or unfenced workers cannot commit protected work.
 `v0.18.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface
+## `0.18.1` — Durable Quota Accounting
 
 Status: planned.
+
+Setup: define tenant/resource quota identity, atomic reservation/commit/refund,
+concurrent-use leases, retry/idempotency binding, fairness, reconciliation,
+overflow behavior, and administrator adjustment evidence.
+
+Goal: make resource limits durable correctness controls rather than process-local
+counters.
+
+Deliverables: project-owned quota ledger/reservation port, deterministic memory
+adapter, recovery reconciler, and contention model.
+
+Verification: concurrent oversubscription, crash after reserve/use/refund,
+duplicate retry, lease loss, starvation, integer overflow, forged adjustment,
+cross-tenant accounting, and reconciliation tests pass.
+
+Exit criteria: admitted work cannot exceed a durable quota through concurrency
+or retry. `v0.18.1 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface
+
+Status: planned; blocked until this milestone approves an implementation-
+admission record for every hash, signing, KMS, and timestamp implementation.
 
 Setup: bind tenant, partition, stream, sequence, event/schema IDs, payload digest,
 predecessor, and key ID; define partition Merkle commitments, external signed
@@ -165,7 +194,8 @@ Goal: make event deletion, replacement, and reordering detectable.
 
 Deliverables: integrity-link model, crypto-provider interface only, partition
 commitment, externally retained checkpoint format, cross-signed rotation,
-verification report, and corruption locator.
+verification report, corruption locator, and the signed admission record binding
+the reviewed implementation/profile versions.
 
 Verification: deletion of an entire stream, reorder/substitution/splice, wrong
 stream/tenant/key, anchor loss, rotation, timestamp semantics, truncated chain,
@@ -191,3 +221,30 @@ repair attempts, report injection, rebuild equivalence, and operator UX pass.
 
 Exit criteria: verification cannot mutate state and repair never runs implicitly.
 `v0.20.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.20.1` — Security Audit Facts And Audit Journal
+
+Status: planned.
+
+Setup: separate successful domain events from security audit facts for accepted
+and denied attempts; cover command rejection, authorization denial, sensitive
+reads/searches/exports/downloads, administration, plugin calls, and AI context.
+Define actor/tenant/purpose/policy/result facts, redaction/classification,
+retention, integrity anchoring, idempotent rejection receipts, and audit failure
+behavior.
+
+Goal: make security-relevant attempts attributable without mutating aggregates
+or pretending denials are domain events.
+
+Deliverables: `SecurityAuditSink` semantic port, bounded audit fact/envelope,
+memory journal, rejection-receipt contract, mandatory-audit action registry,
+query/export policy, and integrity/retention hooks.
+
+Verification: domain rejection produces no domain event/outbox effect while one
+deduplicated audit fact remains; audit outage fails closed for mandatory reads/
+writes without granting access; spoofing, log injection, secret leakage,
+cross-tenant reads, replay, truncation, retention, and anchor verification pass.
+
+Exit criteria: every mandatory security action is durably auditable or fails
+closed, while audit recording never changes domain outcome. `v0.20.1
+implementation stop reached. Run pentest for this exact commit.`

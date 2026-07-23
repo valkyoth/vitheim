@@ -9,7 +9,37 @@ Status: planned. Setup: typed fields/operators, sorts, pagination, temporal/grap
 Status: planned. Setup: document schema/version, event offsets, deletes, rebuild, policy labels, checkpoints. Goal: reliable disposable indexing. Deliverables: index projection port and memory engine. Verification: missing/duplicate/reordered updates, stale delete/policy, crash/rebuild, tenant pass. Exit criteria: index rebuild equals authoritative visibility. `v0.92.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.93.0` — Lexical Full-Text Search
-Status: planned. Setup: tokenizer/version, bounded document/query, ranking, snippets, cancellation. Goal: replaceable lexical search. Deliverables: lexical adapter and explain trace. Verification: query injection, pathological tokens, oversized docs, Unicode, ranking determinism, fuzz/load pass. Exit criteria: parser and execution are bounded. `v0.93.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: tokenizer/version, bounded document/query, ranking,
+snippets, cancellation, and memory reference implementation. Goal: define
+replaceable lexical semantics before a hosted engine. Deliverables: lexical port,
+memory reference adapter, golden corpus, and explain trace. Verification: query
+injection, pathological tokens, oversized docs, Unicode, ranking determinism,
+fuzz/load pass. Exit criteria: parser and execution are bounded and portable.
+`v0.93.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.93.1` — PostgreSQL Full-Text Search Adapter
+
+Status: planned; blocked until this milestone extends the `0.24.0` admission
+record for exact PostgreSQL full-text/tokenization capabilities.
+
+Setup: map the `0.93.0` lexical port to pinned PostgreSQL configuration,
+language/tokenizer versions, generated parameterized statements, tenant
+partitioning, policy labels, ranking/pagination, cancellation, rebuild, quotas,
+and capability probes.
+
+Goal: own one production search backend for the default HA profile without
+requiring a separate search cluster.
+
+Deliverables: PostgreSQL lexical/index adapter, migrations, capability report,
+golden differential corpus, rebuild tooling, and operator guide.
+
+Verification: query/operator injection, tenant/policy leakage, tokenizer drift,
+ranking/pagination instability, stale delete/revocation, cancellation, index
+corruption, rebuild, failover, and memory-versus-hosted differential tests pass.
+
+Exit criteria: the default HA profile has a tested production search backend;
+other engines remain unsupported until separately admitted. `v0.93.1
+implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.94.0` — Facets, Queues, And Saved Views
 Status: planned. Setup: count visibility, view owner/sharing, parameters, pagination, quotas. Goal: reusable operational discovery. Deliverables: facets/view aggregates and APIs. Verification: unauthorized counts, shared-view leakage, parameter injection, stale policy, expensive facets pass. Exit criteria: aggregates disclose no more than records. `v0.94.0 implementation stop reached. Run pentest for this exact commit.`
@@ -30,5 +60,12 @@ Status: planned. Setup: embedding provider boundary, model/version, residency, r
 Status: planned. Setup: draft/review/publish, audience, safe content, versions, expiry, feedback, provenance. Goal: governed reusable knowledge. Deliverables: knowledge aggregate, renderer, contextual suggestions. Verification: stored injection, publication bypass, poisoning, hidden linkage, stale article, search parity pass. Exit criteria: trusted content has approval/version evidence. `v0.99.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.100.0` — Unified Search Conformance Suite
-Status: planned. Setup: enumerate API/read/search/export visibility across identities, fields, history, graph, and lag. Goal: prove authorization equivalence. Deliverables: generated corpus, differential harness, coverage report. Verification: all engines, rebuilds, revocations, tenants, counts/snippets/facets pass. Exit criteria: no search surface lacks a negative authorization case. `v0.100.0 implementation stop reached. Run pentest for this exact commit.`
-
+Status: planned. Setup: register every search interface in the `0.58.0`
+authority/tenant registry and enumerate API/read/search/export visibility across
+identities, fields, history, graph, lag, and Phase E/H fake-port contracts. Goal:
+prove authorization equivalence and replace earlier fakes with real integration.
+Deliverables: generated corpus, differential harness, ITSM/SecOps integration
+retests, and coverage report. Verification: all engines, rebuilds, revocations,
+tenants, counts/snippets/facets, and fake-versus-real contracts pass.
+Exit criteria: no search surface lacks a negative authorization case. `v0.100.0
+implementation stop reached. Run pentest for this exact commit.`

@@ -29,7 +29,15 @@ evidence deletion, timezone abuse, self-approval, hidden active rules, bypass
 pass. Exit criteria: suppressed alerts remain evidenced. `v0.74.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.75.0` — Topology And Temporal Correlation
-Status: planned. Setup: admitted edges, time windows, confidence, scoring, traversal/work limits, explanation. Goal: group related alerts safely. Deliverables: pure correlation planner/engine. Verification: poisoning, graph cycles, hidden-node inference, order dependence, exhaustion, differential fixtures pass. Exit criteria: correlations cite bounded evidence. `v0.75.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: define a minimal topology-fact port with deterministic
+fake, admitted edges, time windows, confidence, scoring, traversal/work limits,
+and explanation; do not claim the Phase I service graph. Goal: group related
+alerts safely against a replaceable topology contract. Deliverables: pure
+correlation planner/engine and fake topology corpus. Verification: poisoning,
+graph cycles, hidden-node inference, order dependence, exhaustion, differential
+fixtures pass; real graph integration is repeated at `0.88.0`. Exit criteria:
+correlations cite bounded evidence and no later graph capability is assumed.
+`v0.75.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.76.0` — Alert-To-Incident Orchestration
 Status: planned. Setup: creation/link thresholds, policy, rate limits, idempotency, feedback-loop guards. Goal: automate cases without flooding or unauthorized links. Deliverables: orchestration workflow and audit trace. Verification: storms, duplicate creation, malicious linking, suppressed alerts, races, rollback pass. Exit criteria: every incident/link has policy evidence. `v0.76.0 implementation stop reached. Run pentest for this exact commit.`
@@ -53,4 +61,12 @@ derived-parent mismatch, conflicting clocks, crypto-erasure and restore pass.
 Exit criteria: evidence lineage is complete or explicitly incomplete. `v0.79.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.80.0` — Integrated SecOps Workspace
-Status: planned. Setup: pin current schemas/policies, source integrations, migrations, and representative attacks. Goal: prove integrated alert-to-response behavior. Deliverables: workspace, runbooks, operational evidence. Verification: cross-source/tenant leaks, authorization/search/export parity, load, recovery, upgrade, full phase pentest pass. Exit criteria: SecOps scope is truthful and not called a full SIEM. `v0.80.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: pin current schemas/policies, source integrations,
+migrations, deterministic search-port fake, and representative attacks. Goal:
+prove integrated alert-to-response behavior without claiming Phase J search.
+Deliverables: workspace, fake search contract fixtures, runbooks, operational
+evidence. Verification: cross-source/tenant leaks, current authorization/export
+parity, fake-search contract, load, recovery, upgrade, full phase pentest pass;
+real search parity is repeated at `0.100.0`. Exit criteria: SecOps scope and
+unavailable later-phase search are truthful and not called a full SIEM.
+`v0.80.0 implementation stop reached. Run pentest for this exact commit.`

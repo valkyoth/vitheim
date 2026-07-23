@@ -21,6 +21,12 @@ All crates remain private, dependency direction points inward, Rust files stay
 under 500 lines, and third-party Cargo code remains forbidden unless a separate
 explicit policy decision changes that rule. Unavailable safe hosted technology
 blocks its milestone rather than causing an improvised protocol implementation.
+Before the first line of any hosted adapter or protocol implementation, that
+milestone must approve a version-bound implementation-admission record covering
+the exact dependency/runtime, maintenance, license, unsafe/native code, protocol
+profile, trust boundary, replacement port, and rejection alternatives. The
+`0.140.x` decisions revalidate and freeze production support from those records;
+they are never the first technology selection.
 
 ## Universal Verification And Exit
 
@@ -29,6 +35,9 @@ target checks, tool freshness, SBOM and license review, CI, CodeQL default
 setup, docs/release-note review, threat-model and unsafe/dependency deltas,
 authorization and tenant-isolation matrices, changed-parser fuzzing, changed-
 invariant property tests, and migration/restore evidence where applicable.
+Every milestone that adds an authority-bearing interface must register its
+tenant, subject, action, resource, fields, purpose, obligations, audit behavior,
+and negative cases in the `0.58.0–0.60.0` conformance registry before exit.
 
 At each implementation stop: do not tag, publish, or begin the next milestone.
 Pentest the exact commit, fix every blocking finding, rerun all gates, obtain a
@@ -51,7 +60,7 @@ versions contain corrections only and follow the same process.
 - [Phase L — WASM And Integrations (`0.111.0–0.120.0`)](implementation/PHASE_L.md)
 - [Phase M — Optional AI (`0.121.0–0.130.0`)](implementation/PHASE_M.md)
 - [Phase N — Product Experience (`0.131.0–0.140.0`)](implementation/PHASE_N.md)
-- [Pre-Production Option Decisions (`0.140.1–0.140.8`)](implementation/OPTION_DECISIONS.md)
+- [Pre-Production Option Decisions (`0.140.1–0.140.9`)](implementation/OPTION_DECISIONS.md)
 - [Phase O — Production Hardening (`0.141.0–0.150.0`)](implementation/PHASE_O.md)
 - [`1.0.0` — Production Acceptance](implementation/PRODUCTION_1_0.md)
 
