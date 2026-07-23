@@ -142,8 +142,17 @@ All notable Vitheim changes are documented here. The format follows
   migration or startup fails.
 - Made provider execution and credential authority revocable through one
   authoritative profile lineage, monotonic profile/account/credential/broker-
-  policy epochs, atomic rotation, claim/redemption ordering, and restore anti-
-  resurrection.
+  policy epochs, atomic local successor activation, claim/redemption ordering,
+  and restore anti-resurrection.
+- Governed profile authority with typed control-plane lifecycle commands, signed
+  exact-digest admission, semantic expansion review, risk/quorum/separation
+  controls, current activation fences, and pre-activation revocation tombstones.
+- Recast remote credential rotation as an evidence-driven asynchronous process
+  with atomic local activation, fail-closed unknown states, bounded overlap and
+  escalation, confirmed provider revocation, and restore-safe redeemability.
+- Added versioned credential-capability snapshots and monotonic local epochs so
+  stale, broadened, insufficient, or policy-mismatched out-of-band provider
+  permission state cannot authorize privileged transmission.
 - Replaced the impossible blanket no-plaintext executor claim with explicit
   credential-operation profiles: signing/mTLS/HSM keys stay non-exportable,
   while bearer authorization serialization, TLS, claim, and socket live inside

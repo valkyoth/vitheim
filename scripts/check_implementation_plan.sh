@@ -164,6 +164,15 @@ require_text docs/implementation/PHASE_B.md \
     'Every admitted profile scope has exactly one authoritative' \
     'revocable provider execution profile lineage'
 require_text docs/implementation/PHASE_B.md \
+    'Profile authority is created and changed only through typed' \
+    'governed provider execution profile lifecycle'
+require_text docs/implementation/PHASE_B.md \
+    'Provider-side credential rotation is not described as one atomic transaction.' \
+    'asynchronous provider credential rotation'
+require_text docs/implementation/PHASE_B.md \
+    'Every credential generation also owns a versioned' \
+    'provider credential capability snapshot'
+require_text docs/implementation/PHASE_B.md \
     'Credential operations use one explicit `ProviderCredentialOperationProfile`.' \
     'explicit bearer versus non-exportable credential profile'
 require_text docs/implementation/PHASE_B.md \

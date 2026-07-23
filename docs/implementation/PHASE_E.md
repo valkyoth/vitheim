@@ -170,8 +170,14 @@ allowlist/TLS/DNS/redirect rules without a general proxy, and isolates any
 unscopable account credential to a documented trust domain.
 Its authoritative lineage supplies current profile/account/credential/broker
 epochs to start claim and handle redemption; emergency suspension, revocation,
-rotation, broker-policy change, and restore cannot leave an old instruction or
-handle redeemable. Non-exportable channel signing/mTLS exposes operations only.
+local rotation activation, broker-policy change, and restore cannot leave an old
+instruction or handle redeemable. Channel profiles use the typed control-plane
+proposal/approval/activation/revocation lifecycle, signed exact-digest admission,
+semantic expansion review, current fences, and revocation tombstones. Remote
+credential rotation uses the provider-evidence/unknown/reconciliation process,
+and publication requires a fresh credential-capability snapshot/epoch proving
+the observed channel permissions and provider-policy revision. Non-exportable
+channel signing/mTLS exposes operations only.
 For bearer/API-key channels, the hardened channel broker joins the executor TCB
 and owns authorization serialization, redirects, TLS, claim, and socket; bearer
 bytes may exist briefly only there and never in the publication worker, queue,
@@ -203,7 +209,12 @@ failover/compromise, arbitrary unclaimed publication request, credential-handle
 or provider-account substitution, cross-tenant credential reuse, egress/TLS/DNS/
 redirect bypass, unrestricted shared credential, understated residual blast
 radius, profile/account/credential/broker epoch substitution or rollback,
-credential ABA, stale queued instruction/restored handle, signing/mTLS export,
+credential ABA, unauthorized/self-approved profile activation, hidden channel/
+destination/trust-radius expansion, stale activation fence or tombstone bypass,
+every rotation crash/unknown/evidence/deadline state, restored dual redemption,
+out-of-band permission/role/group/trust change, callback reorder, stale poll,
+policy-revision mismatch, stale/restored capability snapshot, stale queued
+instruction/restored handle, signing/mTLS export,
 bearer material outside the broker TCB, caller-owned claim/socket, HTTP/TLS/
 redirect/diagnostic/crash memory-canary failure, accessibility, load, and fake-
 versus-hosted differential tests pass.

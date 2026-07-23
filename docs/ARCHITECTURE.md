@@ -139,8 +139,19 @@ authorization semantics.
    radius is explicit. One authoritative profile lineage owns active/suspended/
    superseded/revoked generations and never-reused profile, provider-account,
    credential-version, and broker-policy epochs. Start claim and handle
-   redemption recheck those epochs; rotation atomically disables the predecessor
-   and restore cannot resurrect it. Non-exportable signing/mTLS/HSM profiles
+   redemption recheck those epochs. Typed control-plane proposal, approval,
+   activation, suspension, revocation, and supersession commands require signed
+   digest-bound admission, semantic expansion review, risk ownership, required
+   quorum/separation, current activation fences, and a revocation tombstone.
+   Remote credential rotation is an evidence-driven process: only local
+   successor activation is atomic and disables predecessor redemption; unknown
+   provider creation/revocation reconciles to bounded deadlines. A fresh
+   `ProviderCredentialCapabilitySnapshot` and monotonic local epoch bind
+   observed permissions, role/group/trust provenance, provider policy revision,
+   profile, and credential generation. Privileged transmission fails closed on
+   stale, unverifiable, insufficient, broader, or mismatched snapshots; dispatch
+   never discovers remote permissions inside its transaction. Restore cannot
+   resurrect old authority. Non-exportable signing/mTLS/HSM profiles
    expose operations only. For bearer/API-key profiles, the hardened broker is
    part of the executor TCB and owns header serialization, redirects, TLS, claim,
    and socket. Bearer bytes may briefly exist there, but never in upstream

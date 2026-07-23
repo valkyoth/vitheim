@@ -120,8 +120,16 @@ action/request/destination, enforces least-privilege credentials and destination
 TLS/DNS/redirect policy without a general proxy, partitions unscopable provider
 trust domains, and rejects unrestricted cross-tenant privileged credentials.
 One authoritative profile lineage and never-reused profile/account/credential/
-broker-policy epochs make suspension, revocation, rotation, queued work, and
-restore linearizable. Non-exportable signing/mTLS exposes operations only;
+broker-policy epochs make suspension, revocation, queued work, and restore
+linearizable. Profile authority uses typed control-plane commands, signed exact-
+digest admission, semantic expansion review, quorum/separation, current
+activation fences, and pre-activation revocation tombstones. Provider credential
+rotation is an asynchronous evidence/reconciliation workflow; only local
+successor activation is atomic and disables predecessor redemption. A fresh,
+versioned credential-capability snapshot and monotonic local epoch fence out-of-
+band permission, role/group/trust, and provider-policy drift without remote
+discovery in the dispatch transaction. Non-exportable signing/mTLS exposes
+operations only;
 bearer/API-key transmission places header serialization, TLS, claim, and socket
 inside the hardened credential-broker/executor TCB, where bearer bytes may
 briefly exist but cannot escape to upstream/plugin/general connector or durable/

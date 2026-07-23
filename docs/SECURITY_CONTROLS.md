@@ -118,8 +118,17 @@ audit decision.
   provider blast radius is documented. One authoritative profile lineage owns
   active/suspended/superseded/revoked generations plus monotonic profile,
   provider-account, credential-version, and broker-policy epochs; claim and
-  redemption recheck them, rotation disables predecessors atomically, and
-  restore cannot resurrect them. Signing/mTLS/HSM key material remains non-
+  redemption recheck them. Profile mutation is control-plane-only and uses typed
+  proposal, approval, activation, suspension, revocation, and supersession
+  commands; signed digest-bound admission; semantic expansion review; quorum/
+  separation; current activation fences; and revocation tombstones. Remote
+  rotation is asynchronous and
+  evidence-driven; local successor activation atomically disables predecessor
+  redemption, while unknown provider creation/revocation reconciles with bounded
+  overlap and escalation. Fresh credential-capability snapshots and local epochs
+  bind observed permissions and provider policy provenance; privileged claims
+  fail closed on drift, staleness, or mismatch. Restore cannot resurrect any of
+  this authority. Signing/mTLS/HSM key material remains non-
   exportable. Bearer/API-key profiles put HTTP authorization serialization, TLS,
   claim, and socket inside the hardened broker/executor TCB; bearer bytes may
   briefly exist only there and are prohibited from upstream, plugin, general

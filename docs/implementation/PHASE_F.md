@@ -442,8 +442,14 @@ request/destination opaque credential operations, provider credential privilege/
 lifetime, executor trust-domain partition, destination/TLS/DNS/redirect/no-
 general-proxy policy, and documented residual blast radius. Register exactly one
 authoritative profile lineage, active/suspended/superseded/revoked generations,
-never-reused profile/account/credential/broker-policy epochs, rotation and
-restore behavior, and revocation-versus-redemption ordering. Register the exact
+never-reused profile/account/credential/broker-policy epochs, and revocation-
+versus-redemption ordering. Register the typed lifecycle commands/control-plane
+capability, signed admission/exact digest, semantic expansion class, risk owner,
+quorum/separation, activation fences, tombstone, and emergency-revocation rule.
+Register the credential-rotation owner/states/provider evidence/unknown outcome/
+local activation/overlap/deadline/outage/restore rules. Register the exact
+credential-capability snapshot/local epoch/freshness/provider-policy validator/
+event-or-poll reconciler and fail-closed drift rules. Register the exact
 credential-operation profile: non-exportable signing/mTLS/HSM, brokered bearer
 transmission with broker-owned header/redirect/TLS/claim/socket TCB, or
 unsupported credential-exporting connector.
@@ -502,7 +508,13 @@ request, master-key/general-write or out-of-broker bearer access, scoped-handle
 substitution/reuse, cross-tenant executor compromise, unrestricted shared
 credential, destination/TLS/DNS/redirect/general-proxy bypass, missing residual-
 blast-radius record, profile/account/credential/broker epoch omission/rollback,
-revocation/account-suspension/rotation/ABA race, stale instruction/restored
+unauthorized/self-approved lifecycle command, unsigned/wrong-digest admission,
+hidden semantic expansion, stale activation fence/tombstone bypass, emergency
+replacement activation, revocation/account-suspension/rotation/ABA race, every
+rotation crash/unknown/evidence/deadline/outage failure, restored dual
+redeemability, permission/role/group/trust/policy drift, callback reorder, stale
+poll, stale/unverifiable/insufficient/broader/restored snapshot, remote
+permission discovery in dispatch, stale instruction/restored
 handle, signing/mTLS/HSM export, bearer escape/caller-owned claim/socket/memory-
 canary failure, tenant-invoked capacity
 policy, ambiguous policy owner/parent, non-atomic activation, shared floor/policy
@@ -568,7 +580,10 @@ precondition outcomes independently of local fences; enumerate exception owner/
 guard/attempt/revocation cases, dispatch-transmission windows/start claims/
 claimants/executor/instruction-only/provider-execution-profile/permits, and
 provider profile/account/credential/broker epoch and credential-operation/TCB
-placement cases, and capacity-policy owner/parent/floor-governance/typed-key-
+placement cases, profile lifecycle command/approval/tombstone cases, credential-
+rotation state/evidence/unknown/deadline cases, credential-capability snapshot/
+epoch/freshness/reconciler cases, and capacity-policy owner/parent/floor-
+governance/typed-key-
 ratchet/root-manifest/
 active-generation-successor/cancellation-recovery/fresh-parent-activation/
 current-authority cases.
@@ -583,7 +598,8 @@ evidence report; include remote-validator/provider-downgrade/ABA, exception-
 guard, transmission duplicate-worker/claim-response/lease-takeover fixtures,
 executor/split-service/duplicate-instruction/no-permit-transport fixtures, and
 provider credential/egress/executor-compromise/profile-lineage/epoch/revocation/
-rotation/credential-operation and bearer-memory fixtures, and capacity-policy
+profile-governance/rotation-state/capability-drift/credential-operation and
+bearer-memory fixtures, and capacity-policy
 floor-governance/key-migration/ratchet/root-membership/active-generation/
 successor/cancellation-recovery/post-finalization-activation/delayed-transfer
 authority fixtures.
@@ -616,7 +632,12 @@ executor failover/compromise, arbitrary unclaimed request, key-ring/general-writ
 access, secret-handle substitution/reuse, cross-tenant executor compromise,
 unrestricted shared credential, egress/TLS/DNS/redirect/general-proxy bypass,
 profile/account/credential/broker epoch substitution/rollback, emergency
-revocation, provider-account suspension, rotation/ABA, stale queued instruction,
+revocation, provider-account suspension, unauthorized/self-approved activation,
+semantic expansion, stale fence/tombstone, emergency replacement, rotation/ABA,
+every rotation crash/unknown/evidence/deadline/outage state, restored dual
+redemption, permission expansion/reduction, role/group/cross-account trust
+change, callback reorder, stale polling, wrong policy revision, restored
+snapshot, remote permission discovery in dispatch, stale queued instruction,
 restored handle, signing/mTLS/HSM export, bearer serialization/TLS/socket outside
 the broker TCB, caller-owned claim, HTTP/TLS/redirect/log/diagnostic/crash memory
 leak, uncertain retransmit, protected-class adjustment,
@@ -656,8 +677,13 @@ start as unknown rather than retryable. It denies general key/database authority
 and permits provider authentication only through exact-claim-bound scoped
 credentials and egress policy with bounded tenant/account trust domains. It
 rechecks monotonic profile/account/credential/broker epochs, prevents rotation/
-revocation resurrection, and admits bearer work only when the hardened broker
-owns serialization, TLS, claim, and socket and its memory canaries pass.
+revocation resurrection, proves profile activation came through signed typed
+governance with semantic expansion review and a current tombstone fence, proves
+remote rotation/evidence/unknown outcomes through the authoritative process
+manager, and requires a fresh admitted credential-capability snapshot/epoch
+without dispatch-time remote discovery. It admits bearer work only when the
+hardened broker owns serialization, TLS, claim, and socket and its memory
+canaries pass.
 Capacity policy cannot rewrite existing
 classes; each one-parent activation atomically updates its co-located ledger
 under independently governed floors, floor reductions cannot share authority

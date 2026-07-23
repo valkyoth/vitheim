@@ -8,7 +8,9 @@ permissions, secure defaults, upgrades, compiled
 `PlatformSafetyFloorProfile` identity/version/digest, and durable admitted
 fully typed `PlatformSafetyFloorKey` high-watermarks plus total key-migration
 evidence, and durable never-reused provider profile/account/credential/broker-
-policy epochs. Goal: hardened repeatable single-node install.
+policy epochs, profile approval/activation/tombstone state, credential-rotation
+state/provider evidence/deadlines, and credential-capability snapshots/local
+epochs/freshness provenance. Goal: hardened repeatable single-node install.
 Deliverables: signed packages, startup floor-profile compatibility gate,
 governed higher-floor and key-set migration/drain tooling, and runbook.
 Verification: clean
@@ -17,7 +19,9 @@ downgrade/rollback to a lower compiled floor, lower-default release, conflicting
 profile, missing/duplicate/incompatible key, unit/scale/period/kind/lane/region/
 settlement-policy substitution, lossy/overflowing/interrupted floor migration,
 profile/account/credential/broker epoch rollback, revoked-generation/rotated-
-handle restore, credential-operation-profile mismatch,
+handle restore, unauthorized/stale profile activation, lost tombstone/rotation
+evidence/deadline, restored dual redemption, stale/restored capability snapshot,
+credential-operation-profile mismatch,
 and restore pass. Exit criteria: the
 documented profile is operable securely and no package change can start below or
 lower the durable admitted platform-floor ratchet. `v0.141.0 implementation stop
@@ -36,7 +40,13 @@ tenant/provider/account/action/destination-bound opaque secret handles, and is
 confined by allowlisted egress, TLS identity, DNS-rebinding/redirect policy, and
 a tenant/account or documented bounded-trust-domain pool. Its authoritative
 profile lineage and profile/account/credential/broker-policy epochs are checked
-at claim/redemption and cannot roll back on restore. Signing/mTLS/HSM profiles
+at claim/redemption and cannot roll back on restore. The profile-governance
+owner validates typed signed/digest-bound approvals, semantic expansions,
+current fences, and tombstones. The rotation process manager owns provider
+create/verify/revoke evidence, unknown reconciliation, local activation, and
+deadlines. The permission observer owns capability snapshots/local epochs; the
+executor only rechecks fresh state and never discovers provider IAM remotely.
+Signing/mTLS/HSM profiles
 are non-exportable. For bearer/API keys, the hardened credential broker is the
 `TransmissionExecutor`: it owns authorization serialization, redirects, TLS,
 start claim, and socket. Bearer bytes may briefly exist there, but never in
@@ -46,10 +56,12 @@ process separation without inventing a
 transferable start capability. Deliverables: deploy manifests, executor
 placement/isolation profile, instruction codec/authentication and duplicate
 handling, scoped-credential broker, egress policy, pool-partition and residual-
-blast-radius evidence, profile-lineage/epoch/rotation guard, credential-
-operation/TCB profile, bearer-memory canaries, status/reconciliation protocol,
-no-permit-transport evidence, and
-service runbook. Verification: service/executor impersonation, confused deputy,
+blast-radius evidence, profile-lineage/epoch guard, credential-
+operation/TCB profile, bearer-memory canaries, profile lifecycle/approval/
+tombstone routing, rotation reconciler/evidence/deadline ownership, capability-
+snapshot observer/freshness ownership, status/reconciliation protocol, no-
+permit-transport evidence, and service runbook. Verification: service/executor
+impersonation, confused deputy,
 network bypass, instruction replay/substitution, duplicate RPC, claim-response
 loss, executor failover/stale process/compromise, socket/claim ownership split,
 permit or digest authorization leakage, version skew, partial outage, and
@@ -57,6 +69,10 @@ rotation pass; include arbitrary unclaimed socket use, secret-handle/account
 substitution, cross-tenant credential reuse, unrestricted shared-credential
 rejection, and allowlist/TLS/DNS/redirect/general-proxy bypass. Include
 emergency revocation, account suspension, credential rotation/ABA,
+unauthorized/self-approved activation, hidden expansion, stale fence/tombstone,
+every rotation crash/unknown/evidence/deadline/outage state, restored dual
+redemption, permission/role/group/trust drift, callback reorder, stale polling,
+wrong policy revision, stale/restored snapshot, remote discovery in executor,
 stale instruction/restored handle, epoch rollback, signing/mTLS key export,
 bearer escape, caller-owned claim/socket, and HTTP/TLS/redirect/log/diagnostic/
 crash memory-canary failure. Exit criteria:
@@ -110,7 +126,9 @@ with fresh local post-finalization activation, delayed-transition authority
 rechecks, bounded dispatch-transmission windows with unique executor/lease
 claimants and instruction-only split boundaries, immutable provider-execution
 profiles with revocable lineage/epoch-scoped credential and egress authority,
-explicit credential-operation/bearer-broker TCB profiles, monotonic active root
+governed profile activation/tombstones, asynchronous rotation reconciliation,
+credential-capability snapshot/epoch freshness, explicit credential-operation/
+bearer-broker TCB profiles, monotonic active root
 rollout generation with permanent successor supersession, complete-successor
 rollback, prepared-cancellation recovery successor, and fully typed floor-key migration,
 canonical composite acquisition/retry, and fair partitioned control-plane
@@ -125,7 +143,10 @@ policy owner/parent/floor-governance/ratchet/root-manifest/fresh-activation/
 active-generation/successor/typed-key-migration/current-authority evidence,
 provider-execution-profile/credential/egress/pool-partition evidence,
 profile/account/credential/broker epoch/rotation and credential-operation/
-bearer-memory evidence, cancellation-recovery/deadline evidence,
+bearer-memory evidence, profile-governance/approval/tombstone evidence, rotation-
+state/provider-evidence/unknown/deadline evidence, credential-capability
+snapshot/epoch/freshness/reconciler evidence, cancellation-recovery/deadline
+evidence,
 fair-capacity evidence, and runbooks.
 Verification: partitions, clock skew, stale leader/fence,
 receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
@@ -174,8 +195,15 @@ broker bearer access, scoped-handle/account substitution, cross-tenant credentia
 reuse, unrestricted shared credential, egress/TLS/DNS/redirect/general-proxy
 bypass, profile/account/credential/broker epoch substitution/rollback,
 emergency revocation, account suspension, rotation/ABA, stale instruction/
-restored handle, signing/mTLS/HSM export, bearer escape or caller-owned claim/
-socket, HTTP/TLS/redirect/log/diagnostic/crash memory-canary failure,
+restored handle, unauthorized/self-approved profile activation, semantic
+expansion, stale approver/account/policy fence, tombstone bypass, emergency
+replacement, every rotation crash/unknown/evidence/deadline/outage state,
+duplicate creation, eventual consistency/continued old-key validity, restored
+dual redemption, permission expansion/reduction, role/group/cross-account drift,
+callback reorder, stale polling, wrong policy revision, stale/restored snapshot,
+remote permission discovery in dispatch, signing/mTLS/HSM export, bearer escape
+or caller-owned claim/socket, HTTP/TLS/redirect/log/diagnostic/crash memory-
+canary failure,
 tenant-invoked capacity policy, ambiguous owner/parent, non-co-located or non-
 atomic activation, concurrent allocation/stale high-watermark, delta/
 simulation/floor substitution, self-lowered floor, partial rollout/rollback/
@@ -217,7 +245,9 @@ bypass trusted executor claim-plus-socket ownership or move permit authority
 across a service boundary, escape its provider execution profile, redeem
 unclaimed or cross-tenant credentials, or obtain arbitrary egress, bypass
 profile/account/credential/broker revocation/rotation epochs, export key or
-bearer material outside its admitted operation/TCB profile,
+bearer material outside its admitted operation/TCB profile, bypass signed typed
+profile governance/tombstones, misclassify provider rotation outcomes, or use a
+stale/unadmitted credential-capability snapshot,
 policy ownership/atomic parent activation/
 floor governance/platform-floor ratchet/root-manifest completeness/fresh post-
 finalization parent revalidation/conservative rollout/current transfer
@@ -282,7 +312,11 @@ expiry redemption receipt—but no plaintext credential or master key—plus
 network allowlist/TLS/DNS/redirect policy, authoritative profile lineage/
 generation and never-reused profile/account/credential/broker-policy epochs,
 credential-operation profile and bearer-broker TCB declaration—but no bearer
-material—plus atomic rotation/revocation receipts,
+material—plus profile proposals/approvals/signed admission/digest/semantic diff/
+activation fences/tombstones, rotation state/provider evidence/unknown outcome/
+overlap and escalation deadlines/local activation/revocation receipts, and
+credential-capability snapshots/local epochs/observation provenance/freshness/
+provider-policy validators,
 whole quota claim-set digest/member restoration with partial-set
 quarantine, hierarchical capacity-lease epoch/allocation/unreserved-remainder/
 per-kind encumbrance/transfer state/receipt/acknowledgement/original-claim-and-
@@ -316,7 +350,11 @@ stored claim/digest,
 recover an unscoped credential, master-key/general-write authority, or broader
 egress than the restored provider execution profile; roll back a profile/
 account/credential/broker epoch; resurrect a revoked profile, rotated credential,
-or stale handle; recover bearer material outside the hardened broker TCB,
+or stale handle; lose profile approval/tombstone evidence; restore two locally
+redeemable credential generations; regress an unknown/pending rotation or erase
+old-credential identity/provider evidence/deadlines; restore a stale, broader,
+wrong-revision, or unverifiable credential-capability snapshot/epoch; recover
+bearer material outside the hardened broker TCB,
 roll back a policy lineage/parent high-watermark/floor history/root manifest/
 membership epoch/active rollout generation/supersession/parent-activation
 receipt, reactivate a superseded generation, treat partial activation as
@@ -346,7 +384,9 @@ complete-root-manifest/fresh-parent-activation rollout contention, delayed-
 transition authority epochs, active-root-generation successor contention,
 fully typed floor-key migration, provider-execution-profile scoped-credential/
 pool/egress and profile/account/credential/broker-epoch contention, credential-
-operation/bearer-broker memory pressure, cancellation-recovery contention,
+profile-governance activation/revocation contention, credential-rotation
+process/evidence/deadline contention, capability-observer event/poll/freshness
+contention,
 starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
@@ -362,7 +402,9 @@ owner/parent/floor-governance/ratchet/root-manifest/fresh-activation oracle,
 active-generation/successor/typed-key migration oracle, provider credential-
 scope/epoch/operation-profile and egress-isolation harness, bearer HTTP/TLS/
 redirect/diagnostic/crash memory-canary harness, cancellation-recovery/
-deadline oracle,
+deadline oracle, profile-governance/semantic-diff/tombstone race harness,
+rotation crash/unknown/evidence/eventual-consistency oracle, provider-permission-
+drift/capability-snapshot observer oracle,
 leak/escalation evidence, and signed reports. Verification: atomic
 bounded claim sets across every work bundle, concurrent overlapping-set
 canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
@@ -387,7 +429,13 @@ failover/compromise, arbitrary unclaimed provider socket use, secret-handle/
 account/cross-tenant substitution, unrestricted shared credentials, egress/TLS/
 DNS/redirect/general-proxy bypass, profile/account/credential/broker epoch
 rollback/race, emergency revocation, account suspension, rotation/ABA, stale/
-restored handle, signing/mTLS key export, bearer TCB escape/caller-owned claim/
+restored handle, unauthorized/self-approved profile activation, hidden
+expansion, stale activation fence/tombstone, emergency replacement, every
+rotation crash/unknown/evidence/deadline/outage state, duplicate creation,
+eventual consistency/continued old-key validity, restored dual redemption,
+permission/role/group/cross-account drift, callback reorder, stale polling,
+wrong policy revision, stale/restored snapshot, remote discovery in dispatch,
+signing/mTLS key export, bearer TCB escape/caller-owned claim/
 socket/memory-canary failure, uncertain retransmission, tenant-invoked capacity policy,
 owner/parent ambiguity, concurrent allocation, stale high-watermark, self-
 lowered floor, floor-reduction/spend approval reuse, stale operational fences/
@@ -428,7 +476,9 @@ command separation/platform-floor ratchet/root-manifest completeness/fresh
 parent activation bypass, permit transport or claim/socket split, unsafe partial
 rollout, active-generation/successor or total typed-key-migration bypass,
 provider credential/egress scope or epoch escape, bearer TCB/memory escape,
-prepared-cancellation recovery bypass, delayed-authority bypass, retry-driven
+profile-governance/tombstone bypass, rotation-state/evidence/deadline corruption,
+credential-capability drift/freshness bypass, prepared-cancellation recovery
+bypass, delayed-authority bypass, retry-driven
 duplicate work, unfair or
 blocked recovery, and unsafe saturation block release.
 `v0.146.0
@@ -445,6 +495,9 @@ bound signed evidence, SBOM/provenance, reproducible artifacts, permit-memory/
 diagnostic exposure report, executor credential-operation/egress isolation and
 residual-blast-radius report, bearer-broker memory lifetime/zeroization/
 allocator/TLS-library/redirect/diagnostic/crash/core-dump/swap assurance report,
+profile-governance/semantic-diff/approval/tombstone audit, credential-rotation
+provider-evidence/unknown-state/overlap/deadline assurance report, provider-IAM
+capability-observation/freshness/drift assurance report,
 and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
@@ -455,7 +508,10 @@ unclaimed socket use, handle/account/cross-tenant substitution, and
 allowlist/TLS/DNS/redirect/general-proxy bypass; profile/account/credential/
 broker epoch rollback/ABA/restore; signing/mTLS/HSM export; bearer-header/TLS/
 redirect/log/diagnostic/crash/core-dump/swap exposure; and caller-owned claim or
-socket.
+socket. Include unauthorized/self-approved activation, hidden semantic
+expansion, stale fences/tombstones, rotation crash/unknown/evidence/deadline/
+single-key-outage cases, and forged/stale/broader/wrong-revision capability
+snapshots or authenticated-event/poll reorder.
 Exit criteria: every trusted input is pinned/accounted. `v0.147.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.148.0` — Compatibility Freeze
@@ -467,7 +523,10 @@ platform-floor profile compatibility/admission matrix including full
 successor-state compatibility, and `ProviderExecutionProfile` protocol/
 credential/egress compatibility including lineage/generation/epoch guards,
 credential-operation discriminator and bearer-broker TCB placement, plus
-cancellation-recovery generation/receipt compatibility.
+profile lifecycle command/approval/admission/diff/tombstone compatibility,
+rotation-state/evidence/deadline/outage compatibility, capability-snapshot/
+local-epoch/freshness/validator compatibility, plus cancellation-recovery
+generation/receipt compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
 golden mixed-version event corpus, migration/rebuild suites, and deprecation
 rules. Verification: downgrade/skew/unknown versions, upcaster determinism,
@@ -477,7 +536,9 @@ release, interrupted higher-floor or typed-key migration, unit/period/kind/
 lane/region/settlement-policy substitution, mixed rollout generations, late
 superseded messages, provider-profile/handle-protocol skew, and rollback/restore
 ratchet pass; include profile/account/credential/broker epoch skew/rollback,
-operation-profile confusion, bearer TCB drift, cancellation-recovery successor/
+profile-command/approval/tombstone skew, rotation state/evidence/deadline skew,
+capability-snapshot/epoch/freshness/provider-validator skew, operation-profile
+confusion, bearer TCB drift, cancellation-recovery successor/
 receipt/deadline skew, and independent-parent-release rejection.
 Exit criteria: supported combinations are exact and no compatible version path
 can lower the durable platform floor, reactivate a superseded rollout, or
@@ -485,7 +546,17 @@ broaden executor credential/network authority.
 `v0.148.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.149.0` — External Pentest Remediation Candidate
-Status: planned. Setup: freeze scope/artifacts/environment and engage independent testers across all trust boundaries. Goal: remediate complete attack paths. Deliverables: findings, fixes, regression tests, clean retest evidence. Verification: external pentest plus tenant/auth/plugin/AI/storage/operations/supply-chain regression pass. Exit criteria: all critical/high findings are fixed and retested. `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: freeze scope/artifacts/environment and engage independent
+testers across all trust boundaries, including provider-profile governance,
+remote credential-rotation reconciliation, provider permission observation, and
+the credential broker/executor TCB. Goal: remediate complete attack paths.
+Deliverables: findings, fixes, regression tests, and clean retest evidence.
+Verification: external pentest plus tenant/auth/plugin/AI/storage/operations/
+supply-chain regression passes; test unauthorized or semantically expanded
+profile activation, tombstone bypass, rotation unknown/evidence/deadline abuse,
+restored dual redemption, and forged/stale/broader capability snapshots.
+Exit criteria: all critical/high findings are fixed and retested.
+`v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.150.0` — Final Production-Readiness Candidate
 Status: planned. Setup: candidate from remediated freeze; exact install/upgrade/
@@ -493,7 +564,9 @@ restore/rollback/failover artifacts and evidence, selected trusted-executor
 deployment and provider execution profiles, active rollout generation/
 successor/cancellation-recovery state, monotonic profile/account/credential/
 broker-policy epochs and selected credential-operation/bearer-broker TCB
-profiles, and durable fully typed floor-profile ratchet state. Goal:
+profiles, profile-governance approvals/tombstones, credential-rotation state/
+provider evidence/deadlines, credential-capability snapshots/epochs/freshness
+state, and durable fully typed floor-profile ratchet state. Goal:
 final pre-RC readiness
 proof. Deliverables: complete candidate bundle, runbooks, acceptance report,
 no-permit-transport proof, fresh-parent-activation evidence, and floor-ratchet
@@ -501,6 +574,9 @@ compatibility evidence including total typed-key migrations and successor
 rollbacks. Verification: clean install, split executor, scoped credential and
 egress isolation, arbitrary unclaimed socket and cross-tenant handle rejection, duplicate
 profile/account/credential/broker epoch revocation/rotation/restore checks,
+profile lifecycle authorization/semantic expansion/activation-tombstone checks,
+every rotation crash/unknown/evidence/overlap/deadline/outage/restore check,
+out-of-band provider permission/role/group/trust/event/poll/snapshot check,
 signing/mTLS non-exportability and bearer HTTP/TLS/redirect/diagnostic/crash
 memory canaries,
 instruction/response loss/failover, rolling upgrade, higher-floor migration,

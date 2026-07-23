@@ -195,7 +195,8 @@ Every `CommitAndDispatch` authorization receipt carries a bounded
 effect/attempt identity, permitted service audience, provider, account, request
 digest, and the exact authority, target, exception, and provider-capability
 versions plus provider-execution profile/account/credential/broker-policy
-epochs admitted at redemption. `transmit_before` is the earliest applicable
+and credential-capability epochs admitted at redemption. `transmit_before` is
+the earliest applicable
 authority, grant, exception, target, or provider-capability validity bound,
 further capped by a platform maximum admission-to-transmission interval. An
 authority source that cannot provide an enforceable bound or co-located current
@@ -204,8 +205,9 @@ epoch is unsupported for privileged work.
 Immediately before adapter I/O, the worker executes a local
 `ClaimTransmissionStart` transition. It rechecks the current authority-fence
 set, target fence, grant/exception guard state, and provider-capability epoch,
-provider-execution profile/account/credential/broker-policy epochs,
-validates authoritative transaction time against `transmit_before`, and
+provider-execution profile/account/credential/broker-policy epochs, and current
+credential-capability snapshot/epoch; validates authoritative transaction time
+against `transmit_before`; and
 atomically compare-and-swaps the exact receipt from `Admitted` to
 `TransmissionStartClaimed`. The transition binds a globally unique
 `TransmissionStartClaimId`, exact authenticated `WorkerInstanceId`, permitted
@@ -236,13 +238,61 @@ broker policy epoch. `ClaimTransmissionStart` locks and rechecks all four curren
 epochs; the claim and secret handle bind their exact values. Secret-handle
 redemption rechecks that the profile generation and provider account remain
 active, the credential generation is current, and broker policy still permits
-the exact operation. Credential rotation atomically activates its successor and
-makes the predecessor non-redeemable. Backup, failover, rollback, and restore
-cannot decrease an epoch or reactivate a suspended, superseded, or revoked
-profile, account, credential, broker policy, or handle. Revocation that
-linearizes before handle redemption denies transmission; redemption that
-linearizes first creates only the already bounded admitted attempt and grants no
-later reuse.
+the exact operation. Backup, failover, rollback, and restore cannot decrease an
+epoch or reactivate a suspended, superseded, or revoked profile, account,
+credential, broker policy, or handle. Revocation that linearizes before handle
+redemption denies transmission; redemption that linearizes first creates only
+the already bounded admitted attempt and grants no later reuse.
+
+Profile authority is created and changed only through typed
+`ProposeProviderExecutionProfile`, `ApproveProviderExecutionProfile`,
+`ActivateProviderExecutionProfile`, `SuspendProviderExecutionProfile`,
+`RevokeProviderExecutionProfile`, and `SupersedeProviderExecutionProfile`
+commands owned by the lineage. Every command requires a control-plane-only
+capability. A proposal binds a signed implementation-admission record, exact
+profile digest, risk owner, and semantic diff from its predecessor. Privileged
+profiles require the frozen approval quorum and separation of duties. Any
+expansion of credential scope, destinations, redirect behavior, executor trust
+domain, or documented residual blast radius creates a new approval decision;
+metadata-only classification cannot hide authority expansion. Activation locks
+and rechecks current tenant, provider-account, policy, and approver fences plus
+the generation's pre-activation revocation tombstone, then atomically changes
+the lineage's active generation and never-reused profile epoch. Suspension,
+revocation, and supersession fence delayed activation. Emergency revocation may
+remove authority immediately but never grants authority to activate a
+replacement.
+
+Provider-side credential rotation is not described as one atomic transaction.
+One authoritative `ProviderCredentialRotationState` progresses
+`Proposed` → `NewCredentialProvisioning` → `NewCredentialVerified` →
+`LocallyActivated` → `OldCredentialRevocationPending` → `Completed`, with
+fail-closed `ProvisioningUnknown`, `RevocationUnknown`, `VerificationFailed`,
+and `ManualInterventionRequired` states. Before local activation, authenticated
+provider evidence must bind the new credential to the expected account and
+principal and prove its effective permissions fit the admitted profile. Local
+activation atomically increments the credential epoch and makes the predecessor
+non-redeemable in Vitheim; provider revocation is claimed only after admissible
+evidence confirms it. Lost creation or revocation responses become
+`OutcomeUnknown` and enter query/reconciliation without blind retry. The old
+credential identity and evidence remain until confirmed revocation. Every
+profile defines bounded overlap and escalation deadlines. A provider that
+supports only one credential uses an explicit outage/maintenance rotation
+profile. Restore can never make two generations locally redeemable.
+
+Every credential generation also owns a versioned
+`ProviderCredentialCapabilitySnapshot`: exact provider/account/principal,
+requested and observed effective permissions, role/group/trust-chain
+provenance, provider policy identity/revision/strong validator, observation
+time/source/maximum freshness, admitted profile and credential generation, and
+a never-reused local `ProviderCredentialCapabilityEpoch`. This is distinct from
+the provider-feature `provider-capability epoch`. A reconciler advances it from
+authenticated provider events or bounded polling; dispatch never discovers
+remote permissions inside its transaction. Privileged transmission fails
+closed when the snapshot is stale or unverifiable, does not cover the requested
+operation, is broader than the admitted profile, or names a different provider
+policy revision. Every observed permission, role, group, or trust-chain change
+advances the local epoch and invalidates stale receipts; restore cannot revive
+an older snapshot.
 
 Credential operations use one explicit `ProviderCredentialOperationProfile`.
 `NonExportableSigning`, `NonExportableMtls`, and equivalent HSM-backed profiles
@@ -1150,7 +1200,8 @@ binds its own authorization decision, effect identity, and bounded claim set.
 The receipt also records the exact `DispatchTransmissionWindow`, including
 `redeemed_at`, derived `transmit_before`, effect/attempt, permitted service
 audience, provider/account/request digest, and admitted authority/target/
-exception/provider-capability versions. Immediately before adapter I/O, a
+exception/provider-capability versions plus profile/account/credential/broker-
+policy and credential-capability epochs. Immediately before adapter I/O, a
 separate local `ClaimTransmissionStart` transition rechecks current fences and
 guards, uses authoritative transaction time, and CAS-binds one globally unique
 `TransmissionStartClaimId` to the exact authenticated worker instance, work-
@@ -1168,9 +1219,29 @@ The profile's one authoritative lineage supplies the exact active generation,
 never-reused profile epoch, provider-account lifecycle epoch, credential-
 lineage/version epoch, and broker-policy epoch. The start claim and handle
 redemption lock/recheck them; profile/account suspension or revocation, atomic
-credential rotation, and broker-policy change make stale instructions/handles
+local credential-generation activation, and broker-policy change make stale
+instructions/handles
 non-redeemable. Revocation before redemption denies, while redemption first
 admits only the existing bounded attempt. Restore cannot roll back any epoch.
+Profile proposal, approval, activation, suspension, revocation, and supersession
+are separate typed control-plane commands. Signed implementation admission,
+exact digest, semantic expansion classification, risk ownership, quorum/
+separation of duties, current activation fences, and a pre-activation revocation
+tombstone guard every active-generation/epoch update; emergency revocation
+cannot activate a replacement.
+Remote credential rotation runs through typed provisioning, verification,
+local-activation, old-revocation-pending, completion, unknown, and intervention
+states. Only local activation is atomic: it advances the credential epoch and
+permanently disables predecessor redemption. Provider creation/revocation
+response loss reconciles as unknown, old identity/evidence remains until
+confirmed revocation, overlap has a deadline, and single-credential providers
+use an explicit maintenance profile.
+The current versioned `ProviderCredentialCapabilitySnapshot` and monotonic local
+capability epoch bind observed effective permissions, role/group/trust
+provenance, provider policy validator, freshness, profile, and credential
+generation. A separate reconciler updates it; privileged claim fails closed on
+stale, unverifiable, insufficient, broader, or policy-revision-mismatched state
+without remote discovery in the dispatch transaction.
 The admitted `ProviderCredentialOperationProfile` is non-exportable signing/
 mTLS/HSM operation, brokered bearer transmission, or unsupported. For bearer/
 API-key work, the hardened broker is part of the executor TCB and owns header
@@ -1232,8 +1303,12 @@ zeroization contract, explicit no-transferable-capability production profile,
 `ProviderExecutionProfile` codec/admission rules, claim-bound opaque credential-
 handle redemption, executor database/key denial, scoped pool and residual-blast-
 radius model, authoritative profile lineage/generation and profile/account/
-credential/broker-policy epoch guards, atomic credential rotation and restore
-ratchet, `ProviderCredentialOperationProfile` codec with non-exportable signing/
+credential/broker-policy epoch guards, typed profile-governance commands,
+signed admission/digest/semantic-diff/approval/tombstone state,
+`ProviderCredentialRotationState` with provider-evidence reconciliation,
+bounded overlap/deadline and local activation/restore ratchet,
+`ProviderCredentialCapabilitySnapshot` plus local epoch/freshness/reconciler
+contract, `ProviderCredentialOperationProfile` codec with non-exportable signing/
 mTLS and brokered-bearer TCB placement, destination/TLS/DNS/redirect/no-general-
 proxy egress contract,
 authoritative-time and monotonic-start enforcement contract, and
@@ -1316,9 +1391,24 @@ and reach another tenant/account trust domain; admit one unrestricted privileged
 credential across unrelated tenants; omit or understate unavoidable provider
 blast radius; omit/substitute/reuse the profile lineage, generation, profile
 epoch, provider-account lifecycle epoch, credential-lineage/version epoch, or
-broker-policy epoch; emergency-revoke or suspend a profile/account after
+broker-policy epoch; propose/approve/activate a profile without the control-
+plane capability, signed admission record, exact digest, risk owner, required
+quorum/separation, semantic expansion review, current tenant/account/policy/
+approver fences, or tombstone recheck; race approval/activation against
+revocation; use emergency revocation to activate a replacement; emergency-
+revoke or suspend a profile/account after
 instruction creation; rotate a secret before redemption; perform credential
-ABA; redeem a stale queued instruction or restored handle; race revocation/
+ABA; crash at every remote rotation state; duplicate credential creation; lose
+a provisioning or revocation response; observe provider eventual consistency or
+continued old-key validity; exceed overlap/deadline; rotate a one-credential
+provider without its outage profile; restore two locally redeemable generations;
+expand/reduce permissions out of band; change role/group/cross-account trust;
+reorder authenticated callbacks; observe provider IAM eventual consistency; use
+stale polling or restored capability
+snapshots; omit/substitute/reuse the credential-capability epoch; accept a stale,
+unverifiable, broader, insufficient, or wrong-policy-revision snapshot; discover
+remote permission inside the dispatch transaction; redeem a stale queued
+instruction or restored handle; race revocation/
 rotation/policy change against redemption; export private key material from a
 signing/mTLS/HSM profile; serialize a bearer header or own its TLS/socket outside
 the hardened broker; let a separate broker caller claim transmission; leak
@@ -1408,9 +1498,16 @@ database authority; every provider credential operation is an opaque, exact-
 claim-bound, tenant/provider/account/action/request/destination-scoped handle
 under least-privilege credential and deny-by-default egress policy. Its
 authoritative profile/account/credential/broker-policy epochs are current at
-claim and redemption, rotation makes predecessors non-redeemable, and restore
-cannot resurrect them. Non-exportable key profiles expose only operations;
-bearer transmission is performed entirely by the hardened broker/executor TCB,
+claim and redemption. Profile activation is a separately approved, signed,
+digest-bound, semantic-diff-classified control-plane mutation with current
+fences and a revocation tombstone. Rotation is an evidence-driven asynchronous
+provider process; only local successor activation is atomic and makes the
+predecessor non-redeemable, while unknown creation/revocation outcomes reconcile
+to a deadline. The current credential-capability snapshot/epoch proves fresh,
+admitted effective permissions without remote discovery in dispatch. Restore
+cannot resurrect any of this authority. Non-exportable key profiles expose only
+operations; bearer transmission is performed entirely by the hardened broker/
+executor TCB,
 where bearer bytes may exist briefly but cannot escape to upstream, plugin,
 queue, log, diagnostic, or durable surfaces. Unscopable
 cross-tenant privileged profiles are unsupported and unavoidable residual blast

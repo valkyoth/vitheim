@@ -129,8 +129,26 @@ Verification:
   tenant privileged credentials; and explicit residual blast-radius evidence.
   It proves exactly one authoritative profile lineage; active/suspended/
   superseded/revoked generations; never-reused profile, provider-account,
-  credential-version, and broker-policy epochs; atomic rotation; claim/
-  redemption ordering; and restore anti-resurrection. Non-exportable signing/
+  credential-version, and broker-policy epochs; claim/redemption ordering; and
+  restore anti-resurrection. It proves typed proposal, approval, activation,
+  suspension, revocation, and supersession commands require control-plane
+  capability, signed implementation admission, exact digest, semantic expansion
+  review, risk owner, required quorum/separation, current tenant/account/policy/
+  approver fences, and a pre-activation revocation tombstone. Emergency
+  revocation cannot activate a replacement.
+  It proves `ProviderCredentialRotationState` from provisioning through
+  verification, atomic local activation, provider old-credential revocation, and
+  completion, with fail-closed unknown/failed/manual states, admissible provider
+  identity/permission/revocation evidence, no blind retry, bounded overlap/
+  escalation, a single-credential maintenance profile, retained old identity,
+  and restore-safe one-generation local redeemability. It proves a versioned
+  `ProviderCredentialCapabilitySnapshot` and never-reused local epoch bind
+  effective permissions, role/group/trust provenance, provider policy revision/
+  validator, observation source/time/freshness, profile, and credential
+  generation. Authenticated event/poll reconciliation advances it; stale,
+  unverifiable, insufficient, broader, mismatched, or restored snapshots fail
+  privileged transmission without remote discovery in dispatch.
+  Non-exportable signing/
   mTLS/HSM profiles expose operations only. Bearer/API-key profiles put
   authorization serialization, redirects, TLS, start claim, and socket in the
   hardened broker/executor TCB. Bearer bytes may briefly exist only there, with

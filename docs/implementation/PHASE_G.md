@@ -85,7 +85,11 @@ provider destination/TLS/DNS/redirect profile; timer or queue possession cannot
 redeem credentials or access a general proxy. Start claim and handle redemption
 also recheck the active profile lineage generation and monotonic profile/
 provider-account/credential/broker-policy epochs, so suspension, revocation,
-rotation, policy change, and restore invalidate stale timer instructions.
+local rotation activation, policy change, and restore invalidate stale timer
+instructions. Timer execution also rechecks the current credential-capability
+snapshot/epoch and cannot remotely discover permissions. Only governed profile
+lifecycle commands may change active authority; timers cannot approve/activate
+a profile or advance provider credential rotation.
 Non-exportable signing/mTLS exposes operations only; a bearer/API-key broker is
 the executor TCB and owns authorization serialization, redirects, TLS, claim,
 and socket.
@@ -99,8 +103,9 @@ fixtures, remote-target conditional-mutation and exception-guard fixtures, and
 transmission-window/unique-claimant/executor-boundary fixtures plus atomic-
 variant and provider credential/egress profile integration fixtures.
 Include profile-lineage/epoch/revocation/rotation ordering, credential-operation
-profile, brokered-bearer ownership, and HTTP/TLS/redirect/diagnostic/crash memory
-canary fixtures.
+profile, governed activation/tombstone, rotation-state/evidence/deadline,
+credential-capability snapshot/drift, brokered-bearer ownership, and HTTP/TLS/
+redirect/diagnostic/crash memory canary fixtures.
 Verification: clock jumps,
 retry storms, duplicate wakeups/results,
 cancellation/revocation races, not-before/expiry boundaries, grant replay and
@@ -125,8 +130,12 @@ instruction, split executor failover/compromise, arbitrary unclaimed provider
 request, secret-handle/account substitution, cross-tenant credential reuse,
 egress/TLS/DNS/redirect/general-proxy bypass, stale/reused profile/account/
 credential/broker epoch, provider-account suspension, credential ABA, restored
-handle, signing/mTLS key export, bearer material or serialization/TLS/socket
-outside the broker TCB, caller-owned claim, memory-canary failure, uncertain retransmission,
+handle, unauthorized profile lifecycle/hidden expansion/stale tombstone,
+rotation crash/unknown/duplicate creation/continued-old-key/deadline failure,
+permission/role/group/trust drift, callback reorder, stale polling, wrong policy
+revision, restored capability snapshot, signing/mTLS key export, bearer material
+or serialization/TLS/socket outside the broker TCB, caller-owned claim, memory-
+canary failure, uncertain retransmission,
 lock-order inversion, retry identity drift/exhaustion, dispatch/completion
 collapse, receipt/effect split,
 remote-call-in-transaction rejection, overflow, and replay pass.
@@ -209,7 +218,9 @@ delayed-transition current-authority rechecks, dispatch-transmission windows/
 unique claimant/executor-owned start claims, immutable instruction-only split
 protocol and provider credential/egress profile, canonical composite acquisition/retry behavior,
 revocable provider profile/account/credential/broker epochs and explicit
-credential-operation/bearer-broker TCB placement, cancellation-recovery
+profile governance, rotation-state/evidence reconciliation, credential-
+capability snapshot/epoch freshness, credential-operation/bearer-broker TCB
+placement, cancellation-recovery
 successor semantics,
 and `0.51.2`
 tenant-data-surface registry entries, Phase E workflow contract fixtures, and
@@ -231,9 +242,10 @@ cancellation-recovery generation/idempotent receipt/deadline escalation,
 protected-floor governance/cross-command separation and durable typed-key
 profile ratchet, delayed-transition authority rechecker, transmission-window/
 unique-claimant/trusted-executor/instruction-only/scoped-credential-egress
-handler, bounded identity-
-preserving deadlock retry, fair
-partitioned recovery lanes, and operational evidence.
+handler, profile-governance lifecycle/approval/tombstone handler, credential-
+rotation process manager/evidence/deadline reconciler, credential-capability
+snapshot/epoch/freshness observer, bounded identity-preserving deadlock retry,
+fair partitioned recovery lanes, and operational evidence.
 Verification: lease loss, partitions, duplicate activity/result, activity
 receipt/effect split, network-call-in-transaction rejection, crash points,
 stale fencing commits, poison/dead-letter split, quota/effect split, poison
@@ -262,6 +274,10 @@ general-write or out-of-broker bearer access, scoped-handle substitution/reuse,
 cross-tenant executor compromise, unrestricted shared credential, egress/TLS/
 DNS/redirect/general-proxy bypass, profile/account/credential/broker epoch
 substitution/rollback, emergency revocation, account suspension, rotation/ABA,
+unauthorized/self-approved activation, semantic expansion, stale fence/
+tombstone, every rotation crash/unknown/evidence/deadline/outage state, restored
+dual redemption, permission/role/group/trust drift, callback reorder, stale
+polling, wrong policy revision, restored snapshot, remote discovery in dispatch,
 stale instruction/restored handle, signing/mTLS export, bearer serialization/
 TLS/socket outside the broker TCB, caller-owned claim, HTTP/TLS/redirect/log/
 diagnostic/crash memory leak, pre/post-claim crash, uncertain retransmission,
@@ -337,8 +353,14 @@ delivery, or a possibly started request enters reconciliation instead of
 ordinary retry. Provider authentication is exact-claim-bound and scoped; the
 executor lacks master-key/general-write authority and arbitrary egress. Profile,
 account, credential, and broker-policy epochs are current at claim/redemption
-and cannot be resurrected by restore. Non-exportable key profiles expose only
-operations; bearer material is confined to the hardened broker/executor TCB
+and cannot be resurrected by restore. Profile activation remains a signed,
+digest-bound, semantically reviewed, separately approved control-plane action
+with current fences and tombstone. Rotation remains an asynchronous
+provider-evidence process with atomic local activation and bounded unknown-state
+reconciliation. A fresh admitted credential-capability snapshot/epoch fences
+out-of-band permission drift without remote discovery in dispatch. Non-
+exportable key profiles expose only operations; bearer material is confined to
+the hardened broker/executor TCB
 that owns serialization, TLS, claim, and socket.
 Every current-target dispatch linearizes on the target stream version/digest or
 co-located authoritative target-fence row without advancing a second stream.
