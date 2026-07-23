@@ -37,10 +37,24 @@ signals and has an explicit telemetry-loss policy. `v0.142.1 implementation stop
 reached. Run pentest for this exact commit.`
 
 ## `0.143.0` — HA Leases, Failover, And Partitions
-Status: planned. Setup: quorum/authority, fencing, health, failover, partition policy, reconciliation. Goal: prevent split-brain effects. Deliverables: HA orchestration and runbooks. Verification: partitions, clock skew, stale leader, duplicate work, failover/failback, chaos/soak pass. Exit criteria: split brain rejects writes. `v0.143.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: quorum/authority, fencing, health, failover, partition
+policy, reconciliation, and every `0.18.2` atomic work variant. Goal: prevent
+split-brain effects. Deliverables: HA orchestration, work-variant fault matrix,
+and runbooks. Verification: partitions, clock skew, stale leader/fence,
+receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
+activity work, failover/failback, and chaos/soak pass. Exit criteria: split
+brain and stale workers reject every state-changing variant. `v0.143.0
+implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.144.0` — Regional Placement And Residency
-Status: planned. Setup: tenant authoritative region, allowed replicas, policy labels, failover approval, encryption/keys. Goal: enforce data residency. Deliverables: placement engine and regional runbook. Verification: cross-region write/read/cache/backup/log leakage, failover bypass, policy changes pass. Exit criteria: placement violations fail closed. `v0.144.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: tenant authoritative region, allowed replicas, policy
+labels, failover approval, encryption/keys, and every `0.51.2` registered
+surface including external copies. Goal: enforce data residency. Deliverables:
+placement engine, zero-unmapped-surface report, and regional runbook.
+Verification: cross-region write/read/cache/backup/log/vector/measurement/
+plugin/AI/federation leakage, unregistered surface, failover bypass, and policy
+changes pass. Exit criteria: placement violations or incomplete surface mapping
+fail closed. `v0.144.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.0` — Backup, Restore, And Disaster Recovery
 Status: planned. Setup: RPO/RTO profiles and consistent DB/blob/key/config/
@@ -48,8 +62,9 @@ retention-hold set, envelope encryption, immutability, rotation/revocation,
 crypto-erasure consequences, external checkpoint anchors and drills. Goal:
 verified recoverability. Deliverables: backup/restore tools and DR evidence.
 Verification: substitution, partial/stale backup, lost/rotated key, held/erased
-data, point-in-time restore, `0.16.1` bundle and denial-only audit-chain
-integrity, external anchors, rebuild/workflow continuation pass.
+data, point-in-time restore, every `0.18.2` atomic work variant and denial-only
+audit-chain integrity, external anchors, registered tenant-surface disposition,
+measurement rollup manifests, rebuild/workflow continuation pass.
 Exit criteria: claimed RPO/RTO is demonstrated. `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification
@@ -58,7 +73,8 @@ profiles, separate Vitheim-telemetry and customer-measurement capacity models,
 paging/status provider limits, fairness and reconciliation, baselines, failure
 scenarios, and evidence retention. Goal: prove bounded behavior under stress.
 Deliverables: harnesses and signed reports. Verification: atomic quota
-reservation/refund, noisy tenants, observation late-arrival/downsampling,
+reservation/refund/work-bundle consumption, noisy tenants, observation late-
+arrival/authoritative-rollup recalculation/downsampling,
 paging/status retry/reconciliation, queue/index/embedding/plugin/report
 exhaustion, leaks, cascading failures, and long soak/chaos pass. Exit criteria:
 regressions and unsafe saturation block release. `v0.146.0

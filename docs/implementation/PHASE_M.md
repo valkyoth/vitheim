@@ -74,7 +74,9 @@ Status: planned. Setup: immutable datasets, access, metrics, baseline, reviewer 
 Status: planned. Setup: approved uses, owners, risks, controls, evidence,
 monitoring, incident/disable process, and mandatory `0.58.0` authority/tenant/
 audit registry entries for retrieval, context, inference, citation, evaluation,
-feedback, and proposals. Goal: govern optional AI lifecycle. Deliverables:
+feedback, and proposals plus `0.51.2` lifecycle entries for context packs,
+provider copies, caches, embeddings, evaluations, and feedback. Goal: govern
+optional AI lifecycle. Deliverables:
 signed governance pack, authorization cases, and dashboards. Verification:
 unregistered interface/model/purpose, missing evidence, autonomous-mode attempt,
 disable/revoke pass. Exit criteria: AI remains optional, policy controlled, and

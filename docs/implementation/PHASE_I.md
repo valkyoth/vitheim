@@ -17,7 +17,8 @@ provenance/four-clock/correction/confidence primitives and the authenticated
 `0.38.2` customer-measurement plane; define availability intervals,
 maintenance/dependency context, manual override authority/expiry,
 incident/change links, `0.38.1` SLI/SLO/error-budget bindings, aggregation
-rules, audience classification, and unknown state.
+rules, `0.38.3` raw-versus-authoritative-rollup admissibility, audience
+classification, and unknown state.
 
 Goal: represent service health as provenance-aware temporal facts rather than a
 mutable green/yellow/red field or direct copy of monitoring output.
@@ -38,6 +39,8 @@ matrix; revoked or wrong-audience sources fail closed.
 Exit criteria: every health/availability claim cites source facts, corrections,
 aggregation/SLO policy, freshness, uncertainty, and audience, and the selected
 hosted measurement profile has complete identity/authorization evidence.
+Historical claims cite retained raw inputs or an admissible integrity-bound
+rollup rather than a disposable downsampling projection.
 `v0.82.1
 implementation stop reached. Run pentest for this exact commit.`
 

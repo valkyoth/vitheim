@@ -22,7 +22,8 @@ Goal: make the complete tenant lifecycle a governed aggregate rather than
 administrator scripts or scattered storage flags.
 
 Deliverables: tenant-lifecycle commands/events, process manager, cleanup proof
-ledger, migration plan/checkpoints, hold/erasure conflict policy, and runbook.
+ledger, migration plan/checkpoints, hold/erasure conflict policy, initial
+data-surface inventory hook for the `0.51.2` registry, and runbook.
 
 Verification: ID reuse, suspend bypass, partial provisioning/deletion, held
 tenant deletion, stale cache/index/backup/blob, key destruction order, topology
@@ -32,49 +33,105 @@ Exit criteria: tenant closure either has complete verified disposition evidence
 or remains visibly incomplete and recoverable. `v0.51.1 implementation stop
 reached. Run pentest for this exact commit.`
 
+## `0.51.2` — Tenant Data-Surface Lifecycle Registry
+
+Status: planned.
+
+Setup: generate a separate registry for every tenant-bearing durable, cached,
+indexed, backed-up, or externally copied surface. Each entry declares structural
+tenant key, data classes and accountable owner, authoritative/derived/external
+status, export behavior, retention and legal-hold behavior, erasure/deletion
+semantics, backup/restore handling, residency/replication, key ownership and
+destruction, rebuild capability, tenant-topology migration, and cleanup proof.
+Inventory all earlier surfaces including event/audit journals and projections,
+blobs, queues, customer measurements and rollups, paging/delivery receipts,
+hosted status, and caches.
+
+Goal: make tenant lifecycle coverage mechanically complete as the platform adds
+new storage and external-copy paths.
+
+Deliverables: generated `TenantDataSurface` descriptor registry, compile/
+registration gate, lifecycle-operation planner, per-surface disposition
+receipts, completeness report, closure blocker, and adapter conformance API.
+The authorization-interface registry and this lifecycle registry remain
+distinct and cross-reference surfaces where applicable.
+
+Verification: missing/duplicate surface registration, omitted tenant key or
+data class, false derived/rebuild claim, export/hold/erasure conflict, stale
+backup/index/cache/external copy, residency mismatch, wrong key destruction,
+topology migration omission, cleanup-receipt forgery, restore resurrection, and
+late registration tests pass.
+
+Exit criteria: every existing tenant data surface has a complete lifecycle
+entry and tested disposition path. Every later milestone that adds or changes a
+surface is mechanically unable to exit until it updates this registry, and
+tenant closure remains visibly incomplete while any registered surface lacks
+verified disposition evidence.
+`v0.51.2 implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.52.0` — Subjects And Service Principals
 Status: planned. Setup: define human/service/device identities, issuer binding,
-lifecycle, credentials facts, and impersonation prohibition. Goal: stable actor identity.
-Deliverables: subject model, identity mapping, disable/revoke events. Verification:
-issuer collision, account recreation, stale/disabled identity, spoofing, and audit pass.
-Exit criteria: actor origin and lifecycle are explicit. `v0.52.0 implementation stop reached. Run pentest for this exact commit.`
+lifecycle, credential facts, and impersonation prohibition. Define an
+external-identity-link aggregate keyed only by compound issuer plus immutable
+external subject ID; never auto-link email, display name, or mutable username.
+Specify controlled JIT provisioning, OIDC/SAML/SCIM correlation, reviewable
+merge/split/unlink and IdP-migration operations, deprovision-versus-login race
+policy, identity recreation protection, and complete provenance/audit history.
+Goal: stable actor identity without unsafe account correlation. Deliverables:
+subject model, external-identity-link aggregate, mapping/review workflows,
+disable/revoke events, migration tooling, and explanation view. Verification:
+issuer collision, email/name collision, account recreation, JIT/group
+escalation, merge/split/unlink abuse, IdP migration takeover, concurrent
+deprovision/login, stale/disabled identity, spoofing, and audit pass.
+Exit criteria: actor origin and lifecycle are explicit, and every external link
+is immutable-keyed, reviewable, reversible where permitted, and provenance
+complete.
+`v0.52.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.52.1` — Machine-To-Machine Authentication Profile
+## `0.52.1` — OAuth Resource-Server Workload Authentication
 
-Status: planned; blocked until the exact OAuth/mTLS/token/TLS implementations
-and conformance profile are admitted. Personal access tokens and static API
-keys are disabled by default; enabling either requires a separate explicit
-profile decision and evidence.
+Status: planned as an OAuth resource-server profile; blocked until the exact
+token-validation/mTLS/TLS implementations and external-issuer conformance
+profile are admitted. Vitheim does not operate an OAuth authorization server or
+token endpoint for `1.0.0`. Personal access tokens and static API keys are
+disabled.
 
-Setup: select narrowly supported OAuth client-credentials authentication using
-`private_key_jwt` and/or mutual TLS; define issuer and tenant binding, immutable
-`ServicePrincipalId`, client/key/certificate registration, short-lived
-audience-bound workload tokens, proof-of-possession where selected, exact
-scopes/capabilities, token type/issuer/audience/time validation, credential
-issuance/rotation/revocation/compromise response, policy re-evaluation, replay
-cache, and agent/connector workload identities. Token exchange, delegation,
-impersonation, and refresh tokens are disabled unless separately specified.
-Email, client display name, certificate subject, DNS name, or external account
-name is never the stable principal identity.
+Setup: select an admitted external authorization server where clients use its
+supported client-credentials authentication, such as `private_key_jwt` and/or
+mutual TLS. Vitheim validates short-lived access-token issuer, audience, tenant,
+immutable external subject-to-`ServicePrincipalId` link, token type, time,
+scope, key/signature, and certificate/proof binding where selected. Define
+external issuer/key rotation and compromise response, mapping disable/revoke,
+policy re-evaluation, replay restrictions, and connector workload identities.
+Vitheim stores public validation material and external identity mappings, never
+client private credentials. Token issuance, client registration secrets, token
+exchange, delegation, impersonation, refresh tokens, and local OAuth grants are
+out of scope. Local agent enrollment remains the separate `0.119.0` device/
+workload credential protocol. Email, display name, certificate subject, DNS
+name, client name, or external account name is never stable principal identity.
 
-Goal: authenticate API automation, agents, workers, and connectors as governed
-service principals without reusing browser sessions or turning credentials
-into authorization.
+Goal: authenticate API automation, hosted workers, and connectors as governed
+service principals without reusing browser sessions, implementing token
+issuance, or turning authentication into authorization. Local agents adopt
+their service-principal mapping only through the later enrollment protocol.
 
-Deliverables: workload-auth contract and hosted adapter, issuer/client registry,
-credential lifecycle, mTLS/key binding, validation and replay controls,
-compromise/revocation workflow, conformance corpus, fake issuer/client,
-operator tooling, and explicit disabled-feature matrix.
+Deliverables: resource-server workload-auth contract and validation adapter,
+external issuer/trust registry, service-principal link lifecycle, mTLS/proof
+binding, validation and replay controls, compromise/revocation workflow,
+conformance corpus, fake external issuer/client, operator tooling, and explicit
+no-token-endpoint/disabled-feature matrix.
 
-Verification: client/principal/tenant confusion, forged assertion, key/
+Verification: issuer/client/principal/tenant confusion, forged assertion, key/
 algorithm/token-type confusion, bearer replay, audience/scope inflation,
-certificate remapping, display-name collision, token exchange/refresh misuse,
-stale policy/credential, rotation race, revocation lag, agent/connector
-impersonation, clock abuse, outage, and protocol conformance tests pass.
+certificate remapping, display-name collision, accidental token endpoint or
+private-client-key storage, token exchange/refresh misuse, stale policy/mapping,
+issuer key rotation/rollback, revocation lag, connector impersonation, clock
+abuse, issuer outage, and resource-server conformance tests pass.
 
 Exit criteria: each workload request resolves to one immutable tenant-bound
-service principal, current credential and assurance profile; authorization is
-independently reevaluated and no static secret is silently enabled. `v0.52.1
+service principal, current issuer/token/mapping and assurance profile;
+authorization is independently reevaluated and no local token issuer or static
+secret is silently enabled. `v0.52.1
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.53.0` — OIDC Integration

@@ -12,7 +12,14 @@ Status: planned. Setup: define state, step budget, yielded effects, replay input
 Status: planned. Setup: bind task actor eligibility, claim, completion schema, approval separation, expiry. Goal: safe human workflow stops. Deliverables: activity models and command integration. Verification: theft, self-approval, stale claim, duplicate completion, hidden fields, tenant isolation pass. Exit criteria: human effects require current authority. `v0.63.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.64.0` — Timers, Deadlines, And Retries
-Status: planned. Setup: define logical deadlines, scheduled IDs, retry/backoff, jitter input, cancellation, quotas. Goal: crash-safe time behavior. Deliverables: timer effects and scheduler bridge. Verification: clock jumps, retry storms, duplicate wakeups, cancellation races, overflow, replay pass. Exit criteria: timers cannot create uncontrolled work. `v0.64.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: define logical deadlines, scheduled IDs, retry/backoff,
+jitter input, cancellation, quotas, and specialize the `0.18.2` atomic timer
+variant without weakening its fence/receipt/effect boundary. Goal: crash-safe
+time behavior. Deliverables: timer effects, scheduler bridge, and atomic-variant
+integration fixtures. Verification: clock jumps, retry storms, duplicate
+wakeups, cancellation races, stale fence, receipt/effect split, overflow, and
+replay pass. Exit criteria: timers cannot create uncontrolled or unreceipted
+work. `v0.64.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.65.0` — Parallel Branches And Joins
 Status: planned. Setup: define branch identity, join policy, failure/cancel propagation, ordering, and bounds. Goal: deterministic concurrency semantics. Deliverables: fork/join IR and interpreter support. Verification: premature/duplicate join, late events, branch leaks, cancellation, permutations, and state-model pass. Exit criteria: scheduling order cannot change result. `v0.65.0 implementation stop reached. Run pentest for this exact commit.`
@@ -39,15 +46,18 @@ history. `v0.68.0 implementation stop reached. Run pentest for this exact commit
 Status: planned. Setup: one canonical source model, round-trip policy, provenance, signing, and no hidden flags. Goal: equivalent visual/text authoring. Deliverables: compiler, decompiler, simulator integration, review diff. Verification: hidden behavior, injection, privilege generation, round-trip drift, huge graphs, signature substitution pass. Exit criteria: generated IR is fully reviewable. `v0.69.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.70.0` — HA Workflow Workers
-Status: planned. Setup: define leases/fencing, activity idempotency, `0.30.1`
-queue semantics, poison policy, drain, failover, authorization/tenant registry
+Status: planned. Setup: define leases/fencing, activity idempotency, specialize
+the `0.18.2` activity/poison variants, `0.30.1` queue semantics, poison policy,
+drain, failover, authorization and `0.51.2` tenant-data-surface registry
 entries, Phase E workflow contract fixtures, and `0.39.1–0.39.3` on-call/
 paging/notification process-manager scenarios. Goal: durable multi-worker
 execution. Deliverables: hosted worker orchestration, authorization cases,
 ITSM and response-delivery integration retests, and operational evidence.
 Verification: lease loss,
-partitions, duplicate activity, crash points, poison loops, cross-tenant/
+partitions, duplicate activity, activity receipt/effect split, crash points,
+stale fencing commits, poison/dead-letter split, quota/effect split, poison loops, cross-tenant/
 unauthorized effects, paging escalation/acknowledgement and quiet-hour races,
 Phase E fake-versus-real differential, rolling upgrades, and soak pass.
-Exit criteria: HA preserves documented at-least-once semantics
-and every workflow interface is registered. `v0.70.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: HA preserves documented at-least-once delivery while the atomic
+work variants prevent duplicate protected effects, and every workflow
+interface/data surface is registered. `v0.70.0 implementation stop reached. Run pentest for this exact commit.`

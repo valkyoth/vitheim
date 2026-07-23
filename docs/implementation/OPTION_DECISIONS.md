@@ -44,12 +44,17 @@ Status: planned.
 Setup: compare exact OIDC conformance profiles/providers, WebAuthn level and
 attestation/counter policy, session stores, recovery, logout, and the `0.52.1`
 machine-to-machine profiles. Review `private_key_jwt`/mTLS choice, workload
-token lifetime/audience/proof, credential rotation/revocation, and whether
-personal access tokens or static API keys remain disabled.
+token lifetime/audience/proof, external issuer/key rotation and revocation, and
+the separate local-agent enrollment profile. Confirm that Vitheim remains an
+OAuth resource server, stores no client private credentials, exposes no token
+endpoint, and keeps personal access tokens/static API keys disabled.
 Goal: revalidate and freeze production authentication profiles independently of authorization.
 Deliverables: selected issuer/discovery/PKCE/token/session/logout rules,
 WebAuthn RP/origin/challenge/credential rules, selected workload-auth profile,
-explicit PAT/API-key/token-exchange disposition, and unsupported combinations.
+external-issuer trust and mapping rules, separate agent-enrollment rules,
+explicit no-authorization-server/PAT/API-key/token-exchange disposition, and
+unsupported combinations. Any future Vitheim OAuth authorization server
+requires a new implementation milestone and cannot be selected here.
 Verification: protocol conformance, mix-up/replay/fixation/recovery, key rotation,
 enumeration, and degraded-provider behavior are independently reviewed.
 Exit criteria: production auth never falls back to the `0.40.0` test profile.
@@ -60,13 +65,16 @@ Exit criteria: production auth never falls back to the `0.40.0` test profile.
 Status: planned.
 Setup: compare Component Model runtimes, supported WIT/WASI level, process or
 container isolation, host metering, egress proxy, update, sandbox operations,
-catalog/storefront trust, publisher admission, offline mirrors, and rollout.
+catalog/storefront trust, publisher admission, offline mirrors, rollout, and
+the invariant that plaintext credentials never enter Wasm guest memory.
 Goal: revalidate and freeze a bounded plugin profile with defense in depth.
 Deliverables: runtime/version pin, disabled default imports, worker identity,
 OS limits, egress/DNS/TLS policy, capability-handle, catalog/storefront trust,
+host-brokered authenticated HTTP/signing/token/certificate operations,
 publisher/mirror, permission-diff, connector-support, and upgrade decisions.
 Verification: sandbox escape, metering bypass, host-call amplification, DNS
-rebinding, redirect, cross-plugin/tenant, and cancellation evidence is reviewed.
+rebinding, redirect, cross-plugin/tenant, guest-memory secret canaries, broker
+confused-deputy, and cancellation evidence is reviewed.
 Exit criteria: cryptography is not claimed to enforce resource isolation.
 `v0.140.4 implementation stop reached. Run pentest for this exact commit.`
 
@@ -74,13 +82,19 @@ Exit criteria: cryptography is not claimed to enforce resource isolation.
 
 Status: planned.
 Setup: classify records, metadata, evidence blobs, audit, backups, indexes,
-legal holds, erasure duties, residency, and conflicting jurisdictional rules.
+legal holds, erasure duties, residency, and conflicting jurisdictional rules;
+review the complete `0.51.2` tenant data-surface registry including customer
+measurements/rollups, paging/status receipts, vectors/embeddings, plugin state,
+AI artifacts, federation projections, and connector checkpoints.
 Goal: freeze production data-lifecycle profiles before packaging.
 Deliverables: retention precedence, preservation/disposition, crypto-erasure,
-key ownership, deletion verification, backup expiry, and residency matrices.
+key ownership, deletion verification, backup expiry, residency matrices, and a
+zero-missing-surface registry report.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
-indexes/caches/exports, evidence custody, and cross-region scenarios pass review.
-Exit criteria: no production data class lacks an owner and lifecycle.
+indexes/caches/exports/external copies, authoritative measurement rollups,
+evidence custody, tenant closure, and cross-region scenarios pass review.
+Exit criteria: no production data class or tenant-bearing surface lacks an
+owner, lifecycle, and verified disposition path.
 `v0.140.5 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.140.6` — Deployment, HA, And Recovery Profile Decision

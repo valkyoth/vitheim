@@ -41,15 +41,17 @@ The complete design anticipates boundaries between:
 | Threat | Mandatory controls |
 | --- | --- |
 | Cross-tenant disclosure or mutation | Non-optional tenant types, policy at every boundary, partitioned tests, cache/index/blob isolation |
+| Tenant data survives export/hold/erasure/closure | Generated lifecycle registry for every store/cache/index/backup/external copy, disposition receipts, closure blocker |
 | IDOR and confused deputy | Typed commands, actor and target binding, capability scope, policy snapshots, negative authorization matrix |
 | Event/evidence tampering | Append-only journal semantics, expected versions, integrity chains, signed checkpoints, restore verification |
-| Replay and duplicated effects | Command idempotency, inbox/outbox semantics, causal IDs, idempotent consumers |
+| Replay and duplicated effects | Atomic command/consumer/timer/activity/poison receipt-and-effect variants, fencing, quota binding, inbox/outbox semantics |
 | Parser/resource exhaustion | Explicit byte/item/depth/allocation/work limits, cancellation, quotas, fuzzing and load tests |
 | Injection and unsafe content | Canonical parsers, contextual encoding, attachment quarantine, no arbitrary scripts or SQL exposure |
 | Workflow or policy bypass | Deterministic IR, version pinning, simulation, approval, signed activation, fail-closed evaluator |
-| Plugin escape | Capability manifest, no direct database access, memory/fuel/time/output/network limits, signed rollout |
+| Plugin escape or secret extraction | Capability manifest, no direct database access, no plaintext credential in guest memory, brokered authenticated operations, memory/fuel/time/output/network limits, signed rollout |
+| Workload identity or issuer confusion | External-issuer OAuth resource-server validation, immutable issuer-subject mapping, audience/tenant/proof binding, no local token endpoint |
 | AI prompt/tool abuse | Permission-filtered context, provenance, tainting, structured proposals, independent policy and human approval |
-| Secret leakage | Secret handles, redacted errors/logs, no core secret storage, rotation and zeroization policy at hosted boundary |
+| Secret leakage | Non-extractable handles, host-brokered secret operations, redacted errors/logs, no core or Wasm plaintext secret storage, rotation and best-effort zeroization policy |
 | Supply-chain compromise | No current dependencies, pinned tools/actions, lockfile, SBOM, read-only CI, signed provenance and pentest gate |
 | Availability failure | Tenant quotas, backpressure, poison queues, bounded retries, leases, recovery and chaos testing |
 
@@ -78,4 +80,3 @@ Every release records new assets, actors, entry points, data flows, trust
 boundaries, abuse cases, mitigations, tests, residual risk, and removed surface.
 The pentest scope must cover that delta and relevant regression paths from the
 previous tag.
-

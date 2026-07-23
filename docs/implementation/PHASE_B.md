@@ -156,20 +156,22 @@ Exit criteria: no successful protected mutation exists without its authoritative
 audit intent, and no rejected mutation produces business state or effects.
 `v0.16.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.16.1` — Complete Atomic Commit Bundle
+## `0.16.1` — Atomic Command Commit Bundle
 
 Status: planned.
 
-Setup: freeze one project-owned `AtomicCommitBundle` containing tenant and
-aggregate stream, exact expected stream version, consecutive domain events,
+Setup: freeze one project-owned `AtomicCommandCommitBundle` containing tenant
+and aggregate stream, exact expected stream version, consecutive domain events,
 command or rejection receipt, mandatory audit intent, business outbox entries,
-integrity/commit digest, authority-owned uniqueness claims, and any consumed
-quota reservation. Define successful, denied, rejected, and no-op variants
-without optional omission of mandatory fields. Bind the canonical audit-intent
-and receipt digests into the commitment.
+integrity/commit digest, and authority-owned uniqueness claims. Define
+successful, denied, rejected, and no-op variants without optional omission of
+mandatory fields. Bind the canonical audit-intent and receipt digests into the
+commitment. Quota reservation semantics are deliberately not frozen before
+`0.18.1`; `0.18.2` adds the typed consumed reservation to the final work-commit
+family.
 
-Goal: give every storage adapter one indivisible correctness contract instead
-of a collection of individually transactional ports.
+Goal: give command handling one indivisible correctness contract rather than a
+collection of individually transactional ports.
 
 Deliverables: bounded bundle types and canonical codec, semantic validation,
 atomic memory implementation, capability identifier/version, commit receipt,
@@ -179,14 +181,15 @@ enter a tenant-scoped hash-linked sequence with externally anchorable
 checkpoints.
 
 Verification: omit, duplicate, reorder, substitute, or cross-bind every bundle
-component; fail before and after each persistence step; reuse uniqueness claims
-or quota reservations; mismatch request/audit/receipt/commit digests; delete or
-splice denial evidence; race exact-version writers; and verify rollback,
-recovery, canonicalization, model, and property cases pass.
+component; fail before and after each persistence step; reuse uniqueness
+claims; mismatch request/audit/receipt/commit digests; delete or splice denial
+evidence; race exact-version writers; and verify rollback, recovery,
+canonicalization, model, and property cases pass.
 
 Exit criteria: an adapter can either commit the complete negotiated bundle
 atomically or report the capability unsupported; it cannot claim success with
-a weakened subset. `v0.16.1 implementation stop reached. Run pentest for this exact commit.`
+a weakened subset. Consumer, timer, activity, and poison transitions are not
+claimed by this command variant. `v0.16.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.17.0` — Inbox And Idempotent Consumers
 
@@ -208,6 +211,36 @@ outcome; the same ID with a different digest is a conflict without side effects.
 
 Exit criteria: retries cannot repeat protected effects or hide duplicates.
 `v0.17.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.17.1` — Atomic Consumer Commit Bundle
+
+Status: planned.
+
+Setup: define `AtomicConsumerCommitBundle` with tenant/source/destination,
+inbound message identity and payload digest, inbox receipt and stored duplicate
+outcome, expected aggregate stream versions, consecutive emitted domain events,
+mandatory audit intent, business outbox entries, integrity/commit digest, and
+authority-owned uniqueness claims. The inbox receipt, all emitted effects, and
+their evidence share one database transaction; unsupported cross-aggregate
+effects remain process-manager messages rather than hidden multi-stream writes.
+
+Goal: close the crash window between applying a consumer effect and recording
+that its inbound message was consumed.
+
+Deliverables: bounded consumer bundle and codec, semantic validation, atomic
+memory implementation, duplicate-response behavior, capability version,
+crash-point model, and inbox-plus-effect conformance fixtures.
+
+Verification: crash or fail before/after each receipt/event/audit/outbox/
+integrity/uniqueness component, redeliver concurrently, reuse message ID with a
+different digest, mix tenant/source/destination, emit effects without a receipt,
+store a receipt without effects, split multi-aggregate work, and verify exact
+rollback, replay, model, and property cases pass.
+
+Exit criteria: a consumer either commits its receipt and complete emitted
+effect bundle once or commits neither; redelivery returns the bound prior
+outcome and cannot execute the effect again. `v0.17.1 implementation stop
+reached. Run pentest for this exact commit.`
 
 ## `0.18.0` — Leases, Timers, And Scheduler Primitives
 
@@ -231,9 +264,11 @@ Exit criteria: expired or unfenced workers cannot commit protected work.
 
 Status: planned.
 
-Setup: define tenant/resource quota identity, atomic reservation/commit/refund,
-concurrent-use leases, retry/idempotency binding, fairness, reconciliation,
-overflow behavior, and administrator adjustment evidence.
+Setup: define tenant/resource quota identity, opaque `QuotaReservationId`,
+reservation digest, atomic reserve/consume/refund, concurrent-use leases,
+retry/idempotency binding, fairness, reconciliation, overflow behavior, and
+administrator adjustment evidence. The consumed reservation representation is
+finalized into work bundles only at `0.18.2`, after these semantics exist.
 
 Goal: make resource limits durable correctness controls rather than process-local
 counters.
@@ -248,16 +283,50 @@ cross-tenant accounting, and reconciliation tests pass.
 Exit criteria: admitted work cannot exceed a durable quota through concurrency
 or retry. `v0.18.1 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.18.2` — Atomic Timer, Activity, And Work Commit Family
+
+Status: planned.
+
+Setup: finalize a discriminated `AtomicWorkCommitBundle` family for command
+(`0.16.1`), consumer (`0.17.1`), scheduled timer, workflow activity completion,
+and poison/dead-letter transitions. Every applicable variant binds tenant,
+work/message/timer/activity identity and input digest, current fencing token,
+expected stream versions, events, command/inbox/timer/activity receipt,
+mandatory audit intent, outbox, integrity commitment, uniqueness claims, and
+the typed consumed `0.18.1` quota reservation. Timer firing and completion,
+activity completion, fence validation, and poison/dead-letter movement occur in
+the same transaction as their effects.
+
+Goal: prevent retries, lease loss, or crashes from separating asynchronous work
+completion evidence from the effects it emits.
+
+Deliverables: versioned discriminated bundle model and canonical codec, shared
+validation laws, atomic memory implementation, capability negotiation profile,
+timer/activity/poison receipt types, dead-letter evidence, and deterministic
+failure/interleaving harness. Phase G workflow workers later specialize the
+activity payload without weakening this commit boundary.
+
+Verification: independently omit or split every variant component; crash
+between timer fire/completion, activity effect/receipt, inbox/dead-letter
+transition, fence check/commit, and quota consume/effect; replay stale fencing
+tokens; redeliver poison work; race cancellation/lease loss; and run rollback,
+recovery, model, state-machine, and property tests.
+
+Exit criteria: every supported asynchronous effect uses one negotiated atomic
+variant, stale/unfenced work cannot commit, and adapters unable to preserve a
+variant report it unsupported.
+`v0.18.2 implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface
 
 Status: planned; blocked until this milestone approves an implementation-
 admission record for every hash, signing, KMS, and timestamp implementation.
 
 Setup: bind tenant, partition, stream, sequence, event/schema IDs, payload digest,
-the `0.16.1` audit-intent/receipt/commit digests, predecessor, and key ID; define
-domain-stream and denial-only audit sequences, partition Merkle commitments,
-external signed anchors, checkpoint cadence, rotation, independent timestamp
-option, and limits.
+the `0.18.2` work-variant/audit-intent/receipt/commit digests, predecessor, and
+key ID; define domain-stream and denial-only audit sequences, partition Merkle
+commitments, external signed anchors, checkpoint cadence, rotation, independent
+timestamp option, and limits.
 
 Goal: make event deletion, replacement, and reordering detectable.
 

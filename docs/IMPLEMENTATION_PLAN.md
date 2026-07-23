@@ -38,6 +38,12 @@ planes. All fact-bearing domains reuse the shared N1 provenance, correction,
 confidence, and four-clock vocabulary rather than creating local substitutes.
 Semantic index storage and embedding generation are independently replaceable
 and independently admitted.
+Every milestone that creates or changes tenant-bearing durable, cached, indexed,
+backed-up, or external-copy state must update the `0.51.2`
+`TenantDataSurface` registry and lifecycle tests before exit. This is separate
+from authority-interface registration. Every asynchronous state effect must use
+the applicable `0.18.2` command/consumer/timer/activity/poison atomic variant;
+best-effort receipts are forbidden.
 
 ## Universal Verification And Exit
 

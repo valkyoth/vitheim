@@ -42,7 +42,9 @@ audit decision.
   AI context, audit, and exports.
 - Transactional event/outbox append, inbox deduplication, expected versions,
   leases, poison handling, bounded retries, and backpressure.
-- Capability-limited plugins and integrations; opaque secret handles.
+- Capability-limited plugins and integrations; opaque secret handles and
+  host-brokered authenticated operations; plaintext credentials never enter
+  Wasm guest memory.
 - Tamper-evident event and evidence history with independently stored signed
   checkpoints.
 - Tested backup/restore, projection/search rebuild, workflow continuation,
@@ -55,4 +57,3 @@ Critical and high findings block release. Medium and lower findings require
 remediation or an explicit, scoped, time-bounded acceptance with owner,
 compensating controls, review date, and expiry. No acceptance may waive tenant
 isolation, audit immutability, or legal obligations.
-

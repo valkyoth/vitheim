@@ -141,7 +141,9 @@ Status: planned. Setup: draft/review/publish, audience, safe content, versions, 
 ## `0.100.0` — Unified Search Conformance Suite
 Status: planned. Setup: register every search interface in the `0.58.0`
 authority/tenant registry and enumerate API/read/search/export visibility across
-identities, fields, history, graph, lag, and Phase E/H fake-port contracts. Goal:
+identities, fields, history, graph, lag, and Phase E/H fake-port contracts;
+verify `0.51.2` lifecycle registration for every lexical, vector, embedding,
+facet, saved-view, cache, and rebuild surface. Goal:
 prove authorization equivalence and replace earlier fakes with real integration.
 Deliverables: generated corpus, differential harness, ITSM/SecOps integration
 retests, and coverage report. Verification: all engines, rebuilds, revocations,

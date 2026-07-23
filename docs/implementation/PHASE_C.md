@@ -5,10 +5,10 @@ adapter requires an independently approved implementation-admission record
 before code begins. The default `1.0.0` target is in-memory for semantics,
 SQLite for single-node, and PostgreSQL for HA; MySQL, MongoDB, and SurrealDB are
 experimental unless `0.140.2` promotes an evidenced profile.
-Every database profile must implement the complete negotiated `0.16.1`
-`AtomicCommitBundle` and every other mandatory semantic port claimed for that
-profile, or fail startup capability negotiation. No adapter may emulate a
-missing atomic component with a later best-effort write.
+Every database profile must implement every applicable negotiated `0.18.2`
+`AtomicWorkCommitBundle` variant and every other mandatory semantic port claimed
+for that profile, or fail startup capability negotiation. No adapter may
+emulate a missing atomic component with a later best-effort write.
 
 ## `0.21.0` — Storage Capability Negotiation
 
@@ -40,8 +40,10 @@ Goal: make production-support claims depend on identical observable behavior.
 
 Deliverables: reusable adapter harness, mandatory capability matrix, randomized
 state machine, machine-readable conformance report, and destructive reference
-adapters that each omit or split one `0.16.1` bundle component: events, head,
-receipt, audit intent, outbox, commitment, uniqueness claim, or consumed quota.
+adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
+poison bundle component: inbound or work receipt, events/head, fence validation,
+audit intent, outbox, commitment, uniqueness claim, consumed quota, timer
+completion, activity completion, or dead-letter transition.
 
 Verification: prove every deliberately incomplete bundle adapter and adapters
 that lose snapshots, scheduler state, quota state, rejection receipts, audit
@@ -84,7 +86,7 @@ Record the version-bound implementation admission before adapter code begins.
 
 Goal: establish the deepest-tested reference production backend.
 
-Deliverables: complete `0.16.1` atomic-bundle adapter plus journal, projection,
+Deliverables: complete `0.18.2` atomic work-bundle variants plus journal, projection,
 audit authority, rejection receipt, outbox, inbox, lease/scheduler, durable
 quota, snapshot, integrity commitment, and configuration adapters; migrations,
 operator guide, backup/restore, and observability. Startup fails capability
@@ -254,7 +256,9 @@ scans prove plaintext does not enter prohibited sinks.
 
 Exit criteria: each supported platform states its exact memory assurance and
 limitations, and no secret can enter audit, telemetry, crash reports, plugin
-linear memory, or durable configuration through a supported API. `v0.28.3
+linear memory, or durable configuration through a supported API. Integrations
+requiring plaintext run only as separately isolated hosted profiles and are not
+ordinary Wasm plugins. `v0.28.3
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.29.0` — Migration Registry And Resumable Migrations
@@ -301,7 +305,8 @@ Status: planned.
 
 Setup: define queue/topic identity, tenant scope, ordered/unordered semantics,
 enqueue transaction, visibility lease/fencing, retry/backoff, dead-letter,
-priority/fairness, payload references, cancellation, drain, and quotas.
+priority/fairness, payload references, cancellation, drain, quotas, and exact
+mapping to the `0.18.2` consumer/timer/activity/poison atomic variants.
 
 Goal: own an HA-capable durable queue profile without requiring a separate
 message broker for correctness.
@@ -309,7 +314,8 @@ message broker for correctness.
 Deliverables: project-owned queue port, journal/outbox-backed PostgreSQL adapter,
 memory fake, worker protocol, capability report, and operational metrics.
 
-Verification: enqueue/commit crashes, duplicate delivery, stale ack, lease loss,
+Verification: enqueue/commit crashes, duplicate delivery, receipt/effect split,
+stale ack/fence, lease loss, dead-letter/effect split, quota/effect split,
 poison loops, starvation, cross-tenant routing, sensitive payload leakage,
 partition/failover, drain/restart, and model/conformance tests pass.
 

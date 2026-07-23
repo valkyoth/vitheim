@@ -31,11 +31,16 @@ All notable Vitheim changes are documented here. The format follows
   federation protocol evidence, assigning every intended interchange/semantic
   search adapter, and adding typed on-call, paging, notification, SLO,
   service-health, and status-communication capabilities.
-- Incorporated the latest gap review with a complete atomic commit bundle,
+- Incorporated the latest gap review with atomic command commit semantics,
   shared early provenance/four-clock primitives, in-process secret handling,
   workload authentication, production customer-measurement/paging/status paths,
   enforced threat-intelligence markings, a conditional concrete CMDB connector,
   and separately governed embedding generation. Narrowed syslog to authenticated
   alert-bearing input and made SCIM direction, STIX publication, SIEM/detection,
   and CMDB support explicit pre-production decisions.
+- Closed the final architectural gap review with atomic consumer and fenced
+  timer/activity/poison commit variants, authoritative measurement rollups, a
+  mandatory tenant data-surface lifecycle registry, an external-issuer OAuth
+  resource-server profile, strict no-plaintext-credentials-in-Wasm enforcement,
+  and a governed external identity-link lifecycle.
 - Added local and GitHub verification gates without a crate publication path.

@@ -61,7 +61,8 @@ authorized by its source organization.
 Deliverables: shared-space aggregate, remote-resource reference/projection,
 policy-filtered publication/subscription ports, participant/field/action
 manifests, authorization-intersection evaluator/explanation, source-of-truth
-indicators, consistency/lag markers, UI/API views, and lifecycle runbook.
+indicators, consistency/lag markers, UI/API views, `0.51.2` lifecycle entries
+for every remote projection/cache/external copy, and lifecycle runbook.
 
 Verification: hidden field/count/attachment leakage, resource substitution,
 participant injection, stale policy, home-authority confusion, cross-space
@@ -158,9 +159,9 @@ deployments and can be completely disconnected without corrupting local truth.
 
 Deliverables: multi-instance adversarial harness, generated authorization
 registry cases, protocol compatibility corpus, failure/recovery simulator,
-revocation and data-disposition verifier, inter-organization audit report,
-support matrix, retained-copy limitation statement, and joint incident/
-offboarding runbooks.
+complete `0.51.2` federation-surface inventory, revocation and
+data-disposition verifier, inter-organization audit report, support matrix,
+retained-copy limitation statement, and joint incident/offboarding runbooks.
 
 Verification: twin organizations/tenants with colliding IDs, malicious peer,
 compromised key/admin/plugin, protocol skew/downgrade, partitions/reordering,

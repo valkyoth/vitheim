@@ -28,15 +28,26 @@ Status: planned. Setup: capability calls, effect IDs, authorization, idempotency
 Status: planned. Setup: manifests bind plugin digest, tenant, instance, action,
 target, expiry, nonce, and policy version; opaque authenticated handles recheck
 all bindings/current policy at redemption. External KMS/secret service retains
-master keys, and brokered operations are preferred over plaintext release.
+master keys. Plaintext credentials never enter Wasm guest linear memory.
+Connectors use host-brokered authenticated HTTP, request signing, token refresh,
+HMAC/signature generation, client-certificate operations, and secret-derived
+header injection; the guest receives only opaque handles and bounded
+non-sensitive results. An integration that truly requires raw secret access
+must run as a separately isolated hosted-connector profile with its own
+milestone/admission evidence and is excluded from ordinary Wasm/plugin security
+claims.
 Define plugins as stateless by default; any state capability is explicitly
 tenant/plugin/instance namespaced, schema-versioned, quota-bound, exportable,
-erasable, and migratable. Goal: least-authority plugins. Deliverables:
-manifest/evaluator, secret operation broker, and optional plugin-state port.
+erasable, migratable, and registered in `0.51.2`. Goal: least-authority plugins. Deliverables:
+manifest/evaluator, non-extractable secret-operation broker, authenticated HTTP/
+signing/token/certificate host operations, and optional plugin-state port.
 Verification: forging, scope escalation, state namespace collision, quota/
-migration/deletion failure, extraction, reuse,
-stale/revoked handles and policy change pass. Exit criteria: plaintext secrets
-never enter guest memory unless explicitly unavoidable/reviewed. `v0.114.0 implementation stop reached. Run pentest for this exact commit.`
+migration/deletion failure, handle extraction/reuse, guest-memory secret
+canaries, broker confused deputy, derived-header leakage, stale/revoked handles,
+and policy change pass. Exit criteria: plaintext credentials never enter guest
+memory through any supported plugin API; exceptions are separate hosted
+products and cannot inherit this plugin-security claim. `v0.114.0
+implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.115.0` — Resource Metering
 Status: planned. Setup: per-plugin/tenant instructions and host-call work,
@@ -90,11 +101,15 @@ capability approval. `v0.116.1 implementation stop reached. Run pentest for this
 ## `0.117.0` — Connector SDK And Testkit
 Status: planned. Setup: `0.52.1` service-principal/workload-token identity,
 connector capabilities, non-extractable auth handles, cursor/idempotency,
-schemas, rate/backoff, and test simulation. Goal: safe integration development.
-Deliverables: private SDK/testkit and conformance suite. Verification: principal/
-tenant/audience confusion, SSRF, token replay, impersonation, pagination loops,
-secret logs, and malformed remote data pass. Exit criteria: connectors pass
-conformance before activation. `v0.117.0 implementation stop reached. Run pentest for this exact commit.`
+schemas, rate/backoff, host-brokered authenticated operations, and test
+simulation; the SDK exposes no raw-secret read. Goal: safe integration
+development. Deliverables: private SDK/testkit, broker-operation mocks, guest-
+memory canary harness, and conformance suite. Verification: principal/tenant/
+audience confusion, SSRF, token replay, impersonation, handle extraction,
+plaintext credential in guest memory, pagination loops, secret logs, and
+malformed remote data pass. Exit criteria: connectors pass conformance before
+activation and cannot request plaintext credentials. `v0.117.0 implementation
+stop reached. Run pentest for this exact commit.`
 
 ## `0.118.0` — Mail, Webhook, And Collaboration Connectors
 Status: planned. Setup: sender verification, signed webhooks, deny-by-default
@@ -166,12 +181,16 @@ remain authoritative. `v0.118.2 implementation stop reached. Run pentest for thi
 
 ## `0.119.0` — Outbound-Only Integration Agent
 Status: planned. Setup: stable device plus `0.52.1` service-principal identity,
-enrollment, audience-bound mTLS/workload tokens, capability policy, encrypted
-spool, update, revoke, compromise response, and no inbound listener. Goal:
-reach private systems safely. Deliverables: agent protocol/runtime and operator
-controls. Verification: takeover, identity cloning/remapping, token/spool
-extraction, replay, audience/scope inflation, downgrade, revocation, and
-offline limits pass. Exit criteria: agent compromise is bounded and revocable.
+separate local enrollment challenge, device key attestation/profile,
+short-lived device/workload credential, audience-bound mTLS, capability policy,
+encrypted spool, update, revoke, compromise response, and no inbound listener.
+This is not an OAuth authorization-server or token-endpoint claim. Goal: reach
+private systems safely. Deliverables: agent enrollment/credential protocol,
+runtime, and operator controls. Verification: takeover, identity cloning/
+remapping, enrollment replay, credential/spool extraction, audience/scope
+inflation, downgrade, revocation, and offline limits pass. Exit criteria: agent
+compromise is bounded and revocable without making Vitheim a general OAuth
+issuer.
 `v0.119.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.120.0` — Plugin Compatibility And Isolation Suite

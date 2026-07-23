@@ -34,12 +34,22 @@ Verification:
 - Independent crypto review, plugin escape and AI injection/tool-abuse suites,
   storage conformance, migration/restore/rebuild/workflow continuation tests.
 - Crash-point proof that protected commands cannot commit without authoritative
-  audit intent; every `0.16.1` bundle component is atomic and integrity linked;
-  denial-only audit chains anchor; protected reads/downloads cannot release
-  bytes before audit receipt; streaming completion/abort reconciles.
+  audit intent; every applicable `0.18.2` command/consumer/timer/activity/
+  poison bundle component is atomic and integrity linked; fence and quota
+  consumption share the effect transaction; denial-only audit chains anchor;
+  protected reads/downloads cannot release bytes before audit receipt;
+  streaming completion/abort reconciles.
 - Workload authentication, customer-observation storage, paging delivery,
   hosted status publication, in-process secret handling, and any selected CMDB
   connector pass their exact production-profile failure and recovery suites.
+- The tenant data-surface registry is complete for every store, cache, index,
+  backup, and external copy; closure exercises fail visibly on missing
+  disposition. Historical SLOs reproduce from retained raw observations or
+  admissible integrity-bound rollups.
+- Workload authentication uses the selected external-issuer OAuth resource-
+  server profile; Vitheim exposes no OAuth token endpoint or client-private-key
+  custody. Wasm guest-memory canaries confirm no plaintext credential enters
+  any supported plugin path.
 - Reproducible builds, clean install/upgrade/rollback/failover, load/soak/chaos,
   secure defaults, accessibility, localization, and disaster-recovery exercises.
 - Decision-record conformance proves each shipped artifact and deployment

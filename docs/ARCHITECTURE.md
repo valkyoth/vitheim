@@ -44,10 +44,12 @@ authorization semantics.
    not hard-coded shortcuts around policy.
 7. AI is optional, untrusted, provenance-recorded advice with no implicit
    authority and no direct storage access.
-8. Storage adapters implement the complete versioned `AtomicCommitBundle` plus
-   snapshots, projections, scheduler/quota state, checkpoints, and idempotency—
-   not generic CRUD or a weaker subset exposed to domain code. An adapter that
-   cannot commit the mandatory bundle fails capability negotiation.
+8. Storage adapters implement every applicable versioned
+   `AtomicWorkCommitBundle` variant—command, consumer, timer, activity, and
+   poison/dead-letter—plus snapshots, projections, scheduler/quota state,
+   checkpoints, and idempotency. An adapter that cannot atomically validate
+   fencing and commit receipt/effects/audit/outbox/integrity/quota fails
+   capability negotiation.
 9. Every untrusted parser, query, workflow, plugin, attachment, import, report,
    and export has explicit size, depth, time, memory, and work budgets.
 10. Every important result is explainable from commands, events, policy,
@@ -79,6 +81,18 @@ authorization semantics.
     perfect erasure.
 20. Semantic vector storage and embedding generation are separate ports and
     admission boundaries; production similarity requires evidence for both.
+21. Every tenant-bearing durable, cached, indexed, backed-up, or externally
+    copied surface registers its lifecycle contract. Export, hold, residency,
+    topology migration, erasure, key destruction, restore, and closure cannot
+    silently omit a surface.
+22. Vitheim is an OAuth resource server for workload authentication at `1.0.0`;
+    an admitted external issuer authenticates clients and issues tokens.
+    Operating an OAuth authorization server requires a separate future
+    milestone and is not implied by agent enrollment.
+23. Plaintext credentials never enter Wasm guest memory. Plugins use opaque
+    handles and host-brokered authenticated operations; an unavoidable
+    plaintext integration is a separately isolated hosted profile outside the
+    ordinary plugin claim.
 
 ## Layers
 

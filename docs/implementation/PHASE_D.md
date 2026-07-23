@@ -148,7 +148,9 @@ health/SLI observation API, source/workload identity, schema/unit/version,
 idempotency and deduplication, `0.20.3` temporal provenance, late-arrival
 watermarks, correction/supersession, append-only storage, retention,
 downsampling, query windows, quotas, partitions, backpressure, deletion/hold,
-and replay/rebuild behavior.
+and replay/rebuild behavior. Until `0.38.3`, downsampled data is a disposable
+performance projection and cannot support an authoritative SLO result after
+its raw observations expire.
 
 Goal: give `0.38.1` calculations and later service health one supported
 production measurement path without misusing logs, metrics, or traces emitted
@@ -171,6 +173,42 @@ aggregation history; `0.20.2` telemetry is never accepted as a shortcut. It
 remains non-production until the real `0.52.1`/`0.60.0` identity and policy
 integration is retested by `0.82.1`.
 `v0.38.2 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.38.3` — Measurement Retention And Authoritative Rollups
+
+Status: planned.
+
+Setup: retain raw observations for at least the longest supported raw SLO
+window, correction horizon, lateness bound, investigation period, and hold
+obligation. Before permitted raw expiry, create immutable authoritative rollup
+facts rather than promoting mutable time-series projections. Bind each rollup
+to tenant/indicator, exact input interval and watermark, input count and
+complete/partial/unknown state, source-observation Merkle or manifest digest,
+calculation/schema version, unit and aggregation method, resolution/fidelity,
+retention/hold policy, correction/supersession identity, late-data
+recalculation behavior, and the exact SLO window classes allowed to consume it.
+
+Goal: preserve reproducible historical SLO and error-budget authority when
+retention permits raw customer observations to expire.
+
+Deliverables: authoritative rollup aggregate/events, raw-to-rollup manifest and
+integrity proof, versioned rollup calculator, admissible-window registry,
+expiry preflight, late-data supersession process manager, reconciliation/
+recalculation tooling, memory and PostgreSQL adapters, restore/rebuild rules,
+and operator retention guide.
+
+Verification: expire raw data before rollup commitment, mutate an existing
+rollup, omit or reorder source observations, forge completeness/count/watermark,
+change unit/method/version, consume insufficient resolution, late data after
+expiry, overlapping/supersession races, hold/erasure conflict, digest mismatch,
+restore without manifests, long-window recalculation, and raw-versus-rollup
+differential/property tests pass.
+
+Exit criteria: every supported historical SLO window is reproducible from
+retained raw facts or an explicitly admissible integrity-bound rollup;
+otherwise its result is unknown/unavailable rather than silently calculated
+from mutable aggregates.
+`v0.38.3 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.39.0` — Approval And Notification Foundations
 Status: planned.
