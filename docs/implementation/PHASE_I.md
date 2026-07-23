@@ -12,53 +12,95 @@ Status: planned. Setup: service identity/type, owner, criticality, offerings, li
 
 Status: planned.
 
-Setup: define service/component health state vocabulary, source identity and
-trust, observation/business-valid/recorded/checkpoint times, availability
-intervals, maintenance/dependency context, confidence, corrections/supersession,
-manual override authority/expiry, incident/change links, `0.38.1` SLI/SLO/error-
-budget bindings, aggregation rules, audience classification, and unknown state.
+Setup: define service/component health state vocabulary over `0.20.3`
+provenance/four-clock/correction/confidence primitives and the authenticated
+`0.38.2` customer-measurement plane; define availability intervals,
+maintenance/dependency context, manual override authority/expiry,
+incident/change links, `0.38.1` SLI/SLO/error-budget bindings, aggregation
+rules, audience classification, and unknown state.
 
 Goal: represent service health as provenance-aware temporal facts rather than a
 mutable green/yellow/red field or direct copy of monitoring output.
 
-Deliverables: health-observation and correction models, service-health
-projection/aggregate rules, availability calculator, SLO binding, explanation
-timeline, source port/fake, Phase H fake-versus-real health integration, and
-internal/public DTO contracts.
+Deliverables: typed health-observation payload and service-health projection/
+aggregate rules, availability calculator, SLO binding, explanation timeline,
+`0.38.2` measurement-source adapter plus fake, Phase H fake-versus-real health
+integration, and internal/public DTO contracts.
 
 Verification: source spoofing, false healthy/recovered state, stale observations,
 clock/interval overlap, dependency cycles, confidence/override inflation,
 maintenance masking, unknown-to-healthy fail-open, hidden component leakage,
 rebuild permutations, alert/incident/status-publication feedback loops, and
-SLO/health/Phase H differential tests pass.
+SLO/health/Phase H differential tests pass. The hosted `0.38.2` observation API
+is retested with real `0.52.1` workload identities and the `0.60.0` policy
+matrix; revoked or wrong-audience sources fail closed.
 
 Exit criteria: every health/availability claim cites source facts, corrections,
-aggregation/SLO policy, freshness, uncertainty, and audience. `v0.82.1
+aggregation/SLO policy, freshness, uncertainty, and audience, and the selected
+hosted measurement profile has complete identity/authorization evidence.
+`v0.82.1
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.83.0` — Typed Relationship Graph
 Status: planned. Setup: edge vocabulary, direction, cardinality, temporal validity, provenance, policy, traversal bounds. Goal: first-class safe relationships. Deliverables: relationship aggregate and graph port. Verification: unauthorized edges, cycles, hidden endpoints, duplicate/contradictory edges, exhaustion pass. Exit criteria: every edge is tenant-bound and evidenced. `v0.83.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.84.0` — Provenance And Confidence
-Status: planned. Setup: source identity, observed/recorded times, evidence,
-confidence derived only from versioned trust policy, expiry, immutable source
-facts, and explicit correction/supersedes identities. Goal: distinguish facts
-from assertions. Deliverables: fact envelope and provenance explanations.
+Status: planned. Setup: specialize the shared `0.20.3` source, observation,
+provenance, correction/supersession, four-clock, and policy-bound confidence
+primitives for asset, configuration, software, and service facts; add evidence,
+expiry, and domain-specific source trust without redefining the shared law.
+Goal: distinguish asset/service facts from assertions. Deliverables: typed
+asset/service fact envelopes, provenance explanations, and cross-domain
+conformance fixtures.
 Verification: impersonation, direct confidence inflation, detached evidence,
 destructive correction, stale facts, conflicting sources pass. Exit criteria: no reconciled value loses origin. `v0.84.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.85.0` — Bitemporal Facts
-Status: planned. Setup: preserve source-observed time, business-valid intervals,
-journal-recorded time, and projection-checkpoint time; define corrections,
-overlap policy, ordering, clock quality, and explicit as-known/as-valid query
-semantics. Goal: preserve what was asserted, true, recorded, and projected.
-Deliverables: temporal model/operators and four-clock query fixtures.
+Status: planned. Setup: apply the `0.20.3` four-clock and correction semantics
+to asset/service overlap, ordering, and explicit as-known/as-valid queries;
+define only domain-specific interval rules and clock-quality requirements.
+Goal: preserve what was asserted, true, recorded, and projected. Deliverables:
+asset/service temporal operators and four-clock query fixtures shared with
+SLI, health, alert, vulnerability, and evidence facts.
 Verification: clock collapse, historical rewrite, invalid/overlap intervals,
 uncertain boundaries, late facts, checkpoint lag and deterministic queries pass.
 Exit criteria: corrections append rather than erase history. `v0.85.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.86.0` — Discovery And Import Interface
 Status: planned. Setup: connector identity, batches, schemas, quotas, checkpoints, deletion claims, quarantine. Goal: ingest discovery as untrusted facts. Deliverables: discovery port/import pipeline. Verification: poisoned source, oversized/deep import, replay, partial batch, forged deletion, parser fuzz pass. Exit criteria: discovery never directly overwrites authority. `v0.86.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.86.1` — Concrete CMDB Discovery Connector
+
+Status: conditional planned milestone. Before code, select one concrete CMDB
+product/API/version demanded by an intended production profile and admit its
+exact HTTP/TLS/client/authentication dependencies; if none is justified, record
+the profile deferred at `0.140.9` and do not create a generic compatibility
+claim.
+
+Setup: define `0.52.1` workload identity, endpoint/tenant/domain binding,
+supported object/relationship classes, immutable external identities, schema
+and pagination/delta versions, checkpoints, provenance, deletion/tombstone
+claims, reconciliation precedence, field classification, quotas, rate limits,
+retry/backoff, raw evidence retention, and outage/resync behavior.
+
+Goal: prove the `0.86.0` discovery contract against one real CMDB boundary
+without allowing the external CMDB to overwrite Vitheim authority.
+
+Deliverables: selected connector adapter and mapping pack, capability probe,
+credential broker integration, staged import/quarantine, checkpoint/reconcile
+state, fake server and recorded conformance corpus, drift monitor, deployment
+guide, and explicit unsupported object/API matrix.
+
+Verification: endpoint/tenant/account confusion, external-ID reuse/collision,
+schema/type coercion, poisoned relationships, pagination/delta gaps, forged
+deletion, stale resurrection, field/credential leakage, SSRF/redirect,
+rate/retry storms, partial batch, full resync, source drift, parser fuzzing,
+load, and fake-versus-live-contract tests pass.
+
+Exit criteria: only the exact evidenced CMDB profile is named supported; absent
+a selected connector, `1.0.0` truthfully exposes the generic discovery API and
+Tenable integration without claiming CMDB compatibility. `v0.86.1
+implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.87.0` — Reconciliation Engine
 Status: planned. Setup: source precedence, freshness/confidence, versioned/scoped

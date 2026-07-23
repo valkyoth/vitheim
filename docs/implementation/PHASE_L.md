@@ -88,7 +88,13 @@ discovery to installed state, and activation still requires explicit current
 capability approval. `v0.116.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.117.0` — Connector SDK And Testkit
-Status: planned. Setup: connector capabilities, auth handles, cursor/idempotency, schemas, rate/backoff, test simulation. Goal: safe integration development. Deliverables: private SDK/testkit and conformance suite. Verification: SSRF, replay, impersonation, pagination loops, secret logs, malformed remote data pass. Exit criteria: connectors pass conformance before activation. `v0.117.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: `0.52.1` service-principal/workload-token identity,
+connector capabilities, non-extractable auth handles, cursor/idempotency,
+schemas, rate/backoff, and test simulation. Goal: safe integration development.
+Deliverables: private SDK/testkit and conformance suite. Verification: principal/
+tenant/audience confusion, SSRF, token replay, impersonation, pagination loops,
+secret logs, and malformed remote data pass. Exit criteria: connectors pass
+conformance before activation. `v0.117.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.118.0` — Mail, Webhook, And Collaboration Connectors
 Status: planned. Setup: sender verification, signed webhooks, deny-by-default
@@ -105,11 +111,12 @@ Status: planned; blocked until exact Microsoft Defender XDR/Microsoft Sentinel
 API profiles, authentication flow, client/TLS implementation, permissions,
 licensing, maintenance, and rate-limit semantics are admitted.
 
-Setup: map provider tenant/workspace, alert/incident/entity/vulnerability IDs,
-delta cursors and webhooks, raw evidence retention, schema versions, paging,
-throttling/backoff, deletion/update claims, asset/identity links, severity/status,
-checkpoint recovery, and optional outbound actions. Outbound acknowledgement or
-case updates require separate capabilities and current policy.
+Setup: bind one `0.52.1` connector service principal and audience to each
+provider tenant/workspace; map alert/incident/entity/vulnerability IDs, delta
+cursors and webhooks, raw evidence retention, schema versions, paging,
+throttling/backoff, deletion/update claims, asset/identity links, severity/
+status, checkpoint recovery, and optional outbound actions. Outbound
+acknowledgement or case updates require separate capabilities and current policy.
 
 Goal: let a governed WASM connector ingest Microsoft security alerts, incidents,
 entities, and relevant exposure facts into Vitheim without granting remote data
@@ -134,10 +141,11 @@ Status: planned; blocked until exact Tenable product/API profiles,
 authentication, client/TLS implementation, permissions, licensing, maintenance,
 export/job, pagination, and rate-limit semantics are admitted.
 
-Setup: map source tenant/container, asset and agent identity, network/cloud
-identifiers, plugin/finding identity, severity and scoring versions, first/last
-seen/fixed/reopened state, evidence, scan coverage, cursor/export checkpoints,
-asset reconciliation, deletion claims, and raw payload retention.
+Setup: bind one `0.52.1` connector service principal and audience to each
+source tenant/container; map asset and agent identity, network/cloud
+identifiers, plugin/finding identity, severity and scoring versions, first/
+last seen/fixed/reopened state, evidence, scan coverage, cursor/export
+checkpoints, asset reconciliation, deletion claims, and raw payload retention.
 
 Goal: ingest Tenable assets and vulnerability findings into the typed
 vulnerability system and unified graph without overwriting authoritative asset
@@ -157,7 +165,14 @@ the correct assets; local priority, exception, remediation, and closure rules
 remain authoritative. `v0.118.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.119.0` — Outbound-Only Integration Agent
-Status: planned. Setup: device identity, enrollment, mTLS, capability policy, encrypted spool, update, revoke, no inbound listener. Goal: reach private systems safely. Deliverables: agent protocol/runtime and operator controls. Verification: takeover, identity cloning, spool extraction, replay, downgrade, offline limits pass. Exit criteria: agent compromise is bounded and revocable. `v0.119.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: stable device plus `0.52.1` service-principal identity,
+enrollment, audience-bound mTLS/workload tokens, capability policy, encrypted
+spool, update, revoke, compromise response, and no inbound listener. Goal:
+reach private systems safely. Deliverables: agent protocol/runtime and operator
+controls. Verification: takeover, identity cloning/remapping, token/spool
+extraction, replay, audience/scope inflation, downgrade, revocation, and
+offline limits pass. Exit criteria: agent compromise is bounded and revocable.
+`v0.119.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.120.0` — Plugin Compatibility And Isolation Suite
 Status: planned. Setup: ABI/runtime/version matrix, tenants, concurrent plugins,

@@ -12,7 +12,19 @@ impersonation, authority wiring, fallback, timeout, malformed output and budgets
 pass. Exit criteria: no domain API depends on a provider type. `v0.121.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.122.0` — Classification, Redaction, And Residency Gateway
-Status: planned. Setup: data classes, allowed purpose/provider/region, field redaction, retention, audit. Goal: policy-gate every model request. Deliverables: broker gateway and decision record. Verification: hidden-field/region leak, encoding bypass, derived data, logging, fallback pass. Exit criteria: denied data never reaches providers. `v0.122.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned; any external AI or embedding provider is blocked until its
+exact client/TLS/model/profile, retention/training terms, maintenance, license,
+and failure semantics are admitted. Setup: data classes, allowed purpose/
+provider/region, field redaction, retention, audit, and the `0.98.2`
+`EmbeddingGenerator` request/provenance contract. Goal: policy-gate every model
+or external embedding request. Deliverables: broker gateway and decision
+record, selected external embedding adapter when admitted, and provider-policy
+enforcement. Verification: hidden-field/region leak, encoding bypass, derived
+data, logging, provider retention/training mismatch, cancellation after
+dispatch, partial batch, outage/no-fallback, and external-versus-fake
+differentials pass. Exit criteria: denied data never reaches providers and no
+external embedding path bypasses the gateway. `v0.122.0 implementation stop
+reached. Run pentest for this exact commit.`
 
 ## `0.123.0` — Model, Prompt, And Purpose Registry
 Status: planned. Setup: immutable versions/digests, approval, compatibility, rollback, expiry. Goal: prevent hidden model/prompt changes. Deliverables: registry aggregate and activation flow. Verification: substitution, downgrade, unapproved purpose, stale model, rollback/audit pass. Exit criteria: inference cites exact approved versions. `v0.123.0 implementation stop reached. Run pentest for this exact commit.`
@@ -27,14 +39,16 @@ cross-tenant recall, truncation and unsafe rendering pass. Exit criteria:
 summaries never become record facts automatically. `v0.124.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.125.0` — Similarity And Duplicate Suggestions
-Status: planned; production enablement requires a passing `0.98.1` adapter or
-remains unavailable. Setup: tenant/policy filters before retrieval, exact hosted
-capability, model/index versions, confidence, feedback, and no lexical-to-
-semantic policy fallback. Goal: advisory duplicate discovery. Deliverables:
-candidate service and explanations. Verification: cross-tenant similarity,
-poisoning, hidden candidate, adversarial text, stale deletion, adapter outage/
-disable pass. Exit criteria: users independently confirm links and production
-similarity cannot activate without hosted isolation evidence. `v0.125.0
+Status: planned; production enablement requires passing `0.98.1` index and
+`0.98.2` generator evidence or remains unavailable. Setup: tenant/policy filters
+before retrieval, exact hosted capabilities, generator/model/tokenizer/chunk/
+index versions, confidence, feedback, and no lexical-to-semantic policy
+fallback. Goal: advisory duplicate discovery. Deliverables: candidate service
+and explanations. Verification: cross-tenant similarity, generation/provenance
+substitution, poisoning, hidden candidate, adversarial text, stale deletion,
+generator/index outage/disable pass. Exit criteria: users independently confirm
+links and production similarity cannot activate without both generation and
+hosted isolation evidence. `v0.125.0
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.126.0` — Triage And Next-Action Suggestions

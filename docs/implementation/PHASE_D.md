@@ -112,10 +112,12 @@ Exit criteria: identical pinned calendars yield identical results. `v0.38.0 impl
 Status: planned.
 
 Setup: distinguish internal service-level indicators/objectives and error
-budgets from customer-facing SLA commitments. Define indicator identity/unit/
-direction, good/valid event criteria, source/provenance, correction, rolling/
-calendar windows, objective versions, missing-data policy, burn-rate windows,
-budget consumption/reset, maintenance exclusions, and calculation budgets.
+budgets from customer-facing SLA commitments. Reuse the `0.20.3` observation,
+provenance, four-clock, correction/supersession, and policy-bound confidence
+primitives. Define indicator identity/unit/direction, good/valid event criteria,
+rolling/calendar windows, objective versions, missing-data policy, burn-rate
+windows, budget consumption/reset, maintenance exclusions, and calculation
+budgets.
 
 Goal: model service reliability deterministically without treating monitoring
 data, SLOs, SLAs, or contractual penalties as interchangeable.
@@ -131,6 +133,44 @@ clock/DST boundaries, policy downgrade, long-range exhaustion, and properties pa
 Exit criteria: every SLO/error-budget result cites its exact observations,
 corrections, window, exclusions, and objective version. `v0.38.1 implementation
 stop reached. Run pentest for this exact commit.`
+
+## `0.38.2` — Customer-Service Measurement Plane
+
+Status: planned as an authenticated-source contract, storage adapter, and
+internal integration slice; production activation is additionally blocked
+until `0.52.1` workload authentication and `0.60.0` authorization conformance
+pass. The hosted storage and transport implementation is blocked until its
+exact database/client/TLS/profile admission is approved.
+
+Setup: keep customer-service observations structurally separate from Vitheim's
+own `0.20.2` operational telemetry. Define an authenticated tenant-scoped
+health/SLI observation API, source/workload identity, schema/unit/version,
+idempotency and deduplication, `0.20.3` temporal provenance, late-arrival
+watermarks, correction/supersession, append-only storage, retention,
+downsampling, query windows, quotas, partitions, backpressure, deletion/hold,
+and replay/rebuild behavior.
+
+Goal: give `0.38.1` calculations and later service health one supported
+production measurement path without misusing logs, metrics, or traces emitted
+to operate Vitheim itself.
+
+Deliverables: measurement-ingestion contract/application/HTTP crates, source
+authentication and registry, append-only observation-store port, memory oracle,
+PostgreSQL reference adapter, watermark/downsampling workers, correction API,
+query/read model, capability probes, migration/restore tooling, and runbook.
+
+Verification: source/tenant/unit/schema spoofing, replay and duplicate samples,
+out-of-order/late arrival, watermark races, destructive correction, retention/
+hold conflict, downsampling distortion, missing intervals, quota bypass,
+backpressure/drop accounting, partition/failover, restore/rebuild, load/soak,
+and memory-versus-hosted differential tests pass.
+
+Exit criteria: the storage and authenticated-source contract produces durable
+customer observations with reproducible correction, retention, watermark, and
+aggregation history; `0.20.2` telemetry is never accepted as a shortcut. It
+remains non-production until the real `0.52.1`/`0.60.0` identity and policy
+integration is retested by `0.82.1`.
+`v0.38.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.39.0` — Approval And Notification Foundations
 Status: planned.
@@ -214,6 +254,38 @@ policy/renderer differential tests pass.
 Exit criteria: each delivery or suppression explains the current preference,
 mandatory policy, quiet-hours decision, and any bounded emergency override.
 `v0.39.3 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.39.4` — Hosted Paging And Notification Delivery
+
+Status: planned; blocked until at least one exact production delivery provider,
+client/TLS/authentication profile, receipt semantics, maintenance, license, and
+failure contract are admitted.
+
+Setup: bind tenant, delivery intent, recipient endpoint, channel, provider
+account, idempotency key, expiry, payload classification, provider message ID,
+authenticated receipt, retry/backoff/reconciliation, cancellation, rate limits,
+credential rotation, outage/degraded policy, and regional/privacy constraints
+to `0.39.0–0.39.3`. Provider acknowledgement never substitutes for an
+authorized human acknowledgement.
+
+Goal: own at least one production paging channel and notification-delivery path
+instead of ending at provider-neutral ports and fakes.
+
+Deliverables: selected paging/notification adapter, credential broker binding,
+authenticated delivery/receipt codec, durable reconciliation worker, capability
+and health probes, outage simulator, fake-versus-hosted differential corpus,
+operator runbook, and explicit unsupported-channel matrix.
+
+Verification: provider/account/tenant confusion, forged or replayed receipts,
+credential leakage/rotation, duplicate delivery, acknowledgement confusion,
+retry storms, cancellation races, rate limiting, partial outage, stale receipt,
+payload/recipient leakage, provider failover without silent reroute, reconciliation,
+load, and disaster exercises pass.
+
+Exit criteria: every claimed production page has a bounded attempt history and
+authenticated provider disposition, while unknown delivery remains unknown and
+triggers the documented escalation/reconciliation policy. `v0.39.4
+implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.40.0` — Authenticated API And Service-Desk UI
 Status: planned; internal test slice only until Phase F identity passes.

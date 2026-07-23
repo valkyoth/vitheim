@@ -98,6 +98,38 @@ Exit criteria: every published statement identifies its approved audience,
 source facts, reviewer, version, time, and correction history without revealing
 unauthorized incident data. `v0.48.1 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.48.2` — Hosted Status Publication And Reconciliation
+
+Status: planned. The built-in hosted status API is the default production
+candidate; any external publication channel remains blocked until its exact
+client/TLS/authentication/profile and failure semantics are admitted.
+
+Setup: define separate internal, authenticated customer, and public status
+origins; immutable publication version, component/audience mapping, approval
+receipt, conditional write/idempotency, cache policy, subscription delivery,
+correction/retraction, authenticated channel receipt, retry/reconciliation,
+outage/degraded behavior, custom-domain/TLS, rate limits, and anti-enumeration.
+
+Goal: turn the `0.48.1` publication port and fake into a supported hosted status
+surface without exposing the private incident or service-health authority.
+
+Deliverables: policy-filtered built-in status API and read projection, static/
+cache representation with explicit freshness, authenticated administration
+transport, publication reconciler, subscription integration through `0.39.4`,
+optional admitted channel adapter, capability/health probes, DAST corpus,
+deployment guide, and outage runbook.
+
+Verification: unauthorized/premature publication, audience/component/tenant
+confusion, hidden-field and count leakage, stale cache/CDN, false success
+receipt, duplicate/out-of-order update, correction-history loss, provider
+outage/retry, subscription flood, domain/TLS takeover, restore/rebuild,
+accessibility, load, and fake-versus-hosted differential tests pass.
+
+Exit criteria: at least the selected built-in hosted profile publishes and
+corrects status with reproducible approval/source/receipt history; external
+channels are supported only when independently evidenced. `v0.48.2
+implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.49.0` — Postmortems And Corrective Actions
 Status: planned. Setup: define sensitive draft, contributors, evidence, review,
 publication audience, lessons, and linked tasks. Goal: durable learning without blame leakage.

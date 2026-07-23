@@ -42,10 +42,14 @@ Exit criteria: weaker isolation is rejected, not relabeled supported.
 
 Status: planned.
 Setup: compare exact OIDC conformance profiles/providers, WebAuthn level and
-attestation/counter policy, session stores, recovery, logout, and service identity.
+attestation/counter policy, session stores, recovery, logout, and the `0.52.1`
+machine-to-machine profiles. Review `private_key_jwt`/mTLS choice, workload
+token lifetime/audience/proof, credential rotation/revocation, and whether
+personal access tokens or static API keys remain disabled.
 Goal: revalidate and freeze production authentication profiles independently of authorization.
 Deliverables: selected issuer/discovery/PKCE/token/session/logout rules,
-WebAuthn RP/origin/challenge/credential rules, and unsupported combinations.
+WebAuthn RP/origin/challenge/credential rules, selected workload-auth profile,
+explicit PAT/API-key/token-exchange disposition, and unsupported combinations.
 Verification: protocol conformance, mix-up/replay/fixation/recovery, key rotation,
 enumeration, and degraded-provider behavior are independently reviewed.
 Exit criteria: production auth never falls back to the `0.40.0` test profile.
@@ -110,7 +114,8 @@ named SDK exception may change. `v0.140.7 implementation stop reached. Run pente
 Status: planned.
 Setup: compare disabled, advisory-only, and provider/model-specific profiles by
 purpose, tenant, classification, residency, retention, evaluation, contracts,
-and passing `0.98.1` hosted semantic-index evidence where similarity is enabled.
+and passing `0.98.1` hosted semantic-index plus `0.98.2` embedding-generator
+evidence where similarity is enabled.
 Goal: decide whether AI is disabled or supported in a bounded `1.0.0` profile.
 Deliverables: approved purposes/providers/models, no-fallback rules, broker
 identity/network isolation, evaluation thresholds, monitoring, and kill switch.
@@ -124,20 +129,29 @@ Exit criteria: absence of sufficient evidence selects disabled-by-default.
 
 Status: planned.
 Setup: inventory implemented and requested identity, vulnerability, SBOM,
-threat-intelligence, logging, webhook, and document interchange profiles plus
-their exact specification versions, extensions, codecs, vendor connector
-profiles (including selected Microsoft Defender/Sentinel and Tenable APIs),
-licenses, trust and update models.
+threat-intelligence, logging, webhook, discovery, and document interchange
+profiles plus their exact specification versions, extensions, codecs, vendor
+connector profiles (including selected Microsoft Defender/Sentinel, Tenable,
+and any `0.86.1` CMDB API), licenses, trust and update models. Explicitly decide
+inbound versus outbound SCIM, threat-intelligence ingestion versus STIX/TAXII
+publication, and whether raw log management or detection-rule authoring/testing
+remains outside the product boundary.
 Goal: freeze an explicit support/defer matrix rather than implying generic
 standards compatibility. This milestone cannot implement a missing profile.
-Deliverables: supported/deferred/rejected matrix for SCIM/SAML, CVSS/VEX,
-SPDX/CycloneDX, STIX/TAXII, syslog/webhook and any shipped profile; conformance
-corpora, version policy, admission records, implementing-milestone references,
-and truthful compatibility wording. Every profile without complete earlier
-implementation and pentest evidence is explicitly deferred.
+Deliverables: supported/deferred/rejected matrix for directional SCIM/SAML,
+CVSS/VEX, SPDX/CycloneDX, STIX/TAXII ingestion/publication, authenticated
+alert-bearing syslog/security webhooks, raw-log/SIEM detection features, CMDB
+discovery, and any shipped profile; conformance corpora, version policy,
+admission records, implementing-milestone references, and truthful
+compatibility wording. Every profile without complete earlier implementation
+and pentest evidence is explicitly deferred. The default `1.0.0` boundary
+defers general raw-log storage/query, detection-rule authoring/execution,
+outbound STIX/TAXII publication, the unselected SCIM direction, and an
+unimplemented CMDB connector.
 Verification: namespace/version/extension confusion, parser differentials,
 downgrade, signature/source spoofing, round trips, lossiness, bombs, tenant/
-policy mapping, and source-drift review pass for every selected profile.
+policy/marking mapping, directional-role confusion, high-volume capacity
+assumptions, and source-drift review pass for every selected profile.
 Exit criteria: `1.0.0` names only exact independently evidenced interchange
 profiles; generic family claims are forbidden. `v0.140.9 implementation stop
 reached. Run pentest for this exact commit.`

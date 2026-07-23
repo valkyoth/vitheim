@@ -156,6 +156,38 @@ Exit criteria: no successful protected mutation exists without its authoritative
 audit intent, and no rejected mutation produces business state or effects.
 `v0.16.0 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.16.1` — Complete Atomic Commit Bundle
+
+Status: planned.
+
+Setup: freeze one project-owned `AtomicCommitBundle` containing tenant and
+aggregate stream, exact expected stream version, consecutive domain events,
+command or rejection receipt, mandatory audit intent, business outbox entries,
+integrity/commit digest, authority-owned uniqueness claims, and any consumed
+quota reservation. Define successful, denied, rejected, and no-op variants
+without optional omission of mandatory fields. Bind the canonical audit-intent
+and receipt digests into the commitment.
+
+Goal: give every storage adapter one indivisible correctness contract instead
+of a collection of individually transactional ports.
+
+Deliverables: bounded bundle types and canonical codec, semantic validation,
+atomic memory implementation, capability identifier/version, commit receipt,
+failure-injection matrix, and denial-only integrity sequence. A denied or
+rejected operation advances no domain stream, but its receipt and audit fact
+enter a tenant-scoped hash-linked sequence with externally anchorable
+checkpoints.
+
+Verification: omit, duplicate, reorder, substitute, or cross-bind every bundle
+component; fail before and after each persistence step; reuse uniqueness claims
+or quota reservations; mismatch request/audit/receipt/commit digests; delete or
+splice denial evidence; race exact-version writers; and verify rollback,
+recovery, canonicalization, model, and property cases pass.
+
+Exit criteria: an adapter can either commit the complete negotiated bundle
+atomically or report the capability unsupported; it cannot claim success with
+a weakened subset. `v0.16.1 implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.17.0` — Inbox And Idempotent Consumers
 
 Status: planned.
@@ -222,8 +254,10 @@ Status: planned; blocked until this milestone approves an implementation-
 admission record for every hash, signing, KMS, and timestamp implementation.
 
 Setup: bind tenant, partition, stream, sequence, event/schema IDs, payload digest,
-predecessor, and key ID; define partition Merkle commitments, external signed
-anchors, checkpoint cadence, rotation, independent timestamp option, and limits.
+the `0.16.1` audit-intent/receipt/commit digests, predecessor, and key ID; define
+domain-stream and denial-only audit sequences, partition Merkle commitments,
+external signed anchors, checkpoint cadence, rotation, independent timestamp
+option, and limits.
 
 Goal: make event deletion, replacement, and reordering detectable.
 
@@ -232,9 +266,11 @@ commitment, externally retained checkpoint format, cross-signed rotation,
 verification report, corruption locator, and the signed admission record binding
 the reviewed implementation/profile versions.
 
-Verification: deletion of an entire stream, reorder/substitution/splice, wrong
-stream/tenant/key, anchor loss, rotation, timestamp semantics, truncated chain,
-recovery verification, digest collision fixture, and bounded verify pass.
+Verification: deletion of an entire stream or denial sequence, removal of an
+audit intent or receipt while leaving domain events intact, reorder/substitution/
+splice, wrong stream/tenant/key, anchor loss, rotation, timestamp semantics,
+truncated chain, recovery verification, digest collision fixture, and bounded
+verify pass.
 
 Exit criteria: tamper evidence is deterministic without inventing cryptography.
 `v0.19.0 implementation stop reached. Run pentest for this exact commit.`
@@ -316,3 +352,33 @@ readiness lies, and telemetry-disabled semantic equivalence pass.
 Exit criteria: every later hosted milestone instruments the same bounded
 tenant-safe contract, and telemetry failure cannot grant authority or corrupt
 domain correctness. `v0.20.2 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.20.3` — Shared Provenance And Temporal-Fact Primitives
+
+Status: planned.
+
+Setup: define reusable N1 `SourceRef`, `ObservationId`, `ProvenanceRef`,
+source-observed time with clock quality/uncertainty, business-valid interval,
+journal-recorded time, projection-checkpoint time, `CorrectionOf`,
+`Supersedes`, and confidence assertions bound to an exact trust-policy version.
+Define unknown, conflicting, late, and corrected facts without collapsing the
+four clocks or overwriting original assertions.
+
+Goal: establish one provenance and temporal vocabulary before service
+measurements, alerts, evidence, vulnerabilities, assets, and service health
+develop incompatible local models.
+
+Deliverables: focused `no_std`/N1 fact-model crate, bounded canonical types,
+interval and ordering operators, correction/supersession laws, confidence
+explanation model, golden cross-domain fixtures, and compile-time dependency
+rules requiring later fact-bearing domains to reuse these primitives.
+
+Verification: identity/source confusion, clock collapse, invalid or uncertain
+intervals, destructive correction, supersession cycles, late/out-of-order
+facts, confidence inflation, policy-version mismatch, projection lag, canonical
+round trips, property tests, and cross-domain differential fixtures pass.
+
+Exit criteria: later domains may add typed fact payloads and domain rules, but
+cannot redefine provenance identities, correction semantics, confidence
+authority, or the four-clock model.
+`v0.20.3 implementation stop reached. Run pentest for this exact commit.`

@@ -54,7 +54,15 @@ Status: planned. Setup: valid/recorded time filters, event access, retention, hi
 Status: planned. Setup: path grammar, allowed edges, authorization, depth/work, ranking, explanation. Goal: searchable service/evidence graph. Deliverables: graph search port/planner. Verification: path disclosure, cycles, unauthorized intermediate nodes, explosion, ranking manipulation pass. Exit criteria: results include policy-safe path proof. `v0.97.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.98.0` — Semantic-Index Interface
-Status: planned. Setup: embedding provider boundary, model/version, residency, redaction, tenant partitions, deletion. Goal: optional replaceable similarity search. Deliverables: vector port and provenance model. Verification: cross-tenant similarity, embedding leakage, poisoning, stale deletion, provider failure pass. Exit criteria: lexical/product correctness never depends on vectors. `v0.98.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: separate `SemanticIndex` storage/query semantics from
+the later `EmbeddingGenerator`; define vector identity/dimension/metric,
+provenance reference, tenant/purpose/policy partitions, deletion, and bounded
+candidate queries without owning model inference. Goal: optional replaceable
+similarity storage. Deliverables: vector index port and indexed-vector
+provenance model. Verification: cross-tenant similarity, vector leakage,
+poisoning, dimension confusion, stale deletion, and index failure pass. Exit criteria:
+lexical/product correctness never depends on vectors and the index cannot generate
+embeddings. `v0.98.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.98.1` — Hosted Semantic-Index Adapter And Isolation
 
@@ -86,6 +94,46 @@ side-channel, and differential/load tests pass.
 Exit criteria: every enabled semantic result is tenant/purpose/policy safe and
 rebuildable for a pinned model/index profile; without this evidence, production
 similarity remains disabled. `v0.98.1 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.98.2` — Embedding Generation And Provenance
+
+Status: conditional planned milestone. Production semantic similarity requires
+both this milestone and `0.98.1`; otherwise it remains disabled. Any local
+model runtime is blocked until its exact model/runtime versions, license,
+maintenance, unsafe/native code, and resource isolation are admitted. External
+provider implementation and activation remain deferred to the `0.122.0`
+classification/residency gateway.
+
+Setup: define a distinct `EmbeddingGenerator` port with exact model ID/version/
+digest, tokenizer/version, output dimension, deterministic input normalization
+and chunking/version, input classification, purpose, tenant, residency,
+provider retention/training policy, batch/token/memory/time limits,
+cancellation, failure, and output provenance. Define re-embedding migration and
+mixed-model rejection. Specify, but do not bypass, the later `0.122.0` gateway
+contract for external generation. If AI is disabled, only a separately admitted
+local non-AI-profile runtime may be used.
+
+Goal: own how vectors are produced without conflating inference, vector
+storage, retrieval authorization, or optional AI enablement.
+
+Deliverables: project-owned generator port, canonical chunk/input manifest,
+model/tokenizer registry binding, output provenance record, deterministic fake,
+selected local adapter when admitted, external-provider request contract,
+re-embedding planner/checkpoints, resource governor, evaluation corpus, and
+operator runbook.
+
+Verification: model/tokenizer/dimension substitution, non-deterministic
+chunking, cross-tenant batch mix, classification/residency metadata omission,
+input/output leakage, cancellation, partial batch, oversized input, resource
+exhaustion, poisoned vectors, stale provenance, mixed-model migration, rollback,
+local runtime outage/no-fallback, and reproducibility/evaluation tests pass.
+External provider retention, training, residency, cancellation-after-dispatch,
+and outage cases are owned and retested at `0.122.0`.
+
+Exit criteria: every stored embedding cites an exact admitted input/chunk/model/
+tokenizer/purpose/policy provenance chain; no provider receives disallowed data,
+and absence of an admitted generator keeps semantic search disabled. `v0.98.2
+implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.99.0` — Knowledge Articles And Runbooks
 Status: planned. Setup: draft/review/publish, audience, safe content, versions, expiry, feedback, provenance. Goal: governed reusable knowledge. Deliverables: knowledge aggregate, renderer, contextual suggestions. Verification: stored injection, publication bypass, poisoning, hidden linkage, stale article, search parity pass. Exit criteria: trusted content has approval/version evidence. `v0.99.0 implementation stop reached. Run pentest for this exact commit.`

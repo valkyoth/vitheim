@@ -33,6 +33,11 @@ party UI has no privileged command, repository, or database path.
 Optional federation, AI, vendor-connector, plugin-storefront, and semantic-index
 crates depend inward on stable ports. The kernel and first-party domains must
 build, test, and operate without any optional product family.
+Vitheim operational telemetry and customer-service measurements are distinct
+planes. All fact-bearing domains reuse the shared N1 provenance, correction,
+confidence, and four-clock vocabulary rather than creating local substitutes.
+Semantic index storage and embedding generation are independently replaceable
+and independently admitted.
 
 ## Universal Verification And Exit
 

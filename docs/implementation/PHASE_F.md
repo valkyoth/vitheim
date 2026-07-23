@@ -39,6 +39,44 @@ Deliverables: subject model, identity mapping, disable/revoke events. Verificati
 issuer collision, account recreation, stale/disabled identity, spoofing, and audit pass.
 Exit criteria: actor origin and lifecycle are explicit. `v0.52.0 implementation stop reached. Run pentest for this exact commit.`
 
+## `0.52.1` — Machine-To-Machine Authentication Profile
+
+Status: planned; blocked until the exact OAuth/mTLS/token/TLS implementations
+and conformance profile are admitted. Personal access tokens and static API
+keys are disabled by default; enabling either requires a separate explicit
+profile decision and evidence.
+
+Setup: select narrowly supported OAuth client-credentials authentication using
+`private_key_jwt` and/or mutual TLS; define issuer and tenant binding, immutable
+`ServicePrincipalId`, client/key/certificate registration, short-lived
+audience-bound workload tokens, proof-of-possession where selected, exact
+scopes/capabilities, token type/issuer/audience/time validation, credential
+issuance/rotation/revocation/compromise response, policy re-evaluation, replay
+cache, and agent/connector workload identities. Token exchange, delegation,
+impersonation, and refresh tokens are disabled unless separately specified.
+Email, client display name, certificate subject, DNS name, or external account
+name is never the stable principal identity.
+
+Goal: authenticate API automation, agents, workers, and connectors as governed
+service principals without reusing browser sessions or turning credentials
+into authorization.
+
+Deliverables: workload-auth contract and hosted adapter, issuer/client registry,
+credential lifecycle, mTLS/key binding, validation and replay controls,
+compromise/revocation workflow, conformance corpus, fake issuer/client,
+operator tooling, and explicit disabled-feature matrix.
+
+Verification: client/principal/tenant confusion, forged assertion, key/
+algorithm/token-type confusion, bearer replay, audience/scope inflation,
+certificate remapping, display-name collision, token exchange/refresh misuse,
+stale policy/credential, rotation race, revocation lag, agent/connector
+impersonation, clock abuse, outage, and protocol conformance tests pass.
+
+Exit criteria: each workload request resolves to one immutable tenant-bound
+service principal, current credential and assurance profile; authorization is
+independently reevaluated and no static secret is silently enabled. `v0.52.1
+implementation stop reached. Run pentest for this exact commit.`
+
 ## `0.53.0` — OIDC Integration
 Status: planned; blocked until this milestone admits an audited OIDC/client/TLS
 implementation and exact conformance profile. Setup: pin an exact
@@ -128,17 +166,22 @@ Status: planned only for an intended production SCIM profile; otherwise it is
 explicitly deferred at `0.140.9`. Hosted HTTP/TLS/client implementation requires
 its own admission record.
 
-Setup: pin exact SCIM specification/profile, base URL and tenant, bearer/client
-identity, user/group resource schemas and extensions, external IDs, ETags,
-filters, sorting/pagination, PATCH/bulk support policy, active/deleted states,
-delta/full reconciliation, rate limits, retry/idempotency, and error privacy.
+Setup: choose exactly one direction before implementation. The default
+candidate is an inbound Vitheim SCIM service that receives provisioning facts;
+an outbound SCIM client is a distinct alternative, not additional implicit
+scope. Pin exact SCIM specification/profile, base URL and tenant, `0.52.1`
+workload identity, user/group resource schemas and extensions, external IDs,
+ETags, filters, sorting/pagination, PATCH/bulk support policy, active/deleted
+states, delta/full reconciliation, rate limits, retry/idempotency, and error
+privacy.
 
 Goal: implement standards-based directory provisioning through the guarded
 `0.54.0` synchronization lifecycle rather than direct role mutation.
 
-Deliverables: SCIM client/server profile as selected, bounded codec/filter
-parser, mapping and quarantine rules, cursor/reconciliation state, conformance
-corpus, fake peer, capability report, and deployment runbook.
+Deliverables: one SCIM server or client profile as selected, bounded codec/
+filter parser, mapping and quarantine rules, cursor/reconciliation state,
+conformance corpus, fake peer, capability report, deployment runbook, and an
+explicit non-claim for the opposite direction.
 
 Verification: tenant/base-URL confusion, SSRF, token leakage, external-ID
 collision, filter/operator injection, PATCH path confusion, group-cycle/takeover,
@@ -225,10 +268,15 @@ Verification: self-approval, broad scope, non-expiry, replay, hidden use, stale 
 and revocation tests pass. Exit criteria: every exception is bounded and visible. `v0.59.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.60.0` — Authorization Conformance Suite
-Status: planned. Setup: enumerate every command/read/field/search/export/blob/
-notification/admin interface currently implemented and every declared future
-interface schema from the generated registry. Goal: prove equivalent policy for
-current surfaces and make later registration mechanically mandatory.
-Deliverables: generated matrix, negative corpus, coverage/evidence report.
-Verification: mutation and read parity, tenant pairs, stale policy, cache/index lag,
-break-glass, and differential adapters pass. Exit criteria: no uncovered authority-bearing interface remains. `v0.60.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: enumerate every human and `0.52.1` workload command/
+read/field/search/export/blob/notification/admin/ingest interface currently
+implemented and every declared future interface schema from the generated
+registry; include token audiences and credential/policy versions. Goal: prove
+equivalent deny-by-default policy independent of authentication mechanism and
+make later registration mechanically mandatory. Deliverables: generated
+matrix, negative corpus, human-versus-service-principal differential tests,
+connector/agent/measurement-source cases, and coverage/evidence report.
+Verification: mutation and read parity, tenant pairs, stale policy/credential,
+wrong audience/scope, cache/index lag, break-glass, and differential adapters
+pass. Exit criteria: no principal kind or authority-bearing interface lacks a
+negative case. `v0.60.0 implementation stop reached. Run pentest for this exact commit.`

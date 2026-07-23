@@ -44,9 +44,10 @@ authorization semantics.
    not hard-coded shortcuts around policy.
 7. AI is optional, untrusted, provenance-recorded advice with no implicit
    authority and no direct storage access.
-8. Storage adapters implement semantic contracts such as atomic append,
-   expected version, outbox, checkpoints, leases, and idempotency—not generic
-   CRUD exposed to domain code.
+8. Storage adapters implement the complete versioned `AtomicCommitBundle` plus
+   snapshots, projections, scheduler/quota state, checkpoints, and idempotency—
+   not generic CRUD or a weaker subset exposed to domain code. An adapter that
+   cannot commit the mandatory bundle fails capability negotiation.
 9. Every untrusted parser, query, workflow, plugin, attachment, import, report,
    and export has explicit size, depth, time, memory, and work budgets.
 10. Every important result is explainable from commands, events, policy,
@@ -67,6 +68,17 @@ authorization semantics.
 16. Hosted telemetry follows one early tenant-safe bounded schema. Metrics,
     traces, logs, health, or exporter failure never become authority and never
     contain secrets, sensitive payloads, or unbounded attacker-controlled labels.
+17. Customer-service observations used for SLI/SLO and service health form an
+    authenticated append-only measurement plane. They are not Vitheim's own
+    operational telemetry and cannot be synthesized from it implicitly.
+18. Provenance-bearing domains reuse one N1 source/observation identity,
+    correction/supersession, confidence-policy, and four-clock model.
+19. Secret plaintext is scoped, non-displayable, non-serializable through
+    supported APIs, excluded from diagnostics and plugins, and handled under
+    explicit per-platform best-effort memory assurances rather than claims of
+    perfect erasure.
+20. Semantic vector storage and embedding generation are separate ports and
+    admission boundaries; production similarity requires evidence for both.
 
 ## Layers
 
@@ -93,7 +105,7 @@ strategy for that milestone are explicitly approved.
 
 - Foundation: `vitheim-id`, `vitheim-time`, `vitheim-error`,
   `vitheim-budget`, `vitheim-value`, `vitheim-codec`, `vitheim-schema`,
-  `vitheim-capability`, and `vitheim-context`.
+  `vitheim-capability`, `vitheim-context`, and `vitheim-fact-model`.
 - Kernel: `vitheim-command`, `vitheim-event`, `vitheim-aggregate`,
   `vitheim-journal-model`, `vitheim-projection-model`, `vitheim-query`,
   `vitheim-audit-model`, `vitheim-evidence-model`, `vitheim-crypto-api`, and
@@ -110,10 +122,12 @@ strategy for that milestone are explicitly approved.
   `vitheim-api-http` is one hosted transport, and `vitheim-ui-client`,
   `vitheim-ui-composition`, and `vitheim-ui-shell` consume the API without
   depending on domain or storage crates.
-- Hosted ports/adapters: storage, blobs, queues, search, identity, plugins,
-  integrations, runtime, import/export, federation transport, and optional AI
-  broker. API contract/application/transport crates remain separate from UI
-  shell/composition/rendering crates.
+- Hosted ports/adapters: storage, blobs, queues, customer measurements,
+  paging/notification delivery, hosted status, search/index, embedding
+  generation, human and workload identity, plugins, integrations, runtime,
+  import/export, federation transport, and optional AI broker. API contract/
+  application/transport crates remain separate from UI shell/composition/
+  rendering crates.
 - Optional product families: federation trust/shared-space/protocol/host,
   AI provider/broker, vendor connector packs, and plugin storefront crates
   depend inward on stable ports. Core/kernel and first-party domain crates must

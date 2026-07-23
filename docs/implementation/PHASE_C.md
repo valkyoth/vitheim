@@ -5,6 +5,10 @@ adapter requires an independently approved implementation-admission record
 before code begins. The default `1.0.0` target is in-memory for semantics,
 SQLite for single-node, and PostgreSQL for HA; MySQL, MongoDB, and SurrealDB are
 experimental unless `0.140.2` promotes an evidenced profile.
+Every database profile must implement the complete negotiated `0.16.1`
+`AtomicCommitBundle` and every other mandatory semantic port claimed for that
+profile, or fail startup capability negotiation. No adapter may emulate a
+missing atomic component with a later best-effort write.
 
 ## `0.21.0` — Storage Capability Negotiation
 
@@ -35,9 +39,13 @@ state reuse, cleanup, administrator threat boundary, and evidence format.
 Goal: make production-support claims depend on identical observable behavior.
 
 Deliverables: reusable adapter harness, mandatory capability matrix, randomized
-state machine, and machine-readable conformance report.
+state machine, machine-readable conformance report, and destructive reference
+adapters that each omit or split one `0.16.1` bundle component: events, head,
+receipt, audit intent, outbox, commitment, uniqueness claim, or consumed quota.
 
-Verification: prove deliberately broken reference adapters fail each relevant
+Verification: prove every deliberately incomplete bundle adapter and adapters
+that lose snapshots, scheduler state, quota state, rejection receipts, audit
+authority, or integrity commitments fail the relevant capability/conformance
 test; run memory adapter through all atomicity/isolation/recovery cases.
 
 Exit criteria: an adapter cannot claim support by skipping or weakening tests.
@@ -76,8 +84,11 @@ Record the version-bound implementation admission before adapter code begins.
 
 Goal: establish the deepest-tested reference production backend.
 
-Deliverables: journal/projection/outbox/inbox/lease/config adapters, migrations,
-operator guide, backup/restore, and observability.
+Deliverables: complete `0.16.1` atomic-bundle adapter plus journal, projection,
+audit authority, rejection receipt, outbox, inbox, lease/scheduler, durable
+quota, snapshot, integrity commitment, and configuration adapters; migrations,
+operator guide, backup/restore, and observability. Startup fails capability
+negotiation if any mandatory semantic component is absent.
 
 Verification: injection, auth downgrade, transaction crashes, concurrent append,
 tenant bypass, pool exhaustion, migration rollback, restore, and conformance pass.
@@ -213,6 +224,38 @@ recovery, audit failure, and fail-closed behavior pass.
 
 Exit criteria: no production encryption/signing path depends on filesystem keys
 or plaintext configuration secrets. `v0.28.2 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.28.3` — In-Process Secret Handling
+
+Status: planned; any zeroization or locked-memory implementation is blocked
+until its exact implementation, platform behavior, maintenance, license,
+unsafe/native-code use, and measurable assurance are admitted.
+
+Setup: define non-`Debug`, non-`Display` secret wrappers; prohibit ordinary
+clone, equality diagnostics, serialization, formatting, and telemetry; minimize
+plaintext scope/lifetime; bound cache size and expiry; define best-effort
+zeroization, panic/error redaction, crash/core-dump policy, swap and locked-
+memory profiles where supported, and plugin/worker isolation. Document where
+compiler, allocator, copies, platform dumps, or runtime behavior prevent a
+perfect erasure guarantee.
+
+Goal: reduce exposure after secrets enter process memory without making false
+claims about guaranteed physical erasure.
+
+Deliverables: project-owned secret-handle/value interfaces, scoped reveal API,
+redacted error/diagnostic types, bounded expiring cache, admitted best-effort
+zeroization adapter, platform hardening matrix and operator guide, crash-policy
+checks, and secret-sink test harness.
+
+Verification: compile-fail formatting/clone/serialization cases; panic, error,
+audit, log, metric, trace, crash-report, heap-dump fixture, swap-profile,
+cache-expiry, cancellation, worker/plugin memory, and fault-path tests; canary
+scans prove plaintext does not enter prohibited sinks.
+
+Exit criteria: each supported platform states its exact memory assurance and
+limitations, and no secret can enter audit, telemetry, crash reports, plugin
+linear memory, or durable configuration through a supported API. `v0.28.3
+implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.29.0` — Migration Registry And Resumable Migrations
 

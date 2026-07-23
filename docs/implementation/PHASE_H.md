@@ -11,26 +11,33 @@ Status: planned only for exact production profiles; unimplemented syslog/
 webhook schema families are deferred at `0.140.9`. Network/TLS/parser
 implementations require version-bound admission.
 
-Setup: pin supported syslog transports/framing/message profiles and named
-security-webhook schemas; source/device identity, mTLS/signature/token,
-facility/severity, hostname/app/proc/message IDs, structured data, timestamps/
-clock quality, webhook event IDs, content type/encoding, replay windows,
-ordering, acknowledgement, quotas, tenant routing, and raw-byte preservation.
+Setup: pin only authenticated, pre-filtered, alert-bearing syslog transports/
+framing/message profiles and named security-webhook schemas; source/device
+identity, mTLS/signature/token, facility/severity, hostname/app/proc/message
+IDs, structured data, timestamps/clock quality, webhook event IDs, content
+type/encoding, replay windows, ordering, acknowledgement, quotas, tenant
+routing, bounded raw-evidence retention, and `0.20.3` provenance. General-
+purpose raw log collection, indexing, querying, detection-rule execution, and
+unauthenticated UDP alert authority are explicit non-goals for `1.0.0`.
 
 Goal: accept common security telemetry through narrow authenticated profiles
 without treating arbitrary text/JSON or source severity as trusted authority.
 
-Deliverables: syslog listener and webhook receiver ports/adapters, bounded
-framing/codecs, source registry, schema mapping packs, raw evidence links,
-receipts, conformance corpora, and deployment guidance.
+Deliverables: authenticated syslog listener and webhook receiver ports/adapters,
+bounded framing/codecs, source registry, alert-bearing schema mapping packs,
+raw evidence links with bounded retention, receipts, quarantine/rejection
+handling for untrusted inputs, conformance corpora, and deployment guidance.
 
 Verification: source/tenant spoofing, delimiter/length confusion, truncation,
 Unicode/control/log injection, timestamp/severity manipulation, signature/token
 replay, compression/JSON bombs, schema smuggling, connection floods,
 backpressure/drop accounting, malformed corpus, and fuzzing pass.
 
-Exit criteria: every accepted message names an authenticated source and exact
-profile/schema; unsupported inputs remain quarantined raw evidence or are rejected.
+Exit criteria: every authoritative alert names an authenticated source and
+exact alert-bearing profile/schema. Unauthenticated UDP and arbitrary raw
+syslog are rejected or quarantined as non-authoritative bounded evidence and
+cannot create alerts. Supporting raw log management or detection rules requires
+a separately designed high-volume SIEM architecture and milestone.
 `v0.71.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.71.2` — STIX And TAXII Threat-Intelligence Profiles
@@ -45,12 +52,14 @@ created/modified/revoked times, markings, confidence, relationships, sightings,
 indicator patterns, source trust, manifests/checkpoints, retry/backoff,
 deletion/revocation, raw object retention, and tenant/purpose policy.
 
-Goal: ingest and exchange threat intelligence as untrusted provenance-aware
-facts without granting indicators automatic correlation or containment authority.
+Goal: ingest threat intelligence as untrusted provenance-aware facts without
+granting indicators automatic correlation or containment authority. TAXII/STIX
+publication is not implemented by this milestone.
 
 Deliverables: TAXII client/source adapter, bounded STIX codec/validator, marking
 and relationship mapping, collection checkpoint state, quarantine, immutable
-raw-to-derived provenance, conformance corpus, and operator runbook.
+raw-to-derived provenance, conformance corpus, operator runbook, and explicit
+publication non-claim.
 
 Verification: server/collection/tenant confusion, object-ID/version collision,
 marking bypass, malicious relationship graph/pattern, revoked-object reuse,
@@ -60,6 +69,35 @@ inflation, JSON/decompression bombs, SSRF/auth leak, rate storms, and fuzz pass.
 Exit criteria: threat-intelligence facts retain exact source, version, marking,
 confidence, and revocation state and cannot trigger privileged actions directly.
 `v0.71.2 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.71.3` — Threat-Intelligence Marking Enforcement
+
+Status: planned.
+
+Setup: map admitted STIX object and granular markings into Vitheim data classes,
+audiences, purposes, handling obligations, derivative/combination rules,
+retention, and export/federation prohibitions. Define conservative behavior for
+unknown, conflicting, downgraded, revoked, or unsupported markings and preserve
+marking lineage through normalization and derived facts.
+
+Goal: ensure ingested threat-intelligence restrictions remain enforceable after
+the object leaves the TAXII adapter.
+
+Deliverables: versioned marking-policy compiler and evaluator, provenance-bound
+obligations, propagation adapters for search/snippets/counts, graph/correlation
+paths, federation/shared spaces, exports/reports, notifications, plugins, and
+AI context packs; explanation traces; migration/reindex hooks; and cross-surface
+conformance matrix.
+
+Verification: marking strip/downgrade, granular-object mismatch, derived-data
+laundering, conflicting markings, unauthorized graph intermediate/count/snippet,
+federation audience expansion, export/plugin/notification leak, AI retrieval,
+cache/index lag, revocation/reindex, and policy-version differential tests pass.
+
+Exit criteria: every surfaced or derived threat-intelligence fact carries
+effective marking obligations, and unknown/conflicting markings fail closed
+across every registered read or egress surface. `v0.71.3 implementation stop
+reached. Run pentest for this exact commit.`
 
 ## `0.72.0` — Alert Normalization
 Status: planned. Setup: immutable raw evidence, canonical derived alert fields,

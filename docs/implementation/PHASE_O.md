@@ -48,26 +48,32 @@ retention-hold set, envelope encryption, immutability, rotation/revocation,
 crypto-erasure consequences, external checkpoint anchors and drills. Goal:
 verified recoverability. Deliverables: backup/restore tools and DR evidence.
 Verification: substitution, partial/stale backup, lost/rotated key, held/erased
-data, point-in-time restore, integrity/rebuild/workflow continuation pass.
+data, point-in-time restore, `0.16.1` bundle and denial-only audit-chain
+integrity, external anchors, rebuild/workflow continuation pass.
 Exit criteria: claimed RPO/RTO is demonstrated. `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification
 Status: planned. Setup: representative workloads, SLOs, durable `0.18.1` quota
-profiles, fairness and reconciliation, baselines, failure scenarios, and evidence
-retention. Goal: prove bounded behavior under stress. Deliverables: harnesses and
-signed reports. Verification: atomic quota reservation/refund, noisy tenants,
-queue/index/plugin/report exhaustion, leaks, cascading failures, long soak/chaos
-pass. Exit criteria: regressions and unsafe saturation block release. `v0.146.0
+profiles, separate Vitheim-telemetry and customer-measurement capacity models,
+paging/status provider limits, fairness and reconciliation, baselines, failure
+scenarios, and evidence retention. Goal: prove bounded behavior under stress.
+Deliverables: harnesses and signed reports. Verification: atomic quota
+reservation/refund, noisy tenants, observation late-arrival/downsampling,
+paging/status retry/reconciliation, queue/index/embedding/plugin/report
+exhaustion, leaks, cascading failures, and long soak/chaos pass. Exit criteria:
+regressions and unsafe saturation block release. `v0.146.0
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.147.0` — Final Security And Supply-Chain Hardening
 Status: planned. Setup: complete threat model, dependency/tool/action inventory,
 semantic SBOM, reproducibility, full key generation/storage/use/rotation/revocation/
-recovery/destruction lifecycle, provenance and secret scanning. Goal: close build
-and runtime supply-chain paths. Deliverables: audits, candidate-tree/artifact-
-bound signed evidence, SBOM/provenance, reproducible artifacts, hardening guide.
-Verification: compromised builder/dependency/action/key, stale or name-only SBOM,
-wrong pentest parent/tree/artifact, substitution and unsafe delta pass.
+recovery/destruction lifecycle, `0.28.3` in-process memory assurance, crash/
+core-dump/swap profile, provenance and secret scanning. Goal: close build and
+runtime supply-chain paths. Deliverables: audits, candidate-tree/artifact-bound
+signed evidence, SBOM/provenance, reproducible artifacts, hardening guide.
+Verification: compromised builder/dependency/action/key, secret canaries across
+diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
+tree/artifact, substitution and unsafe delta pass.
 Exit criteria: every trusted input is pinned/accounted. `v0.147.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.148.0` — Compatibility Freeze
