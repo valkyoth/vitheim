@@ -90,20 +90,28 @@ Setup: classify records, metadata, evidence blobs, audit, backups, indexes,
 legal holds, erasure duties, residency, and conflicting jurisdictional rules;
 review the complete `0.51.2` tenant data-surface registry including customer
 measurements/rollups, paging/status receipts, vectors/embeddings, plugin state,
-AI artifacts, federation projections, and connector checkpoints.
+AI artifacts, federation projections, and connector checkpoints. Freeze an
+explicit precedence matrix distinguishing legal hold, mandatory erasure,
+maximum retention, tenant closure, contractual preservation, and discretionary
+rollup-substitution expiry; preservation of historical SLO authority cannot
+override mandatory deletion.
 Goal: freeze production data-lifecycle profiles before packaging.
-Deliverables: retention precedence, preservation/disposition, crypto-erasure,
-key ownership, deletion verification, backup expiry, residency matrices, and a
-zero-missing-surface registry report with typed external-copy evidence strengths
-and closure-policy results.
+Deliverables: normative retention-precedence matrix, preservation/disposition,
+mandatory-deletion-with-authority-loss procedure, crypto-erasure, key ownership,
+deletion verification, backup expiry, residency matrices, and a zero-missing-
+surface registry report with typed external-copy evidence strengths and
+closure-policy results.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
 evidence custody, false equivalence between local proof/provider attestation/
-unconfirmed request/unverifiable plaintext, tenant closure, and cross-region
-scenarios pass review.
+unconfirmed request/unverifiable plaintext, missing rollup proof during
+mandatory deletion, unlawful retention for availability reporting, tenant
+closure, and cross-region scenarios pass review.
 Exit criteria: no production data class or tenant-bearing surface lacks an
 owner, lifecycle, typed disposition state, and policy result; accepted residual
 uncertainty remains explicit and is never described as verified erasure.
+Mandatory deletion proceeds even when doing so makes historical results
+unknown, with immutable evidence of the precedence decision and authority loss.
 `v0.140.5 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.140.6` — Deployment, HA, And Recovery Profile Decision

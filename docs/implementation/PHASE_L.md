@@ -22,7 +22,20 @@ covert imports, escape tests pass. Exit criteria: pure components have no
 ambient authority. `v0.112.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.113.0` — Effectful Component Execution
-Status: planned. Setup: capability calls, effect IDs, authorization, idempotency, replay, audit. Goal: controlled hosted extension effects. Deliverables: host-call broker and event receipts. Verification: unauthorized calls, replay, confused deputy, cross-tenant handles, partial failure pass. Exit criteria: every effect passes independent policy. `v0.113.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: capability calls, stable `EffectId`/request digest,
+authorization, provider idempotency-key scope/retention, status-query and
+reconciliation support, retry/replay horizon, compensation, privilege/
+non-compensability, and audit. Each capability maps exactly onto the `0.18.2`
+external-outcome states; plugins cannot select a stronger capability or
+reinterpret `OutcomeUnknown`. Goal: controlled hosted extension effects with
+truthful remote outcomes. Deliverables: host-call broker, typed effect-
+capability descriptors, outcome/reconciliation receipts, and manual-resolution
+boundary. Verification: unauthorized calls, replay, confused deputy, cross-
+tenant handles, request-digest substitution, provider acceptance plus lost
+response, idempotency expiry, forged success/reconciliation, forbidden blind
+retry, and partial failure pass. Exit criteria: every effect passes independent
+policy and ends known, durably reconciling, or explicitly assigned for
+authorized manual resolution. `v0.113.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.114.0` — Capability And Secret Handles
 Status: planned. Setup: manifests bind plugin digest, tenant, instance, action,

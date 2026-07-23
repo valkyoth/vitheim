@@ -310,21 +310,29 @@ Setup: define queue/topic identity, tenant scope, ordered/unordered semantics,
 enqueue transaction, visibility lease/fencing, retry/backoff, dead-letter,
 priority/fairness, payload references, cancellation, drain, quotas, and exact
 mapping to the `0.18.2` consumer/timer/activity/poison atomic variants.
+Queue delivery/acknowledgement is distinct from external-effect acceptance and
+outcome. Preserve stable `EffectId`, request digest, attempt evidence,
+idempotency/replay horizon, and every unknown/reconciliation/manual-resolution
+state across lease expiry, redelivery, failover, and dead-letter movement.
 
 Goal: own an HA-capable durable queue profile without requiring a separate
 message broker for correctness.
 
 Deliverables: project-owned queue port, journal/outbox-backed PostgreSQL adapter,
-memory fake, worker protocol, capability report, and operational metrics.
+memory fake, worker protocol, external-outcome reconciliation scheduling and
+manual-resolution queue, capability report, and operational metrics.
 
 Verification: enqueue/commit crashes, duplicate delivery, receipt/effect split,
 stale ack/fence, lease loss, dead-letter/effect split, quota/effect split,
 poison loops, starvation, cross-tenant routing, sensitive payload leakage,
-partition/failover, drain/restart, and model/conformance tests pass.
+provider acceptance with lost worker response, blind retry after idempotency-key
+expiry, unknown-outcome dead-letter loss, partition/failover, drain/restart, and
+model/conformance tests pass.
 
-Exit criteria: HA work dispatch has documented at-least-once/idempotent
-semantics and no process-local queue dependency. `v0.30.1 implementation stop
-reached. Run pentest for this exact commit.`
+Exit criteria: HA work dispatch has documented at-least-once delivery and
+idempotent local-commit semantics, preserves the `0.18.2` external-outcome
+contract, and has no process-local queue dependency.
+`v0.30.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.30.2` — Cache Semantics And Hosted Adapter
 

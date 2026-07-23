@@ -53,7 +53,10 @@ authorization semantics.
    aggregate stream and contains local durable effects only. External calls
    execute from committed intents and return through a later bundle; Vitheim
    never claims a distributed database/provider transaction or exactly-once
-   remote execution.
+   remote execution. Every external effect has a stable identity, request
+   digest, declared retry/idempotency/reconciliation/compensation capability,
+   and durable outcome state. An unknown privileged or non-compensable outcome
+   is reconciled or escalated, never blindly replayed.
 9. Every untrusted parser, query, workflow, plugin, attachment, import, report,
    and export has explicit size, depth, time, memory, and work budgets.
 10. Every important result is explainable from commands, events, policy,
@@ -77,9 +80,13 @@ authorization semantics.
 17. Customer-service observations used for SLI/SLO and service health form an
     authenticated append-only measurement plane. They are not Vitheim's own
     operational telemetry and cannot be synthesized from it implicitly. Raw
-    observations cannot expire in favor of an authoritative rollup until its
-    manifest is committed, integrity verified, externally checkpointed, and
-    restore tested.
+    observations cannot expire merely in favor of an authoritative rollup until
+    its manifest is committed, integrity verified, externally checkpointed, and
+    restore tested. A controlling mandatory-erasure, maximum-retention, or
+    tenant-closure deletion obligation still proceeds when that proof is
+    unavailable; the rollup then remains non-authoritative, affected history
+    becomes unknown/unavailable, and an immutable disposition fact explains the
+    authority loss.
 18. Provenance-bearing domains reuse one N1 source/observation identity,
     correction/supersession, confidence-policy, and four-clock model.
 19. Secret plaintext is scoped, non-displayable, non-serializable through
@@ -116,7 +123,8 @@ N0: no_std, no allocator
   identifiers, time, errors, budgets, fixed values, capability IDs
                          ↓
 N1: no_std + alloc
-  commands, events, domain entities, workflow IR, policy, queries, evidence
+  commands, events, domain entities, workflow IR, policy, queries, evidence,
+  neutral tenant-data lifecycle descriptors
                          ↓
 H: hosted std ports and orchestration
   semantic storage, crypto provider, search, identity, runtime, plugin host

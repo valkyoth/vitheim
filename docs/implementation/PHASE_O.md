@@ -43,7 +43,9 @@ split-brain effects. Deliverables: HA orchestration, work-variant fault matrix,
 and runbooks. Verification: partitions, clock skew, stale leader/fence,
 receipt/effect/quota/dead-letter splits, duplicate command/consumer/timer/
 activity work, timer dispatch/result separation, multi-aggregate/remote-call
-transaction rejection, failover/failback, and chaos/soak pass. Exit criteria: split
+transaction rejection, provider acceptance plus lost response, unknown-outcome
+reconciliation/manual resolution, forbidden blind privileged/non-compensable
+retry, failover/failback, and chaos/soak pass. Exit criteria: split
 brain and stale workers reject every state-changing variant. `v0.143.0
 implementation stop reached. Run pentest for this exact commit.`
 
@@ -66,9 +68,13 @@ Verification: substitution, partial/stale backup, lost/rotated key, held/erased
 data, point-in-time restore, every `0.18.2` atomic work variant and denial-only
 audit-chain integrity, external anchors, registered tenant-surface disposition,
 typed external-copy evidence-strength honesty, measurement rollup manifests,
-rollup checkpoint inclusion and raw-expiry gates, rebuild/workflow continuation
-pass.
-Exit criteria: claimed RPO/RTO is demonstrated. `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
+rollup checkpoint inclusion and substitution-expiry gates, mandatory deletion
+during unavailable proof, historical authority-loss records, rebuild/workflow
+continuation pass.
+Exit criteria: claimed RPO/RTO is demonstrated; recovery neither retains data
+past a controlling mandatory deletion obligation nor promotes an unverified
+rollup to authority.
+`v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification
 Status: planned. Setup: representative workloads, SLOs, durable `0.18.1` quota

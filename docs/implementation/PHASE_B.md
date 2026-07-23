@@ -9,6 +9,14 @@ and scheduler/inbox state only. Network/provider calls and other external side
 effects never join the database transaction; they execute at least once from a
 committed outbox/work intent and return results through a later consumer or
 activity-result bundle. No bundle claims distributed exactly-once execution.
+Each external-effect capability declares a stable `EffectId` and request
+digest, provider idempotency-key scope and retention, status-query/
+reconciliation support, retry safety and maximum replay horizon, compensation
+support, and privilege/non-compensability class. Durable outcomes use
+`Pending`, `Dispatched`, `Succeeded`, `Failed`, `OutcomeUnknown`, `Reconciled`,
+and `ManualResolutionRequired`; an unknown privileged or non-compensable
+outcome is never retried without reconciliation or explicit authorized
+resolution.
 
 ## `0.11.0` — Semantic Event-Journal Interface
 
@@ -142,25 +150,31 @@ Status: planned.
 Setup: bind exact-version CAS, consecutive events, stream head, request-digest
 receipt, authoritative `0.15.1` audit intent, outbox entries, integrity links,
 authority-owned uniqueness indexes, destination, payload version, attempt
-policy, and one database transaction. Denied/rejected commands atomically commit
-their idempotent outcome plus audit fact but no domain events, stream advance,
-business outbox, or state effect.
+policy, stable external `EffectId`/request digest, and one database transaction.
+Each effect intent records its capability declaration, initial `Pending` state,
+and immutable request binding before dispatch. Denied/rejected commands
+atomically commit their idempotent outcome plus audit fact but no domain events,
+stream advance, business outbox, or state effect.
 Outbox routing contains protected references rather than pre-rendered sensitive
 bodies and cannot copy fields forbidden by the `0.8.1` lifecycle.
 
 Goal: prevent committed business facts from losing required asynchronous work
 or mandatory audit evidence.
 
-Deliverables: outbox semantic types/port, command-commit unit including audit
-authority, atomic memory implementation, dispatcher claim/ack protocol, and
-failure fixtures.
+Deliverables: outbox semantic types/port, external-effect capability and outcome
+types, command-commit unit including audit authority, atomic memory
+implementation, dispatcher claim/ack protocol, outcome query/reconciliation
+port, and failure fixtures.
 
 Verification: fail before/during/after every event/receipt/audit/outbox write,
 successful mutation without audit, denied mutation with domain events, duplicate
-dispatch/audit, crash before ack, poison payload, tenant routing, and rollback pass.
+dispatch/audit, crash before ack, provider acceptance followed by lost response,
+idempotency-key expiry/scope mismatch, forged outcome, poison payload, tenant
+routing, and rollback pass.
 
 Exit criteria: no successful protected mutation exists without its authoritative
-audit intent, and no rejected mutation produces business state or effects.
+audit intent, no rejected mutation produces business state or effects, and
+transport acknowledgement is never represented as a known provider outcome.
 `v0.16.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.16.1` — Atomic Command Commit Bundle
@@ -216,7 +230,9 @@ Expiry cannot re-enable non-idempotent work unless the upstream replay horizon
 is independently bounded. The same command ID and digest returns the stored
 outcome; the same ID with a different digest is a conflict without side effects.
 
-Exit criteria: retries cannot repeat protected effects or hide duplicates.
+Exit criteria: retries cannot repeat the local protected commit or hide
+duplicates; possible remote duplication remains governed by the external-effect
+outcome contract.
 `v0.17.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.17.1` — Atomic Consumer Commit Bundle
@@ -250,8 +266,9 @@ network/provider call inside the transaction is rejected.
 
 Exit criteria: a consumer either commits its receipt and complete emitted
 effect bundle once or commits neither; redelivery returns the bound prior
-outcome and cannot execute the effect again. `v0.17.1 implementation stop
-reached. Run pentest for this exact commit.`
+outcome and cannot repeat the local protected commit. Remote execution may
+still be duplicated and must use the stable effect identity and reconciliation
+contract. `v0.17.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.18.0` — Leases, Timers, And Scheduler Primitives
 
@@ -311,6 +328,8 @@ the due/fenced dispatch transition and its outbox work intent; timer or remote
 work completion is a separate later activity-result/consumer transition that
 atomically records its own result receipt and local effects. Fence validation
 and poison/dead-letter movement occur with their respective local effects.
+Finalize the generic external-effect state transitions, attempt evidence, status
+queries, reconciliation results, and authorized/manual resolution commands.
 
 Goal: prevent retries, lease loss, or crashes from separating asynchronous work
 completion evidence from the effects it emits.
@@ -321,18 +340,23 @@ timer/activity/poison receipt types, dead-letter evidence, and deterministic
 failure/interleaving harness. Phase G workflow workers later specialize the
 activity payload without weakening this commit boundary. The contract states
 at-least-once external execution explicitly and makes no distributed
-exactly-once claim.
+exactly-once claim. It distinguishes local commit/delivery success from remote
+acceptance and outcome.
 
 Verification: independently omit or split every variant component; crash
 between timer fire/completion, activity effect/receipt, inbox/dead-letter
 transition, fence check/commit, and quota consume/effect; replay stale fencing
 tokens; attempt a second aggregate stream or remote call in one bundle;
-redeliver poison work; race cancellation/lease loss; and run rollback, recovery,
-model, state-machine, and property tests.
+lose a response after provider acceptance; expire a provider idempotency key;
+return conflicting status queries; attempt blind retry of unknown privileged or
+non-compensable work; redeliver poison work; race cancellation/lease loss; and
+run rollback, recovery, model, state-machine, and property tests.
 
 Exit criteria: every supported asynchronous effect uses one negotiated atomic
 variant, stale/unfenced work cannot commit, and adapters unable to preserve a
-variant report it unsupported.
+variant report it unsupported. Every external outcome is terminally known,
+durably unknown and reconciling, or explicitly assigned for authorized manual
+resolution rather than inferred from delivery state.
 `v0.18.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface

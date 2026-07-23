@@ -48,4 +48,8 @@ All notable Vitheim changes are documented here. The format follows
   privileged workload tokens are sender constrained; external-copy disposition
   evidence carries honest proof strength; and raw measurements cannot expire
   until rollup authority is externally checkpointed and restore verified.
+- Strengthened the closed roadmap without new versions: mandatory deletion now
+  outranks unavailable rollup-preservation proof; remote effects have durable
+  ambiguous-outcome and reconciliation semantics; and the tenant-surface
+  registry has an inward descriptor, explicit backfill, and prospective gate.
 - Added local and GitHub verification gates without a crate publication path.

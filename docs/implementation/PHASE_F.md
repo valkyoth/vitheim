@@ -23,7 +23,7 @@ administrator scripts or scattered storage flags.
 
 Deliverables: tenant-lifecycle commands/events, process manager, cleanup proof
 ledger, migration plan/checkpoints, hold/erasure conflict policy, initial
-data-surface inventory hook for the `0.51.2` registry, and runbook.
+neutral `0.8.1` data-surface inventory consumed later by `0.51.2`, and runbook.
 
 Verification: ID reuse, suspend bypass, partial provisioning/deletion, held
 tenant deletion, stale cache/index/backup/blob, key destruction order, topology
@@ -45,6 +45,11 @@ tenant key, data classes and accountable owner, authoritative/derived/external
 status, export behavior, retention and legal-hold behavior, erasure/deletion
 semantics, backup/restore handling, residency/replication, key ownership and
 destruction, rebuild capability, tenant-topology migration, and cleanup proof.
+Consume the neutral `0.8.1` N1 descriptor schema and backfill every surface
+created in `0.1.0–0.51.1`; earlier crates never import Phase F solely to
+register themselves. This milestone validates the complete backfill, then
+activates the generated compile/registration gate prospectively for itself and
+all later milestones.
 For external copies, define typed disposition evidence strengths:
 `LocallyVerifiedDeletion`, `ControlledKeyCryptographicErasure`,
 `ProviderAttestedDeletion`, `DeletionRequestedUnconfirmed`, and
@@ -53,7 +58,11 @@ not cryptographic proof. Previously disclosed plaintext is never described as
 provably erased merely because access, synchronization, or a contract ended.
 Tenant closure policy defines acceptable/pending/blocking states by data class,
 legal hold, agreement, jurisdiction, and evidence strength while retaining the
-honest residual state.
+honest residual state. Retention precedence distinguishes rollup-substitution
+expiry from mandatory erasure, maximum-retention, and closure deletion.
+Mandatory deletion proceeds despite missing rollup/checkpoint/restore proof,
+leaves the rollup non-authoritative, marks affected historical results unknown,
+and emits an immutable authority-loss disposition record.
 Inventory all earlier surfaces including event/audit journals and projections,
 blobs, queues, customer measurements and rollups, paging/delivery receipts,
 hosted status, and caches.
@@ -62,8 +71,10 @@ Goal: make tenant lifecycle coverage mechanically complete as the platform adds
 new storage and external-copy paths.
 
 Deliverables: generated `TenantDataSurface` descriptor registry, compile/
-registration gate, lifecycle-operation planner, per-surface disposition
-receipts, completeness report, closure blocker, and adapter conformance API.
+registration gate, pre-`0.51.2` descriptor backfill importer/report,
+dependency-direction check, lifecycle-operation and retention-precedence
+planner, per-surface disposition receipts, completeness report, closure blocker,
+and adapter conformance API.
 The authorization-interface registry and this lifecycle registry remain
 distinct and cross-reference surfaces where applicable. Disposition receipts
 carry evidence kind, issuer/controller, scope, time, related request/
@@ -74,9 +85,13 @@ Verification: missing/duplicate surface registration, omitted tenant key or
 data class, false derived/rebuild claim, export/hold/erasure conflict, stale
 backup/index/cache/external copy, residency mismatch, wrong key destruction,
 topology migration omission, cleanup-receipt forgery, restore resurrection, and
-late registration tests pass. Provider attestation presented as local proof,
-unconfirmed request presented as deletion, unverifiable plaintext presented as
-erased, evidence-strength downgrade, and closure-policy bypass all fail.
+late registration tests pass. Missing earlier-surface backfill, an earlier crate
+depending outward on Phase F, post-`0.51.2` registration bypass, rollup proof
+blocking mandatory deletion, historical authority surviving deletion without
+proof, and missing authority-loss disposition fail. Provider attestation
+presented as local proof, unconfirmed request presented as deletion,
+unverifiable plaintext presented as erased, evidence-strength downgrade, and
+closure-policy bypass all fail.
 
 Exit criteria: every existing tenant data surface has a complete lifecycle
 entry and tested disposition path. Every later milestone that adds or changes a
@@ -85,6 +100,8 @@ tenant closure remains visibly incomplete while any registered surface lacks
 the evidence strength required by current closure policy. Closure may record an
 explicitly accepted unverifiable residual obligation where law and agreement
 permit, but cannot relabel it verified deletion or cryptographic erasure.
+Neither rollup authority nor availability history may override a mandatory
+deletion obligation.
 `v0.51.2 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.52.0` — Subjects And Service Principals

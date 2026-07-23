@@ -39,7 +39,11 @@ Verification:
   consumption share the effect transaction. Each bundle advances at most one
   authoritative aggregate stream and contains local durable effects only;
   provider/network dispatch and results are separate at-least-once transitions
-  with no distributed exactly-once claim. Denial-only audit chains anchor;
+  with no distributed exactly-once claim. Stable effect identity/request digest,
+  declared provider idempotency and replay horizon, durable unknown outcome,
+  reconciliation/compensation, and authorized manual-resolution tests prove an
+  ambiguous privileged or non-compensable effect is never blindly retried.
+  Denial-only audit chains anchor;
   protected reads/downloads cannot release bytes before audit receipt;
   streaming completion/abort reconciles.
 - Workload authentication, customer-observation storage, paging delivery,
@@ -51,8 +55,16 @@ Verification:
   deletion, controlled-key erasure, provider attestation, unconfirmed request,
   and unverifiable disclosed plaintext without overstating proof. Historical
   SLOs reproduce from retained raw observations or admissible integrity-bound
-  rollups; raw expiry evidence proves the rollup manifest was committed,
-  integrity verified, externally checkpointed, and restored successfully.
+  rollups; rollup-substitution expiry evidence proves the rollup manifest was
+  committed, integrity verified, externally checkpointed, and restored
+  successfully.
+  Controlling mandatory-erasure, maximum-retention, and closure exercises still
+  delete raw data when that proof is missing, keep the rollup non-authoritative,
+  expose affected history as unknown, and emit an immutable authority-loss
+  record.
+  Registry evidence also proves `0.51.2` backfilled every earlier surface and
+  mechanically gated every surface introduced thereafter without an outward
+  dependency from foundation/domain crates.
 - Workload authentication uses the selected external-issuer OAuth resource-
   server profile; privileged access is sender constrained, any bearer profile
   is lower-assurance and non-privileged, and replay caching is not credited as

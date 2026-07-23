@@ -176,36 +176,52 @@ integration is retested by `0.82.1`.
 
 ## `0.38.3` — Measurement Retention And Authoritative Rollups
 
-Status: planned; production raw expiry remains disabled until the exact
-production backup/restore profile repeats this gate at `0.145.0`.
+Status: planned; production rollup-substitution expiry remains disabled until
+the exact production backup/restore profile repeats this gate at `0.145.0`.
+Mandatory disposition obligations are never disabled by a missing rollup proof.
 
-Setup: retain raw observations for at least the longest supported raw SLO
+Setup: subject to the controlling legal/contractual deletion and retention-
+precedence policy, retain raw observations for the longest supported raw SLO
 window, correction horizon, lateness bound, investigation period, and hold
-obligation. Before permitted raw expiry, create immutable authoritative rollup
-facts rather than promoting mutable time-series projections. Bind each rollup
-to tenant/indicator, exact input interval and watermark, input count and
+obligation. A raw SLO window cannot be promised beyond permitted raw retention;
+it requires an admissible rollup or becomes unknown. Before raw observations may
+be replaced by a rollup, create
+immutable authoritative rollup facts rather than promoting mutable time-series
+projections. Bind each rollup to tenant/indicator, exact input interval and
+watermark, input count and
 complete/partial/unknown state, source-observation Merkle or manifest digest,
 calculation/schema version, unit and aggregation method, resolution/fidelity,
 retention/hold policy, correction/supersession identity, late-data
 recalculation behavior, and the exact SLO window classes allowed to consume it.
-Raw expiry is a gated transition: the rollup and source manifest must be
-committed, their integrity chain verified, their commitment included in a
+Rollup-substitution expiry is a gated transition: the rollup and source
+manifest must be committed, their integrity chain verified, their commitment
+included in a
 retrievable externally retained `0.19.0` signed checkpoint, and the
 then-current adapter restore fixture must have successfully restored and
-reverified that rollup/manifest/checkpoint class. Checkpoint lag, anchor loss,
-or missing restore evidence keeps the raw observations retained and reports
-the blocked expiry. `0.145.0` repeats the proof for every selected production
-backup/restore profile before production retention jobs may expire raw data.
+reverified that rollup/manifest/checkpoint class.
+Distinguish two deletion paths. Discretionary or policy-driven substitution of
+raw observations with a rollup is blocked by checkpoint lag, anchor loss, or
+missing restore evidence and retains raw data only while retention policy
+permits. Legally mandatory erasure, maximum-retention expiry, or tenant-closure
+deletion takes precedence and proceeds even when rollup proof is incomplete.
+In that case the rollup is not promoted to authority, every affected historical
+SLO/error-budget window becomes `Unknown`/`Unavailable`, and an immutable
+disposition fact records the controlling obligation, deleted scope, missing
+proof, affected windows, actor/policy, and authority loss. `0.145.0` repeats the
+substitution proof for every selected production backup/restore profile before
+production jobs may replace raw data with rollups.
 
 Goal: preserve reproducible historical SLO and error-budget authority when
-retention permits raw customer observations to expire.
+retention permits raw customer observations to be replaced, and degrade
+truthfully when a controlling deletion obligation prevents that authority.
 
 Deliverables: authoritative rollup aggregate/events, raw-to-rollup manifest and
 integrity proof, versioned rollup calculator, admissible-window registry,
 expiry preflight, late-data supersession process manager, reconciliation/
 recalculation tooling, memory and PostgreSQL adapters, restore/rebuild rules,
 external-checkpoint inclusion/verification receipt, restore-evidence binding,
-blocked-expiry projection/alerts, and operator retention guide.
+retention-precedence evaluator, blocked-substitution projection/alerts,
+authority-loss disposition event/projection, and operator retention guide.
 
 Verification: expire raw data before rollup commitment, mutate an existing
 rollup, omit or reorder source observations, forge completeness/count/watermark,
@@ -213,15 +229,21 @@ change unit/method/version, consume insufficient resolution, late data after
 expiry, overlapping/supersession races, hold/erasure conflict, digest mismatch,
 crash between rollup commit and checkpoint, forged or unavailable external
 anchor, checkpoint before rollup commitment, restore without manifest/anchor,
-false restore receipt, raw expiry during anchor/restore lag, long-window
-recalculation, and raw-versus-rollup differential/property tests pass.
+false restore receipt, discretionary rollup substitution during anchor/restore
+lag, long-window recalculation, mandatory erasure/max-retention/closure during
+checkpoint or restore failure, unlawful retention to preserve SLO history,
+accidental rollup promotion after mandatory deletion, missing authority-loss
+record, and raw-
+versus-rollup differential/property tests pass.
 
 Exit criteria: every supported historical SLO window is reproducible from
 retained raw facts or an explicitly admissible integrity-bound rollup;
 otherwise its result is unknown/unavailable rather than silently calculated
-from mutable aggregates. No raw observation expires until the corresponding
-authoritative rollup is committed, integrity verified, externally checkpointed,
-and restore tested under the selected profile.
+from mutable aggregates. Raw observations are replaced by an authoritative
+rollup only after commitment, integrity verification, external checkpointing,
+and restore testing under the selected profile. Mandatory deletion overrides
+preservation, records the loss immutably, and makes unsupported historical
+results explicitly unknown.
 `v0.38.3 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.39.0` — Approval And Notification Foundations

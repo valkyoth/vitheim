@@ -185,22 +185,29 @@ Status: planned.
 Setup: separate immutable event metadata from encrypted or externally erasable
 sensitive payloads; define classification, retention, tombstone, crypto-erasure,
 payload-key destruction, original plaintext/ciphertext hashes, legal holds, and
-rebuild behavior without erased plaintext.
+rebuild behavior without erased plaintext. Define a neutral N1 tenant-data-
+surface lifecycle descriptor vocabulary for tenant key, data classification,
+authority/derivation, retention/hold/erasure, residency, backup/external-copy,
+key ownership, rebuild, and disposition behavior. Earlier surface-owning crates
+emit these descriptors without importing the later Phase F registry.
 
 Goal: make privacy and erasure structural before event schemas become permanent.
 
 Deliverables: sensitive-payload reference/value model, classification enforcement,
 erasable store port with memory fake, tombstone proof, and redacted rebuild
-placeholder. Idempotency records, integrity links, outbox routing metadata,
-telemetry labels, and search keys may contain only explicitly safe references.
+placeholder; neutral bounded lifecycle descriptor schema and inventory fixture.
+Idempotency records, integrity links, outbox routing metadata, telemetry labels,
+and search keys may contain only explicitly safe references.
 
 Verification: classification downgrade, plaintext in metadata/log/index/receipt,
 hash substitution, held-data erasure, key destruction, double erasure, missing
-payload replay, and rebuild-after-erasure tests pass.
+payload replay, rebuild-after-erasure, descriptor incompatibility, and forbidden
+outward Phase F dependency tests pass.
 
 Exit criteria: erasure can remove recoverable plaintext without rewriting event
-authority or hiding that a classified payload existed. `v0.8.1 implementation
-stop reached. Run pentest for this exact commit.`
+authority or hiding that a classified payload existed, and pre-`0.51.2` crates
+can describe lifecycle surfaces through an inward foundation contract.
+`v0.8.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.9.0` — Pure Aggregate Framework
 

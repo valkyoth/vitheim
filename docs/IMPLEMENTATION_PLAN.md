@@ -38,18 +38,27 @@ planes. All fact-bearing domains reuse the shared N1 provenance, correction,
 confidence, and four-clock vocabulary rather than creating local substitutes.
 Semantic index storage and embedding generation are independently replaceable
 and independently admitted.
-Every milestone that creates or changes tenant-bearing durable, cached, indexed,
-backed-up, or external-copy state must update the `0.51.2`
-`TenantDataSurface` registry and lifecycle tests before exit. This is separate
+Before `0.51.2`, every milestone that creates or changes tenant-bearing durable,
+cached, indexed, backed-up, or external-copy state must supply the neutral
+`0.8.1` lifecycle descriptor and inventory fixture without depending outward on
+Phase F. `0.51.2` backfills and validates every earlier surface; its generated
+`TenantDataSurface` compile/registration gate then applies prospectively to
+`0.51.2` and every later milestone. This lifecycle registry remains separate
 from authority-interface registration. Every asynchronous state effect must use
 the applicable `0.18.2` command/consumer/timer/activity/poison atomic variant;
 best-effort receipts are forbidden. Each bundle advances no more than one
 authoritative aggregate stream and includes only local durable effects;
 provider/network work begins from committed intent and returns in a later
-bundle under explicitly at-least-once semantics.
+bundle under explicitly at-least-once semantics. Each external-effect
+capability follows the `0.16.0–0.18.2` outcome/reconciliation contract; an
+unknown privileged or non-compensable outcome is never retried blindly.
 External-copy lifecycle evidence uses the typed `0.51.2` strength model and may
 never promote an attestation, unconfirmed request, or unverifiable disclosed
-plaintext to local deletion proof or controlled-key erasure.
+plaintext to local deletion proof or controlled-key erasure. Rollup-substitution
+expiry requires its full authority proof, but a controlling mandatory erasure,
+maximum-retention, or closure deletion obligation takes precedence; any
+resulting loss of historical authority is recorded immutably and exposed as
+unknown/unavailable.
 
 ## Universal Verification And Exit
 
@@ -58,9 +67,10 @@ target checks, tool freshness, SBOM and license review, CI, CodeQL default
 setup, docs/release-note review, threat-model and unsafe/dependency deltas,
 authorization and tenant-isolation matrices, changed-parser fuzzing, changed-
 invariant property tests, and migration/restore evidence where applicable.
-Every milestone that adds an authority-bearing interface must register its
-tenant, subject, action, resource, fields, purpose, obligations, audit behavior,
-and negative cases in the `0.58.0–0.60.0` conformance registry before exit.
+`0.58.0–0.60.0` backfill every authority-bearing interface implemented through
+Phase F. Every later milestone that adds one must register its tenant, subject,
+action, resource, fields, purpose, obligations, audit behavior, and negative
+cases in that conformance registry before exit.
 
 At each implementation stop: do not tag, publish, or begin the next milestone.
 Pentest the exact commit, fix every blocking finding, rerun all gates, obtain a
