@@ -575,19 +575,24 @@ Checkpoint settles terminalization/backlog but not the envelope; physical
 deletion settles envelope/cleanup/deletion. Duplicate/reordered/unknown
 outcomes reconcile without double decrement, while checkpoint/archive
 occupancy stays charged.
-Deletion settlements reuse the domain-separated authenticated sparse archive/
-publication machinery with distinct local journal and verified archive replay
-heads. Physical deletion locks replay head -> journal head -> key/attempt ->
-capacity -> domain and atomically commits envelope deletion, original-bucket
-decrement, hot settlement row, journal-head advance, audit and result; it does
-not imply archive availability. Publication advances the archive replay head
-only after upload/verification and atomically deletes the exact captured hot-
+All checkpoint and deletion settlements reuse one domain-separated
+authenticated sparse journal/archive namespace with distinct local journal and
+verified archive replay heads. Checkpoint settlement locks replay head ->
+journal head -> key/attempt -> capacity -> domain and atomically commits
+original terminalization/backlog decrements, ordered per-leg rows, journal
+advance, attempt checkpoint, audit and result. Physical deletion follows the
+same protocol for separate envelope/cleanup/deletion legs and includes envelope
+removal. The journal never implies archive availability. Publication advances
+the archive replay head only after upload/verification and atomically deletes
+the exact captured hot-
 row IDs/version/range after locking archive head -> journal head -> rows and
-rechecking continuity. Lookup revalidates archive head H and combines it with
+rechecking continuity; archives may mix checkpoint/deletion triggers. Lookup
+revalidates archive head H and combines it with
 current hot rows/version and journal continuity. Absent-envelope non-membership
-cannot decrement. Exact duplicates return the archived result; changed
-bindings conflict, exact tombstones survive coalescing, dense inference is
-forbidden, and unavailable history retains capacity. Bounds protect Recovery.
+cannot decrement. Exact checkpoint/deletion duplicates return the archived
+result; changed trigger/leg bindings conflict, exact tombstones survive
+coalescing, dense inference is forbidden, and unavailable history retains the
+affected original capacity. Bounds protect Recovery.
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 bounds bytes/entries/chunks/depth/decode/work/jobs and a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
@@ -645,7 +650,8 @@ deadline, attempt lifecycle/owner/lease/fence/capacity/checkpoint state,
 reservation-set/settlement-leg high-watermarks and original-bucket balances,
 settlement journal-head and archive-replay-head predecessor/sequence/
 relationship state, archive root/key/publication, exact hot-row versions/ranges,
-cursor and exact settled-leg tombstones,
+cursor, exact checkpoint/deletion settled-leg tombstones, attempt-checkpoint
+linkage and remaining unsettled legs,
 fairness-scheduler state, and verified derived coverage. Late exact retry
 returns the archived result, changed retry returns historical conflict, and
 unavailable proof returns typed historical-state-unavailable without

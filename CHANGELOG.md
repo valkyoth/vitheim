@@ -32,6 +32,9 @@ All notable Vitheim changes are documented here. The format follows
 - Split settlement continuity into a database-local journal head and a
   verified archive replay head, with separate CAS boundaries, exact captured-
   range compaction, and proof-head revalidation.
+- Unified checkpoint and physical-deletion capacity settlements under that
+  journal/archive protocol, including atomic checkpoint bundles and mixed-leg
+  archive replay.
 - Selected bounded authenticated sparse archives for exact drain-action replay
   after compaction, with canonical result recovery, historical conflicts,
   resource-bounded proof verification, and fail-closed unavailable history.

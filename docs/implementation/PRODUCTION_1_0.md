@@ -257,23 +257,31 @@ occupancy remains charged to its archive ledger.
 Production reuses the authenticated sparse archive/publication mechanism but
 freezes separate domain-separated settlement heads.
 `...CapacitySettlementJournalHeadV1` is the database-local integrity/append
-head and never implies archive availability. Physical deletion atomically
-locks replay head -> settlement journal head -> key/attempt -> capacity ->
-domain, deletes the envelope, decrements the original bucket, records the hot
-settlement/audit/result and advances that journal head.
+head and never implies archive availability. Production uses one settlement
+namespace for every checkpoint and deletion leg. Checkpoint settlement
+atomically locks replay head -> journal head -> key/attempt -> capacity ->
+domain, validates unsettled checkpoint legs, decrements their original
+terminalization/backlog buckets, writes immutable per-leg rows, advances the
+journal over the ordered bundle, and writes the attempt checkpoint/audit/
+result. Physical deletion uses the same protocol for its separate envelope/
+cleanup/deletion legs and atomically commits envelope removal, original-bucket
+decrements, per-leg rows, journal advance, audit and result.
 `...CapacitySettlementArchiveReplayHeadV1` is the greatest authenticated,
 verified, published cumulative root and advances only after chunk upload and
 verification. Compaction captures exact hot-row IDs and version/range. Its
 final local transaction locks archive replay head -> journal head -> exact
 covered rows, rechecks the captured version and journal continuity, then
 atomically CAS-installs the archive head and deletes only those rows.
+Archives may mix checkpoint and deletion legs without aliasing trigger or leg
+identity.
 Authoritative lookup combines verified archive head, current hot-row version
 and journal continuity and revalidates archive head H before using a proof.
 Archive non-membership with an absent envelope never decrements. Exact
 duplicate after compaction returns the archived result; changed bytes conflict,
 coalescing preserves exact IDs/tombstones, and missing/forked/rolled-back/
-unverifiable history retains the charge. Settlement rows/bytes/checkpoints/
-archive/proof/backlog/workers are bounded with protected Recovery capacity.
+unverifiable checkpoint or deletion history retains the affected original
+charge. Settlement rows/bytes/checkpoints/archive/proof/backlog/workers are
+bounded with protected Recovery capacity.
 `PendingDrain` atomically installs a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` binding
 predecessor/successor generations and digests, canonically derived affected
@@ -327,7 +335,8 @@ reservation-set original buckets/balances/transfers and settlement leg/result
 records, greatest local settlement journal head, greatest verified archive
 replay head, both predecessor chains and their proved relationship, root/key/
 publication and exact covered/current hot-row version/range state, verification
-cursor, exact settled-leg tombstones, conservative capacity balances, and
+cursor, exact checkpoint/deletion settled-leg tombstones, attempt-checkpoint
+linkage, remaining unsettled legs, conservative capacity balances, and
 verified derived lane/aggregate coverage. Multiple active profiles, pending/fence
 half-state, contradictory activation records, unreachable predecessors, or
 direct fence install/clear invocation deny. Activation gaps, forks, reorder,
@@ -489,6 +498,10 @@ after journal commit before upload, after upload before verification, after
 verification before archive-head CAS and at the archive-head-CAS/hot-row-delete
 atomic boundary, duplicate deletion racing compaction, new hot rows racing the
 captured range, stale proof for H, absent-envelope non-membership,
+checkpoint-settlement response loss and duplicate retry before/after
+compaction, checkpoint settlement racing snapshot/publication, mixed
+checkpoint/deletion archives, trigger/leg substitution, restore/migration
+between the two settlement stages, unavailable checkpoint history,
 continuous traffic during shrink, admission/fence-install and final-admission/
 activation races, rejection-versus-admission, installed-fence crash/failover/
 restore, stale-worker bypass, and competing successors, lineage change before a receipt

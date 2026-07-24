@@ -163,15 +163,20 @@ audit decision.
   per-leg settlement identities separate checkpoint from physical-deletion
   release, reconcile unknown outcomes and prevent double decrement or
   current-profile recomputation;
-- physical-deletion settlement evidence uses a domain-separated authenticated
-  sparse checkpoint/archive with two heads: the local journal head advances
-  atomically with deletion/decrement/hot row and implies no archive
-  availability; the verified archive replay head advances only after upload/
-  verification and its CAS commits with exact captured-version row deletion;
+- checkpoint and physical-deletion capacity-settlement evidence uses one
+  domain-separated authenticated sparse checkpoint/archive with two heads and
+  one namespace for every
+  checkpoint/deletion leg: checkpoint decrements/per-leg rows/journal append/
+  attempt checkpoint/audit/result commit atomically, and physical deletion uses
+  the same protocol for separate legs; the local journal head implies no
+  archive availability; the verified archive replay head advances only after
+  upload/verification and its CAS commits with exact captured-version row
+  deletion, including mixed-trigger archives;
   authoritative lookup revalidates archive head H and combines it with current
   hot-row version and journal continuity; absent-envelope non-membership never
   decrements, archived duplicates return one result, changed bindings conflict,
-  unavailable history retains the charge, exact tombstones survive coalescing,
+  unavailable checkpoint/deletion history retains the affected charge, exact
+  tombstones survive coalescing,
   and bounded settlement storage/proof/compaction plus Recovery capacity forbid
   permanent rows or dense settlement inference;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,

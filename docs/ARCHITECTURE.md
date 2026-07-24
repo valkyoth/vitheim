@@ -205,17 +205,21 @@ Joins allocate nothing. Success rechecks owner/fence/deadline/budget/head and
 co-commits the action plus active-to-terminal transfer. Checkpoint and physical
 envelope deletion settle separate original reservation legs exactly once under
 stable settlement identities; profile changes never recompute buckets.
-Physical-deletion settlements reuse the authenticated sparse archive machinery
-but have two domain-separated heads. The local journal head advances atomically
-with envelope deletion, original-bucket decrement and the hot settlement row
-without implying archive availability. The archive replay head advances only
-after verified publication; its CAS commits with deletion of the exact
-captured hot-row version/range. Authoritative lookup combines verified archive
-head, current hot rows/version and journal continuity and revalidates head H
-before proof use. Archived exact retries return the prior result; changed bytes
-conflict; absent-envelope non-membership cannot decrement; unavailable proof
-retains the charge. Settlement state/proof/compaction is bounded, exact-ID
-tombstones survive coalescing, and no dense watermark infers settlement.
+Checkpoint and physical-deletion settlements reuse one authenticated sparse
+journal/archive namespace with two domain-separated heads. Checkpoint
+settlement atomically commits its original terminalization/backlog decrements,
+per-leg rows, journal advance, attempt checkpoint, audit and result; physical
+deletion uses the same protocol for separate envelope/cleanup/deletion legs.
+The local journal head never implies archive availability. The archive replay
+head advances only after verified publication; its CAS commits with deletion of
+the exact captured hot-row version/range and may cover mixed trigger kinds.
+Authoritative lookup combines verified archive head, current hot rows/version
+and journal continuity and revalidates head H before proof use. Archived exact
+retries return the prior result; changed trigger/leg bytes conflict; absent-
+envelope non-membership cannot decrement; unavailable checkpoint or deletion
+proof retains the affected charge. Settlement state/proof/compaction is
+bounded, exact-ID tombstones survive coalescing, and no dense watermark infers
+settlement.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again

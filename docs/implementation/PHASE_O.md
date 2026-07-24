@@ -302,23 +302,31 @@ remains charged to its archive ledger.
 Reuse the authenticated sparse archive/publication implementation for domain-
 separated settlement checkpoint and archive entries, but freeze two heads.
 `...CapacitySettlementJournalHeadV1` is the database-local append/integrity
-head and never implies archive availability. Physical deletion atomically
-locks replay head -> settlement journal head -> key/attempt -> capacity ->
-domain, deletes the envelope, decrements the original bucket, writes the hot
-settlement/audit/result and advances that journal head.
+head and never implies archive availability. Every checkpoint and deletion leg
+uses this one settlement namespace. Checkpoint settlement atomically locks
+replay head -> journal head -> key/attempt -> capacity -> domain, validates
+unsettled checkpoint legs, decrements original terminalization/backlog buckets,
+writes immutable per-leg rows, advances the journal over their ordered bundle,
+and writes the attempt checkpoint/audit/result. Physical deletion uses the same
+protocol for its separate envelope/cleanup/deletion legs and atomically commits
+envelope removal, original-bucket decrements, per-leg rows, journal advance,
+audit and result.
 `...CapacitySettlementArchiveReplayHeadV1` is the greatest authenticated,
 verified, published cumulative archive root and advances only after upload and
 verification. Compaction captures exact hot-row IDs and version/range; its
 final transaction locks archive replay head -> journal head -> exact covered
 rows, rechecks the snapshot and journal continuity, then atomically CAS-
 installs the archive head and deletes only those rows.
+Archives may mix checkpoint and deletion legs without aliasing trigger or leg
+identity.
 Authoritative lookup combines verified archive head, current hot-row version
 and journal continuity, and revalidates archive head H before using a proof.
 Non-membership with an absent envelope cannot decrement. Exact duplicate after
 hot-row compaction returns the archived result; changed settlement bytes
 conflict, coalescing preserves exact IDs/tombstones, and missing/forked/rolled-
-back/unverifiable history retains the charge. Settlement storage/proof/backlog/
-workers are bounded and protected for Recovery.
+back/unverifiable checkpoint or deletion history retains the affected original
+charge. Settlement storage/proof/backlog/workers are bounded and protected for
+Recovery.
 Entering pending drain persists
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 predecessor/successor generations and digests, canonically derived affected
@@ -372,7 +380,8 @@ original buckets/balances/transfers, settlement leg/result records, greatest
 local settlement journal head, greatest verified archive replay head, both
 predecessor chains and their proved relationship, root/key/publication and
 exact covered/current hot-row version/range state, verification cursor, exact
-settled-leg tombstones and conservative capacity balances; it verifies the
+checkpoint/deletion settled-leg tombstones, attempt-checkpoint linkage,
+remaining unsettled legs and conservative capacity balances; it verifies the
 derived lane/aggregate coverage. Multiple
 active profiles, pending/fence half-state, contradictory activation records,
 unreachable predecessors, activation gaps/forks/reordering/duplicate
@@ -1751,6 +1760,13 @@ row-delete boundary. Race duplicate deletion with compaction, new hot rows
 against the captured version/range and a proof for H against a head change.
 Historical proof failure or absent-envelope non-membership must retain capacity
 and never permit another decrement.
+Lose checkpoint-settlement responses; retry before and after compaction; race
+checkpoint settlement with snapshot/publication; publish mixed checkpoint/
+deletion archives; substitute trigger and leg identity; restore/migrate between
+checkpoint and deletion settlement; and remove checkpoint history. The attempt
+checkpoint, ordered settlement bundle, journal append, decrements, audit and
+result remain indivisible, and unavailable history retains the checkpoint
+charge.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 

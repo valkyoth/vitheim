@@ -207,12 +207,16 @@ allocate nothing. Success rechecks fence/deadline/budget/head and transfers
 active-to-terminal with the action bundle. Stable settlement IDs release
 checkpoint and physical-envelope legs separately and exactly once, never from
 current-profile recomputation. A
-domain-separated local settlement journal head advances with physical deletion
-and a distinct verified archive replay head advances only with publication and
-exact captured-hot-row deletion. Lookup combines archive head, current hot-row
-version and journal continuity and revalidates head H before proof use. Exact
-retry returns the archived result, changed bytes conflict, absent-envelope
-non-membership cannot decrement, and unavailable proof retains capacity.
+domain-separated local settlement journal covers every checkpoint and deletion
+leg. Checkpoint decrements, per-leg rows, journal append, attempt checkpoint,
+audit and result commit atomically; physical deletion follows the same protocol
+for its separate legs. A distinct verified archive replay head advances only
+with publication and exact captured-hot-row deletion and can cover mixed
+trigger kinds. Lookup combines archive head, current hot-row version and journal
+continuity and revalidates head H before proof use. Exact retry returns the
+archived result, changed trigger/leg bytes conflict, absent-envelope non-
+membership cannot decrement, and unavailable checkpoint or deletion proof
+retains capacity.
 Exact-ID tombstones, bounds, recovery and migration replace any dense inference
 or permanent rows. A
 once-per-

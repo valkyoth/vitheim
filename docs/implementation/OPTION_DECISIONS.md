@@ -667,12 +667,20 @@ settlement archive entry,
 and
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementArchiveReplayHeadV1`.
 The database-local journal head binds a non-wrapping sequence/predecessor,
-settlement/hot-row digest and version, transaction/result/audit identity and
-owner continuity; it never claims archive availability. Physical deletion
-locks replay head -> settlement journal head -> key/attempt -> capacity ->
-profile/fence/domain and atomically deletes the envelope, decrements the
-original bucket, writes the immutable hot settlement row and advances that
-journal head with the audit and canonical result.
+canonical ordered settlement/hot-row-set digest and version, every reservation-
+set/leg/settlement ID and trigger, transaction/result/audit identity and owner
+continuity; it never claims archive availability.
+
+Freeze one unified journal/archive protocol for all checkpoint and deletion
+settlement legs. Checkpoint settlement locks replay head -> settlement journal
+head -> key/attempt -> capacity -> profile/fence/domain, validates the terminal
+attempt and unsettled checkpoint legs, decrements only their original
+terminalization/backlog buckets, writes immutable per-leg settlements, advances
+the journal over the ordered bundle, and writes the attempt checkpoint, audit
+and canonical result atomically. Physical deletion uses the same order and
+protocol for its separate envelope/cleanup/deletion legs and atomically commits
+envelope removal, original-bucket decrements, immutable per-leg rows, journal
+advance, audit and result. Checkpoint occupancy remains charged.
 
 Exact duplicate after hot-row deletion returns the archived result without
 decrement. Changed settlement/reservation-set ID, leg, bucket/quantity, trigger
@@ -685,22 +693,30 @@ locks archive replay head -> settlement journal head -> exact covered hot rows,
 rechecks the captured version and journal continuity, then atomically
 CAS-installs the archive replay head and deletes only those rows through
 Staged -> Verified -> CommittedHead -> HotRowsDeleted. Later rows remain hot.
+Archive chunks may mix checkpoint and deletion legs; exact identity, trigger
+kind and per-leg tombstones survive publication and coalescing.
 Authoritative lookup is verified archive replay head plus current hot-row
 version plus journal-head continuity. A proof for archive head H must re-read
 or lock H before use. Archive non-membership never authorizes another decrement
 when the envelope is absent. Coalescing preserves exact sparse IDs and
 settled-leg tombstones. Missing, forked, rolled-back or unverifiable history
 returns typed settlement-historical-state-unavailable and retains the
-conservative charge.
+conservative original checkpoint or deletion charge.
 
 Freeze settlement row/byte/checkpoint/archive/proof/backlog/worker bounds and
 protected Recovery reservations. Recovery and migration preserve greatest
 local settlement journal head, greatest verified archive replay head, both
 predecessor chains and their proved relationship, root/key/publication state,
 exact hot-row IDs/versions/ranges, cursor, settled-leg tombstones and original-
-bucket balances. Adapters must expose both distinct CAS boundaries or refuse
-`VIT-CAP-061`. Dense high-watermark inference over arbitrary settlement IDs is
-forbidden.
+bucket balances, attempt-checkpoint linkage and the exact remaining unsettled
+legs. Adapters must expose both distinct CAS boundaries and one unified
+checkpoint/deletion settlement namespace or refuse `VIT-CAP-061`. Dense high-
+watermark inference over arbitrary settlement IDs is forbidden.
+Decision verification loses checkpoint responses, retries checkpoint settlement
+before and after compaction, races it with snapshot/publication, publishes mixed
+checkpoint/deletion archives, substitutes trigger/leg identity, restores or
+migrates between checkpoint and deletion settlement, and removes checkpoint
+history; outcomes are one exact result or a conservatively retained charge.
 
 Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
