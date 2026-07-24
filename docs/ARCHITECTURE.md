@@ -81,10 +81,13 @@ remains expired/historical. Issuance budgets separate normal, recovery, and
 break-glass counters with a non-borrowable emergency reserve and independent
 ceilings; this protects repair availability without bypassing authorization,
 deadline, or replay proof.
-Every authenticated canonical presentation charges a separate bounded attempt
-rate, including typed denials, without creating authority. Every first-seen
-canonical request gets a monotonic request sequence; exact retries reuse its
-charge/outcome. Denials remain exactly replayable for a bounded horizon and
+Every authenticated canonical presentation charges a bounded presentation
+rate before protected idempotency lookup, including retry, replay and conflict,
+without creating a logical request or authority. Every first-seen canonical
+request pays one separate request-rate charge and gets a monotonic request
+sequence. Exact retries pay presentation rate again but reuse that request
+charge, sequence and outcome; concurrent identical calls serialize to the same
+logical request. Denials remain exactly replayable for a bounded horizon and
 then permanently historical through a checkpoint-before-delete authenticated
 request commitment and bounded archive proof. Missing proof fails closed rather
 than reevaluating the request under new policy. Successful issuance also
@@ -101,8 +104,9 @@ Immediate receipt revocation is therefore a distinct consumer-fenced protocol;
 the issuer cannot manufacture its own release evidence. Its canonical envelope
 binds consumer ownership/fence, authorization/receipt/intent, closed outcome,
 result/tombstone/time, sender/key/profile, message and outbox sequences.
-`Reconciling` is non-terminal; consumer sender credentials are never available
-to the issuer. Timeout never releases.
+Terminal outcomes and reconciliation evidence use separate disposition and
+receipt types, and settlement accepts only the terminal receipt. Consumer
+sender credentials are never available to the issuer. Timeout never releases.
 Large issuer ranges use resource-bounded authenticated chunks with explicit
 byte/entry/decode/work/depth limits and a durable verification cursor, so
 compaction proof cannot become a CPU or allocation denial of service.

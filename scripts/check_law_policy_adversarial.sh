@@ -229,8 +229,14 @@ expect_realization_failure "a missing topology commit reconciliation outcome"
 sed -i 's/`TopologyAuthorizationAdmissionBudgetV1`, //' "$realizations"
 expect_realization_failure "a missing topology authorization admission budget"
 
-sed -i 's/`TopologyAuthorizationAttemptRateBudgetV1`, //' "$realizations"
-expect_realization_failure "a missing topology authorization attempt-rate budget"
+sed -i 's/`TopologyAuthorizationPresentationRateBudgetV1`, //' "$realizations"
+expect_realization_failure "a missing topology authorization presentation-rate budget"
+
+sed -i 's/`TopologyAuthorizationRequestRateBudgetV1`, //' "$realizations"
+expect_realization_failure "a missing topology authorization request-rate budget"
+
+sed -i 's/`TopologyAuthorizationPresentationRateLimited`, //' "$realizations"
+expect_realization_failure "a missing topology authorization presentation-rate denial"
 
 sed -i 's/`TopologyAuthorizationRequestSequence`, //' "$realizations"
 expect_realization_failure "a missing topology authorization request sequence"
@@ -252,6 +258,15 @@ expect_realization_failure "a missing consumer terminal receipt"
 
 sed -i 's/`TopologyAuthorizationConsumerTerminalOutcomeV1`, //' "$realizations"
 expect_realization_failure "a missing closed consumer terminal outcome"
+
+sed -i 's/`TopologyAuthorizationConsumerDispositionV1`, //' "$realizations"
+expect_realization_failure "a missing consumer disposition type"
+
+sed -i 's/`TopologyAuthorizationConsumerReconciliationEvidenceV1`, //' "$realizations"
+expect_realization_failure "a missing consumer reconciliation evidence type"
+
+sed -i 's/`TopologyAuthorizationConsumerReconciliationReceiptV1`, //' "$realizations"
+expect_realization_failure "a missing consumer reconciliation receipt"
 
 sed -i 's/`AuthorizationIssuanceSequence`, //' "$realizations"
 expect_realization_failure "a missing topology authorization issuance sequence"

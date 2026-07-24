@@ -114,8 +114,9 @@ clock disagreement cannot lengthen authority. `0.21.0` freezes canonical
 prevent migration/export field loss; and `0.140.2` admits only a concrete
 commit-time predicate or hard no-late-commit fence. Client timeouts are never
 deadline authority. The same versions freeze and prove bounded authorization
-anti-replay: a separate rate for every authenticated canonical attempt,
-successful-admission/outstanding quotas, monotonic issuance
+anti-replay: a presentation rate for every authenticated canonical
+presentation, a once-per-first-seen-request rate, successful-admission/
+outstanding quotas, monotonic issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive
 commitments, checkpoint-before-delete compaction, fail-closed missing history,
 and storage-growth alerts. Phase O implements, failover-tests, restores, soaks,
@@ -124,21 +125,24 @@ authenticated complete sequence/deadline range evidence; the consumer stays
 sparse across unseen receipts unless time and range proof make dense compaction
 eligible. Separate non-borrowable normal/recovery/break-glass counters preserve
 one bounded emergency repair path without relaxing any security gate. Every
-canonical denial consumes bounded attempt rate but creates no authority.
-Every first-seen canonical request gets a stable request sequence and exact
-retry outcome. Denials checkpoint before hot deletion, remain historical after
+canonical denial consumes presentation and request rate but creates no
+authority. Every first-seen canonical request gets a stable request sequence
+and request charge; exact retries pay presentation rate again while reusing its
+outcome. Denials checkpoint before hot deletion, remain historical after
 compaction, fail closed when proof is unavailable, and have bounded rows/bytes/
-archive/verification work. Successful issuance atomically commits both rate charges, layered deployment/
+archive/verification work. Successful issuance atomically commits all
+applicable rate charges, layered deployment/
 issuer/caller quota reservation, the original quota claim set, sequence,
 receipt, idempotent result and outbox. Lineage revocation or supersession blocks
 new grants but does not free a live receipt. Settlement decrements the original
 counters all-or-none only after authenticated consumer terminal proof or
 conservative expiry. Immediate individual revocation is a separate VIT-INV-060
 consumer-fence/tombstone protocol whose terminal receipt the issuer cannot
-forge. Its complete canonical envelope uses a closed outcome state machine,
-sender-only consumer authentication and verify-only issuer credentials;
-`Reconciling` cannot release. Timeout and a lost revocation response retain
-capacity.
+forge. Its complete canonical envelope uses closed terminal outcomes, while
+ongoing reconciliation uses separate evidence and receipt types. The
+terminal-settlement port accepts only terminal receipts; sender-only consumer
+authentication and verify-only issuer credentials apply. Timeout and a lost
+revocation response retain capacity.
 Bounded predecessor-linked range chunks cap bytes, entries, decode allocation,
 verification work and proof depth before dense eligibility. VIT-INV-060 only consumes that
 profile-discriminated receipt and local workload proof with its CAS—there is no

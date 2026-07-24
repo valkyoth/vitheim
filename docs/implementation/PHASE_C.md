@@ -221,15 +221,21 @@ admission-rate and outstanding-authorization quotas execute before allocation;
 every layer must admit, and `TopologyAuthorizationPrincipalBudgetKey` binds the
 authenticated principal plus issuing-authority lineage and class, so caller
 identity splitting cannot increase an aggregate ceiling. A separate bounded
-`TopologyAuthorizationAttemptRateBudgetV1` charges every authenticated
-canonical issuance presentation—including policy, quota, and replay denials—
-without creating authority or an outstanding reservation. Unauthenticated or
-non-canonical traffic is rejected under ingress parser/transport limits before
-this owner state. Every first-seen authenticated canonical request atomically
-receives a monotonic `TopologyAuthorizationRequestSequence`; retries with the
-same canonical request ID and digest reuse that sequence and its original
-attempt charge/outcome. Request-ID reuse with a different digest, principal,
-authority lineage, or budget class rejects. The request sequence is distinct
+`TopologyAuthorizationPresentationRateBudgetV1` charges every authenticated
+canonical presentation, including exact retries, response-loss retries,
+historical replays, and requests that will receive policy/quota/replay denial.
+It protects authentication, canonical decode, idempotency lookup and bounded
+proof verification and creates no logical request, authority, or reservation.
+Unauthenticated or non-canonical traffic is rejected under ingress parser/
+transport limits before this owner state. Every first-seen authenticated
+canonical request atomically receives a monotonic
+`TopologyAuthorizationRequestSequence` and one separate
+`TopologyAuthorizationRequestRateBudgetV1` charge; retries with the same
+canonical request ID/digest/principal/authority/class reuse that sequence,
+request charge and immutable outcome but still consume presentation rate.
+Request-ID reuse with a different digest, principal, authority lineage, or
+budget class consumes presentation rate and rejects as conflict without a new
+request charge. The request sequence is distinct
 from `AuthorizationIssuanceSequence`: every admitted or denied canonical
 request has the former, while only a successful authority allocation has the
 latter and binds both sequences into its receipt/result. The
@@ -243,16 +249,25 @@ Break-glass remains subject to its own strict ceiling and every trusted-time,
 quorum/SoD, canonical receipt, single-consumption, deadline-CAS, and replay-
 checkpoint control.
 
-For successful issuance, request-sequence allocation, attempt charging, quota
-validation, every applicable admission counter/reserve mutation,
+Presentation charging occurs before protected request lookup. Presentation
+saturation returns typed `TopologyAuthorizationPresentationRateLimited`
+without reading, replacing, or becoming the immutable request outcome; a later
+presentation may retrieve that outcome. Concurrent identical first-seen
+presentations each spend presentation rate, serialize on the canonical request
+key, and create exactly one request sequence, request-rate charge and outcome.
+
+For successful first-seen issuance, request-sequence allocation, request-rate
+charging, quota validation, every applicable admission counter/reserve mutation,
 `TopologyAuthorizationOutstandingReservation` creation,
 `AuthorizationIssuanceSequence` allocation, canonical receipt persistence,
 request-digest-bound idempotent result persistence, and issuance outbox
-insertion are one VIT-INV-061 local atomic transaction. A denied authenticated
-canonical attempt atomically commits its request sequence, bounded attempt-rate
-charge, caller/class binding, and typed idempotent denial result; it allocates
+insertion are one VIT-INV-061 local atomic transaction after the presentation
+charge. A denied first-seen authenticated canonical request atomically commits
+its request sequence, bounded request-rate charge, caller/class binding, and
+typed idempotent denial result; it allocates
 no admission token, outstanding reservation, authorization issuance sequence,
-receipt, or issuance outbox. Attempt/admission rate charges are never refunded.
+receipt, or issuance outbox. Presentation, request and admission rate charges
+are never refunded; exact retries spend only presentation rate again.
 
 Each reservation embeds immutable
 `TopologyAuthorizationOriginalQuotaClaimSetV1`: exact deployment bucket,
@@ -300,10 +315,19 @@ version and monotonic result sequence; receipt-specific tombstone digest;
 applicable `commit_before`, trusted-time profile/epoch/continuity and
 conservative terminal-time evidence; sender workload/owner identity; signing or
 MAC key epoch and closed authentication profile; stable message/idempotency ID;
-and transactional outbox sequence. The closed outcomes are
+and transactional outbox sequence. The terminal outcome type contains only
 `RevokedBeforeConsumption`, `AlreadyConsumed`, `Expired`,
-`DefinitelyNotCommitted`, `PermanentlyUnresolved`, and `Reconciling`.
-`Reconciling` is explicitly non-terminal and never releases capacity.
+`DefinitelyNotCommitted`, and `PermanentlyUnresolved`.
+`TopologyAuthorizationConsumerDispositionV1` is the separate closed sum
+`Terminal(TopologyAuthorizationConsumerTerminalOutcomeV1)` or
+`Reconciling(TopologyAuthorizationConsumerReconciliationEvidenceV1)`.
+VIT-INV-060 emits `TopologyAuthorizationConsumerTerminalReceiptV1` only for
+the terminal variant. Reconciling uses a domain-separated
+`TopologyAuthorizationConsumerReconciliationReceiptV1` and can later advance
+to a terminal receipt under a greater consumer result/outbox sequence.
+`SettleTopologyAuthorizationOutstandingReservation` accepts the terminal
+receipt type, never the disposition or reconciliation types, so reconciliation-
+based release is unrepresentable at the settlement port.
 VIT-INV-060 alone has sender/signing or sender-MAC generation authority;
 VIT-INV-061 has issuer-side verification only and cannot possess credentials
 that manufacture the envelope. Receipt replay is idempotent by message ID,
@@ -324,7 +348,7 @@ Denied-request history has its own bounded branch inside
 `TopologyAuthorizationRequestReplayCheckpointV1` binds deployment and issuer
 lineage; inclusive `TopologyAuthorizationRequestSequence` range; predecessor
 checkpoint digest; canonical ordered request ID/digest, principal/authority,
-budget-class, attempt-charge, and typed-outcome commitments; successful
+budget-class, request-rate charge, and typed-outcome commitments; successful
 request-to-`AuthorizationIssuanceSequence` links; archive digest/profile;
 schema/algorithm version; counters; signing identity/key epoch; and creation
 time. VIT-INV-061 keeps exact request outcomes hot for the frozen minimum
@@ -338,7 +362,7 @@ cannot become a new request or a successful issuance. Freeze maximum denied
 rows/bytes, request-checkpoint backlog, archive proof bytes/depth/work, decode
 allocation, verification jobs, and compaction latency; saturation fails closed
 before admitting another canonical request. Request sequence, checkpoint chain,
-covered-through high-watermark, key epochs, and attempt-charge commitments
+covered-through high-watermark, key epochs, and request-rate-charge commitments
 survive crash, migration, failover, restore, and backend conversion.
 
 A closed `HotExact` ->
@@ -493,15 +517,15 @@ issuer/consumer time high-watermark, continuity field, expiry tombstone, or
 atomic bundle member; uses client-side deadline checks; reports an unproven
 commit mechanism; permits a timeout-abandoned transaction to commit later; or
 allows migration, downgrade, backup, restore, or import to reset those fields.
-Reject VIT-CAP-060/061 when issuance can bypass its attempt/admission/
-outstanding budget,
+Reject VIT-CAP-060/061 when issuance can bypass its presentation/request/
+admission/outstanding budget,
 the exact replay horizon or maximum hot/backlog cardinality is unspecified,
 compaction deletes before checkpoint installation, a covered request can look
 absent, archive/proof loss permits reissue, checkpoint/key rotation is
 unauthenticated, or storage-growth accounting and fail-closed alerts are absent.
 Also reject a profile without a monotonic request sequence for every first-seen
-authenticated canonical request; one that recharges or renumbers an exact
-retry; omits denied request ID/digest, caller/class, attempt charge, typed
+authenticated canonical request; one that recharges request rate or renumbers
+an exact retry; omits denied request ID/digest, caller/class, request-rate charge, typed
 outcome, or success-to-issuance link from its authenticated request checkpoint;
 deletes denial state before checkpoint; reevaluates a late compacted denial;
 treats missing denial proof as new; or leaves denial rows/bytes, checkpoint
@@ -517,12 +541,18 @@ timeout-, lineage-revocation-, or lineage-supersession-based release while the
 receipt remains consumable; duplicate, partial, recomputed-key, issuer-forged,
 or unauthenticated outstanding-counter release; loss of the original quota
 claim set/budget epoch/reserve source; denial that creates authority or a
-reservation; successful issuance that is not charged to both attempt and
-admission limits; an authenticated canonical denial that can bypass the
-bounded attempt-rate counter; a consumer terminal receipt with an open/unknown
-outcome, omitted owner/authorization/receipt/intent/result/tombstone/time/
-sender/key/message/outbox field, noncanonical optional intent, consumer-result
-sequence rollback, conflicting replay, or `Reconciling` accepted as release;
+reservation; a presentation, first-seen request, or successful issuance that
+escapes its respective presentation, request, admission, or outstanding
+charge; an
+exact retry charged request/admission/outstanding capacity again; an
+authenticated canonical denial that can bypass presentation or request rate;
+a terminal receipt with an open/unknown or `Reconciling` outcome (which must be
+unrepresentable), omitted owner/authorization/receipt/intent/result/tombstone/
+time/sender/key/message/outbox field, noncanonical optional intent, consumer-
+result sequence rollback, conflicting replay; a settlement port accepting
+`TopologyAuthorizationConsumerDispositionV1`,
+`TopologyAuthorizationConsumerReconciliationEvidenceV1`, or
+`TopologyAuthorizationConsumerReconciliationReceiptV1`;
 consumer authentication credentials available to VIT-INV-061;
 missing principal/authority sub-limits where a class has multiple callers; and
 an unbounded, oversized, over-depth, cyclic, partial, or non-canonical range
@@ -768,10 +798,16 @@ unresolved/receipt-revoked evidence or conservative expiry releases it. Forge
 terminal evidence with issuer keys, change principal/policy/budget epochs before
 settlement, and race settlement with consumption, expiry, failover and duplicate
 delivery; original buckets release all-or-none exactly once. Prove every
-first-seen authenticated canonical denial atomically allocates one request
-sequence and bounded attempt charge without creating an admission token/
-reservation/authorization issuance sequence/receipt/outbox; exact retries reuse
-that identity and charge. Compact denial history across the hot-horizon boundary,
+authenticated presentation—including every concurrent duplicate, response-
+loss retry and historical replay—spends presentation rate. Prove exactly one
+first-seen canonical denial atomically allocates one request sequence and
+request-rate charge without creating an admission token/reservation/
+authorization issuance sequence/receipt/outbox; exact retries reuse that
+identity/outcome and never spend request/admission/outstanding capacity again.
+During presentation-rate saturation, retry returns the transient presentation-
+limited result without replacing the immutable request outcome. Changed-digest
+request-ID reuse spends presentation rate, rejects conflict and creates no
+request charge. Compact denial history across the hot-horizon boundary,
 policy/approval change, checkpoint crash, archive outage, key rotation,
 failover, restore and backend conversion; a late request returns its historical
 denial or fail-closed unavailable-history, never reevaluation. Saturate every
@@ -779,9 +815,13 @@ denial row/byte/backlog/proof/decode/work bound.
 For `TopologyAuthorizationConsumerTerminalReceiptV1`, omit or substitute every
 canonical field, use an unknown outcome, make optional intent noncanonical,
 roll back result/outbox sequence, replay a conflicting digest, forge with issuer
-credentials, and present `Reconciling`; every case retains capacity. Prove each
-closed terminal outcome and sender-only consumer/verify-only issuer role.
-Successful issuance charges attempt plus admission/outstanding. Exhaust one principal sub-
+credentials, and attempt to construct a terminal receipt from
+`Reconciling`; the type/codec/settlement port must make the latter
+unrepresentable. Prove each closed terminal outcome, the separate reconciliation
+receipt/evidence path, monotonic reconciliation-to-terminal transition, and
+sender-only consumer/verify-only issuer role. Successful first-seen issuance
+charges presentation, request, admission and outstanding; exact retry charges
+presentation only. Exhaust one principal sub-
 limit without exhausting its class. Feed oversized entry counts,
 encoded lengths, decode allocations, verification work, proof depths, chunk
 counts, cyclic/reordered/substituted chains, truncated terminal markers, and
@@ -899,11 +939,12 @@ results, request and authorization issuance sequences, authenticated denial-
 request and issuance replay checkpoints/covered-through high-watermarks,
 archive proofs, issuer range manifests, consumer sparse/eligible-dense state,
 bounded range chunks/verification cursors, layered deployment/issuer/principal
-attempt/admission/outstanding normal/recovery/break-glass counters, original
+presentation/request/admission/outstanding normal/recovery/break-glass counters, original
 quota claim sets/budget epochs/reserve sources, outstanding reservations,
-receipt-revocation intents, consumer terminal receipts and exact-once
-settlements; canonical terminal receipt envelopes/outcomes/result and outbox
-sequences/authentication roles; non-borrowable reserve; denial and issuance
+receipt-revocation intents, terminal and reconciliation receipts and exact-once
+settlements; canonical terminal outcome and separate disposition/
+reconciliation evidence, result and outbox sequences/authentication roles;
+non-borrowable reserve; denial and issuance
 compaction/backpressure state; proof-work budgets; and growth metrics. Startup
 fails capability negotiation if any
 mandatory semantic component or transaction-domain placement is absent.
@@ -974,7 +1015,8 @@ reserved break-glass success, break-glass flood isolation, bounded growth under
 maximum admitted rate, atomic issuance crash points, timeout-preserved and
 duplicate-settled reservations, lineage revoke/supersede retention, issuer-
 forged terminal rejection, original-bucket settlement across policy changes,
-denial-attempt versus successful-admission accounting, principal
+presentation-per-retry/request-once/admission-once accounting, reconciliation-
+type settlement rejection, principal
 monopolization, denial request-sequence/checkpoint/horizon/archive-loss/late-
 retry behavior, terminal-envelope field/outcome/authentication/result-sequence
 conformance, and bounded range-chunk decode/verification exhaustion, and
@@ -1015,8 +1057,8 @@ eligible-through time/deadline checks, and independent non-borrowable normal/
 recovery/break-glass counters and ceilings. It also proves one atomic
 reservation/sequence/receipt/result/outbox issuance transaction, exact-once
 terminal release from consumer evidence or conservative expiry, lineage revoke/
-supersede retention, original-bucket settlement, distinct attempt/admission
-rate accounting, denial request-sequence/checkpoint/late-retry and archive-loss
+supersede retention, original-bucket settlement, distinct presentation/request/
+admission rate accounting, denial request-sequence/checkpoint/late-retry and archive-loss
 behavior, canonical terminal-envelope/outcome/authentication conformance,
 principal/authority sub-limits, and bounded chunked manifest decoding and
 verification.
@@ -1050,9 +1092,10 @@ pause points including primary failover and response loss, attempted late
 commit, common quota/horizon/checkpoint/compaction/archive-loss/bounded-growth
 cases, sparse-gap/range-manifest/late-presentation cases, break-glass reserve
 isolation, issuance atomicity/settlement idempotency/principal isolation, and
-lineage-retention/original-claim/consumer-terminal/attempt-versus-admission
-semantics, denial request-sequence/checkpoint/late-retry/archive-loss and
-terminal-envelope/outcome/authentication semantics, oversized/deep/partial/
+lineage-retention/original-claim/consumer-terminal/presentation-versus-request-
+versus-admission semantics, denial request-sequence/checkpoint/late-retry/
+archive-loss and terminal-versus-reconciling type/authentication semantics,
+oversized/deep/partial/
 cyclic manifest-chunk rejection, and
 conformance pass.
 
@@ -1086,8 +1129,9 @@ checkpoint/compaction/archive-loss/bounded-growth cases, and full conformance
 pass; include sparse-gap/range-manifest/late-presentation behavior and break-
 glass reserve isolation, atomic issuance and exact-once settlement, caller
 sub-limit isolation, lineage-retention/original-claim/consumer-terminal/
-attempt-versus-admission semantics, denial request-sequence/checkpoint/late-
-retry/archive-loss and terminal-envelope/outcome/authentication semantics, and
+presentation-versus-request-versus-admission semantics, denial request-sequence/
+checkpoint/late-retry/archive-loss and terminal-versus-reconciling type/
+authentication semantics, and
 bounded chunk/proof verification.
 
 Exit criteria: optional graph behavior is replaceable and policy equivalent.
@@ -1304,11 +1348,13 @@ permit an older binary/schema to write. Downgrade below this schema is rejected
 before opening the authority rows.
 Preserve `TopologyAuthorizationRequestSequence`,
 `AuthorizationIssuanceSequence`, pre-allocation budget state,
-layered deployment/issuer/principal attempt/admission/outstanding counters,
+layered deployment/issuer/principal presentation-rate/request-rate/admission/
+outstanding counters,
 immutable original quota claim sets/budget epochs/class/reserve sources,
 outstanding reservations, receipt-revocation intents, canonical consumer
-terminal receipt envelope/outcome/result and outbox sequences/authentication
-roles, and exact-once settlement records; exact replay-horizon metadata; every
+terminal receipt envelope/outcome/result and outbox sequences, separate
+reconciliation evidence/receipts, authentication roles, and exact-once
+terminal settlement records; exact replay-horizon metadata; every
 hot request/result not yet covered; authenticated denial-request and issuance
 replay checkpoint chains/current digests/request covered-through high-watermark; issuer
 dense issued-through watermark and bounded range manifest/chunks/verification
@@ -1322,10 +1368,11 @@ weaken proof availability, turn sparse consumer history into an unproven dense
 range, split issuance atomicity, release a reservation from timeout, duplicate
 a terminal release, release from lineage revocation/supersession without
 receipt-specific consumer proof, recompute current quota keys, accept issuer-
-forged terminal evidence, accept `Reconciling` as terminal, omit or alter a
-terminal envelope field/authentication role, lose/renumber/recharge a request
+forged terminal evidence, pass reconciliation evidence to the terminal-only
+settlement port, omit or alter a terminal or reconciliation envelope field/
+authentication role, lose/renumber/recharge a request
 sequence, reevaluate a compacted denial, treat unavailable denial proof as new,
-conflate attempt and admission rates, drop a caller
+conflate presentation, request, and admission rates, drop a caller
 sub-limit, widen a range-proof resource budget, make budget classes borrowable,
 or treat an unavailable archive as absence.
 Replacement creates a successor placement generation and fresh admission;
@@ -1428,10 +1475,12 @@ request and authorization sequences, denial-request and issuance checkpoint
 chains/current digests/covered-through high-watermarks, set and archive
 commitments, issuer range manifests/dense watermark, consumer sparse and
 eligible-dense state, bounded chunks/verification cursor, layered caller/class
-attempt/admission/outstanding counters, original claim sets/epochs/reserve
+presentation-rate/request-rate/admission/outstanding counters, original claim
+sets/epochs/reserve
 sources, outstanding reservations/settlements, receipt-revocation intents/
 canonical consumer terminal receipt envelopes/outcomes/result and outbox
-sequences/authentication profiles, normal/recovery/break-glass counters/reserve,
+sequences, separate reconciliation evidence/receipts, authentication profiles,
+normal/recovery/break-glass counters/reserve,
 denial and issuance compaction cursors/backlogs/proof-work budgets, key epochs,
 and growth-accounting state,
 encryption/signing ports, position mapping, and budgets.
@@ -1452,7 +1501,8 @@ usable membership/non-membership proofs, equivalent non-borrowable budget
 classes/reserve and principal sub-limits, intact outstanding reservations and
 original claim sets, settlement idempotency and consumer-terminal evidence,
 complete request sequence/checkpoint/denial-history proof, canonical terminal
-envelope/outcome/role semantics, separate attempt/admission semantics,
+envelope/outcome/role semantics, structurally separate reconciliation evidence,
+separate presentation/request/admission semantics,
 equal-or-stricter request/archive and manifest/chunk/
 verification limits, and no sequence/key reuse. Missing archival payload may remain unavailable, but
 that range is durably fail-closed and cannot be interpreted as unused. It then
@@ -1475,9 +1525,10 @@ issuer-range loss/substitution, sparse-to-dense promotion, late gap acceptance,
 split issuance state, timeout release, duplicate terminal decrement, caller-
 limit loss, lineage revoke/supersede release without receipt-specific consumer
 proof, current-key recomputation, issuer-forged/incomplete/open-outcome
-terminal evidence, `Reconciling` release, terminal result/outbox sequence or
-authentication-role rollback, attempt/
-admission counter collapse, oversized/deep/partial/cyclic range proof, or
+terminal evidence, reconciliation passed to terminal settlement, terminal or
+reconciliation result/outbox sequence or authentication-role rollback,
+presentation/request/admission counter collapse,
+oversized/deep/partial/cyclic range proof, or
 budget-class/reserve weakening,
 and cross-adapter conformance pass.
 

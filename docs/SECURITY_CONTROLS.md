@@ -59,9 +59,10 @@ audit decision.
   predicate or hard no-late-commit fence; atomic time-ratchet/receipt/claim/
   topology/member-fence/tombstone/outbox persistence and typed reconciliation
   where client timeouts never permit a later commit;
-  bounded `TopologyAuthorizationReplayLifecycleV1` with a separate all-
-  authenticated-canonical-attempt rate and successful-admission/outstanding
-  quotas, monotonic request sequence for every first-seen canonical request,
+  bounded `TopologyAuthorizationReplayLifecycleV1` with an authenticated-
+  presentation rate charged before protected idempotency lookup, a once-per-
+  first-seen-request rate, and successful-admission/outstanding quotas,
+  monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,
   authenticated checkpoint/archive commitments, checkpoint-before-delete
   compaction, fail-closed unavailable history, key/restore ratchets, and
@@ -74,8 +75,9 @@ audit decision.
   atomic topology-authorization success where layered deployment/issuer/
   canonical-caller admission/outstanding quotas, original quota claim,
   reservation, sequence, canonical receipt, idempotent result, and outbox
-  commit together; denied canonical attempts consume only bounded attempt rate
-  and create no authority; lineage revoke/supersede never releases a live
+  commit together; denied first-seen canonical requests consume presentation
+  and request rate but create no authority, while exact retries pay only a new
+  presentation charge; lineage revoke/supersede never releases a live
   receipt; settlement decrements the original counters all-or-none and exactly
   once only after consumer-authenticated consumption/definite absence/
   permanent-unresolved state, conservative expiry, or receipt-specific
@@ -87,8 +89,9 @@ audit decision.
   canonical `TopologyAuthorizationConsumerTerminalReceiptV1` binding consumer
   owner/fence, authorization/receipt/intent, closed outcome, result/tombstone/
   time, sender/key/profile, message and outbox sequences; only VIT-INV-060 has
-  sender credentials, VIT-INV-061 is verify-only, and `Reconciling` never
-  releases;
+  sender credentials and VIT-INV-061 is verify-only; a separate consumer
+  disposition/evidence/receipt family represents reconciliation, and only the
+  terminal receipt type is accepted for settlement;
   resource-bounded issuer range roots/chunks with encoded-byte, entry, decode-
   allocation, verification-work, proof-depth and per-job chunk ceilings,
   resumable verification cursor, and fail-closed partial-chain handling;

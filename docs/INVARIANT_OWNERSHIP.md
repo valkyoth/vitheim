@@ -155,25 +155,34 @@ authorization source.
 canonical principal-or-authority/class successful-admission-rate and
 outstanding-authorization budgets before allocating a monotonic
 `AuthorizationIssuanceSequence`. A separate bounded
-`TopologyAuthorizationAttemptRateBudgetV1` charges every authenticated
-canonical presentation, including typed denials, without creating authority or
-an outstanding reservation. Unauthenticated or noncanonical traffic remains
-bounded by ingress/parser controls. Every first-seen canonical request receives
-one monotonic `TopologyAuthorizationRequestSequence`; exact retries reuse its
-attempt charge and result, and only success additionally receives
+`TopologyAuthorizationPresentationRateBudgetV1` charges every authenticated
+canonical presentation before protected idempotency lookup, including exact
+retry, replay, concurrent duplicate, changed-digest conflict, and typed denial,
+without creating a logical request, authority, or reservation. Its saturation
+returns transient `TopologyAuthorizationPresentationRateLimited` without
+reading or replacing an immutable request outcome. Unauthenticated or
+noncanonical traffic remains bounded by ingress/parser controls. A separate
+`TopologyAuthorizationRequestRateBudgetV1` charges once for each first-seen
+canonical request ID/digest and binds that charge to one monotonic
+`TopologyAuthorizationRequestSequence`. Exact retries charge presentation rate
+again but reuse the request charge, sequence, and result; concurrent identical
+presentations each charge presentation rate but serialize to one request
+charge/sequence/outcome; changed-digest reuse charges presentation rate and
+rejects without a second request charge. Only success additionally receives
 `AuthorizationIssuanceSequence`. Every applicable layer must admit. Its closed
 `Normal`/`Recovery`/`BreakGlass` classes use separate counters and rate
 ceilings, a small non-borrowable per-deployment break-glass reserve, and an
 independent recovery-processing lane. Saturation in one caller or class conveys
 no authority or capacity from another and never widens an aggregate limit.
-On success, request-sequence allocation, attempt charge, admission-rate and outstanding counter/reserve
+On first-seen success, presentation and request charges, request-sequence
+allocation, admission-rate and outstanding counter/reserve
 mutations, `TopologyAuthorizationOriginalQuotaClaimSetV1`,
 `TopologyAuthorizationOutstandingReservation`, sequence allocation, canonical
 receipt, request-digest-bound idempotent result, and issuance outbox are one
-VIT-INV-061 local transaction. A denial commits its request sequence, bounded
-attempt charge, caller/class binding and typed idempotent denial; it creates no
+VIT-INV-061 local transaction. A first-seen denial commits its request sequence,
+one request charge, caller/class binding and typed idempotent denial; it creates no
 admission token, reservation, authorization issuance sequence, receipt, or
-outbox, and the attempt charge is not refunded.
+outbox, and neither rate charge is refunded.
 The original claim set preserves deployment, issuer/class, canonical principal-
 or-authority key, budget epochs, class, reserve source, units, and quantities.
 The reservation releases exactly once by atomically decrementing those original
@@ -192,10 +201,19 @@ generation/fence, authorization/issuance/receipt/optional-intent, closed
 outcome, result version/sequence, tombstone/time evidence, sender/key/profile,
 message/idempotency ID and outbox sequence. Outcomes are exactly
 `RevokedBeforeConsumption`, `AlreadyConsumed`, `Expired`,
-`DefinitelyNotCommitted`, `PermanentlyUnresolved`, and non-terminal
-`Reconciling`. VIT-INV-060 has sender-only authentication and VIT-INV-061
-verify-only credentials; `Reconciling`, open/unknown outcomes, incomplete
-envelopes, conflicting replay or sequence rollback retain capacity.
+`DefinitelyNotCommitted`, and `PermanentlyUnresolved`.
+`TopologyAuthorizationConsumerDispositionV1` is exactly
+`Terminal(TopologyAuthorizationConsumerTerminalOutcomeV1)` or
+`Reconciling(TopologyAuthorizationConsumerReconciliationEvidenceV1)`.
+Reconciliation produces
+`TopologyAuthorizationConsumerReconciliationReceiptV1` and may later advance
+to a terminal receipt under a greater result/outbox sequence.
+`SettleTopologyAuthorizationOutstandingReservation` accepts only
+`TopologyAuthorizationConsumerTerminalReceiptV1`; no disposition or
+reconciliation type is accepted. VIT-INV-060 has sender-only authentication
+and VIT-INV-061 verify-only credentials; reconciliation evidence, open/unknown
+outcomes, incomplete envelopes, conflicting replay or sequence rollback retain
+capacity.
 VIT-INV-061 cannot forge that evidence. Timeouts, cancellation,
 unknown response, retry, replay, lineage change, compaction, and a lost
 revocation result do not release capacity, and duplicate/reordered settlement
@@ -212,7 +230,7 @@ unavailable.
 
 VIT-INV-061 separately checkpoints complete authenticated request history with
 `TopologyAuthorizationRequestReplayCheckpointV1`: request sequence/range,
-request ID/digest, principal/authority, class, attempt charge, typed outcome,
+request ID/digest, principal/authority, class, request-rate charge, typed outcome,
 successful issuance link, predecessor/archive/schema/algorithm/key/counter
 evidence. Exact denials remain hot for the frozen horizon. The authenticated
 request checkpoint commits before denied-row deletion and advances its covered-
@@ -253,14 +271,16 @@ checkpoint; consumer dense advance across an unseen gap, forged/incomplete/
 overlapping range manifest, late-presentation acceptance, budget-class
 borrowing, reserve exhaustion by normal work, emergency control bypass, and
 break-glass starvation of revocation/recovery also reject. Split issuance
-state, canonical denial allocating authority or avoiding attempt rate,
-successful admission avoiding either rate, timeout/lineage-change/current-key
+state, canonical presentation avoiding presentation rate, canonical first-seen
+denial allocating authority or avoiding request rate, retry receiving a second
+request charge, successful admission avoiding any applicable rate,
+timeout/lineage-change/current-key
 release, issuer-forged consumer evidence, missing original claim data, partial
 or duplicate counter decrement, caller monopolization, request sequence reuse/
 recharge/renumber, denial delete-before-checkpoint, late denial reevaluation,
 denial archive loss interpreted as new, unbounded denial proof work, terminal
-envelope omission/open outcome/`Reconciling` release/result-sequence rollback/
-sender-role collision, oversized allocation,
+or reconciliation envelope omission/open outcome/reconciliation-to-terminal
+type confusion/result-sequence rollback/sender-role collision, oversized allocation,
 verification-work/depth exhaustion, partial/cyclic chunk chains, and cursor
 rollback also reject. Their M/F
 schedules race issuance, terminal settlement and old replay against
@@ -269,11 +289,13 @@ failover, restore, migration and import; they exhaust normal capacity for one
 valid reserved break-glass operation and reverse-flood break-glass. VIT-RCV-
 060/061 merge the greatest request and issuance sequences, denial-request and
 issuance checkpoint digests/high-watermarks, issuer dense watermark/
-range manifests, consumer sparse set/eligible-through proof, attempt/admission/
-outstanding counters, budget-class counters/reserve, principal/authority sub-
+range manifests, consumer sparse set/eligible-through proof, presentation/
+request/admission/outstanding counters, budget-class counters/reserve,
+principal/authority sub-
 limits, original quota-claim sets/epochs/reserve sources, outstanding
-reservations/settlements, receipt-revocation intents and canonical consumer
-terminal envelope/outcome/result/outbox-sequence/authentication state, bounded
+reservations/settlements, receipt-revocation intents, canonical consumer
+terminal envelope/outcome/result/outbox-sequence, separate reconciliation
+evidence/receipt state and authentication roles, bounded
 range chunks/verification cursor, key epoch and denial/issuance compaction
 cursors/proof budgets, preserve every uncovered hot result, and fail closed for
 an unprovable historical range or request.

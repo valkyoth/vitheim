@@ -353,8 +353,11 @@ require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationOutstandingReservation` creation' \
     'atomic topology authorization issuance reservation'
 require_text docs/implementation/PHASE_C.md \
-    '`TopologyAuthorizationAttemptRateBudgetV1`' \
-    'separate bounded topology authorization attempt rate'
+    '`TopologyAuthorizationPresentationRateBudgetV1`' \
+    'separate bounded topology authorization presentation rate'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationRequestRateBudgetV1` charge' \
+    'exactly-once logical topology authorization request rate'
 require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationRequestSequence`' \
     'bounded idempotent topology authorization request identity'
@@ -377,8 +380,11 @@ require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationConsumerTerminalOutcomeV1`' \
     'closed consumer terminal outcome schema'
 require_text docs/implementation/PHASE_C.md \
-    '`Reconciling` is explicitly non-terminal and never releases capacity.' \
-    'reconciling topology outcome cannot settle capacity'
+    '`TopologyAuthorizationConsumerReconciliationReceiptV1`' \
+    'separate topology authorization reconciliation evidence'
+require_text docs/implementation/PHASE_C.md \
+    '`SettleTopologyAuthorizationOutstandingReservation` accepts the terminal' \
+    'terminal-only topology reservation settlement argument'
 require_text docs/implementation/PHASE_C.md \
     '`OutstandingReserved` to `OutstandingReleased`' \
     'exact-once topology reservation settlement'
