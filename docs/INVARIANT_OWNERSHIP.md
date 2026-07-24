@@ -389,8 +389,10 @@ cannot decrement. Exact checkpoint/deletion duplicate returns the archived
 result; changed trigger/leg bindings conflict. Exact tombstones survive
 coalescing and dense inference is forbidden. Missing/forked/rolled-back/
 unverifiable checkpoint or deletion history retains the affected charge. Bounds
-protect Recovery, and restore/migration preserve both heads, their predecessor
-relationship, attempt-checkpoint linkage and remaining unsettled legs.
+protect Recovery, and restore/migration preserve both heads, both non-wrapping
+chains and authenticated coverage, exact rows and settlement/trigger/bundle/
+result identity, attempt-checkpoint linkage, exact settled/remaining legs and
+conservative original-bucket balances.
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 bounds encoded bytes, entries, chunks, depth, decode allocation, verification
 work and jobs; a durable
@@ -490,9 +492,21 @@ archive/checkpoint/key/cursor state plus cumulative replay-head/publication
 high-watermarks, admission-guard isolation profile, and replay-key uniqueness
 state, restart-budget counters/deadline, fairness-scheduler state, and attempt
 lifecycle/owner/lease/fence/capacity/checkpoint high-watermarks, reservation-
-set/settlement-leg high-watermarks, original-bucket balances, settlement replay-
-head/predecessor/root/key/publication/hot-row/cursor and exact settled-leg
-tombstone high-watermarks. Proposed,
+set/settlement-leg high-watermarks, original-bucket balances, and the settlement
+recovery state consisting of the greatest local
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementJournalHeadV1`
+and greatest verified
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementArchiveReplayHeadV1`;
+both non-wrapping predecessor/sequence chains and their authenticated
+journal-to-archive coverage relationship; archive root, key epoch, publication
+and verification cursor; exact covered and current hot-row IDs, versions and
+ranges; settlement IDs, checkpoint/deletion trigger kinds, ordered bundle
+digests and canonical results; attempt-checkpoint linkage; exact checkpoint/
+deletion settled-leg tombstones and remaining unsettled legs; and conservative
+original-bucket balances. Omission, defaulting, conflation, rollback, fork or
+substitution of any tuple member fails recovery admission. A legacy singular-
+head snapshot is not decoded as this state and requires an explicit registered
+migration. Proposed,
 pending, or
 rejected higher raw generations never imply activation. Recovery applies
 active/pending constraints jointly, recomputes and verifies derived lane/

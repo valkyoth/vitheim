@@ -173,7 +173,14 @@ forks, reorder, duplicates or rollback deny recovery. Checkpoints also preserve
 authorization consumption/result/time/key high-watermarks, validation evidence
 and replay tombstones. Select bounded authenticated sparse replay archives;
 permanent unbounded retention and arbitrary-ID dense watermark inference are
-forbidden. Archive exact results or authenticated result references with
+forbidden. Capacity recovery additionally freezes both settlement heads, both
+non-wrapping predecessor/sequence chains and their authenticated coverage,
+root/key/publication/cursor, exact covered/current hot-row IDs/versions/ranges,
+settlement/trigger/ordered-bundle/result identity, attempt-checkpoint linkage,
+exact settled and remaining leg sets, and conservative original-bucket
+balances. Missing fields deny and singular-head legacy state requires an
+explicit registered migration.
+Archive exact results or authenticated result references with
 request/lifecycle/scope/predecessor/key commitments, bounded proof work and a
 durable cursor. Late exact retry returns the archived result, changed retry
 conflicts, and missing/unverifiable history fails closed without execution. A

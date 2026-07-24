@@ -220,6 +220,14 @@ envelope non-membership cannot decrement; unavailable checkpoint or deletion
 proof retains the affected charge. Settlement state/proof/compaction is
 bounded, exact-ID tombstones survive coalescing, and no dense watermark infers
 settlement.
+The canonical capacity recovery state carries both settlement heads, both
+non-wrapping predecessor/sequence chains and their authenticated coverage
+relationship, archive root/key/publication/cursor, exact covered/current hot-
+row IDs/versions/ranges, settlement/trigger/ordered-bundle/result identity,
+attempt-checkpoint linkage, exact settled and remaining leg sets, and
+conservative original-bucket balances. No member is optional or inferred:
+legacy singular-head state enters only through a registered migration, and
+omission, rollback, fork or substitution keeps the node unready.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again

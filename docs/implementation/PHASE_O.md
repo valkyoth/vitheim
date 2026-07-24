@@ -378,11 +378,14 @@ high-watermark, replay-attempt lifecycle/owner/lease/fence/CAS, counters/
 deadline, reservations/backlogs, terminal checkpoint/links, reservation-set
 original buckets/balances/transfers, settlement leg/result records, greatest
 local settlement journal head, greatest verified archive replay head, both
-predecessor chains and their proved relationship, root/key/publication and
-exact covered/current hot-row version/range state, verification cursor, exact
-checkpoint/deletion settled-leg tombstones, attempt-checkpoint linkage,
-remaining unsettled legs and conservative capacity balances; it verifies the
-derived lane/aggregate coverage. Multiple
+non-wrapping predecessor/sequence chains and their authenticated coverage
+relationship, root/key/publication and exact covered/current hot-row IDs/
+versions/ranges, verification cursor, settlement IDs, checkpoint/deletion
+trigger kinds, ordered bundle digests/results, exact checkpoint/deletion
+settled-leg tombstones, attempt-checkpoint linkage, remaining unsettled legs
+and conservative original-bucket balances; it verifies the derived lane/
+aggregate coverage. Missing/defaulted tuple fields deny, and a legacy singular-
+head snapshot requires its explicit registered migration. Multiple
 active profiles, pending/fence half-state, contradictory activation records,
 unreachable predecessors, activation gaps/forks/reordering/duplicate
 sequences, active-row disagreement, missing checkpoints, rolled-back external
@@ -1280,6 +1283,15 @@ receipt and workload/receipt assurance profile; an older topology generation,
 missing tombstone/fence, stale active rollout generation, late superseded
 message, exported identity key, expired lease, or unauthenticated digest keeps
 the restored placement unready.
+Restore also decodes the complete settlement recovery tuple: greatest local
+journal head, greatest verified archive replay head, both non-wrapping chains
+and their authenticated coverage relationship, root/key/publication/cursor,
+exact covered/current hot-row IDs/versions/ranges, settlement/trigger/bundle/
+result identity, attempt-checkpoint linkage, exact settled and remaining leg
+sets, and conservative original-bucket balances. Omit each member in turn and
+require fail-closed admission; a singular-head backup requires its registered
+migration. Drill restores at every checkpoint-settlement-to-deletion boundary
+and prove no checkpoint leg reopens and no deletion leg becomes pre-settled.
 Exit criteria: claimed RPO/RTO is demonstrated; recovery neither retains data
 past a controlling mandatory deletion obligation nor promotes an unverified
 rollup to authority; grant revocation/supersession cannot be resurrected; quota

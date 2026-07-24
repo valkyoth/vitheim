@@ -35,6 +35,10 @@ All notable Vitheim changes are documented here. The format follows
 - Unified checkpoint and physical-deletion capacity settlements under that
   journal/archive protocol, including atomic checkpoint bundles and mixed-leg
   archive replay.
+- Closed the settlement recovery-schema drift by making both heads/chains and
+  coverage, exact rows, triggers/bundles/results, attempt-checkpoint linkage,
+  settled/remaining legs, and conservative balances one mandatory fail-closed
+  tuple; singular-head legacy state now requires an explicit migration.
 - Selected bounded authenticated sparse archives for exact drain-action replay
   after compaction, with canonical result recovery, historical conflicts,
   resource-bounded proof verification, and fail-closed unavailable history.

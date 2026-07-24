@@ -812,7 +812,15 @@ Freeze recovery as
 the active profile selected from the greatest authenticated committed
 activation record, optional pending successor, optional exact drain fence,
 lineage-generation high-watermark, activation-sequence high-watermark, and
-cumulative replay-head/publication-state high-watermarks.
+cumulative replay-head/publication-state high-watermarks, plus the greatest
+local settlement journal head, greatest verified settlement archive replay
+head, both non-wrapping predecessor/sequence chains and their authenticated
+coverage relationship, archive root/key/publication/cursor, exact covered and
+current hot-row IDs/versions/ranges, settlement IDs/trigger kinds/ordered
+bundle digests/results, attempt-checkpoint linkage, exact checkpoint/deletion
+settled-leg tombstones, remaining unsettled legs and conservative original-
+bucket balances. Missing or defaulted members fail recovery admission; a
+legacy singular-head snapshot requires an explicit registered migration.
 Recover proposed and rejected higher generations as history, never activation;
 apply active and pending constraints jointly. Recompute the affected lanes and
 reduced aggregate dimensions and authenticate them against the fence.
@@ -1382,6 +1390,16 @@ bucket and quantity, current balance/transfer, settlement ID/leg/trigger/result
 record and lock-order version. Recovery reconciles unknown commits by stable
 settlement identity; it never replays a decrement speculatively or derives an
 old bucket from the current capacity profile.
+The frozen recovery codec carries the greatest local settlement journal head
+and greatest verified archive replay head; both non-wrapping predecessor/
+sequence chains and their authenticated coverage relationship; root/key/
+publication/cursor; exact covered and current hot-row IDs/versions/ranges;
+settlement IDs, trigger kinds, ordered bundle digests and results; attempt-
+checkpoint linkage; exact checkpoint/deletion settled-leg tombstones; remaining
+unsettled legs; and conservative original-bucket balances. Omitting or
+defaulting either head, linkage, trigger, settled-leg, remaining-leg or balance
+fails decoding and admission. A singular-head legacy snapshot is accepted only
+through an explicit registered `0.29.0` migration.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/
@@ -1621,7 +1639,9 @@ substitution, circularity/business use, sole-key outage/response loss/count
 exhaustion, false automatic recovery without an independent provider path,
 missing invariant declaration/owner/lifecycle/contract resolution, asymmetric
 supersession, owner-fence loss, unsafe mixed-version transfer, rollback below
-floor, incomplete recovery manifest,
+floor, incomplete recovery manifest, omitted settlement recovery head/linkage/
+trigger/settled-leg/remaining-leg/balance, implicit singular-head upgrade,
+reopened checkpoint leg or pre-settled deletion leg,
 transfer owner/root/
 parent/period/lane/class/region/authorization substitution, emergency/security-cleanup-to-
 business conversion through adjustment, existing-class rewrite, tenant-invoked

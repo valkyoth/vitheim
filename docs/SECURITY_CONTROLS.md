@@ -179,6 +179,12 @@ audit decision.
   tombstones survive coalescing,
   and bounded settlement storage/proof/compaction plus Recovery capacity forbid
   permanent rows or dense settlement inference;
+- fail-closed capacity recovery decodes one complete tuple containing both
+  settlement heads, both non-wrapping chains and authenticated coverage,
+  root/key/publication/cursor, exact covered/current rows, settlement/trigger/
+  bundle/result identity, attempt-checkpoint linkage, settled and remaining
+  leg sets, and conservative original-bucket balances; omission or defaulting
+  denies, and legacy singular-head state requires a registered migration;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

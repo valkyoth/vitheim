@@ -333,11 +333,15 @@ head/publication high-watermarks, attempt lifecycle/owner/lease/fence/CAS,
 counters/deadline, reservations/backlogs, terminal checkpoint/links,
 reservation-set original buckets/balances/transfers and settlement leg/result
 records, greatest local settlement journal head, greatest verified archive
-replay head, both predecessor chains and their proved relationship, root/key/
-publication and exact covered/current hot-row version/range state, verification
-cursor, exact checkpoint/deletion settled-leg tombstones, attempt-checkpoint
-linkage, remaining unsettled legs, conservative capacity balances, and
-verified derived lane/aggregate coverage. Multiple active profiles, pending/fence
+replay head, both non-wrapping predecessor/sequence chains and their
+authenticated coverage relationship, root/key/publication and exact covered/
+current hot-row IDs/versions/ranges, verification cursor, settlement IDs,
+checkpoint/deletion trigger kinds, ordered bundle digests/results, exact
+checkpoint/deletion settled-leg tombstones, attempt-checkpoint linkage,
+remaining unsettled legs, conservative original-bucket balances, and verified
+derived lane/aggregate coverage. Missing/defaulted tuple fields deny; a legacy
+singular-head snapshot requires its explicit registered migration. Multiple
+active profiles, pending/fence
 half-state, contradictory activation records, unreachable predecessors, or
 direct fence install/clear invocation deny. Activation gaps, forks, reorder,
 duplicate sequences, active-row/record disagreement, missing checkpoints, and
@@ -502,6 +506,8 @@ checkpoint-settlement response loss and duplicate retry before/after
 compaction, checkpoint settlement racing snapshot/publication, mixed
 checkpoint/deletion archives, trigger/leg substitution, restore/migration
 between the two settlement stages, unavailable checkpoint history,
+recovery-codec omission of either settlement head, linkage, trigger, settled
+leg, remaining leg or balance, implicit singular-head legacy decoding,
 continuous traffic during shrink, admission/fence-install and final-admission/
 activation races, rejection-versus-admission, installed-fence crash/failover/
 restore, stale-worker bypass, and competing successors, lineage change before a receipt

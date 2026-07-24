@@ -648,10 +648,13 @@ checkpoint/key/cursor state, cumulative replay-head/publication high-watermarks,
 canonical replay-key uniqueness state, logical-attempt restart counters/
 deadline, attempt lifecycle/owner/lease/fence/capacity/checkpoint state,
 reservation-set/settlement-leg high-watermarks and original-bucket balances,
-settlement journal-head and archive-replay-head predecessor/sequence/
-relationship state, archive root/key/publication, exact hot-row versions/ranges,
-cursor, exact checkpoint/deletion settled-leg tombstones, attempt-checkpoint
-linkage and remaining unsettled legs,
+greatest local settlement journal head and greatest verified archive replay
+head, both non-wrapping predecessor/sequence chains and their authenticated
+coverage relationship, archive root/key/publication/cursor, exact covered and
+current hot-row IDs/versions/ranges, settlement IDs, checkpoint/deletion
+trigger kinds, ordered bundle digests/results, exact settled-leg tombstones,
+attempt-checkpoint linkage, remaining unsettled legs and conservative original-
+bucket balances,
 fairness-scheduler state, and verified derived coverage. Late exact retry
 returns the archived result, changed retry returns historical conflict, and
 unavailable proof returns typed historical-state-unavailable without
@@ -659,6 +662,8 @@ execution.
 Multiple-active, contradictory-record, unreachable-predecessor, or
 pending/fence half-state, activation gap/fork/reorder/duplicate, active-row
 disagreement, missing checkpoint, or high-watermark rollback fails closed.
+Omission or defaulting of a settlement recovery member also fails closed; a
+legacy singular-head snapshot requires an explicit registered migration.
 `TopologyAuthorizationRequestRateBudgetV1` charges exactly once for every
 first-seen canonical request ID/digest and binds that charge to monotonic
 `TopologyAuthorizationRequestSequence`. Exact retries charge presentation rate

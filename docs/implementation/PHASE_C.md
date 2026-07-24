@@ -747,10 +747,12 @@ settled-leg tombstones and settlement compaction workers. Reserve settlement
 terminalization/checkpoint/archive/cleanup work before attempt creation under
 the original lane, with protected Recovery capacity. Restore, failover,
 migration and import preserve the greatest local journal head and verified
-archive replay head, both predecessor chains and their proved relationship,
-root/key/publication state, exact hot-row versions/
-ranges, settled-leg bitmap/tombstones, proof cursor/budget and original-bucket
-balances.
+archive replay head, both non-wrapping predecessor/sequence chains and their
+authenticated coverage relationship, root/key/publication state, exact covered
+and current hot-row IDs/versions/ranges, every settlement ID, trigger kind,
+ordered bundle digest and canonical result, attempt-checkpoint linkage, exact
+checkpoint/deletion settled-leg tombstones, remaining unsettled legs,
+verification cursor/budget and conservative original-bucket balances.
 
 Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
@@ -888,10 +890,16 @@ CAS, cumulative counters/deadline, capacity reservations/backlogs and terminal
 checkpoint/result/audit links, reservation-set IDs/original buckets/balances,
 active-to-terminal transfers, settlement ID/leg/trigger/result records, the
 greatest local settlement journal head, greatest verified archive replay head,
-both predecessor chains and their proved relationship, root/key/publication
-state, exact covered/current hot-row versions and ranges, verification cursor,
-exact checkpoint/deletion settled-leg tombstones, attempt-checkpoint linkage,
-remaining unsettled legs, and conservative capacity balances. Raw
+both non-wrapping predecessor/sequence chains and their authenticated coverage
+relationship, root/key/publication state, exact covered/current hot-row IDs,
+versions and ranges, every settlement ID, checkpoint/deletion trigger kind,
+ordered bundle digest and canonical result, verification cursor, exact
+checkpoint/deletion settled-leg tombstones, attempt-checkpoint linkage,
+remaining unsettled legs, and conservative original-bucket balances. Omission
+or defaulting of either head, linkage, trigger, settled leg, remaining leg or
+balance fails decoding and admission. A singular-head legacy snapshot requires
+an explicit registered migration and is never inferred as the two-head tuple.
+Raw
 profile generation never implies activation. Rejected and
 unactivated proposed generations remain historical only. A recovered pending
 successor and fence are applied jointly to new admission; recovery recomputes
@@ -1642,6 +1650,12 @@ checkpoint settlement but before physical deletion; the checkpoint legs remain
 settled, deletion legs remain unsettled, and all original balances/tombstones
 are conserved. Remove checkpoint-settlement history/proof and require the
 terminalization/checkpoint-backlog charge to remain conservatively held.
+Round-trip the complete recovery codec, then omit each head, linkage, trigger,
+settled-leg tombstone, remaining-leg set and original-bucket balance in turn;
+decoding and admission must fail closed. Feed a legacy singular-head snapshot
+and require an explicit registered migration rather than implicit defaulting.
+Restore at every boundary between checkpoint settlement and physical deletion
+and prove that neither leg set is reopened or pre-settled.
 
 Fork or roll back either head, substitute their relationship, change head H
 after proof verification, and remove archive keys/chunks/proofs; re-read/lock
@@ -2255,12 +2269,16 @@ join constraint, capacity reservations/backlogs, terminal checkpoints/links
 and cleanup high-watermarks, complete reservation-set IDs/original buckets/
 balances, transfers, settlement IDs/legs/trigger/result records and lock-order
 contract, greatest local settlement journal head, greatest verified archive
-replay head, both predecessor chains and their proved relationship, root/key/
-publication state, current settlement hot rows and exact versions/ranges,
-verification cursor, exact settled-leg tombstones, checkpoint-versus-deletion
-trigger kinds, remaining unsettled legs and conservative capacity balances as
-one compatibility boundary. Migration between checkpoint settlement and
-physical deletion cannot settle, reopen or reclassify either leg set.
+replay head, both non-wrapping predecessor/sequence chains and their
+authenticated coverage relationship, root/key/publication state, exact covered
+and current settlement hot-row IDs/versions/ranges, verification cursor,
+settlement IDs, checkpoint-versus-deletion trigger kinds, ordered bundle
+digests/results, attempt-checkpoint linkage, exact settled-leg tombstones,
+remaining unsettled legs and conservative original-bucket balances as one
+compatibility boundary. A legacy singular-head recovery snapshot requires an
+explicit registered migration; omission or defaulting of any tuple member
+denies. Migration between checkpoint settlement and physical deletion cannot
+settle, reopen or reclassify either leg set.
 A migration or import
 cannot route authority reads to a replica, synthesize absence, reset a unique
 claim or restart budget, reinterpret contention as unavailable history, or
@@ -2476,12 +2494,16 @@ checkpoint cleanup, atomically conserved original reservation sets, fixed lock
 order and every exact-once checkpoint/deletion settlement leg, including
 one unified settlement journal/archive namespace and atomic checkpoint bundle,
 separate local journal and verified archive replay heads, both CAS boundaries
-and their proved predecessor relationship, archive-before-hot-row-delete,
-captured exact hot-row version/range, archive-head-H revalidation, archive-
-head-plus-hot-plus-journal authority, exact archived retry/conflict behavior,
-no decrement from absent-envelope non-membership, conservative unavailable-
-history charging for either trigger, mixed checkpoint/deletion archives, exact
-sparse settled-leg tombstones and bounded settlement proof/compaction work;
+and their non-wrapping predecessor/sequence chains and authenticated coverage
+relationship, archive-before-hot-row-delete, captured exact hot-row IDs/
+versions/ranges, archive-head-H revalidation, archive-head-plus-hot-plus-journal
+authority, exact settlement/trigger/bundle/result and attempt-checkpoint
+linkage, exact archived retry/conflict behavior, no decrement from absent-
+envelope non-membership, conservative unavailable-history charging for either
+trigger, mixed checkpoint/deletion archives, exact sparse settled/remaining-leg
+state, conservative original balances and bounded settlement proof/compaction
+work; a singular-head legacy snapshot requires explicit migration and no
+missing tuple field is defaulted;
 otherwise
 drain-action execution remains fenced. It also proves
 the same-or-longer exact horizon, no-lower quotas/backpressure safety, complete
