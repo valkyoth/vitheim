@@ -178,15 +178,35 @@ The selectable mechanisms at `0.140.1` are:
    attestation binds the complete catalog-owner key and measured workload; or
 2. `OrchestratorAttestedFencedLease`: a key-bound, short-lived orchestrator
    identity is usable only with one current single-active lease/fencing token
-   and an online, single-use `WorkloadLeaseActionClaim` for every authority-
-   bearing transition. Each claim CAS-binds the instance ephemeral key,
+   and the operation-specific proof in the normative scope matrix below.
+   Each single-use claim CAS-binds the instance ephemeral key,
    `BootOrContinuityId`, lease generation/fence, canonical action digest, one-
    use sequence, issuance, and expiry. No cached or offline lease authorizes
-   readiness, receipt creation/admission, topology change, dispatch, or
-   transmission start. The only exposure after loss/fencing is an already
+   a protected mutation, dispatch, transmission start, or positive readiness
+   result. The only exposure after loss/fencing is an already
    claimed action until the frozen maximum action-claim lifetime; expiry forces
    abort/reconciliation. Duplicate renewal or simultaneous use immediately
    fences the affected incarnation and denies new claims.
+
+The action-authority scope is closed and is frozen at `0.140.1`:
+
+| Operation | Required online authority | Atomicity and result |
+| --- | --- | --- |
+| Readiness observation | reusable, bounded `OnlineWorkloadFreshnessProofV1`; no action claim | read-only; stale, unavailable, fenced, or topology-mismatched proof returns unready and cannot create authority |
+| Positive local prepare, convergence, or admission receipt creation/commit | single-use `WorkloadLeaseActionClaim` | consume the claim, commit the receipt/admission and its typed result in one local owner transaction |
+| Topology handoff initialization/commit or topology successor mutation | single-use `WorkloadLeaseActionClaim` plus `TopologyMutationAuthorizationReceipt` | consume both authorities and commit the expected-version topology CAS, tombstones, and fence outbox in one VIT-INV-060 transaction |
+| Dispatch | single-use `WorkloadLeaseActionClaim` | consume with the exact dispatch bundle and outcome in the dispatch owner transaction |
+| Transmission start | single-use `WorkloadLeaseActionClaim` | consume with the unique start claim immediately before provider I/O |
+| Global catalog proposal/activation/succession/revocation/distrust | no workload action claim for owner-to-owner delivery | authenticated control receipt and durable outbox/inbox protocol; an operator command separately requires current policy/session/approval authority |
+| Rollout-root state transition and control delivery | no workload action claim for owner-to-owner delivery | authenticated process-manager message/receipt, expected-version CAS, and durable outbox/inbox; local positive receipt creation still follows its row above |
+| Local application of revocation, distrust, or placement fence | no workload action claim | authenticated owner protocol; safety withdrawal cannot be delayed by issuer outage |
+
+`OnlineWorkloadFreshnessProofV1` binds the workload key, issuer, audience,
+lease generation/fence, boot/continuity ID, placement generation, current
+topology receipt, catalog epoch/digest, revocation epoch, issued-at, expiry, and
+the maximum age frozen at `0.140.1`. It is reusable only for read-only
+readiness observations within that bound. It cannot authorize receipt
+creation, admission, topology mutation, dispatch, or transmission start.
 
 `WorkloadLeaseActionAuthorityPortV1` is the explicit external trust boundary
 for that second mechanism. The external identity authority, not Vitheim
@@ -199,8 +219,20 @@ reuse with different bytes or action digest is rejected.
 The Vitheim invariant owner performing the protected action validates the claim
 and atomically commits the action, its typed outcome, and a
 `ConsumedWorkloadLeaseActionClaim` tombstone in the same local transaction.
-Exact local replay returns that original outcome without repeating the action;
-the same claim ID with different action bytes is rejected.
+Replay precedence is normative:
+
+1. look up the local consumed-claim tombstone before evaluating current claim
+   expiry, revocation, fence, or sequence state;
+2. when claim ID and canonical action digest exactly match, return the stored
+   historical typed outcome without repeating the action, even when the claim
+   later expired or was revoked;
+3. when no tombstone exists, apply all current expiry, revocation, fence,
+   sequence, identity, and digest checks before first consumption; and
+4. reject every claim-ID or action-digest mismatch.
+
+A historical response reports only the prior transaction; it grants no current
+readiness, retry, follow-up mutation, dispatch, transmission, or other new
+authority.
 Lost issuance responses become `WorkloadLeaseActionClaimIssuanceUnknown` and
 are reconciled by the stable request against the issuer. Lost protected-
 transition responses become `WorkloadLeaseActionClaimOutcomeUnknown` and are
@@ -285,6 +317,23 @@ The ceremony is:
 6. only `Committed` may issue `CurrentPlacementTopologyReceiptV1` or accept
    dynamic commands.
 
+Every initialization, handoff commit, and dynamic topology successor also
+requires a unique `TopologyMutationAuthorizationReceipt`. The policy/approval
+authority issues it only after validating and binding the initiating principal,
+interactive session or delegation lineage, current principal/session/
+delegation/role-assignment/policy epochs, required change/incident/emergency
+record, approval quorum and separation-of-duty evidence, expected topology
+generation, canonical successor-manifest digest, action-claim ID/digest and
+expiry, and authorization expiry. Break-glass use additionally binds a reason,
+narrow scope, duration, incident linkage, named accountable owner, and required
+retrospective review deadline. The topology owner revalidates every bound epoch
+and atomically consumes the authorization receipt, its replay tombstone, the
+orchestrator action claim when applicable, the successor CAS, and fence outbox.
+Identity or attestation alone never authorizes topology mutation. Receipt
+absence, reuse, self-approval, stale policy/identity epoch, manifest
+substitution, or expired break-glass authority returns
+`TopologyMutationAuthorizationBlocked`.
+
 The handoff state is the exclusive source selector: before commit the compiled
 singleton is authoritative and the row is inert; after commit `VIT-INV-060` is
 authoritative and the compiled singleton is provenance only. They are never
@@ -298,6 +347,15 @@ It cannot issue topology generations or placement fences. A topology change
 blocks the affected rollout and requires a new rollout manifest; a rollout
 message cannot make topology current. Search, discovery, orchestration APIs,
 and observed pods/nodes are evidence inputs only, never topology authority.
+
+After handoff commit, `VIT-LAW-007@g02` independently re-reads a current
+authenticated topology receipt during local admission, readiness, dispatch,
+and transmission start. The receipt's deployment, service role, enforcement
+partition, placement identity/generation, manifest digest, and topology
+generation must match the local owner. Unavailability or mismatch blocks even
+when the latest catalog rollout is already complete and an old placement's
+fence message was suppressed; no new catalog rollout is needed to make that
+stale placement unsafe.
 
 ## Durable Distributed Rollout
 
@@ -513,7 +571,7 @@ when the activation milestone leaves planned status.
 | 9 | VIT-LAWCAT-ACTIVE-e009-v1 | `0.56.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e008-envelope-v1 | VIT-LAW-001@g09, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g08, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e009-v1.catalog` |
 | 10 | VIT-LAWCAT-ACTIVE-e010-v1 | `0.57.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e009-envelope-v1 | VIT-LAW-001@g10, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g09, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e010-v1.catalog` |
 | 11 | VIT-LAWCAT-ACTIVE-e011-v1 | `0.59.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e010-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e011-v1.catalog` |
-| 12 | VIT-LAWCAT-ACTIVE-e012-v1 | `0.141.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e011-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g01, VIT-LAW-008@g02 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e012-v1.catalog` |
+| 12 | VIT-LAWCAT-ACTIVE-e012-v1 | `0.141.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e011-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g02, VIT-LAW-008@g02 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e012-v1.catalog` |
 
 `0.18.3` delivers the canonical codec, shared verification core, CLI, first
 compiled artifact, exact local owner identity, split global/rollout/local
@@ -535,7 +593,11 @@ topology evolution, distribution, failover, revocation, claim uncertainty, time
 loss, and recovery. `0.141.0` hands the compiled static topology to
 `VIT-INV-060` without circular authority: epoch 12 is activated and converged
 under `VIT-LAW-008@g01`; only then does locally admitted generation 2 authorize
-initialization, exact verification, and the one-time handoff CAS.
+initialization, exact verification, and the one-time handoff CAS. Epoch 12 also
+activates `VIT-LAW-007@g02`, so current topology independently gates normal
+admission, readiness, dispatch, and transmission start after commit. Each
+topology mutation requires policy/approval authorization distinct from
+workload authentication.
 `0.142.0–0.143.0` prove split service
 and HA behavior. `0.145.0` proves backup/restore cannot clone a local
 owner, invent a receipt, resurrect topology, or roll back catalog/validity

@@ -47,7 +47,8 @@ enforcement/negative, storage-capability, test, recovery, and owner-fence
 contracts. Every law has one declaration, definition/lifecycle row, versioned
 dependency/recovery contracts, proof fence, and resolved contributor placement.
 Both registries prove supersession/mixed-version/migration/rollback behavior.
-Before any split-service or HA topology is legal, perform the staged one-time
+Before any split-service or HA topology is legal, activate
+`VIT-LAW-007@g02` and `VIT-LAW-008@g02` and perform the staged one-time
 handoff from `CompiledStaticPlacementTopologyV1` to
 `VIT-INV-060 PlacementTopologyGenerationState` without circularly depending on
 generation 2. Keep the row `Uninitialized` and the compiled singleton solely
@@ -64,6 +65,17 @@ changes the row to `Committed`. Only then is `VIT-INV-060` the authority and
 allowed to issue `CurrentPlacementTopologyReceiptV1` or accept dynamic
 commands; the compiled singleton becomes provenance only. At every boundary
 exactly one source is authoritative, and recovery never infers `Committed`.
+Initialization, commit, and each successor require a current
+`TopologyMutationAuthorizationReceipt` binding principal, session/delegation,
+principal/session/delegation/role/policy epochs, change/incident/emergency
+record, approval and separation-of-duty evidence, expected topology generation,
+successor digest, action claim and expiry, plus bounded break-glass and
+retrospective-review evidence where applicable. Consume the receipt, replay
+tombstone, selected-profile action claim, topology CAS, and fence outbox in one
+transaction. After commit, local admission, readiness, dispatch, and
+transmission start independently re-read a current topology receipt and reject
+placement mismatch even after the latest rollout completed or fence delivery
+was lost.
 Persist monotonic topology/member placement generations, predecessor fences,
 permanent tombstones, and the transactional fence outbox. The rollout root
 remains a reader and cannot issue membership, generation, or fence authority.
@@ -73,7 +85,9 @@ Deliverables: signed packages, startup floor-profile compatibility gate,
 active-evaluator binary/corpus/language compatibility gate, governed higher-
 floor and key-set migration/drain tooling, topology bootstrap/handoff tool,
 `VIT-CAP-060` uninitialized/dormant/committed persistence, ordering, and
-exclusivity probe, generation-2 law realization/catalog artifact, and runbook.
+exclusivity probe, generation-2 law realizations/catalog artifact,
+topology-authorization schema/policy/approval adapter, normal-path topology
+recheck probe, and runbook.
 Verification: clean
 install, permissions, rootless/non-root, secrets, restart, rolling upgrade,
 downgrade/rollback to a lower compiled floor, lower-default release, conflicting
@@ -100,11 +114,17 @@ initialization or commit before generation-2 local admission, dual static/
 dynamic authority, inferred initialization/commit, crash before/after epoch-12
 activation, local admission, dormant initialization, equality verification, and
 handoff CAS, missing member/fence/tombstone, older-topology
-restore, discovery treated as authority, and restore pass. Exit criteria: the
+restore, discovery treated as authority, and restore pass. The normal-path
+suite replaces a placement after the latest catalog rollout, suppresses the
+predecessor fence, and proves current-topology unavailability or mismatch
+independently blocks admission, readiness, dispatch, and start. It also rejects
+missing/replayed/self-approved/stale-policy/manifest-substituted topology
+authorizations and crash-tests atomic receipt/claim/CAS consumption. Exit
+criteria: the
 documented profile is operable securely and no package change can start below or
 lower the durable admitted platform-floor ratchet; no split deployment starts
 without exactly one current `VIT-INV-060` owner and verified
-`VIT-LAW-008@g02`. `v0.141.0 implementation stop
+`VIT-LAW-007@g02` and `VIT-LAW-008@g02`. `v0.141.0 implementation stop
 reached. Run pentest for this exact commit.`
 
 ## `0.142.0` — Split Service Deployments
@@ -119,8 +139,11 @@ role/split/merge successor commands. Discovery and orchestrator observations
 cannot allocate a key. Bind its selected `WorkloadIdentityProofProfileV1`,
 issuer/subject/audience, key thumbprint/attestation, issuance/expiry/revocation,
 single-active lease/fence where required, and online single-use
-`WorkloadLeaseActionClaim` for every authority-bearing transition under the
-orchestrator profile; cached/offline leases grant no authority. The external
+`WorkloadLeaseActionClaim` only for operations in the frozen scope matrix under
+the orchestrator profile. Readiness uses bounded reusable
+`OnlineWorkloadFreshnessProofV1`; authenticated owner-to-owner control and
+safety-withdrawal messages require no action claim. Cached/offline leases grant
+no positive readiness or mutation authority. The external
 `WorkloadLeaseActionAuthorityPortV1` owns stable issuance IDs/sequences; each
 protected local owner atomically stores `ConsumedWorkloadLeaseActionClaim` with
 its outcome, uses typed issuance/outcome uncertainty, and blocks reissue until
@@ -135,6 +158,10 @@ bytes/epochs/fences/replay tombstone and a durable integrity anchor.
 Route `CatalogActivationAuthorizationReceipt` and
 `CatalogGlobalActivationResultReceipt` through the same closed authentication;
 MAC receivers have `VerifyMac` only and cannot impersonate either sender.
+Exact consumed-claim replay first returns its historical typed outcome even
+after later expiry or revocation, without repeating the action or granting new
+authority. An absent tombstone triggers current validation and any digest
+mismatch rejects.
 Replacement, autoscaling identity reuse, disk/VM/pod clone, service-role
 change, and region move fence the predecessor generation and require a fresh
 global rollout receipt; copied storage never creates readiness. The executor owns both

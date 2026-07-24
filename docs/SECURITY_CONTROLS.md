@@ -44,10 +44,14 @@ audit decision.
   successor topology/placement manifests; one active rollout generation with
   irreversible authorization receipt/outbox pinning and permanent
   pre-authorization loser supersession; staged exact-singleton topology handoff
-  only after generation-2 admission and with exclusive authority; externally
-  owned online single-use orchestrator claims, co-transactional local
-  consumption/outcome, typed uncertainty/no reissue, restore high-watermarks,
-  and zero offline authority; transactional prepare/activation/convergence/
+  only after generation-2 admission and with exclusive authority; policy/
+  approval-bound topology mutation authorization atomically consumed with the
+  successor, action claim, tombstones, and fence outbox; current-topology
+  normal-path admission/readiness/dispatch/start checks independent of rollout
+  and fence delivery; closed single-use-claim, bounded readiness-freshness, and
+  owner-protocol scope; co-transactional local consumption/outcome with
+  tombstone-first historical replay, typed uncertainty/no reissue, restore
+  high-watermarks, and zero offline authority; transactional prepare/activation/convergence/
   revocation delivery, authenticated authorization/global-result receipts, and
   closed signed/sender-generate receiver-verify MAC/attested-channel variants
   with replay and durable-integrity anchors rather than digest authority;

@@ -8,6 +8,15 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added `VIT-LAW-007@g02` so dynamic topology independently gates local
+  admission, readiness, dispatch, and transmission start after handoff,
+  including lost-fence stale-placement tests.
+- Added a closed action-authority scope matrix, bounded reusable readiness
+  freshness proof, and tombstone-first replay precedence that returns only
+  historical outcomes after expiry or revocation.
+- Added policy- and approval-bound `TopologyMutationAuthorizationReceipt`
+  with atomic authorization/claim/topology-CAS/fence-outbox consumption and
+  break-glass review bindings.
 - Moved topology initialization behind epoch-12 convergence and every local
   generation-2 admission, adding explicit `Uninitialized` state so no
   generation-2 transition executes before its semantic realization is active.

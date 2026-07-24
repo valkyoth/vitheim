@@ -118,9 +118,15 @@ prepare/activation/convergence/revocation receipts, irreversible
 pinned active generation, authenticated global-result receipt, replay
 tombstones, external action-claim issuance evidence, co-transactional local
 consumption tombstone/outcome, typed uncertainty, deadlines, reconciliation,
-and `AllRequired` policy. The future `VIT-CAP-060` contract separately persists
+and `AllRequired` policy. Preserve the closed operation-scope classification,
+bounded readiness-freshness proof fields, and tombstone-first replay outcome
+without allowing a historical result to become current authority. The future
+`VIT-CAP-060` contract separately persists
 the closed uninitialized/dormant/committed handoff selector and exact completed-
-rollout/artifact/manifest/local-admission bindings; no adapter may infer
+rollout/artifact/manifest/local-admission bindings, topology-mutation
+authorization receipt/tombstone, bound identity/session/delegation/role/policy
+epochs, approval/break-glass evidence, selected-profile claim, and atomic
+successor/fence outbox; no adapter may infer
 initialization or completion. Negotiate the planning
 superset separately from immutable active payload/envelope support. Exact
 `CompiledCatalog` and `SignedCatalog` capabilities report independently; no
@@ -283,6 +289,11 @@ ratchet, mutable topology manifest, illegal rollout transition, missing/
 duplicate/contradictory/cross-generation receipt, topology join/leave/replace/
 move race, post-activation abandon, unfenced quorum, and crash at every
 prepare/activate/converge/finalize/revoke boundary;
+claim crash-after-commit, expiry-before-response, revocation-before-replay,
+restore-before-tombstone reconciliation, digest-mismatched historical replay,
+freshness-proof misuse as mutation authority, missing/replayed/self-approved/
+stale-policy/manifest-substituted topology authorization, and split
+authorization/claim/topology-CAS/fence-outbox fixtures;
 and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,

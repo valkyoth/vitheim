@@ -30,14 +30,25 @@ handoff: epoch-12 generation-1 activation/convergence and every local
 generation-2 admission precede `InitializeTopologyAuthorityHandoff`, exact
 equality verification, and commit. Evidence proves no early generation-2
 command and no boundary with dual or absent topology authority. The
-orchestrator identity profile has externally owned online single-use action
-claims with a frozen maximum lifetime and zero offline authority. Each
+handoff and every successor have current policy/approval-bound
+`TopologyMutationAuthorizationReceipt` evidence atomically consumed with the
+selected-profile claim, topology CAS, tombstones, and fence outbox.
+`VIT-LAW-007@g02` independently rejects unavailable or mismatched topology at
+local admission, readiness, dispatch, and start, including after rollout
+completion and suppressed predecessor-fence delivery. The orchestrator identity
+profile uses bounded reusable `OnlineWorkloadFreshnessProofV1` only for
+readiness, single-use claims only for the frozen mutation scope, and
+authenticated owner protocols for control/safety withdrawal, with zero offline
+authority. Each
 protected local owner atomically persists consumption/outcome, typed uncertainty
 blocks reissue, and restore honors greatest issuer/tombstone high-watermarks.
+Exact tombstone replay returns only the historical outcome before current
+expiry/revocation checks; it never grants new authority.
 Receipt authentication uses only the three closed reviewed variants with
 replay and durable-integrity evidence; MAC generation is sender-only and
 receivers have verify-only access.
-`VIT-LAW-007` proves admission composition and `VIT-LAW-008` proves the
+`VIT-LAW-007@g02` proves catalog/topology admission composition and
+`VIT-LAW-008@g02` proves the policy-authorized
 manifest/prepare/global-activation/convergence/revocation process manager.
 Every
 active catalog excludes future tuples, serializes exactly `CompiledCatalog` or

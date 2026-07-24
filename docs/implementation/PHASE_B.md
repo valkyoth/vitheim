@@ -1933,9 +1933,12 @@ owner key, public-key thumbprint, attestation policy/version, issue/expiry/
 revocation, and either a non-exportable hardware-attested key or a key-bound
 short-lived orchestrator identity with one single-active lease/fence,
 simultaneous-use detection, and an online, single-use
-`WorkloadLeaseActionClaim` for every authority-bearing transition. No cached or
-offline lease grants readiness, receipt admission, topology change, dispatch,
-or transmission-start authority. Define
+`WorkloadLeaseActionClaim` for the closed scope: positive local receipt/
+admission creation, topology mutation, dispatch, and transmission start.
+Readiness instead requires bounded reusable `OnlineWorkloadFreshnessProofV1`;
+authenticated global/rollout owner-to-owner transitions and revocation/
+distrust/fence application require no claim. No cached or offline lease grants
+positive readiness or mutation authority. Define
 `WorkloadLeaseActionAuthorityPortV1`: the external identity authority owns
 stable claim/action IDs, issuer/lease generation, and sequence uniqueness;
 exact idempotent replay returns the original claim and different action bytes
@@ -1947,6 +1950,10 @@ consumption responses become typed
 allowed before issuer/local-tombstone reconciliation. Expiry, revocation,
 failover, backup, restore, migration, and greatest externally evidenced
 sequence/tombstone high-watermarks fail closed against reissue or reconsumption.
+On replay, consult the tombstone first: an exact claim/action digest returns the
+historical typed outcome without repeating work even after later expiry or
+revocation, but grants no new authority. Only a missing tombstone invokes
+current first-consumption validation; every mismatch rejects.
 Prepare, activation authorization, global activation result, convergence,
 revocation, and topology receipts authenticate their complete canonical bytes
 through exactly one closed

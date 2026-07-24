@@ -56,8 +56,15 @@ revocation receipt digest. Select one closed
 non-exportable key and current measured-workload attestation;
 `OrchestratorAttestedFencedLease` requires a key-bound short-lived identity,
 one single-active lease/fence, simultaneous-use detection, and an online,
-single-use `WorkloadLeaseActionClaim` for every authority-bearing transition.
-Freeze its maximum claim lifetime, action-digest/instance-key/continuity/lease-
+single-use `WorkloadLeaseActionClaim` for each operation in the closed
+action-authority scope matrix. Freeze readiness separately as read-only use of
+bounded reusable `OnlineWorkloadFreshnessProofV1`, including its maximum age,
+topology/catalog/identity/fence bindings, and fail-closed unavailable/stale
+result. Freeze that local positive receipt/admission creation, topology
+mutation, dispatch, and transmission start consume claims; authenticated
+global/rollout owner-to-owner protocol and revocation/distrust/fence
+application do not. Freeze its maximum claim lifetime,
+action-digest/instance-key/continuity/lease-
 generation/fence/sequence bindings, online CAS issuance, and zero offline
 authority: after control-plane loss or fencing, exposure is limited to an
 already claimed action until that fixed bound expires. Freeze
@@ -67,6 +74,10 @@ returns the original claim; different action bytes reject. Freeze local
 co-transactional `ConsumedWorkloadLeaseActionClaim`, typed issuance/outcome
 uncertainty, no reissue before issuer/tombstone reconciliation, expiry,
 revocation, failover, and externally evidenced backup/restore high-watermarks.
+Freeze replay precedence: consult the tombstone first; an exact claim/action
+digest returns the stored historical outcome even after later expiry or
+revocation without repeating work or granting new authority; only absent
+tombstones undergo current first-consumption checks; mismatches always reject.
 Freeze issuer, subject,
 audience, deployment/region/service-role/partition/placement binding, public-
 key thumbprint, attestation policy/version, issuance/renewal/rotation/expiry/
@@ -91,6 +102,13 @@ without generation/export/rotation authority. Freeze authenticated
 `CatalogGlobalActivationResultReceipt`, including rollout/manifest/catalog/
 predecessor, expected/resulting global versions, outcome, distrust/revocation,
 sender/key epochs, idempotency, and replay tombstones.
+Freeze `TopologyMutationAuthorizationReceipt` separately from workload
+authentication. Bind initiating principal/session/delegation lineage, current
+principal/session/delegation/role/policy epochs, change/incident/emergency
+record, approval quorum/separation, expected topology generation, canonical
+successor digest, action claim/expiry, authorization expiry, and bounded
+break-glass reason/scope/duration/owner/retrospective review. Require atomic
+receipt/claim/tombstone/topology-CAS/fence-outbox consumption.
 Freeze the credential-operation mechanism used by every
 `ProviderExecutionProfile`: external KMS/secret services retain master keys;
 upstream and general executor components receive only opaque tenant/provider/

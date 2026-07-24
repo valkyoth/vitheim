@@ -196,6 +196,12 @@ expect_realization_failure "a missing pre-initialization topology state"
 sed -i 's/`CommitTopologyAuthorityHandoff`, //' "$realizations"
 expect_realization_failure "a missing topology-authority handoff transition"
 
+sed -i 's/`TopologyMutationAuthorizationReceipt`, //' "$realizations"
+expect_realization_failure "a missing topology-mutation authorization receipt"
+
+sed -i 's/`RecheckTopologyAtTransmissionStart`, //' "$realizations"
+expect_realization_failure "a missing dynamic topology start recheck"
+
 sed -i 's/, VIT-LST-001-g01-N//' "$realizations"
 expect_realization_failure "a missing negative semantic contract"
 

@@ -51,7 +51,11 @@ fences, and tombstones; rollout generation 2 consumes its authenticated
 snapshot only after epoch 12 activates/converges under generation 1 and
 every required local owner has admitted generation 2, authorizing
 initialization, exact equality verification, and the dormant-singleton handoff
-CAS; static and dynamic sources
+CAS. Each handoff or successor atomically consumes distinct policy/approval
+authorization and selected-profile workload action authority. Once committed,
+`VIT-LAW-007@g02` makes current topology a normal admission, readiness,
+dispatch, and transmission-start dependency, so a stale placement is blocked
+even after rollout completion or loss of its fence message; static and dynamic sources
 are never co-authoritative. Each catalog lineage has one monotonic active rollout
 generation, irreversible `ActivationAuthorized` state with atomic receipt/
 outbox and pinning, and permanent pre-authorization `Superseded` losers.
@@ -59,7 +63,10 @@ Workload identity is an executable hardware-attested profile or an
 orchestrator-attested lease whose external issuer owns online single-use claims
 and whose protected local owner atomically persists consumption/outcome. Typed
 uncertainty blocks reissue and restore honors greatest claim high-watermarks;
-offline authority is zero. Canonical receipts—including authorization and
+exact tombstone replay returns only the historical outcome before current
+expiry/revocation checks and never creates new authority. Readiness uses a
+bounded reusable online freshness proof, while authenticated owner-to-owner
+safety protocols do not require claims; offline authority is zero. Canonical receipts—including authorization and
 global activation result—use only signed, sender-only authority-MAC, or
 attested-channel-admission variants with replay and durable-integrity binding;
 a disk key, digest, transport transcript, or ordinary row is not authority. One project-owned

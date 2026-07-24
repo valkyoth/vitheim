@@ -93,11 +93,18 @@ topology. At `0.141.0`, epoch 12 activates/converges under generation 1/static
 authority; after every local generation-2 admission, generation 2 initializes/
 verifies the exact dormant singleton and commits the handoff that makes
 independent `VIT-INV-060` current. The two topology sources are never co-
-authoritative. Rollout consumes topology receipts and cannot create
+authoritative. `VIT-LAW-007@g02` then makes current topology an independent
+local admission, readiness, dispatch, and transmission-start gate even after
+rollout completion or missing fence delivery. Every topology handoff/mutation
+also atomically consumes policy/approval authorization distinct from workload
+authentication. Rollout consumes topology receipts and cannot create
 membership or fences. `0.140.1` selects a hardware-attested identity or an
-orchestrator-attested lease with externally owned online single-use claims,
+orchestrator-attested lease with a closed action-authority scope: bounded
+reusable freshness for readiness, authenticated owner protocol for control/
+safety withdrawal, and externally owned online single-use claims for mutations,
 atomic local consumption/outcome, typed uncertainty, no reissue, fixed maximum
-lifetime, restore high-watermarks, and zero offline authority. Authorization
+lifetime, tombstone-first historical replay, restore high-watermarks, and zero
+offline authority. Authorization
 and global-result receipts use a closed signed, sender-only authority-MAC, or
 attested-channel-admission variant with replay and durable-integrity binding; a
 disk key, digest, transcript, or row is not
