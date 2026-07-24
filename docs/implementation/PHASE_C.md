@@ -115,10 +115,13 @@ local fence. Require `VIT-CAP-059` for rollout ID/root, immutable catalog/
 placement/topology manifest, closed state, transactional outbox/inbox,
 prepare/activation/convergence/revocation receipts, irreversible
 `ActivationAuthorized` state, atomic authorization-receipt/outbox bundle,
-pinned active generation, deadlines, reconciliation, and `AllRequired` policy.
-The future `VIT-CAP-060` contract separately persists the closed dormant/
-committed handoff selector and exact completed-rollout/artifact/manifest/local-
-admission bindings; no adapter may infer handoff completion. Negotiate the planning
+pinned active generation, authenticated global-result receipt, replay
+tombstones, external action-claim issuance evidence, co-transactional local
+consumption tombstone/outcome, typed uncertainty, deadlines, reconciliation,
+and `AllRequired` policy. The future `VIT-CAP-060` contract separately persists
+the closed uninitialized/dormant/committed handoff selector and exact completed-
+rollout/artifact/manifest/local-admission bindings; no adapter may infer
+initialization or completion. Negotiate the planning
 superset separately from immutable active payload/envelope support. Exact
 `CompiledCatalog` and `SignedCatalog` capabilities report independently; no
 combined capability is valid. The adapter consumes only the typed result of the
@@ -838,8 +841,10 @@ each closed semantic realization through the shared verifier. Independently
 preserve `VIT-INV-059` rollout root/state, immutable topology/placement
 manifest generation, outbox/inbox, prepare/global/convergence/revocation
 receipts, irreversible authorization state and receipt/outbox atomicity, pinned
-active rollout generation, deadlines/escalation, exact local owner identities,
-and all fences.
+active rollout generation, authenticated global-result receipt/replay
+tombstone, external claim issuance sequence, co-transactional local consumption
+tombstones/outcomes/typed uncertainty, deadlines/escalation, exact local owner
+identities, and all fences.
 Replacement creates a successor placement generation and fresh admission;
 migration never clones authority from a copied local row.
 Migration authority cannot come from a manifest or catalog stored under the
@@ -918,8 +923,9 @@ activation floor/actual predecessor/scope/validity/maximum uncertainty/signer/
 root epoch/revocation/successor fields and full generation ancestry; the
 `VIT-INV-059` rollout root, immutable placement manifest, exact local owner
 keys/fences, messages, receipts, irreversible authorization state, atomically
-paired authorization outbox, pinned active generation, and deadline/
-reconciliation state,
+paired authorization outbox, authenticated global result/replay tombstones,
+pinned active generation, action-claim issuer/consumption/uncertainty state,
+and deadline/reconciliation state,
 encryption/signing ports, position mapping, and budgets.
 
 Goal: migrate between backends without claiming direct database interchange.

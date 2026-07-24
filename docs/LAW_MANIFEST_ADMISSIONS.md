@@ -33,7 +33,7 @@ Planning catalog revision: `1`
 
 Trust profile: `planning-superset-not-runtime-v1`
 
-Planning catalog digest: `sha256:aee8ad6163460588c51d5abafbc3f30d47e0e711000928a8c4817750cad5f999`
+Planning catalog digest: `sha256:4905aa2ea7aec3f52f0773b5614920dfa125f862577ad9e1f6ee217c30d4cb5b`
 
 The planning-catalog digest uses the length-prefixed encoding defined by
 `docs/LAW_GENERATION_MANIFEST.md`. Encode, in order, the ASCII format literal
@@ -74,8 +74,8 @@ Markdown presentation are excluded.
 | VIT-LAW-006@g09 | sha256:44b4e01d4de263d630fbf5ea97e52fcfa1a06f0d63056ba4a9af0aeb2e0cc12f |
 | VIT-LAW-006@g10 | sha256:54280761c256d867005a953f5c2f46d6e0d0ed018ac4b3ad47326d859f47d338 |
 | VIT-LAW-007@g01 | sha256:d36ba8b53e831437107f1f78610dfa889ccdfdd9288a58f90b01affb4caee5d7 |
-| VIT-LAW-008@g01 | sha256:177e24a7b6565d50594c1610745d0d4cf21047e5353cb3a15a9ed49685f8bed0 |
-| VIT-LAW-008@g02 | sha256:f6c805ef729fb22002174920ce18d85add87d55087981dce9e12ef3b824f6b15 |
+| VIT-LAW-008@g01 | sha256:108df80613c6b4fc288a343ae04a81c90f6d3a403a1ea3c01d0c230cac5052e3 |
+| VIT-LAW-008@g02 | sha256:7e69fb4304e9e5e5b7790dc6ccd971b6d6a9e79ccba1cc5f6f27d238200c7964 |
 
 `0.18.3` implements planning-superset validation and generation of the first
 active activation-floor catalog. Each later law-effective milestone generates
@@ -85,16 +85,18 @@ remains applicable. The first catalog embeds `VIT-LAW-008@g01`, the compiled
 static singleton topology, and its empty serialized rollout root without self-
 admission. `0.18.4` proves the first predecessor transition and competing-
 candidate recovery through the durable process manager, including irreversible
-authorization state/receipt/outbox pinning. `0.19.0` binds that bundle, the verified
+authorization state/receipt/outbox pinning, both authenticated cross-owner
+receipts, and external-issuer/local-consumption action-claim recovery. `0.19.0` binds that bundle, the verified
 envelope, immutable placement manifest, receipts, and exact local identities/
 ratchets into signed checkpoints. `0.21.0–0.22.0` negotiate and conform catalog
 global/rollout/local ownership, trusted-time ratchets, persistence, and
 admission; `0.29.0–0.30.0`
 preserve them through migration, export, and import. `0.140.1`, `0.140.2`, and
 `0.140.6` freeze exact cryptographic/time, storage, and deployment profiles.
-`0.141.0` initializes the exact dormant singleton, activates/converges epoch 12
-under generation 1, requires every local generation-2 admission, and only then
-commits the one-time handoff to independent `VIT-INV-060` topology authority.
+`0.141.0` activates/converges epoch 12 under generation 1, requires every local
+generation-2 admission, and only then lets generation 2 initialize/verify the
+exact dormant singleton and commit the one-time handoff to independent
+`VIT-INV-060` topology authority.
 Phase O and `1.0.0` require verifier-bound
 topology/identity/receipt/backup/restore/failover evidence and an exact-commit
 pentest.

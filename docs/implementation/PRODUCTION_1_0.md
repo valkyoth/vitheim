@@ -26,12 +26,17 @@ local `VIT-INV-058` is exactly one enforcement-partition placement generation
 with the selected attested/fenced workload proof, authenticated receipts,
 boot identity, binary/semantic digests, and fencing.
 The topology owner reached `Committed` only through the staged exact-singleton
-handoff after epoch-12 generation-1 activation/convergence and local
-generation-2 admission; evidence proves no boundary admitted dual or absent
-topology authority. The orchestrator identity profile has online single-use
-action claims with a frozen maximum lifetime and zero offline authority, and
-receipt authentication uses only the three closed reviewed variants with
-replay and durable-integrity evidence.
+handoff: epoch-12 generation-1 activation/convergence and every local
+generation-2 admission precede `InitializeTopologyAuthorityHandoff`, exact
+equality verification, and commit. Evidence proves no early generation-2
+command and no boundary with dual or absent topology authority. The
+orchestrator identity profile has externally owned online single-use action
+claims with a frozen maximum lifetime and zero offline authority. Each
+protected local owner atomically persists consumption/outcome, typed uncertainty
+blocks reissue, and restore honors greatest issuer/tombstone high-watermarks.
+Receipt authentication uses only the three closed reviewed variants with
+replay and durable-integrity evidence; MAC generation is sender-only and
+receivers have verify-only access.
 `VIT-LAW-007` proves admission composition and `VIT-LAW-008` proves the
 manifest/prepare/global-activation/convergence/revocation process manager.
 Every
@@ -49,7 +54,10 @@ exact workload-authenticated identity-bound receipts, bounded reconciliation,
 and no distributed-transaction claim. Its irreversible
 `ActivationAuthorized` state atomically owns the authorization receipt/outbox,
 pins the generation, and is reconciled against the globally serialized
-activate-or-revoke result; no post-authorization abandon or supersede is
+activate-or-revoke result. Both
+`CatalogActivationAuthorizationReceipt` and
+`CatalogGlobalActivationResultReceipt` are independently authenticated,
+version/outcome/idempotency/replay-bound, and recovered; no post-authorization abandon or supersede is
 possible. Rollout/discovery cannot create
 topology, and restore cannot resurrect a placement tombstone.
 

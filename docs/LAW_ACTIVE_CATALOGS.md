@@ -188,6 +188,35 @@ The selectable mechanisms at `0.140.1` are:
    abort/reconciliation. Duplicate renewal or simultaneous use immediately
    fences the affected incarnation and denies new claims.
 
+`WorkloadLeaseActionAuthorityPortV1` is the explicit external trust boundary
+for that second mechanism. The external identity authority, not Vitheim
+storage, owns the monotonic issuer/lease generation and sequence plus unique
+`(ClaimId, ActionId)`. A stable idempotent request binds issuer, lease,
+instance key, `BootOrContinuityId`, sequence, canonical action digest, issuance,
+expiry, and revocation/fence epochs. An exact retry returns the original claim;
+reuse with different bytes or action digest is rejected.
+
+The Vitheim invariant owner performing the protected action validates the claim
+and atomically commits the action, its typed outcome, and a
+`ConsumedWorkloadLeaseActionClaim` tombstone in the same local transaction.
+Exact local replay returns that original outcome without repeating the action;
+the same claim ID with different action bytes is rejected.
+Lost issuance responses become `WorkloadLeaseActionClaimIssuanceUnknown` and
+are reconciled by the stable request against the issuer. Lost protected-
+transition responses become `WorkloadLeaseActionClaimOutcomeUnknown` and are
+reconciled against the local tombstone/outcome. Neither state permits a new
+claim for the same action. Expired, revoked, fenced, duplicate, out-of-sequence,
+or digest-substituted claims fail closed; an issued but unconsumed claim may
+expire without inventing completion.
+
+Issuer records, greatest consumed-claim sequence/tombstone checkpoints, and
+their exact outcomes survive failover, backup, restore, and migration. Restore
+below either externally evidenced high-watermark is unready until reconciled;
+it cannot reissue or reconsume a claim. This capability/consumption split does
+not create a second Vitheim owner: the external authority owns issuance, while
+each existing invariant owner exclusively owns the co-transactional
+consumption tombstone and protected state.
+
 Raw disk-held mTLS keys, bearer tokens, host names, pod names, VM identities
 without key-bound attestation, and receipt digests alone are unsupported.
 `CatalogReceiptAuthenticationV1` is exactly one closed variant:
@@ -196,7 +225,9 @@ without key-bound attestation, and receipt digests alone are unsupported.
    receipt bytes, profile/placement/lease fence, signer epoch, and domain;
 2. `AuthorityMacReceipt`: a non-exportable authority key handle MACs the same
    fields and binds its owner, key epoch, purpose, and rotation/revocation
-   state; or
+   state. KMS/HSM policy gives only the named sender `GenerateMac` for that
+   owner/domain/key epoch and gives receivers `VerifyMac` only; receivers
+   cannot generate, export, rotate, or impersonate the sender; or
 3. `AttestedChannelAdmissionReceipt`: a unique verifier challenge, channel
    exporter, authenticated peer identity/key/attestation, canonical receipt
    bytes, admission/signer epochs, owner fences, and replay tombstone commit
@@ -231,29 +262,34 @@ manifest; activation atomically makes it current and emits durable fence
 intents for every removed or superseded placement. Restore takes the greatest
 externally evidenced topology and placement-generation ratchets and cannot
 resurrect a tombstone. Its handoff state is closed:
-`DormantInitialized` or `Committed`.
+`Uninitialized`, `DormantInitialized`, or `Committed`.
 
 The ceremony is:
 
-1. create `DormantInitialized` with bytes/digest exactly equal to the compiled
-   singleton; the compiled artifact remains the sole topology authority;
+1. keep the compiled singleton as the sole topology authority and
+   `VIT-INV-060` in `Uninitialized`;
 2. use currently active `VIT-LAW-008@g01` and that static singleton to activate
    and converge `VIT-LAWCAT-ACTIVE-e012-v1`, which contains
    `VIT-LAW-008@g02`;
-3. after every required local owner has admitted generation 2, execute
-   `CommitTopologyAuthorityHandoff`;
-4. the expected-version CAS binds the completed epoch-12 rollout ID/generation,
+3. only after every required local owner has admitted generation 2, execute
+   `InitializeTopologyAuthorityHandoff`; its expected-version CAS creates
+   `DormantInitialized` with bytes/digest exactly equal to the compiled
+   singleton, while the compiled artifact remains the sole authority;
+4. independently verify the stored manifest bytes/digest against the compiled
+   singleton and completed epoch-12/local-admission evidence;
+5. execute `CommitTopologyAuthorityHandoff`; its expected-version CAS binds the
+   completed epoch-12 rollout ID/generation,
    catalog envelope digest, compiled static artifact digest, identical dormant
    manifest digest, and handoff receipt, then changes the row to `Committed`;
    and
-5. only `Committed` may issue `CurrentPlacementTopologyReceiptV1` or accept
+6. only `Committed` may issue `CurrentPlacementTopologyReceiptV1` or accept
    dynamic commands.
 
 The handoff state is the exclusive source selector: before commit the compiled
 singleton is authoritative and the row is inert; after commit `VIT-INV-060` is
 authoritative and the compiled singleton is provenance only. They are never
-simultaneously authoritative. Recovery replays initialization/catalog rollout/
-local convergence/handoff boundaries and never infers `Committed`.
+simultaneously authoritative. Recovery replays catalog rollout/local
+convergence/initialization/handoff boundaries and never infers `Committed`.
 
 The rollout process manager reads an authenticated
 `CurrentPlacementTopologyReceiptV1`, seals its exact topology generation and
@@ -277,6 +313,24 @@ owner keys, required binary capability and semantic-realization profiles,
 activation policy, deadlines, global/local owner fences, and manifest digest.
 Changing membership or any bound requirement creates a successor manifest
 generation; an in-flight manifest is never edited.
+
+Both messages crossing the rollout/global-owner boundary are first-class
+authenticated receipts under the selected exact
+`CatalogReceiptAuthenticationV1` variant:
+
+- `CatalogActivationAuthorizationReceipt` binds authorization ID, rollout ID/
+  generation, manifest digest, catalog ID/epoch/envelope digest, predecessor
+  epoch/digest, expected global lineage version, distrust/revocation epoch,
+  sender owner/fence, signer/key epoch, idempotency ID, and replay tombstone;
+- `CatalogGlobalActivationResultReceipt` binds that authorization and request
+  digest, the authoritative activated/revoked/blocked outcome, prior and
+  resulting global CAS versions, resulting catalog/distrust/revocation state,
+  global-owner fence, signer/key epoch, idempotency ID, and replay tombstone.
+
+The global owner verifies the first before its CAS; the rollout owner verifies
+the second before changing rollout state. A transport-authenticated message,
+untyped outbox row, copied authorization, unauthenticated global result, or
+receiver-forgeable MAC never advances either owner.
 
 The closed rollout states are:
 
@@ -324,10 +378,13 @@ transaction:
    then atomically records one idempotent `CatalogPrepareReceipt`;
 4. the rollout root admits receipts by exact identity/authenticator and, only
    when policy is satisfied, atomically enters `ActivationAuthorized`, stores
-   one canonical authorization receipt, and commits its outbox message;
+   one canonical `CatalogActivationAuthorizationReceipt`, and commits its
+   outbox message;
 5. `VIT-INV-057` consumes that receipt in its own expected-version activation
-   CAS and emits the authoritative global-activation receipt;
-6. the rollout root consumes that receipt, enters `GloballyActivated`, emits
+   CAS and emits one authenticated
+   `CatalogGlobalActivationResultReceipt`;
+6. the rollout root authenticates and consumes that result receipt, enters
+   `GloballyActivated`, emits
    activation deliveries, and enters `Converging`;
 7. each `VIT-INV-058` owner admits the active global epoch and emits one
    `CatalogConvergenceReceipt`; and
@@ -365,7 +422,9 @@ global result. A delayed authorization cannot bypass the global tombstone.
 
 Recovery replays transactional outbox/inbox state, re-reads the global owner,
 current topology/placement manifest, and every local owner, and resumes from
-durable receipts. Crash injection covers before and after manifest seal,
+durable authenticated receipts. It also reconciles action-claim issuance/
+consumption uncertainty against the external issuer and local co-transactional
+tombstone without reissue or reconsumption. Crash injection covers before and after manifest seal,
 prepare outbox commit, local receipt commit, root receipt admission, activation
 authorization, global CAS, global receipt delivery, local convergence, final
 receipt admission, completion, topology change, revocation, abandonment,
@@ -458,21 +517,26 @@ when the activation milestone leaves planned status.
 
 `0.18.3` delivers the canonical codec, shared verification core, CLI, first
 compiled artifact, exact local owner identity, split global/rollout/local
-owners, durable process manager, and trusted-time interface. `0.18.4` verifies
-the first actual predecessor transition through every rollout state and crash
-boundary. `0.19.0` binds verified envelope digests, rollout manifest/receipts,
-and local identity/ratchets into checkpoints.
+owners, durable process manager, authenticated authorization/result receipts,
+external action-claim authority port plus local atomic consumption, and
+trusted-time interface. `0.18.4` verifies the first actual predecessor
+transition through every rollout/control-receipt/claim state and crash boundary.
+`0.19.0` binds verified envelope digests, rollout/control receipts/replay
+tombstones, claim high-watermarks/outcomes, and local identity/ratchets into
+checkpoints.
 `0.21.0–0.22.0` negotiate and destructively conform storage without making it a
 trust root. `0.29.0–0.30.0` prove migration/import with the real verifier.
 `0.140.1` freezes compiled versus signed profile, signature suite/root ceremony,
-time source, maximum uncertainty, workload-identity proof, and receipt
-authentication. `0.140.2` freezes separate global, rollout-root, future
-topology, and local row placement. `0.140.6` freezes `AllRequired` or a fully
-fenced quorum, topology evolution, distribution, failover, revocation, time
+time source, maximum uncertainty, workload-identity/claim proof, receipt
+authentication, and sender/verifier MAC roles. `0.140.2` freezes separate
+global, rollout-root, future topology, external-issuer evidence, and local
+consumption placement. `0.140.6` freezes `AllRequired` or a fully fenced quorum,
+topology evolution, distribution, failover, revocation, claim uncertainty, time
 loss, and recovery. `0.141.0` hands the compiled static topology to
 `VIT-INV-060` without circular authority: epoch 12 is activated and converged
-under `VIT-LAW-008@g01`, then locally admitted generation 2 authorizes the
-one-time identical-manifest handoff CAS. `0.142.0–0.143.0` prove split service
+under `VIT-LAW-008@g01`; only then does locally admitted generation 2 authorize
+initialization, exact verification, and the one-time handoff CAS.
+`0.142.0–0.143.0` prove split service
 and HA behavior. `0.145.0` proves backup/restore cannot clone a local
 owner, invent a receipt, resurrect topology, or roll back catalog/validity
 state. Phase O and

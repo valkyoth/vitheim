@@ -50,13 +50,14 @@ Both registries prove supersession/mixed-version/migration/rollback behavior.
 Before any split-service or HA topology is legal, perform the staged one-time
 handoff from `CompiledStaticPlacementTopologyV1` to
 `VIT-INV-060 PlacementTopologyGenerationState` without circularly depending on
-generation 2. First initialize one `PlacementTopologyGenerationRow` as
-`DormantInitialized` with bytes/digest exactly equal to the compiled singleton;
-the compiled artifact remains the sole authority and the dormant row cannot
-issue receipts or accept commands. Then use active `VIT-LAW-008@g01` and the
-compiled topology to activate and converge epoch 12, whose catalog contains
-`VIT-LAW-008@g02`. After every required local owner admits generation 2,
-execute `CommitTopologyAuthorityHandoff`: one expected-version CAS binds the
+generation 2. Keep the row `Uninitialized` and the compiled singleton solely
+authoritative while active `VIT-LAW-008@g01` activates and converges epoch 12,
+whose catalog contains `VIT-LAW-008@g02`. Only after every required local owner
+admits generation 2 may the generation-2 realization execute
+`InitializeTopologyAuthorityHandoff`; its expected-version CAS creates
+`DormantInitialized` with bytes/digest exactly equal to the compiled singleton,
+while the row remains inert. Independently verify that equality, then execute
+`CommitTopologyAuthorityHandoff`: one expected-version CAS binds the
 completed epoch-12 rollout ID/generation, catalog envelope digest, compiled
 artifact digest, identical dormant manifest digest, and handoff receipt, and
 changes the row to `Committed`. Only then is `VIT-INV-060` the authority and
@@ -71,8 +72,8 @@ Goal: hardened repeatable single-node install.
 Deliverables: signed packages, startup floor-profile compatibility gate,
 active-evaluator binary/corpus/language compatibility gate, governed higher-
 floor and key-set migration/drain tooling, topology bootstrap/handoff tool,
-`VIT-CAP-060` dormant/committed persistence and exclusivity probe, generation-2
-law realization/catalog artifact, and runbook.
+`VIT-CAP-060` uninitialized/dormant/committed persistence, ordering, and
+exclusivity probe, generation-2 law realization/catalog artifact, and runbook.
 Verification: clean
 install, permissions, rootless/non-root, secrets, restart, rolling upgrade,
 downgrade/rollback to a lower compiled floor, lower-default release, conflicting
@@ -95,9 +96,10 @@ quorum/exercise state, stale recovery epoch, or lost manual-only limitation,
 credential-operation-profile mismatch,
 forged/mutable topology bootstrap, rollout-authored generation, expected-version
 race, mismatched dormant manifest/artifact/catalog/rollout binding, handoff
-before generation-2 local admission, dual static/dynamic authority, inferred
-commit, crash before/after dormant initialization, epoch-12 activation, local
-convergence, and handoff CAS, missing member/fence/tombstone, older-topology
+initialization or commit before generation-2 local admission, dual static/
+dynamic authority, inferred initialization/commit, crash before/after epoch-12
+activation, local admission, dormant initialization, equality verification, and
+handoff CAS, missing member/fence/tombstone, older-topology
 restore, discovery treated as authority, and restore pass. Exit criteria: the
 documented profile is operable securely and no package change can start below or
 lower the durable admitted platform-floor ratchet; no split deployment starts
@@ -118,7 +120,11 @@ cannot allocate a key. Bind its selected `WorkloadIdentityProofProfileV1`,
 issuer/subject/audience, key thumbprint/attestation, issuance/expiry/revocation,
 single-active lease/fence where required, and online single-use
 `WorkloadLeaseActionClaim` for every authority-bearing transition under the
-orchestrator profile; cached/offline leases grant no authority. Bind boot/continuity ID,
+orchestrator profile; cached/offline leases grant no authority. The external
+`WorkloadLeaseActionAuthorityPortV1` owns stable issuance IDs/sequences; each
+protected local owner atomically stores `ConsumedWorkloadLeaseActionClaim` with
+its outcome, uses typed issuance/outcome uncertainty, and blocks reissue until
+reconciliation. Bind boot/continuity ID,
 binary-capability digest, semantic-set digest, local fence, and catalog
 ratchets. Route rollout prepare/activation/revocation through transactional
 outbox/inbox and return canonically authenticated, exact identity-bound
@@ -126,6 +132,9 @@ receipts through exactly `WorkloadSignedReceipt`, `AuthorityMacReceipt`, or
 `AttestedChannelAdmissionReceipt`—not bare digests or an open equivalent—to the
 separate rollout root. The channel form binds a fresh challenge/exporter/peer/
 bytes/epochs/fences/replay tombstone and a durable integrity anchor.
+Route `CatalogActivationAuthorizationReceipt` and
+`CatalogGlobalActivationResultReceipt` through the same closed authentication;
+MAC receivers have `VerifyMac` only and cannot impersonate either sender.
 Replacement, autoscaling identity reuse, disk/VM/pod clone, service-role
 change, and region move fence the predecessor generation and require a fresh
 global rollout receipt; copied storage never creates readiness. The executor owns both
@@ -270,7 +279,9 @@ distributed transaction. Exercise immutable topology/placement manifests,
 `Abandoned`, and `Superseded`; monotonic per-lineage
 `ActiveRolloutGeneration`; authenticated prepare and convergence receipt
 uniqueness; atomic authorization-state/receipt/outbox commit and pinning;
-activate-versus-revoke serialization by the global CAS; and deadline
+authenticated authorization and global-result receipts with replay tombstones;
+activate-versus-revoke serialization by the global CAS; external action-claim
+issuance plus co-transactional local consumption/uncertainty; and deadline
 reconciliation. `VIT-INV-060`, not rollout or discovery, owns current
 topology generation, placement successors, fences, and tombstones. The selected
 baseline is `AllRequired`. Any approved
@@ -302,13 +313,18 @@ Include catalog rollout-root/global-lineage/local-owner placement, immutable
 manifest, outbox/inbox, authenticated receipt, independent topology-generation
 owner, active-rollout generation, superseded tombstone, typed workload-
 identity proof, online single-use action claims for the orchestrator profile,
-closed receipt-authentication variant and durable integrity anchor,
+co-transactional consumption tombstones, closed receipt-authentication variant,
+sender-only MAC generation, control-message replay tombstones, and durable integrity anchor,
 fence, convergence, revocation, and recovery evidence.
 Verification: crash and fail over before/after every catalog manifest/prepare/
 receipt/authorization/global-CAS/activation/convergence/finalize/revoke step;
 race authorization commit with abandon/supersede/revoke and response loss,
 delay authorization across global-owner failover/revocation, and prove its
 generation remains pinned until the authoritative result is reconciled. Race
+authorization/result substitution, replay, receiver MAC forgery, action-claim
+issuance/consumption response loss, different-digest stable-ID reuse, expiry,
+revocation, failover, and restore; no typed-uncertain action may be reissued.
+Race
 two prepared rollout candidates, lose authorization/global-CAS responses,
 restart both coordinators, and prove one authorized winner plus a permanently
 fenced pre-authorization `Superseded` loser; race every topology command and
@@ -468,7 +484,9 @@ distrust separately from every `VIT-INV-058` local catalog/distrust/time
 ratchet and the `VIT-INV-059` rollout root/state/immutable topology-placement
 manifest/outbox/inbox/receipts/deadlines, including irreversible authorization
 state, canonical authorization receipt/outbox atomicity, pinned active
-generation, and global result; and the independent `VIT-INV-060` handoff
+generation, authenticated global-result receipt, both replay tombstones,
+external action-claim issuer sequence plus local consumption tombstone/outcome/
+uncertainty, and sender/verifier MAC policy; and the independent `VIT-INV-060` handoff
 selector/topology owner/current generation/canonical membership digest/member
 placement generations/fences/tombstones/fence outbox; the active catalog ID/epoch,
 recomputed payload/envelope and actual

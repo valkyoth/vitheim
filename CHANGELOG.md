@@ -8,6 +8,15 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Moved topology initialization behind epoch-12 convergence and every local
+  generation-2 admission, adding explicit `Uninitialized` state so no
+  generation-2 transition executes before its semantic realization is active.
+- Added authenticated `CatalogActivationAuthorizationReceipt` and
+  `CatalogGlobalActivationResultReceipt` contracts with version/outcome/
+  idempotency/replay bindings and sender-generate/receiver-verify MAC roles.
+- Assigned workload action-claim issuance to an external authority port and
+  atomic consumption/outcome to each protected Vitheim owner, with typed
+  uncertainty, no-reissue reconciliation, and backup/restore high-watermarks.
 - Made catalog activation authorization an irreversible, atomic
   `ActivationAuthorized` state with receipt/outbox persistence, active-
   generation pinning, globally serialized activate-versus-revoke recovery, and

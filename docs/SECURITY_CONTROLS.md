@@ -44,9 +44,12 @@ audit decision.
   successor topology/placement manifests; one active rollout generation with
   irreversible authorization receipt/outbox pinning and permanent
   pre-authorization loser supersession; staged exact-singleton topology handoff
-  with exclusive authority; online single-use orchestrator action claims with
-  zero offline authority; transactional prepare/activation/convergence/
-  revocation delivery and closed signed/MAC/attested-channel receipt variants
+  only after generation-2 admission and with exclusive authority; externally
+  owned online single-use orchestrator claims, co-transactional local
+  consumption/outcome, typed uncertainty/no reissue, restore high-watermarks,
+  and zero offline authority; transactional prepare/activation/convergence/
+  revocation delivery, authenticated authorization/global-result receipts, and
+  closed signed/sender-generate receiver-verify MAC/attested-channel variants
   with replay and durable-integrity anchors rather than digest authority;
   expected-version explicit
   succession; gap-free milestone selection; shared runtime/CLI canonical

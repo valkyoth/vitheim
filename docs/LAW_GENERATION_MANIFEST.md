@@ -101,8 +101,9 @@ released meaning requires a successor generation, not an in-place edit.
   identity/catalog/distrust/trusted-time ratchets, `VIT-INV-059` durable
   serialized rollout process manager and `VIT-LAW-008@g01`, compiled static
   singleton placement, irreversible activation authorization with atomic
-  receipt/outbox and active-generation pinning, authenticated receipt-bound
-  state, planning/active
+  receipt/outbox and active-generation pinning, authenticated authorization/
+  global-result receipts, external action-claim issuance plus co-transactional
+  local consumption/uncertainty, authenticated receipt-bound state, planning/active
   separation, gap-free activation-floor
   selection, fully bound payload/envelope, one runtime/CLI cryptographic
   verifier, closed stage-aware P/N/M/F semantic-realization registry, and

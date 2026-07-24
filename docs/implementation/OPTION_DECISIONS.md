@@ -60,7 +60,14 @@ single-use `WorkloadLeaseActionClaim` for every authority-bearing transition.
 Freeze its maximum claim lifetime, action-digest/instance-key/continuity/lease-
 generation/fence/sequence bindings, online CAS issuance, and zero offline
 authority: after control-plane loss or fencing, exposure is limited to an
-already claimed action until that fixed bound expires. Freeze issuer, subject,
+already claimed action until that fixed bound expires. Freeze
+`WorkloadLeaseActionAuthorityPortV1`: the external issuer owns stable claim/
+action IDs, lease generation and sequence uniqueness; exact request replay
+returns the original claim; different action bytes reject. Freeze local
+co-transactional `ConsumedWorkloadLeaseActionClaim`, typed issuance/outcome
+uncertainty, no reissue before issuer/tombstone reconciliation, expiry,
+revocation, failover, and externally evidenced backup/restore high-watermarks.
+Freeze issuer, subject,
 audience, deployment/region/service-role/partition/placement binding, public-
 key thumbprint, attestation policy/version, issuance/renewal/rotation/expiry/
 revocation, clone detection, replacement, restore, and compromise recovery.
@@ -77,6 +84,13 @@ lease/action claim, fences, challenge/tombstone, and integrity anchor.
 Disk-held ordinary mTLS keys, disk-derived or cloneable bearer identity,
 host/pod names, and unauthenticated receipt digests cannot support a production
 local catalog owner.
+The `AuthorityMacReceipt` choice is valid only when KMS/HSM policy grants the
+named sender/domain/key epoch `GenerateMac` and every receiver `VerifyMac`
+without generation/export/rotation authority. Freeze authenticated
+`CatalogActivationAuthorizationReceipt` and
+`CatalogGlobalActivationResultReceipt`, including rollout/manifest/catalog/
+predecessor, expected/resulting global versions, outcome, distrust/revocation,
+sender/key epochs, idempotency, and replay tombstones.
 Freeze the credential-operation mechanism used by every
 `ProviderExecutionProfile`: external KMS/secret services retain master keys;
 upstream and general executor components receive only opaque tenant/provider/
@@ -201,9 +215,12 @@ binary/semantic/fence bindings. Map `VIT-INV-059` separately: rollout root,
 immutable topology/placement manifest, closed state, outbox/inbox, prepare/
 activation/convergence/revocation receipts, irreversible
 `ActivationAuthorized`, canonical authorization receipt and atomically paired
-outbox intent, pinned active generation, deadlines, escalation, and
+outbox intent, authenticated global-result receipt, both replay tombstones,
+pinned active generation, external claim issuance evidence, co-transactional
+local consumption tombstones/outcomes/uncertainty, deadlines, escalation, and
 reconciliation. Reserve a fourth independent deployment topology-control
-partition for `VIT-INV-060`: closed `DormantInitialized`/`Committed` handoff
+partition for `VIT-INV-060`: closed
+`Uninitialized`/`DormantInitialized`/`Committed` handoff
 state, exact artifact/rollout/manifest/local-admission binding, expected-version
 current-generation row, canonical membership manifest/digest, monotonic member
 placement generations, predecessor fences, permanent tombstones, and
@@ -628,8 +645,10 @@ receipt, CAS-claims one monotonic `ActiveRolloutGeneration` per catalog lineage,
 seals one topology/placement manifest, and gathers exact authenticated identity/
 capability/semantic/fence-bound prepare receipts. It then atomically enters
 irreversible `ActivationAuthorized`, persists the authorization receipt and
-outbox, and pins that generation. The global owner serializes activation versus
-revocation through CAS; each independent local owner invokes the
+outbox, and pins that generation. The global owner authenticates that receipt,
+serializes activation versus revocation through CAS, and returns an
+authenticated result receipt that the rollout verifies before transition; each
+independent local owner invokes the
 shared verifier and emits authenticated convergence; the rollout root finalizes
 from durable receipts. A digest alone is not receipt authentication.
 Exactly one rollout generation is current and nonterminal. Pre-authorization
@@ -665,6 +684,10 @@ response loss, delayed delivery, and coordinator/global-owner failover. It also
 proves online action-claim expiry and zero offline authority for the
 orchestrator profile and revalidates every closed receipt variant plus its
 durable integrity anchor.
+It loses claim issuance and consumption responses independently, rejects
+different-digest stable-ID reuse, blocks reissue while either typed uncertainty
+state exists, restores the greatest issuer/local tombstone high-watermarks, and
+proves receiver-only MAC verifiers cannot forge either cross-owner receipt.
 Goal: select the exact profiles Phase O must certify.
 Deliverables: support matrix, trust/network boundaries, fencing/quorum model,
 dispatch-authorization consistency/failure model, quota consumption/refund

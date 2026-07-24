@@ -248,11 +248,23 @@ require_text docs/LAW_ACTIVE_CATALOGS.md \
     '`Superseded` is the permanent losing-candidate state' \
     'permanent competing-rollout loser state'
 require_text docs/LAW_ACTIVE_CATALOGS.md \
-    '`DormantInitialized` or `Committed`' \
+    '`Uninitialized`, `DormantInitialized`, or `Committed`' \
     'closed topology authority handoff state'
 require_text docs/LAW_ACTIVE_CATALOGS.md \
     '`WorkloadLeaseActionClaim`' \
     'online single-use orchestrator action claim'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '`WorkloadLeaseActionAuthorityPortV1` is the explicit external trust boundary' \
+    'workload action claim ownership and crash semantics'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '`CatalogActivationAuthorizationReceipt` binds authorization ID' \
+    'authenticated activation authorization receipt'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    '`CatalogGlobalActivationResultReceipt` binds that authorization' \
+    'authenticated global activation result receipt'
+require_text docs/LAW_ACTIVE_CATALOGS.md \
+    'gives receivers `VerifyMac` only' \
+    'receiver cannot forge authority MAC receipts'
 require_text docs/LAW_ACTIVE_CATALOGS.md \
     '`WorkloadSignedReceipt`' \
     'closed catalog receipt authentication variants'

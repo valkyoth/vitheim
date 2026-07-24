@@ -90,14 +90,17 @@ converge/complete/block/revoke/abandon/supersede states, transactional delivery,
 and authenticated identity/fence-bound receipts without a distributed
 transaction. `0.18.3` permits only the compiled immutable single-placement
 topology. At `0.141.0`, epoch 12 activates/converges under generation 1/static
-authority, then an exact dormant-singleton handoff CAS makes independent
-`VIT-INV-060` and `VIT-LAW-008@g02` current; the two topology sources are never
-co-authoritative. Rollout consumes topology receipts and cannot create
+authority; after every local generation-2 admission, generation 2 initializes/
+verifies the exact dormant singleton and commits the handoff that makes
+independent `VIT-INV-060` current. The two topology sources are never co-
+authoritative. Rollout consumes topology receipts and cannot create
 membership or fences. `0.140.1` selects a hardware-attested identity or an
-orchestrator-attested lease with online single-use action claims, fixed maximum
-lifetime, and zero offline authority. Receipt authentication is a closed
-signed, authority-MAC, or attested-channel-admission variant with replay and
-durable-integrity binding; a disk key, digest, transcript, or row is not
+orchestrator-attested lease with externally owned online single-use claims,
+atomic local consumption/outcome, typed uncertainty, no reissue, fixed maximum
+lifetime, restore high-watermarks, and zero offline authority. Authorization
+and global-result receipts use a closed signed, sender-only authority-MAC, or
+attested-channel-admission variant with replay and durable-integrity binding; a
+disk key, digest, transcript, or row is not
 authority. Every
 artifact is canonically decoded and cryptographically verified by one project-
 owned core shared by runtime and release CLI. No clone, startup, restore,

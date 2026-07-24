@@ -181,8 +181,17 @@ expect_realization_failure "a missing catalog-rollout loser state"
 sed -i 's/, `ActivationAuthorized`//' "$realizations"
 expect_realization_failure "a missing irreversible activation-authorization state"
 
+sed -i 's/, `CatalogGlobalActivationResultReceipt`//' "$realizations"
+expect_realization_failure "a missing authenticated global activation result"
+
+sed -i 's/, `ConsumedWorkloadLeaseActionClaim`//' "$realizations"
+expect_realization_failure "a missing workload action-claim consumption tombstone"
+
 sed -i 's/`CurrentPlacementTopologyReceiptV1`, //' "$realizations"
 expect_realization_failure "a missing topology-authority receipt"
+
+sed -i 's/`Uninitialized`, //' "$realizations"
+expect_realization_failure "a missing pre-initialization topology state"
 
 sed -i 's/`CommitTopologyAuthorityHandoff`, //' "$realizations"
 expect_realization_failure "a missing topology-authority handoff transition"

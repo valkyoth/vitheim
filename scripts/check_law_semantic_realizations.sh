@@ -133,7 +133,7 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
             done
             ;;
         VIT-LAW-008@g01)
-            for symbol in ActiveRolloutGeneration CatalogReceiptAuthenticationV1 CatalogActivationAuthorization ActivationAuthorized Superseded; do
+            for symbol in ActiveRolloutGeneration CatalogReceiptAuthenticationV1 CatalogActivationAuthorizationReceipt CatalogGlobalActivationResultReceipt WorkloadLeaseActionAuthorityPortV1 ConsumedWorkloadLeaseActionClaim WorkloadLeaseActionClaimIssuanceUnknown WorkloadLeaseActionClaimOutcomeUnknown ActivationAuthorized Superseded; do
                 case "$transitions" in
                     *"\`$symbol\`"*) ;;
                     *) fail "$semantic omits catalog rollout symbol $symbol" ;;
@@ -141,7 +141,7 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
             done
             ;;
         VIT-LAW-008@g02)
-            for symbol in InitializeTopologyAuthorityHandoff DormantInitialized CommitTopologyAuthorityHandoff Committed CurrentPlacementTopologyReceiptV1 FencePlacementGeneration CatalogTopologyChanged; do
+            for symbol in Uninitialized InitializeTopologyAuthorityHandoff DormantInitialized CommitTopologyAuthorityHandoff Committed CurrentPlacementTopologyReceiptV1 FencePlacementGeneration CatalogTopologyChanged; do
                 case "$transitions" in
                     *"\`$symbol\`"*) ;;
                     *) fail "$semantic omits topology rollout symbol $symbol" ;;
