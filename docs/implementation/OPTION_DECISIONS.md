@@ -115,7 +115,16 @@ the issuer validates current principal/session/delegation/role/policy epochs and
 change/incident/emergency/approval evidence, then creates one narrow immutable
 grant with fixed `commit_before`; changes before issuance deny, while changes
 after issuance block new grants but cannot retroactively revoke that exact
-receipt before expiry. Freeze the authorization-time profile by reusing the
+receipt before expiry. Lineage revocation or supersession therefore never
+terminalizes that receipt or frees its outstanding capacity. Freeze a separate
+receipt-revocation protocol: an authenticated
+`TopologyAuthorizationReceiptRevocationIntentV1` binds the exact authorization
+ID, issuance sequence, receipt digest, issuer lineage/fence, reason and
+revocation epoch; VIT-INV-060 serializes it against consumption/expiry and
+commits a receipt-specific tombstone/result/outbox locally. Only its
+`TopologyAuthorizationConsumerTerminalReceiptV1`, or another independently
+valid terminal proof, allows issuer settlement. VIT-INV-061 cannot manufacture
+consumer terminal evidence, and response loss retains capacity. Freeze the authorization-time profile by reusing the
 `TrustedCatalogTime` interval vocabulary through a separately domain-separated
 `TrustedTopologyAuthorizationTime` capability. The authenticated receipt binds
 `issued_at`, `commit_before`, `maximum_time_uncertainty_ns`, trusted-time
@@ -305,10 +314,16 @@ the authorization linearization point. MySQL, MongoDB, and SurrealDB may claim
 dynamic topology only after the same conformance proof; otherwise their
 capability report must reject it. The same decision freezes
 `TopologyAuthorizationReplayLifecycleV1`: exact per-deployment and issuer/class
-attempt-rate and outstanding-authorization limits, plus canonical principal-or-
-authority/class limits, the minimum exact-outcome replay horizon, maximum hot-
+successful-admission-rate and outstanding-authorization limits, plus canonical
+principal-or-authority/class limits, the minimum exact-outcome replay horizon, maximum hot-
 row/byte and compaction-backlog limits, checkpoint cadence, archival
 availability objective, alert thresholds, and fail-closed saturation behavior.
+Separately freeze `TopologyAuthorizationAttemptRateBudgetV1` as bounded
+per-deployment/issuer/class/principal state charged by every authenticated
+canonical presentation, including denied and replayed requests; it creates no
+reservation or authority and is never refunded. A successful issuance charges
+both attempt and admission rate, while a denial may persist only bounded
+attempt-rate and typed idempotent denial state.
 Freeze the canonical principal/authority budget key and anti-identity-splitting
 rule; every caller sub-limit is additive to, never a replacement for, deployment
 and issuer/class ceilings. Freeze a closed `Normal`/`Recovery`/`BreakGlass` budget
@@ -324,9 +339,17 @@ all layered counter mutations, outstanding reservation, monotonic sequence,
 canonical receipt, request-digest-bound idempotent result, and issuance outbox.
 Freeze `OutstandingReserved` -> `OutstandingReleased` as an exactly-once
 issuer-owned settlement keyed by stable settlement ID and authenticated terminal
-evidence. Client timeout/cancellation/disconnect, unknown response, retry,
-replay, compaction, or unauthenticated consumer observation never releases
-capacity; duplicate/reordered terminal evidence never decrements twice.
+evidence. `TopologyAuthorizationOutstandingReservation` embeds immutable
+`TopologyAuthorizationOriginalQuotaClaimSetV1`: deployment, issuer/class,
+principal/authority key, budget epochs, class/reserve source, unit and
+quantities. Settlement releases those original outstanding buckets atomically
+and never recomputes current policy keys; rate charges remain spent.
+Client timeout/cancellation/disconnect, unknown response, retry, replay,
+compaction, lineage revocation/supersession, or unauthenticated/issuer-created
+consumer observation never releases capacity. Release requires consumer-
+authenticated consumption, definitely-not-committed, permanently-unresolved or
+receipt-specific-revocation evidence, or conservative trusted expiry beyond
+`commit_before`; duplicate/reordered terminal evidence never decrements twice.
 Checkpoint installation and the applicable
 issuer-dense or proven consumer-eligible watermark advance precede hot
 deletion; exact replay after the horizon requires authenticated archive
@@ -454,7 +477,14 @@ reserved break-glass issuance; flood break-glass and prove its ceiling,
 non-borrowing, and zero delay to revocation/recovery. Archive/checkpoint outage
 or compaction saturation never becomes an anti-replay exemption. Crash between
 every issuance write and prove all-or-nothing state; preserve reservations over
-timeouts and settle terminal evidence exactly once under duplicate/reorder.
+timeouts, lineage revocation and supersession. Reject issuer-forged consumer
+terminal evidence; settle only consumer-authenticated terminal outcomes or
+conservative expiry, exactly once under duplicate/reorder and consumption/
+revocation/expiry races. Change policy/principal keys and budget epochs before
+settlement and prove the original claim set releases all-or-none. Prove every
+authenticated canonical denial consumes bounded attempt-rate capacity but no
+admission token/reservation/sequence/receipt/outbox; successful issuance
+consumes both attempt and admission capacity.
 Exhaust one caller sub-limit while other callers and aggregate ceilings remain
 correct. Fuzz declared lengths/counts, decode allocation, work, depth, chunk
 chain/root bindings and verification-cursor recovery without unbounded CPU or
@@ -768,13 +798,17 @@ restore, and cross-region disagreement may deny or shorten a receipt but never
 extend it; an expiry-versus-topology-CAS race must produce either one proven
 pre-expiry commit or a non-retryable reconciliation state.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
-principal budget keys and counters, outstanding reservation/terminal settlement
-ledger, bounded range roots/chunks/resource profile, and durable verification
-cursor as one failover domain per issuer. RPO may conservatively retain a
-reservation or repeat bounded verification, but cannot expose a partial
-issuance, release from timeout, decrement twice, widen a caller/class ceiling,
-or reset byte/entry/decode/work/depth accounting. Cross-region range evidence
-remains non-authoritative until the complete authenticated chain verifies.
+principal attempt/admission/outstanding counters, immutable original quota claim
+sets/budget epochs/reserve sources, receipt-revocation intents, consumer
+terminal receipts, outstanding reservation/terminal settlement ledger, bounded
+range roots/chunks/resource profile, and durable verification cursor as one
+failover domain per issuer. RPO may conservatively retain a reservation or
+repeat bounded verification, but cannot expose a partial issuance, release from
+timeout or lineage revocation/supersession, accept issuer-created terminal
+evidence, recompute current bucket keys, decrement twice, merge attempt/
+admission semantics, widen a caller/class ceiling, or reset byte/entry/decode/
+work/depth accounting. Cross-region range evidence remains non-authoritative
+until the complete authenticated chain verifies.
 It resolves `VIT-LAW-006` end to end on every failover path: no node may claim
 transmission start unless it can recheck the exact independent authority,
 target, provider, capability, lease/claimant, time, and quota roots, while
@@ -1002,7 +1036,9 @@ stale transfer-transition tenant/principal/policy authority,
 incompatible active/active topology,
 provider-outage tenant exhaustion, one-tenant unknown-outcome floods, per-
 tenant/global starvation, emergency-reserve borrowing, split issuance bundle,
-timeout/forged/duplicate terminal settlement, caller-budget-key substitution,
+timeout/lineage-revoke/lineage-supersede/forged/duplicate terminal settlement,
+original-claim loss or current-key recomputation, consumer-terminal signer
+confusion, attempt/admission counter collapse, caller-budget-key substitution,
 range chunk truncation/cycle/substitution, verification-work/depth/cursor
 rollback, degraded dependencies,
 restore, capacity, and incident operations.

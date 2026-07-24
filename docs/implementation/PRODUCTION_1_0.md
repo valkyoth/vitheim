@@ -57,18 +57,38 @@ transaction that cannot commit later. An uncertain response reconciles without
 ordinary retry and without weakening that proof.
 Production also freezes `TopologyAuthorizationReplayLifecycleV1`: monotonic
 issuance sequences; layered pre-allocation per-deployment, issuer/class, and
-canonical principal-or-authority/class rate and outstanding limits; a minimum
-exact-outcome horizon; bounded hot rows/bytes and compaction backlog;
+canonical principal-or-authority/class successful-admission-rate and
+outstanding limits; a distinct bounded
+`TopologyAuthorizationAttemptRateBudgetV1` charged for every authenticated
+canonical presentation, including typed denials; a minimum exact-outcome
+horizon; bounded hot rows/bytes and compaction backlog;
 authenticated predecessor-linked checkpoints, set/archive commitments, key
 rotation and covered-through high-watermarks; and growth/proof-availability
-alerts. Quota validation, all counter/reserve mutations, outstanding
-reservation, sequence allocation, canonical receipt, request-digest-bound
-idempotent result, and issuance outbox are one VIT-INV-061 local atomic
-transaction. Capacity releases exactly once only from authenticated stable
-terminal evidence under a settlement ID; timeout, cancellation, disconnect,
-unknown response, retry, replay or compaction never releases it, and duplicate/
-reordered settlement cannot decrement twice. Compaction commits the checkpoint
-before deleting hot state. VIT-INV-061 owns a dense issued-through watermark
+alerts. On success, the attempt-rate charge, admission-rate and outstanding
+counter/reserve mutations, `TopologyAuthorizationOriginalQuotaClaimSetV1`,
+outstanding reservation, sequence allocation, canonical receipt, request-
+digest-bound idempotent result, and issuance outbox are one VIT-INV-061 local
+atomic transaction. A denial commits at most its bounded attempt-rate charge
+and typed idempotent denial, creates no authority or reservation, and does not
+refund the attempt. Each reservation preserves its original deployment,
+issuer/class, canonical principal-or-authority key, budget epochs, class,
+reserve source, units, and quantities. Settlement atomically releases those
+original counters rather than recomputed current-policy keys.
+Capacity releases exactly once only from authenticated receipt-specific
+terminal evidence under a settlement ID: consumer-authenticated consumption,
+conservative trusted-time expiry past the exact immutable `commit_before`,
+consumer-authenticated definitely-not-committed or permanently-unresolved
+state, or a VIT-INV-060 receipt-specific revocation tombstone proven by
+`TopologyAuthorizationConsumerTerminalReceiptV1`. Issuer-lineage revocation or
+supersession blocks new grants but does not invalidate a live receipt and never
+releases its reservation. Immediate individual revocation uses
+`TopologyAuthorizationReceiptRevocationIntentV1`; VIT-INV-060 serializes the
+consumer-side fence/tombstone against consumption and emits the terminal
+receipt, which VIT-INV-061 cannot forge. Timeout, cancellation, disconnect,
+unknown response, retry, replay, lineage change, compaction, or a lost
+revocation result never releases capacity; duplicate/reordered settlement
+cannot partially decrement or decrement twice. Compaction commits the
+checkpoint before deleting hot state. VIT-INV-061 owns a dense issued-through watermark
 and authenticated `TopologyAuthorizationIssuedRangeManifestV1`. VIT-INV-060 defaults to a sparse
 commitment and advances dense `ConsumerCompactionEligibleThrough` only after
 complete range evidence, conservative trusted-time proof that the horizon and
@@ -95,7 +115,10 @@ and missing historical proof still denies.
 Soak, HA, migration/import, and DR evidence proves bounded storage and no
 receipt resurrection across concurrent replay, checkpointing, key rotation,
 archive outage, sparse gaps, range-manifest loss/forgery, late presentation,
-atomic issuance crashes, timeout/duplicate settlement, caller-sub-limit
+atomic issuance crashes, canonical denial versus successful-admission rate
+accounting, lineage change before a receipt deadline, issuer-forged consumer
+evidence, policy/principal/budget-epoch changes before original-claim
+settlement, timeout/partial/duplicate settlement, caller-sub-limit
 monopolization, range-proof resource exhaustion, normal/break-glass saturation,
 crash, failover, or restore.
 The production risk register explicitly accepts only the residual window

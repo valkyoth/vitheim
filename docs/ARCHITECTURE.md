@@ -81,10 +81,19 @@ remains expired/historical. Issuance budgets separate normal, recovery, and
 break-glass counters with a non-borrowable emergency reserve and independent
 ceilings; this protects repair availability without bypassing authorization,
 deadline, or replay proof.
-Issuance atomically validates every deployment/issuer/canonical-caller budget,
-reserves outstanding capacity, allocates the sequence, and persists the
-canonical receipt, idempotent result and outbox. Only authenticated terminal
-evidence releases that reservation exactly once; client timeout never does.
+Every authenticated canonical presentation charges a separate bounded attempt
+rate, including typed denials, without creating authority. Successful issuance
+also atomically validates admission/outstanding deployment/issuer/canonical-
+caller budgets, preserves the original quota keys/epochs/class/reserve source,
+reserves capacity, allocates the sequence, and persists the canonical receipt,
+idempotent result and outbox. Issuer-lineage revocation or supersession blocks
+new grants but retains a still-consumable receipt and its reservation.
+Settlement releases the original counters exactly once only after consumer-
+authenticated consumption, conservative expiry, consumer-authenticated
+definitely-not-committed/permanently-unresolved state, or a receipt-specific
+VIT-INV-060 revocation tombstone and authenticated consumer terminal receipt.
+Immediate receipt revocation is therefore a distinct consumer-fenced protocol;
+the issuer cannot manufacture its own release evidence. Timeout never releases.
 Large issuer ranges use resource-bounded authenticated chunks with explicit
 byte/entry/decode/work/depth limits and a durable verification cursor, so
 compaction proof cannot become a CPU or allocation denial of service.

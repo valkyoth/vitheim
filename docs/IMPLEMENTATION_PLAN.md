@@ -114,7 +114,8 @@ clock disagreement cannot lengthen authority. `0.21.0` freezes canonical
 prevent migration/export field loss; and `0.140.2` admits only a concrete
 commit-time predicate or hard no-late-commit fence. Client timeouts are never
 deadline authority. The same versions freeze and prove bounded authorization
-anti-replay: pre-allocation rate/outstanding quotas, monotonic issuance
+anti-replay: a separate rate for every authenticated canonical attempt,
+successful-admission/outstanding quotas, monotonic issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive
 commitments, checkpoint-before-delete compaction, fail-closed missing history,
 and storage-growth alerts. Phase O implements, failover-tests, restores, soaks,
@@ -122,10 +123,16 @@ and hardens the selected construction before `1.0.0`. The issuer publishes
 authenticated complete sequence/deadline range evidence; the consumer stays
 sparse across unseen receipts unless time and range proof make dense compaction
 eligible. Separate non-borrowable normal/recovery/break-glass counters preserve
-one bounded emergency repair path without relaxing any security gate. Issuance
-atomically commits layered deployment/issuer/caller quota reservation,
-sequence, receipt, idempotent result and outbox; timeout cannot release
-capacity, while authenticated terminal settlement releases it exactly once.
+one bounded emergency repair path without relaxing any security gate. Every
+canonical denial consumes bounded attempt rate but creates no authority.
+Successful issuance atomically commits both rate charges, layered deployment/
+issuer/caller quota reservation, the original quota claim set, sequence,
+receipt, idempotent result and outbox. Lineage revocation or supersession blocks
+new grants but does not free a live receipt. Settlement decrements the original
+counters all-or-none only after authenticated consumer terminal proof or
+conservative expiry. Immediate individual revocation is a separate VIT-INV-060
+consumer-fence/tombstone protocol whose terminal receipt the issuer cannot
+forge; timeout and a lost revocation response retain capacity.
 Bounded predecessor-linked range chunks cap bytes, entries, decode allocation,
 verification work and proof depth before dense eligibility. VIT-INV-060 only consumes that
 profile-discriminated receipt and local workload proof with its CAS—there is no

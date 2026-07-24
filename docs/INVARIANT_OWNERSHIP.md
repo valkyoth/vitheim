@@ -152,20 +152,41 @@ authenticated archive exchange is evidence, never a cross-owner transaction or
 authorization source.
 
 `VIT-ENF-061-F` applies frozen layered per-deployment, issuer/class, and
-canonical principal-or-authority/class attempt-rate and outstanding-
-authorization budgets before allocating a monotonic
-`AuthorizationIssuanceSequence`. Every layer must admit. Its closed
+canonical principal-or-authority/class successful-admission-rate and
+outstanding-authorization budgets before allocating a monotonic
+`AuthorizationIssuanceSequence`. A separate bounded
+`TopologyAuthorizationAttemptRateBudgetV1` charges every authenticated
+canonical presentation, including typed denials, without creating authority or
+an outstanding reservation. Unauthenticated or noncanonical traffic remains
+bounded by ingress/parser controls. Every applicable layer must admit. Its closed
 `Normal`/`Recovery`/`BreakGlass` classes use separate counters and rate
 ceilings, a small non-borrowable per-deployment break-glass reserve, and an
 independent recovery-processing lane. Saturation in one caller or class conveys
 no authority or capacity from another and never widens an aggregate limit.
-Quota validation, all counter/reserve mutations,
+On success, attempt charge, admission-rate and outstanding counter/reserve
+mutations, `TopologyAuthorizationOriginalQuotaClaimSetV1`,
 `TopologyAuthorizationOutstandingReservation`, sequence allocation, canonical
 receipt, request-digest-bound idempotent result, and issuance outbox are one
-VIT-INV-061 local transaction. The reservation releases exactly once only from
-authenticated stable terminal evidence under `ReservationSettlementId`;
-timeouts, cancellation, unknown response, retry, replay and compaction do not
-release it, and duplicate/reordered settlement cannot decrement twice. Break-
+VIT-INV-061 local transaction. A denial may commit only its bounded attempt
+charge and typed idempotent denial; it creates no admission token, reservation,
+sequence, receipt, or outbox, and the attempt charge is not refunded.
+The original claim set preserves deployment, issuer/class, canonical principal-
+or-authority key, budget epochs, class, reserve source, units, and quantities.
+The reservation releases exactly once by atomically decrementing those original
+counters under `ReservationSettlementId`, never recomputed current-policy
+buckets. Issuer-lineage revocation or supersession blocks new issuance but is
+not terminal evidence for a still-consumable receipt and never releases it.
+Release requires consumer-authenticated consumption, conservative trusted-time
+expiry beyond the exact `commit_before`, consumer-authenticated definitely-not-
+committed or permanently-unresolved state, or a receipt-specific VIT-INV-060
+revocation tombstone proven by
+`TopologyAuthorizationConsumerTerminalReceiptV1`. Immediate individual
+revocation uses `TopologyAuthorizationReceiptRevocationIntentV1`; VIT-INV-060
+serializes its fence/tombstone against consumption and emits the terminal
+receipt. VIT-INV-061 cannot forge that evidence. Timeouts, cancellation,
+unknown response, retry, replay, lineage change, compaction, and a lost
+revocation result do not release capacity, and duplicate/reordered settlement
+cannot decrement twice or partially. Break-
 glass retains every ordinary trusted-time, quorum/SoD, canonical-receipt,
 single-consumption, deadline-CAS and replay-proof requirement.
 `VIT-ENF-060-G` and `VIT-ENF-061-G` implement
@@ -207,17 +228,22 @@ checkpoint; consumer dense advance across an unseen gap, forged/incomplete/
 overlapping range manifest, late-presentation acceptance, budget-class
 borrowing, reserve exhaustion by normal work, emergency control bypass, and
 break-glass starvation of revocation/recovery also reject. Split issuance
-state, timeout/unauthenticated release, duplicate counter decrement, caller
-monopolization, oversized allocation, verification-work/depth exhaustion,
-partial/cyclic chunk chains, and cursor rollback also reject. Their M/F
+state, canonical denial allocating authority or avoiding attempt rate,
+successful admission avoiding either rate, timeout/lineage-change/current-key
+release, issuer-forged consumer evidence, missing original claim data, partial
+or duplicate counter decrement, caller monopolization, oversized allocation,
+verification-work/depth exhaustion, partial/cyclic chunk chains, and cursor
+rollback also reject. Their M/F
 schedules race issuance, terminal settlement and old replay against
 checkpoint installation, hot deletion, coalescing, key rotation, crash,
 failover, restore, migration and import; they exhaust normal capacity for one
 valid reserved break-glass operation and reverse-flood break-glass. VIT-RCV-
 060/061 merge the greatest sequence, checkpoint digest, issuer dense watermark/
-range manifests, consumer sparse set/eligible-through proof, budget-class
-counters/reserve, principal/authority sub-limits, outstanding reservations/
-settlements, bounded range chunks/verification cursor, key epoch and compaction
+range manifests, consumer sparse set/eligible-through proof, attempt/admission/
+outstanding counters, budget-class counters/reserve, principal/authority sub-
+limits, original quota-claim sets/epochs/reserve sources, outstanding
+reservations/settlements, receipt-revocation intents and consumer terminal
+receipts, bounded range chunks/verification cursor, key epoch and compaction
 cursor, preserve every uncovered hot result, and fail closed for an unprovable
 historical range.
 

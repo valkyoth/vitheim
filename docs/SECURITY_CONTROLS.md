@@ -59,8 +59,9 @@ audit decision.
   predicate or hard no-late-commit fence; atomic time-ratchet/receipt/claim/
   topology/member-fence/tombstone/outbox persistence and typed reconciliation
   where client timeouts never permit a later commit;
-  bounded `TopologyAuthorizationReplayLifecycleV1` with pre-allocation rate/
-  outstanding quotas, monotonic issuance sequence, exact replay horizon,
+  bounded `TopologyAuthorizationReplayLifecycleV1` with a separate all-
+  authenticated-canonical-attempt rate and successful-admission/outstanding
+  quotas, monotonic issuance sequence, exact replay horizon,
   authenticated checkpoint/archive commitments, checkpoint-before-delete
   compaction, fail-closed unavailable history, key/restore ratchets, and
   storage/backlog accounting and alerts;
@@ -69,10 +70,15 @@ audit decision.
   eligibility, late-presentation denial, and separate non-borrowable normal/
   recovery/break-glass rate/outstanding counters and reserve with no emergency
   exemption from authorization, deadline, or replay controls;
-  atomic topology-authorization issuance where layered deployment/issuer/
-  canonical-caller quotas, outstanding reservation, sequence, canonical
-  receipt, idempotent result, and outbox commit together, and only authenticated
-  stable terminal evidence releases capacity exactly once;
+  atomic topology-authorization success where layered deployment/issuer/
+  canonical-caller admission/outstanding quotas, original quota claim,
+  reservation, sequence, canonical receipt, idempotent result, and outbox
+  commit together; denied canonical attempts consume only bounded attempt rate
+  and create no authority; lineage revoke/supersede never releases a live
+  receipt; settlement decrements the original counters all-or-none and exactly
+  once only after consumer-authenticated consumption/definite absence/
+  permanent-unresolved state, conservative expiry, or receipt-specific
+  VIT-INV-060 fencing proven by an authenticated consumer terminal receipt;
   resource-bounded issuer range roots/chunks with encoded-byte, entry, decode-
   allocation, verification-work, proof-depth and per-job chunk ceilings,
   resumable verification cursor, and fail-closed partial-chain handling;

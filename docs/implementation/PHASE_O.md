@@ -99,17 +99,43 @@ profile-applicable workload proof, topology CAS, and fence outbox in one local
 transaction—never a distributed epoch/CAS transaction. The receipt discriminates
 the orchestrator profile's required action claim from hardware profile's
 canonical-none claim and required hardware proof.
-VIT-INV-061 assigns every allocation a monotonic
-`AuthorizationIssuanceSequence` and applies the frozen per-deployment,
-issuer/class, and canonical principal-or-authority/class rate/outstanding
-budgets before allocating durable authority. All layers must admit. Quota
-validation, every counter/reserve mutation, outstanding-reservation creation,
-sequence allocation, canonical receipt, request-digest-bound idempotent result,
-and issuance outbox commit in one VIT-INV-061 transaction. Rejection commits
-none of them. `OutstandingReserved` releases exactly once under a stable
-settlement ID and authenticated terminal evidence; timeout, cancellation,
-disconnect, unknown response, retry, replay, and compaction never release it,
-and duplicate/reordered settlement never decrements twice. The
+VIT-INV-061 assigns every successful allocation a monotonic
+`AuthorizationIssuanceSequence` and applies frozen per-deployment,
+issuer/class, and canonical principal-or-authority/class successful-admission
+rate and outstanding budgets before allocating durable authority. A separate
+bounded `TopologyAuthorizationAttemptRateBudgetV1` charges every authenticated
+canonical presentation, including policy, quota, replay, and other typed
+denials, but creates no authority or outstanding reservation. Unauthenticated
+or noncanonical traffic remains bounded by ingress/parser controls. All
+applicable layers must admit. On success, attempt-rate charge, admission-rate
+and outstanding counter/reserve mutations,
+`TopologyAuthorizationOriginalQuotaClaimSetV1`, outstanding-reservation
+creation, sequence allocation, canonical receipt, request-digest-bound
+idempotent result, and issuance outbox commit in one VIT-INV-061 transaction.
+A denial may commit only its bounded attempt-rate charge and typed idempotent
+denial; it creates no admission token, reservation, sequence, receipt, or
+outbox, and spent attempt rate is never refunded.
+Each reservation preserves the original deployment, issuer/class, canonical
+principal-or-authority budget key, budget epochs, class, reserve source, units,
+and quantities. A policy, principal, or key change creates successor accounting
+buckets and never changes the claim used to settle an existing reservation.
+`OutstandingReserved` releases exactly once under a stable settlement ID by
+atomically decrementing those original counters and recording authenticated
+receipt-specific terminal evidence. Issuer-lineage revocation or supersession
+blocks new issuance but does not invalidate an already-issued receipt before
+its immutable `commit_before`, and therefore never releases its reservation.
+Release requires consumer-authenticated consumption, conservative trusted-time
+expiry past the exact `commit_before`, a consumer-authenticated definitely-not-
+committed or permanently-unresolved result, or a VIT-INV-060 receipt-specific
+revocation tombstone proven by
+`TopologyAuthorizationConsumerTerminalReceiptV1`. Immediate individual
+revocation uses `TopologyAuthorizationReceiptRevocationIntentV1`; VIT-INV-060
+serializes its consumer-side fence/tombstone against consumption and emits the
+terminal receipt. VIT-INV-061 cannot manufacture consumer evidence, and a lost
+revocation result retains the reservation until other terminal proof or
+expiry. Timeout, cancellation, disconnect, unknown response, retry, replay,
+lineage change, and compaction never release it; duplicate/reordered settlement
+never decrements twice or partially. The
 closed `Normal`/`Recovery`/`BreakGlass` classes have independent counters and
 ceilings; the small break-glass reserve and recovery-processing lane are non-
 borrowable. Normal exhaustion can therefore leave one valid emergency path,
@@ -165,9 +191,12 @@ deadline-conditional topology-CAS backend probe/result ledger;
 replay-lifecycle budgets, exact-horizon hot store, authenticated checkpoint/
 archive proof and compactor, issuer range-manifest publisher/verifier, consumer
 sparse/eligible-dense state, bounded range-chunk codec/resumable verifier,
-layered deployment/issuer/principal budget counters, atomic issuance bundle,
-outstanding-reservation settlement ledger, separate budget counters/reserve/
-recovery lane, storage-growth metrics/alerts;
+layered deployment/issuer/principal successful-admission and outstanding
+budget counters, the separate all-authenticated-attempt rate budget, atomic
+issuance bundle, original quota-claim sets and epochs, outstanding-reservation
+settlement ledger, receipt-specific revocation intents and consumer terminal
+receipts, separate budget counters/reserve/recovery lane, storage-growth
+metrics/alerts;
 challenge/currentness ratchet probe; and runbook.
 Verification: clean
 install, permissions, rootless/non-root, secrets, restart, rolling upgrade,
@@ -213,8 +242,14 @@ checkpoint/install/delete, compaction crash/restart, archive/proof outage,
 checkpoint/key rotation, sparse sequence gaps, forged/incomplete range manifest,
 late first presentation, deadline/horizon eligibility, permanently-unresolved
 seal, normal exhaustion with reserved break-glass success, break-glass flood
-isolation, atomic issuance write-point crashes, timeout-preserved and duplicate/
-reordered terminal settlement, principal-sub-limit monopolization, oversized/
+isolation, atomic issuance write-point crashes; authenticated canonical denials
+that spend attempt rate without allocating authority; successful admissions
+that spend both attempt and admission rate; lineage revocation or supersession
+before the receipt deadline that preserves the reservation; issuer-forged
+consumer terminal evidence; policy, principal-key, and budget-epoch changes
+followed by settlement against the original claim; receipt-specific revocation
+fencing; timeout-preserved, all-or-none, and duplicate/reordered terminal
+settlement; principal-sub-limit monopolization; oversized/
 deep/work-heavy/cyclic/truncated range chunks, verification-cursor restart,
 bounded-growth saturation; older restore; and crash-
 tests local
@@ -247,7 +282,15 @@ trusted interval and monotonic continuity/time ratchet, so service clock skew or
 NTP disagreement can only shorten or deny the grant. The remote storage
 boundary preserves the exact admitted `DeadlineConditionalTopologyCasV1`
 profile; RPC cancellation or service timeout cannot substitute for its backend
-commit guarantee. Bind each topology receipt
+commit guarantee.
+The boundary also carries `TopologyAuthorizationReceiptRevocationIntentV1`
+to VIT-INV-060 and returns only authenticated
+`TopologyAuthorizationConsumerTerminalReceiptV1` evidence for a committed
+receipt-specific fence/tombstone. VIT-INV-061 cannot sign or synthesize that
+consumer evidence. Lineage revocation/supersession and RPC timeout retain every
+still-consumable reservation; settlement uses its preserved original quota
+claim, never service-local current policy.
+Bind each topology receipt
 to a fresh challenge,
 monotonic sequence, bounded currentness window, owner fence, and local
 observation ratchets. Bind its selected `WorkloadIdentityProofProfileV1`,
@@ -317,7 +360,9 @@ operation/TCB profile, bearer-memory canaries, profile lifecycle/approval/
 tombstone routing, rotation reconciler/evidence/deadline ownership, capability-
 snapshot observer/freshness ownership, status/reconciliation protocol, no-
 permit-transport evidence, evaluator/quarantine/remediation owner-routing and
-readiness evidence, topology successor/fence/tombstone routing,
+readiness evidence, topology successor/fence/tombstone routing, receipt-
+revocation-intent routing, consumer-terminal-receipt authentication, original-
+quota-claim preservation and distinct attempt/admission/outstanding accounting,
 workload-identity issuance/renewal/rotation/revocation/clone-detection evidence,
 receipt-authentication evidence, and service runbook. Verification: service/executor
 impersonation, confused deputy,
@@ -344,7 +389,10 @@ workload-bound authenticator, use an offline/cached action claim, reuse or
 extend a claim beyond its frozen lifetime, substitute its action/instance/
 continuity/lease/fence/sequence fields, replay an attested channel challenge or
 exporter transcript, corrupt its admission tombstone/integrity anchor, mutate
-topology through discovery, and race every topology successor command with
+topology through discovery, forge consumer terminal evidence at the issuer,
+release on lineage change or RPC timeout, recompute settlement under current
+policy, collapse attempt/admission accounting, and race every topology
+successor or receipt-revocation command with consumption and
 prepare/convergence. Exit criteria:
 split mode preserves modular semantics, moves only
 instructions/status across services, and routes every ambiguous claimed start
@@ -449,7 +497,14 @@ glass and prove its ceiling cannot consume normal capacity or starve
 revocation/recovery. Archive/proof outage still denies ambiguous emergency
 issuance. Fail over at every atomic issuance write boundary and during
 terminal-settlement delivery; recover either the whole original bundle or no
-allocation, preserve unknown reservations, and apply each settlement once.
+allocation, preserve unknown reservations and reservations whose issuer
+lineage was revoked or superseded while their receipts remain consumable, and
+apply each settlement once to its preserved original quota-claim buckets.
+Separately fail over attempt-rate denial accounting and successful-admission
+accounting so a canonical denied request cannot allocate authority and a
+successful request cannot escape either charge. Authenticate every
+`TopologyAuthorizationConsumerTerminalReceiptV1` across the split-service
+boundary; an issuer-created substitute cannot release capacity.
 Race multiple principals at their sub-limits without exceeding aggregate
 ceilings. Fail over bounded range-chunk publication and resumable verification;
 partial/cyclic/substituted chains never advance dense eligibility, and
@@ -670,13 +725,16 @@ tombstones, break-glass recovery state, authenticated time profile/epoch, and
 issuer continuity evidence; plus every consumer's last trusted lower-bound,
 profile-epoch/continuity ratchet, and expired-authorization tombstone; the selected
 `DeadlineConditionalTopologyCasV1` mechanism/profile, typed result ledger, and
-canonical authorization receipt V1 bytes/digest; replay-lifecycle attempt/
-outstanding budgets, issuance sequence, exact-horizon hot results, checkpoint
+canonical authorization receipt V1 bytes/digest; replay-lifecycle all-
+authenticated-attempt-rate/successful-admission/outstanding budgets, issuance
+sequence, exact-horizon hot results, checkpoint
 chain/current digest/covered-through high-watermark, accumulator and archive
 commitments, issuer range manifests/dense watermark, consumer sparse and
 eligible-dense state, bounded range chunks/verification cursor, layered
-deployment/issuer/principal counters, outstanding reservations/settlement
-ledger, separate normal/recovery/break-glass counters/reserve, compaction
+deployment/issuer/principal counters, original quota-claim sets and epochs,
+outstanding reservations/settlement ledger, receipt-specific revocation
+intents and consumer terminal receipts, separate normal/recovery/break-glass
+counters/reserve, compaction
 cursor/backlog, proof/key epochs, and growth counters;
 the active
 catalog ID/epoch,
@@ -715,8 +773,11 @@ rollback, accumulator/archive substitution, compaction-cursor rewind,
 unauthenticated key rotation, or unavailable historical evidence treated as
 absence; it also rejects issuer-range loss/substitution, consumer dense advance
 across an unproven gap, late-presented gap acceptance, or budget-class/reserve
-merge; split issuance state, timeout-based or duplicate reservation release,
-caller-sub-limit rollback, missing terminal evidence, over-budget range chunks,
+merge; split issuance state, timeout-, lineage-revocation-, or lineage-
+supersession-based reservation release, settlement against recomputed current-
+policy keys, issuer-forged terminal evidence, duplicate or partial reservation
+release, caller-sub-limit rollback, collapsed attempt/admission accounting,
+missing terminal evidence, over-budget range chunks,
 or verification-cursor/work/depth rollback also reject. Exact payload erasure
 may yield
 `TopologyAuthorizationHistoricalStateUnavailable`, but the minimal restored
@@ -870,11 +931,14 @@ replacement, remediation ceremony quorum/channel/KMS/recovery-epoch and
 exercise contention, evaluator campaign root/enumeration/materialization/
 completeness contention, invariant declaration/owner/lifecycle/contract/fence
 coverage,
-topology-authorization issuance-rate/outstanding/hot-row/checkpoint/archive/
+topology-authorization all-authenticated-attempt rate/successful-admission rate/
+outstanding/hot-row/checkpoint/archive/
 proof-index/compaction-backlog cardinality and byte budgets, separate normal/
 recovery/break-glass reserve saturation, issuer-range-manifest and consumer-
-sparse-compaction throughput, layered principal/authority fairness,
-outstanding-reservation settlement duplication/reordering, atomic issuance
+sparse-compaction throughput, layered principal/authority fairness, original
+quota-claim settlement across policy/key/epoch changes, receipt-specific
+revocation fencing, outstanding-reservation settlement duplication/reordering,
+atomic issuance
 contention, range-chunk encoded/decode/work/depth limits, and verification-
 cursor throughput,
 starvation bounds,
@@ -902,7 +966,9 @@ old-work-revival oracle, independent-remediation bootstrap/simultaneous-loss/
 compromise/channel/KMS/outage/manual-limit/exercise oracle, invariant-registry
 coverage oracle, topology-authorization sustained-abuse/quota/horizon/
 checkpoint/compaction/archive-outage/key-rotation/sparse-gap/range-manifest/
-break-glass-reserve/bounded-storage oracle,
+break-glass-reserve/bounded-storage oracle; canonical denial-versus-success
+attempt/admission-rate oracle; lineage-change/live-receipt reservation oracle;
+original-claim and authenticated-consumer-terminal-evidence oracle,
 leak/escalation evidence, and signed reports. Verification: atomic
 bounded claim sets across every work bundle, concurrent overlapping-set
 canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
@@ -994,9 +1060,10 @@ limit bypass, prepared-cancellation recovery bypass, delayed-authority bypass, r
 duplicate work, unfair or
 blocked recovery, unbounded authorization anti-replay state, covered receipt
 resurrection, archive loss interpreted as absence, and unsafe saturation block
-release; no split issuance commit, timeout capacity release, duplicate terminal
-decrement, caller monopolization, or manifest verification resource escape is
-accepted.
+release; no split issuance commit, timeout or lineage-change capacity release,
+issuer-forged terminal evidence, current-policy-key settlement, partial or
+duplicate terminal decrement, attempt/admission-rate collapse, caller
+monopolization, or manifest verification resource escape is accepted.
 `v0.146.0
 implementation stop reached. Run pentest for this exact commit.`
 
@@ -1023,8 +1090,11 @@ assurance report,
 topology-authorization replay-checkpoint canonicalization/authentication/key-
 rotation, accumulator membership/non-membership, archive integrity,
 issuer-range-manifest authentication/completeness, consumer sparse/dense
-eligibility, compaction-ordering, budget-class/reserve isolation, quota/
-backpressure, atomic issuance linearization, terminal-settlement idempotency,
+eligibility, compaction-ordering, budget-class/reserve isolation, distinct
+attempt/admission/outstanding accounting, original quota-claim preservation,
+lineage-change live-receipt retention, receipt-specific revocation fencing,
+consumer terminal-evidence authentication, quota/backpressure, atomic issuance
+linearization, terminal-settlement all-or-none idempotency,
 principal/authority sub-limit fairness, range-chunk codec/proof/work/depth
 budgets, verification-cursor recovery, sensitive-data minimization, and
 bounded-growth assurance report,
@@ -1048,8 +1118,11 @@ Include evaluator supply-chain substitution, unsigned binary/corpus, epoch
 rollback, emergency-revocation lag, partial reevaluation, unsafe quarantine
 clear or old-work revival, resolver collusion, and remediation credential
 compromise/derivation/business use/circularity/substitution.
-Include split/partially durable authorization issuance, timeout or forged
-terminal settlement, duplicate decrement/underflow, principal-key substitution,
+Include split/partially durable authorization issuance, canonical denial that
+allocates authority or avoids attempt rate, successful admission that avoids
+either rate, timeout/lineage-change/current-key release, issuer-forged consumer
+terminal settlement, partial/duplicate decrement or underflow, principal-key
+or original-claim substitution,
 oversized declared lengths/counts, allocation-before-limit-check, decompression
 or verification-work bomb, over-depth/cyclic/reordered chunk proof, partial
 terminal chain, and cursor rollback.
@@ -1073,9 +1146,11 @@ quarantine-resolution/new-generation/tombstone/evidence compatibility,
 remediation-profile/credential-lineage/audit/epoch/quota/manual-limit
 compatibility, plus cancellation-recovery
 generation/receipt compatibility, and topology-authorization issuance-sequence/
-budget/exact-horizon/checkpoint/predecessor/covered-through/set/archive/
+all-attempt-rate/admission-rate/outstanding-budget/original-quota-claim-set/
+exact-horizon/checkpoint/predecessor/covered-through/set/archive/
 issuer-range-manifest/consumer-sparse-or-eligible-dense/budget-class/reserve/
-atomic-issuance/outstanding-reservation/settlement/principal-sub-limit/
+atomic-issuance/outstanding-reservation/receipt-revocation-intent/consumer-
+terminal-receipt/settlement/principal-sub-limit/
 range-chunk/resource-budget/verification-cursor/compaction/key-epoch/
 historical-unavailable compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
@@ -1096,7 +1171,10 @@ confusion, bearer TCB drift, cancellation-recovery successor/
 receipt/deadline skew, replay-checkpoint algorithm/key/horizon skew, old writer
 after compaction, checkpoint fork/rollback, archive-loss-as-absence, issuer-
 range-manifest/chunk/resource-profile or sparse/dense-profile skew, split
-issuance-bundle schema, settlement-ID/evidence skew, caller-budget-key loss,
+issuance-bundle schema, attempt/admission semantic collapse, original-claim
+key/epoch/reserve-source loss, lineage change interpreted as terminal, receipt-
+revocation-intent or consumer-terminal-receipt skew, settlement-ID/evidence
+skew, caller-budget-key loss,
 verification-cursor rollback, budget-class/reserve merge, and independent-
 parent-release rejection.
 Exit criteria: supported combinations are exact and no compatible version path

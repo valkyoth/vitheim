@@ -194,7 +194,7 @@ The action-authority scope is closed and is frozen at `0.140.1`:
 | --- | --- | --- |
 | Readiness observation | reusable, bounded `OnlineWorkloadFreshnessProofV1`; no action claim | read-only; stale, unavailable, fenced, or topology-mismatched proof returns unready and cannot create authority |
 | Positive local prepare, convergence, or admission receipt creation/commit | single-use `WorkloadLeaseActionClaim` | consume the claim, commit the receipt/admission and its typed result in one local owner transaction |
-| Topology-authorization allocation | current principal/session/delegation/policy/approval plus layered pre-allocation `TopologyAuthorizationAdmissionBudgetV1` at deployment, issuer/class and canonical principal-or-authority/class scope in a closed normal/recovery/break-glass class | VIT-INV-061 atomically validates quotas, mutates counters/reserve, creates one outstanding reservation, allocates one monotonic issuance sequence, and persists canonical receipt, request-bound idempotent result and issuance outbox; rejection changes none, terminal settlement releases exactly once, class/caller ceilings and non-borrowable reserve apply, and break-glass retains all ordinary security gates |
+| Topology-authorization allocation | current principal/session/delegation/policy/approval plus a separate bounded all-authenticated-canonical-attempt rate and layered pre-allocation `TopologyAuthorizationAdmissionBudgetV1` successful-admission/outstanding limits at deployment, issuer/class and canonical principal-or-authority/class scope in a closed normal/recovery/break-glass class | VIT-INV-061 atomically charges every canonical attempt; a denial creates no authority/reservation, while success also validates quotas, mutates admission/outstanding counters and reserve, preserves the original quota claim set, creates one outstanding reservation, allocates one monotonic issuance sequence, and persists canonical receipt, request-bound idempotent result and issuance outbox; lineage revocation/supersession does not release a live receipt, terminal settlement uses authenticated consumer evidence and the original counters exactly once, class/caller ceilings and non-borrowable reserve apply, and break-glass retains all ordinary security gates |
 | Topology handoff initialization/commit or topology successor mutation | independently issued `TopologyMutationAuthorizationReceiptV1`; orchestrator profile additionally requires a single-use `WorkloadLeaseActionClaim`, while hardware profile requires canonical-none claim fields and current hardware proof | `DeadlineConditionalTopologyCasV1` consumes the receipt, profile-applicable workload proof, time ratchet/tombstones, expected-version topology CAS, member fences/tombstones, and fence outbox in one VIT-INV-060 transaction |
 | Topology-authorization replay checkpoint/compaction | no new workload or mutation authority; only the current VIT-INV-060 or VIT-INV-061 owner may compact its own local terminal state | issuer may advance dense allocation watermark; consumer remains sparse unless complete authenticated issuer range plus trusted-time horizon/deadline and terminal-state proof yields `ConsumerCompactionEligibleThrough`; checkpoint precedes deletion and unavailable proof never means absence |
 | Dispatch | single-use `WorkloadLeaseActionClaim` | consume with the exact dispatch bundle and outcome in the dispatch owner transaction |
@@ -388,8 +388,12 @@ cannot extend the deadline.
 `TopologyAuthorizationReplayLifecycleV1` bounds anti-replay storage without
 weakening logical permanence. Before VIT-INV-061 allocates durable authority,
 `TopologyAuthorizationAdmissionBudgetV1` enforces frozen per-deployment and
-issuer/class plus canonical principal-or-authority/class attempt-rate and
-outstanding limits. `TopologyAuthorizationPrincipalBudgetKey` binds the
+issuer/class plus canonical principal-or-authority/class successful-admission-
+rate and outstanding limits. A separate bounded
+`TopologyAuthorizationAttemptRateBudgetV1` charges every authenticated
+canonical presentation, including policy/quota/replay denial, but creates no
+authority or reservation; unauthenticated/noncanonical traffic is handled by
+ingress/parser bounds. `TopologyAuthorizationPrincipalBudgetKey` binds the
 authenticated principal, issuing-authority lineage and class. Every layer must
 admit and caller identity splitting never widens an aggregate ceiling.
 `Normal`, `Recovery`, and
@@ -399,17 +403,35 @@ direction: normal saturation cannot starve emergency repair, while break-glass
 floods cannot consume normal capacity or suppress revocation/recovery.
 Break-glass has no exemption from trusted time, quorum/SoD, canonical receipt,
 single consumption, deadline CAS, replay checkpoint, or unavailable-history
-denial. Each allocation gets a
-monotonic `AuthorizationIssuanceSequence` bound into the receipt. Quota
-validation, all applicable counter/reserve mutations,
+denial. Each successful allocation gets a monotonic
+`AuthorizationIssuanceSequence` bound into the receipt. On success, the attempt
+charge, quota validation, admission/outstanding counter and reserve mutations,
+preserved `TopologyAuthorizationOriginalQuotaClaimSetV1`,
 `TopologyAuthorizationOutstandingReservation` creation, sequence allocation,
 canonical receipt, request-digest-bound idempotent result, and issuance outbox
-are one VIT-INV-061 local atomic transaction; quota denial changes none.
+are one VIT-INV-061 local atomic transaction. A denial may change only its
+bounded attempt-rate counter and typed idempotent denial; it creates no
+admission token, reservation, sequence, receipt, or outbox, and spent attempt
+rate is not refunded.
 `SettleTopologyAuthorizationOutstandingReservation` transitions
 `OutstandingReserved` to `OutstandingReleased` exactly once using a stable
-`ReservationSettlementId` and authenticated terminal-evidence digest. Timeout,
-cancellation, disconnect, unknown response, retry, replay and compaction never
-release capacity; duplicate or reordered settlement cannot decrement twice.
+`ReservationSettlementId` and authenticated receipt-specific terminal-evidence
+digest. The reservation embeds the original deployment, issuer/class,
+principal/authority key, budget epochs, class, reserve source, units, and
+quantities, and settlement atomically decrements those original counters rather
+than recomputed current-policy buckets. Issuer-lineage revocation or
+supersession blocks new grants but cannot release an issued receipt that
+remains consumable before immutable `commit_before`. Release requires
+consumer-authenticated consumption, conservative expiry beyond that deadline,
+consumer-authenticated definitely-not-committed or permanently-unresolved
+state, or a receipt-specific VIT-INV-060 revocation tombstone proven by
+`TopologyAuthorizationConsumerTerminalReceiptV1`. Immediate individual
+revocation uses `TopologyAuthorizationReceiptRevocationIntentV1`; VIT-INV-060
+serializes its consumer-side fence/tombstone against consumption and emits the
+terminal receipt. VIT-INV-061 cannot manufacture this evidence. Timeout,
+cancellation, disconnect, unknown response, retry, replay, lineage change,
+compaction, or a lost revocation result never releases capacity; duplicate or
+reordered settlement cannot partially decrement or decrement twice.
 Both
 VIT-INV-061 issuance results and VIT-INV-060 consumption/expiry/deadline results
 remain exactly replayable in hot storage for the frozen horizon. Each owner

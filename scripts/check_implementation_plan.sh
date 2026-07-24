@@ -347,11 +347,23 @@ require_text docs/implementation/PHASE_C.md \
     '`ConsumerCompactionEligibleThrough`' \
     'proven consumer dense-compaction eligibility'
 require_text docs/implementation/PHASE_C.md \
-    'independent rate/outstanding counters; a small per-deployment break-glass' \
+    'independent admission-rate/outstanding counters; a small per-deployment break-' \
     'isolated topology emergency capacity'
 require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationOutstandingReservation` creation' \
     'atomic topology authorization issuance reservation'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationAttemptRateBudgetV1`' \
+    'separate bounded topology authorization attempt rate'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationOriginalQuotaClaimSetV1`' \
+    'preserved original topology quota claim'
+require_text docs/implementation/PHASE_C.md \
+    'Those lineage transitions block new issuance only;' \
+    'live receipt reservation retention across lineage change'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationConsumerTerminalReceiptV1`' \
+    'consumer-authenticated topology terminal evidence'
 require_text docs/implementation/PHASE_C.md \
     '`OutstandingReserved` to `OutstandingReleased`' \
     'exact-once topology reservation settlement'
@@ -359,7 +371,7 @@ require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationIssuedRangeChunkV1`' \
     'resource-bounded topology range chunks'
 require_text docs/implementation/OPTION_DECISIONS.md \
-    'attempt-rate and outstanding-authorization limits' \
+    'successful-admission-rate and outstanding-authorization limits' \
     'production topology replay horizon decision'
 require_text docs/implementation/PHASE_O.md \
     'topology-authorization sustained-abuse/quota/horizon/' \

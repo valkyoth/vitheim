@@ -229,6 +229,18 @@ expect_realization_failure "a missing topology commit reconciliation outcome"
 sed -i 's/`TopologyAuthorizationAdmissionBudgetV1`, //' "$realizations"
 expect_realization_failure "a missing topology authorization admission budget"
 
+sed -i 's/`TopologyAuthorizationAttemptRateBudgetV1`, //' "$realizations"
+expect_realization_failure "a missing topology authorization attempt-rate budget"
+
+sed -i 's/`TopologyAuthorizationOriginalQuotaClaimSetV1`, //' "$realizations"
+expect_realization_failure "a missing topology authorization original quota claim set"
+
+sed -i 's/`TopologyAuthorizationReceiptRevocationIntentV1`, //' "$realizations"
+expect_realization_failure "a missing receipt-specific revocation intent"
+
+sed -i 's/`TopologyAuthorizationConsumerTerminalReceiptV1`, //' "$realizations"
+expect_realization_failure "a missing consumer terminal receipt"
+
 sed -i 's/`AuthorizationIssuanceSequence`, //' "$realizations"
 expect_realization_failure "a missing topology authorization issuance sequence"
 

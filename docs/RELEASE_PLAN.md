@@ -131,19 +131,19 @@ implementations remain blocked rather than being implemented casually.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.21.0` | Stable-invariant, law-manifest, catalog lineage/rollout/local-ratchet, and semantic-realization storage negotiation | Freeze atomic issuance/reservation settlement, layered caller limits, bounded range chunks/verifier, sparse eligibility, deadline/replay lifecycle, isolated budget classes/reserve/lane |
-| `0.22.0` | Declaration-derived destructive invariant and ancestry-complete generation-pinned law/catalog conformance | Crash every issuance write; attack timeout/duplicate settlement, caller monopolization, sparse gaps, late presentation and range byte/entry/decode/work/depth/chunk bounds |
-| `0.23.0` | SQLite single-node adapter | Prove atomic issuance, exact-once settlement, caller limits, bounded chunk verifier, deadline-CAS, sparse/late and emergency-reserve semantics or refuse VIT-CAP-060/061 |
-| `0.24.0` | PostgreSQL reference production adapter | Prove issuance/settlement/fairness/resource-bound parity under pause/failover plus no-late-commit, sparse/range eligibility and reserve isolation |
-| `0.25.0` | Experimental MySQL adapter | Prove atomic issuance, exact-once settlement, caller and bounded range-proof parity or refuse VIT-CAP-060/061; no default v1 claim |
-| `0.26.0` | Experimental MongoDB adapter | Prove issuance/settlement/caller/range-proof bounds under transactions and failover or refuse VIT-CAP-060/061; no default v1 claim |
-| `0.27.0` | Experimental SurrealDB adapter | Prove version-specific issuance/settlement/caller/range-proof bounds or refuse VIT-CAP-060/061; namespace/graph/query isolation and capability truthfulness |
+| `0.21.0` | Stable-invariant, law-manifest, catalog lineage/rollout/local-ratchet, and semantic-realization storage negotiation | Freeze separate all-canonical-attempt and successful-admission/outstanding accounting, atomic issuance, original quota-claim settlement, live-receipt retention across lineage changes, receipt-specific consumer-fenced revocation, layered caller limits, bounded range verification, sparse eligibility, and isolated budget classes/reserve/lane |
+| `0.22.0` | Declaration-derived destructive invariant and ancestry-complete generation-pinned law/catalog conformance | Crash every issuance/settlement write; prove lineage revoke/supersede retains a live reservation, issuer-created terminal evidence fails, policy/key/epoch changes settle original counters, denial/success rate semantics remain distinct, and sparse/range resource bounds hold |
+| `0.23.0` | SQLite single-node adapter | Prove atomic issuance, original-claim exact-once settlement, live-receipt retention, consumer terminal-proof authentication, distinct attempt/admission rates, bounded verifier, deadline-CAS, sparse/late and emergency-reserve semantics or refuse VIT-CAP-060/061 |
+| `0.24.0` | PostgreSQL reference production adapter | Prove the corrected issuance/rate/reservation lifecycle and original-bucket settlement under pause/failover plus no-late-commit, sparse/range eligibility and reserve isolation |
+| `0.25.0` | Experimental MySQL adapter | Prove corrected atomic issuance, rate split, live-receipt retention, original-claim exact-once settlement and bounded range-proof parity or refuse VIT-CAP-060/061; no default v1 claim |
+| `0.26.0` | Experimental MongoDB adapter | Prove corrected issuance/rate/retention/settlement/caller/range-proof bounds under transactions and failover or refuse VIT-CAP-060/061; no default v1 claim |
+| `0.27.0` | Experimental SurrealDB adapter | Prove version-specific corrected issuance/rate/retention/settlement/caller/range-proof bounds or refuse VIT-CAP-060/061; namespace/graph/query isolation and capability truthfulness |
 | `0.28.0` | Blob-store API and filesystem adapter | Traversal, symlinks, races, content mismatch, quotas |
 | `0.28.1` | S3-compatible object-storage adapter | Tenant/object confusion, endpoint spoofing, multipart races, retention/deletion |
 | `0.28.2` | KMS and secret-provider adapters | Serialized provisioning/inventory/orphan/count controls plus governed evaluator upgrade/reevaluation, strong-resolution evidence, independent recovery or manual limitation |
 | `0.28.3` | In-process secret and brokered-bearer memory handling | HTTP/TLS/redirect/error/log/crash/core-dump/swap canaries, stale cache, honest transient-memory/erasure limits |
-| `0.29.0` | Resumable invariant-owner and trusted law/catalog migrations preserving monotonic authority | Preserve atomic issuance schema, outstanding settlements, caller limits, range chunks/cursor/budgets, dense/sparse eligibility and reserve state; reject weakening |
-| `0.30.0` | Cross-backend export and import with explicit law trust closure | Require same-or-stronger issuance atomicity, settlement idempotency, caller ceilings and range-proof resource limits; missing archive/range remains fail-closed |
+| `0.29.0` | Resumable invariant-owner and trusted law/catalog migrations preserving monotonic authority | Preserve distinct attempt/admission/outstanding ledgers, original quota claims/epochs/reserve sources, live reservations, revocation intents, authenticated consumer terminal receipts, settlement IDs, caller limits, range budgets, dense/sparse eligibility and reserve state; reject lineage-based release, current-key recomputation, issuer-forged proof, counter collapse, or weakening |
+| `0.30.0` | Cross-backend export and import with explicit law trust closure | Require same-or-stronger rate separation, issuance atomicity, live-receipt retention, original-claim settlement and consumer terminal-proof authentication; missing archive/range remains fail-closed |
 | `0.30.1` | Durable queue preserving governed provider and cancellation-recovery authority | Existing guard/orphan/count/recovery state remains complete; evaluator revocation/resolution never revives work; queues cannot evaluate, clear, or remediate |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 
@@ -430,12 +430,12 @@ the first technology decision. An unselected option remains unsupported at
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.140.1` | Cryptography/time, executable workload identity, exact catalog/topology-receipt authentication, topology authorization, and credential-operation decision | Freeze currentness challenge/sequence/window, local observation ratchets, independent authorization issuer, authenticated authorization time/profile/continuity fields, conservative consumer interval, concrete five-minute initialization/two-minute commit-or-successor/sixty-second break-glass ceilings, issuance-time bounded-grant semantics, profile discrimination, claim scope/replay, control receipts, MAC separation, and durable anchors |
-| `0.140.2` | Storage topology for invariant/law manifests, rollout/topology/authorization state, active catalogs/ratchets, and provider state | Freeze atomic issuance bundle, settlement evidence/ID, caller budget key/ceilings, exact range root/chunk byte/entry/decode/work/depth/job limits and cursor, sparse eligibility and reserve profiles |
+| `0.140.1` | Cryptography/time, executable workload identity, exact catalog/topology-receipt authentication, topology authorization, and credential-operation decision | Freeze currentness and time ceilings plus the rule that lineage revoke/supersede blocks only new issuance; define separate receipt-specific revocation intent, VIT-INV-060 consumer fencing/tombstone, and authenticated consumer terminal receipt before any immediate individual revocation may release capacity |
+| `0.140.2` | Storage topology for invariant/law manifests, rollout/topology/authorization state, active catalogs/ratchets, and provider state | Freeze distinct all-attempt/admission/outstanding ledgers, atomic success and bounded-denial writes, original quota claim set/epochs/reserve source, consumer-only terminal evidence and all-or-none original-counter settlement, plus existing range/sparse/reserve profiles |
 | `0.140.3` | Human/workload/session and worker-instance identity decision | Co-located epochs, enforceable expiry, unique per-runtime claimant, lease-fence binding, restart/takeover invalidation |
 | `0.140.4` | Component runtime and governed credential-broker TCB decision | Evaluator binary/corpus admission and upgrade; quarantine-resolution evidence; non-composable remediation authority; existing TCB |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Minimize checkpoint/range root/chunks/cursor to non-sensitive sequence/digest/deadline/structure evidence; keep caller identity and exact payload outside long-lived proof |
-| `0.140.6` | Deployment/HA invariant-owner, catalog rollout/topology/authorization, and recovery decision | Freeze failover/restore of whole issuance bundles, outstanding settlements, caller ceilings and bounded range-verification cursors alongside existing authorization/time guarantees |
+| `0.140.6` | Deployment/HA invariant-owner, catalog rollout/topology/authorization, and recovery decision | Freeze failover/restore of distinct rate ledgers, whole issuance bundles, original quota claims, live lineage-changed reservations, receipt-revocation intents, authenticated consumer terminal receipts and all-or-none settlements alongside existing authorization/time guarantees |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |
@@ -449,15 +449,15 @@ exit: production candidate has passed external pentest and all acceptance tests.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.141.0` | Single-node packaging plus independent topology authorization, governed handoff, and replay-safe dynamic admission | Implement atomic issuance/exact-once settlement, caller sub-limits, bounded chunked range verifier, sparse consumer proof, late denial and isolated reserve |
-| `0.142.0` | Split deployments with separated topology/authorization services and exact topology-issued catalog placement owners | Preserve issuer/topology credential and time-profile separation plus backend deadline-CAS across RPC; service timeout never substitutes for commit proof; retain profile/claim/currentness/replacement fencing |
+| `0.141.0` | Single-node packaging plus independent topology authorization, governed handoff, and replay-safe dynamic admission | Implement distinct attempt/admission/outstanding accounting, original-claim atomic issuance/settlement, lineage-change live-reservation retention, consumer-fenced receipt revocation, caller limits, bounded range verification, sparse proof and isolated reserve |
+| `0.142.0` | Split deployments with separated topology/authorization services and exact topology-issued catalog placement owners | Authenticate consumer terminal receipts across RPC; issuer evidence, lineage change, and service timeout never substitute for terminal proof; preserve original claims, rate separation, deadline-CAS, profile/claim/currentness/replacement fencing |
 | `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
-| `0.143.0` | HA atomic work, catalog rollout/topology/authorization, governed execution, and cancellation recovery | Fail over whole issuance/terminal settlement and bounded chunk verification; preserve caller/aggregate ceilings, sparse gaps, late denial and reserve isolation |
+| `0.143.0` | HA atomic work, catalog rollout/topology/authorization, governed execution, and cancellation recovery | Fail over distinct rate ledgers, whole issuance, lineage-changed live reservations, original-claim terminal settlement, receipt revocation and bounded verification; reject forged proof, partial release, and counter underflow |
 | `0.144.0` | Authoritative-region placement and residency through topology successors | `VIT-INV-060` regional move/fence/tombstone, predecessor-bound rollout block, cross-region identity/lease collision, receipt/start split, floor owner split, omitted regional parent |
-| `0.145.0` | Backup, restore, and disaster recovery | Recover atomic issuance, reservations/settlements, caller limits, range chunks/cursor/budgets, dense/sparse eligibility and reserve state without rollback |
-| `0.146.0` | Provider-governance, topology anti-replay, rotation/drift, credential-TCB, and cancellation contention certification | Soak issuance contention, terminal duplicates, caller fairness and range decode/work/depth bounds plus sparse/late and reserve saturation |
-| `0.147.0` | Final profile-governance, topology replay-lifecycle, bearer-memory, executor, and supply-chain hardening | Audit issuance linearization, settlement underflow, caller substitution and range allocation/CPU proof bombs plus existing replay hardening |
-| `0.148.0` | Compatibility freeze for provider authority, rollout recovery, and topology replay lifecycle | Freeze issuance bundle, settlement, caller budget, range root/chunk/resource/cursor, sparse eligibility and reserve formats |
+| `0.145.0` | Backup, restore, and disaster recovery | Recover distinct rate ledgers, original quota claims, live reservations, revocation intents, authenticated terminal receipts and all-or-none settlements without lineage-release, current-key recomputation, forgery, or rollback |
+| `0.146.0` | Provider-governance, topology anti-replay, rotation/drift, credential-TCB, and cancellation contention certification | Soak denial/success rate accounting, lineage-change retention, original-claim settlement races, terminal-proof forgery, duplicate/partial release and existing range/sparse/reserve bounds |
+| `0.147.0` | Final profile-governance, topology replay-lifecycle, bearer-memory, executor, and supply-chain hardening | Audit rate semantic separation, live-receipt retention, consumer revocation fencing, terminal-evidence authentication, original-claim underflow resistance and existing replay/resource hardening |
+| `0.148.0` | Compatibility freeze for provider authority, rollout recovery, and topology replay lifecycle | Freeze attempt/admission/outstanding, original-claim, receipt-revocation-intent, consumer-terminal-receipt and all-or-none settlement formats plus existing bounded replay formats |
 | `0.149.0` | Release candidate and external pentest remediation | Complete prior platform retest plus evaluator-governance bypass, quarantine clear/revival, and remediation escalation/circularity |
 | `0.150.0` | Final production-readiness candidate | Existing lifecycle/TCB/recovery evidence plus active evaluator/reevaluation, evidence-backed resolution, independent remediation/manual limitation |
 
@@ -526,11 +526,14 @@ are independently evidenced as production-ready.
   and never reach upstream, plugin, queue, general connector, or durable state.
 - Identical mandatory conformance for supported production storage profiles;
   SQLite remains limited to its documented single-node profile.
-- Production topology authorization proves one local atomic layered-quota/
-  reservation/sequence/receipt/idempotent-result/outbox transaction, exact-once
-  authenticated terminal settlement, canonical caller sub-limits, and bounded
-  range-root/chunk decoding and verification. Timeout cannot free live
-  authority, and partial or over-budget proof cannot advance compaction.
+- Production topology authorization proves distinct bounded canonical-attempt
+  and successful-admission/outstanding accounting; one local atomic original-
+  claim/reservation/sequence/receipt/idempotent-result/outbox success
+  transaction; and all-or-none settlement against the original counters.
+  Lineage revoke/supersede and timeout cannot free a live receipt. Immediate
+  receipt revocation requires VIT-INV-060 consumer fencing and an authenticated
+  terminal receipt the issuer cannot forge. Canonical caller sub-limits and
+  bounded range-root/chunk decoding and verification remain mandatory.
 
 ### Verification
 

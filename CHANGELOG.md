@@ -8,6 +8,11 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Corrected topology-authorization reservation accounting so lineage revocation
+  or supersession cannot free a still-consumable receipt; added original quota-
+  claim settlement, separate attempt/admission/outstanding ledgers, and a
+  consumer-fenced receipt-specific revocation protocol with authenticated
+  terminal receipts.
 - Made topology-authorization issuance one local atomic
   quota/reservation/sequence/receipt/result/outbox transaction, added exact-once
   terminal capacity settlement and caller sub-limits, and bounded chunked
