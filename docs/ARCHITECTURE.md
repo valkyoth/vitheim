@@ -81,6 +81,13 @@ remains expired/historical. Issuance budgets separate normal, recovery, and
 break-glass counters with a non-borrowable emergency reserve and independent
 ceilings; this protects repair availability without bypassing authorization,
 deadline, or replay proof.
+Issuance atomically validates every deployment/issuer/canonical-caller budget,
+reserves outstanding capacity, allocates the sequence, and persists the
+canonical receipt, idempotent result and outbox. Only authenticated terminal
+evidence releases that reservation exactly once; client timeout never does.
+Large issuer ranges use resource-bounded authenticated chunks with explicit
+byte/entry/decode/work/depth limits and a durable verification cursor, so
+compaction proof cannot become a CPU or allocation denial of service.
 Later authority changes block new grants rather than pretending to atomically
 revoke the already issued bounded grant across transaction domains. Once committed,
 `VIT-LAW-007@g02` makes current topology a normal admission, readiness,

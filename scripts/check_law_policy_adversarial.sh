@@ -247,6 +247,24 @@ expect_realization_failure "a missing consumer compaction eligibility proof"
 sed -i 's/`TopologyAuthorizationBreakGlassReserve`, //' "$realizations"
 expect_realization_failure "a missing topology authorization break-glass reserve"
 
+sed -i 's/`TopologyAuthorizationOutstandingReservation`, //' "$realizations"
+expect_realization_failure "a missing topology authorization outstanding reservation"
+
+sed -i 's/`TopologyAuthorizationPrincipalBudgetKey`, //' "$realizations"
+expect_realization_failure "a missing topology authorization principal budget key"
+
+sed -i 's/`SettleTopologyAuthorizationOutstandingReservation`, //' "$realizations"
+expect_realization_failure "a missing exact-once reservation settlement"
+
+sed -i 's/`TopologyAuthorizationIssuedRangeChunkV1`, //' "$realizations"
+expect_realization_failure "a missing bounded topology authorization range chunk"
+
+sed -i 's/`TopologyAuthorizationRangeProofBudgetV1`, //' "$realizations"
+expect_realization_failure "a missing topology authorization range proof budget"
+
+sed -i 's/`TopologyAuthorizationRangeVerificationCursor`, //' "$realizations"
+expect_realization_failure "a missing topology authorization range verification cursor"
+
 sed -i 's/`RejectLateCompactedTopologyAuthorization`, //' "$realizations"
 expect_realization_failure "a missing late compacted authorization rejection"
 

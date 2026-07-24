@@ -56,18 +56,32 @@ timeout/response-loss/failover pause proves only a pre-expiry commit or a
 transaction that cannot commit later. An uncertain response reconciles without
 ordinary retry and without weakening that proof.
 Production also freezes `TopologyAuthorizationReplayLifecycleV1`: monotonic
-issuance sequences; pre-allocation per-deployment and issuer/class rate and
-outstanding limits; a minimum exact-outcome horizon; bounded hot rows/bytes and
-compaction backlog; authenticated predecessor-linked checkpoints, set/archive
-commitments, key rotation and covered-through high-watermarks; and growth/
-proof-availability alerts. Compaction commits the checkpoint before deleting
-hot state. VIT-INV-061 owns a dense issued-through watermark and authenticated
-`TopologyAuthorizationIssuedRangeManifestV1`. VIT-INV-060 defaults to a sparse
+issuance sequences; layered pre-allocation per-deployment, issuer/class, and
+canonical principal-or-authority/class rate and outstanding limits; a minimum
+exact-outcome horizon; bounded hot rows/bytes and compaction backlog;
+authenticated predecessor-linked checkpoints, set/archive commitments, key
+rotation and covered-through high-watermarks; and growth/proof-availability
+alerts. Quota validation, all counter/reserve mutations, outstanding
+reservation, sequence allocation, canonical receipt, request-digest-bound
+idempotent result, and issuance outbox are one VIT-INV-061 local atomic
+transaction. Capacity releases exactly once only from authenticated stable
+terminal evidence under a settlement ID; timeout, cancellation, disconnect,
+unknown response, retry, replay or compaction never releases it, and duplicate/
+reordered settlement cannot decrement twice. Compaction commits the checkpoint
+before deleting hot state. VIT-INV-061 owns a dense issued-through watermark
+and authenticated `TopologyAuthorizationIssuedRangeManifestV1`. VIT-INV-060 defaults to a sparse
 commitment and advances dense `ConsumerCompactionEligibleThrough` only after
 complete range evidence, conservative trusted-time proof that the horizon and
 all deadlines passed, and terminal/permanently-unresolved local members. A
-never-presented gap or first late presentation cannot become absent. Replays
-within the horizon return the original typed outcome; older
+never-presented gap or first late presentation cannot become absent. The
+manifest root and predecessor-linked
+`TopologyAuthorizationIssuedRangeChunkV1` chain enforce frozen maximum encoded
+bytes, entries/chunks per manifest, entries per chunk, canonical decode
+allocation, verification work, proof depth, and roots/chunks-per-job through
+predecessor-linked successor roots and a durable cursor. Oversized or partial/
+cyclic/reordered/substituted chains reject or remain sparse before unbounded
+allocation/work.
+Replays within the horizon return the original typed outcome; older
 replays return authenticated archival evidence or
 `TopologyAuthorizationHistoricalStateUnavailable`. Missing archive/proof state
 fails closed and never permits consumption, reissue, or inference of absence.
@@ -81,7 +95,9 @@ and missing historical proof still denies.
 Soak, HA, migration/import, and DR evidence proves bounded storage and no
 receipt resurrection across concurrent replay, checkpointing, key rotation,
 archive outage, sparse gaps, range-manifest loss/forgery, late presentation,
-normal/break-glass saturation, crash, failover, or restore.
+atomic issuance crashes, timeout/duplicate settlement, caller-sub-limit
+monopolization, range-proof resource exhaustion, normal/break-glass saturation,
+crash, failover, or restore.
 The production risk register explicitly accepts only the residual window
 created by issuance-time linearization: compromised credentials may retain an
 already issued exact grant for at most its immutable class ceiling (never more

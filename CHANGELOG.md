@@ -8,6 +8,10 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Made topology-authorization issuance one local atomic
+  quota/reservation/sequence/receipt/result/outbox transaction, added exact-once
+  terminal capacity settlement and caller sub-limits, and bounded chunked
+  issuer-range proof decoding and verification.
 - Refined topology anti-replay compaction with issuer-authenticated range
   manifests, sparse-by-default consumer commitments, deadline/time-gated dense
   eligibility, and non-borrowable normal/recovery/break-glass issuance budgets.

@@ -194,7 +194,7 @@ The action-authority scope is closed and is frozen at `0.140.1`:
 | --- | --- | --- |
 | Readiness observation | reusable, bounded `OnlineWorkloadFreshnessProofV1`; no action claim | read-only; stale, unavailable, fenced, or topology-mismatched proof returns unready and cannot create authority |
 | Positive local prepare, convergence, or admission receipt creation/commit | single-use `WorkloadLeaseActionClaim` | consume the claim, commit the receipt/admission and its typed result in one local owner transaction |
-| Topology-authorization allocation | current principal/session/delegation/policy/approval plus pre-allocation `TopologyAuthorizationAdmissionBudgetV1` in closed normal/recovery/break-glass class | VIT-INV-061 allocates one monotonic issuance sequence and exact typed result in its local transaction; class ceilings and non-borrowable reserve apply, quota rejection allocates no authority, and break-glass retains all ordinary security gates |
+| Topology-authorization allocation | current principal/session/delegation/policy/approval plus layered pre-allocation `TopologyAuthorizationAdmissionBudgetV1` at deployment, issuer/class and canonical principal-or-authority/class scope in a closed normal/recovery/break-glass class | VIT-INV-061 atomically validates quotas, mutates counters/reserve, creates one outstanding reservation, allocates one monotonic issuance sequence, and persists canonical receipt, request-bound idempotent result and issuance outbox; rejection changes none, terminal settlement releases exactly once, class/caller ceilings and non-borrowable reserve apply, and break-glass retains all ordinary security gates |
 | Topology handoff initialization/commit or topology successor mutation | independently issued `TopologyMutationAuthorizationReceiptV1`; orchestrator profile additionally requires a single-use `WorkloadLeaseActionClaim`, while hardware profile requires canonical-none claim fields and current hardware proof | `DeadlineConditionalTopologyCasV1` consumes the receipt, profile-applicable workload proof, time ratchet/tombstones, expected-version topology CAS, member fences/tombstones, and fence outbox in one VIT-INV-060 transaction |
 | Topology-authorization replay checkpoint/compaction | no new workload or mutation authority; only the current VIT-INV-060 or VIT-INV-061 owner may compact its own local terminal state | issuer may advance dense allocation watermark; consumer remains sparse unless complete authenticated issuer range plus trusted-time horizon/deadline and terminal-state proof yields `ConsumerCompactionEligibleThrough`; checkpoint precedes deletion and unavailable proof never means absence |
 | Dispatch | single-use `WorkloadLeaseActionClaim` | consume with the exact dispatch bundle and outcome in the dispatch owner transaction |
@@ -388,7 +388,11 @@ cannot extend the deadline.
 `TopologyAuthorizationReplayLifecycleV1` bounds anti-replay storage without
 weakening logical permanence. Before VIT-INV-061 allocates durable authority,
 `TopologyAuthorizationAdmissionBudgetV1` enforces frozen per-deployment and
-issuer/class attempt-rate and outstanding limits. `Normal`, `Recovery`, and
+issuer/class plus canonical principal-or-authority/class attempt-rate and
+outstanding limits. `TopologyAuthorizationPrincipalBudgetKey` binds the
+authenticated principal, issuing-authority lineage and class. Every layer must
+admit and caller identity splitting never widens an aggregate ceiling.
+`Normal`, `Recovery`, and
 `BreakGlass` have separate counters and rate ceilings. A small per-deployment
 break-glass reserve and recovery-processing lane are non-borrowable in either
 direction: normal saturation cannot starve emergency repair, while break-glass
@@ -396,7 +400,17 @@ floods cannot consume normal capacity or suppress revocation/recovery.
 Break-glass has no exemption from trusted time, quorum/SoD, canonical receipt,
 single consumption, deadline CAS, replay checkpoint, or unavailable-history
 denial. Each allocation gets a
-monotonic `AuthorizationIssuanceSequence` bound into the receipt. Both
+monotonic `AuthorizationIssuanceSequence` bound into the receipt. Quota
+validation, all applicable counter/reserve mutations,
+`TopologyAuthorizationOutstandingReservation` creation, sequence allocation,
+canonical receipt, request-digest-bound idempotent result, and issuance outbox
+are one VIT-INV-061 local atomic transaction; quota denial changes none.
+`SettleTopologyAuthorizationOutstandingReservation` transitions
+`OutstandingReserved` to `OutstandingReleased` exactly once using a stable
+`ReservationSettlementId` and authenticated terminal-evidence digest. Timeout,
+cancellation, disconnect, unknown response, retry, replay and compaction never
+release capacity; duplicate or reordered settlement cannot decrement twice.
+Both
 VIT-INV-061 issuance results and VIT-INV-060 consumption/expiry/deadline results
 remain exactly replayable in hot storage for the frozen horizon. Each owner
 then compacts only its own state by atomically installing authenticated
@@ -412,6 +426,19 @@ is a sparse set commitment by default. Dense
 `TopologyAuthorizationIssuedRangeManifestV1` binding issuer lineage/fence/key,
 exact range, ordered issued sequences/receipt digests, every `commit_before`,
 maximum deadline/uncertainty, predecessor digest, and authentication profile.
+The authenticated root binds total range/entry/chunk counts, ordered chunk-root
+digest and terminal marker. Larger ranges use predecessor-linked
+`TopologyAuthorizationIssuedRangeChunkV1`; the frozen profile limits header and
+chunk encoded bytes, entries and chunks per manifest, entries per chunk,
+canonical decode allocations, verification work per step/job, proof depth and
+roots/chunks per job. These limits are
+`TopologyAuthorizationRangeProofBudgetV1`. A larger range uses predecessor-
+linked successor roots. A durable
+`TopologyAuthorizationRangeVerificationCursor` permits incremental progress
+without resetting lineage or work accounting. Limits are checked before entry
+allocation. Partial, truncated, cyclic, reordered, duplicated, overlapping,
+substituted, mixed-profile or over-budget chains cannot advance dense
+eligibility.
 The consumer also proves with conservative trusted time that the exact replay
 horizon and every deadline passed, and that each locally known member is
 terminal or `TopologyAuthorizationPermanentlyUnresolved`. The manifest is
@@ -433,8 +460,10 @@ predecessor and issuer-dense/consumer-sparse-or-eligible-dense meaning. Restore/
 import merge the greatest sequence, checkpoint digest, applicable watermark/
 sparse commitment, range manifest and key epoch before serving.
 Backlog saturation fails closed before allocation, and hot/checkpoint/archive/
-proof-index bytes and rows, outstanding counts, oldest uncompacted age, proof
-availability and quota/backlog thresholds are measured and alerted.
+proof-index/manifest/chunk bytes and rows, layered outstanding counts,
+reservation-settlement lag, verification work/depth/cursor age, oldest
+uncompacted age, proof availability and quota/backlog thresholds are measured
+and alerted.
 
 The receipt is profile-discriminated. `OrchestratorAttestedFencedLease` requires
 the exact action-claim ID/digest/expiry fields and canonical-none hardware-proof

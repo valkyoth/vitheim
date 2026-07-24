@@ -215,18 +215,36 @@ transaction can later commit.
 Freeze `TopologyAuthorizationReplayLifecycleV1` as part of VIT-CAP-060/061.
 Every durable authorization allocation receives a monotonic
 `AuthorizationIssuanceSequence` bound into
-`TopologyMutationAuthorizationReceiptV1`. Per-deployment and per-issuer/class
-attempt-rate and outstanding-authorization quotas execute before allocation.
-The budget class is closed: `Normal`, `Recovery`, or `BreakGlass`. Each has
+`TopologyMutationAuthorizationReceiptV1`. Layered per-deployment,
+per-issuer/class, and canonical principal-or-authority/class attempt-rate and
+outstanding-authorization quotas execute before allocation; every layer must
+admit, and `TopologyAuthorizationPrincipalBudgetKey` binds the authenticated
+principal plus issuing-authority lineage and class, so caller identity splitting
+cannot increase an aggregate ceiling. The
+budget class is closed: `Normal`, `Recovery`, or `BreakGlass`. Each has
 independent rate/outstanding counters; a small per-deployment break-glass
 reserve and recovery-processing lane are non-borrowable in both directions.
 Normal saturation cannot consume emergency capacity, while break-glass floods
 cannot consume normal capacity or delay revocation/recovery processing.
 Break-glass remains subject to its own strict ceiling and every trusted-time,
 quorum/SoD, canonical receipt, single-consumption, deadline-CAS, and replay-
-checkpoint control;
-unknown issuance and unresolved consumption continue to count until safely
-reconciled or terminally checkpointed. A closed `HotExact` ->
+checkpoint control.
+
+Quota validation, every applicable counter/reserve mutation,
+`TopologyAuthorizationOutstandingReservation` creation,
+`AuthorizationIssuanceSequence` allocation, canonical receipt persistence,
+request-digest-bound idempotent result persistence, and issuance outbox
+insertion are one VIT-INV-061 local atomic transaction. Rejection changes none
+of them. A committed reservation remains outstanding across client timeout,
+cancellation, disconnect, process crash, or unknown response. It transitions
+exactly once from `OutstandingReserved` to `OutstandingReleased` only in a
+VIT-INV-061 transaction that authenticates a stable terminal settlement:
+consumed, expired, revoked, superseded, or explicitly sealed permanently
+unresolved. `ReservationSettlementId` and terminal-evidence
+digest make duplicate/reordered delivery idempotent; no timeout, retry, replay,
+or compaction observation can decrement a counter. Unknown issuance and
+unresolved consumption continue to count until safely reconciled or terminally
+settled. A closed `HotExact` ->
 `CheckpointPending` -> `ArchivedCompacted` lifecycle keeps the exact request,
 mutation, receipt, and typed result locally replayable for a frozen minimum
 exact-outcome horizon. Compaction first atomically installs an authenticated,
@@ -249,6 +267,24 @@ canonical ordered issued sequence numbers and receipt digests, per-receipt
 authentication profile. It is evidence, never consumer mutation authority or a
 cross-owner transaction.
 
+`TopologyAuthorizationIssuedRangeManifestV1` is also a resource-bounded proof
+format. `TopologyAuthorizationRangeProofBudgetV1` declares maximum entries and
+chunks per manifest, header and chunk bytes, entries per chunk, canonical decode
+allocations, verification work units per step and per compaction job, proof
+depth, and manifest roots/chunks consumed per job. A larger range uses canonical
+predecessor-linked successor `TopologyAuthorizationIssuedRangeManifestV1`
+roots whose bounded pages contain predecessor-linked
+`TopologyAuthorizationIssuedRangeChunkV1` chunks. Each authenticated root binds
+its complete inclusive subrange, total entry and chunk counts, ordered chunk-
+root digest, predecessor-root digest, maximum deadline/uncertainty, and
+terminal-chain marker; each chunk binds its ordinal, exact subrange,
+predecessor digest, ordered entries, codec/profile, and root. Parsing checks
+length/count/depth limits before entry allocation, and verification is
+incremental through a durable bounded
+`TopologyAuthorizationRangeVerificationCursor`. No single chunk, partial
+root/chain, truncated terminal marker, or over-budget proof permits dense
+consumer advance.
+
 Consumer eligibility additionally requires a conservative trusted-time proof
 that the exact replay horizon has elapsed and every manifest receipt is past
 `commit_before`; every locally known member is terminal or sealed
@@ -267,9 +303,11 @@ issuer-dense, consumer-sparse, or consumer-eligible-dense meaning. Key rotation
 cross-authenticates the successor
 checkpoint key. Restore, migration, import, or failover merges the greatest
 checkpoint/high-watermark before serving. Rate/backlog/cardinality limits,
-compaction failure backpressure, hot/checkpoint/archive bytes and rows, oldest
-uncompacted sequence/age, quota saturation, proof availability, and alert
-thresholds are mandatory capability fields rather than operator folklore.
+compaction failure backpressure, hot/checkpoint/archive/manifest/chunk bytes
+and rows, range-verification work/depth/cursor age, oldest uncompacted
+sequence/age, quota and principal-sub-limit saturation, proof availability,
+and alert thresholds are mandatory capability fields rather than operator
+folklore.
 
 Goal: prevent adapters from silently weakening correctness.
 
@@ -367,7 +405,12 @@ Also reject a merged/borrowable budget class, a break-glass path without its
 own ceiling, any emergency exemption from ordinary authorization/deadline/
 replay controls, consumer dense compaction without complete authenticated
 issuer-range and trusted-time eligibility evidence, or a range gap/late receipt
-that can be treated as absent.
+that can be treated as absent. Reject issuance whose quota reservation,
+sequence, receipt, idempotent result, or outbox can commit separately; any
+timeout-based, duplicate, or unauthenticated outstanding-counter release;
+missing principal/authority sub-limits where a class has multiple callers; and
+an unbounded, oversized, over-depth, cyclic, partial, or non-canonical range
+manifest/chunk proof.
 
 Exit criteria: correctness never depends on an unverified optional capability.
 `v0.21.0 implementation stop reached. Run pentest for this exact commit.`
@@ -601,6 +644,14 @@ shard target placement, every authority-change-versus-dispatch race, composite
 lock-order inversion, exhausted/identity-changing retry, active/active
 authoritative topology, and remote-in-transaction adapters fail; run the memory adapter
 through all atomicity/isolation/recovery cases.
+For topology authorization, split every issuance-transaction write point and
+prove no partial reservation/sequence/receipt/result/outbox state; timeout and
+duplicate/reordered terminal settlement never release twice. Exhaust one
+principal sub-limit without exhausting its class. Feed oversized entry counts,
+encoded lengths, decode allocations, verification work, proof depths, chunk
+counts, cyclic/reordered/substituted chains, truncated terminal markers, and
+resume-cursor crashes; each case rejects or remains sparse within the frozen
+resource budget.
 
 Exit criteria: an adapter cannot claim support by skipping or weakening tests.
 `v0.22.0 implementation stop reached. Run pentest for this exact commit.`
@@ -711,8 +762,10 @@ issuer and consumer time columns/high-watermarks/tombstones, and the atomic
 deadline-CAS mechanism/result ledger; plus pre-allocation budgets, hot exact
 results, authenticated replay checkpoints/covered-through high-watermarks,
 archive proofs, issuer range manifests, consumer sparse/eligible-dense state,
-separate normal/recovery/break-glass counters/reserve, compaction/backpressure
-state, and growth metrics. Startup
+bounded range chunks/verification cursors, layered deployment/issuer/principal
+normal/recovery/break-glass counters, outstanding reservations and exact-once
+settlements, non-borrowable reserve, compaction/backpressure state, and growth
+metrics. Startup
 fails capability negotiation if any
 mandatory semantic component or transaction-domain placement is absent.
 
@@ -779,7 +832,9 @@ failover pause from `0.22.0`, attempted post-deadline commit, quota and
 checkpoint races, compaction crash/failover/key rotation/concurrent replay,
 archive loss, sparse consumer gaps/late presentation, normal exhaustion with
 reserved break-glass success, break-glass flood isolation, bounded growth under
-maximum admitted rate, and conformance pass.
+maximum admitted rate, atomic issuance crash points, timeout-preserved and
+duplicate-settled reservations, principal monopolization, and bounded
+range-chunk decode/verification exhaustion, and conformance pass.
 
 Exit criteria: production claims match tested deployment profiles only.
 `v0.24.0 implementation stop reached. Run pentest for this exact commit.`
@@ -810,9 +865,13 @@ receipt V1 and issuer/consumer time/continuity/tombstone field, the complete
 deadline-CAS pause/failover matrix, attempted late commit, and conformance pass.
 The adapter also proves the common issuance budget, exact-replay horizon,
 authenticated checkpoint/compaction, unavailable-archive denial, and bounded-
-That proof includes issuer range manifests, consumer sparse-gap behavior,
+storage proof. That proof includes issuer range manifests, consumer sparse-gap
+behavior,
 eligible-through time/deadline checks, and independent non-borrowable normal/
-recovery/break-glass counters and ceilings.
+recovery/break-glass counters and ceilings. It also proves one atomic
+reservation/sequence/receipt/result/outbox issuance transaction, exact-once
+terminal release, principal/authority sub-limits, and bounded chunked manifest
+decoding and verification.
 
 Exit criteria: no backend-specific behavior leaks into domain correctness.
 `v0.25.0 implementation stop reached. Run pentest for this exact commit.`
@@ -842,7 +901,8 @@ receipt V1 and issuer/consumer time/continuity/tombstone field, all deadline-CAS
 pause points including primary failover and response loss, attempted late
 commit, common quota/horizon/checkpoint/compaction/archive-loss/bounded-growth
 cases, sparse-gap/range-manifest/late-presentation cases, break-glass reserve
-isolation, and conformance pass.
+isolation, issuance atomicity/settlement idempotency/principal isolation, and
+oversized/deep/partial/cyclic manifest-chunk rejection, and conformance pass.
 
 Exit criteria: document flexibility never weakens mandatory journal semantics.
 `v0.26.0 implementation stop reached. Run pentest for this exact commit.`
@@ -872,7 +932,8 @@ issuer/consumer time/continuity/tombstone field, every deadline-CAS pause/
 failover/response-loss case, attempted late commit, common quota/horizon/
 checkpoint/compaction/archive-loss/bounded-growth cases, and full conformance
 pass; include sparse-gap/range-manifest/late-presentation behavior and break-
-glass reserve isolation.
+glass reserve isolation, atomic issuance and exact-once settlement, caller
+sub-limit isolation, and bounded chunk/proof verification.
 
 Exit criteria: optional graph behavior is replaceable and policy equivalent.
 `v0.27.0 implementation stop reached. Run pentest for this exact commit.`
@@ -1087,16 +1148,20 @@ continuity, erase expiry/consumption, change the deadline-CAS mechanism, or
 permit an older binary/schema to write. Downgrade below this schema is rejected
 before opening the authority rows.
 Preserve `AuthorizationIssuanceSequence`, pre-allocation budget state,
-outstanding counts, exact replay-horizon metadata, every hot result not yet
-covered, authenticated replay checkpoint chain/current digest,
-issuer dense issued-through watermark and range manifests, consumer sparse set
-commitment and any `ConsumerCompactionEligibleThrough` proof, accumulator/
-archive digest/profile, separate normal/recovery/break-glass counters/reserve,
-compaction cursor/backlog, and key epochs. Migration installs and verifies the destination
+layered deployment/issuer/principal counters, outstanding reservation and
+exact-once settlement records, exact replay-horizon metadata, every hot result
+not yet covered, authenticated replay checkpoint chain/current digest, issuer
+dense issued-through watermark and bounded range manifest/chunks/verification
+cursor, consumer sparse set commitment and any
+`ConsumerCompactionEligibleThrough` proof, accumulator/archive digest/profile,
+separate normal/recovery/break-glass counters/reserve, compaction
+cursor/backlog, and key epochs. Migration installs and verifies the destination
 checkpoint before deleting or transforming a source row; it cannot restart
 sequence space, reopen a compacted key, silently shorten the exact horizon,
 weaken proof availability, turn sparse consumer history into an unproven dense
-range, make budget classes borrowable, or treat an unavailable archive as
+range, split issuance atomicity, release a reservation from timeout, duplicate
+a terminal release, drop a caller sub-limit, widen a range-proof resource
+budget, make budget classes borrowable, or treat an unavailable archive as
 absence.
 Replacement creates a successor placement generation and fresh admission;
 migration never clones authority from a copied local row.
@@ -1196,8 +1261,10 @@ expired tombstones, topology/member generations/fences/outbox, exact
 `TopologyAuthorizationReplayLifecycleV1` quotas/horizon/hot results,
 checkpoint chain/current digest/covered-through high-watermark, set and archive
 commitments, issuer range manifests/dense watermark, consumer sparse and
-eligible-dense state, normal/recovery/break-glass counters/reserve, compaction
-cursor/backlog, key epochs, and growth-accounting state,
+eligible-dense state, bounded chunks/verification cursor, layered caller/class
+counters, outstanding reservations/settlements, normal/recovery/break-glass
+counters/reserve, compaction cursor/backlog, key epochs, and growth-accounting
+state,
 encryption/signing ports, position mapping, and budgets.
 
 Goal: migrate between backends without claiming direct database interchange.
@@ -1213,7 +1280,9 @@ the same-or-longer exact horizon, no-lower quotas/backpressure safety, complete
 uncompacted hot results, an authenticated checkpoint/predecessor chain and
 issuer manifests/dense watermark plus consumer sparse/eligible-dense proof,
 usable membership/non-membership proofs, equivalent non-borrowable budget
-classes/reserve, and no sequence/key reuse. Missing archival payload may remain unavailable, but
+classes/reserve and principal sub-limits, intact outstanding reservations and
+settlement idempotency, equal-or-stricter manifest/chunk/verification limits,
+and no sequence/key reuse. Missing archival payload may remain unavailable, but
 that range is durably fail-closed and cannot be interpreted as unused. It then
 calls the shared
 canonical verifier with destination build scope and the actual predecessor
@@ -1229,7 +1298,9 @@ replay-horizon shortening, quota/budget reset, missing hot result, checkpoint
 fork or rollback, accumulator/archive/key substitution, compaction-cursor
 rewind, unavailable proof treated as absence, issuance-sequence reuse,
 issuer-range loss/substitution, sparse-to-dense promotion, late gap acceptance,
-or budget-class/reserve weakening,
+split issuance state, timeout release, duplicate terminal decrement, caller-
+limit loss, oversized/deep/partial/cyclic range proof, or budget-class/reserve
+weakening,
 and cross-adapter conformance pass.
 
 Exit criteria: successful import proves complete semantic and integrity parity.

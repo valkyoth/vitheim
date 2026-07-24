@@ -69,6 +69,13 @@ audit decision.
   eligibility, late-presentation denial, and separate non-borrowable normal/
   recovery/break-glass rate/outstanding counters and reserve with no emergency
   exemption from authorization, deadline, or replay controls;
+  atomic topology-authorization issuance where layered deployment/issuer/
+  canonical-caller quotas, outstanding reservation, sequence, canonical
+  receipt, idempotent result, and outbox commit together, and only authenticated
+  stable terminal evidence releases capacity exactly once;
+  resource-bounded issuer range roots/chunks with encoded-byte, entry, decode-
+  allocation, verification-work, proof-depth and per-job chunk ceilings,
+  resumable verification cursor, and fail-closed partial-chain handling;
   profile-discriminated authorization locally
   consumed with the successor, applicable workload proof, tombstones, and fence
   outbox without cross-owner atomicity; challenge/sequence/expiry topology

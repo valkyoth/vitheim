@@ -305,10 +305,13 @@ the authorization linearization point. MySQL, MongoDB, and SurrealDB may claim
 dynamic topology only after the same conformance proof; otherwise their
 capability report must reject it. The same decision freezes
 `TopologyAuthorizationReplayLifecycleV1`: exact per-deployment and issuer/class
-attempt-rate and outstanding-authorization limits, the minimum exact-outcome
-replay horizon, maximum hot-row/byte and compaction-backlog limits, checkpoint
-cadence, archival availability objective, alert thresholds, and fail-closed
-saturation behavior. Freeze a closed `Normal`/`Recovery`/`BreakGlass` budget
+attempt-rate and outstanding-authorization limits, plus canonical principal-or-
+authority/class limits, the minimum exact-outcome replay horizon, maximum hot-
+row/byte and compaction-backlog limits, checkpoint cadence, archival
+availability objective, alert thresholds, and fail-closed saturation behavior.
+Freeze the canonical principal/authority budget key and anti-identity-splitting
+rule; every caller sub-limit is additive to, never a replacement for, deployment
+and issuer/class ceilings. Freeze a closed `Normal`/`Recovery`/`BreakGlass` budget
 class with independent rate and outstanding counters, a small per-deployment
 non-borrowable break-glass reserve, and a non-borrowable recovery-processing
 lane. Freeze exact reserve/counter sizes and ceilings. Neither normal nor break-
@@ -316,7 +319,15 @@ glass may borrow from the other, and emergency issuance never bypasses trusted
 time, quorum/SoD, canonical receipt, single consumption, deadline CAS, replay
 proof, or archive/checkpoint ambiguity. Select one project-owned, versioned canonical
 authenticated-set/checkpoint construction and key-rotation profile. Every
-issuance gets a monotonic sequence. Checkpoint installation and the applicable
+issuance freezes one local atomic VIT-INV-061 transaction for quota validation,
+all layered counter mutations, outstanding reservation, monotonic sequence,
+canonical receipt, request-digest-bound idempotent result, and issuance outbox.
+Freeze `OutstandingReserved` -> `OutstandingReleased` as an exactly-once
+issuer-owned settlement keyed by stable settlement ID and authenticated terminal
+evidence. Client timeout/cancellation/disconnect, unknown response, retry,
+replay, compaction, or unauthenticated consumer observation never releases
+capacity; duplicate/reordered terminal evidence never decrements twice.
+Checkpoint installation and the applicable
 issuer-dense or proven consumer-eligible watermark advance precede hot
 deletion; exact replay after the horizon requires authenticated archive
 evidence; and missing proof blocks the affected issuance key/range rather than
@@ -333,7 +344,16 @@ permanently-unresolved state for every locally known member. Freeze the
 manifest's deployment/issuer/fence/key/range/ordered sequence/receipt digest/
 deadline/uncertainty/predecessor/authentication fields. It is evidence, not
 cross-owner authority. Any gap, unavailable manifest, or failed time proof
-keeps the consumer sparse. The global, rollout, topology, and local update
+keeps the consumer sparse. Freeze `TopologyAuthorizationIssuedRangeManifestV1`
+as a bounded root plus predecessor-linked
+`TopologyAuthorizationIssuedRangeChunkV1`: exact maximum root/chunk encoded
+bytes, entries and chunks per manifest, entries per chunk, canonical decode
+allocations, verification work per step/job, proof depth, roots/chunks per job,
+durable verification-cursor schema, and
+root/chunk/ordinal/subrange/entry-count/chunk-count/terminal-marker bindings.
+Oversize or over-budget input rejects before entry allocation; partial,
+truncated, cyclic, reordered, duplicated, overlapping, substituted, or mixed-
+profile chains remain sparse. The global, rollout, topology, and local update
 domains cannot share an authority row. Discovery/orchestrator state is
 non-authoritative.
 Planning-superset storage is non-authoritative and physically/logically
@@ -432,7 +452,13 @@ incomplete/overlapping issuer manifests, deadline/horizon boundaries, and
 permanently-unresolved seals. Exhaust normal capacity and prove one valid
 reserved break-glass issuance; flood break-glass and prove its ceiling,
 non-borrowing, and zero delay to revocation/recovery. Archive/checkpoint outage
-or compaction saturation never becomes an anti-replay exemption.
+or compaction saturation never becomes an anti-replay exemption. Crash between
+every issuance write and prove all-or-nothing state; preserve reservations over
+timeouts and settle terminal evidence exactly once under duplicate/reorder.
+Exhaust one caller sub-limit while other callers and aggregate ceilings remain
+correct. Fuzz declared lengths/counts, decode allocation, work, depth, chunk
+chain/root bindings and verification-cursor recovery without unbounded CPU or
+memory.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
 requires a distributed work transaction are rejected, not relabeled supported.
 `v0.140.2 implementation stop reached. Run pentest for this exact commit.`
@@ -657,7 +683,9 @@ forbidden in the long-lived accumulator/checkpoint.
 Apply the same minimization to issuer range manifests: retain only sequence,
 receipt digest, deadline/uncertainty, lineage/fence/key and predecessor evidence
 needed for consumer gap proof; principal, approval, incident and receipt
-plaintext remain outside the long-lived manifest.
+plaintext remain outside the long-lived manifest. Chunk roots, ordinals,
+subranges, counts, verification cursor, and resource-budget evidence reveal no
+caller identity and cannot become a secondary activity log.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
 evidence custody, false equivalence between local proof/provider attestation/
@@ -739,6 +767,14 @@ tombstones. Issuer or consumer failover, NTP steps, suspend/resume, snapshot
 restore, and cross-region disagreement may deny or shorten a receipt but never
 extend it; an expiry-versus-topology-CAS race must produce either one proven
 pre-expiry commit or a non-retryable reconciliation state.
+Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
+principal budget keys and counters, outstanding reservation/terminal settlement
+ledger, bounded range roots/chunks/resource profile, and durable verification
+cursor as one failover domain per issuer. RPO may conservatively retain a
+reservation or repeat bounded verification, but cannot expose a partial
+issuance, release from timeout, decrement twice, widen a caller/class ceiling,
+or reset byte/entry/decode/work/depth accounting. Cross-region range evidence
+remains non-authoritative until the complete authenticated chain verifies.
 It resolves `VIT-LAW-006` end to end on every failover path: no node may claim
 transmission start unless it can recheck the exact independent authority,
 target, provider, capability, lease/claimant, time, and quota roots, while
@@ -965,7 +1001,10 @@ revalidation, missing recovery deadline escalation,
 stale transfer-transition tenant/principal/policy authority,
 incompatible active/active topology,
 provider-outage tenant exhaustion, one-tenant unknown-outcome floods, per-
-tenant/global starvation, emergency-reserve borrowing, degraded dependencies,
+tenant/global starvation, emergency-reserve borrowing, split issuance bundle,
+timeout/forged/duplicate terminal settlement, caller-budget-key substitution,
+range chunk truncation/cycle/substitution, verification-work/depth/cursor
+rollback, degraded dependencies,
 restore, capacity, and incident operations.
 Exit criteria: every `1.0.0` deployment claim maps to a Phase O test profile;
 all ten option-decision authority reviews are resolved and no proposed

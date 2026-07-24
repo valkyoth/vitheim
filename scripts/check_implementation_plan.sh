@@ -349,6 +349,15 @@ require_text docs/implementation/PHASE_C.md \
 require_text docs/implementation/PHASE_C.md \
     'independent rate/outstanding counters; a small per-deployment break-glass' \
     'isolated topology emergency capacity'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationOutstandingReservation` creation' \
+    'atomic topology authorization issuance reservation'
+require_text docs/implementation/PHASE_C.md \
+    '`OutstandingReserved` to `OutstandingReleased`' \
+    'exact-once topology reservation settlement'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationIssuedRangeChunkV1`' \
+    'resource-bounded topology range chunks'
 require_text docs/implementation/OPTION_DECISIONS.md \
     'attempt-rate and outstanding-authorization limits' \
     'production topology replay horizon decision'
