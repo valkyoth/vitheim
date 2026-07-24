@@ -628,15 +628,17 @@ state.
 
 Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityLedgerV1`
-and versioned reservation set. Creation atomically locks replay head ->
-key/attempt -> attempt-capacity -> profile/fence/domain rows, rechecks head/
-profile, reserves original active/terminal/terminalization/checkpoint/cleanup/
-deletion buckets, inserts the one nonterminal attempt and commits all-or-none.
+and versioned reservation set. Creation atomically locks replay head -> optional
+settlement head -> key/attempt -> attempt-capacity -> profile/fence/domain rows,
+rechecks head/profile, reserves original active/terminal/terminalization/
+checkpoint/cleanup/deletion buckets, inserts the one nonterminal attempt and
+commits all-or-none.
 Identical joins persist no waiter and allocate no row, budget or reservation;
 polling/connection resources remain separately bounded.
 
-Every transition uses that lock order. Success rechecks Active, key/digest,
-owner/boot, lease/fence/CAS, deadline, cumulative budget, authoritative head
+Every transition uses that order and locks the settlement head between replay
+head and key when settlement state is touched. Success rechecks Active, key/
+digest, owner/boot, lease/fence/CAS, deadline, cumulative budget, authoritative head
 and profile/fence/domain authority before co-committing success, replay/result,
 domain/audit/outbox and active-to-terminal transfer. No-write terminalization
 atomically performs the same original-bucket transfer. Profile/policy changes,
@@ -653,6 +655,30 @@ row/byte and cleanup/deletion reservations. Physical envelope deletion settles
 those remaining legs exactly once; checkpoint occupancy remains in the archive
 ledger. Duplicate/reordered/unknown responses replay or reconcile the stable
 settlement result and cannot decrement twice.
+
+Reuse the existing authenticated sparse archive/publication machinery under a
+domain-separated settlement namespace. Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementCheckpointV1`,
+settlement archive entry and settlement replay head. Physical deletion locks
+replay head -> settlement head -> key/attempt -> capacity -> profile/fence/
+domain and atomically deletes the envelope, decrements the original bucket,
+writes the immutable settlement and advances its non-wrapping predecessor-
+linked checkpoint/head.
+
+Exact duplicate after hot-row deletion returns the archived result without
+decrement. Changed settlement/reservation-set ID, leg, bucket/quantity, trigger
+or result returns typed settlement conflict. Settlement rows delete only after
+Staged -> Verified -> CommittedHead -> HotRowsDeleted publication and exact-row
+local deletion. Greatest settlement head plus hot rows is authoritative;
+coalescing preserves exact sparse IDs and settled-leg tombstones. Missing,
+forked, rolled-back or unverifiable history returns typed settlement-
+historical-state-unavailable and retains the conservative charge.
+
+Freeze settlement row/byte/checkpoint/archive/proof/backlog/worker bounds and
+protected Recovery reservations. Recovery and migration preserve greatest
+settlement head, root/predecessor/key/publication/hot-row/cursor state, exact
+settled-leg tombstones and original-bucket balances. Dense high-watermark
+inference over arbitrary settlement IDs is forbidden.
 
 Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`

@@ -283,7 +283,8 @@ or no-write audit link; only then may cleanup remove the envelope, never replay-
 critical state.
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityLedgerV1`
 atomically creates the attempt and complete original reservation set under
-head -> key/attempt -> capacity -> profile/fence/domain locking. Identical joins
+replay head -> optional settlement head -> key/attempt -> capacity -> profile/
+fence/domain locking. Identical joins
 persist no waiter and allocate no row, budget or reservation. Every transition
 uses the same order. Success rechecks Active, key/digest, owner/boot, lease/
 fence/CAS, deadline, cumulative budget, head and domain authority before one
@@ -298,6 +299,17 @@ terminalization/backlog work but retain envelope/cleanup/deletion capacity;
 physical envelope deletion settles those legs. Duplicate, reordered and
 unknown outcomes replay/reconcile the settlement record; checkpoint occupancy
 remains charged to its archive ledger.
+Reuse the authenticated sparse archive/publication implementation for a domain-
+separated settlement checkpoint, archive entry and replay head. Physical
+deletion atomically locks replay head -> settlement head -> key/attempt ->
+capacity -> domain, deletes the envelope, decrements the original bucket,
+writes the immutable settlement and advances the predecessor-linked head.
+Exact duplicate after hot-row compaction returns the archived result; changed
+settlement bytes conflict. Settlement rows delete only after authenticated
+publication; greatest head plus hot rows is authority, coalescing preserves
+exact IDs/tombstones, and missing/forked/rolled-back/unverifiable history
+retains the charge. Settlement storage/proof/backlog/workers are bounded and
+protected for Recovery.
 Entering pending drain persists
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 predecessor/successor generations and digests, canonically derived affected
@@ -347,7 +359,10 @@ the activation-selected active profile, optional pending successor/exact
 fence, lineage-generation high-watermark, and activation-sequence
 high-watermark, replay-attempt lifecycle/owner/lease/fence/CAS, counters/
 deadline, reservations/backlogs, terminal checkpoint/links, reservation-set
-original buckets/balances/transfers and settlement leg/result records; it verifies the
+original buckets/balances/transfers, settlement leg/result records, greatest
+committed settlement head, predecessor/root/key/publication and covered-hot-row
+state, verification cursor, exact settled-leg tombstones and conservative
+capacity balances; it verifies the
 derived lane/aggregate coverage. Multiple
 active profiles, pending/fence half-state, contradictory activation records,
 unreachable predecessors, activation gaps/forks/reordering/duplicate
@@ -1715,6 +1730,11 @@ settlement/response boundary. Require all-or-none creation, reservation-free
 join, fixed ordering, pre-success fence/deadline/budget/head recheck, original-
 bucket transfer, distinct checkpoint-versus-delete releases, exact-once
 settlement and profile-change conservation.
+Exercise response loss after deletion settlement, retry after envelope deletion
+and after settlement compaction, substitution of every settlement binding,
+checkpoint/head fork/rollback, archive/key/chunk loss, exact sparse coalescing,
+all settlement capacity bounds, restore and cross-backend migration. Historical
+proof failure must retain capacity and never permit another decrement.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 

@@ -26,6 +26,9 @@ All notable Vitheim changes are documented here. The format follows
 - Defined the transactional attempt-capacity ledger, global lock order,
   original reservation buckets, atomic active-to-terminal transfers, and
   exact-once checkpoint/deletion settlement.
+- Added bounded authenticated sparse retention for physical-deletion settlement
+  evidence, preserving exact duplicate results and conservative capacity across
+  hot-row compaction, restore, and migration.
 - Selected bounded authenticated sparse archives for exact drain-action replay
   after compaction, with canonical result recovery, historical conflicts,
   resource-bounded proof verification, and fail-closed unavailable history.

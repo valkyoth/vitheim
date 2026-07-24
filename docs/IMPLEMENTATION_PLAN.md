@@ -201,11 +201,17 @@ atomic with the replay/action bundle and no-write terminals are irreversible.
 Attempt rows/bytes/queues/principals/takeover/terminalization/cleanup are
 bounded and reserved, with checkpoint-gated cleanup preserving replay state. A
 transactional capacity ledger atomically reserves the complete original set
-and creates the attempt under fixed head/key/capacity/domain lock order; joins
+and creates the attempt under fixed replay-head/optional-settlement-head/key/
+capacity/domain lock order; joins
 allocate nothing. Success rechecks fence/deadline/budget/head and transfers
 active-to-terminal with the action bundle. Stable settlement IDs release
 checkpoint and physical-envelope legs separately and exactly once, never from
 current-profile recomputation. A
+domain-separated settlement head reuses the authenticated sparse archive and
+publication protocol so physical-deletion settlement evidence remains exact
+after hot-row compaction. Exact retry returns the archived result, changed
+bytes conflict, and unavailable proof retains capacity. Exact-ID tombstones,
+bounds, recovery and migration replace any dense inference or permanent rows. A
 once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance

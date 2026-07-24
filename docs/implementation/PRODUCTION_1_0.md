@@ -236,7 +236,8 @@ row or no-write audit link before envelope-only cleanup. Replay-critical state
 cannot be removed.
 Production freezes
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityLedgerV1`.
-Creation locks head -> key/attempt -> capacity -> profile/fence/domain, reserves
+Creation locks replay head -> optional settlement head -> key/attempt ->
+capacity -> profile/fence/domain, reserves
 the complete original active/terminal/terminalization/checkpoint/cleanup/
 deletion set, inserts the attempt and commits all-or-none. Identical joins
 persist no waiter and allocate no row, budget or reservation. Every transition
@@ -253,6 +254,17 @@ terminalization/checkpoint backlog but retains envelope/cleanup/deletion
 capacity; physical deletion settles those remaining legs. Duplicate/reordered/
 unknown outcomes replay or reconcile the stable result, and checkpoint
 occupancy remains charged to its archive ledger.
+Production reuses the authenticated sparse archive/publication mechanism under
+a domain-separated settlement checkpoint/archive/head. Physical deletion
+atomically locks replay head -> settlement head -> key/attempt -> capacity ->
+domain, deletes the envelope, decrements the original bucket, records the
+settlement and advances the predecessor-linked head. Exact duplicate after
+settlement compaction returns the archived result; changed settlement bytes
+conflict. Settlement hot rows delete only after authenticated publication.
+Greatest head plus hot rows is authority, coalescing preserves exact IDs/
+tombstones, and missing/forked/rolled-back/unverifiable history retains the
+capacity charge. Settlement rows/bytes/checkpoints/archive/proof/backlog/
+workers are bounded with protected Recovery capacity.
 `PendingDrain` atomically installs a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` binding
 predecessor/successor generations and digests, canonically derived affected
@@ -303,7 +315,9 @@ lineage-generation and activation-sequence high-watermarks, cumulative replay-
 head/publication high-watermarks, attempt lifecycle/owner/lease/fence/CAS,
 counters/deadline, reservations/backlogs, terminal checkpoint/links,
 reservation-set original buckets/balances/transfers and settlement leg/result
-records, and
+records, greatest committed settlement head, predecessor/root/key/publication
+and covered-hot-row state, verification cursor, exact settled-leg tombstones,
+conservative capacity balances, and
 verified derived lane/aggregate coverage. Multiple active profiles, pending/fence
 half-state, contradictory activation records, unreachable predecessors, or
 direct fence install/clear invocation deny. Activation gaps, forks, reorder,
@@ -457,6 +471,10 @@ crashes around every capacity lock/reservation/insert/transition/bundle/
 transfer/checkpoint/delete/settlement/response boundary, duplicate/reordered/
 unknown settlements, join allocation attempts, expired/stale-owner execution
 races and capacity-profile changes across every lifecycle stage,
+lost deletion-settlement responses, duplicate retry after envelope removal and
+after settlement compaction, settlement-binding substitution, head/checkpoint
+fork/rollback, archive/key/chunk loss, dense-ID inference, every settlement
+bound, restore and cross-backend migration after physical deletion,
 continuous traffic during shrink, admission/fence-install and final-admission/
 activation races, rejection-versus-admission, installed-fence crash/failover/
 restore, stale-worker bypass, and competing successors, lineage change before a receipt

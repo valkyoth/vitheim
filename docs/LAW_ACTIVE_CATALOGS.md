@@ -574,6 +574,17 @@ Checkpoint settles terminalization/backlog but not the envelope; physical
 deletion settles envelope/cleanup/deletion. Duplicate/reordered/unknown
 outcomes reconcile without double decrement, while checkpoint/archive
 occupancy stays charged.
+Deletion settlements reuse the domain-separated authenticated sparse archive/
+publication machinery. Physical deletion locks replay head -> settlement head
+-> key/attempt -> capacity -> domain and atomically deletes the envelope,
+decrements the original bucket, writes the settlement and advances its
+predecessor-linked checkpoint/head. Exact duplicate after hot-row compaction
+returns the archived result; changed settlement bindings conflict. Settlement
+rows delete only after authenticated publication. Greatest head plus hot rows
+is authority, exact sparse tombstones survive coalescing, dense inference is
+forbidden, and unavailable history conservatively retains capacity. Settlement
+rows/bytes/checkpoints/archive/proof/backlog/workers are bounded with Recovery
+protection.
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 bounds bytes/entries/chunks/depth/decode/work/jobs and a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
@@ -629,6 +640,8 @@ checkpoint/key/cursor state, cumulative replay-head/publication high-watermarks,
 canonical replay-key uniqueness state, logical-attempt restart counters/
 deadline, attempt lifecycle/owner/lease/fence/capacity/checkpoint state,
 reservation-set/settlement-leg high-watermarks and original-bucket balances,
+settlement replay-head/predecessor/root/key/publication/hot-row/cursor state
+and exact settled-leg tombstones,
 fairness-scheduler state, and verified derived coverage. Late exact retry
 returns the archived result, changed retry returns historical conflict, and
 unavailable proof returns typed historical-state-unavailable without
