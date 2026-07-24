@@ -530,13 +530,39 @@ IDs. Missing history returns
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainHistoricalStateUnavailable`
 without execution.
 
+Freeze one authoritative cumulative
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayHeadV1`
+per tenant/deployment scope with non-wrapping sequence, predecessor-head
+digest, cumulative sparse root, scope, expected-version CAS, encoding/key
+epoch, publication identity and covered hot-row version. Non-membership is
+verified only against the greatest committed head plus current hot rows under
+the same head/scope version; individual archives, checkpoints, stale heads and
+head roots alone are insufficient.
+
+Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayArchivePublicationV1`
+as `Staged` -> `Verified` -> `CommittedHead` -> `HotRowsDeleted` ->
+`OrphanGcEligible`. Upload immutable content-addressed chunks before the local
+database commit. Staged/verified/orphan artifacts are non-authoritative and
+readers ignore them. After content, key, durable visibility, budget and covered
+row verification, one local expected-version transaction installs the
+cumulative head and deletes exactly the covered hot rows; committed-head and
+deletion are never separately visible. Unknown upload/visibility/verification
+retains hot rows. Unknown local-commit response re-reads the exact
+transaction/head and finds either the complete bundle or unchanged hot state.
+Orphan cleanup requires proof that no committed head references the chunks or
+that a later cumulative head preserves equivalent entries/results. Coalescing
+creates a successor cumulative head. No database/object-store distributed
+transaction is assumed.
+
 Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 and
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
 with maximum encoded bytes, entries, chunks, proof depth, decode allocation,
 verification work and concurrent jobs. Checkpoint/archive commitment,
-high-watermarks/cursor and hot deletion are one transaction after durable
+high-watermarks/cursor, committed-head CAS/publication evidence and exact hot
+deletion are one local database transaction after immutable upload and durable
 archive verification. Archive/key/chunk loss, outage, budget exhaustion or
 incomplete proof fails closed. Reserve bounded archive, verification, and
 backlog capacity from Recovery maintenance resources; saturation backpressures
@@ -610,8 +636,11 @@ active-row disagreement, absent checkpoints and rolled-back external
 time/key/consumption/result/activation high-watermarks. It additionally
 preserves the sparse checkpoint/archive root, complete result or authenticated
 reference, predecessor checkpoint, proof-budget profile, verification cursor,
-encoding/key epoch, availability evidence and membership/non-membership
-semantics. A digest/high-watermark cannot reconstruct a result or declare an
+encoding/key epoch, availability evidence, authoritative cumulative head
+sequence/predecessor/root/scope/version, publication identity/state, covered-
+row deletion evidence and membership/non-membership semantics against the
+greatest committed head plus current hot rows. A digest, individual checkpoint,
+stale head, or high-watermark cannot reconstruct a result or declare an
 arbitrary ID unseen; response loss after hot deletion resolves only to the
 archived result, historical conflict, or typed historical-state-unavailable.
 
@@ -619,7 +648,8 @@ Freeze recovery as
 `TopologyAuthorizationPresentationChargeLedgerCapacityRecoveryStateV1`:
 the active profile selected from the greatest authenticated committed
 activation record, optional pending successor, optional exact drain fence,
-lineage-generation high-watermark, and activation-sequence high-watermark.
+lineage-generation high-watermark, activation-sequence high-watermark, and
+cumulative replay-head/publication-state high-watermarks.
 Recover proposed and rejected higher generations as history, never activation;
 apply active and pending constraints jointly. Recompute the affected lanes and
 reduced aggregate dimensions and authenticate them against the fence.

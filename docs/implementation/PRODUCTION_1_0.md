@@ -171,6 +171,19 @@ without execution. Frozen proof budgets bound bytes/entries/chunks/depth/
 decode/work/jobs, a durable verification cursor resumes bounded work, and
 Recovery maintenance reservations backpressure new authority before archive
 permanence can be lost.
+One authoritative cumulative
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayHeadV1`
+per tenant/deployment binds non-wrapping sequence, predecessor/root/scope,
+expected-version CAS, key epoch, publication identity and covered-row version.
+Proofs target the greatest committed head plus current hot rows.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayArchivePublicationV1`
+uses only `Staged`, `Verified`, `CommittedHead`, `HotRowsDeleted`, and
+`OrphanGcEligible`. Immutable chunks upload and verify before one local
+database transaction CAS-installs the head and deletes exact covered rows.
+Readers ignore staged/verified/orphan data; unknown external publication keeps
+hot rows, unknown local commit reconciles the indivisible bundle, and orphan
+GC requires no committed reference or authenticated successor equivalence.
+Vitheim never assumes a database/object-store distributed transaction.
 `PendingDrain` atomically installs a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` binding
 predecessor/successor generations and digests, canonically derived affected
@@ -204,9 +217,11 @@ validated interval, signer/key epochs/authentication profile, and replay
 tombstones before record deletion. It also preserves sparse replay checkpoint/
 archive commitments, complete results or authenticated references,
 predecessor checkpoints, proof-budget profile, verification cursor,
-encoding/key epoch, archive availability and exact membership/non-membership
-semantics; digests/high-watermarks alone never reconstruct a result or prove an
-arbitrary ID unseen.
+encoding/key epoch, archive availability, cumulative head sequence/
+predecessor/root/scope/version, publication identity/state and covered-row
+deletion evidence. Membership/non-membership uses the greatest committed head
+plus current hot rows; individual archives, stale heads, digests and
+high-watermarks never prove an arbitrary ID unseen.
 Fence lifecycle helpers are not callable authority. The PendingDrain
 transaction emits
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`;
@@ -215,8 +230,9 @@ atomic activation or authorized rejection emits
 Recovery reconstructs
 `TopologyAuthorizationPresentationChargeLedgerCapacityRecoveryStateV1` with
 activation-selected active profile, optional pending successor/exact fence,
-lineage-generation and activation-sequence high-watermarks, and verified
-derived lane/aggregate coverage. Multiple active profiles, pending/fence
+lineage-generation and activation-sequence high-watermarks, cumulative replay-
+head/publication high-watermarks, and verified derived lane/aggregate
+coverage. Multiple active profiles, pending/fence
 half-state, contradictory activation records, unreachable predecessors, or
 direct fence install/clear invocation deny. Activation gaps, forks, reorder,
 duplicate sequences, active-row/record disagreement, missing checkpoints, and
@@ -348,6 +364,11 @@ archive outage, missing result reference/chunk/key, checkpoint fork, proof
 bytes/entries/chunks/depth/decode/work/jobs exhaustion, verification-cursor and
 compaction crashes, cross-backend migration, and any attempt to infer unseen
 authority from a dense watermark,
+new consumption racing compaction snapshot/upload/verification/head-CAS/delete,
+competing publishers, stale-head readers, head exhaustion/fork/predecessor/
+root/scope/version substitution, checkpoint coalescing, delayed object-store
+visibility, unknown upload/verify/local-commit results, staged/orphan reads,
+premature orphan cleanup and committed-head rollback,
 continuous traffic during shrink, admission/fence-install and final-admission/
 activation races, rejection-versus-admission, installed-fence crash/failover/
 restore, stale-worker bypass, and competing successors, lineage change before a receipt

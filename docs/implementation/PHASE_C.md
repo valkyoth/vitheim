@@ -436,15 +436,51 @@ historical conflict. Non-membership is valid only for the exact sparse
 authenticated set and never follows from an action, nonce, idempotency, or
 other dense high-watermark.
 
+Freeze exactly one authoritative cumulative
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayHeadV1`
+per tenant/deployment scope. It binds a non-wrapping head sequence,
+predecessor-head digest, cumulative sparse root digest, exact scope,
+expected-version CAS, encoding/key epoch, archive publication identity, and
+covered hot-row snapshot/version. Sequence exhaustion denies before
+publication and a head never forks, wraps, or reuses a sequence. Membership or
+non-membership is valid only against the greatest committed cumulative head
+plus current hot rows checked under the same head/scope version; an individual
+checkpoint/archive, stale reader head, or head root alone cannot prove
+non-membership.
+
+Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayArchivePublicationV1`
+with the closed lifecycle `Staged` -> `Verified` -> `CommittedHead` ->
+`HotRowsDeleted` -> `OrphanGcEligible`. Immutable content-addressed archive
+chunks are uploaded before the local database commit and are non-authoritative
+while staged. Verification authenticates every chunk/root/key, exact contents,
+durable visibility, proof-budget profile, and covered hot-row snapshot.
+Only then may one local expected-version transaction install the cumulative
+committed head and delete exactly its covered hot rows. `CommittedHead` and
+`HotRowsDeleted` are logically ordered but co-committed and never externally
+observable as head-without-deletion or deletion-without-head. Unknown upload,
+visibility, or verification outcome retains all hot rows. Unknown local-commit
+response reconciles the exact transaction/head identity: either the atomic
+head/delete bundle exists or the hot rows remain.
+
+Readers ignore `Staged`, `Verified`, and orphan publications and trust only the
+greatest cumulative committed head with its co-committed deletion evidence.
+`OrphanGcEligible` permits cleanup only when no committed head references the
+chunks or a later cumulative committed head has authenticated equivalent
+entries/results and retention/key policy permits deletion; garbage collection
+is never replay authority. Checkpoint coalescing creates a new cumulative head
+and cannot replace, fork, or weaken the current head. This protocol uses no
+database/object-store distributed transaction.
+
 Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 with exact maximum checkpoint/archive/root/chunk encoded bytes, entries and
 chunks, proof depth, decode allocation, verification work, roots/chunks per
 job, and concurrent jobs, plus durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`.
-Checkpoint installation, archive commitment, replay high-watermarks/cursor,
-and hot-row deletion commit in one transaction after the archive is
-authenticated and durably available. Missing/unverifiable history, key or
+After immutable chunk upload and verification, cumulative-head installation,
+replay high-watermarks/cursor, publication state, and exact hot-row deletion
+commit in one local database transaction. Missing/unverifiable history, key or
 chunk loss, archive outage, proof-budget exhaustion, or incomplete
 verification returns typed
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainHistoricalStateUnavailable`
@@ -535,8 +571,11 @@ validated interval; signer/key epochs and authentication profile; and every
 replay tombstone needed to prevent resurrection. It also commits the complete
 sparse replay checkpoint/archive root, entry/result or authenticated result
 reference, predecessor checkpoint, proof-budget profile, verification cursor,
-encoding/key epoch, archive availability evidence, and exact sparse
-membership/non-membership semantics. A digest or high-watermark alone is never
+encoding/key epoch, archive availability evidence, authoritative cumulative
+head sequence/predecessor/root/scope/version, publication identity/state and
+covered hot-row snapshot, and exact sparse membership/non-membership semantics
+over greatest committed head plus current hot rows. A digest, individual
+checkpoint, stale head, or high-watermark alone is never
 an exact-retry result or proof that an arbitrary ID was unseen. Checkpoint and
 archive publication precede deletion
 and local or external replicated time, key, consumption, result, and activation
@@ -561,7 +600,10 @@ activation record, an optional pending successor, its optional exact drain
 fence, the lineage-generation high-watermark, and the activation-sequence
 high-watermark plus drain-authorization consumption/result/time/key
 high-watermarks, replay tombstones, sparse replay checkpoint/archive roots,
-proof-budget profile, archive/key availability and verification cursor. Raw
+the greatest cumulative committed replay head and predecessor/sequence/scope/
+version high-watermarks, co-committed covered-hot-row deletion evidence,
+publication states, proof-budget profile, archive/key availability and
+verification cursor. Raw
 profile generation never implies activation. Rejected and
 unactivated proposed generations remain historical only. A recovered pending
 successor and fence are applied jointly to new admission; recovery recomputes
@@ -1238,6 +1280,15 @@ every checkpoint/archive/delete boundary, failover/restore, and cross-backend
 migration. Only the archived original result, historical conflict, or typed
 historical-state-unavailable is permitted; no dense watermark can establish an
 arbitrary ID as unseen.
+Race new consumption against snapshot, immutable chunk upload, verification,
+head CAS and exact hot-row deletion. Exercise stale-head readers, competing
+publishers, head sequence exhaustion/fork/predecessor/root/scope/version
+substitution, checkpoint coalescing, delayed object-store visibility, unknown
+upload/verification/local-commit responses, staged/orphan reads, orphan cleanup
+before and after successor publication, committed-head rollback, and crash at
+every publication-state edge. A stale or individual archive proof cannot
+authorize non-membership; staged/orphan chunks are ignored; unknown publication
+keeps hot state or reconciles the indivisible committed-head/delete bundle.
 Drive every
 permitted charge-disposition edge and reject undeclared edges, terminal-to-
 terminal substitution, terminal-to-awaiting rollback, timeout-derived

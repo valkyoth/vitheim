@@ -169,6 +169,15 @@ conflicts, and missing archive/key/chunk/proof returns typed historical-state-
 unavailable without execution. Bounded proof resources, a durable cursor,
 checkpoint-before-delete atomicity and reserved Recovery maintenance capacity
 make archive outage or saturation fail closed.
+Each tenant/deployment has one cumulative committed replay head with
+non-wrapping sequence, predecessor/root/scope and expected-version CAS.
+Non-membership is evaluated against the greatest committed head plus current
+hot rows. Immutable chunks are staged and verified first; one local database
+transaction installs the head and deletes exact covered rows. Readers ignore
+staged/verified/orphan data, unknown external publication retains hot rows,
+unknown local commit reconciles the indivisible bundle, and orphan cleanup
+requires no committed reference or an equivalent authenticated successor.
+This protocol never assumes a database/object-store distributed transaction.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again

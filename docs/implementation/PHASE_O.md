@@ -216,8 +216,19 @@ never a dense watermark inference. Missing archive/key/chunk/proof returns
 without execution. `...CapacityDrainReplayProofBudgetV1` bounds bytes, entries,
 chunks, depth, decode allocation, verification work and jobs; a durable
 `...CapacityDrainReplayVerificationCursor` makes verification restartable.
-Archive/checkpoint/cursor/delete is atomic and bounded Recovery maintenance
-capacity applies backpressure before replay permanence is endangered.
+One `...CapacityDrainAuthorizationReplayHeadV1` per tenant/deployment binds
+non-wrapping sequence, predecessor digest, cumulative root, scope, expected-
+version CAS, key epoch, publication identity and covered-row version. Proofs
+use the greatest committed head plus current hot rows.
+`...CapacityDrainReplayArchivePublicationV1` is closed `Staged` -> `Verified`
+-> `CommittedHead` -> `HotRowsDeleted` -> `OrphanGcEligible`. Immutable chunks
+upload and verify first; staged/verified/orphan data is ignored by readers.
+One local database transaction CAS-installs the cumulative head and deletes
+exactly covered hot rows. Unknown external publication retains hot rows;
+unknown local commit reconciles the whole bundle. Orphan GC requires no head
+reference or authenticated successor equivalence. There is no distributed
+transaction. Bounded Recovery maintenance capacity applies backpressure before
+replay permanence is endangered.
 Entering pending drain persists
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 predecessor/successor generations and digests, canonically derived affected
@@ -252,8 +263,11 @@ validated interval, signer/key epochs/authentication profile, and replay
 tombstones before record deletion. It also preserves the sparse replay
 checkpoint/archive commitment, complete result or authenticated reference,
 predecessor checkpoint, proof-budget profile, verification cursor,
-encoding/key epoch, availability evidence and exact membership/non-membership
-semantics. Digest or high-watermark alone is insufficient.
+encoding/key epoch, availability evidence, cumulative head sequence/
+predecessor/root/scope/version, publication state/identity and covered-row
+deletion evidence. Membership/non-membership targets the greatest committed
+head plus current hot rows; digest, individual archive, stale head or
+high-watermark alone is insufficient.
 Fence install/clear helpers are not commands:
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`
 occurs only in the atomic PendingDrain transaction and
@@ -1601,6 +1615,12 @@ reference/key/chunk loss, checkpoint fork, proof bytes/entries/chunks/depth/
 decode/work/jobs exhaustion, cursor crash, compaction crash and cross-backend
 migration. Accept only archived result, historical conflict or typed
 historical-state-unavailable, never execution from missing history.
+Race consumption with compaction snapshot/upload/verification/head CAS/delete;
+exercise competing publishers, stale-head readers, head exhaustion/fork/
+predecessor/root/scope/version substitution, coalescing, delayed visibility,
+unknown upload/verify/local-commit outcomes, staged/orphan reads, premature
+orphan GC and committed-head rollback. Only the greatest cumulative committed
+head plus current hot rows is authoritative.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 

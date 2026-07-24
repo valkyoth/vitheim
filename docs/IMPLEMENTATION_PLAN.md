@@ -177,6 +177,12 @@ forbidden. Archive exact results or authenticated result references with
 request/lifecycle/scope/predecessor/key commitments, bounded proof work and a
 durable cursor. Late exact retry returns the archived result, changed retry
 conflicts, and missing/unverifiable history fails closed without execution. A
+single cumulative head per tenant/deployment orders archive roots with a non-
+wrapping predecessor chain and CAS. Proofs use its greatest committed value
+plus current hot rows. Immutable chunks stage and verify before one local head-
+CAS/exact-delete transaction; readers ignore noncommitted publications,
+unknown external outcomes preserve hot state, local unknowns reconcile the
+atomic bundle, and fenced orphan cleanup assumes no distributed transaction. A
 once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance

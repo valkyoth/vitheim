@@ -130,6 +130,13 @@ audit decision.
   retention or arbitrary-ID dense-watermark inference; unavailable archive,
   key, chunk or proof fails closed without execution under reserved Recovery
   maintenance capacity;
+  one cumulative non-wrapping predecessor-linked replay head per tenant/
+  deployment, with non-membership checked against its greatest committed root
+  plus current hot rows; staged immutable upload and verification followed by
+  one local head-CAS/exact-hot-delete transaction; readers ignore staged/
+  verified/orphan data, unknown external outcomes retain hot state, local
+  unknowns reconcile the bundle, and orphan GC requires no committed reference
+  or authenticated successor equivalence without a distributed transaction;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

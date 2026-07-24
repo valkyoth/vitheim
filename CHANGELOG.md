@@ -8,6 +8,9 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added a cumulative per-scope drain-replay head and staged immutable archive
+  publication protocol, preventing stale-checkpoint non-membership proofs and
+  avoiding any database/object-store distributed-transaction assumption.
 - Selected bounded authenticated sparse archives for exact drain-action replay
   after compaction, with canonical result recovery, historical conflicts,
   resource-bounded proof verification, and fail-closed unavailable history.

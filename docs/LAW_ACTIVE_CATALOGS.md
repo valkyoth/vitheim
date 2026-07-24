@@ -498,10 +498,25 @@ non-membership is never inferred from a dense watermark. Missing history
 returns
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainHistoricalStateUnavailable`
 without execution.
+One authoritative cumulative
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayHeadV1`
+per tenant/deployment binds non-wrapping sequence, predecessor/root/scope,
+expected-version CAS, key epoch, publication identity and covered-row version.
+Proofs use the greatest committed head plus current hot rows; individual
+archives/checkpoints, stale heads and roots alone cannot prove non-membership.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayArchivePublicationV1`
+has only Staged, Verified, CommittedHead, HotRowsDeleted and OrphanGcEligible.
+Immutable chunks upload and verify before one local database transaction CAS-
+installs the head and deletes exact covered rows. Readers ignore staged/
+verified/orphan data. Unknown external publication retains hot rows; unknown
+local commit reconciles the indivisible bundle. Orphan GC requires no
+committed reference or authenticated successor equivalence. No distributed
+transaction is assumed.
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 bounds bytes/entries/chunks/depth/decode/work/jobs and a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
-resumes verification. Checkpoint/archive/cursor/delete commits atomically;
+resumes verification. After immutable chunk upload and verification, one local
+database transaction commits cumulative head/cursor/exact-delete;
 archive/key/chunk loss, outage, budget exhaustion or backlog saturation fails
 closed under reserved Recovery maintenance capacity.
 `PendingDrain` atomically installs
@@ -535,8 +550,11 @@ authorization/validation-evidence digests, trusted-time interval/profile/epoch,
 signer/key epochs/authentication profile and replay tombstones, plus the sparse
 checkpoint/archive root, complete result or authenticated reference,
 predecessor checkpoint, proof-budget profile, verification cursor,
-encoding/key epoch, availability evidence and exact membership/non-membership
-semantics. Digest or high-watermark alone is insufficient.
+encoding/key epoch, availability evidence, cumulative head sequence/
+predecessor/root/scope/version, publication identity/state and covered-row
+deletion evidence. Membership/non-membership targets the greatest committed
+head plus current hot rows; individual archive, stale head, digest or
+high-watermark alone is insufficient.
 Install/clear helpers are uncallable. PendingDrain emits atomic
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`;
 activation/rejection emits atomic
@@ -545,7 +563,8 @@ Recovery reconstructs
 `TopologyAuthorizationPresentationChargeLedgerCapacityRecoveryStateV1` with
 activation-selected active profile, optional pending successor/exact fence,
 lineage and activation high-watermarks, authorization sparse replay archive/
-checkpoint/key/cursor state, and verified derived coverage. Late exact retry
+checkpoint/key/cursor state, cumulative replay-head/publication high-watermarks,
+and verified derived coverage. Late exact retry
 returns the archived result, changed retry returns historical conflict, and
 unavailable proof returns typed historical-state-unavailable without
 execution.
