@@ -61,13 +61,27 @@ outstanding limits; a minimum exact-outcome horizon; bounded hot rows/bytes and
 compaction backlog; authenticated predecessor-linked checkpoints, set/archive
 commitments, key rotation and covered-through high-watermarks; and growth/
 proof-availability alerts. Compaction commits the checkpoint before deleting
-hot state. Replays within the horizon return the original typed outcome; older
+hot state. VIT-INV-061 owns a dense issued-through watermark and authenticated
+`TopologyAuthorizationIssuedRangeManifestV1`. VIT-INV-060 defaults to a sparse
+commitment and advances dense `ConsumerCompactionEligibleThrough` only after
+complete range evidence, conservative trusted-time proof that the horizon and
+all deadlines passed, and terminal/permanently-unresolved local members. A
+never-presented gap or first late presentation cannot become absent. Replays
+within the horizon return the original typed outcome; older
 replays return authenticated archival evidence or
 `TopologyAuthorizationHistoricalStateUnavailable`. Missing archive/proof state
 fails closed and never permits consumption, reissue, or inference of absence.
+The frozen budget has independent `Normal`, `Recovery`, and `BreakGlass`
+counters and rate ceilings, a small non-borrowable per-deployment break-glass
+reserve, and an independent recovery-processing lane. Normal exhaustion leaves
+the reserved emergency path; break-glass floods cannot borrow normal capacity
+or delay revocation/recovery. Emergency issuance retains every ordinary
+trusted-time, quorum/SoD, receipt, deadline-CAS, single-use and replay control,
+and missing historical proof still denies.
 Soak, HA, migration/import, and DR evidence proves bounded storage and no
 receipt resurrection across concurrent replay, checkpointing, key rotation,
-archive outage, crash, failover, or restore.
+archive outage, sparse gaps, range-manifest loss/forgery, late presentation,
+normal/break-glass saturation, crash, failover, or restore.
 The production risk register explicitly accepts only the residual window
 created by issuance-time linearization: compromised credentials may retain an
 already issued exact grant for at most its immutable class ceiling (never more

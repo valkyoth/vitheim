@@ -308,17 +308,34 @@ capability report must reject it. The same decision freezes
 attempt-rate and outstanding-authorization limits, the minimum exact-outcome
 replay horizon, maximum hot-row/byte and compaction-backlog limits, checkpoint
 cadence, archival availability objective, alert thresholds, and fail-closed
-saturation behavior. Select one project-owned, versioned canonical
+saturation behavior. Freeze a closed `Normal`/`Recovery`/`BreakGlass` budget
+class with independent rate and outstanding counters, a small per-deployment
+non-borrowable break-glass reserve, and a non-borrowable recovery-processing
+lane. Freeze exact reserve/counter sizes and ceilings. Neither normal nor break-
+glass may borrow from the other, and emergency issuance never bypasses trusted
+time, quorum/SoD, canonical receipt, single consumption, deadline CAS, replay
+proof, or archive/checkpoint ambiguity. Select one project-owned, versioned canonical
 authenticated-set/checkpoint construction and key-rotation profile. Every
-issuance gets a monotonic sequence; checkpoint installation and covered-through
-high-watermark advance before hot deletion; exact replay after the horizon
-requires authenticated archive evidence; and missing proof blocks the affected
-issuance key/range rather than making it unused. Freeze storage accounting for
-hot results, checkpoints, archives, proof indexes, outstanding grants, and
-compaction backlog. A backend that cannot prove bounded growth and anti-replay
-preservation refuses VIT-CAP-060/061. The
-global, rollout, topology, and local update domains cannot share an authority
-row. Discovery/orchestrator state is non-authoritative.
+issuance gets a monotonic sequence. Checkpoint installation and the applicable
+issuer-dense or proven consumer-eligible watermark advance precede hot
+deletion; exact replay after the horizon requires authenticated archive
+evidence; and missing proof blocks the affected issuance key/range rather than
+making it unused. Freeze storage accounting for hot results, checkpoints,
+archives, proof indexes, outstanding grants, and compaction backlog. A backend
+that cannot prove bounded growth and anti-replay preservation refuses
+VIT-CAP-060/061. The issuer checkpoint may use a dense allocated-sequence
+watermark. The consumer
+defaults to a sparse terminal-state commitment and may advance dense
+`ConsumerCompactionEligibleThrough` only with a complete authenticated
+`TopologyAuthorizationIssuedRangeManifestV1`, conservative proof that the
+exact replay horizon elapsed and every `commit_before` passed, and terminal or
+permanently-unresolved state for every locally known member. Freeze the
+manifest's deployment/issuer/fence/key/range/ordered sequence/receipt digest/
+deadline/uncertainty/predecessor/authentication fields. It is evidence, not
+cross-owner authority. Any gap, unavailable manifest, or failed time proof
+keeps the consumer sparse. The global, rollout, topology, and local update
+domains cannot share an authority row. Discovery/orchestrator state is
+non-authoritative.
 Planning-superset storage is non-authoritative and physically/logically
 distinguishable from active catalogs. No storage topology may make active trust
 reconstructible from the database after compiled/signed provenance is lost or
@@ -410,6 +427,12 @@ archive outage, key rotation, backup, restore, migration, and backend failover;
 prove no covered key becomes absent/reusable, exact outcomes remain guaranteed
 for the frozen horizon, unavailable historical evidence fails closed, and
 steady-state storage stays within the admitted model.
+Exercise sparse consumer histories and late first presentation, forged/
+incomplete/overlapping issuer manifests, deadline/horizon boundaries, and
+permanently-unresolved seals. Exhaust normal capacity and prove one valid
+reserved break-glass issuance; flood break-glass and prove its ceiling,
+non-borrowing, and zero delay to revocation/recovery. Archive/checkpoint outage
+or compaction saturation never becomes an anti-replay exemption.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
 requires a distributed work transaction are rejected, not relabeled supported.
 `v0.140.2 implementation stop reached. Run pentest for this exact commit.`
@@ -631,6 +654,10 @@ old replay outside the guaranteed exact-outcome horizon from exact outcome to
 `TopologyAuthorizationHistoricalStateUnavailable`, but never to absent,
 reissuable, or consumable. Sensitive fields and plaintext receipt payloads are
 forbidden in the long-lived accumulator/checkpoint.
+Apply the same minimization to issuer range manifests: retain only sequence,
+receipt digest, deadline/uncertainty, lineage/fence/key and predecessor evidence
+needed for consumer gap proof; principal, approval, incident and receipt
+plaintext remain outside the long-lived manifest.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
 evidence custody, false equivalence between local proof/provider attestation/

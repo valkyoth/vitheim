@@ -238,6 +238,18 @@ expect_realization_failure "a missing topology authorization replay checkpoint"
 sed -i 's/`TopologyAuthorizationHistoricalStateUnavailable`, //' "$realizations"
 expect_realization_failure "a missing unavailable historical-state denial"
 
+sed -i 's/`TopologyAuthorizationIssuedRangeManifestV1`, //' "$realizations"
+expect_realization_failure "a missing topology authorization issuer range manifest"
+
+sed -i 's/`ConsumerCompactionEligibleThrough`, //' "$realizations"
+expect_realization_failure "a missing consumer compaction eligibility proof"
+
+sed -i 's/`TopologyAuthorizationBreakGlassReserve`, //' "$realizations"
+expect_realization_failure "a missing topology authorization break-glass reserve"
+
+sed -i 's/`RejectLateCompactedTopologyAuthorization`, //' "$realizations"
+expect_realization_failure "a missing late compacted authorization rejection"
+
 sed -i 's/, VIT-LST-001-g01-N//' "$realizations"
 expect_realization_failure "a missing negative semantic contract"
 

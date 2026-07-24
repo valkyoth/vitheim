@@ -73,6 +73,14 @@ linked checkpoint advances a covered-through high-watermark before compaction.
 Compacted state is permanently historical. Missing archive or set proof returns
 typed unavailable-history denial and can never become absence, reissue, or
 reconsumption; checkpoint/key/sequence ratchets survive migration and restore.
+Only VIT-INV-061 naturally owns a dense allocated-sequence watermark. VIT-INV-
+060 is sparse by default and advances a dense consumer marker only from a
+complete authenticated issuer range manifest plus trusted-time proof that the
+replay horizon and every receipt deadline passed; late first presentation
+remains expired/historical. Issuance budgets separate normal, recovery, and
+break-glass counters with a non-borrowable emergency reserve and independent
+ceilings; this protects repair availability without bypassing authorization,
+deadline, or replay proof.
 Later authority changes block new grants rather than pretending to atomically
 revoke the already issued bounded grant across transaction domains. Once committed,
 `VIT-LAW-007@g02` makes current topology a normal admission, readiness,

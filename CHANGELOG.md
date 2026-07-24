@@ -8,6 +8,9 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Refined topology anti-replay compaction with issuer-authenticated range
+  manifests, sparse-by-default consumer commitments, deadline/time-gated dense
+  eligibility, and non-borrowable normal/recovery/break-glass issuance budgets.
 - Added a bounded topology-authorization anti-replay lifecycle with pre-
   allocation quotas, exact replay horizons, authenticated archival checkpoints,
   monotonic compaction high-watermarks, fail-closed unavailable-history

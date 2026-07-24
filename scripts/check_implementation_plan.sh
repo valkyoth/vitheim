@@ -340,6 +340,15 @@ require_text docs/implementation/PHASE_C.md \
 require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationHistoricalStateUnavailable`' \
     'fail-closed unavailable historical state'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationIssuedRangeManifestV1`' \
+    'authenticated issuer range evidence'
+require_text docs/implementation/PHASE_C.md \
+    '`ConsumerCompactionEligibleThrough`' \
+    'proven consumer dense-compaction eligibility'
+require_text docs/implementation/PHASE_C.md \
+    'independent rate/outstanding counters; a small per-deployment break-glass' \
+    'isolated topology emergency capacity'
 require_text docs/implementation/OPTION_DECISIONS.md \
     'attempt-rate and outstanding-authorization limits' \
     'production topology replay horizon decision'

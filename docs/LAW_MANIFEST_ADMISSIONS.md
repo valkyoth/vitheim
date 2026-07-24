@@ -35,7 +35,7 @@ Planning catalog revision: `1`
 
 Trust profile: `planning-superset-not-runtime-v1`
 
-Planning catalog digest: `sha256:6f38d540fc72c92304965af8a16900cd97496a265ed6ef0ab13f874de9543d98`
+Planning catalog digest: `sha256:7dbb1f09cb40534806391563c812a138703a6f74ad41e9793bc8be5d30a6db68`
 
 The planning-catalog digest uses the length-prefixed encoding defined by
 `docs/LAW_GENERATION_MANIFEST.md`. Encode, in order, the ASCII format literal
@@ -78,7 +78,7 @@ Markdown presentation are excluded.
 | VIT-LAW-007@g01 | sha256:d36ba8b53e831437107f1f78610dfa889ccdfdd9288a58f90b01affb4caee5d7 |
 | VIT-LAW-007@g02 | sha256:ab2dcb2593e25d58ec06dbd4f6add9789cdef308281efa9876241295ec2148b2 |
 | VIT-LAW-008@g01 | sha256:108df80613c6b4fc288a343ae04a81c90f6d3a403a1ea3c01d0c230cac5052e3 |
-| VIT-LAW-008@g02 | sha256:e26a5566a8a08c96b263356e60e7145a8533f4ef731acca5d822f9bdfa9e3bb9 |
+| VIT-LAW-008@g02 | sha256:ed7010b33981597a27c3c3a343cb74c074cc432f1be95abcefd2c26c66466d45 |
 
 `0.18.3` implements planning-superset validation and generation of the first
 active activation-floor catalog. Each later law-effective milestone generates

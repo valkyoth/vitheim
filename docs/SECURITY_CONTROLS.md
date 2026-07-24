@@ -64,6 +64,11 @@ audit decision.
   authenticated checkpoint/archive commitments, checkpoint-before-delete
   compaction, fail-closed unavailable history, key/restore ratchets, and
   storage/backlog accounting and alerts;
+  issuer-authenticated complete sequence/deadline range manifests, sparse-by-
+  default consumer commitments, trusted-time/deadline-gated dense consumer
+  eligibility, late-presentation denial, and separate non-borrowable normal/
+  recovery/break-glass rate/outstanding counters and reserve with no emergency
+  exemption from authorization, deadline, or replay controls;
   profile-discriminated authorization locally
   consumed with the successor, applicable workload proof, tombstones, and fence
   outbox without cross-owner atomicity; challenge/sequence/expiry topology

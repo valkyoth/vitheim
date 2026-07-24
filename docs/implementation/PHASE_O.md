@@ -101,12 +101,26 @@ the orchestrator profile's required action claim from hardware profile's
 canonical-none claim and required hardware proof.
 VIT-INV-061 assigns every allocation a monotonic
 `AuthorizationIssuanceSequence` and applies the frozen per-deployment and
-issuer/class rate/outstanding budget before allocating durable authority.
+issuer/class rate/outstanding budget before allocating durable authority. The
+closed `Normal`/`Recovery`/`BreakGlass` classes have independent counters and
+ceilings; the small break-glass reserve and recovery-processing lane are non-
+borrowable. Normal exhaustion can therefore leave one valid emergency path,
+while break-glass flooding cannot consume normal capacity or delay revocation/
+recovery. The reserve never bypasses trusted time, quorum/SoD, canonical
+receipt, deadline CAS, single consumption, replay proof, or archive/checkpoint
+ambiguity.
 VIT-INV-060 and VIT-INV-061 implement
 `TopologyAuthorizationReplayLifecycleV1`: exact hot replay through the frozen
 horizon, authenticated predecessor-linked checkpoint and archival commitments,
-atomic covered-through high-watermark before hot deletion, and bounded
-compaction/backpressure. A compacted receipt remains permanently historical.
+and bounded compaction/backpressure. VIT-INV-061 may advance its dense issued-
+through watermark because it owns allocation. VIT-INV-060 defaults to a sparse
+terminal-state commitment because receipts may never be presented. It advances
+`ConsumerCompactionEligibleThrough` only with a complete authenticated
+`TopologyAuthorizationIssuedRangeManifestV1`, trusted-time proof that the
+horizon and every deadline passed, and terminal or permanently-unresolved local
+members. The issuer manifest is evidence, not cross-owner authority. A
+compacted receipt remains permanently historical, including a first
+presentation after compaction.
 If an old outcome or membership/non-membership proof cannot be authenticated,
 `TopologyAuthorizationHistoricalStateUnavailable` denies consumption and
 ambiguous-key issuance; it never means unused. Checkpoint key rotation,
@@ -135,7 +149,9 @@ lineage/issuance/recovery adapter; generation-2 law realizations/catalog
 artifact; canonical `TopologyMutationAuthorizationReceiptV1` codec;
 deadline-conditional topology-CAS backend probe/result ledger;
 replay-lifecycle budgets, exact-horizon hot store, authenticated checkpoint/
-archive proof and compactor, storage-growth metrics/alerts;
+archive proof and compactor, issuer range-manifest publisher/verifier, consumer
+sparse/eligible-dense state, separate budget counters/reserve/recovery lane,
+storage-growth metrics/alerts;
 challenge/currentness ratchet probe; and runbook.
 Verification: clean
 install, permissions, rootless/non-root, secrets, restart, rolling upgrade,
@@ -178,7 +194,10 @@ race; pauses after locks/time/before CAS/during commit/client timeout/response
 loss; attempted late commit; mechanism downgrade; topology-owner/backend
 failover; replay-horizon boundary, quota saturation, concurrent replay during
 checkpoint/install/delete, compaction crash/restart, archive/proof outage,
-checkpoint/key rotation, bounded-growth saturation; older restore; and crash-
+checkpoint/key rotation, sparse sequence gaps, forged/incomplete range manifest,
+late first presentation, deadline/horizon eligibility, permanently-unresolved
+seal, normal exhaustion with reserved break-glass success, break-glass flood
+isolation, bounded-growth saturation; older restore; and crash-
 tests local
 receipt/workload-proof/CAS consumption without claiming
 cross-owner atomicity. Exit criteria: the
@@ -403,7 +422,13 @@ exact in-horizon outcome, an authenticated archived outcome, or
 `TopologyAuthorizationHistoricalStateUnavailable`; it can never allocate,
 consume, or mutate again. Partition from archive/proof storage blocks the
 affected issuance key/range and compaction backlog saturation applies
-backpressure before new durable authorization. Exercise
+backpressure before new durable authorization. Fail over issuer range-manifest
+publication and consumer sparse/eligible-dense compaction across unseen gaps,
+deadline/horizon boundaries, and late first presentation. Exhaust normal
+capacity while issuing one valid reserved break-glass repair, then flood break-
+glass and prove its ceiling cannot consume normal capacity or starve
+revocation/recovery. Archive/proof outage still denies ambiguous emergency
+issuance. Exercise
 topology receipt challenge/sequence/expiry ratchets through owner failover,
 proxy replay, clock rollback, and restored older state. `VIT-INV-060`, not
 rollout or discovery, owns current
@@ -623,7 +648,9 @@ profile-epoch/continuity ratchet, and expired-authorization tombstone; the selec
 canonical authorization receipt V1 bytes/digest; replay-lifecycle attempt/
 outstanding budgets, issuance sequence, exact-horizon hot results, checkpoint
 chain/current digest/covered-through high-watermark, accumulator and archive
-commitments, compaction cursor/backlog, proof/key epochs, and growth counters;
+commitments, issuer range manifests/dense watermark, consumer sparse and
+eligible-dense state, separate normal/recovery/break-glass counters/reserve,
+compaction cursor/backlog, proof/key epochs, and growth counters;
 the active
 catalog ID/epoch,
 recomputed payload/envelope and actual
@@ -659,7 +686,9 @@ noncanonical receipt bytes, any partial issuer/consumer schema, issuance-
 sequence or budget rollback, missing uncompacted hot results, checkpoint fork/
 rollback, accumulator/archive substitution, compaction-cursor rewind,
 unauthenticated key rotation, or unavailable historical evidence treated as
-absence. Exact payload erasure may yield
+absence; it also rejects issuer-range loss/substitution, consumer dense advance
+across an unproven gap, late-presented gap acceptance, or budget-class/reserve
+merge. Exact payload erasure may yield
 `TopologyAuthorizationHistoricalStateUnavailable`, but the minimal restored
 checkpoint still denies replay/reissue; every
 `0.18.2` atomic work variant and denial-only
@@ -812,7 +841,9 @@ exercise contention, evaluator campaign root/enumeration/materialization/
 completeness contention, invariant declaration/owner/lifecycle/contract/fence
 coverage,
 topology-authorization issuance-rate/outstanding/hot-row/checkpoint/archive/
-proof-index/compaction-backlog cardinality and byte budgets,
+proof-index/compaction-backlog cardinality and byte budgets, separate normal/
+recovery/break-glass reserve saturation, issuer-range-manifest and consumer-
+sparse-compaction throughput,
 starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
@@ -837,7 +868,8 @@ oracle, quarantine-resolution/no-
 old-work-revival oracle, independent-remediation bootstrap/simultaneous-loss/
 compromise/channel/KMS/outage/manual-limit/exercise oracle, invariant-registry
 coverage oracle, topology-authorization sustained-abuse/quota/horizon/
-checkpoint/compaction/archive-outage/key-rotation/bounded-storage oracle,
+checkpoint/compaction/archive-outage/key-rotation/sparse-gap/range-manifest/
+break-glass-reserve/bounded-storage oracle,
 leak/escalation evidence, and signed reports. Verification: atomic
 bounded claim sets across every work bundle, concurrent overlapping-set
 canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
@@ -905,7 +937,9 @@ arrival/authoritative-rollup recalculation/downsampling,
 paging/status retry/reconciliation, queue/index/embedding/plugin/report
 exhaustion, topology-authorization attempt floods, unresolved-grant saturation,
 compaction lag, checkpoint/archive proof outage, concurrent historical replay,
-key rotation, bounded steady-state hot storage and checkpoint coalescing,
+key rotation, sparse gap and late-presentation pressure, forged/incomplete
+range manifests, normal exhaustion, break-glass flood and revocation/recovery
+lane isolation, bounded steady-state hot storage and checkpoint coalescing,
 fail-closed issuance backpressure, leaks, cascading failures, and long soak/
 chaos pass. Exit criteria:
 regressions, cross-kind settlement, partial/mutated/cross-partition set
@@ -953,8 +987,9 @@ remediation credential/profile/lineage/audit/egress/cleanup-quota/manual-limit
 assurance report,
 topology-authorization replay-checkpoint canonicalization/authentication/key-
 rotation, accumulator membership/non-membership, archive integrity,
-compaction-ordering, quota/backpressure, sensitive-data minimization, and
-bounded-growth assurance report,
+issuer-range-manifest authentication/completeness, consumer sparse/dense
+eligibility, compaction-ordering, budget-class/reserve isolation, quota/
+backpressure, sensitive-data minimization, and bounded-growth assurance report,
 and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
@@ -996,6 +1031,7 @@ remediation-profile/credential-lineage/audit/epoch/quota/manual-limit
 compatibility, plus cancellation-recovery
 generation/receipt compatibility, and topology-authorization issuance-sequence/
 budget/exact-horizon/checkpoint/predecessor/covered-through/set/archive/
+issuer-range-manifest/consumer-sparse-or-eligible-dense/budget-class/reserve/
 compaction/key-epoch/historical-unavailable compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
 golden mixed-version event corpus, migration/rebuild suites, and deprecation
@@ -1013,7 +1049,8 @@ lineage/admission/epoch/reevaluation/startup skew, quarantine transition/
 resolution/tombstone skew, remediation profile/lineage/quota/manual-limit skew, operation-profile
 confusion, bearer TCB drift, cancellation-recovery successor/
 receipt/deadline skew, replay-checkpoint algorithm/key/horizon skew, old writer
-after compaction, checkpoint fork/rollback, archive-loss-as-absence, and
+after compaction, checkpoint fork/rollback, archive-loss-as-absence, issuer-
+range-manifest or sparse/dense-profile skew, budget-class/reserve merge, and
 independent-parent-release rejection.
 Exit criteria: supported combinations are exact and no compatible version path
 can lower the durable platform floor, reactivate a superseded rollout, or

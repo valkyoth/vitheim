@@ -194,9 +194,9 @@ The action-authority scope is closed and is frozen at `0.140.1`:
 | --- | --- | --- |
 | Readiness observation | reusable, bounded `OnlineWorkloadFreshnessProofV1`; no action claim | read-only; stale, unavailable, fenced, or topology-mismatched proof returns unready and cannot create authority |
 | Positive local prepare, convergence, or admission receipt creation/commit | single-use `WorkloadLeaseActionClaim` | consume the claim, commit the receipt/admission and its typed result in one local owner transaction |
-| Topology-authorization allocation | current principal/session/delegation/policy/approval plus pre-allocation `TopologyAuthorizationAdmissionBudgetV1` | VIT-INV-061 allocates one monotonic issuance sequence and exact typed result in its local transaction; quota rejection allocates no authority |
+| Topology-authorization allocation | current principal/session/delegation/policy/approval plus pre-allocation `TopologyAuthorizationAdmissionBudgetV1` in closed normal/recovery/break-glass class | VIT-INV-061 allocates one monotonic issuance sequence and exact typed result in its local transaction; class ceilings and non-borrowable reserve apply, quota rejection allocates no authority, and break-glass retains all ordinary security gates |
 | Topology handoff initialization/commit or topology successor mutation | independently issued `TopologyMutationAuthorizationReceiptV1`; orchestrator profile additionally requires a single-use `WorkloadLeaseActionClaim`, while hardware profile requires canonical-none claim fields and current hardware proof | `DeadlineConditionalTopologyCasV1` consumes the receipt, profile-applicable workload proof, time ratchet/tombstones, expected-version topology CAS, member fences/tombstones, and fence outbox in one VIT-INV-060 transaction |
-| Topology-authorization replay checkpoint/compaction | no new workload or mutation authority; only the current VIT-INV-060 or VIT-INV-061 owner may compact its own local terminal state | atomically install authenticated predecessor-linked checkpoint and covered-through high-watermark before deleting hot rows; archive/proof loss returns unavailable-history denial and never absence |
+| Topology-authorization replay checkpoint/compaction | no new workload or mutation authority; only the current VIT-INV-060 or VIT-INV-061 owner may compact its own local terminal state | issuer may advance dense allocation watermark; consumer remains sparse unless complete authenticated issuer range plus trusted-time horizon/deadline and terminal-state proof yields `ConsumerCompactionEligibleThrough`; checkpoint precedes deletion and unavailable proof never means absence |
 | Dispatch | single-use `WorkloadLeaseActionClaim` | consume with the exact dispatch bundle and outcome in the dispatch owner transaction |
 | Transmission start | single-use `WorkloadLeaseActionClaim` | consume with the unique start claim immediately before provider I/O |
 | Global catalog proposal/activation/succession/revocation/distrust | no workload action claim for owner-to-owner delivery | authenticated control receipt and durable outbox/inbox protocol; an operator command separately requires current policy/session/approval authority |
@@ -388,25 +388,50 @@ cannot extend the deadline.
 `TopologyAuthorizationReplayLifecycleV1` bounds anti-replay storage without
 weakening logical permanence. Before VIT-INV-061 allocates durable authority,
 `TopologyAuthorizationAdmissionBudgetV1` enforces frozen per-deployment and
-issuer/class attempt-rate and outstanding limits; each allocation gets a
+issuer/class attempt-rate and outstanding limits. `Normal`, `Recovery`, and
+`BreakGlass` have separate counters and rate ceilings. A small per-deployment
+break-glass reserve and recovery-processing lane are non-borrowable in either
+direction: normal saturation cannot starve emergency repair, while break-glass
+floods cannot consume normal capacity or suppress revocation/recovery.
+Break-glass has no exemption from trusted time, quorum/SoD, canonical receipt,
+single consumption, deadline CAS, replay checkpoint, or unavailable-history
+denial. Each allocation gets a
 monotonic `AuthorizationIssuanceSequence` bound into the receipt. Both
 VIT-INV-061 issuance results and VIT-INV-060 consumption/expiry/deadline results
 remain exactly replayable in hot storage for the frozen horizon. Each owner
 then compacts only its own state by atomically installing authenticated
-predecessor-linked `TopologyAuthorizationReplayCheckpointV1` and advancing its
-covered-through high-watermark before deleting covered hot rows. The
+predecessor-linked `TopologyAuthorizationReplayCheckpointV1` before deleting
+covered hot rows. The
 checkpoint commits to the canonical request/mutation/receipt terminal-state
 set, typed-result archive, counters, schema/algorithm, and signing key epoch.
 
-At or below the covered-through watermark means historical, never absent.
+VIT-INV-061 owns complete allocation history and may advance a dense issued-
+through watermark. VIT-INV-060 sees only presented receipts, so its checkpoint
+is a sparse set commitment by default. Dense
+`ConsumerCompactionEligibleThrough` requires an authenticated
+`TopologyAuthorizationIssuedRangeManifestV1` binding issuer lineage/fence/key,
+exact range, ordered issued sequences/receipt digests, every `commit_before`,
+maximum deadline/uncertainty, predecessor digest, and authentication profile.
+The consumer also proves with conservative trusted time that the exact replay
+horizon and every deadline passed, and that each locally known member is
+terminal or `TopologyAuthorizationPermanentlyUnresolved`. The manifest is
+evidence only, never cross-owner mutation authority. Missing, forged,
+incomplete, duplicate, overlapping, or stale-fence evidence leaves the consumer
+sparse.
+
+An issuer sequence at or below the issuer watermark, a consumer member in its
+sparse commitment, or a sequence covered by valid consumer eligibility means
+historical, never absent. A first presentation after compaction is expired/
+historical.
 Within the exact horizon, replay returns the original typed outcome. Later, an
 authenticated archive proof may return it; missing/corrupt archive,
 membership/non-membership proof, checkpoint predecessor, or key yields
 `TopologyAuthorizationHistoricalStateUnavailable` and blocks affected
 consumption and ambiguous-key issuance. It never permits reissue or inference
 of non-consumption. Checkpoint coalescing/key rotation preserve the authenticated
-predecessor and coverage meaning. Restore/import merge the greatest sequence,
-checkpoint digest, covered-through watermark and key epoch before serving.
+predecessor and issuer-dense/consumer-sparse-or-eligible-dense meaning. Restore/
+import merge the greatest sequence, checkpoint digest, applicable watermark/
+sparse commitment, range manifest and key epoch before serving.
 Backlog saturation fails closed before allocation, and hot/checkpoint/archive/
 proof-index bytes and rows, outstanding counts, oldest uncompacted age, proof
 availability and quota/backlog thresholds are measured and alerted.

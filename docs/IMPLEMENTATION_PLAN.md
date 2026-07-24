@@ -118,7 +118,11 @@ anti-replay: pre-allocation rate/outstanding quotas, monotonic issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive
 commitments, checkpoint-before-delete compaction, fail-closed missing history,
 and storage-growth alerts. Phase O implements, failover-tests, restores, soaks,
-and hardens the selected construction before `1.0.0`. VIT-INV-060 only consumes that
+and hardens the selected construction before `1.0.0`. The issuer publishes
+authenticated complete sequence/deadline range evidence; the consumer stays
+sparse across unseen receipts unless time and range proof make dense compaction
+eligible. Separate non-borrowable normal/recovery/break-glass counters preserve
+one bounded emergency repair path without relaxing any security gate. VIT-INV-060 only consumes that
 profile-discriminated receipt and local workload proof with its CAS—there is no
 cross-owner atomic transaction. Challenge/sequence/expiry-bound topology
 receipts and local observation ratchets prevent signed-old replay. Rollout
