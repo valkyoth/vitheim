@@ -142,6 +142,13 @@ audit decision.
   replay insert in one local write transaction; head change returns a typed
   no-write restart, compaction uses the same head-first lock order, and async
   replicas, followers, caches or weak snapshots never authorize;
+- canonical drain replay keys bind tenant/deployment/action kind/action ID/
+  idempotency ID while independent scoped unique constraints prevent one-sided
+  ID reuse; durable logical-attempt budgets accumulate head restarts, proof
+  bytes, decode/work, elapsed time and observed advances across crash/failover/
+  retry, returning typed no-write contention at exhaustion; finite authenticated
+  admission/compaction quanta cannot be held by unauthenticated callers and
+  retain protected Recovery progress;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

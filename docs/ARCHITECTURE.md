@@ -184,6 +184,13 @@ head and exact action/idempotency key, checks current hot state, and uniquely
 claims execution in one local write transaction. A changed head causes a typed
 no-write restart. Compaction uses the same head-first lock order; replicas,
 caches, and weak snapshots cannot provide execution authority.
+The replay key canonically binds tenant, deployment, action kind, action ID and
+idempotency ID; action and idempotency IDs are independently unique in scope
+and must identify one row. A durable logical-attempt budget accumulates head
+restarts, proof bytes, decode/work, elapsed time and observed advances across
+failover and retries. Exhaustion is typed transient contention with no
+execution, not unavailable history. Finite authenticated-admission/compaction
+quanta preserve Recovery progress without allowing callers to pin compaction.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again

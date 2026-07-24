@@ -188,6 +188,12 @@ the transaction, then locks/re-reads the head and exact key, checks current hot
 state, and inserts the unique replay claim with the atomic result bundle.
 Changed heads restart without writes; compaction shares the head-first lock
 order, and replicas, caches, or weak snapshots cannot authorize. A
+canonical replay key makes action ID and idempotency ID independently unique
+within tenant/deployment scope. A durable cumulative restart budget survives
+head change, crash, failover, cursor recreation and adapter retry; exhaustion
+returns typed contention without consumption or execution, separately from
+unavailable history. Bounded authenticated-admission/compaction quanta and
+protected Recovery capacity prevent starvation. A
 once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance

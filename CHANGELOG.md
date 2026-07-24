@@ -16,6 +16,10 @@ All notable Vitheim changes are documented here. The format follows
   check hot state, and uniquely claim execution in one local transaction.
   Head changes restart without writes; replicas and weak snapshots cannot
   authorize.
+- Bounded repeated replay-head changes across one durable logical attempt,
+  separated transient contention from unavailable history, froze independent
+  action/idempotency uniqueness, and added fair compaction/admission scheduling
+  with protected Recovery progress.
 - Selected bounded authenticated sparse archives for exact drain-action replay
   after compaction, with canonical result recovery, historical conflicts,
   resource-bounded proof verification, and fail-closed unavailable history.

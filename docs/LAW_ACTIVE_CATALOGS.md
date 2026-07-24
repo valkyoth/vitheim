@@ -524,6 +524,23 @@ commit consumption/result/mutation/event/audit/outbox. Unique conflict never
 permits second execution. The compactor uses the same head-first lock order.
 Async replicas, followers, caches, and weak/changing snapshots cannot
 authorize; unsupported adapters refuse `VIT-CAP-061`.
+Canonical
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayKeyV1`
+contains tenant, deployment, action kind, action ID and idempotency ID.
+Action ID and idempotency ID are independently unique within tenant/deployment
+scope through separate constraints that must identify the same row; kind is
+bound, not a namespace. One-sided reuse is historical conflict.
+Durable
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayRestartBudgetV1`
+applies across one logical admission attempt and has finite automatic
+head-change restarts, observed head advances, cumulative proof bytes, decode,
+verification work and conservative elapsed-time bounds. Failover, crash,
+cursor recreation, process or adapter retry cannot reset it. Exhaustion returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionContended`
+without consumption or execution and is distinct from unavailable history.
+Finite authenticated-admission/compaction scheduling quanta, bounded
+caller-independent yield and protected Recovery capacity prevent starvation
+without allowing admission to pin compaction.
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 bounds bytes/entries/chunks/depth/decode/work/jobs and a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
@@ -576,7 +593,8 @@ Recovery reconstructs
 activation-selected active profile, optional pending successor/exact fence,
 lineage and activation high-watermarks, authorization sparse replay archive/
 checkpoint/key/cursor state, cumulative replay-head/publication high-watermarks,
-and verified derived coverage. Late exact retry
+canonical replay-key uniqueness state, logical-attempt restart counters/
+deadline, fairness-scheduler state, and verified derived coverage. Late exact retry
 returns the archived result, changed retry returns historical conflict, and
 unavailable proof returns typed historical-state-unavailable without
 execution.

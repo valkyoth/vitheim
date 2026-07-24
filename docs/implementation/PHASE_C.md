@@ -481,6 +481,18 @@ guard binds tenant/deployment scope, action/idempotency key, canonical request
 digest, head sequence/root/digest/version, proof digest and verification
 profile/cursor.
 
+Freeze the canonical key as
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayKeyV1 {
+tenant_id, deployment_id, action_kind, action_id, idempotency_id }`. Its
+encoding is ordered and versioned. `action_id` and `idempotency_id` are each
+independently unique within tenant/deployment scope; `action_kind` is bound
+data, not a uniqueness namespace. The store enforces unique
+`(tenant_id, deployment_id, action_id)` and unique
+`(tenant_id, deployment_id, idempotency_id)` constraints that resolve to the
+same canonical row. Exact retry supplies both original IDs, action kind and
+request digest. Reusing either ID with a changed counterpart, kind or request
+is historical conflict and never a new key.
+
 The reader then begins one local write transaction and locks, in the declared
 order, the authoritative per-scope replay-head row and exact action/
 idempotency-key row. It re-reads the head and requires byte-for-byte equality
@@ -502,6 +514,36 @@ mode unable to hold a stable head/key predicate cannot authorize execution and
 must refuse VIT-CAP-061. Compaction and first execution share the head-first,
 then canonical-key/covered-row lock order, preventing an old-head proof from
 being paired with post-compaction hot-row absence.
+
+Freeze durable
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayRestartBudgetV1`
+for the complete logical admission attempt, not one proof job. It binds an
+unforgeable attempt ID, replay key, canonical request digest, lane/class,
+budget-profile epoch, starting/latest head, restart count, observed head
+advances, cumulative proof bytes, decode allocation, verification work and
+conservative elapsed-time deadline. The profile sets finite maxima for every
+counter and for automatic `ReplayHeadChanged` restarts. Head changes,
+failover, crash/recovery, cursor recreation, connection-pool or adapter retry,
+and process restart resume the same monotonic counters and deadline; they
+cannot create a fresh budget for the same in-flight attempt.
+
+If another valid head can be tried within every remaining bound, persist the
+restart accounting before releasing the attempt for bounded re-verification.
+Otherwise return typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionContended`
+without consuming authority, inserting replay state or executing the action.
+This is transient contention and is distinct from
+`...DrainHistoricalStateUnavailable`, which means required history is missing
+or unverifiable. A new caller attempt remains subject to presentation, request
+and principal rate limits, so reconnects cannot manufacture unbounded work.
+
+Use an authenticated-admission/compaction scheduler with finite per-scope
+quanta. After bounded publication work, compaction yields to an already
+authenticated queued admission; after bounded admission work it may resume.
+Recovery admissions use their protected, non-borrowable lane and maintenance
+capacity. Yield/backoff has finite lower and upper bounds and cannot be
+reserved, extended or held by an unauthenticated caller, while admission cannot
+pin compaction indefinitely or endanger replay permanence.
 
 Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
@@ -1328,6 +1370,17 @@ from asynchronous replicas, followers, weak snapshots and caches. Require
 typed head-changed restart or refusal; no schedule may combine proof for `H`
 with absence created by `H+1`, execute twice, or perform network proof work
 while holding the write transaction.
+Continuously advance the head until every restart, cumulative proof-byte,
+decode, work, elapsed-time and observed-advance boundary is reached. Exercise
+malicious publication churn, failover, crash/recovery, cursor recreation and
+adapter retry between accounting updates; none may reset the logical-attempt
+budget. Exhaustion returns only typed replay-admission-contended with no
+authority consumption or execution, while missing/corrupt proof remains
+historical-state-unavailable. Reuse `action_id` with a new `idempotency_id`,
+reuse `idempotency_id` with a new `action_id`, change only action kind, and race
+both unique constraints. Test fair progress under Normal churn, bounded
+compactor yield, unauthenticated queue pressure, and a Recovery drain using
+protected capacity.
 Drive every
 permitted charge-disposition edge and reject undeclared edges, terminal-to-
 terminal substitution, terminal-to-awaiting rollback, timeout-derived
@@ -1373,6 +1426,11 @@ capability probe must prove head-first/key-second locking, exact head re-read,
 current-hot lookup and unique replay insertion share one local write
 transaction with the atomic result bundle. Read replicas, followers, caches
 and statement-level changing snapshots are never eligible authority sources.
+It must also enforce the two independent replay-key unique constraints,
+durably increment the logical-attempt counters/deadline across its native
+retry, reconnect and failover behavior, preserve the typed contention/
+unavailable-history distinction, and implement finite scheduler quanta without
+allowing an unauthenticated session to hold compactor yield.
 An adapter that cannot prove the required predicate/row-lock and uniqueness
 semantics must report `VIT-CAP-061` unsupported and refuse the feature; an
 emulation that narrows the guarantee is not parity.
@@ -1887,9 +1945,12 @@ stable invariant field before the new owner becomes authoritative.
 Replay migrations additionally preserve the authoritative cumulative head,
 head/key lock-order contract, uniqueness constraint and existing replay
 claims, current hot rows, admission-guard isolation profile and typed
-head-changed behavior as one compatibility boundary. A migration or import
+head-changed behavior, canonical replay-key encoding and both independent
+unique indexes, logical-attempt counters/deadline, lane/class and fairness
+scheduler state as one compatibility boundary. A migration or import
 cannot route authority reads to a replica, synthesize absence, reset a unique
-claim, or admit the destination until it proves equal-or-stronger
+claim or restart budget, reinterpret contention as unavailable history, or
+admit the destination until it proves equal-or-stronger
 `VIT-CAP-061` semantics.
 Treat every law-generation activation as a registered migration as well. It
 must preserve the predecessor record, resolve the exact dependency delta only
@@ -2092,7 +2153,9 @@ if it proves the same or stronger no-late-commit mechanism; otherwise imported
 topology authority remains fenced and unready. Import calls the shared
 replay-lifecycle verifier and admits issuance only after the destination proves
 the same writer-authoritative admission guard, exact head/key lock order,
-head-change restart, current-hot check and unique replay claim; otherwise
+head-change restart, canonical dual-unique key, monotonic cumulative attempt
+accounting, typed contention distinction, fair scheduling, current-hot check
+and unique replay claim; otherwise
 drain-action execution remains fenced. It also proves
 the same-or-longer exact horizon, no-lower quotas/backpressure safety, complete
 uncompacted hot results, an authenticated checkpoint/predecessor chain and

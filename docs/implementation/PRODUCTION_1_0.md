@@ -198,6 +198,23 @@ outbox. A unique conflict is an exact retry or historical conflict, never
 permission to execute twice. Compaction follows the same head-first lock order.
 Async replicas, followers, caches, and weak or changing snapshots never supply
 authority, and unsupported adapters refuse `VIT-CAP-061`.
+Production freezes
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayKeyV1 {
+tenant_id, deployment_id, action_kind, action_id, idempotency_id }`.
+Tenant/deployment-scoped unique constraints make `action_id` and
+`idempotency_id` independently unique and require them to identify the same
+row; kind is bound, not a namespace. Any one-sided reuse conflicts.
+Durable
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayRestartBudgetV1`
+limits automatic head-change restarts and cumulative proof bytes, decode,
+verification work, elapsed time and observed advances for one logical attempt.
+Crash, failover, cursor recreation and adapter/process retry preserve those
+counters. Exhaustion returns typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionContended`
+without consumption or execution and is distinct from unavailable history.
+Finite authenticated-admission/compaction quanta, bounded caller-independent
+yield and protected Recovery capacity prevent either workload from starving
+the other or threatening replay permanence.
 `PendingDrain` atomically installs a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` binding
 predecessor/successor generations and digests, canonically derived affected
@@ -387,6 +404,10 @@ proof for head `H` paired with hot absence created by `H+1`, ignored typed
 head-change restart, follower/cache/weak-snapshot authorization, unique replay
 claim bypass, and deterministic pauses after proof verification, after head
 lock and before unique insert while compaction and first execution race,
+continuous head advancement through cumulative restart limits, malicious
+publication churn, crash/failover/cursor/adapter budget-reset attempts,
+one-sided action/idempotency reuse and unique-index races, Normal starvation of
+Recovery, bounded compactor yield and unauthenticated queue pressure,
 continuous traffic during shrink, admission/fence-install and final-admission/
 activation races, rejection-versus-admission, installed-fence crash/failover/
 restore, stale-worker bypass, and competing successors, lineage change before a receipt

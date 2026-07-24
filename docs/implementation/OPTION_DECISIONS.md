@@ -575,6 +575,29 @@ canonical-key/covered-row locking. Freeze the exact supported isolation/
 locking clauses per selected backend; otherwise it refuses VIT-CAP-061.
 
 Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayKeyV1 {
+tenant_id, deployment_id, action_kind, action_id, idempotency_id }` with
+versioned canonical encoding. `action_id` and `idempotency_id` are independently
+unique within tenant/deployment scope through separate unique constraints;
+`action_kind` is bound but does not create another namespace. Exact retry
+requires both IDs, kind and request digest to match the same row. Reuse of
+either ID with any changed counterpart is historical conflict.
+
+Freeze durable
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayRestartBudgetV1`
+per logical admission attempt. It has finite automatic-head-change restarts and
+cumulative proof bytes, decode allocation, verification work, conservative
+elapsed-time and observed-head-advance limits. Head change, failover, crash,
+cursor recreation, process restart and adapter retry preserve monotonic
+accounting. Exhaustion returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionContended`
+without authority consumption or execution; missing/unverifiable history
+remains historical-state-unavailable. Freeze finite authenticated-admission/
+compaction scheduling quanta and bounded yield/backoff. Unauthenticated callers
+cannot reserve yield; Recovery keeps protected non-borrowable capacity; neither
+side may starve the other or endanger replay permanence.
+
+Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 and
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
@@ -1117,6 +1140,15 @@ detailed actor/approval/change/incident fields remain in policy-governed audit/
 archive records. Deletion cannot make authorization reusable, erase required
 SoD evidence inside its guaranteed audit horizon, break the activation chain,
 or turn prior active state into unknown authority.
+Retain the `0.140.2` replay-admission/compaction scheduler contract as
+security-relevant lifecycle state: finite per-scope quanta, bounded
+caller-independent yield/backoff, protected non-borrowable Recovery capacity,
+and a rule that admission cannot pin compaction past replay-permanence bounds.
+Unauthenticated callers retain no durable scheduler reservation. Retention,
+erasure or tenant closure cannot delete live logical-attempt restart counters
+or deadlines and thereby grant a fresh budget; closure instead fences the
+attempt and preserves only the minimal non-sensitive exhaustion/authority-loss
+commitment required to prevent replay.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
 evidence custody, false equivalence between local proof/provider attestation/
@@ -1198,6 +1230,13 @@ tombstones. Issuer or consumer failover, NTP steps, suspend/resume, snapshot
 restore, and cross-region disagreement may deny or shorten a receipt but never
 extend it; an expiry-versus-topology-CAS race must produce either one proven
 pre-expiry commit or a non-retryable reconciliation state.
+Preserve canonical drain replay keys, both independent unique constraints and
+claims, logical-attempt identity/counters/deadline, contention versus
+unavailable-history disposition, scheduler quanta and protected Recovery
+classification across failover, restore and region movement. A new process,
+connection, cursor, adapter retry or promoted writer resumes monotonic
+accounting; it cannot allocate a fresh restart budget or reinterpret either
+unique namespace.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/

@@ -245,6 +245,24 @@ Async replicas, followers, caches, and weak or changing snapshots provide no
 authority; an adapter unable to provide these semantics refuses the capability
 with `VIT-CAP-061`. Compaction and first execution use the same head-first,
 key/covered-row-second lock order.
+The exact replay identity is
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayKeyV1 {
+tenant_id, deployment_id, action_kind, action_id, idempotency_id }`.
+Separate tenant/deployment-scoped unique constraints make `action_id` and
+`idempotency_id` independently unique and require both to resolve to the same
+row; action kind is bound but not a uniqueness namespace. One-sided reuse is
+historical conflict.
+Durable
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayRestartBudgetV1`
+accounts across the complete logical attempt: finite automatic head-change
+restarts plus cumulative proof bytes, decode allocation, verification work,
+elapsed time and observed head advances. Failover, crash, cursor recreation,
+process or adapter retry cannot reset it. Exhaustion returns typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionContended`
+with no consumption or execution, distinct from unavailable history.
+Finite authenticated-admission/compaction quanta provide fair progress;
+bounded yield cannot be held by unauthenticated callers, Recovery retains
+protected capacity, and admission cannot pin compaction indefinitely.
 Entering pending drain persists
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 predecessor/successor generations and digests, canonically derived affected
@@ -1643,6 +1661,12 @@ compaction and a competing first execution run. Also split replica head/hot
 visibility deliberately. Every changed head must produce the typed no-write
 restart, every unique conflict must resolve without a second execution, and no
 follower, cache, or weak snapshot may authorize.
+Continuously advance the head through every cumulative restart-budget boundary;
+crash, fail over, recreate cursors and retry adapters between increments.
+Require monotonic accounting and typed no-write contention at exhaustion.
+Exercise malicious publication churn, one-sided action/idempotency reuse,
+unique-index races, Normal starvation attempts, bounded compactor yield,
+unauthenticated pressure and Recovery progress on protected capacity.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 
