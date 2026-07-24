@@ -598,6 +598,35 @@ cannot reserve yield; Recovery keeps protected non-borrowable capacity; neither
 side may starve the other or endanger replay permanence.
 
 Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptV1`
+with closed `Active`, `RestartPending`, `Succeeded`, `HistoricalConflict`,
+`HistoricalUnavailable`, `Contended`, and `ExpiredNoExecution` states. Only
+Active and RestartPending are nonterminal and may alternate; every terminal is
+irreversible. At most one nonterminal attempt exists per canonical replay key.
+Identical key/request joins it without allocating another budget; changed
+digest or key material conflicts.
+
+The attempt owns the restart budget and binds stable attempt ID, key/digest,
+lane/class/principal, counters/deadline, owner workload identity, boot/
+continuity ID, lease generation, fencing token and expected-version CAS.
+Takeover advances lease/fence and preserves all counters/deadline; stale owners
+cannot continue. Cancellation or connection loss changes no authority.
+Succeeded commits with the replay row/action bundle; no-write terminals cannot
+later succeed.
+
+Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityV1`
+with finite active/terminal rows and bytes, queues, per-principal attempts,
+concurrent takeover/work, terminalization backlog and cleanup-worker limits per
+applicable lane/deployment. Reserve terminalization/cleanup capacity before
+attempt admission and keep Recovery capacity non-borrowable. Cleanup requires a
+committed predecessor-linked
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCheckpointV1`
+binding terminal state/final counters/fence/capacity release and authenticated
+result/replay-row or no-write audit link; it never removes replay-critical
+state.
+
+Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 and
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
@@ -1149,6 +1178,13 @@ erasure or tenant closure cannot delete live logical-attempt restart counters
 or deadlines and thereby grant a fresh budget; closure instead fences the
 attempt and preserves only the minimal non-sensitive exhaustion/authority-loss
 commitment required to prevent replay.
+Classify terminal replay-admission attempts separately from replay rows and
+authorization tombstones. Freeze the minimal terminal envelope and its result/
+replay-row or no-write audit/checkpoint link, maximum retention and cleanup
+eligibility. Cleanup requires a committed predecessor-linked attempt checkpoint
+and removes only the envelope after terminal meaning/capacity counters remain
+recoverable. It cannot erase replay-critical state or turn an irreversible
+terminal into a fresh attempt.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
 evidence custody, false equivalence between local proof/provider attestation/
@@ -1237,6 +1273,11 @@ classification across failover, restore and region movement. A new process,
 connection, cursor, adapter retry or promoted writer resumes monotonic
 accounting; it cannot allocate a fresh restart budget or reinterpret either
 unique namespace.
+Preserve attempt lifecycle, single-nonterminal-key index, request-join binding,
+owner workload/boot/continuity, lease generation, fencing token, CAS, capacity
+reservations/backlogs and terminal checkpoint/link state. Failover/takeover
+must advance the fence and retain counters/deadline; two owners, stale-owner
+progress, no-write-terminal reversal and cleanup without complete linkage deny.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/

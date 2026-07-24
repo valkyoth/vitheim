@@ -194,6 +194,12 @@ head change, crash, failover, cursor recreation and adapter retry; exhaustion
 returns typed contention without consumption or execution, separately from
 unavailable history. Bounded authenticated-admission/compaction quanta and
 protected Recovery capacity prevent starvation. A
+closed admission-attempt owner permits one nonterminal attempt per canonical
+key: identical requests join, changed material conflicts, fenced takeover
+preserves counters/deadline, and cancellation cannot reset it. Success is
+atomic with the replay/action bundle and no-write terminals are irreversible.
+Attempt rows/bytes/queues/principals/takeover/terminalization/cleanup are
+bounded and reserved, with checkpoint-gated cleanup preserving replay state. A
 once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance

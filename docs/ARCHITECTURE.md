@@ -191,6 +191,13 @@ restarts, proof bytes, decode/work, elapsed time and observed advances across
 failover and retries. Exhaustion is typed transient contention with no
 execution, not unavailable history. Finite authenticated-admission/compaction
 quanta preserve Recovery progress without allowing callers to pin compaction.
+A closed admission-attempt aggregate owns that budget. One canonical key has
+one nonterminal attempt; identical requests join, while changed material
+conflicts. Owner/boot continuity, lease generation, fencing and CAS make
+takeover exclusive without resetting state. Success co-commits with the action;
+no-write terminals are irreversible. Bounded rows/bytes/queues/principals/
+takeover/terminalization/cleanup capacity is reserved before admission, and
+checkpoint-gated cleanup cannot remove replay-critical state.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again

@@ -546,6 +546,56 @@ reserved, extended or held by an unauthenticated caller, while admission cannot
 pin compaction indefinitely or endanger replay permanence.
 
 Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptV1`
+as the sole owner of the logical restart budget and
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptStateV1`
+as a closed lifecycle:
+`Active` -> `RestartPending` -> `Active`, or either nonterminal state to exactly
+one of `Succeeded { replay_row, result }`, `HistoricalConflict`,
+`HistoricalUnavailable`, `Contended`, or `ExpiredNoExecution`. Every terminal
+state is irreversible. Historical-unavailable remains the proof/history
+failure, contended remains cumulative-budget/scheduling exhaustion, and expired
+means the conservative attempt deadline elapsed before execution; none can
+later transition to success.
+
+One tenant/deployment-scoped canonical replay key has at most one nonterminal
+attempt. Concurrent requests with the identical key and canonical request
+digest join that attempt and observe its counters/outcome without allocating
+another budget; any changed digest, action kind, action ID or idempotency ID
+uses the existing typed historical conflict path. The attempt binds its stable
+ID, key/request digest, lane/class/principal, budget epoch/counters/deadline,
+owner workload identity, boot/continuity ID, lease generation, fencing token
+and expected-version CAS. Only the current fenced owner may advance it.
+
+Crash takeover increments the lease generation/fence under CAS and preserves
+every counter, observed head and original deadline. A stale owner cannot
+verify, restart, terminalize or execute after takeover. Cancellation,
+disconnect, worker loss, failover and retry neither delete the attempt nor
+reset its budget. `Succeeded` commits in the same local transaction as the
+unique replay row and complete action bundle. Each no-write terminal outcome
+atomically records its typed disposition and audit/checkpoint linkage without
+consuming authority or writing replay-critical success state.
+
+Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityV1`
+with finite lane/deployment and canonical-principal limits for active and
+terminal rows/bytes, queued attempts and concurrent takeovers, plus deployment/
+lane limits for takeover work, terminalization backlog and cleanup workers.
+Admission reserves lane-local terminalization and cleanup capacity before
+creating or joining work; saturation fails before allocation. Normal and
+BreakGlass cannot borrow protected Recovery attempt/terminalization/cleanup
+capacity. Terminal attempt cleanup requires an authenticated result/replay-row
+or typed no-write audit/checkpoint link and a committed predecessor-linked
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCheckpointV1`
+binding attempt ID/key/request digest, terminal state, final counters/deadline,
+owner fence, result/replay-row or no-write audit link, capacity release,
+predecessor digest, encoding and integrity epoch. Cleanup may remove only the
+attempt envelope after its
+terminal meaning and required counters are recoverable; it cannot delete or
+weaken replay rows, authorization tombstones, results, archive commitments,
+audit evidence inside its retention horizon, or cumulative budget evidence.
+
+Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 with exact maximum checkpoint/archive/root/chunk encoded bytes, entries and
 chunks, proof depth, decode allocation, verification work, roots/chunks per
@@ -676,7 +726,9 @@ high-watermarks, replay tombstones, sparse replay checkpoint/archive roots,
 the greatest cumulative committed replay head and predecessor/sequence/scope/
 version high-watermarks, co-committed covered-hot-row deletion evidence,
 publication states, proof-budget profile, archive/key availability and
-verification cursor. Raw
+verification cursor, plus attempt lifecycle/key/digest, owner/boot/lease/fence/
+CAS, cumulative counters/deadline, capacity reservations/backlogs and terminal
+checkpoint/result/audit links. Raw
 profile generation never implies activation. Rejected and
 unactivated proposed generations remain historical only. A recovered pending
 successor and fence are applied jointly to new admission; recovery recomputes
@@ -1381,6 +1433,19 @@ reuse `idempotency_id` with a new `action_id`, change only action kind, and race
 both unique constraints. Test fair progress under Normal churn, bounded
 compactor yield, unauthenticated queue pressure, and a Recovery drain using
 protected capacity.
+Run duplicate identical joins before proof, during `RestartPending`, during
+takeover and at terminalization; exactly one attempt/budget exists and all
+joiners observe one outcome. Change only the digest or either key component and
+require conflict. Crash the owner at every lifecycle edge, race two takeovers,
+resume with a stale fence, cancel/disconnect clients and restore old snapshots;
+counters/deadline never reset and only the greatest fenced owner advances.
+Attempt success must be atomic with replay row/action bundle; inject every
+no-write terminal followed by a success attempt and require denial. Attempt
+cleanup before checkpoint/link, missing or substituted links, active cleanup
+and replay-state deletion must fail. Saturate active/terminal rows and bytes,
+queues, per-principal attempts, takeover work, terminalization backlog and
+cleanup workers, then prove bounded failure and Recovery progress during a
+Normal attempt flood.
 Drive every
 permitted charge-disposition edge and reject undeclared edges, terminal-to-
 terminal substitution, terminal-to-awaiting rollback, timeout-derived
@@ -1431,6 +1496,11 @@ durably increment the logical-attempt counters/deadline across its native
 retry, reconnect and failover behavior, preserve the typed contention/
 unavailable-history distinction, and implement finite scheduler quanta without
 allowing an unauthenticated session to hold compactor yield.
+It must enforce one nonterminal attempt per canonical key, atomic identical
+join versus conflict, owner/boot/lease/fence/CAS takeover, success co-commit,
+irreversible terminals, every attempt-capacity reservation/bound and
+checkpoint/link-gated envelope cleanup. Native retry or session failover cannot
+create another owner or budget.
 An adapter that cannot prove the required predicate/row-lock and uniqueness
 semantics must report `VIT-CAP-061` unsupported and refuse the feature; an
 emulation that narrows the guarantee is not parity.
@@ -1947,7 +2017,9 @@ head/key lock-order contract, uniqueness constraint and existing replay
 claims, current hot rows, admission-guard isolation profile and typed
 head-changed behavior, canonical replay-key encoding and both independent
 unique indexes, logical-attempt counters/deadline, lane/class and fairness
-scheduler state as one compatibility boundary. A migration or import
+scheduler state, attempt lifecycle/owner/boot/lease/fence/CAS, single-active
+join constraint, capacity reservations/backlogs, terminal checkpoints/links
+and cleanup high-watermarks as one compatibility boundary. A migration or import
 cannot route authority reads to a replica, synthesize absence, reset a unique
 claim or restart budget, reinterpret contention as unavailable history, or
 admit the destination until it proves equal-or-stronger
@@ -2155,7 +2227,9 @@ replay-lifecycle verifier and admits issuance only after the destination proves
 the same writer-authoritative admission guard, exact head/key lock order,
 head-change restart, canonical dual-unique key, monotonic cumulative attempt
 accounting, typed contention distinction, fair scheduling, current-hot check
-and unique replay claim; otherwise
+and unique replay claim, plus the same closed attempt lifecycle, single-active
+join, takeover fence, terminal atomicity, capacity/reservation bounds and
+checkpoint cleanup; otherwise
 drain-action execution remains fenced. It also proves
 the same-or-longer exact horizon, no-lower quotas/backpressure safety, complete
 uncompacted hot results, an authenticated checkpoint/predecessor chain and

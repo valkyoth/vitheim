@@ -541,6 +541,23 @@ without consumption or execution and is distinct from unavailable history.
 Finite authenticated-admission/compaction scheduling quanta, bounded
 caller-independent yield and protected Recovery capacity prevent starvation
 without allowing admission to pin compaction.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptV1`
+owns the restart budget with only Active/RestartPending nonterminal and
+Succeeded/HistoricalConflict/HistoricalUnavailable/Contended/
+ExpiredNoExecution terminal states. One key has one nonterminal attempt;
+identical requests join without another budget and changed material conflicts.
+Owner workload, boot/continuity, lease generation, fencing token and CAS make
+takeover exclusive while retaining all counters/deadline. Cancellation or
+disconnect does not reset/delete; success co-commits with replay row/action
+bundle and no-write terminals cannot later succeed.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityV1`
+bounds active/terminal rows/bytes, queues, principal attempts, takeover work,
+terminalization backlog and cleanup workers by lane/deployment. Capacity is
+reserved before admission, Recovery is non-borrowable, and checkpoint/link-
+gated cleanup uses
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCheckpointV1`
+to bind terminal state/counters/fence/capacity release and removes no replay-
+critical state.
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 bounds bytes/entries/chunks/depth/decode/work/jobs and a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
@@ -594,7 +611,8 @@ activation-selected active profile, optional pending successor/exact fence,
 lineage and activation high-watermarks, authorization sparse replay archive/
 checkpoint/key/cursor state, cumulative replay-head/publication high-watermarks,
 canonical replay-key uniqueness state, logical-attempt restart counters/
-deadline, fairness-scheduler state, and verified derived coverage. Late exact retry
+deadline, attempt lifecycle/owner/lease/fence/capacity/checkpoint state,
+fairness-scheduler state, and verified derived coverage. Late exact retry
 returns the archived result, changed retry returns historical conflict, and
 unavailable proof returns typed historical-state-unavailable without
 execution.

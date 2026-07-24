@@ -149,6 +149,12 @@ audit decision.
   retry, returning typed no-write contention at exhaustion; finite authenticated
   admission/compaction quanta cannot be held by unauthenticated callers and
   retain protected Recovery progress;
+- one closed drain replay-admission attempt owns each nonterminal canonical
+  key/budget; identical requests join and changed material conflicts; workload/
+  boot/lease/fence/CAS takeover preserves counters/deadline and rejects stale
+  owners; success co-commits with replay/action state, no-write terminals are
+  irreversible, bounded attempt/terminalization/cleanup capacity is reserved,
+  and checkpoint/link-gated cleanup removes no replay-critical evidence;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

@@ -20,6 +20,9 @@ All notable Vitheim changes are documented here. The format follows
   separated transient contention from unavailable history, froze independent
   action/idempotency uniqueness, and added fair compaction/admission scheduling
   with protected Recovery progress.
+- Added a closed, fenced replay-admission-attempt lifecycle with duplicate
+  joining, crash takeover, irreversible no-write terminals, checkpoint-gated
+  cleanup, and bounded attempt/terminalization capacity.
 - Selected bounded authenticated sparse archives for exact drain-action replay
   after compaction, with canonical result recovery, historical conflicts,
   resource-bounded proof verification, and fail-closed unavailable history.

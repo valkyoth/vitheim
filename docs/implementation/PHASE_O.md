@@ -263,6 +263,24 @@ with no consumption or execution, distinct from unavailable history.
 Finite authenticated-admission/compaction quanta provide fair progress;
 bounded yield cannot be held by unauthenticated callers, Recovery retains
 protected capacity, and admission cannot pin compaction indefinitely.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptV1`
+owns the budget with closed `Active`/`RestartPending` nonterminal states and
+irreversible `Succeeded`, `HistoricalConflict`, `HistoricalUnavailable`,
+`Contended`, or `ExpiredNoExecution` terminals. One canonical key has at most
+one nonterminal attempt. Identical requests join without a new budget; changed
+digest/key material conflicts. Owner identity, boot/continuity, lease
+generation, fence and CAS make crash takeover exclusive while preserving every
+counter/deadline. Cancellation and disconnect do not reset or delete it;
+success co-commits with replay row/action bundle and no-write terminals cannot
+succeed later.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityV1`
+bounds active/terminal rows/bytes, queues, principals, takeovers/work,
+terminalization backlog and cleanup workers per lane/deployment. Admission
+reserves terminalization/cleanup capacity; Recovery capacity is non-borrowable.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCheckpointV1`
+binds terminal state/final counters/fence/capacity release and result/replay-row
+or no-write audit link; only then may cleanup remove the envelope, never replay-
+critical state.
 Entering pending drain persists
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 predecessor/successor generations and digests, canonically derived affected
@@ -310,7 +328,9 @@ only in atomic activation or authorized rejection. Recovery materializes
 `TopologyAuthorizationPresentationChargeLedgerCapacityRecoveryStateV1` with
 the activation-selected active profile, optional pending successor/exact
 fence, lineage-generation high-watermark, and activation-sequence
-high-watermark; it verifies the derived lane/aggregate coverage. Multiple
+high-watermark, replay-attempt lifecycle/owner/lease/fence/CAS, counters/
+deadline, reservations/backlogs and terminal checkpoint/links; it verifies the
+derived lane/aggregate coverage. Multiple
 active profiles, pending/fence half-state, contradictory activation records,
 unreachable predecessors, activation gaps/forks/reordering/duplicate
 sequences, active-row disagreement, missing checkpoints, rolled-back external
@@ -1667,6 +1687,11 @@ Require monotonic accounting and typed no-write contention at exhaustion.
 Exercise malicious publication churn, one-sided action/idempotency reuse,
 unique-index races, Normal starvation attempts, bounded compactor yield,
 unauthenticated pressure and Recovery progress on protected capacity.
+Exercise identical join and changed-digest conflict in every nonterminal state,
+owner crash at every edge, stale-owner/takeover races, client cancellation,
+atomic success, terminal-to-success denial, premature/missing-link cleanup, and
+every attempt row/byte/queue/principal/takeover/terminalization/cleanup bound.
+Normal attempt floods must not prevent Recovery progress.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 
