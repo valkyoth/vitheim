@@ -587,6 +587,21 @@ promotion fenced, allows only bounded digest/metadata quarantine and converges
 cleanup inside the reserved Recovery lane. A larger successor profile requires
 explicit change authority and binds the predecessor plus every cumulative
 counter; a new process, cursor or job ID confers no fresh capacity.
+Authority cutover additionally uses the frozen closed
+`MigrationImportJobLifecycleV1`, `MigrationImportAdmissionCandidateV1`,
+canonical ordered owner manifest, authenticated dormant-generation preparation
+receipts and `MigrationImportActivationBarrierV1`. The registry owns
+completeness evidence only. The supported production profile co-locates job,
+barrier and every affected invariant-owner activation guard; one transaction
+rechecks current budget/final counters, job lease/fence, terminal disposition,
+trusted-time-bound authorization, staged root, complete unique receipts and
+owner versions, then activates every owner plus barrier/job result/audit/outbox
+or none. Every pre-activation failure permanently fences the candidate;
+prepared state is never authority. Activation is irreversible and response-loss
+retry returns its canonical result. Cleanup before activation touches only
+fenced dormant/staged state and after activation touches only staging.
+Cross-database, cross-region or external-selector activation is unsupported
+through `1.0.0`; it requires a future explicitly owned invariant/composite law.
 
 Goal: release the first production-supported Vitheim platform with claims no
 broader than its evidence.
@@ -615,7 +630,9 @@ Deliverables:
   destination-local job ownership, precharge/reservation rules, typed
   exhaustion, fenced promotion, digest-only quarantine, protected cleanup and
   runbooks for joining, resuming, failing over, restoring and explicitly
-  superseding a job.
+  superseding a job; closed candidate/preparation/barrier activation codecs,
+  fixed local lock order, owner verification ports and all-owner atomic cutover
+  evidence, with unsupported non-co-located profiles named explicitly.
 - Signed source/artifacts/checksums, SBOM, provenance, licenses, compatibility
   evidence, pentest report, and complete release notes.
 - A production support matrix that names the selected dependency/crypto/KMS,
@@ -638,7 +655,14 @@ Verification:
   failover/restore, duplicate job creation, changed manifests and concurrent
   tenants/deployments. They prove counter monotonicity and reservation
   conservation, exact retry joining, fenced exhaustion with unchanged source,
-  bounded digest-only quarantine and protected cleanup convergence.
+  bounded digest-only quarantine and protected cleanup convergence. Cutover
+  cases race every terminal disposition, takeover, owner-version change and
+  cleanup at every lock; omit, duplicate, reorder and substitute owner-manifest
+  members or receipts; exercise partial preparation, one-owner rejection,
+  concurrent activation, response loss, failover after prepare, prepared-state
+  restore and falsely active state. All owners plus barrier/result/audit/outbox
+  commit together or none; dormant state never authorizes, terminal candidates
+  never revive and unsupported selector topologies refuse before staging.
 - Crash-point proof that protected commands cannot commit without authoritative
   audit intent; every applicable `0.18.2` command/consumer/timer/activity/
   poison bundle component is atomic and integrity linked; fence and quota

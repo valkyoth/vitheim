@@ -37,6 +37,15 @@ fail-closed state, and an end-to-end recovery proof. A coordinator records and
 reconciles the law; it does not become an alternate owner of contributing
 state.
 
+The same rule governs migration/import activation. The destination migration
+registry owns job, budget and completeness evidence, never domain authority.
+Each existing invariant owner alone validates and prepares its dormant
+candidate generation. Through `1.0.0`, every affected owner activation guard,
+the exact candidate/receipt barrier and job result must be co-located so one
+local transaction activates the complete owner set or none; a remote selector
+would be a new authority root and requires a future invariant/composite-law
+declaration rather than being inferred from coordination prose.
+
 Cells cannot be empty, contain
 `TBD`, or name alternative owners. Each invariant has stable `VIT-ENF-*`
 enforcement, `VIT-CAP-*` storage-capability, `VIT-TST-*` verification-contract,

@@ -194,6 +194,15 @@ audit decision.
   concurrency; creation reserves terminal and Recovery-protected cleanup
   capacity, work precharges bounded quanta, exhaustion fences promotion and
   preserves the source, and quarantine stores only bounded metadata/digests;
+- migration/import activation uses a closed lifecycle and canonical candidate,
+  complete ordered invariant-owner manifest, authenticated dormant-preparation
+  receipts and activation barrier; through `1.0.0` every affected owner guard
+  is co-located with the job/barrier, and one local transaction rechecks current
+  budget/fence/authorization/owner versions before activating all owner
+  generations plus result/audit/outbox or none; every pre-activation failure
+  permanently fences the candidate, response-loss retry is idempotent, cleanup
+  cannot promote or delete authority, and non-co-located selector fallback is
+  unsupported;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

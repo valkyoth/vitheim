@@ -323,6 +323,21 @@ key uniqueness, worst-case quantum precharge, staging/verification/result/
 rollback/quarantine reservations and a non-borrowable Recovery cleanup reserve.
 Storage unable to atomically persist counters/reservations with cursor and job
 lifecycle refuses migration/import rather than relying on process memory.
+Freeze the production activation choice: only the co-located
+`MigrationImportActivationBarrierV1` profile is supported through `1.0.0`.
+Persist the closed job lifecycle, candidate and candidate tombstone, canonical
+owner manifest, dormant owner generations, authenticated preparation receipts,
+barrier sequence/predecessor/result and cleanup linkage. Candidate final
+counters include a pessimistically precharged complete preparation/activation/
+result/recovery quantum, and `AdmissionPrepared` requires the atomically stored
+complete unique receipt set. Job, barrier and every
+affected owner activation guard must fit one local transaction with fixed
+job→candidate/barrier→ordered-owner→audit/result/outbox locking and
+expected-version CAS. Storage must prove atomic all-owner activation with the
+job result or refuse before migration/import reads or stages authority.
+Cross-database, cross-region and external-selector activation are unsupported;
+admitting one later requires a separately owned invariant/composite law and
+reviewed milestone because the selector would become authority.
 Produce a complete stable-invariant-ID coverage matrix from
 `docs/INVARIANT_OWNERSHIP.md`; a selected storage profile missing an applicable
 `VIT-CAP-*` capability is unsupported rather than waived. Coverage begins from
@@ -1049,6 +1064,13 @@ pressure, cursor recreation, reconnect/failover/adapter retry and concurrent
 tenant jobs. Prove monotonic counter survival, precharge-before-work, stable
 duplicate-job reconciliation, changed-manifest conflict, fenced destination,
 unchanged source, bounded digest-only quarantine and Recovery cleanup progress.
+Race every terminal disposition, job takeover, owner-version change and cleanup
+at each activation lock; omit, duplicate, reorder or substitute owner-manifest
+members and receipts; test partial preparation, one-owner rejection, concurrent
+activation, response loss, failover after prepare and prepared-state restore.
+Atomic activation must expose every owner plus the barrier/result or none.
+Missing barrier/receipt/owner state fails closed, and every topology outside
+the selected co-located profile is rejected before staging.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
 requires a distributed work transaction are rejected, not relabeled supported.
 `v0.140.2 implementation stop reached. Run pentest for this exact commit.`
@@ -1431,6 +1453,12 @@ exhaustion result and cleanup/quarantine disposition across failover, restore
 and region movement. A promoted writer cannot reset cumulative work, allocate
 a second nonterminal job for the same material, reinterpret exhaustion as fresh
 work, borrow Recovery cleanup capacity or promote staged authority.
+Preserve `MigrationImportJobLifecycleV1`, candidate/tombstone, complete owner
+manifest, dormant generations, preparation receipts, activation-barrier
+sequence/predecessor/result, activation authorization, co-location proof and
+cleanup linkage as one HA/restore unit. Failover cannot turn prepared into
+active, replay a terminal candidate, accept a partial receipt set, or replace
+the selected local transaction with a remote selector.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/

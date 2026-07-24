@@ -858,6 +858,14 @@ and principal/tenant/deployment counters, reservations, cursor, staged-state
 high-watermarks, result and cleanup/quarantine disposition survive promotion;
 new processes, cursors, reconnects and adapter retries cannot allocate fresh
 work or borrow protected Recovery cleanup.
+Fail over the complete activation handoff with it: closed job phase and
+terminal disposition, candidate/tombstone, canonical owner manifest, dormant
+generations, preparation receipts, barrier sequence/predecessor/result,
+activation authorization and cleanup linkage. A new coordinator may resume
+completeness work under a higher job fence but cannot activate stale receipts.
+Failover after preparation or an unknown activation response re-reads the one
+local transaction result; it never exposes a partial owner set or replaces the
+co-located boundary with remote coordination.
 Catalog HA is the `VIT-LAW-008` process manager, not a quorum write or
 distributed transaction. Exercise immutable topology/placement manifests,
 `Candidate`, `Preparing`, irreversible `ActivationAuthorized`,
@@ -1176,7 +1184,9 @@ cursor/backlog, proof/key epochs, and growth counters;
 every active or terminal `MigrationImportWorkBudgetV1` job/material key,
 immutable budget profile, cumulative operation/aggregate counters, reservations,
 cursor/checkpoints, lease/fence, staged-row high-watermarks, typed result and
-cleanup/quarantine disposition;
+cleanup/quarantine disposition, closed activation lifecycle, candidate/
+tombstone, ordered owner manifest, dormant generations, preparation receipts,
+activation barrier sequence/predecessor/result and authorization;
 the active
 catalog ID/epoch,
 recomputed payload/envelope and actual
@@ -1232,7 +1242,12 @@ resuming source or staging work. Counter/reservation/profile rollback, a
 recreated cursor, duplicate nonterminal material, promotion after budget
 exhaustion, lost cleanup obligation, unbounded quarantine payload or Normal
 borrowing of Recovery cleanup keeps the destination fenced. Resume may repeat a
-conservatively precharged quantum but can never erase cumulative cost; every
+conservatively precharged quantum but can never erase cumulative cost. Every
+prepared-but-unactivated candidate remains dormant after restore. A terminal
+candidate can only resume cleanup; an activated result requires the exact
+barrier and complete matching owner generations. Missing or conflicting
+candidate/receipt/barrier/owner state, an obsolete job fence, or any attempt to
+reconstruct activation from staged rows keeps the deployment unready. Every
 `0.18.2` atomic work variant and denial-only
 audit-chain integrity, external anchors, registered tenant-surface disposition,
 typed external-copy evidence-strength honesty, measurement rollup manifests,
@@ -1423,7 +1438,9 @@ cursor throughput, and every active and terminal
 cumulative byte/item/crypto/proof/temporary-storage/staged-row/open-stream/
 checkpoint/retry/elapsed/cleanup and concurrent-job limits, pessimistic quantum
 precharge, destination-local reservations, fenced promotion, and non-borrowable
-Recovery cleanup capacity,
+Recovery cleanup capacity, plus the closed job lifecycle, candidate/owner
+manifest/dormant-generation/receipt set, co-located activation barrier and
+cleanup-versus-authority separation,
 starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
@@ -1457,7 +1474,9 @@ oracle; terminal-envelope/reconciliation field/outcome/sequence/
 authentication-role and terminal-only settlement oracle,
 migration/import operation-key, budget-profile, cumulative-counter,
 precharge/reservation, cursor/resume/failover, fenced-promotion,
-digest-only-quarantine and protected-cleanup oracle,
+digest-only-quarantine and protected-cleanup oracle; lifecycle-transition,
+candidate/owner-manifest/preparation-receipt, all-or-none activation-barrier,
+idempotent-result and cleanup-race oracle,
 leak/escalation evidence, and signed reports. Verification: atomic
 bounded claim sets across every work bundle, concurrent overlapping-set
 canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
@@ -1563,7 +1582,14 @@ cursor, job identifier, adapter path, restore, or promoted writer may reset
 cumulative counters, evade the frozen profile, duplicate reservations, promote
 exhausted state, mutate the source, write unbounded quarantine payloads, or
 borrow protected Recovery capacity; exhaustion remains typed and cleanup
-converges within its reserved bound.
+converges within its reserved bound. At every activation lock, race exhaustion,
+cancellation, quarantine, rejection, stale-owner takeover, owner-version
+change and cleanup. Omit, duplicate, reorder or substitute manifest members and
+receipts; force partial preparation or one-owner rejection; lose the activation
+response; activate concurrently; fail over after preparation; and restore
+prepared or allegedly active state. Every owner plus barrier/job result/audit/
+outbox becomes visible in one local commit or none does, and unsupported
+non-co-located activation is refused before staging.
 `v0.146.0
 implementation stop reached. Run pentest for this exact commit.`
 
@@ -1609,7 +1635,9 @@ ownership, immutable operation-key uniqueness, frozen budget-profile binding,
 monotonic cumulative-counter and pessimistic-precharge accounting, reservation
 conservation, cursor/retry/failover continuity, fenced promotion, typed
 exhaustion, digest-only quarantine, and protected Recovery-cleanup assurance
-report,
+report; closed lifecycle, canonical candidate/manifest/receipt/barrier codecs,
+dormant-generation non-authority, fixed activation lock order, all-owner
+atomicity, response-loss idempotency and cleanup-separation assurance report,
 and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
@@ -1648,7 +1676,10 @@ terminal chain, and cursor rollback. Audit migrations/imports for job-key alias,
 profile substitution, counter reset/overflow, undercharged quantum, reservation
 overcommit, retry/failover double work, promotion after exhaustion, source
 mutation, payload-bearing quarantine, and cleanup that can starve or borrow from
-Recovery.
+Recovery. Audit every lifecycle edge, terminal fence, owner preparation port,
+candidate/receipt/barrier binding and activation transaction; no coordinator,
+staging reader, cleanup worker or recovery path may make dormant or partial
+state authoritative.
 Exit criteria: every trusted input is pinned/accounted. `v0.147.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.148.0` — Compatibility Freeze
@@ -1687,7 +1718,10 @@ range-chunk/resource-budget/verification-cursor/compaction/key-epoch/
 historical-unavailable compatibility, plus migration/import operation-key,
 budget-profile/generation/epoch/digest, cumulative-counter, precharge,
 reservation, cursor/checkpoint, terminal-result, cleanup/quarantine and
-authorized-successor compatibility.
+authorized-successor compatibility, plus job-phase/terminal-disposition,
+candidate/tombstone, owner-manifest, dormant-generation, preparation-receipt,
+activation-barrier sequence/predecessor/result/authorization and cleanup-link
+compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
 golden mixed-version event corpus, migration/rebuild suites, and deprecation
 rules. Verification: downgrade/skew/unknown versions, upcaster determinism,
@@ -1718,6 +1752,10 @@ parent-release rejection; include old writers that omit a migration/import
 counter, reinterpret its unit, start a fresh job/cursor for the same operation,
 lower or replace its budget profile, lose reservations or cleanup state,
 promote exhausted staging, or treat unknown budget state as reusable capacity.
+Also reject old writers that collapse prepared into active, omit a terminal
+candidate fence, reorder or default owner manifests/receipts, activate against
+stale owner/job versions, accept active state without a complete barrier, or
+introduce a non-co-located selector under an existing profile.
 Exit criteria: supported combinations are exact and no compatible version path
 can lower the durable platform floor, reactivate a superseded rollout, or
 broaden executor credential/network authority.
@@ -1847,6 +1885,15 @@ conservative; no crash, retry, cursor, process, adapter or successor profile
 resets prior work; typed exhaustion leaves the source unchanged and destination
 fenced; quarantine remains digest-only; and protected Recovery cleanup
 converges without unbounded reconciliation.
+Attack the activation handoff at every instruction and commit boundary:
+exhaust/cancel/quarantine immediately before and during activation; substitute
+candidate, manifest, staged root, receipt, owner version, job fence, trusted
+time or authorization; leave one owner unprepared/rejecting; race cleanup and
+takeover; lose responses; run concurrent activators; fail over after prepare;
+and restore prepared, terminal or falsely active state. Prove the fixed local
+transaction exposes the complete matching owner set and canonical result or
+nothing, prepared state stays dormant, terminal state stays fenced, and no
+remote selector fallback exists.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -1889,6 +1936,9 @@ lost recovery delivery, coordinator failover, parent drift, restore of cancelled
 prepared state, load, compatibility, and evidence
 reproducibility pass, plus clean-install/upgrade/restore/failover continuity for
 every migration/import operation key, budget profile, cumulative counter,
-reservation, cursor, result, exhaustion, quarantine and cleanup record. Exit criteria:
+reservation, cursor, result, exhaustion, quarantine and cleanup record, and for
+every closed lifecycle phase, candidate/tombstone, owner manifest, dormant
+generation, preparation receipt, activation barrier/result/authorization and
+cleanup link. Exit criteria:
 no known blocking gap remains.
 `v0.150.0 implementation stop reached. Run pentest for this exact commit.`

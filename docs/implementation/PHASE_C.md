@@ -2344,6 +2344,76 @@ budget-exceeded/quarantine result. A larger successor budget requires explicit
 current change authority, binds the exhausted predecessor and its counters, and
 cannot silently restart work or erase the security record.
 
+Define closed `MigrationImportJobLifecycleV1` with only `Admitted`, `Reading`,
+`Staged`, `Verified`, `AdmissionPrepared`, `Activated`, and `CleanupComplete`
+on the success path. `Rejected`, `BudgetExceeded`, `Cancelled`, `Quarantined`,
+and `AdmissionFailed` are mutually exclusive irreversible pre-activation
+dispositions; their separately bounded cleanup substate may advance but can
+never return to preparation or activation. `Activated` is also irreversible:
+later cancellation or exhaustion returns the canonical activation result and
+cannot revoke authority. Before activation, every terminal disposition
+atomically advances the job fence, permanently tombstones the candidate and
+prevents cleanup, retry, takeover, failover or restore from promoting it.
+
+Freeze canonical `MigrationImportAdmissionCandidateV1`. It binds the job and
+operation key; exact tenant/deployment, source/destination and manifest digest;
+budget-profile identity and final cumulative counters; staged-state root;
+complete canonically ordered expected invariant-owner manifest; every owner
+identity, authoritative key, expected version/epoch and proposed dormant
+generation/root; migration lease generation and fence; trusted-time interval,
+deadline and exact activation authorization; and candidate digest plus stable
+idempotency identity. Each existing invariant owner validates its portion and
+prepares only a dormant, non-authoritative candidate generation. Its canonical
+authenticated `MigrationImportOwnerPreparationReceiptV1` binds all candidate,
+owner, version/epoch, dormant-generation/root, verifier/build and fence fields.
+Preparation never changes the current generation and one owner rejection
+permanently makes the candidate `AdmissionFailed`.
+Before sealing the candidate digest, the job pessimistically precharges the
+complete bounded owner-preparation, activation, result and response-recovery
+quantum, so the bound final counters already include every later handoff step.
+No owner may perform uncharged preparation. The job moves from `Verified` to
+`AdmissionPrepared` only while atomically persisting the complete unique
+ordered receipt set and barrier draft; a partial set remains dormant in
+`Verified` and cannot be interpreted as ready.
+
+Freeze canonical `MigrationImportActivationBarrierV1` containing the exact
+candidate digest, complete ordered owner-manifest and preparation-receipt set,
+expected current destination generations, current job state/lease/fence and
+budget profile/final counters, activation authorization and trusted-time
+evidence, non-wrapping activation sequence/predecessor, and canonical result.
+The migration registry coordinates completeness evidence only; it cannot
+approve a domain transition, fabricate a receipt or make prepared state
+authoritative.
+
+The supported through-`1.0.0` activation profile requires the job, candidate,
+barrier and every affected invariant-owner activation guard to be co-located in
+one destination-local transaction domain. Activation locks job, candidate/
+barrier, then owner rows in canonical manifest order; rechecks
+`AdmissionPrepared`, exact current job lease/fence, budget profile and final
+counters, absence of every failure disposition, current trusted time and
+authorization, complete unique ordered receipts, exact staged root, and every
+unchanged owner version/epoch; invokes each owner's own verifier; then
+atomically activates all dormant owner generations, commits the barrier
+sequence/result, moves the job to `Activated`, and writes audit/result/outbox.
+Missing, duplicate, reordered or substituted receipts, stale owner/job state,
+partial preparation, expired authority or any owner rejection commits no
+activation. Exact concurrent or response-loss retry returns the one barrier
+result; changed material conflicts. No distributed transaction is claimed.
+A topology unable to provide this complete local atomic boundary refuses the
+migration/import profile before reading or staging authority. A future
+non-co-located activation selector would be an authority root and therefore
+requires a separately versioned invariant/composite-law review; it is not an
+implicit fallback.
+
+Cleanup locks and rechecks the barrier and job disposition. Before activation
+it may remove only permanently fenced dormant/staged data through each owner's
+non-authoritative cleanup port while retaining bounded result/tombstone
+evidence. After activation it may remove only non-authoritative staging;
+authoritative generations are thereafter governed and deleted solely by their
+existing invariant owners. An active job with a missing/mismatched barrier,
+receipt or owner generation is corrupt authority state and fails closed rather
+than being reconstructed from staging.
+
 A migration or import
 cannot route authority reads to a replica, synthesize absence, reset a unique
 claim or restart budget, reinterpret contention as unavailable history, or
@@ -2463,7 +2533,11 @@ and concrete `VIT-RCV-*` fields. The adapter migration contract explicitly
 accepts only complete two-head settlement state and exposes no singular-head
 conversion path. It also exposes the durable `MigrationImportWorkBudgetV1`
 transaction, precharge, aggregate-concurrency and cleanup semantics or refuses
-the migration profile.
+the migration profile. Deliver the closed job lifecycle, canonical admission
+candidate/owner-manifest/preparation-receipt/activation-barrier codecs, dormant
+owner preparation ports, owner-local verification, one co-located activation
+transaction and idempotent result/recovery/cleanup ports. No non-co-located
+activation profile is supported.
 
 Verification: reorder/substitution, partial failure, concurrent runner, lease loss,
 downgrade, malicious input, retry, backup restore, floor-profile conflict,
@@ -2522,6 +2596,17 @@ reuse. Saturate principal/tenant/deployment job limits and prove Normal
 migration traffic cannot consume Recovery cleanup capacity. Budget exhaustion
 never promotes destination authority, mutates the source or stores hostile
 payload in quarantine.
+Exercise every legal and illegal `MigrationImportJobLifecycleV1` transition.
+Race exhaustion and cancellation immediately before every activation lock and
+during the transaction; stale-owner takeover, cleanup and concurrent
+activation attempts; and every owner-version change. Omit, duplicate, reorder
+or substitute manifest members and preparation receipts; leave one owner
+unprepared or rejecting; lose the activation response; fail over after
+preparation; restore a prepared but unactivated candidate; and present
+`Activated` with a missing barrier, receipt or owner generation. Exactly one
+complete local transaction activates every owner plus job/result/audit/outbox,
+or none does; no prepared state is readable as authority and no failure cleanup
+can later promote it.
 
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
 `v0.29.0 implementation stop reached. Run pentest for this exact commit.`
@@ -2572,6 +2657,14 @@ manifest/admission/semantic-realization closure. The importer reuses the exact
 precharged reservations, typed exhaustion, bounded quarantine and cleanup
 lifecycle from `0.29.0`; export enumeration, transfer and destination staging
 are charged to that same operation rather than separate resettable budgets.
+It also reuses the exact `MigrationImportJobLifecycleV1`,
+`MigrationImportAdmissionCandidateV1`, owner preparation receipts and
+`MigrationImportActivationBarrierV1` from `0.29.0`. Import never exposes a
+partially prepared owner: all owner generations remain dormant until the one
+supported destination-local activation transaction atomically commits the
+complete owner set, barrier, job result, audit and outbox. A destination that
+would require a cross-partition, cross-region or external activation selector
+refuses before staging rather than weakening the handoff.
 Import preserves every
 authorization schema field without defaulting and admits the destination only
 if it proves the same or stronger no-late-commit mechanism; otherwise imported
@@ -2648,6 +2741,12 @@ temporary/staging exhaustion, open-file/stream and concurrent-job saturation,
 crash/cursor/reconnect/failover/adapter-retry counter reset, duplicate job or
 changed-manifest reuse, Normal-to-Recovery cleanup starvation, unbounded
 quarantine payload retention, budget-exceeded promotion or source mutation,
+exhaustion/cancellation/cleanup versus activation, stale owner version or job
+fence, missing/duplicate/reordered/substituted preparation receipt, incomplete
+owner manifest, partial preparation, owner rejection, activation response
+loss, concurrent activation, failover after preparation, prepared-state
+restore, active-without-barrier/receipt/owner-generation corruption, and any
+non-co-located activation fallback,
 and cross-adapter conformance pass.
 
 Exit criteria: successful import proves complete semantic and integrity parity.

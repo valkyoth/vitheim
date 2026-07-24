@@ -192,6 +192,21 @@ protected Recovery capacity; each bounded quantum is precharged before work.
 Typed exhaustion leaves the source unchanged and destination unready, enters
 bounded resumable cleanup, and stores only bounded metadata/digests in
 quarantine.
+The same milestones close the activation handoff. One
+`MigrationImportAdmissionCandidateV1` binds the final counters, staged root,
+complete ordered invariant-owner manifest, expected versions/epochs, dormant
+generations, lease/fence, trusted-time-bound authorization and idempotency
+digest. Each existing owner prepares and authenticates only its dormant
+generation. One `MigrationImportActivationBarrierV1` binds the complete unique
+receipt set and current job/owner state. Through `1.0.0`, job, barrier and every
+owner activation guard are co-located: one canonical local transaction rechecks
+the still-`AdmissionPrepared` job, budget/fence/authorization and all owner
+versions, then activates every owner plus barrier/job result/audit/outbox, or
+none. Pre-activation rejection, exhaustion, cancellation or quarantine
+permanently fences the candidate; post-activation cleanup touches only staging.
+The registry coordinates completeness, never domain authority. A topology
+requiring a distributed transaction or unreviewed global activation selector
+is refused.
 Archive exact results or authenticated result references with
 request/lifecycle/scope/predecessor/key commitments, bounded proof work and a
 durable cursor. Late exact retry returns the archived result, changed retry

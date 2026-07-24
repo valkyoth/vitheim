@@ -8,6 +8,12 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Closed the migration/import activation handoff with a fenced job lifecycle,
+  exact admission candidate and ordered owner manifest, authenticated dormant-
+  generation preparation receipts, and an idempotent activation barrier. The
+  supported production profile activates every existing invariant owner plus
+  job/result/audit/outbox in one local transaction or none; terminal failures
+  permanently fence candidates, and remote selector fallback is unsupported.
 - Added one durable operation-wide `MigrationImportWorkBudgetV1` for migrations
   and imports, with immutable job uniqueness, monotonic cumulative resource
   counters across crash/retry/failover, pessimistic precharge, admission-time

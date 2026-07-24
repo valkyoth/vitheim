@@ -526,6 +526,18 @@ restore, failover, and release evidence.
    bounded work quanta are precharged before use; exhaustion fences promotion,
    preserves the source, and runs bounded Recovery-protected cleanup with
    digest-only quarantine metadata.
+   Imported authority follows a closed staged lifecycle. Existing invariant
+   owners prepare candidate generations as dormant and authenticate receipts
+   over one exact candidate, owner manifest, staged root, versions, budget
+   counters and migration fence. Through `1.0.0`, the job/barrier and every
+   affected owner activation guard must share one destination-local transaction:
+   after canonical locking and current-state rechecks, all owners activate with
+   the barrier/job result/audit/outbox or none do. The migration registry proves
+   completeness but grants no domain authority. Cancellation, exhaustion,
+   rejection or quarantine before that commit permanently fences the candidate;
+   afterward cleanup can remove only non-authoritative staging. Non-co-located
+   selectors are unsupported because they would require an explicitly owned
+   new authority root and composite law.
 10. Every important result is explainable from commands, events, policy,
     workflow, evidence, provenance, and versioned configuration.
 11. The API is the product boundary; the UI is an API client and cannot acquire
