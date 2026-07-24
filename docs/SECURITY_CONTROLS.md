@@ -101,6 +101,12 @@ audit decision.
   denial; exact expected-version fence clear/activation; authenticated
   failover/restore; stale-worker and competing-successor rejection; and
   Recovery isolation;
+  mandatory PendingDrain for every canonical reduction; overflow-safe typed
+  complete-profile comparison with unknown/incomparable schemas treated as
+  reductions; canonically derived aggregate-to-lane fence coverage; fixed
+  lane/aggregate capacity-row locking; activation-record-selected recovery
+  with lineage/activation high-watermarks; and atomic, uncallable fence
+  lifecycle events;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

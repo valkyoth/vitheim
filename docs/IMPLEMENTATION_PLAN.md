@@ -153,7 +153,12 @@ and successor limits or receive a typed pre-debit draining denial, while
 existing reservations continue to terminalization/checkpoint. Activation or
 authorized rejection atomically rechecks and consumes the exact fence;
 failover/restore cannot lose or bypass it, and Normal/BreakGlass draining never
-blocks Recovery. A once-per-
+blocks Recovery. Every canonical reduction must pass through PendingDrain;
+unknown/incomparable schemas drain conservatively. Aggregate reductions derive
+all capable consumer lanes and enforce successor lane plus aggregate limits
+under fixed row locking. Recovery selects active state from committed
+activation records, restores pending/fence state and high-watermarks
+separately, and exposes no independent fence install/clear command. A once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive

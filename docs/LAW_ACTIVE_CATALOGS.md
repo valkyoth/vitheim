@@ -450,25 +450,43 @@ VIT-INV-061 alone owns the immutable
 `TopologyAuthorizationPresentationChargeLedgerCapacityProfileV1` lineage:
 stable ID, monotonic generation/epoch, canonical digest, predecessor, closed
 state and expected-version activation CAS. Emergency reductions and aggregate
-changes require separated approval. A shrink stays `PendingDrain` or rejects
+changes require separated approval. Every reduction of a canonical lane,
+reserve, aggregate, storage, I/O, or worker field must follow Proposed ->
+PendingDrain -> Active; only an overflow-safe typed proof that every field is
+equal or increasing permits direct Proposed activation. Unknown, omitted,
+incomparable, or mixed-schema fields require drain. A shrink stays
+`PendingDrain` or rejects
 until every lane's usage, awaiting charges, reservations, backlog, maintenance
 obligations and protected reserve fit. Obligations never change lane, capacity
 never transfers, and increases require authenticated physical disk/I/O/worker
-evidence. Restore selects the greatest authenticated generation/digest and
-reconstructs usage; it never merges maximum numeric ceilings or accepts a
-downgrade writer.
+evidence. Restore selects active state from the greatest authenticated
+committed activation record rather than greatest raw generation; it never
+merges maximum numeric ceilings or accepts a downgrade writer.
 `PendingDrain` atomically installs
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 the active predecessor and pending successor generations/digests, affected
-lanes, sequence, expected version, and continuity. One predecessor has at most
+lanes, reduced aggregate dimensions, sequence, expected version, and
+continuity. The owner derives affected lanes; aggregate reduction includes
+every capable consumer lane. One predecessor has at most
 one nonterminal successor/fence. Stage one must fit both active and pending
-limits or return
+lane-specific and aggregate limits after prospective reservation or return
 `TopologyAuthorizationPresentationChargeLedgerCapacityDraining` before debit
-or evidence. Existing obligations retain completion capacity. Activation or
+or evidence. Admission/activation lock the same capacity rows in fixed order.
+Existing obligations retain completion capacity. Activation or
 authorized rejection locks and consumes only the exact fence after rechecking
 usage, reservations, backlog, maintenance, provisioning, and predecessor.
 Competing/stale/missing/restored-unauthenticated fences and worker bypass deny;
 Normal/BreakGlass draining cannot block Recovery.
+Install/clear helpers are uncallable. PendingDrain emits atomic
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`;
+activation/rejection emits atomic
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceConsumed`.
+Recovery reconstructs
+`TopologyAuthorizationPresentationChargeLedgerCapacityRecoveryStateV1` with
+activation-selected active profile, optional pending successor/exact fence,
+lineage and activation high-watermarks, and verified derived coverage.
+Multiple-active, contradictory-record, unreachable-predecessor, or
+pending/fence half-state fails closed.
 `TopologyAuthorizationRequestRateBudgetV1` charges exactly once for every
 first-seen canonical request ID/digest and binds that charge to monotonic
 `TopologyAuthorizationRequestSequence`. Exact retries charge presentation rate

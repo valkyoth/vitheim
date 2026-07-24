@@ -8,6 +8,11 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Strengthened capacity-profile transitions so every lane, reserve, aggregate,
+  storage, I/O, or worker reduction must pass through PendingDrain; aggregate
+  fences derive all capable consumer lanes; recovery follows committed
+  activation records and explicit high-watermarks; and fence lifecycle is
+  represented only by atomic transition events.
 - Added a durable lane-scoped capacity drain fence for pending charge-ledger
   profile reductions. New stage-one work must satisfy both active and pending
   limits, over-target lanes receive a typed pre-debit draining denial, existing

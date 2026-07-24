@@ -460,9 +460,16 @@ reserves, aggregate ceilings, and authenticated physical disk/I/O/worker
 provisioning evidence. Freeze `Proposed`, `PendingDrain`, `Active`,
 `Superseded`, and `Rejected` as the only states and forbid in-place mutation.
 The predecessor remains active while a successor is proposed or pending drain.
-Activation is one expected-version transaction that makes the proposed or
-pending-drain successor active and the predecessor superseded. Rejected and
-superseded are terminal; no state returns to proposal or active.
+Freeze a complete typed profile-diff classifier: every reduction of a lane
+limit, reserve, aggregate ceiling, storage/I/O allowance, or worker allowance
+must follow `Proposed` -> `PendingDrain` -> `Active`; only a successor proven
+equal-or-increasing in every canonical field may activate directly from
+`Proposed`. Comparisons use overflow-safe typed units. Unknown or omitted
+fields, incomparable profiles, and mixed schema versions classify as
+reductions. Activation is one expected-version transaction that makes the
+permitted proposed or pending-drain successor active and the predecessor
+superseded. Rejected and superseded are terminal; no state returns to proposal
+or active.
 Reducing either emergency lane or changing aggregate ceilings requires current
 change-or-incident authority with separated requestor, approver, and activator
 roles plus quorum. A shrink activates only when every successor lane limit
@@ -476,11 +483,17 @@ downgrade writers deny.
 
 Freeze `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`.
 Entering `PendingDrain` atomically binds the active predecessor ID/generation/
-digest, pending successor generation/digest, affected lanes, install sequence,
-expected version, and owner continuity into one durable fence. Permit only one
+digest, pending successor generation/digest, affected lanes, reduced aggregate
+dimensions, install sequence, expected version, and owner continuity into one
+durable fence. The owner derives `affected_lanes` from the canonical typed
+profile diff; callers never supply it. A shared aggregate reduction fences
+every lane capable of consuming that disk, I/O, worker, row, byte, backlog, or
+maintenance dimension. Permit only one
 nonterminal successor/fence per active predecessor. Every stage-one admission
 locks the fence and must fit both active and applicable successor limits,
-including lifecycle reservation; otherwise typed
+including every lane-specific and aggregate limit after its prospective
+lifecycle reservation. Admission and activation lock the same lane and
+aggregate capacity rows in one fixed order; otherwise typed
 `TopologyAuthorizationPresentationChargeLedgerCapacityDraining` rejects before
 debit/evidence creation. Existing obligations retain their lane reservations
 and completion path. Activation atomically rechecks the fence, usage,
@@ -490,9 +503,24 @@ Authorized rejection or controlled abandonment moves the successor to
 stale, competing, worker-cleared or unauthenticated restored fence state denies.
 Normal/BreakGlass drains cannot affect Recovery resources.
 
-Freeze recovery by greatest authenticated profile generation and exact digest,
-followed by reconstruction of usage/reservations and any installed drain
-fence. Never merge maximum numeric
+Fence lifecycle helpers are not public or independently callable commands.
+Freeze `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`
+as an event emitted only by the atomic PendingDrain transition and
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceConsumed` as
+an event emitted only by atomic activation or authorized rejection. Direct
+install/clear invocation is unrepresentable and older/malformed attempts deny.
+
+Freeze recovery as
+`TopologyAuthorizationPresentationChargeLedgerCapacityRecoveryStateV1`:
+the active profile selected from the greatest authenticated committed
+activation record, optional pending successor, optional exact drain fence,
+lineage-generation high-watermark, and activation-sequence high-watermark.
+Recover proposed and rejected higher generations as history, never activation;
+apply active and pending constraints jointly. Recompute the affected lanes and
+reduced aggregate dimensions and authenticate them against the fence.
+Multiple active profiles, pending/fence half-state, contradictory activation
+records, unreachable predecessors, or rolled-back high-watermarks deny. Then
+reconstruct usage/reservations. Never merge maximum numeric
 ceilings across backups or peers; an older larger profile is not authority
 after a newer downsizing profile.
 Freeze the canonical principal/authority budget key and anti-identity-splitting
@@ -1015,8 +1043,9 @@ sequence/closed irreversible disposition/result link/continuity/checkpoint and
 atomic saturation semantics, per-lane charge-ledger rows/bytes/awaiting/
 backlog/checkpoint/archive-I/O/compaction-worker reservations and aggregate
 disk/work ceilings, capacity-profile lineage/generation/digest/state/
-activation/provisioning evidence and drain obligations, exact lane-scoped
-drain-fence state, authenticated presentation-lane
+activation/provisioning evidence, typed reduction classification, activation
+sequence/high-watermark and drain obligations, exact lane-scoped/
+aggregate-derived drain-fence state and atomic lifecycle events, authenticated presentation-lane
 endpoint/audience/credential-profile mappings and their generation/fence/
 revocation high-watermarks and sole-owner/SoD state,
 principal presentation-rate/request-rate/admission/outstanding counters,

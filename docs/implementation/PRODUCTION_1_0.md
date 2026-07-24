@@ -120,23 +120,46 @@ activation, lane limits/reserves, aggregate ceilings, closed state, governance,
 and authenticated physical provisioning evidence. A shrink remains
 `PendingDrain` until all current usage, awaiting charges, lifecycle
 reservations, backlog, maintenance obligations, and protected reserves fit.
+Every reduction of any canonical lane limit, reserve, aggregate ceiling,
+storage allowance, I/O allowance, or worker allowance must transition
+`Proposed` -> `PendingDrain` -> `Active`. Direct activation from `Proposed` is
+permitted only when overflow-safe typed comparison proves every canonical
+field equal or increasing; unknown, omitted, incomparable, or mixed-schema
+fields require drain.
 No obligation is cancelled or moved between lanes; capacity never transfers
 between lanes. Emergency reductions and aggregate changes require separated
 approval, and increases require proven disk/I/O/worker capacity. Restore uses
-the greatest authenticated profile generation and exact digest, never the
-greatest numeric ceiling; stale generations and downgrade writers fail closed.
+the active profile selected by the greatest authenticated committed activation
+record, never raw greatest profile generation or greatest numeric ceiling;
+stale generations and downgrade writers fail closed.
 `PendingDrain` atomically installs a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` binding
-predecessor/successor generations and digests, affected lanes, sequence,
-expected version, and continuity. Stage one must fit active plus pending limits
+predecessor/successor generations and digests, canonically derived affected
+lanes and reduced aggregate dimensions, sequence, expected version, and
+continuity. Aggregate reductions fence every lane capable of consuming the
+dimension; callers cannot provide the set. Stage one must fit active plus
+pending lane-specific and aggregate limits after prospective reservation
 or return typed
 `TopologyAuthorizationPresentationChargeLedgerCapacityDraining` before debit
-or evidence; existing obligations retain their reserved completion path.
+or evidence; admission and activation lock identical lane/aggregate rows in a
+fixed order, and existing obligations retain their reserved completion path.
 Activation rechecks fence, usage, reservations, backlog, maintenance,
 provisioning, and predecessor atomically. Authorized rejection clears only the
 exact fence with its terminal transition. Competing/stale/missing/restored-
 unauthenticated fences and worker bypass deny, while Normal/BreakGlass drains
 cannot block Recovery.
+Fence lifecycle helpers are not callable authority. The PendingDrain
+transaction emits
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`;
+atomic activation or authorized rejection emits
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceConsumed`.
+Recovery reconstructs
+`TopologyAuthorizationPresentationChargeLedgerCapacityRecoveryStateV1` with
+activation-selected active profile, optional pending successor/exact fence,
+lineage-generation and activation-sequence high-watermarks, and verified
+derived lane/aggregate coverage. Multiple active profiles, pending/fence
+half-state, contradictory activation records, unreachable predecessors, or
+direct fence install/clear invocation deny.
 Every first-seen authenticated canonical request receives monotonic
 `TopologyAuthorizationRequestSequence` bound to its request-rate charge. Exact
 retries charge presentation rate again but reuse the request charge, sequence,
@@ -241,6 +264,13 @@ disk/worker bounds and cross-lane non-borrowing, shrink races against stage one,
 stage two and compaction, interrupted activation, generation-skew failover,
 older-larger-profile restore, insufficient provisioning evidence, downgrade
 writer rejection and attempts to assign Recovery capacity elsewhere,
+initially-safe lane/reserve/aggregate/storage/I/O/worker reductions racing
+admission, overflow/unknown/omitted/incomparable/mixed-schema classification,
+aggregate-only disk/I/O/worker reductions with unchanged lanes under traffic,
+fixed lane/aggregate row locking, higher proposed/pending/rejected generations
+above the active record, multiple-active/contradictory activation records,
+unreachable predecessors, pending/fence half-state, derived-set mismatch and
+direct fence-helper calls,
 continuous traffic during shrink, admission/fence-install and final-admission/
 activation races, rejection-versus-admission, installed-fence crash/failover/
 restore, stale-worker bypass, and competing successors, lineage change before a receipt

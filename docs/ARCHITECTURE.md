@@ -124,8 +124,10 @@ with monotonic generation/digest, predecessor and expected-version activation.
 Shrinks remain pending until all current usage, reservations, maintenance
 obligations and protected reserves fit; obligations never change lane.
 Increases require authenticated physical provisioning evidence. Failover and
-restore select the greatest authenticated profile generation/digest and
-reconstruct usage, never the greatest numeric ceilings.
+restore select active state from the greatest authenticated committed
+activation record, restore pending state and lineage/activation
+high-watermarks separately, and reconstruct usage—never raw greatest
+generation or greatest numeric ceilings.
 Pending shrink installs an authenticated lane-scoped drain fence. Stage one
 must satisfy active and pending profiles or receive a typed denial before
 debit/evidence creation; accepted obligations retain their completion path.
@@ -133,6 +135,14 @@ Activation or authorized rejection consumes the exact fence under
 expected-version CAS. Competing, stale, missing or worker-cleared fences fail
 closed across RPC, failover and restore, and Normal/BreakGlass drain cannot
 block Recovery.
+Every reduction of lane, reserve, aggregate, storage, I/O, or worker capacity
+must enter PendingDrain; only a complete overflow-safe typed proof of
+equal-or-increasing fields permits direct activation. Aggregate reductions
+derive and fence every capable consumer lane, and admission/activation share a
+fixed capacity-row lock order. Recovery selects active state from authenticated
+committed activation records and separately restores pending/fence state and
+lineage/activation high-watermarks. Fence installed/consumed are atomic events,
+not callable helper commands.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again
