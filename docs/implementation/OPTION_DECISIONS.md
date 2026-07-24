@@ -820,7 +820,10 @@ current hot-row IDs/versions/ranges, settlement IDs/trigger kinds/ordered
 bundle digests/results, attempt-checkpoint linkage, exact checkpoint/deletion
 settled-leg tombstones, remaining unsettled legs and conservative original-
 bucket balances. Missing or defaulted members fail recovery admission; a
-legacy singular-head snapshot requires an explicit registered migration.
+singular-head snapshot is unsupported because no Vitheim release admitted that
+schema. It is quarantined before authority mutation and cannot initialize or
+migrate either head; only a new empty deployment initializes both canonical
+genesis heads.
 Recover proposed and rejected higher generations as history, never activation;
 apply active and pending constraints jointly. Recompute the affected lanes and
 reduced aggregate dimensions and authenticate them against the fence.
@@ -1398,8 +1401,11 @@ settlement IDs, trigger kinds, ordered bundle digests and results; attempt-
 checkpoint linkage; exact checkpoint/deletion settled-leg tombstones; remaining
 unsettled legs; and conservative original-bucket balances. Omitting or
 defaulting either head, linkage, trigger, settled-leg, remaining-leg or balance
-fails decoding and admission. A singular-head legacy snapshot is accepted only
-through an explicit registered `0.29.0` migration.
+fails decoding and admission. Singular-head input is never accepted: no
+Vitheim release admitted that schema, `0.29.0` defines no split migration, and
+preflight quarantines it before authority mutation while retaining conservative
+capacity and an unready destination. A future genuine compatibility need
+requires a separately versioned source-specific decision and security review.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/
@@ -1640,7 +1646,8 @@ exhaustion, false automatic recovery without an independent provider path,
 missing invariant declaration/owner/lifecycle/contract resolution, asymmetric
 supersession, owner-fence loss, unsafe mixed-version transfer, rollback below
 floor, incomplete recovery manifest, omitted settlement recovery head/linkage/
-trigger/settled-leg/remaining-leg/balance, implicit singular-head upgrade,
+trigger/settled-leg/remaining-leg/balance, any singular-head admission or
+upgrade, invented predecessor/coverage history,
 reopened checkpoint leg or pre-settled deletion leg,
 transfer owner/root/
 parent/period/lane/class/region/authorization substitution, emergency/security-cleanup-to-

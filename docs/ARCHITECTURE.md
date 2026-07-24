@@ -226,7 +226,8 @@ relationship, archive root/key/publication/cursor, exact covered/current hot-
 row IDs/versions/ranges, settlement/trigger/ordered-bundle/result identity,
 attempt-checkpoint linkage, exact settled and remaining leg sets, and
 conservative original-bucket balances. No member is optional or inferred:
-legacy singular-head state enters only through a registered migration, and
+singular-head state was never an admitted Vitheim schema, is quarantined before
+authority mutation, and cannot be split, migrated or treated as empty genesis;
 omission, rollback, fork or substitution keeps the node unready.
 
 Every first-seen canonical request pays one separate request-rate charge and

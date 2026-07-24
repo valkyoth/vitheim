@@ -663,7 +663,9 @@ Multiple-active, contradictory-record, unreachable-predecessor, or
 pending/fence half-state, activation gap/fork/reorder/duplicate, active-row
 disagreement, missing checkpoint, or high-watermark rollback fails closed.
 Omission or defaulting of a settlement recovery member also fails closed; a
-legacy singular-head snapshot requires an explicit registered migration.
+singular-head snapshot is unsupported because no Vitheim release admitted that
+schema, and is quarantined before authority mutation rather than migrated,
+split, or treated as genesis.
 `TopologyAuthorizationRequestRateBudgetV1` charges exactly once for every
 first-seen canonical request ID/digest and binds that charge to monotonic
 `TopologyAuthorizationRequestSequence`. Exact retries charge presentation rate

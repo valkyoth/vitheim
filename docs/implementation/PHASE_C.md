@@ -897,8 +897,11 @@ ordered bundle digest and canonical result, verification cursor, exact
 checkpoint/deletion settled-leg tombstones, attempt-checkpoint linkage,
 remaining unsettled legs, and conservative original-bucket balances. Omission
 or defaulting of either head, linkage, trigger, settled leg, remaining leg or
-balance fails decoding and admission. A singular-head legacy snapshot requires
-an explicit registered migration and is never inferred as the two-head tuple.
+balance fails decoding and admission. No Vitheim release admitted a singular-
+head settlement schema, so such a snapshot is unsupported input: recovery
+quarantines it before authority mutation and never infers, migrates or
+initializes the two-head tuple from it. Only an explicitly new empty deployment
+may create both heads at canonical genesis.
 Raw
 profile generation never implies activation. Rejected and
 unactivated proposed generations remain historical only. A recovered pending
@@ -1652,8 +1655,13 @@ are conserved. Remove checkpoint-settlement history/proof and require the
 terminalization/checkpoint-backlog charge to remain conservatively held.
 Round-trip the complete recovery codec, then omit each head, linkage, trigger,
 settled-leg tombstone, remaining-leg set and original-bucket balance in turn;
-decoding and admission must fail closed. Feed a legacy singular-head snapshot
-and require an explicit registered migration rather than implicit defaulting.
+decoding and admission must fail closed. Feed a purported singular-head snapshot
+claiming local-journal, verified-archive, both, empty or fully reconstructable
+meaning and require the same pre-mutation unsupported-schema quarantine.
+Supply complete-looking hot rows, archives, chunks, keys, checkpoints,
+reservation sets and balances alongside it and prove they still cannot invent
+either historical chain. Lose the refusal response and retry; no destination
+head, anchor, tombstone, balance, supersession or migration marker may appear.
 Restore at every boundary between checkpoint settlement and physical deletion
 and prove that neither leg set is reopened or pre-settled.
 
@@ -2275,10 +2283,20 @@ and current settlement hot-row IDs/versions/ranges, verification cursor,
 settlement IDs, checkpoint-versus-deletion trigger kinds, ordered bundle
 digests/results, attempt-checkpoint linkage, exact settled-leg tombstones,
 remaining unsettled legs and conservative original-bucket balances as one
-compatibility boundary. A legacy singular-head recovery snapshot requires an
-explicit registered migration; omission or defaulting of any tuple member
-denies. Migration between checkpoint settlement and physical deletion cannot
-settle, reopen or reclassify either leg set.
+compatibility boundary. This roadmap defines no
+`CapacitySettlementLegacyHeadMigrationV1` and no singular-head split: no
+Vitheim release admitted that schema, and a single digest cannot authenticate
+two historical chains. Migration preflight accepts only the complete canonical
+two-head tuple. Any singular source-schema identity or representation is
+quarantined before destination authority mutation, leaves the source untouched,
+keeps the destination fenced/unready and every ambiguous capacity charge
+conservative, and returns the same refusal on retry. It cannot be reclassified
+as empty genesis even when it claims no settlements. Omission or defaulting of
+any tuple member likewise denies. If a real external compatibility population
+is discovered later, a new milestone must admit its exact source schema,
+evidence, quarantine and idempotent application contract after security review;
+`0.29.0` cannot improvise one. Migration between checkpoint settlement and
+physical deletion cannot settle, reopen or reclassify either leg set.
 A migration or import
 cannot route authority reads to a replica, synthesize absence, reset a unique
 claim or restart budget, reinterpret contention as unavailable history, or
@@ -2394,7 +2412,9 @@ semantic/recovery lifecycle plus canonical manifest bytes and digests,
 planning-superset versus active-catalog separation, complete owned payload/
 envelope metadata/full ancestry and ratchets, closed semantic realizations, explicit
 per-point negative-child realization,
-and concrete `VIT-RCV-*` fields.
+and concrete `VIT-RCV-*` fields. The adapter migration contract explicitly
+accepts only complete two-head settlement state and exposes no singular-head
+conversion path.
 
 Verification: reorder/substitution, partial failure, concurrent runner, lease loss,
 downgrade, malicious input, retry, backup restore, floor-profile conflict,
@@ -2434,6 +2454,14 @@ loss, or key-rotation loss,
 missing campaign membership journal/scan receipt/final barrier/mismatch state,
 missing operation-profile discriminator, cancelled-prepared recovery receipt
 loss/duplication, and restored independent-parent-release cases.
+Present singular settlement sources under every claimed meaning and with
+partial or apparently complete rows, archives, chunks, keys, attempt
+checkpoints, reservation sets, leg sets and balances. Preflight must quarantine
+before destination authority mutation, leave the source untouched, retain
+conservative charges and keep the destination unready. Lose and retry the
+refusal response; neither run may create a destination head, anchor,
+tombstone, balance, supersession, checkpoint or migration marker. Only a
+complete authenticated two-head source can proceed.
 
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
 `v0.29.0 implementation stop reached. Run pentest for this exact commit.`
@@ -2502,8 +2530,8 @@ linkage, exact archived retry/conflict behavior, no decrement from absent-
 envelope non-membership, conservative unavailable-history charging for either
 trigger, mixed checkpoint/deletion archives, exact sparse settled/remaining-leg
 state, conservative original balances and bounded settlement proof/compaction
-work; a singular-head legacy snapshot requires explicit migration and no
-missing tuple field is defaulted;
+work; singular-head input is unsupported and quarantined before import
+mutation, while no missing tuple field is defaulted;
 otherwise
 drain-action execution remains fenced. It also proves
 the same-or-longer exact horizon, no-lower quotas/backpressure safety, complete
@@ -2546,6 +2574,10 @@ reconciliation result/outbox sequence or authentication-role rollback,
 presentation/request/admission counter collapse,
 oversized/deep/partial/cyclic range proof, or
 budget-class/reserve weakening,
+singular settlement input claiming local/archive/both/empty/complete meaning,
+apparently complete supporting evidence, genesis inference, invented chains or
+coverage, source mutation, destination authority mutation, refusal-response
+retry side effects,
 and cross-adapter conformance pass.
 
 Exit criteria: successful import proves complete semantic and integrity parity.

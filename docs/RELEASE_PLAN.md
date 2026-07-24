@@ -131,8 +131,8 @@ implementations remain blocked rather than being implemented casually.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.21.0` | Stable-invariant, law-manifest, catalog lineage/rollout/local-ratchet, and semantic-realization storage negotiation | Retain transactional original reservations, reservation-free joins, lifecycle transfers, per-leg exact-once settlement, distinct journal/archive heads, both CAS boundaries, captured-range/H-revalidation and bounded conservative replay; add one namespace for every checkpoint/deletion leg, atomic checkpoint bundle and a canonical recovery tuple containing both heads/chains/coverage, exact rows, triggers/bundles/results/linkage/leg sets/balances |
-| `0.22.0` | Declaration-derived destructive invariant and ancestry-complete generation-pinned law/catalog conformance | Retain every prior attack; add recovery-codec omission/defaulting for either head, linkage, trigger, settled/remaining leg or balance; explicit legacy singular-head migration; checkpoint response/duplicate/publication races; mixed archives; substitution; between-stage restore; unavailable-history charge |
+| `0.21.0` | Stable-invariant, law-manifest, catalog lineage/rollout/local-ratchet, and semantic-realization storage negotiation | Retain transactional original reservations, reservation-free joins, lifecycle transfers, per-leg exact-once settlement, distinct heads/CAS boundaries, captured-range/H-revalidation and bounded conservative replay; add unified checkpoint/deletion replay, atomic checkpoint bundle and complete recovery tuple; only new empty deployments initialize both genesis heads and no singular schema is admitted |
+| `0.22.0` | Declaration-derived destructive invariant and ancestry-complete generation-pinned law/catalog conformance | Retain every prior attack; omit/default recovery fields; present singular input as local/archive/both/empty/complete and require pre-mutation quarantine; retry lost refusals without mutation; retain checkpoint/compaction/publication/mixed-trigger/between-stage/unavailable-history tests |
 | `0.23.0` | SQLite single-node adapter | Retain all prior adapter proofs; prove unified checkpoint/deletion journaling, atomic checkpoint bundle, mixed-trigger archive replay, both CAS boundaries and all prior busy/crash/reopen guarantees, or refuse VIT-CAP-060/061 |
 | `0.24.0` | PostgreSQL reference production adapter | Retain all prior protections; prove concurrent atomic checkpoint bundles, checkpoint/deletion trigger isolation, unified journal ordering, mixed archives and both CAS boundaries under pool failover |
 | `0.25.0` | Experimental MySQL adapter | Prove unified checkpoint/deletion settlement and all prior two-head/bounds/exact-ID/conservative semantics plus attempt-ledger parity, or refuse VIT-CAP-060/061; no default v1 claim |
@@ -142,8 +142,8 @@ implementations remain blocked rather than being implemented casually.
 | `0.28.1` | S3-compatible object-storage adapter | Tenant/object confusion, endpoint spoofing, multipart races, retention/deletion |
 | `0.28.2` | KMS and secret-provider adapters | Serialized provisioning/inventory/orphan/count controls plus governed evaluator upgrade/reevaluation, strong-resolution evidence, independent recovery or manual limitation |
 | `0.28.3` | In-process secret and brokered-bearer memory handling | HTTP/TLS/redirect/error/log/crash/core-dump/swap canaries, stale cache, honest transient-memory/erasure limits |
-| `0.29.0` | Resumable invariant-owner and trusted law/catalog migrations preserving monotonic authority | Preserve the complete canonical recovery tuple; require an explicit singular-head-to-two-head migration with no inferred fields; migration between checkpoint and deletion cannot reopen, pre-settle or reclassify legs |
-| `0.30.0` | Cross-backend export and import with explicit law trust closure | Require the complete canonical two-head recovery tuple, unified checkpoint/deletion namespace, atomic checkpoint bundle and mixed-trigger archive proof; missing/defaulted fields retain charges, fence execution and refuse import/profile |
+| `0.29.0` | Resumable invariant-owner and trusted law/catalog migrations preserving monotonic authority | Migrate only complete canonical two-head state. Singular schemas were never admitted: quarantine before destination mutation, retain conservative charges/unready state, never infer genesis/chains/coverage, and require a new reviewed future milestone for any real external compatibility population |
+| `0.30.0` | Cross-backend export and import with explicit law trust closure | Require the complete canonical two-head tuple, unified namespace, atomic checkpoint bundle and mixed-trigger proof; missing/defaulted or singular state is quarantined before import mutation, retains charges, fences execution and refuses the profile |
 | `0.30.1` | Durable queue preserving governed provider and cancellation-recovery authority | Existing guard/orphan/count/recovery state remains complete; evaluator revocation/resolution never revives work; queues cannot evaluate, clear, or remediate |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 
@@ -435,7 +435,7 @@ the first technology decision. An unselected option remains unsupported at
 | `0.140.3` | Human/workload/session and worker-instance identity decision | Co-located epochs, enforceable expiry, unique per-runtime claimant, lease-fence binding, restart/takeover invalidation |
 | `0.140.4` | Component runtime and governed credential-broker TCB decision | Evaluator binary/corpus admission and upgrade; quarantine-resolution evidence; non-composable remediation authority; existing TCB |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Retain prior retention rules; freeze mixed checkpoint/deletion archive evidence, trigger/leg minimization without aliasing, and conservative checkpoint-history retention |
-| `0.140.6` | Deployment/HA invariant-owner, catalog rollout/topology/authorization, and recovery decision | Freeze fail-closed codec admission for the complete canonical recovery tuple, explicit singular-head migration, and no reopen/pre-settle behavior across checkpoint/deletion stages |
+| `0.140.6` | Deployment/HA invariant-owner, catalog rollout/topology/authorization, and recovery decision | Freeze fail-closed complete-tuple admission, singular-schema pre-mutation quarantine/no migration, and no reopen/pre-settle behavior across checkpoint/deletion stages |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |
@@ -454,11 +454,11 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
 | `0.143.0` | HA atomic work, catalog rollout/topology/authorization, governed execution, and cancellation recovery | Fail over the complete recovery tuple and atomic checkpoint bundles; no missing/defaulted member, duplicate decrement, reopened/pre-settled leg or stage drift |
 | `0.144.0` | Authoritative-region placement and residency through topology successors | `VIT-INV-060` regional move/fence/tombstone, predecessor-bound rollout block, cross-region identity/lease collision, receipt/start split, floor owner split, omitted regional parent |
-| `0.145.0` | Backup, restore, and disaster recovery | Round-trip/omit every recovery-tuple member, reject implicit singular-head restore, and restore at every checkpoint-to-deletion boundary without reopened/pre-settled legs; retain unverifiable charges |
+| `0.145.0` | Backup, restore, and disaster recovery | Round-trip/omit every tuple member; quarantine singular backups regardless of claimed meaning/evidence and refusal retries; restore every checkpoint-to-deletion boundary without reopened/pre-settled legs; retain unverifiable charges |
 | `0.146.0` | Provider-governance, topology anti-replay, rotation/drift, credential-TCB, and cancellation contention certification | Retain prior stress; add checkpoint response/duplicate/publication races, mixed archives, trigger substitution and unavailable checkpoint history; prove one decrement or conservative charge |
 | `0.147.0` | Final profile-governance, topology replay-lifecycle, bearer-memory, executor, and supply-chain hardening | Audit one journal/archive namespace, atomic checkpoint bundle, mixed-trigger exact identity and conservative checkpoint failure plus every prior two-head control |
-| `0.148.0` | Compatibility freeze for provider authority, rollout recovery, and topology replay lifecycle | Freeze the complete two-head recovery codec and explicit legacy migration alongside checkpoint/deletion trigger, bundle, linkage, settled/remaining-leg and mixed-archive formats |
-| `0.149.0` | Release candidate and external pentest remediation | Retain every prior attack; add omitted/defaulted recovery members, implicit singular-head upgrade, split checkpoint path/bundle, duplicate retry, mixed-leg alias, trigger substitution, between-stage drift and unavailable-proof release; retest fixes |
+| `0.148.0` | Compatibility freeze for provider authority, rollout recovery, and topology replay lifecycle | Freeze the complete two-head recovery codec and explicitly exclude every singular-head schema/migration alongside checkpoint/deletion trigger, bundle, linkage, settled/remaining-leg and mixed-archive formats |
+| `0.149.0` | Release candidate and external pentest remediation | Retain every prior attack; add singular local/archive/both/empty claims, fabricated complete evidence/chains, refusal-response retry mutation, omitted/defaulted fields, split path/bundle, duplicate retry, alias/substitution, between-stage drift and unavailable-proof release; retest fixes |
 | `0.150.0` | Final production-readiness candidate | Existing lifecycle/TCB/recovery evidence plus active evaluator/reevaluation, evidence-backed resolution, independent remediation/manual limitation |
 
 ## `1.0.0` — Serious Production Release
@@ -487,6 +487,10 @@ are independently evidenced as production-ready.
   composite transaction retry, local exact-set/hierarchical per-kind quota
   encumbrances, authoritative-region failover, fair recovery, and backpressure
   operations.
+- Production settlement recovery supports only the complete authenticated
+  two-head format. The compatibility matrix explicitly lists every singular-
+  head representation as unsupported; restore, migration and import quarantine
+  it before authority mutation and make no conversion or genesis claim.
 - Immutable versioned provider execution profiles bind every transmitted
   operation to its exact claim, tenant/provider/account/action/request/
   destination and scoped opaque secret handle. Executors hold no master-key

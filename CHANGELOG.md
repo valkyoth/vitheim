@@ -38,7 +38,9 @@ All notable Vitheim changes are documented here. The format follows
 - Closed the settlement recovery-schema drift by making both heads/chains and
   coverage, exact rows, triggers/bundles/results, attempt-checkpoint linkage,
   settled/remaining legs, and conservative balances one mandatory fail-closed
-  tuple; singular-head legacy state now requires an explicit migration.
+  tuple. Because Vitheim never admitted a singular-head schema, such input is
+  now explicitly quarantined before mutation rather than split, migrated, or
+  treated as empty genesis.
 - Selected bounded authenticated sparse archives for exact drain-action replay
   after compaction, with canonical result recovery, historical conflicts,
   resource-bounded proof verification, and fail-closed unavailable history.

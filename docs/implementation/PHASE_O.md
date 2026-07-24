@@ -384,8 +384,10 @@ versions/ranges, verification cursor, settlement IDs, checkpoint/deletion
 trigger kinds, ordered bundle digests/results, exact checkpoint/deletion
 settled-leg tombstones, attempt-checkpoint linkage, remaining unsettled legs
 and conservative original-bucket balances; it verifies the derived lane/
-aggregate coverage. Missing/defaulted tuple fields deny, and a legacy singular-
-head snapshot requires its explicit registered migration. Multiple
+aggregate coverage. Missing/defaulted tuple fields deny, and a purported singular-
+head snapshot is unsupported because no Vitheim release admitted that schema;
+it is quarantined before authority mutation and never split or treated as
+genesis. Multiple
 active profiles, pending/fence half-state, contradictory activation records,
 unreachable predecessors, activation gaps/forks/reordering/duplicate
 sequences, active-row disagreement, missing checkpoints, rolled-back external
@@ -1289,9 +1291,13 @@ and their authenticated coverage relationship, root/key/publication/cursor,
 exact covered/current hot-row IDs/versions/ranges, settlement/trigger/bundle/
 result identity, attempt-checkpoint linkage, exact settled and remaining leg
 sets, and conservative original-bucket balances. Omit each member in turn and
-require fail-closed admission; a singular-head backup requires its registered
-migration. Drill restores at every checkpoint-settlement-to-deletion boundary
-and prove no checkpoint leg reopens and no deletion leg becomes pre-settled.
+require fail-closed admission. Present singular-head backups claiming local,
+archive, both, empty or complete meaning—with partial or apparently complete
+rows/chunks/keys—and require the same pre-mutation unsupported-schema
+quarantine, conservative charges and unready target. Response loss and retry
+cannot create either head or any migration/supersession marker. Drill restores
+at every checkpoint-settlement-to-deletion boundary and prove no checkpoint
+leg reopens and no deletion leg becomes pre-settled.
 Exit criteria: claimed RPO/RTO is demonstrated; recovery neither retains data
 past a controlling mandatory deletion obligation nor promotes an unverified
 rollup to authority; grant revocation/supersession cannot be resurrected; quota

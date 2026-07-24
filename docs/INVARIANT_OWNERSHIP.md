@@ -504,9 +504,11 @@ ranges; settlement IDs, checkpoint/deletion trigger kinds, ordered bundle
 digests and canonical results; attempt-checkpoint linkage; exact checkpoint/
 deletion settled-leg tombstones and remaining unsettled legs; and conservative
 original-bucket balances. Omission, defaulting, conflation, rollback, fork or
-substitution of any tuple member fails recovery admission. A legacy singular-
-head snapshot is not decoded as this state and requires an explicit registered
-migration. Proposed,
+substitution of any tuple member fails recovery admission. A purported singular-
+head snapshot is not decoded as this state. Because no Vitheim release admitted
+that schema, it is unsupported and quarantined before authority mutation; no
+migration may invent either predecessor chain, coverage, genesis state,
+settlement classification or balance from it. Proposed,
 pending, or
 rejected higher raw generations never imply activation. Recovery applies
 active/pending constraints jointly, recomputes and verifies derived lane/

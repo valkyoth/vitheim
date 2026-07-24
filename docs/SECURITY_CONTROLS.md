@@ -184,7 +184,9 @@ audit decision.
   root/key/publication/cursor, exact covered/current rows, settlement/trigger/
   bundle/result identity, attempt-checkpoint linkage, settled and remaining
   leg sets, and conservative original-bucket balances; omission or defaulting
-  denies, and legacy singular-head state requires a registered migration;
+  denies; singular-head state was never an admitted Vitheim schema and is
+  quarantined before authority mutation, without split migration, invented
+  predecessor/coverage history, genesis inference or capacity release;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

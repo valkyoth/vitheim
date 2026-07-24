@@ -178,8 +178,9 @@ non-wrapping predecessor/sequence chains and their authenticated coverage,
 root/key/publication/cursor, exact covered/current hot-row IDs/versions/ranges,
 settlement/trigger/ordered-bundle/result identity, attempt-checkpoint linkage,
 exact settled and remaining leg sets, and conservative original-bucket
-balances. Missing fields deny and singular-head legacy state requires an
-explicit registered migration.
+balances. Missing fields deny. Singular-head state was never an admitted
+Vitheim schema and is quarantined before authority mutation; the current
+roadmap provides no split migration or genesis inference.
 Archive exact results or authenticated result references with
 request/lifecycle/scope/predecessor/key commitments, bounded proof work and a
 durable cursor. Late exact retry returns the archived result, changed retry
