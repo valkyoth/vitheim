@@ -629,15 +629,18 @@ state.
 Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityLedgerV1`
 and versioned reservation set. Creation atomically locks replay head -> optional
-settlement head -> key/attempt -> attempt-capacity -> profile/fence/domain rows,
+settlement journal head -> key/attempt -> attempt-capacity -> profile/fence/
+domain rows,
 rechecks head/profile, reserves original active/terminal/terminalization/
 checkpoint/cleanup/deletion buckets, inserts the one nonterminal attempt and
 commits all-or-none.
 Identical joins persist no waiter and allocate no row, budget or reservation;
 polling/connection resources remain separately bounded.
 
-Every transition uses that order and locks the settlement head between replay
-head and key when settlement state is touched. Success rechecks Active, key/
+Every transition uses that order and locks the settlement journal head between
+replay head and key when settlement state is touched. The separate settlement
+archive replay head belongs only to publication and authoritative historical
+lookup. Success rechecks Active, key/
 digest, owner/boot, lease/fence/CAS, deadline, cumulative budget, authoritative head
 and profile/fence/domain authority before co-committing success, replay/result,
 domain/audit/outbox and active-to-terminal transfer. No-write terminalization
@@ -659,26 +662,45 @@ settlement result and cannot decrement twice.
 Reuse the existing authenticated sparse archive/publication machinery under a
 domain-separated settlement namespace. Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementCheckpointV1`,
-settlement archive entry and settlement replay head. Physical deletion locks
-replay head -> settlement head -> key/attempt -> capacity -> profile/fence/
-domain and atomically deletes the envelope, decrements the original bucket,
-writes the immutable settlement and advances its non-wrapping predecessor-
-linked checkpoint/head.
+settlement archive entry,
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementJournalHeadV1`
+and
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementArchiveReplayHeadV1`.
+The database-local journal head binds a non-wrapping sequence/predecessor,
+settlement/hot-row digest and version, transaction/result/audit identity and
+owner continuity; it never claims archive availability. Physical deletion
+locks replay head -> settlement journal head -> key/attempt -> capacity ->
+profile/fence/domain and atomically deletes the envelope, decrements the
+original bucket, writes the immutable hot settlement row and advances that
+journal head with the audit and canonical result.
 
 Exact duplicate after hot-row deletion returns the archived result without
 decrement. Changed settlement/reservation-set ID, leg, bucket/quantity, trigger
-or result returns typed settlement conflict. Settlement rows delete only after
-Staged -> Verified -> CommittedHead -> HotRowsDeleted publication and exact-row
-local deletion. Greatest settlement head plus hot rows is authoritative;
-coalescing preserves exact sparse IDs and settled-leg tombstones. Missing,
-forked, rolled-back or unverifiable history returns typed settlement-
-historical-state-unavailable and retains the conservative charge.
+or result returns typed settlement conflict.
+
+The archive replay head is the greatest authenticated, verified, published
+cumulative root and advances only after chunk upload and verification.
+Compaction captures exact hot-row IDs and version/range. Its final transaction
+locks archive replay head -> settlement journal head -> exact covered hot rows,
+rechecks the captured version and journal continuity, then atomically
+CAS-installs the archive replay head and deletes only those rows through
+Staged -> Verified -> CommittedHead -> HotRowsDeleted. Later rows remain hot.
+Authoritative lookup is verified archive replay head plus current hot-row
+version plus journal-head continuity. A proof for archive head H must re-read
+or lock H before use. Archive non-membership never authorizes another decrement
+when the envelope is absent. Coalescing preserves exact sparse IDs and
+settled-leg tombstones. Missing, forked, rolled-back or unverifiable history
+returns typed settlement-historical-state-unavailable and retains the
+conservative charge.
 
 Freeze settlement row/byte/checkpoint/archive/proof/backlog/worker bounds and
 protected Recovery reservations. Recovery and migration preserve greatest
-settlement head, root/predecessor/key/publication/hot-row/cursor state, exact
-settled-leg tombstones and original-bucket balances. Dense high-watermark
-inference over arbitrary settlement IDs is forbidden.
+local settlement journal head, greatest verified archive replay head, both
+predecessor chains and their proved relationship, root/key/publication state,
+exact hot-row IDs/versions/ranges, cursor, settled-leg tombstones and original-
+bucket balances. Adapters must expose both distinct CAS boundaries or refuse
+`VIT-CAP-061`. Dense high-watermark inference over arbitrary settlement IDs is
+forbidden.
 
 Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`

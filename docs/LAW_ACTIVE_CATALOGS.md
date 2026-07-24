@@ -559,7 +559,8 @@ gated cleanup uses
 to bind terminal state/counters/fence/capacity release and removes no replay-
 critical state.
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityLedgerV1`
-atomically locks head -> key/attempt -> capacity -> profile/fence/domain,
+atomically locks replay head -> optional settlement journal head -> key/attempt
+-> capacity -> profile/fence/domain,
 reserves the original active/terminal/terminalization/checkpoint/cleanup/
 deletion set, inserts the attempt and commits all-or-none. Identical joins have
 no durable waiter and allocate no row, budget or reservation. Every transition
@@ -575,16 +576,18 @@ deletion settles envelope/cleanup/deletion. Duplicate/reordered/unknown
 outcomes reconcile without double decrement, while checkpoint/archive
 occupancy stays charged.
 Deletion settlements reuse the domain-separated authenticated sparse archive/
-publication machinery. Physical deletion locks replay head -> settlement head
--> key/attempt -> capacity -> domain and atomically deletes the envelope,
-decrements the original bucket, writes the settlement and advances its
-predecessor-linked checkpoint/head. Exact duplicate after hot-row compaction
-returns the archived result; changed settlement bindings conflict. Settlement
-rows delete only after authenticated publication. Greatest head plus hot rows
-is authority, exact sparse tombstones survive coalescing, dense inference is
-forbidden, and unavailable history conservatively retains capacity. Settlement
-rows/bytes/checkpoints/archive/proof/backlog/workers are bounded with Recovery
-protection.
+publication machinery with distinct local journal and verified archive replay
+heads. Physical deletion locks replay head -> journal head -> key/attempt ->
+capacity -> domain and atomically commits envelope deletion, original-bucket
+decrement, hot settlement row, journal-head advance, audit and result; it does
+not imply archive availability. Publication advances the archive replay head
+only after upload/verification and atomically deletes the exact captured hot-
+row IDs/version/range after locking archive head -> journal head -> rows and
+rechecking continuity. Lookup revalidates archive head H and combines it with
+current hot rows/version and journal continuity. Absent-envelope non-membership
+cannot decrement. Exact duplicates return the archived result; changed
+bindings conflict, exact tombstones survive coalescing, dense inference is
+forbidden, and unavailable history retains capacity. Bounds protect Recovery.
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 bounds bytes/entries/chunks/depth/decode/work/jobs and a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
@@ -640,8 +643,9 @@ checkpoint/key/cursor state, cumulative replay-head/publication high-watermarks,
 canonical replay-key uniqueness state, logical-attempt restart counters/
 deadline, attempt lifecycle/owner/lease/fence/capacity/checkpoint state,
 reservation-set/settlement-leg high-watermarks and original-bucket balances,
-settlement replay-head/predecessor/root/key/publication/hot-row/cursor state
-and exact settled-leg tombstones,
+settlement journal-head and archive-replay-head predecessor/sequence/
+relationship state, archive root/key/publication, exact hot-row versions/ranges,
+cursor and exact settled-leg tombstones,
 fairness-scheduler state, and verified derived coverage. Late exact retry
 returns the archived result, changed retry returns historical conflict, and
 unavailable proof returns typed historical-state-unavailable without

@@ -155,8 +155,8 @@ audit decision.
   owners; success co-commits with replay/action state, no-write terminals are
   irreversible, bounded attempt/terminalization/cleanup capacity is reserved,
   and checkpoint/link-gated cleanup removes no replay-critical evidence;
-- the attempt-capacity ledger locks replay head→optional settlement head→key/
-  attempt→capacity→domain, atomically
+- the attempt-capacity ledger locks replay head→optional settlement journal
+  head→key/attempt→capacity→domain, atomically
   reserves original active/terminal/checkpoint/cleanup buckets with creation,
   gives joins no reservation, rechecks fence/deadline/budget/head at success,
   and transfers active-to-terminal with the action/no-write bundle; stable
@@ -164,12 +164,16 @@ audit decision.
   release, reconcile unknown outcomes and prevent double decrement or
   current-profile recomputation;
 - physical-deletion settlement evidence uses a domain-separated authenticated
-  sparse checkpoint/archive/head under the existing publication protocol;
-  envelope deletion atomically records/heads settlement, archived duplicates
-  return one result, changed bindings conflict, unavailable history retains the
-  charge, exact tombstones survive coalescing, and bounded settlement storage/
-  proof/compaction plus Recovery capacity forbid permanent rows or dense
-  settlement inference;
+  sparse checkpoint/archive with two heads: the local journal head advances
+  atomically with deletion/decrement/hot row and implies no archive
+  availability; the verified archive replay head advances only after upload/
+  verification and its CAS commits with exact captured-version row deletion;
+  authoritative lookup revalidates archive head H and combines it with current
+  hot-row version and journal continuity; absent-envelope non-membership never
+  decrements, archived duplicates return one result, changed bindings conflict,
+  unavailable history retains the charge, exact tombstones survive coalescing,
+  and bounded settlement storage/proof/compaction plus Recovery capacity forbid
+  permanent rows or dense settlement inference;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

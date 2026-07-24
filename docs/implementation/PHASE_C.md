@@ -604,7 +604,7 @@ principal, capacity-profile ID/generation/epoch, active row/bytes, terminal
 row/bytes, terminalization work, checkpoint backlog/row/bytes, cleanup work/
 worker and envelope-deletion quantities using overflow-checked typed units.
 Creation is one local expected-version transaction: lock the current replay
-head, skip the untouched settlement head, then lock canonical key/attempt,
+head, skip the untouched settlement journal head, then lock canonical key/attempt,
 applicable attempt-capacity rows, then profile/fence/domain rows in that global
 order; recheck current profile and head; verify every bound; reserve the
 complete original set; insert the unique nonterminal attempt; and commit
@@ -617,9 +617,11 @@ the stable attempt reference and use separately bounded connection/polling
 surfaces. Any future durable waiter requires a separately versioned capacity
 ledger and cannot charge the attempt reservation set.
 
-Every attempt transition follows replay head -> settlement head when touched ->
-key/attempt -> attempt-capacity -> profile/fence/domain lock order. Before
-success, while those locks are held,
+Every attempt transition follows replay head -> settlement journal head when
+touched -> key/attempt -> attempt-capacity -> profile/fence/domain lock order.
+The settlement archive replay head is a separate publication/read boundary and
+is never advanced by an attempt transition. Before success, while those locks
+are held,
 recheck `Active`, canonical key/request, owner workload and boot/continuity,
 lease generation, fencing token, expected-version CAS, conservative deadline,
 all cumulative budget counters, authoritative head and current profile/fence/
@@ -651,8 +653,9 @@ reservation set.
 Freeze domain-separated
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementCheckpointV1`,
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementArchiveEntryV1`,
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementJournalHeadV1`,
 and
-`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementReplayHeadV1`
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementArchiveReplayHeadV1`
 by reusing the existing authenticated
 sparse archive codec, immutable publication lifecycle, bounded proof verifier
 and verification cursor rather than creating an independent retention system.
@@ -661,12 +664,22 @@ original bucket/quantity, checkpoint-or-deletion trigger identity, immutable
 result digest, local transaction identity, settled status, predecessor
 checkpoint/head, encoding/key epoch and domain separator.
 
+`...CapacitySettlementJournalHeadV1` is the database-local, non-wrapping
+integrity/append head, with one lineage per tenant/deployment settlement scope.
+It binds its predecessor and sequence, the exact
+settlement-row digest and row-set version, reservation-set/leg/settlement IDs,
+transaction/result/audit identities and owner continuity. It advances
+atomically with the hot settlement row but never claims that archive chunks
+exist or are available.
+
 The physical envelope-deletion transaction locks replay head -> settlement
-head -> key/attempt -> capacity -> profile/fence/domain, revalidates the
+journal head -> key/attempt -> capacity -> profile/fence/domain, revalidates the
 checkpoint and unsettled deletion leg, deletes the envelope, applies the
 original-bucket decrement, writes the immutable deletion settlement and
-atomically advances the non-wrapping predecessor-linked settlement checkpoint/
-head. Response loss reconciles that exact transaction and settlement ID. Exact
+atomically advances the predecessor-linked settlement journal head. The
+envelope deletion, decrement, hot row, journal-head advance, audit and canonical
+transaction result are indivisible. Response loss reconciles that exact
+transaction and settlement ID. Exact
 duplicate after envelope or hot settlement-row deletion returns the recorded
 settlement result without another decrement. Changed canonical settlement
 bytes, substituted settlement/reservation-set ID, leg, bucket, quantity,
@@ -674,14 +687,34 @@ trigger or result returns typed
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementConflict`
 without mutation.
 
-Settlement hot rows cannot be deleted until immutable archive chunks upload,
-authenticate and become authoritative through the same Staged -> Verified ->
-CommittedHead -> HotRowsDeleted -> OrphanGcEligible protocol and one local
-head-CAS/exact-row-delete transaction. Readers use the greatest committed
-settlement head plus current settlement hot rows. Coalescing preserves every
-exact sparse settlement ID/result and settled-leg bitmap/tombstone; no dense
-high-watermark can infer an arbitrary settlement settled. Missing/forked/
-rolled-back/unverifiable head, checkpoint, archive, key, chunk or proof returns
+`...CapacitySettlementArchiveReplayHeadV1` is the greatest authenticated,
+verified and published cumulative archive root. It advances only after
+immutable chunks upload and verify; it binds its predecessor/root/key epoch,
+publication identity, exact covered hot-row IDs and captured row-set version/
+range, and the corresponding settlement-journal sequence/digest. It never
+advances in the physical-deletion transaction.
+
+Compaction captures an exact hot-row set and version/range without treating
+later rows as covered. After upload and verification, its final local
+transaction locks the archive replay head before the settlement journal head
+and exact covered hot rows, rechecks the captured row-set version and journal
+continuity, CAS-installs the new archive replay head and deletes only those
+exact covered rows. This is the indivisible CommittedHead -> HotRowsDeleted
+boundary within the existing Staged -> Verified -> CommittedHead ->
+HotRowsDeleted -> OrphanGcEligible protocol. A new settlement racing the
+snapshot remains hot.
+
+Authoritative lookup is the greatest verified archive replay head plus current
+hot settlement rows/version plus local settlement-journal head/continuity. A
+proof verified against archive head H outside the database transaction becomes
+authoritative only after a local transaction locks or re-reads exactly H,
+rechecks the hot-row version and journal continuity, and confirms the exact
+settlement key. Archive non-membership never authorizes a decrement when the
+attempt envelope is absent. Coalescing preserves every exact sparse settlement
+ID/result and settled-leg bitmap/tombstone; no dense high-watermark can infer
+an arbitrary settlement settled. Missing/forked/rolled-back/unverifiable
+journal head, archive replay head, checkpoint, archive, key, chunk or proof
+returns
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementHistoricalStateUnavailable`
 and conservatively retains the capacity charge; unavailable history never
 authorizes another decrement.
@@ -691,9 +724,11 @@ rows/bytes/backlog, archive chunks/bytes, proof bytes/depth/decode/work/jobs,
 settled-leg tombstones and settlement compaction workers. Reserve settlement
 terminalization/checkpoint/archive/cleanup work before attempt creation under
 the original lane, with protected Recovery capacity. Restore, failover,
-migration and import preserve the greatest settlement checkpoint/archive head,
-predecessor/root/key/publication state, hot rows, settled-leg bitmap/tombstones,
-proof cursor/budget and original-bucket balances.
+migration and import preserve the greatest local journal head and verified
+archive replay head, both predecessor chains and their proved relationship,
+root/key/publication state, exact hot-row versions/
+ranges, settled-leg bitmap/tombstones, proof cursor/budget and original-bucket
+balances.
 
 Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
@@ -830,9 +865,10 @@ verification cursor, plus attempt lifecycle/key/digest, owner/boot/lease/fence/
 CAS, cumulative counters/deadline, capacity reservations/backlogs and terminal
 checkpoint/result/audit links, reservation-set IDs/original buckets/balances,
 active-to-terminal transfers, settlement ID/leg/trigger/result records, the
-greatest committed settlement replay head, predecessor/root/key/publication
-state, covered hot rows, verification cursor, exact settled-leg tombstones,
-and conservative capacity balances. Raw
+greatest local settlement journal head, greatest verified archive replay head,
+both predecessor chains and their proved relationship, root/key/publication
+state, exact covered/current hot-row versions and ranges, verification cursor,
+exact settled-leg tombstones, and conservative capacity balances. Raw
 profile generation never implies activation. Rejected and
 unactivated proposed generations remain historical only. A recovered pending
 successor and fence are applied jointly to new admission; recovery recomputes
@@ -1563,13 +1599,24 @@ reservation buckets.
 Lose the deletion-settlement response, retry after the envelope disappears,
 compact the hot settlement row and retry again; every path returns one result
 and one decrement. Substitute settlement ID, reservation set, leg, original
-bucket/quantity, trigger or result and require conflict. Crash/fork/roll back
-the settlement checkpoint/head and remove archive keys/chunks/proofs; the
-original charge remains conservatively held. Exercise archive publication,
-coalescing and exact sparse IDs, proving no dense inference. Saturate every
-settlement row/byte/checkpoint/archive/proof/backlog/worker bound. Restore and
-cross-backend migrate after physical deletion and after settlement compaction;
-the greatest head, hot rows, tombstones and balances must remain identical.
+bucket/quantity, trigger or result and require conflict. Crash after the local
+settlement/journal commit but before upload, after upload but before
+verification, after verification but before archive-head CAS, and at the
+archive-head-CAS/exact-hot-row-delete transaction boundary; the journal and
+archive heads retain their separate meanings and the final boundary is
+indivisible. Race a duplicate deletion against settlement compaction and race
+a new settlement after the captured hot-row version/range; only the exact
+covered rows delete.
+
+Fork or roll back either head, substitute their relationship, change head H
+after proof verification, and remove archive keys/chunks/proofs; re-read/lock
+detects the stale proof and the original charge remains conservatively held.
+Prove archive non-membership with an absent envelope and require no decrement.
+Exercise archive publication, coalescing and exact sparse IDs, proving no dense
+inference. Saturate every settlement row/byte/checkpoint/archive/proof/backlog/
+worker bound. Restore and cross-backend migrate after local settlement, during
+publication and after compaction; both heads, their predecessor relationship,
+hot-row versions, tombstones and balances must remain identical.
 Drive every
 permitted charge-disposition edge and reject undeclared edges, terminal-to-
 terminal substitution, terminal-to-awaiting rollback, timeout-derived
@@ -1626,22 +1673,28 @@ irreversible terminals, every attempt-capacity reservation/bound and
 checkpoint/link-gated envelope cleanup. Native retry or session failover cannot
 create another owner or budget.
 It must implement atomic reservation-set/attempt creation, the global replay
-head -> optional settlement head -> key/attempt -> capacity -> profile/fence/
-domain lock order, reservation-free
+head -> optional settlement journal head -> key/attempt -> capacity -> profile/
+fence/domain lock order, reservation-free
 joins, pre-success attempt/head/deadline/budget/authority rechecks, original-
 bucket active-to-terminal transfer and unique exact-once checkpoint/deletion
 settlement records. Backend-generated retries cannot hide an unknown settlement
 or recompute from the current profile.
 Physical deletion must co-commit its deletion settlement and predecessor-linked
-settlement checkpoint/head advance. The adapter must also prove authenticated
-archive publication before exact hot-row deletion, greatest-head-plus-hot
-authority, exact archived retry versus typed conflict, conservative retained
-capacity for unavailable history, exact sparse settled-leg tombstones, and
-bounded settlement rows, bytes, chunks, proofs, checkpoint backlog and
-compaction work.
+local settlement-journal-head advance without implying archive availability.
+The adapter must separately prove that only verified publication can advance
+the archive replay head; publication locks that head before the journal head
+and exact covered hot rows, rechecks the captured row-set version/range and
+journal continuity, then atomically CAS-installs the archive head and deletes
+only those rows. It must also prove archive-head-H revalidation before a proof
+becomes authoritative, archive-head-plus-hot-plus-journal lookup, exact
+archived retry versus typed conflict, no decrement from non-membership with an
+absent envelope, conservative retained capacity for unavailable history, exact
+sparse settled-leg tombstones, and bounded settlement rows, bytes, chunks,
+proofs, checkpoint backlog and compaction work.
 An adapter that cannot prove the required predicate/row-lock and uniqueness
-semantics must report `VIT-CAP-061` unsupported and refuse the feature; an
-emulation that narrows the guarantee is not parity.
+semantics and both distinct CAS boundaries must report `VIT-CAP-061`
+unsupported and refuse the feature; an emulation that narrows the guarantee is
+not parity.
 
 ## `0.23.0` — SQLite Adapter
 
@@ -2151,7 +2204,7 @@ history to make the new owner appear original, activate both owners, or remove
 the superseded row. The generated recovery manifest includes every applicable
 stable invariant field before the new owner becomes authoritative.
 Replay migrations additionally preserve the authoritative cumulative head,
-replay-head/optional-settlement-head/key lock-order contract, uniqueness
+replay-head/optional-settlement-journal-head/key lock-order contract, uniqueness
 constraint and existing replay
 claims, current hot rows, admission-guard isolation profile and typed
 head-changed behavior, canonical replay-key encoding and both independent
@@ -2160,9 +2213,11 @@ scheduler state, attempt lifecycle/owner/boot/lease/fence/CAS, single-active
 join constraint, capacity reservations/backlogs, terminal checkpoints/links
 and cleanup high-watermarks, complete reservation-set IDs/original buckets/
 balances, transfers, settlement IDs/legs/trigger/result records and lock-order
-contract, greatest committed settlement head, predecessor/root/key/publication
-state, current settlement hot rows, verification cursor, exact settled-leg
-tombstones and conservative capacity balances as one compatibility boundary.
+contract, greatest local settlement journal head, greatest verified archive
+replay head, both predecessor chains and their proved relationship, root/key/
+publication state, current settlement hot rows and exact versions/ranges,
+verification cursor, exact settled-leg tombstones and conservative capacity
+balances as one compatibility boundary.
 A migration or import
 cannot route authority reads to a replica, synthesize absence, reset a unique
 claim or restart budget, reinterpret contention as unavailable history, or
@@ -2369,17 +2424,20 @@ if it proves the same or stronger no-late-commit mechanism; otherwise imported
 topology authority remains fenced and unready. Import calls the shared
 replay-lifecycle verifier and admits issuance only after the destination proves
 the same writer-authoritative admission guard, exact replay-head/
-optional-settlement-head/key lock order,
+optional-settlement-journal-head/key lock order,
 head-change restart, canonical dual-unique key, monotonic cumulative attempt
 accounting, typed contention distinction, fair scheduling, current-hot check
 and unique replay claim, plus the same closed attempt lifecycle, single-active
 join, takeover fence, terminal atomicity, capacity/reservation bounds and
 checkpoint cleanup, atomically conserved original reservation sets, fixed lock
 order and every exact-once checkpoint/deletion settlement leg, including
-archive-before-hot-row-delete, greatest-settlement-head authority, exact
-archived retry/conflict behavior, conservative unavailable-history charging,
-exact sparse settled-leg tombstones and bounded settlement proof/compaction
-work; otherwise
+separate local journal and verified archive replay heads, both CAS boundaries
+and their proved predecessor relationship, archive-before-hot-row-delete,
+captured exact hot-row version/range, archive-head-H revalidation, archive-
+head-plus-hot-plus-journal authority, exact archived retry/conflict behavior,
+no decrement from absent-envelope non-membership, conservative unavailable-
+history charging, exact sparse settled-leg tombstones and bounded settlement
+proof/compaction work; otherwise
 drain-action execution remains fenced. It also proves
 the same-or-longer exact horizon, no-lower quotas/backpressure safety, complete
 uncompacted hot results, an authenticated checkpoint/predecessor chain and

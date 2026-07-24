@@ -29,6 +29,9 @@ All notable Vitheim changes are documented here. The format follows
 - Added bounded authenticated sparse retention for physical-deletion settlement
   evidence, preserving exact duplicate results and conservative capacity across
   hot-row compaction, restore, and migration.
+- Split settlement continuity into a database-local journal head and a
+  verified archive replay head, with separate CAS boundaries, exact captured-
+  range compaction, and proof-head revalidation.
 - Selected bounded authenticated sparse archives for exact drain-action replay
   after compaction, with canonical result recovery, historical conflicts,
   resource-bounded proof verification, and fail-closed unavailable history.

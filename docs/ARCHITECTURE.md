@@ -199,18 +199,23 @@ no-write terminals are irreversible. Bounded rows/bytes/queues/principals/
 takeover/terminalization/cleanup capacity is reserved before admission, and
 checkpoint-gated cleanup cannot remove replay-critical state.
 An attempt-capacity ledger creates the attempt and complete original
-reservation set atomically under replay-head→optional-settlement-head→key/
-attempt→capacity→domain lock order.
+reservation set atomically under replay-head→optional-settlement-journal-head→
+key/attempt→capacity→domain lock order.
 Joins allocate nothing. Success rechecks owner/fence/deadline/budget/head and
 co-commits the action plus active-to-terminal transfer. Checkpoint and physical
 envelope deletion settle separate original reservation legs exactly once under
 stable settlement identities; profile changes never recompute buckets.
-Physical-deletion settlements use the same authenticated sparse archive and
-publication machinery under a domain-separated settlement head. Envelope
-deletion atomically records and heads the settlement. Archived exact retries
-return the prior result; changed bytes conflict; unavailable proof retains the
-charge. Settlement state/proof/compaction is bounded, exact-ID tombstones
-survive coalescing, and no dense watermark infers settlement.
+Physical-deletion settlements reuse the authenticated sparse archive machinery
+but have two domain-separated heads. The local journal head advances atomically
+with envelope deletion, original-bucket decrement and the hot settlement row
+without implying archive availability. The archive replay head advances only
+after verified publication; its CAS commits with deletion of the exact
+captured hot-row version/range. Authoritative lookup combines verified archive
+head, current hot rows/version and journal continuity and revalidates head H
+before proof use. Archived exact retries return the prior result; changed bytes
+conflict; absent-envelope non-membership cannot decrement; unavailable proof
+retains the charge. Settlement state/proof/compaction is bounded, exact-ID
+tombstones survive coalescing, and no dense watermark infers settlement.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again
