@@ -466,11 +466,25 @@ Every PendingDrain transition requires current
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationV1`,
 including Normal-only drain. It binds deployment/tenant, action, exact
 predecessor/successor/diff/derived coverage, policy/change/incident authority,
-requestor/approvers/activator/quorum/SoD, expiry, nonce and idempotency.
-Install rechecks it; activation uses a separate action authorization binding
-the begin-drain authorization digest and rechecks both; rejection/abandonment
-uses separate action-authority and audit. Unauthorized, expired, replayed, self-approved,
-cross-scope or substituted requests write nothing.
+requestor/approvers/activator/quorum/SoD; not-before/issued/expiry, maximum
+uncertainty, trusted-time profile/epoch, issuer continuity, signer/key
+identity/epoch and authentication profile; nonce and idempotency. Its closed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationConsumptionV1`
+lifecycle is Issued, Consumed with action/request/result digests,
+ExpiredUnused, or RevokedUnused. Consumption, permanent tombstone, canonical
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainActionResultV1`,
+mutation, event, audit and outbox are atomic. Identical post-commit retry
+returns that result with no new effect; changed bytes/digest/action returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationConflict`.
+Trusted-time and continuity/key high-watermarks deny rollback, suspend,
+restore, failover or key-rotation resurrection. Activation uses a separate
+currently valid action authorization binding the begin-drain authorization and
+consumption digests and rechecks current state; historical begin-drain validity
+survives its later expiry, and revocation while draining leaves the fence safe
+until fresh activation authority or separately authorized rejection.
+Rejection/abandonment uses separate action-authority and audit. Unauthorized,
+expired-unused, replayed, self-approved, cross-scope or substituted requests
+write nothing.
 `PendingDrain` atomically installs
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 the active predecessor and pending successor generations/digests, affected
@@ -496,7 +510,10 @@ transaction/journal identity, encoding and integrity binding. Record/head/
 supersession/activation/optional fence event/audit/idempotent result/outbox are
 indivisible. Predecessor-linked authenticated
 `TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationCheckpointV1`
-precedes record deletion and preserves the active/pending/fence tuple.
+precedes record deletion and preserves the active/pending/fence tuple,
+authorization-consumption/result/time/key high-watermarks, canonical
+authorization/validation-evidence digests, trusted-time interval/profile/epoch,
+signer/key epochs/authentication profile and replay tombstones.
 Install/clear helpers are uncallable. PendingDrain emits atomic
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`;
 activation/rejection emits atomic

@@ -250,10 +250,14 @@ allocator/TLS-library, diagnostics, crash/core-dump, and swap limitations.
 Freeze the authentication and canonical-preimage profile for
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationV1`.
 It binds deployment/tenant/action/predecessor/successor/diff/derived coverage/
-policy/change-or-incident/requestor/approvers/activator/quorum/SoD/expiry/
-nonce/idempotency and is single-action, non-portable, non-replayable, and
-digest-linked into activation. Canonical-none fields exist only where the
-action contract explicitly permits them; unknown versions deny.
+policy/change-or-incident/requestor/approvers/activator/quorum/SoD; exact
+`not_before`/`issued_at`/`expires_at`, maximum uncertainty, trusted-time
+profile/epoch, issuer continuity, signer/key identity and epoch, authentication
+profile; and nonce/idempotency. It is single-action, non-portable, and
+digest-linked into activation. Freeze exact-retry versus conflicting-replay
+authentication so an identical post-commit retry can recover the canonical
+result without granting new authority. Canonical-none fields exist only where
+the action contract explicitly permits them; unknown versions deny.
 Verification: independent supply-chain and cryptographic design review proves
 N0/N1 remain isolated and no protocol is improvised to avoid dependencies;
 deadline extension, wall-clock rollback, host suspend, restore, and monotonic-
@@ -497,11 +501,31 @@ IDs/generations/digests, typed-diff digest, derived lanes/aggregates, policy
 epoch, change/incident authority, requestor/approvers/activator/quorum/
 separation proof, expiry, nonce, and idempotency ID. One authorization permits
 one exact begin-drain, activation, rejection, or controlled-abandonment action
-and is not portable or reusable. Recheck current policy/authority/approval,
-expiry, diff/coverage, and predecessor version before both fence install and
-activation. Activation uses its own single-action authorization, binds the
-installed begin-drain authorization digest, and rechecks both. Rejection/
-abandonment is separately action-authorized and audited.
+and is not portable or reusable as authority. Freeze the closed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationConsumptionV1`
+lifecycle as `Issued`, `Consumed { action_id, request_digest, result_digest }`,
+`ExpiredUnused`, or `RevokedUnused`, with canonical
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainActionResultV1`
+and typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationConflict`.
+Consumption/tombstone/result/profile-or-fence mutation/event/audit/outbox is one
+transaction. Same action/idempotency plus identical canonical request returns
+the original result with no new side effect; different bytes/digest conflicts;
+consumed, expired-unused, and revoked-unused authority can never authorize
+another action.
+
+Recheck current policy/authority/approval, conservative trusted-time interval,
+expiry, diff/coverage, and predecessor version before consumption. Ratchet
+local time/profile, issuer continuity, signer/key epoch, consumption/result,
+and replay state so failover, restore, suspend, clock rollback, or key rotation
+cannot revive authority. Activation uses its own currently valid single-action
+authorization, binds the installed begin-drain authorization and consumption
+digests, and rechecks current policy/authority/approval/predecessor/fence.
+Historical begin-drain authority must have been valid when consumed but need
+not remain unexpired after a long drain. Revocation while draining leaves the
+fence in force and requires fresh activation authority or separately
+authorized rejection. Rejection/abandonment is separately action-authorized
+and audited.
 Unauthorized, expired, replayed, self-approved, cross-tenant, or substituted
 requests write no successor/fence/event/outbox state.
 
@@ -550,9 +574,13 @@ denies.
 Freeze predecessor-linked authenticated
 `TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationCheckpointV1`
 before record deletion. It preserves the complete activation head and active/
-pending/fence tuple. Restore rejects gaps, forks, reorder, duplicates,
+pending/fence tuple; drain-authorization consumption/result high-watermarks;
+canonical authorization/validation-evidence digests; trusted-time profile,
+epoch, and validation interval; signer/key epochs and authentication profile;
+and replay tombstones. Restore rejects gaps, forks, reorder, duplicates,
 active-row disagreement, absent checkpoints and rolled-back external
-high-watermarks; response loss reuses the transaction result.
+time/key/consumption/result/activation high-watermarks; response loss for every
+drain action reuses the stable canonical result.
 
 Freeze recovery as
 `TopologyAuthorizationPresentationChargeLedgerCapacityRecoveryStateV1`:

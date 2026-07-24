@@ -160,11 +160,18 @@ under fixed row locking. Recovery selects active state from committed
 activation records, restores pending/fence state and high-watermarks
 separately, and exposes no independent fence install/clear command. Drain entry
 itself is authorized for every lane and aggregate with exact scope/action/diff/
-policy/approval/SoD/expiry/nonce/idempotency/replay bindings; activation
-rechecks it and rejection/abandonment is separately authorized and audited.
+policy/approval/SoD/expiry/nonce/idempotency and trusted-time/signer/key
+bindings. A closed Issued/Consumed/ExpiredUnused/RevokedUnused lifecycle
+atomically persists the replay tombstone, canonical action result, mutation,
+event, audit and outbox; exact response-loss retries recover that result while
+changed request bytes/digest/action conflict. Activation uses fresh current
+authority while historically authenticating the consumed begin-drain proof;
+rejection/abandonment is separately authorized and audited.
 Canonical non-wrapping predecessor-linked activation records commit with head/
 supersession/fence/audit/result/outbox and checkpoint before deletion; gaps,
-forks, reorder, duplicates or rollback deny recovery. A once-per-
+forks, reorder, duplicates or rollback deny recovery. Checkpoints also preserve
+authorization consumption/result/time/key high-watermarks, validation evidence
+and replay tombstones. A once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive

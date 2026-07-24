@@ -146,13 +146,20 @@ not callable helper commands.
 Beginning any drain—including Normal-only drain—requires one current
 deployment/tenant/action/predecessor/successor/diff/coverage/policy/
 approval-bound authorization with SoD, expiry, nonce, idempotency and replay
-protection. Activation uses its own action authorization binding the installed
-begin-drain authorization and rechecks both; rejection/abandonment is separately
+protection plus a trusted-time/signer/key envelope. Its durable closed
+Issued/Consumed/ExpiredUnused/RevokedUnused lifecycle atomically binds
+consumption, tombstone, canonical action result, mutation, event, audit and
+outbox. An identical response-loss retry returns that result; changed bytes,
+digest, or action conflict without a write. Activation uses fresh current
+action authority binding the installed begin-drain authorization/consumption
+while the consumed begin-drain proof remains historically valid after expiry;
+revocation leaves the fence safe, and rejection/abandonment is separately
 authorized and audited. Successful activation commits a canonical
 non-wrapping predecessor-linked record atomically with the active head,
 supersession, optional fence event, audit, result and outbox. Authenticated
-checkpoints precede deletion; chain/head/high-watermark disagreement denies
-recovery.
+checkpoints preserve authorization consumption/results, trusted-time/key
+validation state, and replay tombstones before deletion; chain/head/
+high-watermark disagreement denies recovery.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again

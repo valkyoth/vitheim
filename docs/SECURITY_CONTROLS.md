@@ -110,10 +110,19 @@ audit decision.
   lifecycle events;
   action-bound drain authorization for Normal/Recovery/BreakGlass/aggregate
   actions with exact scope/diff/coverage/policy/approval/SoD/expiry/nonce/
-  idempotency/replay binding and separately authorized rejection/abandonment;
+  idempotency binding and separately authorized rejection/abandonment; closed
+  Issued/Consumed/ExpiredUnused/RevokedUnused authorization consumption,
+  atomic tombstone/result/mutation/event/audit/outbox persistence, exact retry
+  recovery, typed conflicting retry, and permanent non-reuse;
+  conservative trusted-time authorization validation with not-before/issued/
+  expiry, uncertainty, profile/epoch, issuer continuity, signer/key epoch/
+  authentication profile, long-drain historical validity, fresh activation
+  authority, and rollback/suspend/restore/failover ratchets;
   canonical non-wrapping predecessor-linked activation records atomically
   committed with head/supersession/fence/audit/result/outbox, authenticated
-  checkpoint-before-delete, and chain/head/high-watermark rollback refusal;
+  checkpoint-before-delete covering authorization/result/time/key
+  high-watermarks, validation evidence and replay tombstones, and chain/head/
+  high-watermark rollback refusal;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

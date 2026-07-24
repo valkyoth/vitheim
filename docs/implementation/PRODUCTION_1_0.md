@@ -136,11 +136,26 @@ Every PendingDrain transition—including Normal-only drain—requires current
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationV1`.
 It binds deployment/tenant, action, exact predecessor/successor/diff/derived
 coverage, policy/change/incident epochs, requestor/approvers/activator/quorum/
-SoD, expiry, nonce, and idempotency. Fence install and activation revalidate
-the exact authorization; rejection/abandonment uses separate action-bound
-authority and audit evidence. Activation uses its own action authorization,
-binds the installed begin-drain authorization digest, and rechecks both.
-Unauthorized, expired, replayed, self-approved,
+SoD; `not_before`/`issued_at`/`expires_at`, maximum uncertainty, trusted-time
+profile/epoch, issuer continuity, signer/key identity/epoch and authentication
+profile; nonce; and idempotency. Its closed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationConsumptionV1`
+lifecycle is `Issued`, `Consumed { action_id, request_digest, result_digest }`,
+`ExpiredUnused`, or `RevokedUnused`. Consumption, permanent replay tombstone,
+canonical `TopologyAuthorizationPresentationChargeLedgerCapacityDrainActionResultV1`,
+profile/fence mutation, event, audit, and outbox are atomic. Identical
+post-commit retry returns the original result without new side effects;
+changed canonical bytes/digest returns typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationConflict`.
+Fence install and activation revalidate the exact authorization, trusted-time
+interval and monotonic time/profile/key ratchets; rejection/abandonment uses
+separate action-bound authority and audit evidence. Activation uses its own
+currently valid action authorization, binds the installed begin-drain
+authorization and consumption digests, and rechecks current state. The
+historically valid consumed begin-drain authorization need not remain
+unexpired during a long drain; later revocation leaves the fence safe and
+requires fresh activation authority or separately authorized rejection.
+Unauthorized, expired-unused, replayed, self-approved,
 cross-scope, or substituted requests write no successor/fence/event/outbox.
 `PendingDrain` atomically installs a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` binding
@@ -168,8 +183,11 @@ Active-head update, supersession, activation, optional fence consumption/event,
 audit/idempotent result/outbox, and record append are indivisible. Sequence
 exhaustion denies. Authenticated predecessor-linked
 `TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationCheckpointV1`
-preserves the complete activation head and active/pending/fence tuple before
-record deletion.
+preserves the complete activation head and active/pending/fence tuple,
+authorization-consumption/result/time/key high-watermarks, canonical
+authorization/validation-evidence digests, trusted-time profile/epoch and
+validated interval, signer/key epochs/authentication profile, and replay
+tombstones before record deletion.
 Fence lifecycle helpers are not callable authority. The PendingDrain
 transaction emits
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`;
@@ -297,9 +315,15 @@ unreachable predecessors, pending/fence half-state, derived-set mismatch and
 direct fence-helper calls, unauthorized/expired/replayed/self-approved/
 cross-scope/substituted Normal/Recovery/BreakGlass/aggregate drain authority,
 policy/approval/predecessor/expiry install-and-activate races, unauthorized
-rejection/abandonment cycling, activation-record deletion/reorder/fork/gap/
-duplicate/sequence-exhaustion/checkpoint rollback/response loss and active-row
-contradiction,
+rejection/abandonment cycling, exact post-commit retry versus changed
+bytes/digest/action conflict for all four drain actions, consumed/expired/
+revoked authorization reuse, expiry and revocation during long drain with
+fresh activation/rejection authority, unavailable/discontinuous/uncertain
+trusted time, clock rollback, suspend/resume, old restore, signer/key rotation
+and profile substitution, authorization-checkpoint deletion and time/key/
+consumption/result/tombstone rollback, activation-record deletion/reorder/fork/
+gap/duplicate/sequence-exhaustion/checkpoint rollback/response loss and
+active-row contradiction,
 continuous traffic during shrink, admission/fence-install and final-admission/
 activation races, rejection-versus-admission, installed-fence crash/failover/
 restore, stale-worker bypass, and competing successors, lineage change before a receipt

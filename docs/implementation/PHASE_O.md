@@ -185,11 +185,24 @@ Every drain, including Normal-only drain, first authenticates
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationV1`
 binding deployment/tenant, action, exact predecessor/successor/diff/derived
 coverage, policy/change/incident epoch, requestor/approvers/activator/quorum/
-SoD, expiry, nonce, and idempotency. Install and activation recheck current
-authority and predecessor version. Rejection/abandonment requires its own
-action-bound authorization and audit record. Activation uses a separate action
-authorization, binds the installed begin-drain authorization digest, and
-rechecks both. Unauthorized, expired, replayed,
+SoD; `not_before`/`issued_at`/`expires_at`, maximum uncertainty, trusted-time
+profile/epoch, issuer continuity, signer/key identity/epoch and authentication
+profile; nonce; and idempotency. Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationConsumptionV1`
+as `Issued`, `Consumed { action_id, request_digest, result_digest }`,
+`ExpiredUnused`, or `RevokedUnused`; canonical
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainActionResultV1`
+supports exact post-commit retry and changed bytes/digest return typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationConflict`.
+Consumption/tombstone/result/mutation/event/audit/outbox commit atomically.
+Install and activation recheck current authority, conservative trusted time,
+ratchets, and predecessor version. Rejection/abandonment requires its own
+action-bound authorization and audit record. Activation uses a separate
+currently valid action authorization, binds the installed begin-drain
+authorization and consumption digests, and rechecks current state. A consumed
+begin-drain authorization remains historical proof after expiry; authority
+revocation leaves the fence in force until fresh activation authority or
+separately authorized rejection. Unauthorized, expired-unused, replayed,
 self-approved, cross-scope, or substituted requests write no transition state.
 Entering pending drain persists
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
@@ -218,8 +231,11 @@ active head, supersession/activation, optional fence event, audit/idempotent
 result/outbox commit atomically; exhaustion denies. Predecessor-linked
 authenticated
 `TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationCheckpointV1`
-must preserve the activation head and active/pending/fence tuple before record
-deletion.
+must preserve the activation head and active/pending/fence tuple,
+authorization-consumption/result/time/key high-watermarks, canonical
+authorization and validation-evidence digests, trusted-time profile/epoch and
+validated interval, signer/key epochs/authentication profile, and replay
+tombstones before record deletion.
 Fence install/clear helpers are not commands:
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`
 occurs only in the atomic PendingDrain transaction and
@@ -1548,10 +1564,19 @@ unrepresentable or denied; only atomic fence-installed/fence-consumed events
 are accepted. Attack unauthorized/expired/replayed/self-approved/cross-scope/
 substituted drain authority for every lane and aggregate; race policy,
 approval, predecessor and expiry against install/activation; attempt
-unauthorized rejection/abandonment cycling. Delete, fork, reorder, duplicate or
-gap activation records; roll back checkpoints/external high-watermarks; force
-sequence exhaustion, response loss and active-row disagreement. Require
-fail-atomic denial or exact idempotent replay.
+unauthorized rejection/abandonment cycling. For every action, lose the
+post-commit response, replay the identical canonical request, then reuse its
+action/idempotency ID with changed bytes, digest, scope and action; require one
+original result/effect and typed no-write conflict. Reuse consumed,
+expired-unused and revoked-unused grants; expire and revoke authority during a
+long drain; require the installed fence plus fresh activation or rejection
+authority. Deny unavailable/discontinuous/excessively uncertain time, clock
+rollback, suspend/resume, old restore and signer/key/profile substitution.
+Delete, fork, reorder, duplicate or gap activation records; delete
+authorization replay checkpoints and roll back time/key/consumption/result/
+activation or external high-watermarks; force sequence exhaustion, response
+loss and active-row disagreement. Require fail-atomic denial or exact
+idempotent replay without authorization resurrection.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 

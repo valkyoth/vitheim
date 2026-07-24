@@ -393,20 +393,48 @@ deployment and tenant; action kind; predecessor and successor profile IDs,
 generations and digests; the exact typed diff digest; derived lanes and reduced
 aggregate dimensions; policy epoch; change-or-incident authority; requestor,
 approver identities, activator, quorum and separation proof; issued/expiry
-times; nonce; and idempotency ID. It authorizes one exact begin-drain,
+times; nonce; and idempotency ID. Its authenticated time envelope is exactly
+`not_before`, `issued_at`, `expires_at`, maximum uncertainty, trusted-time
+profile/epoch, issuer continuity, signer/key identity and epoch, and
+authentication profile. It authorizes one exact begin-drain,
 activation, rejection, or controlled-abandonment action and cannot be reused
 across an action, predecessor, successor, diff, deployment, tenant, or policy
 epoch. Every Normal, Recovery, BreakGlass, and aggregate drain requires current
 authorization and at least the same requestor/approver/activator separation as
 the effective reduction.
 
+Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationConsumptionV1`
+as the sole closed authorization lifecycle:
+`Issued`, `Consumed { action_id, request_digest, result_digest }`,
+`ExpiredUnused`, or `RevokedUnused`.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainActionResultV1`
+is the canonical request-digest-bound result. Authorization consumption,
+permanent replay tombstone, that result, the exact profile/fence mutation,
+event, audit, and outbox commit in one local transaction. An identical
+canonical request using the same action and idempotency ID returns the original
+result without another mutation, event, audit-success, sequence, or outbox
+entry. Reuse with different canonical bytes or digest returns typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationConflict`
+and writes nothing. Consumed authority cannot authorize another action;
+expired-unused and revoked-unused authority remain permanently non-consumable.
+
 `TransitionTopologyAuthorizationPresentationChargeLedgerCapacityProfileToPendingDrain`
 authenticates that authorization and rechecks current policy, change/incident
 authority, approval validity/quorum/separation, typed diff, derived coverage,
-expiry, nonce/idempotency, and predecessor expected version before any state or
-fence write. Activation requires its own single-action authorization, binds the
-installed begin-drain authorization digest, and rechecks both immutable drain
-bindings and current policy/authority/approval/predecessor state.
+conservative trusted-time interval, expiry, nonce/idempotency, and predecessor
+expected version before any state or fence write. Unavailable/discontinuous
+time, excessive uncertainty, clock rollback, restore below the local
+lower-bound/profile/key high-watermarks, or an unauthenticated signer denies
+consumption. Activation requires its own currently valid single-action
+authorization, binds the installed begin-drain authorization and consumption
+digests, and rechecks both immutable drain bindings and current
+policy/authority/approval/predecessor/fence state. The consumed begin-drain
+authorization must have been valid at fence installation but need not remain
+unexpired throughout a long drain. Its historical authentication remains
+mandatory. Revocation after installation never removes the safety fence:
+activation waits for fresh current authority or a separately authorized
+rejection.
 Rejection and controlled abandonment require their own action-bound current
 authorization and append audit evidence, preventing an unauthorized actor from
 cycling drains. Unauthorized, expired, replayed, self-approved, cross-tenant,
@@ -467,9 +495,14 @@ local transaction. A record cannot be deleted until an authenticated
 predecessor-linked
 `TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationCheckpointV1`
 preserves the complete activation head plus active/pending/fence recovery
-tuple. Checkpoint precedes deletion and external replicated high-watermarks
-cannot roll back. Response loss replays the same transaction identity/result;
-it never appends another sequence.
+tuple; drain-authorization consumption and result high-watermarks; canonical
+authorization and validation-evidence digests; trusted-time profile/epoch and
+validated interval; signer/key epochs and authentication profile; and every
+replay tombstone needed to prevent resurrection. Checkpoint precedes deletion
+and local or external replicated time, key, consumption, result, and activation
+high-watermarks cannot roll back. Response loss for begin-drain, activation,
+rejection, or abandonment replays the same stable action result; it never
+consumes authority twice or appends another event or sequence.
 
 Fence installation and consumption are not independently callable commands.
 `TransitionTopologyAuthorizationPresentationChargeLedgerCapacityProfileToPendingDrain`
@@ -486,7 +519,9 @@ Recovery authenticates and reconstructs
 tuple of the active profile selected from the greatest authenticated committed
 activation record, an optional pending successor, its optional exact drain
 fence, the lineage-generation high-watermark, and the activation-sequence
-high-watermark. Raw profile generation never implies activation. Rejected and
+high-watermark plus drain-authorization consumption/result/time/key
+high-watermarks and replay tombstones. Raw profile generation never implies
+activation. Rejected and
 unactivated proposed generations remain historical only. A recovered pending
 successor and fence are applied jointly to new admission; recovery recomputes
 the canonical affected-lane and reduced-aggregate sets from the profile diff
@@ -1127,9 +1162,24 @@ aggregate reductions; prove no successor/fence/event/outbox write. Race policy,
 approval, predecessor version, and expiry changes with fence install and
 activation. Attempt unauthorized rejection/abandonment and repeated
 install/remove cycling; require action-bound authorization and audit evidence.
+For begin-drain, activation, rejection, and abandonment, lose the response
+after commit and require an exact retry to return the original result without
+another event, outbox entry, audit-success, authorization consumption, or
+sequence. Reuse the stable action/idempotency ID with changed canonical bytes,
+digest, action, successor, or tenant and require the typed conflict with no
+write. Exercise consumed-authority reuse, expired-unused and revoked-unused
+authority, expiry during a long drain, policy/authority revocation while
+draining, fresh activation/rejection authority, unavailable time, excessive
+uncertainty, clock rollback, host suspend/resume, old-snapshot restore, signer
+and key rotation, and authentication-profile substitution. The installed fence
+must remain safe after authority revocation; historical begin-drain validity
+must not require its expiry to extend through activation.
 Delete, reorder, fork, duplicate, substitute, or roll back activation records,
 checkpoints, active-head rows, journal positions, transaction identities,
-external high-watermarks, and response-loss results. Prove activation sequence
+authorization consumption/result/time/key high-watermarks, replay tombstones,
+validation evidence, external high-watermarks, and response-loss results.
+Delete the authorization checkpoint before hot replay-state deletion and prove
+recovery denies rather than resurrecting authority. Prove activation sequence
 exhaustion fails before mutation, direct activation records canonical-none
 fence fields, and every active-row-versus-record contradiction denies recovery.
 Drive every

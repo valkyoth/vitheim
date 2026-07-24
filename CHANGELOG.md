@@ -8,6 +8,10 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Closed the capacity-drain authorization lifecycle with atomic consumption,
+  permanent replay tombstones, stable exact-retry results, typed conflicting
+  retries, trusted-time/key/continuity ratchets, long-drain semantics, and
+  checkpoint-complete failover/restore recovery.
 - Added action-bound authorization for every capacity-drain transition and a
   canonical non-wrapping predecessor-linked activation record/checkpoint whose
   active-head, supersession, fence, audit, result, and outbox effects commit
