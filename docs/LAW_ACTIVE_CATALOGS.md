@@ -194,7 +194,7 @@ The action-authority scope is closed and is frozen at `0.140.1`:
 | --- | --- | --- |
 | Readiness observation | reusable, bounded `OnlineWorkloadFreshnessProofV1`; no action claim | read-only; stale, unavailable, fenced, or topology-mismatched proof returns unready and cannot create authority |
 | Positive local prepare, convergence, or admission receipt creation/commit | single-use `WorkloadLeaseActionClaim` | consume the claim, commit the receipt/admission and its typed result in one local owner transaction |
-| Topology-authorization allocation | bounded ingress work; an authenticated endpoint/audience/credential-profile-derived `Normal`, `Recovery`, or `BreakGlass` presentation lane; current principal/session/delegation/policy/approval; bounded authenticated-presentation and first-seen-request rates; and layered pre-allocation `TopologyAuthorizationAdmissionBudgetV1` successful-admission/outstanding limits at deployment, issuer/class and canonical principal-or-authority/class scope | VIT-INV-061 charges every authenticated canonical presentation after authentication/canonicalization but before protected idempotency lookup, rejects stale/ambiguous/caller-selected lanes and post-policy lane/class mismatch, then atomically assigns exactly one request sequence/request charge to every first-seen canonical request; emergency lane identities/audiences and presentation/request capacity are separately provisioned and non-borrowable; denial remains historical through authenticated request checkpoint/archive proof, while success also validates quotas, mutates admission/outstanding counters and reserve, preserves the original quota claim set, allocates a separate issuance sequence, and persists reservation/receipt/result/outbox; terminal settlement accepts only complete consumer-authenticated terminal evidence and original counters exactly once, reconciliation is separately typed, and break-glass retains all ordinary security gates |
+| Topology-authorization allocation | globally bounded but independently provisioned non-borrowable normal/recovery/break-glass ingress resources; an authenticated endpoint/audience/credential-profile-derived presentation lane owned by VIT-INV-061 with SoD promotion; current principal/session/delegation/policy/approval; bounded presentation/request rates; and layered admission/outstanding limits | Stage one commits every non-refundable presentation debit and internal single-use charge evidence before protected lookup. Stage two consumes that evidence, rechecks current mapping generation/fence/profile/lane, and atomically performs lookup plus any request charge/sequence/outcome/admission/reservation/issuance/receipt/outbox writes; mapping change or crash never refunds stage one, and retry gets a new charge. Emergency identities, ingress, presentation and request capacity are non-borrowable; denial history, terminal-only settlement, separate reconciliation and all existing security gates remain enforced |
 | Topology handoff initialization/commit or topology successor mutation | independently issued `TopologyMutationAuthorizationReceiptV1`; orchestrator profile additionally requires a single-use `WorkloadLeaseActionClaim`, while hardware profile requires canonical-none claim fields and current hardware proof | `DeadlineConditionalTopologyCasV1` consumes the receipt, profile-applicable workload proof, time ratchet/tombstones, expected-version topology CAS, member fences/tombstones, and fence outbox in one VIT-INV-060 transaction |
 | Topology-authorization replay checkpoint/compaction | no new workload or mutation authority; only the current VIT-INV-060 or VIT-INV-061 owner may compact its own local state | issuer request checkpoint covers every admitted/denied request before deletion and makes late denial historical; issuer issuance checkpoint may advance dense allocation watermark; consumer remains sparse unless complete authenticated issuer range plus trusted-time horizon/deadline and terminal-state proof yields `ConsumerCompactionEligibleThrough`; unavailable request/receipt proof never means new or absent |
 | Dispatch | single-use `WorkloadLeaseActionClaim` | consume with the exact dispatch bundle and outcome in the dispatch owner transaction |
@@ -393,7 +393,12 @@ rate and outstanding limits. A separate bounded
 `TopologyAuthorizationIngressWorkBudgetV1` first caps deployment/listener bytes,
 concurrent authentication, signature/MAC work, canonical decode bytes/
 allocation/depth/work and failures; trustworthy transport-source limits are
-additive and request-controlled values are never the sole key. A separate
+additive and request-controlled values are never the sole key.
+`TopologyAuthorizationIngressLaneV1` partitions independently provisioned,
+non-borrowable normal/recovery/break-glass listener, accept/file-descriptor,
+TLS/crypto-worker, decode memory/CPU, executor-queue and connection-pool
+capacity under a global safety ceiling. Server-controlled listener/TLS trust
+configuration and upstream policy route work but grant no authorization. A separate
 bounded `TopologyAuthorizationPresentationRateBudgetV1` charges every
 authenticated canonical presentation after authentication/canonicalization and
 before protected idempotency lookup, including exact
@@ -412,6 +417,22 @@ ambiguous or restored-old mapping denies. Full authorization must yield a
 `TopologyAuthorizationBudgetClass` exactly matching the lane or
 `TopologyAuthorizationPresentationLaneMismatch` creates no request, admission
 or outstanding state.
+VIT-INV-061 solely owns stable mapping identity, proposal, SoD promotion/
+activation, rotation, revocation, generation/fence/profile digest and recovery.
+Emergency promotion requires distinct requestor, approver and activator,
+quorum, current policy/session and change-or-incident evidence.
+`ChargeTopologyAuthorizationPresentation` commits the non-refundable debit and
+unique internal `TopologyAuthorizationPresentationChargeV1` before lookup.
+`TopologyAuthorizationPresentationChargeId` binds request/caller, ingress and
+presentation lanes, mapping identity/generation/fence/profile, budget epoch,
+charge sequence and owner/boot continuity; it is non-exportable and single-use.
+The separate `ConsumeTopologyAuthorizationPresentationCharge` transaction
+consumes evidence, rechecks current mapping and performs lookup plus first-seen
+request/outcome/issuance writes. Mapping change returns
+`TopologyAuthorizationPresentationLaneChanged` before request allocation
+without refund. Crash between stages leaves an orphan spent charge, retry gets
+a new charge and fenced-continuity evidence is unusable; evidence/dispositions
+are bounded and checkpoint-before-delete.
 `TopologyAuthorizationRequestRateBudgetV1` charges exactly once for every
 first-seen canonical request ID/digest and binds that charge to monotonic
 `TopologyAuthorizationRequestSequence`. Exact retries charge presentation rate
@@ -430,8 +451,8 @@ floods cannot consume normal capacity or suppress revocation/recovery.
 Break-glass has no exemption from trusted time, quorum/SoD, canonical receipt,
 single consumption, deadline CAS, replay checkpoint, or unavailable-history
 denial. Each successful allocation binds both sequences into the receipt. On
-first-seen success, presentation and request charges, request-sequence
-allocation, quota validation,
+first-seen success, the exact committed presentation-charge evidence is
+consumed while the request charge, request-sequence allocation, quota validation,
 admission/outstanding counter and reserve mutations,
 preserved `TopologyAuthorizationOriginalQuotaClaimSetV1`,
 `TopologyAuthorizationOutstandingReservation` creation, sequence allocation,

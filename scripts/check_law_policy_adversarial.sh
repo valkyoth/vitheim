@@ -232,11 +232,29 @@ expect_realization_failure "a missing topology authorization admission budget"
 sed -i 's/`TopologyAuthorizationIngressWorkBudgetV1`, //' "$realizations"
 expect_realization_failure "a missing topology authorization ingress-work budget"
 
+sed -i 's/`TopologyAuthorizationIngressLaneV1`, //' "$realizations"
+expect_realization_failure "a missing topology authorization ingress lane"
+
 sed -i 's/`TopologyAuthorizationPresentationLaneV1`, //' "$realizations"
 expect_realization_failure "a missing authenticated presentation lane"
 
 sed -i 's/`TopologyAuthorizationPresentationLaneMismatch`, //' "$realizations"
 expect_realization_failure "a missing presentation lane mismatch denial"
+
+sed -i 's/`TopologyAuthorizationPresentationLaneChanged`, //' "$realizations"
+expect_realization_failure "a missing presentation lane change denial"
+
+sed -i 's/`TopologyAuthorizationPresentationChargeV1`, //' "$realizations"
+expect_realization_failure "a missing presentation charge evidence"
+
+sed -i 's/`ChargeTopologyAuthorizationPresentation`, //' "$realizations"
+expect_realization_failure "a missing presentation charge stage"
+
+sed -i 's/`ConsumeTopologyAuthorizationPresentationCharge`, //' "$realizations"
+expect_realization_failure "a missing presentation charge consumption stage"
+
+sed -i 's/`TopologyAuthorizationPresentationChargeCheckpointV1`, //' "$realizations"
+expect_realization_failure "a missing presentation charge checkpoint"
 
 sed -i 's/`TopologyAuthorizationPresentationRateBudgetV1`, //' "$realizations"
 expect_realization_failure "a missing topology authorization presentation-rate budget"

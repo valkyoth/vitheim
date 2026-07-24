@@ -226,7 +226,15 @@ state. It limits request bytes, connections and concurrent handshakes,
 signature or MAC verification work, canonical decode bytes/allocation/depth/
 work, and authentication failures at deployment/listener scope plus a
 transport-source scope only where that source is trustworthy. Caller-controlled
-identifiers are never its sole key.
+identifiers are never its sole key. Its closed
+`TopologyAuthorizationIngressLaneV1` partitions independently provisioned,
+non-borrowable `Normal`, `Recovery`, and `BreakGlass` listeners and their
+accept queues/file-descriptor quotas, TLS/cryptographic workers, decode memory/
+CPU, executor queues, and connection pools. The route derives only from
+server-controlled bind/listener/TLS trust configuration and upstream network
+policy, confers no authorization, and is still bounded by a global deployment
+safety ceiling. Normal cannot consume either emergency partition and
+break-glass cannot consume recovery capacity.
 After successful authentication and canonicalization,
 `TopologyAuthorizationPresentationRateBudgetV1` charges every authenticated
 canonical presentation, including exact retries, response-loss retries,
@@ -246,8 +254,40 @@ revoked, stale, ambiguously mapped, or mismatched lane evidence fails closed.
 After full authorization, the requested `TopologyAuthorizationBudgetClass`
 must exactly equal the authenticated lane or
 `TopologyAuthorizationPresentationLaneMismatch` rejects without request,
-admission, or outstanding allocation. Every first-seen authenticated canonical
-request atomically receives a monotonic
+admission, or outstanding allocation.
+VIT-INV-061 is the sole authoritative owner of presentation-lane mapping
+identity, proposal, activation, rotation, revocation, generation, and fence
+state. Promotion into `Recovery` or `BreakGlass` requires a distinct requestor,
+approver, and activator with the frozen quorum/SoD, current policy/session,
+change-or-incident evidence, and no self-approval; configuration deployment
+cannot promote an identity. The owner exposes only authenticated current
+mapping reads and advances a monotonic externally retained generation/fence on
+activation, rotation, or revocation.
+
+Presentation charging and request processing are an explicit two-stage local
+protocol. Stage one,
+`ChargeTopologyAuthorizationPresentation`, atomically commits the non-
+refundable presentation-rate debit and a bounded internal
+`TopologyAuthorizationPresentationChargeV1` under a unique
+`TopologyAuthorizationPresentationChargeId` before any protected idempotency
+lookup. The evidence binds canonical request ID/digest, authenticated
+principal/authority, ingress lane, presentation lane, mapping identity/
+generation/fence, credential-profile digest, presentation budget epoch, charge
+sequence, owner/boot continuity and creation horizon. It is internal,
+non-exportable and single-use; possessing it confers neither request identity
+nor authorization.
+
+Stage two, `ConsumeTopologyAuthorizationPresentationCharge`, consumes that
+evidence and performs the protected request lookup in one VIT-INV-061
+transaction. It first rechecks that the authoritative mapping identity,
+generation, fence, profile digest and lane still exactly match the charge. A
+rotation or revocation between stages returns typed
+`TopologyAuthorizationPresentationLaneChanged`, consumes no request/admission/
+outstanding capacity, creates no immutable request outcome, and never refunds
+the presentation debit. An exact existing request consumes the new charge
+evidence and returns its immutable outcome; a conflicting request consumes the
+evidence and rejects; a first-seen authenticated canonical request atomically
+receives a monotonic
 `TopologyAuthorizationRequestSequence` and one separate
 `TopologyAuthorizationRequestRateBudgetV1` charge; retries with the same
 canonical request ID/digest/principal/authority/class reuse that sequence,
@@ -268,21 +308,30 @@ Break-glass remains subject to its own strict ceiling and every trusted-time,
 quorum/SoD, canonical receipt, single-consumption, deadline-CAS, and replay-
 checkpoint control.
 
-Presentation charging occurs before protected request lookup. Presentation
+Stage-one presentation charging commits before protected request lookup. Presentation
 saturation returns typed `TopologyAuthorizationPresentationRateLimited`
 without reading, replacing, or becoming the immutable request outcome; a later
 presentation may retrieve that outcome. Concurrent identical first-seen
 presentations each spend presentation rate, serialize on the canonical request
 key, and create exactly one request sequence, request-rate charge and outcome.
+A crash after stage-one commit and before stage two conservatively leaves an
+orphan spent charge; client retry must obtain a new charge. Unconsumed evidence
+from a fenced boot/owner continuity is never reusable. Stage-two abort marks
+the evidence abandoned in a separate fail-closed cleanup transaction or fences
+the serving continuity before more work; it cannot reuse or refund the charge.
+Consumed/abandoned/orphan evidence is bounded by rows/bytes/age, checkpointed
+before deletion, and compacted without changing aggregate debit history.
 
-For successful first-seen issuance, request-sequence allocation, request-rate
-charging, quota validation, every applicable admission counter/reserve mutation,
+For successful first-seen issuance, stage-two charge consumption, request-
+sequence allocation, request-rate charging, quota validation, every applicable
+admission counter/reserve mutation,
 `TopologyAuthorizationOutstandingReservation` creation,
 `AuthorizationIssuanceSequence` allocation, canonical receipt persistence,
 request-digest-bound idempotent result persistence, and issuance outbox
-insertion are one VIT-INV-061 local atomic transaction after the presentation
-charge. A denied first-seen authenticated canonical request atomically commits
-its request sequence, bounded request-rate charge, caller/class binding, and
+insertion are one VIT-INV-061 local atomic transaction after the independently
+committed presentation debit. A denied first-seen authenticated canonical
+request atomically commits charge consumption, its request sequence, bounded
+request-rate charge, caller/class binding, and
 typed idempotent denial result; it allocates
 no admission token, outstanding reservation, authorization issuance sequence,
 receipt, or issuance outbox. Presentation, request and admission rate charges
@@ -543,6 +592,13 @@ is unbounded, when presentation lane derives from a request body or untrusted
 route, when emergency identities/audiences are not separately provisioned,
 when lane capacity borrows, or when authenticated lane and fully authorized
 budget class can differ,
+when ingress accept/TLS/decode/executor/pool resources are shared or borrowable
+across lanes without reserved capacity and an aggregate ceiling, when a route
+confers authorization, when VIT-INV-061 is not the sole mapping owner or lane
+promotion lacks SoD, when presentation debit and evidence do not commit before
+lookup, when charge evidence is forgeable/exportable/reusable/unbounded, when
+stage two does not recheck mapping generation/fence/profile/lane, or when a
+stage-one crash can refund/reuse the debit,
 the exact replay horizon or maximum hot/backlog cardinality is unspecified,
 compaction deletes before checkpoint installation, a covered request can look
 absent, archive/proof loss permits reissue, checkpoint/key rotation is
@@ -823,7 +879,6 @@ terminal evidence with issuer keys, change principal/policy/budget epochs before
 settlement, and race settlement with consumption, expiry, failover and duplicate
 delivery; original buckets release all-or-none exactly once. Prove every
 pre-authentication byte, concurrency, handshake/signature/MAC and canonical-
-decode work limit before owner state. Present normal credentials to recovery
 and break-glass endpoints, claim emergency class in the body, substitute
 audience/profile/mapping generation, rotate and revoke lane credentials, fail
 over and restore an older mapping, and prove fail-closed rejection. Flood many
@@ -831,6 +886,17 @@ normal principals without consuming emergency presentation/request capacity,
 then flood break-glass and prove recovery processing remains available. After
 policy evaluation, prove any requested-class/authenticated-lane mismatch
 rejects without request/admission/outstanding allocation. Prove every
+normal ingress accept/TLS/signature/decode/executor/pool exhaustion cannot
+consume recovery or break-glass reserves, break-glass exhaustion cannot consume
+recovery, and the global ceiling still bounds the aggregate. Prove the ingress
+route grants no authorization. Race mapping proposal/SoD activation, rotation
+and revocation against both stage commits. Split every stage-one debit/evidence
+and stage-two evidence-consumption/request/issuance write point; crash before
+and after each commit on every adapter. Prove protected lookup never starts
+before durable charge evidence, a crash between stages leaves the charge spent
+and forces a new charge, old continuity evidence cannot be reused, mapping
+change fails before request allocation, and request/outcome/issuance remains
+all-or-none. Prove every
 authenticated presentation—including every concurrent duplicate, response-
 loss retry and historical replay—spends presentation rate. Prove exactly one
 first-seen canonical denial atomically allocates one request sequence and
@@ -885,7 +951,9 @@ tooling, capability profile, canonical
 `TopologyMutationAuthorizationReceiptV1` codec/readback, complete issuer/
 consumer time schema, atomic deadline-CAS evidence, quota rows, exact-replay
 hot store, authenticated checkpoint/high-watermark, archive index, and bounded
-compaction worker; include ingress-work budgets, authenticated endpoint/
+compaction worker; include non-borrowable ingress-lane accept/TLS/decode/
+executor/pool profiles with a global ceiling, two-stage presentation charge
+rows/evidence/continuity/compaction, authenticated endpoint/
 audience/credential-profile presentation-lane mappings with generation/fence/
 revocation state, separate normal/recovery/break-glass counters and
 reserve, issuer range manifests, consumer sparse commitments, and eligible-
@@ -900,7 +968,8 @@ maximum admitted issuance, sparse-gap/late-presentation range cases, normal-
 exhausted break-glass success, break-glass flood isolation, and conformance
 pass, including normal-to-emergency lane forgery, lane/class mismatch,
 credential rotation/revocation, mapping rollback on restore, and pre-auth work
-exhaustion.
+exhaustion, cross-lane ingress starvation, stage-one/stage-two crash boundaries,
+orphan charge non-refund/reuse, and mapping-change TOCTOU.
 
 Exit criteria: no HA claim and all single-node semantics are evidenced.
 `v0.23.0 implementation stop reached. Run pentest for this exact commit.`
@@ -976,7 +1045,9 @@ results, request and authorization issuance sequences, authenticated denial-
 request and issuance replay checkpoints/covered-through high-watermarks,
 archive proofs, issuer range manifests, consumer sparse/eligible-dense state,
 bounded range chunks/verification cursors, layered deployment/issuer/principal
-ingress-work limits and authenticated presentation-lane mapping state,
+non-borrowable ingress-lane resource profiles/global ceiling, two-stage
+presentation-charge evidence/continuity/checkpoint, and sole-owner/SoD
+authenticated presentation-lane mapping state,
 presentation/request/admission/outstanding normal/recovery/break-glass counters, original
 quota claim sets/budget epochs/reserve sources, outstanding reservations,
 receipt-revocation intents, terminal and reconciliation receipts and exact-once
@@ -1097,7 +1168,8 @@ reservation/sequence/receipt/result/outbox issuance transaction, exact-once
 terminal release from consumer evidence or conservative expiry, lineage revoke/
 supersede retention, original-bucket settlement, distinct presentation/request/
 admission rate accounting, authenticated lane derivation, non-borrowable lane
-capacity, exact lane/class matching, denial request-sequence/checkpoint/late-retry and archive-loss
+capacity, exact lane/class matching, two-stage charge commit/consume and mapping
+TOCTOU recheck, denial request-sequence/checkpoint/late-retry and archive-loss
 behavior, canonical terminal-envelope/outcome/authentication conformance,
 principal/authority sub-limits, and bounded chunked manifest decoding and
 verification.
@@ -1133,7 +1205,8 @@ cases, sparse-gap/range-manifest/late-presentation cases, break-glass reserve
 isolation, issuance atomicity/settlement idempotency/principal isolation, and
 lineage-retention/original-claim/consumer-terminal/presentation-versus-request-
 versus-admission semantics, ingress-work bounds, authenticated lane derivation/
-rotation/revocation/restore and exact lane/class semantics, denial request-sequence/checkpoint/late-retry/
+rotation/revocation/restore and exact lane/class semantics, non-borrowable
+ingress resources, two-stage charge crash/TOCTOU semantics, denial request-sequence/checkpoint/late-retry/
 archive-loss and terminal-versus-reconciling type/authentication semantics,
 oversized/deep/partial/
 cyclic manifest-chunk rejection, and
@@ -1170,7 +1243,8 @@ pass; include sparse-gap/range-manifest/late-presentation behavior and break-
 glass reserve isolation, atomic issuance and exact-once settlement, caller
 sub-limit isolation, lineage-retention/original-claim/consumer-terminal/
 presentation-versus-request-versus-admission semantics, ingress-work and
-authenticated-lane derivation/non-borrowing/class-match semantics, denial request-sequence/
+authenticated-lane derivation/non-borrowing/class-match semantics, ingress
+partition/global-ceiling and two-stage charge/TOCTOU semantics, denial request-sequence/
 checkpoint/late-retry/archive-loss and terminal-versus-reconciling type/
 authentication semantics, and
 bounded chunk/proof verification.
@@ -1389,9 +1463,12 @@ permit an older binary/schema to write. Downgrade below this schema is rejected
 before opening the authority rows.
 Preserve `TopologyAuthorizationRequestSequence`,
 `AuthorizationIssuanceSequence`, pre-allocation budget state,
-`TopologyAuthorizationIngressWorkBudgetV1`, the closed
+`TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable
+`TopologyAuthorizationIngressLaneV1` resource profiles and global ceilings, the closed
 `TopologyAuthorizationPresentationLaneV1`, endpoint/audience/credential-profile
-lane mappings and their generations/fences/revocations,
+lane mappings, sole VIT-INV-061 ownership/SoD activation, and their generations/
+fences/revocations, every presentation-charge ID/sequence/binding/disposition/
+continuity/checkpoint,
 layered deployment/issuer/principal presentation-rate/request-rate/admission/
 outstanding counters,
 immutable original quota claim sets/budget epochs/class/reserve sources,
@@ -1417,7 +1494,9 @@ settlement port, omit or alter a terminal or reconciliation envelope field/
 authentication role, lose/renumber/recharge a request
 sequence, reevaluate a compacted denial, treat unavailable denial proof as new,
 derive a lane from request content, roll back a lane mapping, merge or borrow
-lane capacity, accept lane/class mismatch, conflate presentation, request, and
+ingress or presentation-lane capacity, accept lane/class mismatch, merge the
+two stage commits, refund/reuse/forge a charge, skip the commit-time mapping
+recheck, accept evidence from fenced continuity, conflate presentation, request, and
 admission rates, drop a caller
 sub-limit, widen a range-proof resource budget, make budget classes borrowable,
 or treat an unavailable archive as absence.
@@ -1517,7 +1596,9 @@ watermarks, consumer lower-bound/profile-epoch/continuity ratchet, consumed/
 expired tombstones, topology/member generations/fences/outbox, exact
 `DeadlineConditionalTopologyCasV1` mechanism/profile and result evidence,
 `TopologyAuthorizationReplayLifecycleV1` quotas/horizon/hot results,
-ingress-work limits, presentation-lane mappings/generations/fences/revocations,
+ingress-work and non-borrowable ingress-lane profiles/global ceiling,
+presentation-lane owner/SoD mappings/generations/fences/revocations, presentation-
+charge evidence/dispositions/continuity/checkpoint,
 request and authorization sequences, denial-request and issuance checkpoint
 chains/current digests/covered-through high-watermarks, set and archive
 commitments, issuer range manifests/dense watermark, consumer sparse and
@@ -1550,7 +1631,8 @@ original claim sets, settlement idempotency and consumer-terminal evidence,
 complete request sequence/checkpoint/denial-history proof, canonical terminal
 envelope/outcome/role semantics, structurally separate reconciliation evidence,
 authenticated lane derivation and exact lane/class matching, separate
-presentation/request/admission semantics,
+stage-one presentation commit and stage-two evidence consumption/mapping
+recheck/request transaction, separate presentation/request/admission semantics,
 equal-or-stricter request/archive and manifest/chunk/
 verification limits, and no sequence/key reuse. Missing archival payload may remain unavailable, but
 that range is durably fail-closed and cannot be interpreted as unused. It then

@@ -29,6 +29,17 @@ All notable Vitheim changes are documented here. The format follows
   audience and credential/authority profile; emergency identities and
   presentation/request capacity are non-borrowable and authorized class must
   match the lane.
+- Split topology-authorization presentation accounting into two durable stages:
+  stage one commits the presentation debit and issues bounded internal
+  single-use evidence before any protected lookup; stage two consumes that
+  evidence, rechecks the mapping generation, and atomically records the logical
+  request/outcome/issuance. Crashes leave an orphaned spent charge, retries
+  require a fresh charge, and mapping rotation fails closed without refund.
+- Assigned presentation-lane mapping ownership to VIT-INV-061 with separated
+  emergency-promotion roles, and added independently provisioned,
+  non-borrowable normal/recovery/break-glass listener, TLS, decode, executor,
+  and pool resources under a global safety ceiling. Pre-auth routing grants no
+  authorization.
 - Updated the not-yet-effective VIT-LAW-008@g02 canonical planning manifest to
   match the strengthened authorization model and re-authenticated its
   generation and planning-catalog digests.

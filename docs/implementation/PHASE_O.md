@@ -107,7 +107,13 @@ rate and outstanding budgets before allocating durable authority.
 request bytes, concurrent handshakes, signature/MAC verification work,
 canonical decode bytes/allocation/depth/work and failures; trustworthy
 transport-source limits are additive and caller-controlled data is never the
-sole key. A separate bounded `TopologyAuthorizationPresentationRateBudgetV1`
+sole key. `TopologyAuthorizationIngressLaneV1` partitions independently
+provisioned, non-borrowable normal/recovery/break-glass listeners, accept/file-
+descriptor quotas, TLS/cryptographic workers, decode memory/CPU, executor
+queues and connection pools under a global safety ceiling. Server-controlled
+listener/TLS trust configuration and upstream network policy select the route,
+which grants no authorization. A separate bounded
+`TopologyAuthorizationPresentationRateBudgetV1`
 then charges every authenticated canonical presentation after authentication
 and canonicalization but before protected idempotency lookup,
 including exact retries, replays, concurrent duplicates, conflicts, and typed
@@ -125,6 +131,24 @@ stale, ambiguous or restored-old lane mapping denies. Full authorization must
 produce a `TopologyAuthorizationBudgetClass` exactly matching that lane or
 `TopologyAuthorizationPresentationLaneMismatch` rejects without creating
 request, admission or outstanding state.
+VIT-INV-061 solely owns mapping proposal, SoD activation/promotion, rotation,
+revocation, generation/fence/profile digest and recovery. Recovery/break-glass
+promotion requires distinct requestor, approver and activator with quorum,
+current policy/session and change-or-incident evidence.
+`ChargeTopologyAuthorizationPresentation` is stage one: it commits the non-
+refundable debit plus unique internal, non-exportable, single-use
+`TopologyAuthorizationPresentationChargeV1` before lookup. Its
+`TopologyAuthorizationPresentationChargeId` binds request ID/digest, caller/
+authority, ingress/presentation lanes, mapping identity/generation/fence/
+profile digest, budget epoch, charge sequence and owner/boot continuity.
+`ConsumeTopologyAuthorizationPresentationCharge` is stage two: one VIT-INV-061
+transaction consumes the evidence, rechecks the current mapping, performs
+idempotency lookup and, for first-seen work, commits request charge/sequence/
+outcome plus any admission/reservation/issuance/receipt/outbox state. Mapping
+change returns `TopologyAuthorizationPresentationLaneChanged` before logical
+request allocation without refund. Crash between stages leaves an orphan spent
+charge, retry obtains a new charge, and fenced-continuity evidence is unusable;
+charge evidence/dispositions are bounded and checkpoint-before-delete.
 `TopologyAuthorizationRequestRateBudgetV1` is charged exactly once for every
 first-seen canonical request ID/digest and is bound to its monotonic
 `TopologyAuthorizationRequestSequence`; exact retries charge presentation rate
@@ -140,13 +164,14 @@ Checkpoint precedes deletion; late compacted denial is historical, and missing
 proof returns `TopologyAuthorizationHistoricalStateUnavailable` rather than
 reevaluation. Denial rows/bytes, checkpoint backlog, archive proof bytes/depth/
 work, decode allocation, jobs and compaction latency are bounded and fail
-closed. All applicable layers must admit. On first-seen success, presentation
-and request-rate charges, request-sequence allocation, admission-rate
+closed. All applicable layers must admit. On first-seen success, stage-two
+charge consumption, request-rate charge, request-sequence allocation, admission-rate
 and outstanding counter/reserve mutations,
 `TopologyAuthorizationOriginalQuotaClaimSetV1`, outstanding-reservation
 creation, sequence allocation, canonical receipt, request-digest-bound
-idempotent result, and issuance outbox commit in one VIT-INV-061 transaction.
-A first-seen denial may commit only its request-rate charge and typed
+idempotent result, and issuance outbox commit in one VIT-INV-061 transaction
+after the independent stage-one commit.
+A first-seen denial commits charge consumption, its request-rate charge and typed
 idempotent denial plus request sequence/caller/class binding; it creates no
 admission token, reservation, authorization issuance sequence, receipt, or
 outbox. Every presentation charge and the one request charge are never
@@ -248,8 +273,10 @@ archive proof and compactor, issuer range-manifest publisher/verifier, consumer
 sparse/eligible-dense state, bounded range-chunk codec/resumable verifier,
 layered deployment/issuer/principal successful-admission and outstanding
 budget counters, ingress-work budgets, authenticated endpoint/audience/
-credential-profile presentation-lane mappings with generation/fence/revocation
-state, separate authenticated-presentation and first-seen-request
+credential-profile presentation-lane mappings with VIT-INV-061 ownership/SoD
+and generation/fence/revocation state, non-borrowable ingress-lane resource
+profiles/global ceiling, two-stage presentation-charge evidence/continuity/
+checkpoint, separate authenticated-presentation and first-seen-request
 rate budgets, atomic
 issuance bundle, request and authorization sequences, denial-request and
 issuance checkpoint chains/high-watermarks/bounded proof-work, original quota-
@@ -312,7 +339,13 @@ endpoints, caller-selected class/lane, audience/profile/mapping substitution,
 lane credential rotation/revocation, failover and restored-old mappings;
 normal-principal floods that cannot consume emergency lane capacity,
 break-glass floods that cannot delay recovery, and lane/class mismatch that
-creates no request/admission/outstanding state; authenticated canonical denials that spend
+creates no request/admission/outstanding state; simultaneous ingress accept/
+TLS/signature/decode/executor/pool exhaustion with lane isolation and aggregate
+ceiling; mapping ownership/SoD and activation/rotation/revocation races across
+both stage commits; crash before/after stage-one and stage-two adapter commits,
+proving durable charge-before-lookup, orphan non-refund, new charge on retry,
+continuity fencing, current-mapping recheck and atomic second-stage request/
+outcome/issuance; authenticated canonical denials that spend
 presentation and request rate without allocating authority; successful first-
 seen admissions that spend presentation, request, and admission rate; lineage
 revocation or supersession
@@ -446,7 +479,9 @@ readiness evidence, topology successor/fence/tombstone routing, receipt-
 revocation-intent routing, consumer-terminal-receipt authentication, original-
 quota-claim preservation, request-sequence/denial-checkpoint routing and
 ingress-work enforcement, authenticated presentation-lane mapping and exact
-lane/class enforcement, distinct presentation/request/admission/outstanding
+lane/class enforcement, non-borrowable ingress resource routing, VIT-INV-061
+mapping ownership/SoD, two-stage charge evidence and mapping recheck, distinct
+presentation/request/admission/outstanding
 accounting, separate
 reconciliation-receipt routing and terminal-only settlement typing,
 workload-identity issuance/renewal/rotation/revocation/clone-detection evidence,
@@ -483,7 +518,9 @@ back consumer result/outbox sequence, deploy consumer sender credentials at the
 issuer, renumber/recharge or reevaluate a compacted denied request, collapse
 presentation/request/admission accounting, select a lane from request content,
 substitute or roll back endpoint/audience/profile mapping, borrow emergency
-lane capacity, accept lane/class mismatch, and race every topology
+lane capacity, accept lane/class mismatch, share/borrow ingress resources,
+merge stage commits, refund/reuse/forge charge evidence, skip mapping recheck
+or accept fenced continuity, and race every topology
 successor or receipt-revocation command with consumption and
 prepare/convergence. Exit criteria:
 split mode preserves modular semantics, moves only
@@ -600,7 +637,10 @@ or receive a second request charge, or become fresh after compaction, while
 every retry still receives a presentation charge and a successful request
 cannot escape any applicable charge. Preserve ingress-work limits and the
 greatest authenticated lane-mapping generation/fence/revocation state; restored
-or ambiguous lane mappings deny, and lane capacity never merges. Authenticate every
+or ambiguous lane mappings deny, and lane capacity never merges. Preserve
+stage-one charge evidence/dispositions/owner continuity/checkpoints; failover
+cannot refund or reuse an orphan, merge the stages, or skip the current mapping
+recheck. Authenticate every
 `TopologyAuthorizationConsumerTerminalReceiptV1` across the split-service
 boundary; preserve its complete envelope, closed outcome, result/outbox
 sequence and sender-only consumer role. Preserve reconciliation under its
@@ -827,8 +867,11 @@ issuer continuity evidence; plus every consumer's last trusted lower-bound,
 profile-epoch/continuity ratchet, and expired-authorization tombstone; the selected
 `DeadlineConditionalTopologyCasV1` mechanism/profile, typed result ledger, and
 canonical authorization receipt V1 bytes/digest; replay-lifecycle
-ingress-work budgets and authenticated presentation-lane endpoint/audience/
-credential-profile mappings with greatest generation/fence/revocation state,
+ingress-work budgets, non-borrowable ingress-lane resource profiles/global
+ceiling, authenticated presentation-lane endpoint/audience/credential-profile
+mappings with sole-owner/SoD state and greatest generation/fence/revocation,
+stage-one charge evidence/dispositions/continuity/checkpoint and stage-two
+mapping-recheck semantics,
 authenticated-presentation-rate/first-seen-request-rate/successful-admission/
 outstanding budgets, issuance
 and request sequences, exact-horizon hot results, denial-request and issuance
@@ -1042,8 +1085,10 @@ replacement, remediation ceremony quorum/channel/KMS/recovery-epoch and
 exercise contention, evaluator campaign root/enumeration/materialization/
 completeness contention, invariant declaration/owner/lifecycle/contract/fence
 coverage,
-topology-authorization ingress-work limits, authenticated presentation-lane
-derivation/rotation/revocation/restore/non-borrowing/class matching,
+topology-authorization ingress-work limits, non-borrowable ingress resource
+partitions/global ceiling, authenticated presentation-lane owner/SoD/
+derivation/rotation/revocation/restore/non-borrowing/class matching, two-stage
+charge evidence/orphan/continuity/mapping-TOCTOU accounting,
 authenticated-presentation rate/first-seen-request rate/
 successful-admission/outstanding/request-and-issuance-sequence/hot-row/denial-
 and-issuance-checkpoint/archive/
@@ -1213,8 +1258,9 @@ topology-authorization replay-checkpoint canonicalization/authentication/key-
 rotation, accumulator membership/non-membership, archive integrity,
 issuer-range-manifest authentication/completeness, consumer sparse/dense
 eligibility, compaction-ordering, budget-class/reserve isolation, distinct
-ingress-work and authenticated presentation-lane derivation, non-borrowing and
-class-match enforcement,
+ingress-work/non-borrowable ingress partitions/global ceiling, authenticated
+presentation-lane ownership/SoD/derivation/non-borrowing/class match, two-stage
+charge commit/evidence/continuity/current-mapping enforcement,
 presentation/request/admission/outstanding accounting, original quota-claim preservation,
 lineage-change live-receipt retention, receipt-specific revocation fencing,
 consumer terminal-evidence authentication, quota/backpressure, atomic issuance
@@ -1281,7 +1327,9 @@ quarantine-resolution/new-generation/tombstone/evidence compatibility,
 remediation-profile/credential-lineage/audit/epoch/quota/manual-limit
 compatibility, plus cancellation-recovery
 generation/receipt compatibility, and topology-authorization/
-ingress-work-budget/presentation-lane-mapping-generation-fence-revocation/
+ingress-work-budget/ingress-lane-resource-profile-global-ceiling/
+presentation-lane-owner-SoD-mapping-generation-fence-revocation/
+presentation-charge-ID-evidence-disposition-continuity-checkpoint/
 presentation-rate/request-rate/admission-rate/outstanding-budget/original-quota-claim-set/
 request-sequence/authorization-issuance-sequence/exact-horizon/denial-request-
 checkpoint/issuance-checkpoint/predecessor/covered-through/set/archive/

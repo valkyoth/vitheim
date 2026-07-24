@@ -356,11 +356,26 @@ require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationIngressWorkBudgetV1`' \
     'bounded topology authorization pre-authentication work'
 require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationIngressLaneV1`' \
+    'non-borrowable topology authorization ingress resources'
+require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationPresentationLaneV1`' \
     'authenticated topology authorization presentation lane'
 require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationPresentationLaneMismatch`' \
     'exact authenticated lane and authorized class match'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationPresentationChargeV1`' \
+    'durable topology authorization presentation charge evidence'
+require_text docs/implementation/PHASE_C.md \
+    '`ChargeTopologyAuthorizationPresentation`' \
+    'committed presentation charge before protected lookup'
+require_text docs/implementation/PHASE_C.md \
+    '`ConsumeTopologyAuthorizationPresentationCharge`' \
+    'atomic second-stage request processing'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationPresentationLaneChanged`' \
+    'commit-time presentation mapping recheck'
 require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationPresentationRateBudgetV1`' \
     'separate bounded topology authorization presentation rate'

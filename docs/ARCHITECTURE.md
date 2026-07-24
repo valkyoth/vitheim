@@ -81,27 +81,52 @@ remains expired/historical. Issuance budgets separate normal, recovery, and
 break-glass counters with a non-borrowable emergency reserve and independent
 ceilings; this protects repair availability without bypassing authorization,
 deadline, or replay proof.
-Before durable authenticated state, an ingress-work budget caps bytes,
-concurrency, authentication cryptographic work and canonical decode allocation/
-depth/work. Every authenticated canonical presentation then charges a bounded
-presentation rate after authentication/canonicalization but before protected
-idempotency lookup, including retry, replay and conflict,
-without creating a logical request or authority. Every first-seen canonical
-request pays one separate request-rate charge and gets a monotonic request
-sequence. Exact retries pay presentation rate again but reuse that request
-charge, sequence and outcome; concurrent identical calls serialize to the same
-logical request. The `Normal`/`Recovery`/`BreakGlass` presentation lane derives
-only from authenticated endpoint/audience and a fenced credential/authority
-profile; emergency identities and capacity are separate and non-borrowable,
-and the fully authorized class must exactly match the lane. Denials remain
+Before durable authenticated state, the `Normal`, `Recovery`, and `BreakGlass`
+ingress lanes have independently provisioned, non-borrowable listener/socket,
+file-descriptor, TLS-worker, decode CPU/memory, executor-queue, and pool
+capacity under one fail-safe global ceiling. Server-controlled listener and
+TLS configuration selects the ingress lane but conveys no authorization. Each
+lane also has an ingress-work budget that caps bytes, concurrency,
+authentication cryptographic work, and canonical decode allocation/depth/work.
+VIT-INV-061 is the sole owner of the versioned presentation-lane mapping
+lineage; emergency mapping promotion requires distinct requestor, approver,
+and activator roles under current policy and recorded change or incident
+authority.
+
+Every authenticated canonical presentation then enters a two-stage protocol.
+Stage one, `ChargeTopologyAuthorizationPresentation`, durably debits the
+selected presentation lane before any protected idempotency lookup and issues
+one internal, single-use, non-authorizing
+`TopologyAuthorizationPresentationChargeV1`. Its identity and digest bind the
+request, caller/authority, ingress and presentation lanes, mapping identity/
+generation/fence/profile digest, budget epoch and charge sequence, plus owner
+and boot continuity. Stage two,
+`ConsumeTopologyAuthorizationPresentationCharge`, consumes that exact evidence,
+rechecks the current mapping generation, and only then serializes the logical
+request. Rotation or revocation between stages returns
+`TopologyAuthorizationPresentationLaneChanged`; the charge stays spent and no
+logical request is allocated. A crash between stages likewise leaves an
+orphaned spent charge, and retry must obtain a new charge. Evidence is bounded,
+checkpointed before deletion, unusable after continuity fencing, and never
+exported as client authority.
+
+Every first-seen canonical request pays one separate request-rate charge and
+gets a monotonic request sequence. Exact retries pay presentation rate again
+but reuse that request charge, sequence and outcome; concurrent identical calls
+serialize to the same logical request. The presentation lane derives only from
+authenticated endpoint/audience and a fenced credential/authority profile;
+emergency identities and capacity are separate and non-borrowable, and the
+fully authorized class must exactly match the lane. Denials remain
 exactly replayable for a bounded horizon and
 then permanently historical through a checkpoint-before-delete authenticated
 request commitment and bounded archive proof. Missing proof fails closed rather
-than reevaluating the request under new policy. Successful issuance also
-atomically validates admission/outstanding deployment/issuer/canonical-
-caller budgets, preserves the original quota keys/epochs/class/reserve source,
-reserves capacity, allocates the sequence, and persists the canonical receipt,
-idempotent result and outbox. Issuer-lineage revocation or supersession blocks
+than reevaluating the request under new policy. The stage-two successful
+issuance transaction atomically consumes the presentation-charge evidence,
+charges the first-seen request, validates admission/outstanding deployment/
+issuer/canonical-caller budgets, preserves the original quota keys/epochs/
+class/reserve source, reserves capacity, allocates the request and issuance
+sequences, and persists the immutable outcome, canonical receipt, idempotent
+result and outbox. Issuer-lineage revocation or supersession blocks
 new grants but retains a still-consumable receipt and its reservation.
 Settlement releases the original counters exactly once only after consumer-
 authenticated consumption, conservative expiry, consumer-authenticated

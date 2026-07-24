@@ -59,12 +59,31 @@ audit decision.
   predicate or hard no-late-commit fence; atomic time-ratchet/receipt/claim/
   topology/member-fence/tombstone/outbox persistence and typed reconciliation
   where client timeouts never permit a later commit;
-  bounded `TopologyAuthorizationReplayLifecycleV1` with pre-authentication
-  ingress byte/concurrency/cryptographic/canonical-decode work limits, an
-  authenticated endpoint/audience/credential-profile-derived closed
-  presentation lane, an authenticated-presentation rate charged after
-  authentication/canonicalization but before protected idempotency lookup, a once-per-
-  first-seen-request rate, and successful-admission/outstanding quotas,
+  bounded `TopologyAuthorizationReplayLifecycleV1` with independently
+  provisioned, non-borrowable `Normal`/`Recovery`/`BreakGlass` accept queues,
+  sockets/file descriptors, TLS workers, decode CPU/memory, executor queues and
+  pools under one aggregate fail-safe ceiling; server-controlled listener/TLS
+  routing selects an ingress lane but grants no authority; per-lane
+  pre-authentication ingress byte/concurrency/cryptographic/canonical-decode
+  work limits;
+  VIT-INV-061 as sole owner of the versioned presentation-lane mapping, with
+  separated requestor/approver/activator roles for emergency promotion under
+  current policy and recorded change or incident authority;
+  a two-stage presentation protocol where
+  `ChargeTopologyAuthorizationPresentation` durably charges after
+  authentication/canonicalization but before protected idempotency lookup and
+  issues bounded internal, non-exportable, single-use
+  `TopologyAuthorizationPresentationChargeV1` evidence bound to request/caller,
+  ingress/presentation lane, mapping identity/generation/fence/profile digest,
+  budget epoch/sequence and owner/boot continuity;
+  `ConsumeTopologyAuthorizationPresentationCharge` consumes that evidence,
+  rechecks the current mapping generation, and only then performs the
+  first-seen request/outcome/issuance transaction; mapping change returns
+  `TopologyAuthorizationPresentationLaneChanged`, while crash or fenced
+  continuity leaves the charge spent, allocates no logical request, and
+  requires a fresh retry charge; evidence/dispositions are bounded and
+  checkpointed before deletion;
+  a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,
   authenticated checkpoint/archive commitments, checkpoint-before-delete
@@ -77,12 +96,14 @@ audit decision.
   counters and reserve, exact authenticated-lane/authorized-class matching,
   with no emergency
   exemption from authorization, deadline, or replay controls;
-  atomic topology-authorization success where layered deployment/issuer/
-  canonical-caller admission/outstanding quotas, original quota claim,
-  reservation, sequence, canonical receipt, idempotent result, and outbox
-  commit together; denied first-seen canonical requests consume presentation
-  and request rate but create no authority, while exact retries pay only a new
-  presentation charge; lineage revoke/supersede never releases a live
+  atomic stage-two topology-authorization success where the exact presentation
+  charge evidence, request charge, layered deployment/issuer/canonical-caller
+  admission/outstanding quotas, original quota claim, reservation, request and
+  issuance sequences, immutable outcome, canonical receipt, idempotent result,
+  and outbox commit together; denied first-seen canonical requests consume the
+  already committed presentation charge and request rate but create no
+  authority, while exact retries require a new presentation charge; lineage
+  revoke/supersede never releases a live
   receipt; settlement decrements the original counters all-or-none and exactly
   once only after consumer-authenticated consumption/definite absence/
   permanent-unresolved state, conservative expiry, or receipt-specific

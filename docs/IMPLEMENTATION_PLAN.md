@@ -114,11 +114,24 @@ clock disagreement cannot lengthen authority. `0.21.0` freezes canonical
 prevent migration/export field loss; and `0.140.2` admits only a concrete
 commit-time predicate or hard no-late-commit fence. Client timeouts are never
 deadline authority. The same versions freeze and prove bounded authorization
-anti-replay: bounded ingress bytes/concurrency/cryptographic/decode work, an
-authenticated endpoint/audience/credential-profile-derived presentation lane,
-a presentation rate for every authenticated canonical presentation, a
-once-per-first-seen-request rate, successful-admission/
-outstanding quotas, monotonic issuance
+anti-replay. Separate non-borrowable `Normal`, `Recovery`, and `BreakGlass`
+accept queues, sockets/file descriptors, TLS workers, decode CPU/memory,
+executor queues, and pools sit under an aggregate fail-safe ceiling; a
+server-controlled listener/TLS route selects only an ingress lane and grants no
+authority. VIT-INV-061 exclusively owns the versioned presentation-lane
+mapping lineage, and emergency promotion requires separated requestor,
+approver, and activator roles. Bounded ingress bytes/concurrency/cryptographic/
+decode work precedes a two-stage authenticated presentation protocol. Stage one
+durably charges every canonical presentation before protected idempotency
+lookup and emits bounded internal single-use evidence bound to request/caller,
+ingress/presentation lane, mapping identity/generation/fence/profile digest,
+budget epoch/sequence, and continuity. Stage two consumes that evidence,
+rechecks the current mapping generation, and then performs the first-seen
+request/outcome/issuance transaction. Changed mapping, crash, or fenced
+continuity never refunds or reuses the stage-one charge; retry obtains a new
+charge and no logical request exists unless stage two commits. A once-per-
+first-seen-request rate, successful-admission/outstanding quotas, monotonic
+request and issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive
 commitments, checkpoint-before-delete compaction, fail-closed missing history,
 and storage-growth alerts. Phase O implements, failover-tests, restores, soaks,
@@ -127,17 +140,21 @@ authenticated complete sequence/deadline range evidence; the consumer stays
 sparse across unseen receipts unless time and range proof make dense compaction
 eligible. Separate non-borrowable normal/recovery/break-glass counters preserve
 one bounded emergency repair path without relaxing any security gate. Every
-canonical denial consumes presentation and request rate but creates no
-authority. Every first-seen canonical request gets a stable request sequence
-and request charge; exact retries pay presentation rate again while reusing its
-outcome. Emergency lanes use separate identities and non-borrowable capacity;
-caller-selected lanes and authorized-class mismatch fail before logical
-request allocation. Denials checkpoint before hot deletion, remain historical after
+first-seen canonical denial consumes a previously committed presentation charge
+plus request rate but creates no authority. Every first-seen canonical request
+gets a stable request sequence and request charge; exact retries first commit a
+new presentation charge while reusing the logical outcome. Emergency lanes use
+separate ingress resources, identities, and non-borrowable capacity; caller-
+selected lanes, authorized-class mismatch, and mapping-generation change fail
+before logical request allocation. Presentation-charge evidence and
+dispositions checkpoint before bounded deletion, as does denied-request
+history. Denials remain historical after
 compaction, fail closed when proof is unavailable, and have bounded rows/bytes/
-archive/verification work. Successful issuance atomically commits all
-applicable rate charges, layered deployment/
-issuer/caller quota reservation, the original quota claim set, sequence,
-receipt, idempotent result and outbox. Lineage revocation or supersession blocks
+archive/verification work. Stage-two successful issuance atomically consumes
+the stage-one charge evidence and commits the request charge, layered
+deployment/issuer/caller quota reservation, original quota claim set, request/
+issuance sequences, immutable outcome, receipt, idempotent result and outbox.
+Lineage revocation or supersession blocks
 new grants but does not free a live receipt. Settlement decrements the original
 counters all-or-none only after authenticated consumer terminal proof or
 conservative expiry. Immediate individual revocation is a separate VIT-INV-060

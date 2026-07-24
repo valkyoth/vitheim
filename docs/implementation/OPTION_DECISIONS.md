@@ -150,6 +150,12 @@ mapping generation/fence, restore merges the greatest externally evidenced
 state, and ambiguous or stale mapping denies. The storage/accounting decision
 at `0.140.2` must enforce non-borrowable lane capacity and exact authorized-
 class equality without changing this identity decision.
+Select VIT-INV-061 as the sole authoritative mapping-lineage owner. Proposal,
+activation, promotion, rotation, revocation and recovery use stable mapping
+identity, monotonic generation/fence and credential-profile digest. Recovery or
+break-glass promotion requires distinct requestor, approver and activator,
+quorum/SoD, current policy/session and change-or-incident evidence; deployment
+configuration is not promotion authority.
 
 Freeze `TopologyAuthorizationConsumerTerminalReceiptV1` as a canonical
 authenticated envelope binding deployment; VIT-INV-060 partition/generation/
@@ -359,7 +365,13 @@ Separately freeze two bounded pre-allocation layers.
 state and caps deployment/listener request bytes, concurrent handshakes,
 signature/MAC work, canonical decode bytes/allocation/depth/work and failures;
 a transport-source dimension is additive only when the source is trustworthy,
-and caller-controlled data is never the sole budget key.
+and caller-controlled data is never the sole budget key. Its
+`TopologyAuthorizationIngressLaneV1` uses independently provisioned,
+non-borrowable normal/recovery/break-glass listeners, accept/file-descriptor
+quotas, cryptographic workers, decode memory/CPU, executor queues and connection
+pools under one aggregate safety ceiling. Only server-controlled listener/TLS
+trust configuration and upstream network policy route pre-authentication work;
+the route grants no authorization.
 `TopologyAuthorizationPresentationRateBudgetV1` is charged before protected
 idempotency lookup but after authentication and canonicalization for every
 authenticated canonical presentation, including
@@ -405,6 +417,21 @@ command receipt: topology request identity, request-rate charging, denial outcom
 and the optional link to authorization issuance must share one local owner and
 transaction. Reusing a cross-domain receipt abstraction must not obscure those
 fields or imply a second owner.
+Select an explicit two-stage transaction boundary. Stage one,
+`ChargeTopologyAuthorizationPresentation`, commits the non-refundable debit and
+unique internal `TopologyAuthorizationPresentationChargeV1` before protected
+lookup. Its `TopologyAuthorizationPresentationChargeId` binds canonical request
+ID/digest, caller/authority, ingress/presentation lanes, mapping identity/
+generation/fence/profile digest, budget epoch, charge sequence and owner/boot
+continuity. The evidence is non-exportable, single-use and grants no authority.
+Stage two, `ConsumeTopologyAuthorizationPresentationCharge`, consumes it,
+rechecks the current owner mapping, and performs idempotency lookup plus any
+first-seen request/denial/issuance writes. Mapping change returns
+`TopologyAuthorizationPresentationLaneChanged` before logical request
+allocation and never refunds stage one. A crash between stages leaves an
+orphan spent charge and retry needs a new charge; fenced-continuity evidence is
+unusable. Bound and checkpoint consumed, abandoned and orphan charge evidence
+before compaction.
 Freeze the canonical principal/authority budget key and anti-identity-splitting
 rule; every caller sub-limit is additive to, never a replacement for, deployment
 and issuer/class ceilings. Freeze a closed `Normal`/`Recovery`/`BreakGlass` budget
@@ -569,7 +596,16 @@ body-class claims, wrong audience/profile/mapping generation and revoked or
 restored-old mappings. Rotate lane credentials and fail over between every
 mapping transition. Flood many normal principals without spending emergency
 capacity; flood break-glass without delaying recovery; prove class/lane
-mismatch creates no request/admission/outstanding state. Prove every
+mismatch creates no request/admission/outstanding state. Simultaneously exhaust
+normal accept queues/file descriptors, TLS/signature workers, decode memory/
+CPU, executor queues and pools; prove reserved recovery/break-glass ingress
+survives, break-glass cannot starve recovery, aggregate ceilings hold and the
+ingress route grants no authority. Race mapping SoD activation, rotation and
+revocation between stage-one and stage-two commits. Crash before/after each
+adapter commit; prove the debit/evidence precedes lookup, orphan charges remain
+spent, retries obtain new IDs, old continuity cannot reuse evidence, changed
+mapping denies before request allocation, and the second-stage request/outcome/
+issuance bundle stays atomic. Prove every
 presentation consumes presentation-rate capacity and every first-seen
 authenticated canonical denial consumes one bounded request-rate charge but no
 admission token/reservation/authorization issuance sequence/receipt/outbox;
@@ -906,9 +942,11 @@ restore, and cross-region disagreement may deny or shorten a receipt but never
 extend it; an expiry-versus-topology-CAS race must produce either one proven
 pre-expiry commit or a non-retryable reconciliation state.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
-`TopologyAuthorizationIngressWorkBudgetV1`, authenticated presentation-lane
+`TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
+resource partitions/global ceiling, stage-one presentation-charge evidence/
+sequence/disposition/continuity/checkpoint, authenticated presentation-lane
 endpoint/audience/credential-profile mappings and their generation/fence/
-revocation high-watermarks,
+revocation high-watermarks and sole-owner/SoD state,
 principal presentation-rate/request-rate/admission/outstanding counters,
 immutable original quota claim
 sets/budget epochs/reserve sources, request and authorization sequences,
@@ -926,8 +964,10 @@ evidence, pass reconciliation evidence to terminal settlement, lose/default a
 terminal-envelope or reconciliation field, roll
 back result/outbox sequence or authentication role, recompute current bucket
 keys, decrement twice, accept caller-selected/stale/ambiguous lane or lane/class
-mismatch, borrow emergency lane capacity, merge presentation/request/admission
-semantics, widen a
+mismatch, borrow ingress or presentation emergency capacity, merge the two
+stage commits, refund/reuse/forge a charge, skip the commit-time mapping
+recheck, accept fenced-continuity evidence, merge presentation/request/
+admission semantics, widen a
 caller/class ceiling, or reset byte/entry/decode/
 work/depth accounting. Cross-region range evidence remains non-authoritative
 until the complete authenticated chain verifies.

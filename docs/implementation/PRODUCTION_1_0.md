@@ -61,7 +61,12 @@ canonical principal-or-authority/class successful-admission-rate and
 outstanding limits; `TopologyAuthorizationIngressWorkBudgetV1` caps deployment/
 listener request bytes, concurrent handshakes, authentication cryptographic
 work, canonical decode bytes/allocation/depth/work and failures before durable
-authenticated state; a distinct bounded
+authenticated state. `TopologyAuthorizationIngressLaneV1` independently
+provisions non-borrowable normal/recovery/break-glass listeners, accept/file-
+descriptor quotas, TLS/crypto workers, decode memory/CPU, executor queues and
+connection pools beneath a global ceiling. Server-controlled listener/TLS
+trust configuration and upstream policy route work but grant no authorization;
+a distinct bounded
 `TopologyAuthorizationPresentationRateBudgetV1` charged after authentication
 and canonicalization but before protected idempotency lookup for every
 authenticated canonical presentation, including
@@ -79,7 +84,20 @@ provisioned identities/audiences and non-borrowable presentation/request
 capacity. Missing, revoked, stale, ambiguous or restored-old mapping denies;
 after policy evaluation, the requested class must exactly match the lane or
 `TopologyAuthorizationPresentationLaneMismatch` creates no request, admission
-or outstanding state. Every first-seen authenticated canonical request receives monotonic
+or outstanding state. VIT-INV-061 solely owns mapping proposal, SoD promotion/
+activation, rotation, revocation, generation/fence/profile digest and recovery.
+`ChargeTopologyAuthorizationPresentation` first commits a non-refundable debit
+and unique, internal, non-exportable, single-use
+`TopologyAuthorizationPresentationChargeV1` before lookup, binding request/
+caller, both lanes, mapping identity/generation/fence/profile, budget epoch,
+charge sequence and owner/boot continuity. A second VIT-INV-061 transaction
+uses `ConsumeTopologyAuthorizationPresentationCharge`, rechecks the current
+mapping, consumes evidence and performs lookup plus first-seen request/outcome/
+issuance writes. `TopologyAuthorizationPresentationLaneChanged` denies before
+logical request allocation without refund. Crash between stages leaves an
+orphan spent charge, retry obtains a new charge, fenced continuity cannot reuse
+evidence, and bounded evidence is checkpointed before deletion.
+Every first-seen authenticated canonical request receives monotonic
 `TopologyAuthorizationRequestSequence` bound to its request-rate charge. Exact
 retries charge presentation rate again but reuse the request charge, sequence,
 and outcome. Concurrent identical presentations each charge presentation rate,
@@ -168,10 +186,14 @@ archive outage, sparse gaps, range-manifest loss/forgery, late presentation,
 atomic issuance crashes, replay storms/concurrent identical requests/response-
 loss retries/admission saturation/changed-digest conflicts, distinct
 presentation/request/admission accounting, pre-authentication byte/concurrency/
-cryptographic/decode exhaustion, normal-to-emergency lane forgery, endpoint/
+cryptographic/decode exhaustion, simultaneous accept/TLS/decode/executor/pool
+cross-lane starvation under aggregate ceiling, normal-to-emergency lane forgery, endpoint/
 audience/profile/mapping substitution, lane credential rotation/revocation,
 failover/restored mapping rollback, normal floods against emergency capacity,
-break-glass-versus-recovery isolation and lane/class mismatch, lineage change before a receipt
+break-glass-versus-recovery isolation, lane/class mismatch, mapping SoD/
+ownership and rotation/revocation races between stages, crash at both stage
+commits, orphan non-refund/new retry charge/continuity fencing/current mapping
+recheck, lineage change before a receipt
 deadline, issuer-forged consumer
 evidence, policy/principal/budget-epoch changes before original-claim
 settlement, timeout/partial/duplicate settlement, caller-sub-limit
