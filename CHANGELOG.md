@@ -24,6 +24,14 @@ All notable Vitheim changes are documented here. The format follows
   presentation is rate charged before protected idempotency lookup, while each
   first-seen canonical ID/digest receives exactly one request-rate charge and
   immutable request sequence/outcome.
+- Added bounded pre-authentication ingress work and authenticated
+  `Normal`/`Recovery`/`BreakGlass` presentation lanes derived from endpoint,
+  audience and credential/authority profile; emergency identities and
+  presentation/request capacity are non-borrowable and authorized class must
+  match the lane.
+- Updated the not-yet-effective VIT-LAW-008@g02 canonical planning manifest to
+  match the strengthened authorization model and re-authenticated its
+  generation and planning-catalog digests.
 - Made topology-authorization issuance one local atomic
   quota/reservation/sequence/receipt/result/outbox transaction, added exact-once
   terminal capacity settlement and caller sub-limits, and bounded chunked

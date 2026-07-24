@@ -229,6 +229,15 @@ expect_realization_failure "a missing topology commit reconciliation outcome"
 sed -i 's/`TopologyAuthorizationAdmissionBudgetV1`, //' "$realizations"
 expect_realization_failure "a missing topology authorization admission budget"
 
+sed -i 's/`TopologyAuthorizationIngressWorkBudgetV1`, //' "$realizations"
+expect_realization_failure "a missing topology authorization ingress-work budget"
+
+sed -i 's/`TopologyAuthorizationPresentationLaneV1`, //' "$realizations"
+expect_realization_failure "a missing authenticated presentation lane"
+
+sed -i 's/`TopologyAuthorizationPresentationLaneMismatch`, //' "$realizations"
+expect_realization_failure "a missing presentation lane mismatch denial"
+
 sed -i 's/`TopologyAuthorizationPresentationRateBudgetV1`, //' "$realizations"
 expect_realization_failure "a missing topology authorization presentation-rate budget"
 

@@ -58,16 +58,28 @@ ordinary retry and without weakening that proof.
 Production also freezes `TopologyAuthorizationReplayLifecycleV1`: monotonic
 issuance sequences; layered pre-allocation per-deployment, issuer/class, and
 canonical principal-or-authority/class successful-admission-rate and
-outstanding limits; a distinct bounded
-`TopologyAuthorizationPresentationRateBudgetV1` charged before protected
-idempotency lookup for every authenticated canonical presentation, including
+outstanding limits; `TopologyAuthorizationIngressWorkBudgetV1` caps deployment/
+listener request bytes, concurrent handshakes, authentication cryptographic
+work, canonical decode bytes/allocation/depth/work and failures before durable
+authenticated state; a distinct bounded
+`TopologyAuthorizationPresentationRateBudgetV1` charged after authentication
+and canonicalization but before protected idempotency lookup for every
+authenticated canonical presentation, including
 exact retries, replays, concurrent duplicates, conflicts, and typed denials;
 and a distinct `TopologyAuthorizationRequestRateBudgetV1` charged once for each
 first-seen canonical request ID/digest; a minimum exact-outcome
 horizon; bounded hot rows/bytes and compaction backlog;
 authenticated predecessor-linked checkpoints, set/archive commitments, key
 rotation and covered-through high-watermarks; and growth/proof-availability
-alerts. Every first-seen authenticated canonical request receives monotonic
+alerts. `TopologyAuthorizationPresentationLaneV1` is closed to `Normal`,
+`Recovery`, and `BreakGlass`, derives only from authenticated endpoint/audience
+and a versioned, fenced credential-or-authority profile, and never trusts body
+class, principal labels, or routing headers. Emergency lanes have separately
+provisioned identities/audiences and non-borrowable presentation/request
+capacity. Missing, revoked, stale, ambiguous or restored-old mapping denies;
+after policy evaluation, the requested class must exactly match the lane or
+`TopologyAuthorizationPresentationLaneMismatch` creates no request, admission
+or outstanding state. Every first-seen authenticated canonical request receives monotonic
 `TopologyAuthorizationRequestSequence` bound to its request-rate charge. Exact
 retries charge presentation rate again but reuse the request charge, sequence,
 and outcome. Concurrent identical presentations each charge presentation rate,
@@ -155,7 +167,11 @@ receipt resurrection across concurrent replay, checkpointing, key rotation,
 archive outage, sparse gaps, range-manifest loss/forgery, late presentation,
 atomic issuance crashes, replay storms/concurrent identical requests/response-
 loss retries/admission saturation/changed-digest conflicts, distinct
-presentation/request/admission accounting, lineage change before a receipt
+presentation/request/admission accounting, pre-authentication byte/concurrency/
+cryptographic/decode exhaustion, normal-to-emergency lane forgery, endpoint/
+audience/profile/mapping substitution, lane credential rotation/revocation,
+failover/restored mapping rollback, normal floods against emergency capacity,
+break-glass-versus-recovery isolation and lane/class mismatch, lineage change before a receipt
 deadline, issuer-forged consumer
 evidence, policy/principal/budget-epoch changes before original-claim
 settlement, timeout/partial/duplicate settlement, caller-sub-limit

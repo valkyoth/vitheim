@@ -81,13 +81,20 @@ remains expired/historical. Issuance budgets separate normal, recovery, and
 break-glass counters with a non-borrowable emergency reserve and independent
 ceilings; this protects repair availability without bypassing authorization,
 deadline, or replay proof.
-Every authenticated canonical presentation charges a bounded presentation
-rate before protected idempotency lookup, including retry, replay and conflict,
+Before durable authenticated state, an ingress-work budget caps bytes,
+concurrency, authentication cryptographic work and canonical decode allocation/
+depth/work. Every authenticated canonical presentation then charges a bounded
+presentation rate after authentication/canonicalization but before protected
+idempotency lookup, including retry, replay and conflict,
 without creating a logical request or authority. Every first-seen canonical
 request pays one separate request-rate charge and gets a monotonic request
 sequence. Exact retries pay presentation rate again but reuse that request
 charge, sequence and outcome; concurrent identical calls serialize to the same
-logical request. Denials remain exactly replayable for a bounded horizon and
+logical request. The `Normal`/`Recovery`/`BreakGlass` presentation lane derives
+only from authenticated endpoint/audience and a fenced credential/authority
+profile; emergency identities and capacity are separate and non-borrowable,
+and the fully authorized class must exactly match the lane. Denials remain
+exactly replayable for a bounded horizon and
 then permanently historical through a checkpoint-before-delete authenticated
 request commitment and bounded archive proof. Missing proof fails closed rather
 than reevaluating the request under new policy. Successful issuance also

@@ -139,6 +139,18 @@ break-glass is the lesser of its mutation-class maximum and sixty seconds.
 These are protocol ceilings, not configurable defaults; changing one requires
 a new law generation and security review.
 
+Freeze the presentation-lane identity contract used before policy evaluation.
+`TopologyAuthorizationPresentationLaneV1` is closed to `Normal`, `Recovery`,
+and `BreakGlass` and derives only from the authenticated endpoint/audience plus
+a versioned, fenced credential-or-authority profile. Recovery and break-glass
+use separately provisioned identities and audiences; a body field, requested
+class, principal label, untrusted routing header, or mutable service
+configuration cannot promote a caller. Rotation/revocation advances the lane
+mapping generation/fence, restore merges the greatest externally evidenced
+state, and ambiguous or stale mapping denies. The storage/accounting decision
+at `0.140.2` must enforce non-borrowable lane capacity and exact authorized-
+class equality without changing this identity decision.
+
 Freeze `TopologyAuthorizationConsumerTerminalReceiptV1` as a canonical
 authenticated envelope binding deployment; VIT-INV-060 partition/generation/
 fence; authorization ID and issuance sequence; receipt digest; canonical
@@ -343,12 +355,28 @@ principal-or-authority/class limits, the minimum exact-outcome replay horizon, m
 row/byte and compaction-backlog limits, checkpoint cadence, archival
 availability objective, alert thresholds, and fail-closed saturation behavior.
 Separately freeze two bounded pre-allocation layers.
+`TopologyAuthorizationIngressWorkBudgetV1` operates before durable authenticated
+state and caps deployment/listener request bytes, concurrent handshakes,
+signature/MAC work, canonical decode bytes/allocation/depth/work and failures;
+a transport-source dimension is additive only when the source is trustworthy,
+and caller-controlled data is never the sole budget key.
 `TopologyAuthorizationPresentationRateBudgetV1` is charged before protected
-idempotency lookup for every authenticated canonical presentation, including
+idempotency lookup but after authentication and canonicalization for every
+authenticated canonical presentation, including
 exact retry, replay, concurrent duplicate, conflict, and denial. It creates no
 logical request, reservation, or authority and is never refunded. Saturation
 returns transient `TopologyAuthorizationPresentationRateLimited` without
 reading, replacing, or manufacturing an immutable request outcome.
+Freeze the closed `TopologyAuthorizationPresentationLaneV1` as `Normal`,
+`Recovery`, or `BreakGlass`. The lane derives only from an authenticated
+endpoint/audience plus a versioned, fenced credential-or-authority profile;
+body fields, requested class, principal labels and untrusted routing metadata
+cannot select it. Recovery and break-glass use separately provisioned
+identities/audiences and non-borrowable presentation/request capacity. Missing,
+revoked, stale, ambiguous or restored-old mapping state denies. After full
+policy evaluation, `TopologyAuthorizationBudgetClass` must exactly match the
+authenticated lane or `TopologyAuthorizationPresentationLaneMismatch` rejects
+without request/admission/outstanding allocation.
 `TopologyAuthorizationRequestRateBudgetV1` is charged exactly once for the
 first-seen canonical request ID/digest and is bound to its
 `TopologyAuthorizationRequestSequence`. A first-seen successful issuance
@@ -535,6 +563,13 @@ terminal evidence; settle only consumer-authenticated terminal outcomes or
 conservative expiry, exactly once under duplicate/reorder and consumption/
 revocation/expiry races. Change policy/principal keys and budget epochs before
 settlement and prove the original claim set releases all-or-none. Prove every
+pre-authentication ingress byte/concurrency/cryptographic/canonical-decode
+limit. Attack lane selection with normal credentials at emergency endpoints,
+body-class claims, wrong audience/profile/mapping generation and revoked or
+restored-old mappings. Rotate lane credentials and fail over between every
+mapping transition. Flood many normal principals without spending emergency
+capacity; flood break-glass without delaying recovery; prove class/lane
+mismatch creates no request/admission/outstanding state. Prove every
 presentation consumes presentation-rate capacity and every first-seen
 authenticated canonical denial consumes one bounded request-rate charge but no
 admission token/reservation/authorization issuance sequence/receipt/outbox;
@@ -871,6 +906,9 @@ restore, and cross-region disagreement may deny or shorten a receipt but never
 extend it; an expiry-versus-topology-CAS race must produce either one proven
 pre-expiry commit or a non-retryable reconciliation state.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
+`TopologyAuthorizationIngressWorkBudgetV1`, authenticated presentation-lane
+endpoint/audience/credential-profile mappings and their generation/fence/
+revocation high-watermarks,
 principal presentation-rate/request-rate/admission/outstanding counters,
 immutable original quota claim
 sets/budget epochs/reserve sources, request and authorization sequences,
@@ -887,7 +925,9 @@ timeout or lineage revocation/supersession, accept issuer-created terminal
 evidence, pass reconciliation evidence to terminal settlement, lose/default a
 terminal-envelope or reconciliation field, roll
 back result/outbox sequence or authentication role, recompute current bucket
-keys, decrement twice, merge presentation/request/admission semantics, widen a
+keys, decrement twice, accept caller-selected/stale/ambiguous lane or lane/class
+mismatch, borrow emergency lane capacity, merge presentation/request/admission
+semantics, widen a
 caller/class ceiling, or reset byte/entry/decode/
 work/depth accounting. Cross-region range evidence remains non-authoritative
 until the complete authenticated chain verifies.

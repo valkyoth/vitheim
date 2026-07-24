@@ -59,8 +59,11 @@ audit decision.
   predicate or hard no-late-commit fence; atomic time-ratchet/receipt/claim/
   topology/member-fence/tombstone/outbox persistence and typed reconciliation
   where client timeouts never permit a later commit;
-  bounded `TopologyAuthorizationReplayLifecycleV1` with an authenticated-
-  presentation rate charged before protected idempotency lookup, a once-per-
+  bounded `TopologyAuthorizationReplayLifecycleV1` with pre-authentication
+  ingress byte/concurrency/cryptographic/canonical-decode work limits, an
+  authenticated endpoint/audience/credential-profile-derived closed
+  presentation lane, an authenticated-presentation rate charged after
+  authentication/canonicalization but before protected idempotency lookup, a once-per-
   first-seen-request rate, and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,
@@ -70,7 +73,9 @@ audit decision.
   issuer-authenticated complete sequence/deadline range manifests, sparse-by-
   default consumer commitments, trusted-time/deadline-gated dense consumer
   eligibility, late-presentation denial, and separate non-borrowable normal/
-  recovery/break-glass rate/outstanding counters and reserve with no emergency
+  recovery/break-glass identities, presentation/request rate, outstanding
+  counters and reserve, exact authenticated-lane/authorized-class matching,
+  with no emergency
   exemption from authorization, deadline, or replay controls;
   atomic topology-authorization success where layered deployment/issuer/
   canonical-caller admission/outstanding quotas, original quota claim,

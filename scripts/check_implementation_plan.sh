@@ -353,6 +353,15 @@ require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationOutstandingReservation` creation' \
     'atomic topology authorization issuance reservation'
 require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationIngressWorkBudgetV1`' \
+    'bounded topology authorization pre-authentication work'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationPresentationLaneV1`' \
+    'authenticated topology authorization presentation lane'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationPresentationLaneMismatch`' \
+    'exact authenticated lane and authorized class match'
+require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationPresentationRateBudgetV1`' \
     'separate bounded topology authorization presentation rate'
 require_text docs/implementation/PHASE_C.md \

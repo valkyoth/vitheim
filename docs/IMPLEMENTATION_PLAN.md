@@ -114,8 +114,10 @@ clock disagreement cannot lengthen authority. `0.21.0` freezes canonical
 prevent migration/export field loss; and `0.140.2` admits only a concrete
 commit-time predicate or hard no-late-commit fence. Client timeouts are never
 deadline authority. The same versions freeze and prove bounded authorization
-anti-replay: a presentation rate for every authenticated canonical
-presentation, a once-per-first-seen-request rate, successful-admission/
+anti-replay: bounded ingress bytes/concurrency/cryptographic/decode work, an
+authenticated endpoint/audience/credential-profile-derived presentation lane,
+a presentation rate for every authenticated canonical presentation, a
+once-per-first-seen-request rate, successful-admission/
 outstanding quotas, monotonic issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive
 commitments, checkpoint-before-delete compaction, fail-closed missing history,
@@ -128,7 +130,9 @@ one bounded emergency repair path without relaxing any security gate. Every
 canonical denial consumes presentation and request rate but creates no
 authority. Every first-seen canonical request gets a stable request sequence
 and request charge; exact retries pay presentation rate again while reusing its
-outcome. Denials checkpoint before hot deletion, remain historical after
+outcome. Emergency lanes use separate identities and non-borrowable capacity;
+caller-selected lanes and authorized-class mismatch fail before logical
+request allocation. Denials checkpoint before hot deletion, remain historical after
 compaction, fail closed when proof is unavailable, and have bounded rows/bytes/
 archive/verification work. Successful issuance atomically commits all
 applicable rate charges, layered deployment/
