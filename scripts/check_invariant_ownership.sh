@@ -1,12 +1,8 @@
 #!/usr/bin/env sh
 set -eu
 registry="${1:-docs/INVARIANT_OWNERSHIP.md}"
-if [ "$#" -gt 0 ]; then
-    shift
-fi
-if [ "$#" -eq 0 ]; then
-    set -- docs/implementation/*.md
-fi
+if [ "$#" -gt 0 ]; then shift; fi
+if [ "$#" -eq 0 ]; then set -- docs/implementation/*.md; fi
 awk -F '|' -v registry="$registry" '
 BEGIN {
     failed = 0
@@ -497,3 +493,4 @@ END {
     exit failed
 }
 ' "$registry" "$@"
+scripts/check_invariant_child_references.sh "$registry"

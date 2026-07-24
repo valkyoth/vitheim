@@ -430,8 +430,17 @@ first-seen request/denial/issuance writes. Mapping change returns
 `TopologyAuthorizationPresentationLaneChanged` before logical request
 allocation and never refunds stage one. A crash between stages leaves an
 orphan spent charge and retry needs a new charge; fenced-continuity evidence is
-unusable. Bound and checkpoint consumed, abandoned and orphan charge evidence
-before compaction.
+unusable. Freeze
+`TopologyAuthorizationPresentationChargeDispositionV1` as exactly
+`ChargedAwaitingStageTwo`, `Consumed`, `MappingChanged`,
+`ControlledAbortAbandoned`, `ContinuityFencedOrphaned`, or
+`CheckpointedCompacted`. Only awaiting is nonterminal; it may transition to one
+of the four irreversible terminal kinds, and checkpointed compaction preserves
+that original kind plus its result/evidence commitment. Timeout/age cannot
+choose a disposition. Stage one atomically commits debit, complete evidence,
+charge sequence, and awaiting disposition; charge-ledger row/byte/backlog
+saturation fails with no partial state before lookup. Bound and checkpoint
+terminal charge evidence before compaction.
 Freeze the canonical principal/authority budget key and anti-identity-splitting
 rule; every caller sub-limit is additive to, never a replacement for, deployment
 and issuer/class ceilings. Freeze a closed `Normal`/`Recovery`/`BreakGlass` budget
@@ -605,7 +614,11 @@ revocation between stage-one and stage-two commits. Crash before/after each
 adapter commit; prove the debit/evidence precedes lookup, orphan charges remain
 spent, retries obtain new IDs, old continuity cannot reuse evidence, changed
 mapping denies before request allocation, and the second-stage request/outcome/
-issuance bundle stays atomic. Prove every
+issuance bundle stays atomic. Exhaust the charge ledger before stage one and
+prove debit/evidence/initial disposition are all absent. Exercise the complete
+disposition transition table; reject unknown states, cross-terminal changes,
+terminal rollback, timeout-derived abandonment and compaction that loses the
+original terminal kind/result link. Prove every
 presentation consumes presentation-rate capacity and every first-seen
 authenticated canonical denial consumes one bounded request-rate charge but no
 admission token/reservation/authorization issuance sequence/receipt/outbox;
@@ -620,8 +633,8 @@ becomes fresh. Omit/substitute every consumer terminal-envelope or
 reconciliation-evidence field, outcome, result/outbox sequence and auth role;
 unknown outcomes, reconciliation evidence, issuer-signed evidence and rollback
 retain capacity. Prove the terminal settlement port cannot accept a
-reconciliation receipt. Successful first-seen issuance consumes presentation,
-request, admission, and outstanding capacity.
+reconciliation receipt. Successful first-seen issuance consumes committed
+presentation-charge evidence plus request, admission, and outstanding capacity.
 Exhaust one caller sub-limit while other callers and aggregate ceilings remain
 correct. Fuzz declared lengths/counts, decode allocation, work, depth, chunk
 chain/root bindings and verification-cursor recovery without unbounded CPU or
@@ -944,7 +957,8 @@ pre-expiry commit or a non-retryable reconciliation state.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/
-sequence/disposition/continuity/checkpoint, authenticated presentation-lane
+sequence/closed irreversible disposition/result link/continuity/checkpoint and
+atomic saturation semantics, authenticated presentation-lane
 endpoint/audience/credential-profile mappings and their generation/fence/
 revocation high-watermarks and sole-owner/SoD state,
 principal presentation-rate/request-rate/admission/outstanding counters,

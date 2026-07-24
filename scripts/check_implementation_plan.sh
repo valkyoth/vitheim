@@ -368,6 +368,21 @@ require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationPresentationChargeV1`' \
     'durable topology authorization presentation charge evidence'
 require_text docs/implementation/PHASE_C.md \
+    '`ChargedAwaitingStageTwo`' \
+    'initial topology authorization presentation charge disposition'
+require_text docs/implementation/PHASE_C.md \
+    '`ControlledAbortAbandoned`' \
+    'closed topology authorization presentation charge abort disposition'
+require_text docs/implementation/PHASE_C.md \
+    '`ContinuityFencedOrphaned`' \
+    'closed topology authorization presentation charge orphan disposition'
+require_text docs/implementation/PHASE_C.md \
+    '`CheckpointedCompacted`' \
+    'terminal-kind-preserving presentation charge compaction'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationPresentationChargeLedgerSaturated`' \
+    'fail-atomic presentation charge ledger saturation'
+require_text docs/implementation/PHASE_C.md \
     '`ChargeTopologyAuthorizationPresentation`' \
     'committed presentation charge before protected lookup'
 require_text docs/implementation/PHASE_C.md \
@@ -376,6 +391,12 @@ require_text docs/implementation/PHASE_C.md \
 require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationPresentationLaneChanged`' \
     'commit-time presentation mapping recheck'
+require_text docs/implementation/PHASE_C.md \
+    'decode work limit before owner state. Present normal credentials to recovery' \
+    'complete pre-authentication and wrong-emergency-endpoint conformance'
+require_text docs/implementation/PRODUCTION_1_0.md \
+    'stage-two presentation-charge' \
+    'production transaction keeps presentation debit in stage one'
 require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationPresentationRateBudgetV1`' \
     'separate bounded topology authorization presentation rate'

@@ -149,6 +149,16 @@ change returns `TopologyAuthorizationPresentationLaneChanged` before logical
 request allocation without refund. Crash between stages leaves an orphan spent
 charge, retry obtains a new charge, and fenced-continuity evidence is unusable;
 charge evidence/dispositions are bounded and checkpoint-before-delete.
+`TopologyAuthorizationPresentationChargeDispositionV1` is closed over
+`ChargedAwaitingStageTwo`, `Consumed`, `MappingChanged`,
+`ControlledAbortAbandoned`, `ContinuityFencedOrphaned`, and
+`CheckpointedCompacted`. Awaiting is the sole nonterminal kind and may move to
+exactly one irreversible terminal kind; checkpointed compaction preserves that
+kind and its result/evidence commitment. Timeout cannot choose a disposition.
+Stage one atomically commits debit, evidence, sequence and awaiting disposition;
+ledger row/byte/backlog saturation returns
+`TopologyAuthorizationPresentationChargeLedgerSaturated` before lookup with no
+partial state.
 `TopologyAuthorizationRequestRateBudgetV1` is charged exactly once for every
 first-seen canonical request ID/digest and is bound to its monotonic
 `TopologyAuthorizationRequestSequence`; exact retries charge presentation rate
@@ -276,7 +286,8 @@ budget counters, ingress-work budgets, authenticated endpoint/audience/
 credential-profile presentation-lane mappings with VIT-INV-061 ownership/SoD
 and generation/fence/revocation state, non-borrowable ingress-lane resource
 profiles/global ceiling, two-stage presentation-charge evidence/continuity/
-checkpoint, separate authenticated-presentation and first-seen-request
+checkpoint, closed irreversible dispositions/result links, atomic ledger-
+saturation behavior, separate authenticated-presentation and first-seen-request
 rate budgets, atomic
 issuance bundle, request and authorization sequences, denial-request and
 issuance checkpoint chains/high-watermarks/bounded proof-work, original quota-
@@ -345,7 +356,10 @@ ceiling; mapping ownership/SoD and activation/rotation/revocation races across
 both stage commits; crash before/after stage-one and stage-two adapter commits,
 proving durable charge-before-lookup, orphan non-refund, new charge on retry,
 continuity fencing, current-mapping recheck and atomic second-stage request/
-outcome/issuance; authenticated canonical denials that spend
+outcome/issuance; ledger saturation before stage one with no debit/evidence/
+disposition, every permitted disposition transition, rejection of unknown or
+cross-terminal transitions, terminal irreversibility, and checkpointed
+original-kind/result-link preservation; authenticated canonical denials that spend
 presentation and request rate without allocating authority; successful first-
 seen admissions that spend presentation, request, and admission rate; lineage
 revocation or supersession
@@ -481,6 +495,7 @@ quota-claim preservation, request-sequence/denial-checkpoint routing and
 ingress-work enforcement, authenticated presentation-lane mapping and exact
 lane/class enforcement, non-borrowable ingress resource routing, VIT-INV-061
 mapping ownership/SoD, two-stage charge evidence and mapping recheck, distinct
+closed disposition/result-link/checkpoint and ledger-saturation semantics,
 presentation/request/admission/outstanding
 accounting, separate
 reconciliation-receipt routing and terminal-only settlement typing,
@@ -520,7 +535,9 @@ presentation/request/admission accounting, select a lane from request content,
 substitute or roll back endpoint/audience/profile mapping, borrow emergency
 lane capacity, accept lane/class mismatch, share/borrow ingress resources,
 merge stage commits, refund/reuse/forge charge evidence, skip mapping recheck
-or accept fenced continuity, and race every topology
+or accept fenced continuity, admit an unknown/reversible disposition, mutate a
+terminal kind, compact without its result link, or debit on ledger saturation,
+and race every topology
 successor or receipt-revocation command with consumption and
 prepare/convergence. Exit criteria:
 split mode preserves modular semantics, moves only
@@ -638,9 +655,10 @@ every retry still receives a presentation charge and a successful request
 cannot escape any applicable charge. Preserve ingress-work limits and the
 greatest authenticated lane-mapping generation/fence/revocation state; restored
 or ambiguous lane mappings deny, and lane capacity never merges. Preserve
-stage-one charge evidence/dispositions/owner continuity/checkpoints; failover
-cannot refund or reuse an orphan, merge the stages, or skip the current mapping
-recheck. Authenticate every
+stage-one charge evidence/closed dispositions/result links/owner continuity/
+checkpoints and ledger saturation state; failover cannot refund or reuse an
+orphan, merge the stages, skip the current mapping recheck, change a terminal
+kind or compact before its checkpoint. Authenticate every
 `TopologyAuthorizationConsumerTerminalReceiptV1` across the split-service
 boundary; preserve its complete envelope, closed outcome, result/outbox
 sequence and sender-only consumer role. Preserve reconciliation under its
@@ -870,8 +888,8 @@ canonical authorization receipt V1 bytes/digest; replay-lifecycle
 ingress-work budgets, non-borrowable ingress-lane resource profiles/global
 ceiling, authenticated presentation-lane endpoint/audience/credential-profile
 mappings with sole-owner/SoD state and greatest generation/fence/revocation,
-stage-one charge evidence/dispositions/continuity/checkpoint and stage-two
-mapping-recheck semantics,
+stage-one charge evidence/closed irreversible dispositions/result links/
+continuity/checkpoint/ledger saturation and stage-two mapping-recheck semantics,
 authenticated-presentation-rate/first-seen-request-rate/successful-admission/
 outstanding budgets, issuance
 and request sequences, exact-horizon hot results, denial-request and issuance
@@ -1088,7 +1106,8 @@ coverage,
 topology-authorization ingress-work limits, non-borrowable ingress resource
 partitions/global ceiling, authenticated presentation-lane owner/SoD/
 derivation/rotation/revocation/restore/non-borrowing/class matching, two-stage
-charge evidence/orphan/continuity/mapping-TOCTOU accounting,
+charge evidence/closed disposition/result-link/orphan/continuity/mapping-TOCTOU
+and atomic ledger-saturation accounting,
 authenticated-presentation rate/first-seen-request rate/
 successful-admission/outstanding/request-and-issuance-sequence/hot-row/denial-
 and-issuance-checkpoint/archive/
@@ -1329,7 +1348,8 @@ compatibility, plus cancellation-recovery
 generation/receipt compatibility, and topology-authorization/
 ingress-work-budget/ingress-lane-resource-profile-global-ceiling/
 presentation-lane-owner-SoD-mapping-generation-fence-revocation/
-presentation-charge-ID-evidence-disposition-continuity-checkpoint/
+presentation-charge-ID-evidence-closed-disposition-result-link-continuity-
+checkpoint-ledger-saturation/
 presentation-rate/request-rate/admission-rate/outstanding-budget/original-quota-claim-set/
 request-sequence/authorization-issuance-sequence/exact-horizon/denial-request-
 checkpoint/issuance-checkpoint/predecessor/covered-through/set/archive/

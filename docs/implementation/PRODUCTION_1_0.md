@@ -96,7 +96,15 @@ mapping, consumes evidence and performs lookup plus first-seen request/outcome/
 issuance writes. `TopologyAuthorizationPresentationLaneChanged` denies before
 logical request allocation without refund. Crash between stages leaves an
 orphan spent charge, retry obtains a new charge, fenced continuity cannot reuse
-evidence, and bounded evidence is checkpointed before deletion.
+evidence, and bounded evidence is checkpointed before deletion. The charge
+disposition is exactly `ChargedAwaitingStageTwo`, `Consumed`,
+`MappingChanged`, `ControlledAbortAbandoned`,
+`ContinuityFencedOrphaned`, or `CheckpointedCompacted`. Awaiting is the only
+nonterminal kind; the four outcome kinds are irreversible, and compacted state
+preserves the original terminal kind and result/evidence commitment. Timeout
+cannot create a disposition. Stage one atomically writes debit, evidence,
+sequence and awaiting state; ledger row/byte/backlog saturation fails before
+lookup without any of those writes.
 Every first-seen authenticated canonical request receives monotonic
 `TopologyAuthorizationRequestSequence` bound to its request-rate charge. Exact
 retries charge presentation rate again but reuse the request charge, sequence,
@@ -112,8 +120,8 @@ linked `TopologyAuthorizationRequestReplayCheckpointV1` and bounded archive
 proof. Checkpoint precedes deletion; missing proof returns typed historical-
 state-unavailable and never permits policy/approval reevaluation. Denial rows/
 bytes, backlog, proof bytes/depth/work, decode allocation, jobs and compaction
-latency are bounded. On first-seen success, presentation and request-rate
-charges, the request sequence, admission-rate and outstanding
+latency are bounded. On first-seen success, stage-two presentation-charge
+evidence consumption, the request-rate charge, request sequence, admission-rate and outstanding
 counter/reserve mutations, `TopologyAuthorizationOriginalQuotaClaimSetV1`,
 outstanding reservation, sequence allocation, canonical receipt, request-
 digest-bound idempotent result, and issuance outbox are one VIT-INV-061 local
@@ -193,7 +201,8 @@ failover/restored mapping rollback, normal floods against emergency capacity,
 break-glass-versus-recovery isolation, lane/class mismatch, mapping SoD/
 ownership and rotation/revocation races between stages, crash at both stage
 commits, orphan non-refund/new retry charge/continuity fencing/current mapping
-recheck, lineage change before a receipt
+recheck, charge-ledger saturation before debit, complete closed-disposition
+transition/irreversibility/checkpoint-compaction proof, lineage change before a receipt
 deadline, issuer-forged consumer
 evidence, policy/principal/budget-epoch changes before original-claim
 settlement, timeout/partial/duplicate settlement, caller-sub-limit

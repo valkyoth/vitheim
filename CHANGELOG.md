@@ -40,6 +40,14 @@ All notable Vitheim changes are documented here. The format follows
   non-borrowable normal/recovery/break-glass listener, TLS, decode, executor,
   and pool resources under a global safety ceiling. Pre-auth routing grants no
   authorization.
+- Declared the previously prose-only VIT-INV-060/061 enforcement and negative-
+  test children, expanded VIT-INV-061 owned mapping/budget/charge/checkpoint
+  storage and recovery state, and made the ownership checker reject undeclared
+  references or duplicate enforcement/test child IDs.
+- Froze the presentation-charge disposition state machine: atomic
+  debit/evidence/awaiting creation, four irreversible terminal outcomes,
+  checkpointed compaction preserving the original outcome, and fail-atomic
+  charge-ledger saturation before protected lookup.
 - Updated the not-yet-effective VIT-LAW-008@g02 canonical planning manifest to
   match the strengthened authorization model and re-authenticated its
   generation and planning-catalog digests.

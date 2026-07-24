@@ -83,6 +83,12 @@ audit decision.
   continuity leaves the charge spent, allocates no logical request, and
   requires a fresh retry charge; evidence/dispositions are bounded and
   checkpointed before deletion;
+  atomic stage-one debit/evidence/sequence/`ChargedAwaitingStageTwo` persistence
+  or pre-lookup failure on charge-ledger saturation; a closed disposition table
+  whose `Consumed`, `MappingChanged`, `ControlledAbortAbandoned`, and
+  `ContinuityFencedOrphaned` outcomes are irreversible; and
+  `CheckpointedCompacted` preservation of the original terminal kind and
+  result/evidence commitment;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

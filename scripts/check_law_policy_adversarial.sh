@@ -44,6 +44,40 @@ expect_law_failure_message() {
     reset_law
 }
 
+expect_ownership_failure_message() {
+    label=$1
+    expected=$2
+    if output=$(scripts/check_invariant_ownership.sh "$ownership" 2>&1); then
+        echo "adversarial law policy: unexpectedly accepted $label" >&2
+        exit 1
+    fi
+    case "$output" in
+        *"$expected"*) ;;
+        *)
+            echo "adversarial law policy: $label failed for the wrong reason" >&2
+            exit 1
+            ;;
+    esac
+    reset_law
+}
+
+expect_child_reference_failure_message() {
+    label=$1
+    expected=$2
+    if output=$(scripts/check_invariant_child_references.sh "$ownership" 2>&1); then
+        echo "adversarial law policy: unexpectedly accepted $label" >&2
+        exit 1
+    fi
+    case "$output" in
+        *"$expected"*) ;;
+        *)
+            echo "adversarial law policy: $label failed for the wrong reason" >&2
+            exit 1
+            ;;
+    esac
+    reset_law
+}
+
 expect_realization_failure() {
     label=$1
     if scripts/check_law_semantic_realizations.sh \
@@ -86,6 +120,34 @@ digest_sha256() {
 reset_law
 cp docs/LAW_SEMANTIC_REALIZATIONS.md "$realizations"
 reset_active_catalogs
+
+sed -i \
+    's/`VIT-ENF-060-G` and/`VIT-ENF-060-H` and/' \
+    "$ownership"
+expect_ownership_failure_message \
+    "a referenced but undeclared enforcement child" \
+    "referenced but undeclared enforcement child VIT-ENF-060-H"
+
+sed -i \
+    's/`VIT-TST-060-N-G`,/`VIT-TST-060-N-H`,/' \
+    "$ownership"
+expect_ownership_failure_message \
+    "a referenced but undeclared negative test child" \
+    "referenced but undeclared negative test child VIT-TST-060-N-H"
+
+sed -i \
+    's#VIT-ENF-061-G: issuer replay lifecycle/checkpoint/compaction enforcement => VIT-TST-061-N-G#VIT-ENF-061-F: issuer replay lifecycle/checkpoint/compaction enforcement => VIT-TST-061-N-F#' \
+    "$ownership"
+expect_ownership_failure_message \
+    "a duplicate enforcement child" \
+    "duplicate enforcement child VIT-ENF-061-F"
+
+sed -i \
+    's#VIT-ENF-061-G: issuer replay lifecycle/checkpoint/compaction enforcement => VIT-TST-061-N-G#VIT-ENF-061-F: issuer replay lifecycle/checkpoint/compaction enforcement => VIT-TST-061-N-F#' \
+    "$ownership"
+expect_child_reference_failure_message \
+    "a duplicate negative test child" \
+    "duplicate negative test child VIT-TST-061-N-F"
 
 sed -i 's/| VIT-LAW-001 | 1 |/| VIT-LAW-001 | 01 |/' "$generations"
 expect_law_failure "a leading-zero generation"
@@ -246,6 +308,27 @@ expect_realization_failure "a missing presentation lane change denial"
 
 sed -i 's/`TopologyAuthorizationPresentationChargeV1`, //' "$realizations"
 expect_realization_failure "a missing presentation charge evidence"
+
+sed -i 's/`TopologyAuthorizationPresentationChargeAwaitingStageTwo`, //' "$realizations"
+expect_realization_failure "a missing presentation charge awaiting state"
+
+sed -i 's/`TopologyAuthorizationPresentationChargeConsumed`, //' "$realizations"
+expect_realization_failure "a missing presentation charge consumed state"
+
+sed -i 's/`TopologyAuthorizationPresentationChargeMappingChanged`, //' "$realizations"
+expect_realization_failure "a missing presentation charge mapping-changed state"
+
+sed -i 's/`TopologyAuthorizationPresentationChargeControlledAbortAbandoned`, //' "$realizations"
+expect_realization_failure "a missing presentation charge controlled-abort state"
+
+sed -i 's/`TopologyAuthorizationPresentationChargeContinuityFencedOrphaned`, //' "$realizations"
+expect_realization_failure "a missing presentation charge continuity-orphan state"
+
+sed -i 's/`TopologyAuthorizationPresentationChargeCheckpointedCompacted`, //' "$realizations"
+expect_realization_failure "a missing presentation charge compacted state"
+
+sed -i 's/`TopologyAuthorizationPresentationChargeLedgerSaturated`, //' "$realizations"
+expect_realization_failure "a missing presentation charge ledger-saturation denial"
 
 sed -i 's/`ChargeTopologyAuthorizationPresentation`, //' "$realizations"
 expect_realization_failure "a missing presentation charge stage"

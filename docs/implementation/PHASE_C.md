@@ -319,8 +319,22 @@ orphan spent charge; client retry must obtain a new charge. Unconsumed evidence
 from a fenced boot/owner continuity is never reusable. Stage-two abort marks
 the evidence abandoned in a separate fail-closed cleanup transaction or fences
 the serving continuity before more work; it cannot reuse or refund the charge.
-Consumed/abandoned/orphan evidence is bounded by rows/bytes/age, checkpointed
-before deletion, and compacted without changing aggregate debit history.
+Stage one atomically writes debit, complete evidence, charge sequence, and
+`ChargedAwaitingStageTwo`; row/byte/backlog saturation returns
+`TopologyAuthorizationPresentationChargeLedgerSaturated` with none of those
+writes and no lookup. The closed
+`TopologyAuthorizationPresentationChargeDispositionV1` state machine permits
+only `ChargedAwaitingStageTwo` to transition to `Consumed` with an immutable
+stage-two result link, `MappingChanged` with observed mapping evidence,
+`ControlledAbortAbandoned` with authorized abort evidence, or
+`ContinuityFencedOrphaned` with an authenticated continuity fence. Those four
+terminal kinds are irreversible. After a predecessor-linked checkpoint commits,
+`CheckpointedCompacted` preserves the original terminal kind, debit, result
+commitment, continuity, charge identity/sequence, and covered-through
+high-watermark before hot deletion. Timeout/age alone causes no transition.
+No terminal kind can change, return to awaiting, or refund. Terminal evidence
+is bounded by rows/bytes/age and compacted without changing aggregate debit
+history.
 
 For successful first-seen issuance, stage-two charge consumption, request-
 sequence allocation, request-rate charging, quota validation, every applicable
@@ -599,6 +613,10 @@ promotion lacks SoD, when presentation debit and evidence do not commit before
 lookup, when charge evidence is forgeable/exportable/reusable/unbounded, when
 stage two does not recheck mapping generation/fence/profile/lane, or when a
 stage-one crash can refund/reuse the debit,
+when debit/evidence/sequence/`ChargedAwaitingStageTwo` can split, charge-ledger
+saturation occurs after debit, disposition is open/reversible, a terminal kind
+can change or return to awaiting, compaction loses the terminal kind/result
+commitment, or timeout/age manufactures abandonment,
 the exact replay horizon or maximum hot/backlog cardinality is unspecified,
 compaction deletes before checkpoint installation, a covered request can look
 absent, archive/proof loss permits reissue, checkpoint/key rotation is
@@ -878,7 +896,8 @@ unresolved/receipt-revoked evidence or conservative expiry releases it. Forge
 terminal evidence with issuer keys, change principal/policy/budget epochs before
 settlement, and race settlement with consumption, expiry, failover and duplicate
 delivery; original buckets release all-or-none exactly once. Prove every
-pre-authentication byte, concurrency, handshake/signature/MAC and canonical-
+pre-authentication byte, concurrency, handshake/signature/MAC, and canonical-
+decode work limit before owner state. Present normal credentials to recovery
 and break-glass endpoints, claim emergency class in the body, substitute
 audience/profile/mapping generation, rotate and revoke lane credentials, fail
 over and restore an older mapping, and prove fail-closed rejection. Flood many
@@ -896,7 +915,12 @@ and after each commit on every adapter. Prove protected lookup never starts
 before durable charge evidence, a crash between stages leaves the charge spent
 and forces a new charge, old continuity evidence cannot be reused, mapping
 change fails before request allocation, and request/outcome/issuance remains
-all-or-none. Prove every
+all-or-none. Exhaust charge-ledger rows, bytes and checkpoint backlog before
+stage one and prove no debit/evidence/initial disposition exists. Drive every
+permitted charge-disposition edge and reject undeclared edges, terminal-to-
+terminal substitution, terminal-to-awaiting rollback, timeout-derived
+abandonment, compaction before checkpoint, and compacted loss of the original
+terminal kind/result commitment. Prove every
 authenticated presentation—including every concurrent duplicate, response-
 loss retry and historical replay—spends presentation rate. Prove exactly one
 first-seen canonical denial atomically allocates one request sequence and
@@ -953,7 +977,8 @@ consumer time schema, atomic deadline-CAS evidence, quota rows, exact-replay
 hot store, authenticated checkpoint/high-watermark, archive index, and bounded
 compaction worker; include non-borrowable ingress-lane accept/TLS/decode/
 executor/pool profiles with a global ceiling, two-stage presentation charge
-rows/evidence/continuity/compaction, authenticated endpoint/
+rows/evidence/sequence/closed dispositions/result links/continuity/checkpoints/
+compaction and atomic saturation behavior, authenticated endpoint/
 audience/credential-profile presentation-lane mappings with generation/fence/
 revocation state, separate normal/recovery/break-glass counters and
 reserve, issuer range manifests, consumer sparse commitments, and eligible-
@@ -969,7 +994,9 @@ exhausted break-glass success, break-glass flood isolation, and conformance
 pass, including normal-to-emergency lane forgery, lane/class mismatch,
 credential rotation/revocation, mapping rollback on restore, and pre-auth work
 exhaustion, cross-lane ingress starvation, stage-one/stage-two crash boundaries,
-orphan charge non-refund/reuse, and mapping-change TOCTOU.
+orphan charge non-refund/reuse, mapping-change TOCTOU, every closed disposition
+transition, terminal irreversibility, checkpoint-before-compaction, and atomic
+charge-ledger saturation.
 
 Exit criteria: no HA claim and all single-node semantics are evidenced.
 `v0.23.0 implementation stop reached. Run pentest for this exact commit.`
@@ -1632,7 +1659,9 @@ complete request sequence/checkpoint/denial-history proof, canonical terminal
 envelope/outcome/role semantics, structurally separate reconciliation evidence,
 authenticated lane derivation and exact lane/class matching, separate
 stage-one presentation commit and stage-two evidence consumption/mapping
-recheck/request transaction, separate presentation/request/admission semantics,
+recheck/request transaction, closed irreversible charge dispositions and
+checkpointed original-terminal-kind preservation, atomic debit/evidence/
+initial-disposition saturation semantics, separate presentation/request/admission semantics,
 equal-or-stricter request/archive and manifest/chunk/
 verification limits, and no sequence/key reuse. Missing archival payload may remain unavailable, but
 that range is durably fail-closed and cannot be interpreted as unused. It then

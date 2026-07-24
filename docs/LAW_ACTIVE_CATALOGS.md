@@ -432,7 +432,13 @@ request/outcome/issuance writes. Mapping change returns
 `TopologyAuthorizationPresentationLaneChanged` before request allocation
 without refund. Crash between stages leaves an orphan spent charge, retry gets
 a new charge and fenced-continuity evidence is unusable; evidence/dispositions
-are bounded and checkpoint-before-delete.
+are bounded and checkpoint-before-delete. Stage one atomically creates debit,
+evidence, sequence and `ChargedAwaitingStageTwo`, or ledger saturation fails
+before lookup without state. The only terminal dispositions are irreversible
+`Consumed`, `MappingChanged`, `ControlledAbortAbandoned`, and
+`ContinuityFencedOrphaned`; `CheckpointedCompacted` preserves the original
+terminal kind and result/evidence commitment after its checkpoint. Timeout is
+not a transition.
 `TopologyAuthorizationRequestRateBudgetV1` charges exactly once for every
 first-seen canonical request ID/digest and binds that charge to monotonic
 `TopologyAuthorizationRequestSequence`. Exact retries charge presentation rate

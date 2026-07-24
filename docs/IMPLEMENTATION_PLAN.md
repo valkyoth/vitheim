@@ -129,7 +129,12 @@ budget epoch/sequence, and continuity. Stage two consumes that evidence,
 rechecks the current mapping generation, and then performs the first-seen
 request/outcome/issuance transaction. Changed mapping, crash, or fenced
 continuity never refunds or reuses the stage-one charge; retry obtains a new
-charge and no logical request exists unless stage two commits. A once-per-
+charge and no logical request exists unless stage two commits. Stage one
+atomically couples debit, evidence, sequence, and awaiting disposition or fails
+before lookup on ledger saturation. The closed disposition table has four
+irreversible terminal kinds—consumed, mapping changed, controlled abort, and
+continuity-fenced orphan—and checkpointed compaction preserves the original
+kind/result commitment. A once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive

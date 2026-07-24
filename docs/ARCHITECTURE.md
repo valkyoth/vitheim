@@ -108,7 +108,13 @@ request. Rotation or revocation between stages returns
 logical request is allocated. A crash between stages likewise leaves an
 orphaned spent charge, and retry must obtain a new charge. Evidence is bounded,
 checkpointed before deletion, unusable after continuity fencing, and never
-exported as client authority.
+exported as client authority. Stage one atomically writes debit, evidence,
+sequence, and `ChargedAwaitingStageTwo`; ledger saturation fails before lookup
+with no partial write. The only later dispositions are irreversible
+`Consumed`, `MappingChanged`, `ControlledAbortAbandoned`, or
+`ContinuityFencedOrphaned`. `CheckpointedCompacted` may replace a terminal hot
+row only after its predecessor-linked checkpoint preserves the original kind
+and result/evidence commitment. Timeout never selects a disposition.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again
