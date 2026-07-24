@@ -852,6 +852,12 @@ rollout generation with permanent successor supersession, complete-successor
 rollback, prepared-cancellation recovery successor, and fully typed floor-key migration,
 canonical composite acquisition/retry, and fair partitioned control-plane
 capacity.
+Fail over `MigrationImportWorkBudgetV1` as one fenced destination-local job
+lineage. Job/material uniqueness, immutable profile, all cumulative operation
+and principal/tenant/deployment counters, reservations, cursor, staged-state
+high-watermarks, result and cleanup/quarantine disposition survive promotion;
+new processes, cursors, reconnects and adapter retries cannot allocate fresh
+work or borrow protected Recovery cleanup.
 Catalog HA is the `VIT-LAW-008` process manager, not a quorum write or
 distributed transaction. Exercise immutable topology/placement manifests,
 `Candidate`, `Preparing`, irreversible `ActivationAuthorized`,
@@ -950,7 +956,9 @@ reevaluation/startup evidence, quarantine resolution/current-evidence/resolver/
 consistency/new-generation/tombstone evidence, remediation profile/credential-
 lineage/audit/epoch/cleanup-quota/manual-limit evidence, cancellation-recovery/deadline
 evidence,
-fair-capacity evidence, and runbooks.
+fair-capacity evidence, migration/import budget-lineage/precharge/reservation/
+failover/aggregate-concurrency/exhaustion/Recovery-cleanup evidence, and
+runbooks.
 Include catalog rollout-root/global-lineage/local-owner placement, immutable
 manifest, outbox/inbox, authenticated receipt, independent topology-generation
 owner, active-rollout generation, superseded tombstone, typed workload-
@@ -1060,7 +1068,10 @@ delegation/policy/principal
 revocation racing dispatch, missing/substituted/reordered authority fences,
 epoch rollback/reuse, stale external authority, composite lock-order inversion,
 bounded-retry exhaustion/identity drift, one-tenant capacity monopolization,
-emergency-reserve misuse, failover/failback, and chaos/soak pass. Exit criteria:
+emergency-reserve misuse, migration/import cursor/job/profile/counter reset,
+duplicate material under new job IDs, changed-manifest reuse, staged promotion
+after exhaustion, cleanup-reserve borrowing, failover/failback, and chaos/soak
+pass. Exit criteria:
 split brain and stale workers reject every state-
 changing variant; failover cannot bypass authority redemption, impersonate an
 offline human, fork a grant lineage, resurrect a consumed attempt, advance grant
@@ -1162,6 +1173,10 @@ separate reconciliation evidence/receipts, authentication state, separate
 normal/recovery/break-glass counters/reserve,
 denial and issuance compaction
 cursor/backlog, proof/key epochs, and growth counters;
+every active or terminal `MigrationImportWorkBudgetV1` job/material key,
+immutable budget profile, cumulative operation/aggregate counters, reservations,
+cursor/checkpoints, lease/fence, staged-row high-watermarks, typed result and
+cleanup/quarantine disposition;
 the active
 catalog ID/epoch,
 recomputed payload/envelope and actual
@@ -1212,7 +1227,12 @@ rollback, missing terminal evidence, over-budget range chunks,
 or verification-cursor/work/depth rollback also reject. Exact payload erasure
 may yield
 `TopologyAuthorizationHistoricalStateUnavailable`, but the minimal restored
-checkpoint still denies replay/reissue; every
+checkpoint still denies replay/reissue. Restore migration/import jobs before
+resuming source or staging work. Counter/reservation/profile rollback, a
+recreated cursor, duplicate nonterminal material, promotion after budget
+exhaustion, lost cleanup obligation, unbounded quarantine payload or Normal
+borrowing of Recovery cleanup keeps the destination fenced. Resume may repeat a
+conservatively precharged quantum but can never erase cumulative cost; every
 `0.18.2` atomic work variant and denial-only
 audit-chain integrity, external anchors, registered tenant-surface disposition,
 typed external-copy evidence-strength honesty, measurement rollup manifests,
@@ -1397,8 +1417,13 @@ revocation fencing, outstanding-reservation settlement duplication/reordering,
 canonical terminal-envelope and reconciliation-receipt verification, denial
 request replay/checkpoint
 bounds, atomic issuance
-contention, range-chunk encoded/decode/work/depth limits, and verification-
-cursor throughput,
+contention, range-chunk encoded/decode/work/depth limits, verification-
+cursor throughput, and every active and terminal
+`MigrationImportWorkBudgetV1` lineage with immutable operation-key uniqueness,
+cumulative byte/item/crypto/proof/temporary-storage/staged-row/open-stream/
+checkpoint/retry/elapsed/cleanup and concurrent-job limits, pessimistic quantum
+precharge, destination-local reservations, fenced promotion, and non-borrowable
+Recovery cleanup capacity,
 starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
@@ -1430,6 +1455,9 @@ original-claim and authenticated-consumer-terminal-evidence oracle,
 denial request-sequence/horizon/checkpoint/archive-loss/policy-change-late-retry
 oracle; terminal-envelope/reconciliation field/outcome/sequence/
 authentication-role and terminal-only settlement oracle,
+migration/import operation-key, budget-profile, cumulative-counter,
+precharge/reservation, cursor/resume/failover, fenced-promotion,
+digest-only-quarantine and protected-cleanup oracle,
 leak/escalation evidence, and signed reports. Verification: atomic
 bounded claim sets across every work bundle, concurrent overlapping-set
 canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
@@ -1527,7 +1555,15 @@ duplicate terminal decrement, presentation/request/admission-rate collapse, call
 monopolization, request renumber/recharge/late reevaluation, denial-proof
 resource escape, terminal-envelope default/open outcome, reconciliation-to-
 terminal type confusion, role rollback, or manifest verification resource
-escape is accepted.
+escape is accepted. Sustain migrations and imports containing millions of
+individually valid small records, maximal hash/signature/proof work, staged
+disk pressure, checkpoint churn, response loss, reconnects, native-adapter
+retries, failover, and competing tenant/deployment jobs. No new process,
+cursor, job identifier, adapter path, restore, or promoted writer may reset
+cumulative counters, evade the frozen profile, duplicate reservations, promote
+exhausted state, mutate the source, write unbounded quarantine payloads, or
+borrow protected Recovery capacity; exhaustion remains typed and cleanup
+converges within its reserved bound.
 `v0.146.0
 implementation stop reached. Run pentest for this exact commit.`
 
@@ -1568,7 +1604,12 @@ structurally separate reconciliation evidence/receipts, terminal-only
 settlement typing, sender-only consumer authentication,
 principal/authority sub-limit fairness, range-chunk codec/proof/work/depth
 budgets, verification-cursor recovery, sensitive-data minimization, and
-bounded-growth assurance report,
+bounded-growth assurance report; destination-local migration/import job
+ownership, immutable operation-key uniqueness, frozen budget-profile binding,
+monotonic cumulative-counter and pessimistic-precharge accounting, reservation
+conservation, cursor/retry/failover continuity, fenced promotion, typed
+exhaustion, digest-only quarantine, and protected Recovery-cleanup assurance
+report,
 and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
@@ -1603,7 +1644,11 @@ outcome, reconciliation-to-terminal type confusion, consumer result/outbox
 rollback, issuer access to consumer sender credentials,
 oversized declared lengths/counts, allocation-before-limit-check, decompression
 or verification-work bomb, over-depth/cyclic/reordered chunk proof, partial
-terminal chain, and cursor rollback.
+terminal chain, and cursor rollback. Audit migrations/imports for job-key alias,
+profile substitution, counter reset/overflow, undercharged quantum, reservation
+overcommit, retry/failover double work, promotion after exhaustion, source
+mutation, payload-bearing quarantine, and cleanup that can starve or borrow from
+Recovery.
 Exit criteria: every trusted input is pinned/accounted. `v0.147.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.148.0` — Compatibility Freeze
@@ -1639,7 +1684,10 @@ issuer-range-manifest/consumer-sparse-or-eligible-dense/budget-class/reserve/
 atomic-issuance/outstanding-reservation/receipt-revocation-intent/consumer-
 terminal-receipt/reconciliation-receipt/terminal-only-settlement/principal-sub-limit/
 range-chunk/resource-budget/verification-cursor/compaction/key-epoch/
-historical-unavailable compatibility.
+historical-unavailable compatibility, plus migration/import operation-key,
+budget-profile/generation/epoch/digest, cumulative-counter, precharge,
+reservation, cursor/checkpoint, terminal-result, cleanup/quarantine and
+authorized-successor compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
 golden mixed-version event corpus, migration/rebuild suites, and deprecation
 rules. Verification: downgrade/skew/unknown versions, upcaster determinism,
@@ -1666,7 +1714,10 @@ envelope/reconciliation field/outcome/result/outbox-sequence/authentication-
 role and settlement-argument skew,
 caller-budget-key loss,
 verification-cursor rollback, budget-class/reserve merge, and independent-
-parent-release rejection.
+parent-release rejection; include old writers that omit a migration/import
+counter, reinterpret its unit, start a fresh job/cursor for the same operation,
+lower or replace its budget profile, lose reservations or cleanup state,
+promote exhausted staging, or treat unknown budget state as reusable capacity.
 Exit criteria: supported combinations are exact and no compatible version path
 can lower the durable platform floor, reactivate a superseded rollout, or
 broaden executor credential/network authority.
@@ -1680,8 +1731,9 @@ provider permission evaluator governance/reevaluation, evidence-backed whole-
 credential quarantine resolution, independent remediation authority, and
 the credential broker/executor TCB; include topology-authorization durable
 charge-ledger lane isolation, maintenance scheduling, failover/restore
-reservations, and aggregate disk/work ceilings. Goal: remediate complete attack
-paths.
+reservations, aggregate disk/work ceilings, and the complete operation-wide
+migration/import job, budget, staging, result, quarantine and cleanup trust
+boundary. Goal: remediate complete attack paths.
 Deliverables: findings, fixes, regression tests, and clean retest evidence.
 Verification: external pentest plus tenant/auth/plugin/AI/storage/operations/
 supply-chain regression passes; test unauthorized or semantically expanded
@@ -1785,6 +1837,16 @@ checkpoint and deletion settlement; and remove checkpoint history. The attempt
 checkpoint, ordered settlement bundle, journal append, decrements, audit and
 result remain indivisible, and unavailable history retains the checkpoint
 charge.
+For migration/import, independently attack every cumulative limit with
+millions of small records, oversized decoded output, hash/signature/proof
+amplification, temporary-disk and staged-row pressure, open-stream exhaustion,
+checkpoint churn, response loss, reconnects, native retries, failover, restore,
+mixed-version writers, duplicate jobs, changed manifests and concurrent
+tenant/deployment jobs. Prove pessimistic precharge and reservations remain
+conservative; no crash, retry, cursor, process, adapter or successor profile
+resets prior work; typed exhaustion leaves the source unchanged and destination
+fenced; quarantine remains digest-only; and protected Recovery cleanup
+converges without unbounded reconciliation.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -1825,6 +1887,8 @@ root finalization, concurrent successor, late superseded messages, typed-key
 substitution/migration failure, cancellation after every preparation point,
 lost recovery delivery, coordinator failover, parent drift, restore of cancelled
 prepared state, load, compatibility, and evidence
-reproducibility pass. Exit criteria:
+reproducibility pass, plus clean-install/upgrade/restore/failover continuity for
+every migration/import operation key, budget profile, cumulative counter,
+reservation, cursor, result, exhaustion, quarantine and cleanup record. Exit criteria:
 no known blocking gap remains.
 `v0.150.0 implementation stop reached. Run pentest for this exact commit.`

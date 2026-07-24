@@ -2297,6 +2297,53 @@ is discovered later, a new milestone must admit its exact source schema,
 evidence, quarantine and idempotent application contract after security review;
 `0.29.0` cannot improvise one. Migration between checkpoint settlement and
 physical deletion cannot settle, reopen or reclassify either leg set.
+
+Freeze project-owned `MigrationImportWorkBudgetV1` for every migration and
+import job. It binds a stable job ID and closed migration-or-import kind;
+tenant/deployment; exact source and destination identities; source schema/
+version and canonical manifest digest; immutable budget-profile ID/generation/
+epoch/digest; authenticated initiating principal and request/approval digest;
+owner workload/boot/continuity; lease generation, fencing token and expected-
+version CAS; and conservative creation/deadline state. The destination-local
+migration registry is the sole writer of the job, budget, cursor, staging
+reservation, result and cleanup lifecycle. It schedules resource use but cannot
+make imported authority current; final admission remains with the existing
+invariant owners and shared verifiers.
+
+The budget persists monotonic overflow-checked counters for cumulative source
+encoded and decoded bytes, decode allocation/work, manifest entries, records,
+blobs and chunks, hash bytes/work, signature checks, proof bytes/depth/work,
+temporary and staged bytes/rows, open files, concurrent streams, checkpoints,
+resumes, reconnects, adapter-native retries, conservative elapsed time,
+cleanup/reconciliation bytes/rows/work/backlog, and concurrent jobs at
+principal, tenant and deployment scopes. A canonical operation key over tenant,
+deployment, operation kind, source, destination and manifest digest has at most
+one nonterminal job. Exact job/material retry joins or resumes its counters;
+duplicate job ID with changed material conflicts, and a fresh job/cursor/
+connection/process cannot reset the operation or aggregate counters.
+
+Job creation atomically reserves bounded staging/temporary storage,
+verification CPU/memory/work, terminal result/checkpoint capacity, rollback-or-
+quarantine cleanup capacity and protected non-borrowable Recovery progress
+before source processing. Each reader, decoder, hasher, signature/proof
+verifier, staging writer and reconciliation step durably precharges a maximum
+bounded quantum before allocation or external work; unused reservation may
+remain conservatively charged until terminal reconciliation, but no action can
+overspend and later report it. Cancellation stops new source work without
+resetting counters and enters the same fenced cleanup lifecycle.
+
+Exhaustion returns typed `MigrationImportBudgetExceeded`, irreversibly blocks
+source processing and destination promotion for that job/profile, preserves
+the source unchanged, leaves destination authority fenced/unready, and enters
+bounded resumable `CleanupPending`. Cleanup uses only its reserved capacity and
+protected Recovery lane; Normal jobs cannot borrow it. Quarantine persists
+only bounded canonical metadata, identities, counters, dispositions and
+cryptographic digests, never attacker-sized source bytes, decoded values,
+blobs, chunks or proofs. Exact retry after response loss returns the same
+budget-exceeded/quarantine result. A larger successor budget requires explicit
+current change authority, binds the exhausted predecessor and its counters, and
+cannot silently restart work or erase the security record.
+
 A migration or import
 cannot route authority reads to a replica, synthesize absence, reset a unique
 claim or restart budget, reinterpret contention as unavailable history, or
@@ -2414,7 +2461,9 @@ envelope metadata/full ancestry and ratchets, closed semantic realizations, expl
 per-point negative-child realization,
 and concrete `VIT-RCV-*` fields. The adapter migration contract explicitly
 accepts only complete two-head settlement state and exposes no singular-head
-conversion path.
+conversion path. It also exposes the durable `MigrationImportWorkBudgetV1`
+transaction, precharge, aggregate-concurrency and cleanup semantics or refuses
+the migration profile.
 
 Verification: reorder/substitution, partial failure, concurrent runner, lease loss,
 downgrade, malicious input, retry, backup restore, floor-profile conflict,
@@ -2462,6 +2511,17 @@ conservative charges and keep the destination unready. Lose and retry the
 refusal response; neither run may create a destination head, anchor,
 tombstone, balance, supersession, checkpoint or migration marker. Only a
 complete authenticated two-head source can proceed.
+Feed millions of individually valid small records; cumulative encoded/decoded
+bytes, allocation, record/blob/chunk counts and work must stop at the job
+budget. Flood hashing, signatures and proof verification; exhaust temporary
+disk, staged rows, open files and streams; crash after every precharge/cursor/
+checkpoint/staging boundary; recreate cursors, reconnect, fail over, trigger
+adapter-native retries and lose responses. Counters never reset or undercount.
+Race duplicate job IDs, same operation under new IDs and changed-manifest
+reuse. Saturate principal/tenant/deployment job limits and prove Normal
+migration traffic cannot consume Recovery cleanup capacity. Budget exhaustion
+never promotes destination authority, mutates the source or stores hostile
+payload in quarantine.
 
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
 `v0.29.0 implementation stop reached. Run pentest for this exact commit.`
@@ -2507,7 +2567,12 @@ Goal: migrate between backends without claiming direct database interchange.
 
 Deliverables: streaming exporter/importer, preflight verifier, reconciliation
 report, resumable checkpoints, source/destination mapping, and explicit
-manifest/admission/semantic-realization closure. Import preserves every
+manifest/admission/semantic-realization closure. The importer reuses the exact
+`MigrationImportWorkBudgetV1` job, operation-key uniqueness, monotonic counters,
+precharged reservations, typed exhaustion, bounded quarantine and cleanup
+lifecycle from `0.29.0`; export enumeration, transfer and destination staging
+are charged to that same operation rather than separate resettable budgets.
+Import preserves every
 authorization schema field without defaulting and admits the destination only
 if it proves the same or stronger no-late-commit mechanism; otherwise imported
 topology authority remains fenced and unready. Import calls the shared
@@ -2578,6 +2643,11 @@ singular settlement input claiming local/archive/both/empty/complete meaning,
 apparently complete supporting evidence, genesis inference, invented chains or
 coverage, source mutation, destination authority mutation, refusal-response
 retry side effects,
+millions of bounded records, cumulative allocation/hash/signature/proof floods,
+temporary/staging exhaustion, open-file/stream and concurrent-job saturation,
+crash/cursor/reconnect/failover/adapter-retry counter reset, duplicate job or
+changed-manifest reuse, Normal-to-Recovery cleanup starvation, unbounded
+quarantine payload retention, budget-exceeded promotion or source mutation,
 and cross-adapter conformance pass.
 
 Exit criteria: successful import proves complete semantic and integrity parity.

@@ -181,6 +181,17 @@ exact settled and remaining leg sets, and conservative original-bucket
 balances. Missing fields deny. Singular-head state was never an admitted
 Vitheim schema and is quarantined before authority mutation; the current
 roadmap provides no split migration or genesis inference.
+Every `0.29.0–0.30.0` migration/import uses one durable
+`MigrationImportWorkBudgetV1` bound to its job/material, tenant/deployment,
+source/destination, schema/manifest, authenticated initiator, immutable budget
+profile and fenced owner. Operation-wide byte/object/cryptographic-work/
+temporary-staging/stream/retry/time/cleanup/concurrency counters are monotonic
+across crash, cursor recreation, failover and adapter retry. Creation reserves
+staging, verification, result/checkpoint, rollback/quarantine cleanup and
+protected Recovery capacity; each bounded quantum is precharged before work.
+Typed exhaustion leaves the source unchanged and destination unready, enters
+bounded resumable cleanup, and stores only bounded metadata/digests in
+quarantine.
 Archive exact results or authenticated result references with
 request/lifecycle/scope/predecessor/key commitments, bounded proof work and a
 durable cursor. Late exact retry returns the archived result, changed retry

@@ -8,6 +8,11 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added one durable operation-wide `MigrationImportWorkBudgetV1` for migrations
+  and imports, with immutable job uniqueness, monotonic cumulative resource
+  counters across crash/retry/failover, pessimistic precharge, admission-time
+  staging/verification/result/cleanup reservations, typed fenced exhaustion,
+  unchanged sources, digest-only quarantine, and protected Recovery cleanup.
 - Added a cumulative per-scope drain-replay head and staged immutable archive
   publication protocol, preventing stale-checkpoint non-membership proofs and
   avoiding any database/object-store distributed-transaction assumption.

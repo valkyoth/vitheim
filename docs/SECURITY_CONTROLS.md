@@ -187,6 +187,13 @@ audit decision.
   denies; singular-head state was never an admitted Vitheim schema and is
   quarantined before authority mutation, without split migration, invented
   predecessor/coverage history, genesis inference or capacity release;
+- migration/import work uses one durable fenced job budget with monotonic
+  operation and principal/tenant/deployment counters for cumulative encoded/
+  decoded bytes, objects/chunks, allocation and cryptographic/proof work,
+  temporary/staged storage, files/streams, resumes/retries/time, cleanup and
+  concurrency; creation reserves terminal and Recovery-protected cleanup
+  capacity, work precharges bounded quanta, exhaustion fences promotion and
+  preserves the source, and quarantine stores only bounded metadata/digests;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

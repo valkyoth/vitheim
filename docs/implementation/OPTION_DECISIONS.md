@@ -310,7 +310,20 @@ channel/KMS bindings, quorum receipts, compromise/loss/recovery epochs, exercise
 evidence, and offline/manual state. Map durable evaluator re-evaluation job
 generation, tenant/provider/account queue, cursors, leases, provider-rate and
 fair-share counters, priority, cleanup lane, freshness/refetch state, and
-escalation. Produce a complete stable-invariant-ID coverage matrix from
+escalation. Map `MigrationImportWorkBudgetV1` job/budget/cursor/staging/result/
+quarantine/cleanup rows into one destination-local transaction domain, with
+source access read-only and final authority admission still owned by existing
+invariant owners. Freeze exact maximum operation and principal/tenant/
+deployment values for encoded/decoded bytes, allocation/decode/hash/signature/
+proof work, manifests/records/blobs/chunks, temporary/staged bytes and rows,
+open files and streams, checkpoints/resumes/reconnects/adapter retries,
+conservative elapsed time, cleanup/reconciliation backlog and concurrent jobs.
+Freeze immutable budget-profile ID/generation/epoch/digest, canonical operation-
+key uniqueness, worst-case quantum precharge, staging/verification/result/
+rollback/quarantine reservations and a non-borrowable Recovery cleanup reserve.
+Storage unable to atomically persist counters/reservations with cursor and job
+lifecycle refuses migration/import rather than relying on process memory.
+Produce a complete stable-invariant-ID coverage matrix from
 `docs/INVARIANT_OWNERSHIP.md`; a selected storage profile missing an applicable
 `VIT-CAP-*` capability is unsupported rather than waived. Coverage begins from
 all phase and production declarations and resolves every ownership/lifecycle
@@ -1030,6 +1043,12 @@ Exhaust one caller sub-limit while other callers and aggregate ceilings remain
 correct. Fuzz declared lengths/counts, decode allocation, work, depth, chunk
 chain/root bindings and verification-cursor recovery without unbounded CPU or
 memory.
+For migration/import, exceed every exact operation and aggregate limit with
+millions of small valid records, cryptographic/proof floods, temporary/staging
+pressure, cursor recreation, reconnect/failover/adapter retry and concurrent
+tenant jobs. Prove monotonic counter survival, precharge-before-work, stable
+duplicate-job reconciliation, changed-manifest conflict, fenced destination,
+unchanged source, bounded digest-only quarantine and Recovery cleanup progress.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
 requires a distributed work transaction are rejected, not relabeled supported.
 `v0.140.2 implementation stop reached. Run pentest for this exact commit.`
@@ -1406,6 +1425,12 @@ Vitheim release admitted that schema, `0.29.0` defines no split migration, and
 preflight quarantines it before authority mutation while retaining conservative
 capacity and an unready destination. A future genuine compatibility need
 requires a separately versioned source-specific decision and security review.
+Preserve every `MigrationImportWorkBudgetV1` identity/profile/counter,
+operation-key uniqueness claim, cursor, reservation, lease/fence, typed
+exhaustion result and cleanup/quarantine disposition across failover, restore
+and region movement. A promoted writer cannot reset cumulative work, allocate
+a second nonterminal job for the same material, reinterpret exhaustion as fresh
+work, borrow Recovery cleanup capacity or promote staged authority.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/

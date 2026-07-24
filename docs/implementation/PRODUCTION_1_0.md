@@ -570,6 +570,24 @@ version/outcome/idempotency/replay-bound, and recovered; no post-authorization a
 possible. Rollout/discovery cannot create
 topology, and restore cannot resurrect a placement tombstone.
 
+Every production migration or import also runs as one destination-local,
+durable and fenced `MigrationImportWorkBudgetV1` lineage. Its immutable
+operation key and frozen profile bind tenant/deployment, operation kind,
+source/destination, source schema and manifest, authenticated principal,
+workload/boot continuity, lease and fence. Cumulative source/decoded bytes,
+items, hash/signature/proof work, temporary/staged storage, rows, open files/
+streams, checkpoints/resumes/reconnects/native retries, conservative elapsed
+time, cleanup/reconciliation and concurrent principal/tenant/deployment jobs
+never reset across crash, response loss, resume, failover, restore or adapter
+retry. Work precharges a pessimistic bounded quantum before allocation or
+external work, and creation reserves staging, verification, result/checkpoint,
+quarantine/rollback cleanup and non-borrowable Recovery capacity. Typed
+`MigrationImportBudgetExceeded` leaves the source unchanged, keeps destination
+promotion fenced, allows only bounded digest/metadata quarantine and converges
+cleanup inside the reserved Recovery lane. A larger successor profile requires
+explicit change authority and binds the predecessor plus every cumulative
+counter; a new process, cursor or job ID confers no fresh capacity.
+
 Goal: release the first production-supported Vitheim platform with claims no
 broader than its evidence.
 
@@ -593,6 +611,11 @@ Deliverables:
   authoritative-region failover,
   backpressure, incident, and DR runbooks. Active/active authoritative
   multi-region writes are explicitly unsupported.
+- Frozen production migration/import limits, operation-key/profile schema,
+  destination-local job ownership, precharge/reservation rules, typed
+  exhaustion, fenced promotion, digest-only quarantine, protected cleanup and
+  runbooks for joining, resuming, failing over, restoring and explicitly
+  superseding a job.
 - Signed source/artifacts/checksums, SBOM, provenance, licenses, compatibility
   evidence, pentest report, and complete release notes.
 - A production support matrix that names the selected dependency/crypto/KMS,
@@ -609,6 +632,13 @@ Verification:
   untrusted parser fuzzed.
 - Independent crypto review, plugin escape and AI injection/tool-abuse suites,
   storage conformance, migration/restore/rebuild/workflow continuation tests.
+  Migration/import cases include millions of small records, decoded/crypto/
+  proof amplification, temporary-disk and staged-row pressure, open-stream
+  exhaustion, checkpoint churn, response loss, reconnects, native retries,
+  failover/restore, duplicate job creation, changed manifests and concurrent
+  tenants/deployments. They prove counter monotonicity and reservation
+  conservation, exact retry joining, fenced exhaustion with unchanged source,
+  bounded digest-only quarantine and protected cleanup convergence.
 - Crash-point proof that protected commands cannot commit without authoritative
   audit intent; every applicable `0.18.2` command/consumer/timer/activity/
   poison bundle component is atomic and integrity linked; fence and quota

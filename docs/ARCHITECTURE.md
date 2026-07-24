@@ -518,6 +518,14 @@ restore, failover, and release evidence.
    tenant work or allowing one tenant to monopolize recovery.
 9. Every untrusted parser, query, workflow, plugin, attachment, import, report,
    and export has explicit size, depth, time, memory, and work budgets.
+   Migration/import additionally has one durable operation-wide budget bound to
+   job, tenant/deployment, source/destination, schema/manifest, principal,
+   budget profile and fenced owner. Monotonic source/decoded bytes, object/
+   chunk/work, temporary/staging, stream, retry/resume/time, cleanup and
+   concurrency counters survive crash and failover. Capacity is reserved and
+   bounded work quanta are precharged before use; exhaustion fences promotion,
+   preserves the source, and runs bounded Recovery-protected cleanup with
+   digest-only quarantine metadata.
 10. Every important result is explainable from commands, events, policy,
     workflow, evidence, provenance, and versioned configuration.
 11. The API is the product boundary; the UI is an API client and cannot acquire

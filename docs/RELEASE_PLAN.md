@@ -142,8 +142,8 @@ implementations remain blocked rather than being implemented casually.
 | `0.28.1` | S3-compatible object-storage adapter | Tenant/object confusion, endpoint spoofing, multipart races, retention/deletion |
 | `0.28.2` | KMS and secret-provider adapters | Serialized provisioning/inventory/orphan/count controls plus governed evaluator upgrade/reevaluation, strong-resolution evidence, independent recovery or manual limitation |
 | `0.28.3` | In-process secret and brokered-bearer memory handling | HTTP/TLS/redirect/error/log/crash/core-dump/swap canaries, stale cache, honest transient-memory/erasure limits |
-| `0.29.0` | Resumable invariant-owner and trusted law/catalog migrations preserving monotonic authority | Migrate only complete canonical two-head state. Singular schemas were never admitted: quarantine before destination mutation, retain conservative charges/unready state, never infer genesis/chains/coverage, and require a new reviewed future milestone for any real external compatibility population |
-| `0.30.0` | Cross-backend export and import with explicit law trust closure | Require the complete canonical two-head tuple, unified namespace, atomic checkpoint bundle and mixed-trigger proof; missing/defaulted or singular state is quarantined before import mutation, retains charges, fences execution and refuses the profile |
+| `0.29.0` | Resumable invariant-owner and trusted law/catalog migrations preserving monotonic authority, under one durable operation-wide `MigrationImportWorkBudgetV1` | Migrate only complete canonical two-head state. Singular schemas were never admitted: quarantine before destination mutation, retain conservative charges/unready state, never infer genesis/chains/coverage, and require a new reviewed future milestone for any real external compatibility population. Persist one destination-local job lineage and cumulative byte/item/crypto/proof/staging/stream/checkpoint/retry/time/cleanup/concurrency counters across crash, resume, failover and native retries; precharge bounded quanta, reserve staging/verification/result/cleanup capacity, type exhaustion, preserve the source, fence promotion and keep quarantine digest-only |
+| `0.30.0` | Cross-backend export and import with explicit law trust closure and the same durable migration/import budget from enumeration through destination staging | Require the complete canonical two-head tuple, unified namespace, atomic checkpoint bundle and mixed-trigger proof; missing/defaulted or singular state is quarantined before import mutation, retains charges, fences execution and refuses the profile. Export enumeration, transfer, decode, verification and staging cannot create fresh counters, jobs, cursors or reservations |
 | `0.30.1` | Durable queue preserving governed provider and cancellation-recovery authority | Existing guard/orphan/count/recovery state remains complete; evaluator revocation/resolution never revives work; queues cannot evaluate, clear, or remediate |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 
@@ -431,11 +431,11 @@ the first technology decision. An unselected option remains unsupported at
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.140.1` | Cryptography/time, executable workload identity, exact catalog/topology-receipt authentication, topology authorization, and credential-operation decision | Retain prior authentication bindings; freeze not-before/issued/expiry, maximum uncertainty, trusted-time profile/epoch, issuer continuity, signer/key identity/epoch/authentication profile, conservative validation, monotonic ratchets, historical consumed validity and fresh activation authority |
-| `0.140.2` | Storage topology for invariant/law manifests, rollout/topology/authorization state, active catalogs/ratchets, and provider state | Freeze the canonical recovery tuple: both heads/non-wrapping chains/authenticated coverage, root/key/publication/cursor, exact covered/current rows, settlement/trigger/bundle/result/linkage, settled/remaining legs and conservative balances; retain both CAS/lock boundaries and prior ledger schemas |
+| `0.140.2` | Storage topology for invariant/law manifests, rollout/topology/authorization state, active catalogs/ratchets, provider state, and destination-local migration/import jobs | Freeze the canonical recovery tuple and exact `MigrationImportWorkBudgetV1` production limits/profile: both heads/non-wrapping chains/authenticated coverage, root/key/publication/cursor, exact covered/current rows, settlement/trigger/bundle/result/linkage, settled/remaining legs and conservative balances; retain both CAS/lock boundaries and prior ledger schemas. Atomically persist immutable operation keys, profiles, cumulative counters, pessimistic precharges, reservations, terminal results, exhaustion and cleanup/quarantine state; unsupported storage refuses |
 | `0.140.3` | Human/workload/session and worker-instance identity decision | Co-located epochs, enforceable expiry, unique per-runtime claimant, lease-fence binding, restart/takeover invalidation |
 | `0.140.4` | Component runtime and governed credential-broker TCB decision | Evaluator binary/corpus admission and upgrade; quarantine-resolution evidence; non-composable remediation authority; existing TCB |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Retain prior retention rules; freeze mixed checkpoint/deletion archive evidence, trigger/leg minimization without aliasing, and conservative checkpoint-history retention |
-| `0.140.6` | Deployment/HA invariant-owner, catalog rollout/topology/authorization, and recovery decision | Freeze fail-closed complete-tuple admission, singular-schema pre-mutation quarantine/no migration, and no reopen/pre-settle behavior across checkpoint/deletion stages |
+| `0.140.6` | Deployment/HA invariant-owner, catalog rollout/topology/authorization, recovery, and migration/import budget decision | Freeze fail-closed complete-tuple admission, singular-schema pre-mutation quarantine/no migration, and no reopen/pre-settle behavior across checkpoint/deletion stages. Preserve the exact migration/import operation key, budget profile/counters/reservations/cursor/result/exhaustion/cleanup and non-borrowable Recovery reserve across every selected HA/DR topology |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |
@@ -452,14 +452,14 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | `0.141.0` | Single-node packaging plus independent topology authorization, governed handoff, and replay-safe dynamic admission | Implement every prior two-head control plus unified checkpoint/deletion settlement, indivisible checkpoint bundle, mixed-leg archive replay and conservative checkpoint-history failure |
 | `0.142.0` | Split deployments with separated topology/authorization services and exact topology-issued catalog placement owners | Preserve checkpoint/deletion trigger, ordered bundle, attempt-checkpoint, settled/remaining-leg and prior two-head provenance across RPC; peers cannot choose a different checkpoint replay path |
 | `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
-| `0.143.0` | HA atomic work, catalog rollout/topology/authorization, governed execution, and cancellation recovery | Fail over the complete recovery tuple and atomic checkpoint bundles; no missing/defaulted member, duplicate decrement, reopened/pre-settled leg or stage drift |
+| `0.143.0` | HA atomic work, catalog rollout/topology/authorization, governed execution, cancellation recovery, and fenced migration/import jobs | Fail over the complete recovery tuple, atomic checkpoint bundles and one durable migration/import job lineage; no missing/defaulted member, duplicate decrement, counter/profile reset, duplicate reservation, reopened/pre-settled leg, exhausted-state promotion, cleanup starvation or stage drift |
 | `0.144.0` | Authoritative-region placement and residency through topology successors | `VIT-INV-060` regional move/fence/tombstone, predecessor-bound rollout block, cross-region identity/lease collision, receipt/start split, floor owner split, omitted regional parent |
-| `0.145.0` | Backup, restore, and disaster recovery | Round-trip/omit every tuple member; quarantine singular backups regardless of claimed meaning/evidence and refusal retries; restore every checkpoint-to-deletion boundary without reopened/pre-settled legs; retain unverifiable charges |
-| `0.146.0` | Provider-governance, topology anti-replay, rotation/drift, credential-TCB, and cancellation contention certification | Retain prior stress; add checkpoint response/duplicate/publication races, mixed archives, trigger substitution and unavailable checkpoint history; prove one decrement or conservative charge |
-| `0.147.0` | Final profile-governance, topology replay-lifecycle, bearer-memory, executor, and supply-chain hardening | Audit one journal/archive namespace, atomic checkpoint bundle, mixed-trigger exact identity and conservative checkpoint failure plus every prior two-head control |
-| `0.148.0` | Compatibility freeze for provider authority, rollout recovery, and topology replay lifecycle | Freeze the complete two-head recovery codec and explicitly exclude every singular-head schema/migration alongside checkpoint/deletion trigger, bundle, linkage, settled/remaining-leg and mixed-archive formats |
-| `0.149.0` | Release candidate and external pentest remediation | Retain every prior attack; add singular local/archive/both/empty claims, fabricated complete evidence/chains, refusal-response retry mutation, omitted/defaulted fields, split path/bundle, duplicate retry, alias/substitution, between-stage drift and unavailable-proof release; retest fixes |
-| `0.150.0` | Final production-readiness candidate | Existing lifecycle/TCB/recovery evidence plus active evaluator/reevaluation, evidence-backed resolution, independent remediation/manual limitation |
+| `0.145.0` | Backup, restore, and disaster recovery | Round-trip/omit every tuple member; quarantine singular backups regardless of claimed meaning/evidence and refusal retries; restore every checkpoint-to-deletion boundary without reopened/pre-settled legs; retain unverifiable charges. Restore migration/import jobs before resuming work and prove rollback, cursor recreation, failover and retries cannot erase cumulative work, reservations, typed exhaustion or cleanup obligations |
+| `0.146.0` | Provider-governance, topology anti-replay, rotation/drift, credential-TCB, cancellation and migration/import contention certification | Retain prior stress; add checkpoint response/duplicate/publication races, mixed archives, trigger substitution and unavailable checkpoint history; prove one decrement or conservative charge. Sustain millions of small records, crypto/proof amplification, staged-disk/stream/checkpoint/retry/failover and concurrent-job pressure while the one frozen migration/import budget remains bounded and Recovery cleanup progresses |
+| `0.147.0` | Final profile-governance, topology replay-lifecycle, bearer-memory, executor, migration/import-budget, and supply-chain hardening | Audit one journal/archive namespace, atomic checkpoint bundle, mixed-trigger exact identity and conservative checkpoint failure plus every prior two-head control; audit job ownership, operation-key uniqueness, profile/counter/precharge/reservation conservation, fenced promotion, typed exhaustion, digest-only quarantine and protected cleanup |
+| `0.148.0` | Compatibility freeze for provider authority, rollout recovery, topology replay lifecycle, and migration/import budgets | Freeze the complete two-head recovery codec and explicitly exclude every singular-head schema/migration alongside checkpoint/deletion trigger, bundle, linkage, settled/remaining-leg and mixed-archive formats. Freeze budget operation-key/profile/counter/precharge/reservation/cursor/result/exhaustion/cleanup semantics; unknown, omitted or weaker fields fail closed |
+| `0.149.0` | Release candidate and external pentest remediation | Retain every prior attack; add singular local/archive/both/empty claims, fabricated complete evidence/chains, refusal-response retry mutation, omitted/defaulted fields, split path/bundle, duplicate retry, alias/substitution, between-stage drift and unavailable-proof release. Pentest budget-reset, undercharge, amplification, staging, retry/failover, duplicate-job, exhausted-promotion, quarantine-growth and Recovery-starvation paths; retest fixes |
+| `0.150.0` | Final production-readiness candidate | Existing lifecycle/TCB/recovery evidence plus active evaluator/reevaluation, evidence-backed resolution, independent remediation/manual limitation, and clean install/upgrade/restore/failover continuity for every migration/import job, budget, reservation, cursor, result, exhaustion and cleanup record |
 
 ## `1.0.0` — Serious Production Release
 
@@ -491,6 +491,18 @@ are independently evidenced as production-ready.
   two-head format. The compatibility matrix explicitly lists every singular-
   head representation as unsupported; restore, migration and import quarantine
   it before authority mutation and make no conversion or genesis claim.
+- Every production migration/import is one destination-local, durable and
+  fenced `MigrationImportWorkBudgetV1` job. Its immutable operation key and
+  frozen profile bind source, destination, schema/manifest, principal,
+  workload/boot continuity and lease/fence; cumulative byte/item/crypto/proof/
+  temporary-storage/staged-row/open-stream/checkpoint/retry/elapsed/cleanup and
+  concurrent-job counters never reset across crash, retry, reconnect, failover,
+  restore or adapter-native retry. Pessimistic precharge and admission-time
+  staging/verification/result/cleanup reservations keep work bounded. Typed
+  exhaustion leaves the source unchanged and destination unready, permits only
+  digest/metadata quarantine, and finishes through protected non-borrowable
+  Recovery capacity. Only an explicitly authorized, predecessor-bound successor
+  profile can increase limits.
 - Immutable versioned provider execution profiles bind every transmitted
   operation to its exact claim, tenant/provider/account/action/request/
   destination and scoped opaque secret handle. Executors hold no master-key
@@ -691,7 +703,14 @@ are independently evidenced as production-ready.
   pass.
 - Backup restoration, event integrity, projection/search rebuild, workflow
   continuation, disaster recovery, migration, rollback, load, soak, chaos,
-  accessibility, localization, and secure-default tests pass.
+  accessibility, localization, and secure-default tests pass. Migration/import
+  tests attack millions of small records, decoded/crypto/proof amplification,
+  temporary disk, staged rows, streams, cursor/checkpoint churn, response loss,
+  reconnects, native retries, failover/restore, duplicate jobs, changed
+  manifests and concurrent tenants/deployments. They prove counters and
+  reservations survive every boundary, exhaustion prevents promotion and source
+  mutation, quarantine remains digest-only, and Recovery cleanup converges
+  within its reserved bound.
 - Reproducible signed artifacts, checksums, SBOM, provenance, license report,
   and exact source/tool inputs are complete.
 
