@@ -627,6 +627,34 @@ result/replay-row or no-write audit link; it never removes replay-critical
 state.
 
 Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityLedgerV1`
+and versioned reservation set. Creation atomically locks replay head ->
+key/attempt -> attempt-capacity -> profile/fence/domain rows, rechecks head/
+profile, reserves original active/terminal/terminalization/checkpoint/cleanup/
+deletion buckets, inserts the one nonterminal attempt and commits all-or-none.
+Identical joins persist no waiter and allocate no row, budget or reservation;
+polling/connection resources remain separately bounded.
+
+Every transition uses that lock order. Success rechecks Active, key/digest,
+owner/boot, lease/fence/CAS, deadline, cumulative budget, authoritative head
+and profile/fence/domain authority before co-committing success, replay/result,
+domain/audit/outbox and active-to-terminal transfer. No-write terminalization
+atomically performs the same original-bucket transfer. Profile/policy changes,
+migration and restore cannot recompute existing quantities.
+
+Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementId`
+and
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementV1`
+with one immutable record per reservation set and leg, binding original bucket/
+quantity, trigger identity, transaction and result digest. Checkpoint
+commit settles terminalization/checkpoint-backlog work but retains envelope
+row/byte and cleanup/deletion reservations. Physical envelope deletion settles
+those remaining legs exactly once; checkpoint occupancy remains in the archive
+ledger. Duplicate/reordered/unknown responses replay or reconcile the stable
+settlement result and cannot decrement twice.
+
+Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 and
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
@@ -1185,6 +1213,13 @@ eligibility. Cleanup requires a committed predecessor-linked attempt checkpoint
 and removes only the envelope after terminal meaning/capacity counters remain
 recoverable. It cannot erase replay-critical state or turn an irreversible
 terminal into a fresh attempt.
+Freeze separate retention/settlement legs: checkpoint commit may settle
+terminalization and checkpoint-backlog work but cannot release a still-present
+terminal envelope or its cleanup/deletion reservation. Physical envelope
+deletion settles those remaining original legs; checkpoint occupancy stays
+charged to the checkpoint/archive lifecycle. Privacy deletion cannot collapse
+these legs or remove their stable settlement record before the replay-retention
+contract permits it.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
 evidence custody, false equivalence between local proof/provider attestation/
@@ -1278,6 +1313,11 @@ owner workload/boot/continuity, lease generation, fencing token, CAS, capacity
 reservations/backlogs and terminal checkpoint/link state. Failover/takeover
 must advance the fence and retain counters/deadline; two owners, stale-owner
 progress, no-write-terminal reversal and cleanup without complete linkage deny.
+Also preserve every reservation-set ID, original profile/lane/class/principal
+bucket and quantity, current balance/transfer, settlement ID/leg/trigger/result
+record and lock-order version. Recovery reconciles unknown commits by stable
+settlement identity; it never replays a decrement speculatively or derives an
+old bucket from the current capacity profile.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/

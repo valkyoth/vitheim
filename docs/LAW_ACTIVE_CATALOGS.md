@@ -558,6 +558,22 @@ gated cleanup uses
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCheckpointV1`
 to bind terminal state/counters/fence/capacity release and removes no replay-
 critical state.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityLedgerV1`
+atomically locks head -> key/attempt -> capacity -> profile/fence/domain,
+reserves the original active/terminal/terminalization/checkpoint/cleanup/
+deletion set, inserts the attempt and commits all-or-none. Identical joins have
+no durable waiter and allocate no row, budget or reservation. Every transition
+uses this order; success rechecks attempt ownership/fence/deadline/budget/head/
+authority before co-committing replay/action state and active-to-terminal
+transfer. No-write terminalization transfers atomically, and profile changes
+cannot recompute original buckets.
+Stable
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementId`
+and immutable `...CapacitySettlementV1` settle each reservation-set leg once.
+Checkpoint settles terminalization/backlog but not the envelope; physical
+deletion settles envelope/cleanup/deletion. Duplicate/reordered/unknown
+outcomes reconcile without double decrement, while checkpoint/archive
+occupancy stays charged.
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 bounds bytes/entries/chunks/depth/decode/work/jobs and a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
@@ -612,6 +628,7 @@ lineage and activation high-watermarks, authorization sparse replay archive/
 checkpoint/key/cursor state, cumulative replay-head/publication high-watermarks,
 canonical replay-key uniqueness state, logical-attempt restart counters/
 deadline, attempt lifecycle/owner/lease/fence/capacity/checkpoint state,
+reservation-set/settlement-leg high-watermarks and original-bucket balances,
 fairness-scheduler state, and verified derived coverage. Late exact retry
 returns the archived result, changed retry returns historical conflict, and
 unavailable proof returns typed historical-state-unavailable without

@@ -198,6 +198,12 @@ takeover exclusive without resetting state. Success co-commits with the action;
 no-write terminals are irreversible. Bounded rows/bytes/queues/principals/
 takeover/terminalization/cleanup capacity is reserved before admission, and
 checkpoint-gated cleanup cannot remove replay-critical state.
+An attempt-capacity ledger creates the attempt and complete original
+reservation set atomically under head→key/attempt→capacity→domain lock order.
+Joins allocate nothing. Success rechecks owner/fence/deadline/budget/head and
+co-commits the action plus active-to-terminal transfer. Checkpoint and physical
+envelope deletion settle separate original reservation legs exactly once under
+stable settlement identities; profile changes never recompute buckets.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again

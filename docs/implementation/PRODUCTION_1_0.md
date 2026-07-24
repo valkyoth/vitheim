@@ -234,6 +234,25 @@ non-borrowable, and
 binds terminal state/final counters/fence/capacity release plus result/replay-
 row or no-write audit link before envelope-only cleanup. Replay-critical state
 cannot be removed.
+Production freezes
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacityLedgerV1`.
+Creation locks head -> key/attempt -> capacity -> profile/fence/domain, reserves
+the complete original active/terminal/terminalization/checkpoint/cleanup/
+deletion set, inserts the attempt and commits all-or-none. Identical joins
+persist no waiter and allocate no row, budget or reservation. Every transition
+uses the same order. Success rechecks Active, key/digest, owner/boot, lease/
+fence/CAS, deadline, cumulative budget, authoritative head and domain authority
+before co-committing replay/action state and active-to-terminal transfer; no-
+write terminalization transfers atomically. Profile/policy/migration/restore
+changes never recompute original buckets.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionAttemptCapacitySettlementId`
+and immutable `...CapacitySettlementV1` settle each reservation-set leg exactly
+once while binding original bucket/quantity and trigger/result identity.
+Checkpoint commit settles
+terminalization/checkpoint backlog but retains envelope/cleanup/deletion
+capacity; physical deletion settles those remaining legs. Duplicate/reordered/
+unknown outcomes replay or reconcile the stable result, and checkpoint
+occupancy remains charged to its archive ledger.
 `PendingDrain` atomically installs a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` binding
 predecessor/successor generations and digests, canonically derived affected
@@ -282,7 +301,9 @@ Recovery reconstructs
 activation-selected active profile, optional pending successor/exact fence,
 lineage-generation and activation-sequence high-watermarks, cumulative replay-
 head/publication high-watermarks, attempt lifecycle/owner/lease/fence/CAS,
-counters/deadline, reservations/backlogs and terminal checkpoint/links, and
+counters/deadline, reservations/backlogs, terminal checkpoint/links,
+reservation-set original buckets/balances/transfers and settlement leg/result
+records, and
 verified derived lane/aggregate coverage. Multiple active profiles, pending/fence
 half-state, contradictory activation records, unreachable predecessors, or
 direct fence install/clear invocation deny. Activation gaps, forks, reorder,
@@ -432,6 +453,10 @@ duplicate joins, changed-digest conflicts, owner crash at every attempt state,
 stale-owner/takeover races, cancellation/disconnect, terminal-to-success
 attempts, premature/missing-link cleanup, every attempt-capacity bound and
 Recovery progress during Normal attempt floods,
+crashes around every capacity lock/reservation/insert/transition/bundle/
+transfer/checkpoint/delete/settlement/response boundary, duplicate/reordered/
+unknown settlements, join allocation attempts, expired/stale-owner execution
+races and capacity-profile changes across every lifecycle stage,
 continuous traffic during shrink, admission/fence-install and final-admission/
 activation races, rejection-versus-admission, installed-fence crash/failover/
 restore, stale-worker bypass, and competing successors, lineage change before a receipt

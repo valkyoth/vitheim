@@ -23,6 +23,9 @@ All notable Vitheim changes are documented here. The format follows
 - Added a closed, fenced replay-admission-attempt lifecycle with duplicate
   joining, crash takeover, irreversible no-write terminals, checkpoint-gated
   cleanup, and bounded attempt/terminalization capacity.
+- Defined the transactional attempt-capacity ledger, global lock order,
+  original reservation buckets, atomic active-to-terminal transfers, and
+  exact-once checkpoint/deletion settlement.
 - Selected bounded authenticated sparse archives for exact drain-action replay
   after compaction, with canonical result recovery, historical conflicts,
   resource-bounded proof verification, and fail-closed unavailable history.
