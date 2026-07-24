@@ -232,6 +232,15 @@ expect_realization_failure "a missing topology authorization admission budget"
 sed -i 's/`TopologyAuthorizationAttemptRateBudgetV1`, //' "$realizations"
 expect_realization_failure "a missing topology authorization attempt-rate budget"
 
+sed -i 's/`TopologyAuthorizationRequestSequence`, //' "$realizations"
+expect_realization_failure "a missing topology authorization request sequence"
+
+sed -i 's/`TopologyAuthorizationRequestReplayCheckpointV1`, //' "$realizations"
+expect_realization_failure "a missing denied-request replay checkpoint"
+
+sed -i 's/`RejectLateCompactedTopologyAuthorizationRequest`, //' "$realizations"
+expect_realization_failure "a missing late compacted request rejection"
+
 sed -i 's/`TopologyAuthorizationOriginalQuotaClaimSetV1`, //' "$realizations"
 expect_realization_failure "a missing topology authorization original quota claim set"
 
@@ -240,6 +249,9 @@ expect_realization_failure "a missing receipt-specific revocation intent"
 
 sed -i 's/`TopologyAuthorizationConsumerTerminalReceiptV1`, //' "$realizations"
 expect_realization_failure "a missing consumer terminal receipt"
+
+sed -i 's/`TopologyAuthorizationConsumerTerminalOutcomeV1`, //' "$realizations"
+expect_realization_failure "a missing closed consumer terminal outcome"
 
 sed -i 's/`AuthorizationIssuanceSequence`, //' "$realizations"
 expect_realization_failure "a missing topology authorization issuance sequence"

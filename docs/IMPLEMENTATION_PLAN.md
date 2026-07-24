@@ -125,14 +125,20 @@ sparse across unseen receipts unless time and range proof make dense compaction
 eligible. Separate non-borrowable normal/recovery/break-glass counters preserve
 one bounded emergency repair path without relaxing any security gate. Every
 canonical denial consumes bounded attempt rate but creates no authority.
-Successful issuance atomically commits both rate charges, layered deployment/
+Every first-seen canonical request gets a stable request sequence and exact
+retry outcome. Denials checkpoint before hot deletion, remain historical after
+compaction, fail closed when proof is unavailable, and have bounded rows/bytes/
+archive/verification work. Successful issuance atomically commits both rate charges, layered deployment/
 issuer/caller quota reservation, the original quota claim set, sequence,
 receipt, idempotent result and outbox. Lineage revocation or supersession blocks
 new grants but does not free a live receipt. Settlement decrements the original
 counters all-or-none only after authenticated consumer terminal proof or
 conservative expiry. Immediate individual revocation is a separate VIT-INV-060
 consumer-fence/tombstone protocol whose terminal receipt the issuer cannot
-forge; timeout and a lost revocation response retain capacity.
+forge. Its complete canonical envelope uses a closed outcome state machine,
+sender-only consumer authentication and verify-only issuer credentials;
+`Reconciling` cannot release. Timeout and a lost revocation response retain
+capacity.
 Bounded predecessor-linked range chunks cap bytes, entries, decode allocation,
 verification work and proof depth before dense eligibility. VIT-INV-060 only consumes that
 profile-discriminated receipt and local workload proof with its CAS—there is no

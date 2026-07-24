@@ -82,8 +82,13 @@ break-glass counters with a non-borrowable emergency reserve and independent
 ceilings; this protects repair availability without bypassing authorization,
 deadline, or replay proof.
 Every authenticated canonical presentation charges a separate bounded attempt
-rate, including typed denials, without creating authority. Successful issuance
-also atomically validates admission/outstanding deployment/issuer/canonical-
+rate, including typed denials, without creating authority. Every first-seen
+canonical request gets a monotonic request sequence; exact retries reuse its
+charge/outcome. Denials remain exactly replayable for a bounded horizon and
+then permanently historical through a checkpoint-before-delete authenticated
+request commitment and bounded archive proof. Missing proof fails closed rather
+than reevaluating the request under new policy. Successful issuance also
+atomically validates admission/outstanding deployment/issuer/canonical-
 caller budgets, preserves the original quota keys/epochs/class/reserve source,
 reserves capacity, allocates the sequence, and persists the canonical receipt,
 idempotent result and outbox. Issuer-lineage revocation or supersession blocks
@@ -93,7 +98,11 @@ authenticated consumption, conservative expiry, consumer-authenticated
 definitely-not-committed/permanently-unresolved state, or a receipt-specific
 VIT-INV-060 revocation tombstone and authenticated consumer terminal receipt.
 Immediate receipt revocation is therefore a distinct consumer-fenced protocol;
-the issuer cannot manufacture its own release evidence. Timeout never releases.
+the issuer cannot manufacture its own release evidence. Its canonical envelope
+binds consumer ownership/fence, authorization/receipt/intent, closed outcome,
+result/tombstone/time, sender/key/profile, message and outbox sequences.
+`Reconciling` is non-terminal; consumer sender credentials are never available
+to the issuer. Timeout never releases.
 Large issuer ranges use resource-bounded authenticated chunks with explicit
 byte/entry/decode/work/depth limits and a durable verification cursor, so
 compaction proof cannot become a CPU or allocation denial of service.

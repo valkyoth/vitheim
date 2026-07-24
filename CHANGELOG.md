@@ -8,6 +8,12 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added monotonic topology-authorization request sequencing and bounded
+  checkpoint-before-delete denial history, so compacted denials cannot become
+  fresh after policy changes or grow without explicit storage/proof limits.
+- Froze the complete consumer terminal-receipt envelope, closed outcome state
+  machine, result/outbox sequences, and sender-only consumer/verify-only issuer
+  authentication; `Reconciling` is explicitly non-terminal.
 - Corrected topology-authorization reservation accounting so lineage revocation
   or supersession cannot free a still-consumable receipt; added original quota-
   claim settlement, separate attempt/admission/outstanding ledgers, and a

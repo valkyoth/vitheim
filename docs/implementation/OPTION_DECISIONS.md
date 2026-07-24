@@ -138,6 +138,21 @@ join/leave/move/replace/service-role/split/merge successor is two minutes, and
 break-glass is the lesser of its mutation-class maximum and sixty seconds.
 These are protocol ceilings, not configurable defaults; changing one requires
 a new law generation and security review.
+
+Freeze `TopologyAuthorizationConsumerTerminalReceiptV1` as a canonical
+authenticated envelope binding deployment; VIT-INV-060 partition/generation/
+fence; authorization ID and issuance sequence; receipt digest; canonical
+optional revocation-intent digest; closed terminal outcome; consumer result
+version/sequence and tombstone digest; applicable deadline/trusted-time
+evidence; sender identity; signing/MAC key epoch and authentication profile;
+stable message/idempotency ID; and transactional outbox sequence. The only
+outcomes are `RevokedBeforeConsumption`, `AlreadyConsumed`, `Expired`,
+`DefinitelyNotCommitted`, `PermanentlyUnresolved`, and non-terminal
+`Reconciling`; the last never settles capacity. Select sender-only
+authentication for VIT-INV-060 and verify-only credentials for VIT-INV-061.
+Unknown outcomes, omitted/defaulted fields, conflicting replay, sequence
+rollback, noncanonical optional intent, or issuer-generated evidence retain the
+reservation.
 The consumer maintains its own last trusted lower-bound/profile-epoch/
 continuity ratchet and permanent expired-receipt tombstone. It may enter the
 topology CAS only when a fresh conservative `[earliest, latest]` interval,
@@ -323,7 +338,27 @@ per-deployment/issuer/class/principal state charged by every authenticated
 canonical presentation, including denied and replayed requests; it creates no
 reservation or authority and is never refunded. A successful issuance charges
 both attempt and admission rate, while a denial may persist only bounded
-attempt-rate and typed idempotent denial state.
+attempt-rate, request-sequence/caller/class binding, and typed idempotent denial
+state.
+Freeze a monotonic `TopologyAuthorizationRequestSequence` for every first-seen
+authenticated canonical request. Exact retries reuse the sequence, attempt
+charge and original outcome; only successful allocation additionally receives
+`AuthorizationIssuanceSequence`. Select
+`TopologyAuthorizationRequestReplayCheckpointV1` as an authenticated
+predecessor-linked commitment over request sequence/range, request ID/digest,
+principal/authority, class, attempt charge, typed outcome, successful issuance
+link, archive profile, counters, algorithm/schema and key epoch. Checkpoint
+precedes denied-row deletion. Within the frozen horizon replay is exact; after
+compaction a request remains historical and returns archived denial or
+`TopologyAuthorizationHistoricalStateUnavailable`, never current-policy
+reevaluation. Freeze denial rows/bytes, checkpoint backlog, archive proof bytes/
+depth/work, decode allocation, jobs and compaction-latency ceilings with fail-
+closed saturation.
+Use this dedicated VIT-INV-061 lifecycle rather than the generic VIT-INV-015
+command receipt: topology request identity, attempt charging, denial outcome,
+and the optional link to authorization issuance must share one local owner and
+transaction. Reusing a cross-domain receipt abstraction must not obscure those
+fields or imply a second owner.
 Freeze the canonical principal/authority budget key and anti-identity-splitting
 rule; every caller sub-limit is additive to, never a replacement for, deployment
 and issuer/class ceilings. Freeze a closed `Normal`/`Recovery`/`BreakGlass` budget
@@ -483,8 +518,14 @@ conservative expiry, exactly once under duplicate/reorder and consumption/
 revocation/expiry races. Change policy/principal keys and budget epochs before
 settlement and prove the original claim set releases all-or-none. Prove every
 authenticated canonical denial consumes bounded attempt-rate capacity but no
-admission token/reservation/sequence/receipt/outbox; successful issuance
-consumes both attempt and admission capacity.
+admission token/reservation/authorization issuance sequence/receipt/outbox;
+it does atomically receive one request sequence/caller/class/outcome binding.
+Crash request checkpoint-before-delete, retry after policy change, lose archive
+proof, and saturate every denial storage/proof-work limit; the request never
+becomes fresh. Omit/substitute every consumer terminal-envelope field, outcome,
+result/outbox sequence and auth role; unknown outcomes, `Reconciling`, issuer-
+signed evidence and rollback retain capacity. Successful issuance consumes both
+attempt and admission capacity.
 Exhaust one caller sub-limit while other callers and aggregate ceilings remain
 correct. Fuzz declared lengths/counts, decode allocation, work, depth, chunk
 chain/root bindings and verification-cursor recovery without unbounded CPU or
@@ -710,6 +751,13 @@ old replay outside the guaranteed exact-outcome horizon from exact outcome to
 `TopologyAuthorizationHistoricalStateUnavailable`, but never to absent,
 reissuable, or consumable. Sensitive fields and plaintext receipt payloads are
 forbidden in the long-lived accumulator/checkpoint.
+Apply that rule independently to the denial-request checkpoint. Retain only
+domain-separated request sequence, keyed request/principal/class digests,
+attempt-charge and typed-outcome commitments, successful issuance link, archive
+profile and predecessor/key evidence needed to prevent reevaluation. Plaintext
+request, principal, approval and denial details remain in horizon-bound hot/
+archive records under their own disposition. Erasure can yield typed
+historical-state-unavailable, never a fresh request.
 Apply the same minimization to issuer range manifests: retain only sequence,
 receipt digest, deadline/uncertainty, lineage/fence/key and predecessor evidence
 needed for consumer gap proof; principal, approval, incident and receipt
@@ -799,13 +847,19 @@ extend it; an expiry-versus-topology-CAS race must produce either one proven
 pre-expiry commit or a non-retryable reconciliation state.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 principal attempt/admission/outstanding counters, immutable original quota claim
-sets/budget epochs/reserve sources, receipt-revocation intents, consumer
-terminal receipts, outstanding reservation/terminal settlement ledger, bounded
-range roots/chunks/resource profile, and durable verification cursor as one
-failover domain per issuer. RPO may conservatively retain a reservation or
-repeat bounded verification, but cannot expose a partial issuance, release from
+sets/budget epochs/reserve sources, request and authorization sequences,
+denial-request and issuance checkpoint chains/high-watermarks/backlogs/proof-
+work budgets, receipt-revocation intents, canonical consumer terminal receipt
+envelopes/outcomes/result/outbox sequences/authentication roles, outstanding
+reservation/terminal settlement ledger, bounded range roots/chunks/resource
+profile, and durable verification cursor as one failover domain per issuer.
+RPO may conservatively retain a reservation, denial, or repeat bounded
+verification, but cannot expose a partial issuance, renumber/recharge a retry,
+reevaluate compacted denial history, treat missing denial proof as new, release from
 timeout or lineage revocation/supersession, accept issuer-created terminal
-evidence, recompute current bucket keys, decrement twice, merge attempt/
+evidence, accept `Reconciling`, lose/default a terminal-envelope field, roll
+back result/outbox sequence or authentication role, recompute current bucket
+keys, decrement twice, merge attempt/
 admission semantics, widen a caller/class ceiling, or reset byte/entry/decode/
 work/depth accounting. Cross-region range evidence remains non-authoritative
 until the complete authenticated chain verifies.

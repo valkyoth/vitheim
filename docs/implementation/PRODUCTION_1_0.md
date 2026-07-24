@@ -64,13 +64,24 @@ canonical presentation, including typed denials; a minimum exact-outcome
 horizon; bounded hot rows/bytes and compaction backlog;
 authenticated predecessor-linked checkpoints, set/archive commitments, key
 rotation and covered-through high-watermarks; and growth/proof-availability
-alerts. On success, the attempt-rate charge, admission-rate and outstanding
+alerts. Every first-seen authenticated canonical request receives monotonic
+`TopologyAuthorizationRequestSequence`; exact retries reuse its attempt charge
+and outcome. Only successful allocation also receives
+`AuthorizationIssuanceSequence` and links both. Denied history remains exact
+through the hot horizon, then historical through authenticated predecessor-
+linked `TopologyAuthorizationRequestReplayCheckpointV1` and bounded archive
+proof. Checkpoint precedes deletion; missing proof returns typed historical-
+state-unavailable and never permits policy/approval reevaluation. Denial rows/
+bytes, backlog, proof bytes/depth/work, decode allocation, jobs and compaction
+latency are bounded. On success, the request sequence, attempt-rate charge,
+admission-rate and outstanding
 counter/reserve mutations, `TopologyAuthorizationOriginalQuotaClaimSetV1`,
 outstanding reservation, sequence allocation, canonical receipt, request-
 digest-bound idempotent result, and issuance outbox are one VIT-INV-061 local
-atomic transaction. A denial commits at most its bounded attempt-rate charge
-and typed idempotent denial, creates no authority or reservation, and does not
-refund the attempt. Each reservation preserves its original deployment,
+atomic transaction. A denial commits its request sequence, bounded attempt-rate
+charge, caller/class binding and typed idempotent denial, creates no authority,
+authorization issuance sequence, or reservation, and does not refund the
+attempt. Each reservation preserves its original deployment,
 issuer/class, canonical principal-or-authority key, budget epochs, class,
 reserve source, units, and quantities. Settlement atomically releases those
 original counters rather than recomputed current-policy keys.
@@ -84,7 +95,17 @@ supersession blocks new grants but does not invalidate a live receipt and never
 releases its reservation. Immediate individual revocation uses
 `TopologyAuthorizationReceiptRevocationIntentV1`; VIT-INV-060 serializes the
 consumer-side fence/tombstone against consumption and emits the terminal
-receipt, which VIT-INV-061 cannot forge. Timeout, cancellation, disconnect,
+receipt, which VIT-INV-061 cannot forge. The canonical terminal envelope binds
+deployment, consumer owner partition/generation/fence, authorization ID/
+issuance sequence/receipt and optional revocation-intent digests, closed
+outcome, consumer result version/sequence, tombstone and deadline/time evidence,
+sender/key/profile, message/idempotency ID and outbox sequence. Only
+`RevokedBeforeConsumption`, `AlreadyConsumed`, `Expired`,
+`DefinitelyNotCommitted`, and `PermanentlyUnresolved` are terminal;
+`Reconciling` never releases. VIT-INV-060 has sender-only authentication and
+VIT-INV-061 verify-only credentials; omitted/defaulted fields, unknown outcome,
+conflicting replay, rollback, or issuer-created evidence retain capacity.
+Timeout, cancellation, disconnect,
 unknown response, retry, replay, lineage change, compaction, or a lost
 revocation result never releases capacity; duplicate/reordered settlement
 cannot partially decrement or decrement twice. Compaction commits the
@@ -119,7 +140,9 @@ atomic issuance crashes, canonical denial versus successful-admission rate
 accounting, lineage change before a receipt deadline, issuer-forged consumer
 evidence, policy/principal/budget-epoch changes before original-claim
 settlement, timeout/partial/duplicate settlement, caller-sub-limit
-monopolization, range-proof resource exhaustion, normal/break-glass saturation,
+monopolization, denial request-sequence/checkpoint/horizon/archive-loss/policy-
+change replay, terminal-envelope fields/outcomes/result/outbox sequences and
+sender-role isolation, range-proof resource exhaustion, normal/break-glass saturation,
 crash, failover, or restore.
 The production risk register explicitly accepts only the residual window
 created by issuance-time linearization: compromised credentials may retain an

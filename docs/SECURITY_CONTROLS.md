@@ -61,7 +61,8 @@ audit decision.
   where client timeouts never permit a later commit;
   bounded `TopologyAuthorizationReplayLifecycleV1` with a separate all-
   authenticated-canonical-attempt rate and successful-admission/outstanding
-  quotas, monotonic issuance sequence, exact replay horizon,
+  quotas, monotonic request sequence for every first-seen canonical request,
+  separate successful issuance sequence, exact replay horizon,
   authenticated checkpoint/archive commitments, checkpoint-before-delete
   compaction, fail-closed unavailable history, key/restore ratchets, and
   storage/backlog accounting and alerts;
@@ -79,6 +80,15 @@ audit decision.
   once only after consumer-authenticated consumption/definite absence/
   permanent-unresolved state, conservative expiry, or receipt-specific
   VIT-INV-060 fencing proven by an authenticated consumer terminal receipt;
+  bounded denial-request replay with exact retry identity/outcome, authenticated
+  predecessor-linked request checkpoint before deletion, historical late
+  requests, fail-closed missing proof, and explicit row/byte/backlog/archive/
+  decode/verification-work limits;
+  canonical `TopologyAuthorizationConsumerTerminalReceiptV1` binding consumer
+  owner/fence, authorization/receipt/intent, closed outcome, result/tombstone/
+  time, sender/key/profile, message and outbox sequences; only VIT-INV-060 has
+  sender credentials, VIT-INV-061 is verify-only, and `Reconciling` never
+  releases;
   resource-bounded issuer range roots/chunks with encoded-byte, entry, decode-
   allocation, verification-work, proof-depth and per-job chunk ceilings,
   resumable verification cursor, and fail-closed partial-chain handling;

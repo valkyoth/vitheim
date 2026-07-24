@@ -158,18 +158,22 @@ outstanding-authorization budgets before allocating a monotonic
 `TopologyAuthorizationAttemptRateBudgetV1` charges every authenticated
 canonical presentation, including typed denials, without creating authority or
 an outstanding reservation. Unauthenticated or noncanonical traffic remains
-bounded by ingress/parser controls. Every applicable layer must admit. Its closed
+bounded by ingress/parser controls. Every first-seen canonical request receives
+one monotonic `TopologyAuthorizationRequestSequence`; exact retries reuse its
+attempt charge and result, and only success additionally receives
+`AuthorizationIssuanceSequence`. Every applicable layer must admit. Its closed
 `Normal`/`Recovery`/`BreakGlass` classes use separate counters and rate
 ceilings, a small non-borrowable per-deployment break-glass reserve, and an
 independent recovery-processing lane. Saturation in one caller or class conveys
 no authority or capacity from another and never widens an aggregate limit.
-On success, attempt charge, admission-rate and outstanding counter/reserve
+On success, request-sequence allocation, attempt charge, admission-rate and outstanding counter/reserve
 mutations, `TopologyAuthorizationOriginalQuotaClaimSetV1`,
 `TopologyAuthorizationOutstandingReservation`, sequence allocation, canonical
 receipt, request-digest-bound idempotent result, and issuance outbox are one
-VIT-INV-061 local transaction. A denial may commit only its bounded attempt
-charge and typed idempotent denial; it creates no admission token, reservation,
-sequence, receipt, or outbox, and the attempt charge is not refunded.
+VIT-INV-061 local transaction. A denial commits its request sequence, bounded
+attempt charge, caller/class binding and typed idempotent denial; it creates no
+admission token, reservation, authorization issuance sequence, receipt, or
+outbox, and the attempt charge is not refunded.
 The original claim set preserves deployment, issuer/class, canonical principal-
 or-authority key, budget epochs, class, reserve source, units, and quantities.
 The reservation releases exactly once by atomically decrementing those original
@@ -183,7 +187,16 @@ revocation tombstone proven by
 `TopologyAuthorizationConsumerTerminalReceiptV1`. Immediate individual
 revocation uses `TopologyAuthorizationReceiptRevocationIntentV1`; VIT-INV-060
 serializes its fence/tombstone against consumption and emits the terminal
-receipt. VIT-INV-061 cannot forge that evidence. Timeouts, cancellation,
+receipt. Its canonical envelope binds deployment, consumer partition/
+generation/fence, authorization/issuance/receipt/optional-intent, closed
+outcome, result version/sequence, tombstone/time evidence, sender/key/profile,
+message/idempotency ID and outbox sequence. Outcomes are exactly
+`RevokedBeforeConsumption`, `AlreadyConsumed`, `Expired`,
+`DefinitelyNotCommitted`, `PermanentlyUnresolved`, and non-terminal
+`Reconciling`. VIT-INV-060 has sender-only authentication and VIT-INV-061
+verify-only credentials; `Reconciling`, open/unknown outcomes, incomplete
+envelopes, conflicting replay or sequence rollback retain capacity.
+VIT-INV-061 cannot forge that evidence. Timeouts, cancellation,
 unknown response, retry, replay, lineage change, compaction, and a lost
 revocation result do not release capacity, and duplicate/reordered settlement
 cannot decrement twice or partially. Break-
@@ -196,6 +209,18 @@ horizon; authenticated predecessor-linked
 and key rotation; bounded compaction/backpressure; and typed
 `TopologyAuthorizationHistoricalStateUnavailable` when historical proof is
 unavailable.
+
+VIT-INV-061 separately checkpoints complete authenticated request history with
+`TopologyAuthorizationRequestReplayCheckpointV1`: request sequence/range,
+request ID/digest, principal/authority, class, attempt charge, typed outcome,
+successful issuance link, predecessor/archive/schema/algorithm/key/counter
+evidence. Exact denials remain hot for the frozen horizon. The authenticated
+request checkpoint commits before denied-row deletion and advances its covered-
+through high-watermark only across complete evidence. A late compacted denial
+is historical; archive loss yields
+`TopologyAuthorizationHistoricalStateUnavailable`, never reevaluation.
+Request rows/bytes, checkpoint backlog, archive proof bytes/depth/work, decode
+allocation, jobs and compaction latency are bounded with fail-closed saturation.
 
 VIT-INV-061 owns complete allocation history and may atomically advance its
 dense issued-through high-watermark before deletion. VIT-INV-060 observes a
@@ -231,21 +256,27 @@ break-glass starvation of revocation/recovery also reject. Split issuance
 state, canonical denial allocating authority or avoiding attempt rate,
 successful admission avoiding either rate, timeout/lineage-change/current-key
 release, issuer-forged consumer evidence, missing original claim data, partial
-or duplicate counter decrement, caller monopolization, oversized allocation,
+or duplicate counter decrement, caller monopolization, request sequence reuse/
+recharge/renumber, denial delete-before-checkpoint, late denial reevaluation,
+denial archive loss interpreted as new, unbounded denial proof work, terminal
+envelope omission/open outcome/`Reconciling` release/result-sequence rollback/
+sender-role collision, oversized allocation,
 verification-work/depth exhaustion, partial/cyclic chunk chains, and cursor
 rollback also reject. Their M/F
 schedules race issuance, terminal settlement and old replay against
 checkpoint installation, hot deletion, coalescing, key rotation, crash,
 failover, restore, migration and import; they exhaust normal capacity for one
 valid reserved break-glass operation and reverse-flood break-glass. VIT-RCV-
-060/061 merge the greatest sequence, checkpoint digest, issuer dense watermark/
+060/061 merge the greatest request and issuance sequences, denial-request and
+issuance checkpoint digests/high-watermarks, issuer dense watermark/
 range manifests, consumer sparse set/eligible-through proof, attempt/admission/
 outstanding counters, budget-class counters/reserve, principal/authority sub-
 limits, original quota-claim sets/epochs/reserve sources, outstanding
-reservations/settlements, receipt-revocation intents and consumer terminal
-receipts, bounded range chunks/verification cursor, key epoch and compaction
-cursor, preserve every uncovered hot result, and fail closed for an unprovable
-historical range.
+reservations/settlements, receipt-revocation intents and canonical consumer
+terminal envelope/outcome/result/outbox-sequence/authentication state, bounded
+range chunks/verification cursor, key epoch and denial/issuance compaction
+cursors/proof budgets, preserve every uncovered hot result, and fail closed for
+an unprovable historical range or request.
 
 ## Lifecycle And Supersession Registry
 

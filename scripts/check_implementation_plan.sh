@@ -356,6 +356,15 @@ require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationAttemptRateBudgetV1`' \
     'separate bounded topology authorization attempt rate'
 require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationRequestSequence`' \
+    'bounded idempotent topology authorization request identity'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationRequestReplayCheckpointV1`' \
+    'authenticated denied-request replay checkpoint'
+require_text docs/implementation/PHASE_C.md \
+    'high-watermark is historical:' \
+    'late compacted denial remains historical'
+require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationOriginalQuotaClaimSetV1`' \
     'preserved original topology quota claim'
 require_text docs/implementation/PHASE_C.md \
@@ -364,6 +373,12 @@ require_text docs/implementation/PHASE_C.md \
 require_text docs/implementation/PHASE_C.md \
     '`TopologyAuthorizationConsumerTerminalReceiptV1`' \
     'consumer-authenticated topology terminal evidence'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationConsumerTerminalOutcomeV1`' \
+    'closed consumer terminal outcome schema'
+require_text docs/implementation/PHASE_C.md \
+    '`Reconciling` is explicitly non-terminal and never releases capacity.' \
+    'reconciling topology outcome cannot settle capacity'
 require_text docs/implementation/PHASE_C.md \
     '`OutstandingReserved` to `OutstandingReleased`' \
     'exact-once topology reservation settlement'
