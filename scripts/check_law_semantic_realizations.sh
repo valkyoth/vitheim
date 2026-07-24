@@ -141,7 +141,7 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
             done
             ;;
         VIT-LAW-008@g02)
-            for symbol in Uninitialized TopologyMutationAuthorizationReceipt AuthorizeTopologyMutation InitializeTopologyAuthorityHandoff DormantInitialized CommitTopologyAuthorityHandoff Committed CurrentPlacementTopologyReceiptV1 FencePlacementGeneration CatalogTopologyChanged TopologyMutationAuthorizationBlocked; do
+            for symbol in Uninitialized TopologyMutationAuthorizationState IssueTopologyMutationAuthorization TopologyMutationAuthorizationIssuanceUnknown TopologyMutationAuthorizationReceipt AuthorizeTopologyMutation ConsumeTopologyMutationAuthorization InitializeTopologyAuthorityHandoff DormantInitialized CommitTopologyAuthorityHandoff Committed CurrentPlacementTopologyReceiptV1 FencePlacementGeneration CatalogTopologyChanged TopologyMutationAuthorizationBlocked; do
                 case "$transitions" in
                     *"\`$symbol\`"*) ;;
                     *) fail "$semantic omits topology rollout symbol $symbol" ;;
@@ -149,7 +149,7 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
             done
             ;;
         VIT-LAW-007@g02)
-            for symbol in ReadCurrentPlacementTopologyForAdmission RecheckTopologyAtReadiness RecheckTopologyAtDispatch RecheckTopologyAtTransmissionStart TopologyGenerationUnavailable TopologyPlacementMismatch; do
+            for symbol in ChallengeCurrentPlacementTopology AdvanceTopologyReceiptSequence LastObservedTopologyGeneration LastObservedTopologyReceiptSequence ReadCurrentPlacementTopologyForAdmission RecheckTopologyAtReadiness RecheckTopologyAtDispatch RecheckTopologyAtTransmissionStart RejectStaleTopologyReceipt TopologyGenerationUnavailable TopologyPlacementMismatch; do
                 case "$transitions" in
                     *"\`$symbol\`"*) ;;
                     *) fail "$semantic omits dynamic admission symbol $symbol" ;;

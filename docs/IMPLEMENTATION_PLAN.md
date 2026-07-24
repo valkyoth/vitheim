@@ -96,8 +96,14 @@ independent `VIT-INV-060` current. The two topology sources are never co-
 authoritative. `VIT-LAW-007@g02` then makes current topology an independent
 local admission, readiness, dispatch, and transmission-start gate even after
 rollout completion or missing fence delivery. Every topology handoff/mutation
-also atomically consumes policy/approval authorization distinct from workload
-authentication. Rollout consumes topology receipts and cannot create
+uses a short immutable authorization independently issued by `VIT-INV-061`
+after current authority/quorum validation; changes before issuance deny and
+changes after issuance block new grants while the exact grant remains usable
+only until fixed `commit_before`. VIT-INV-060 only consumes that
+profile-discriminated receipt and local workload proof with its CAS—there is no
+cross-owner atomic transaction. Challenge/sequence/expiry-bound topology
+receipts and local observation ratchets prevent signed-old replay. Rollout
+consumes topology receipts and cannot create
 membership or fences. `0.140.1` selects a hardware-attested identity or an
 orchestrator-attested lease with a closed action-authority scope: bounded
 reusable freshness for readiness, authenticated owner protocol for control/

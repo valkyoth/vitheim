@@ -194,7 +194,7 @@ The action-authority scope is closed and is frozen at `0.140.1`:
 | --- | --- | --- |
 | Readiness observation | reusable, bounded `OnlineWorkloadFreshnessProofV1`; no action claim | read-only; stale, unavailable, fenced, or topology-mismatched proof returns unready and cannot create authority |
 | Positive local prepare, convergence, or admission receipt creation/commit | single-use `WorkloadLeaseActionClaim` | consume the claim, commit the receipt/admission and its typed result in one local owner transaction |
-| Topology handoff initialization/commit or topology successor mutation | single-use `WorkloadLeaseActionClaim` plus `TopologyMutationAuthorizationReceipt` | consume both authorities and commit the expected-version topology CAS, tombstones, and fence outbox in one VIT-INV-060 transaction |
+| Topology handoff initialization/commit or topology successor mutation | independently issued `TopologyMutationAuthorizationReceipt`; orchestrator profile additionally requires a single-use `WorkloadLeaseActionClaim`, while hardware profile requires canonical-none claim fields and current hardware proof | consume the receipt, profile-applicable workload proof, expected-version topology CAS, local tombstones, and fence outbox in one VIT-INV-060 transaction |
 | Dispatch | single-use `WorkloadLeaseActionClaim` | consume with the exact dispatch bundle and outcome in the dispatch owner transaction |
 | Transmission start | single-use `WorkloadLeaseActionClaim` | consume with the unique start claim immediately before provider I/O |
 | Global catalog proposal/activation/succession/revocation/distrust | no workload action claim for owner-to-owner delivery | authenticated control receipt and durable outbox/inbox protocol; an operator command separately requires current policy/session/approval authority |
@@ -203,7 +203,8 @@ The action-authority scope is closed and is frozen at `0.140.1`:
 
 `OnlineWorkloadFreshnessProofV1` binds the workload key, issuer, audience,
 lease generation/fence, boot/continuity ID, placement generation, current
-topology receipt, catalog epoch/digest, revocation epoch, issued-at, expiry, and
+topology challenge/receipt sequence and topology generation, catalog
+epoch/digest, revocation epoch, issued-at, expiry, maximum uncertainty, and
 the maximum age frozen at `0.140.1`. It is reusable only for read-only
 readiness observations within that bound. It cannot authorize receipt
 creation, admission, topology mutation, dispatch, or transmission start.
@@ -317,22 +318,43 @@ The ceremony is:
 6. only `Committed` may issue `CurrentPlacementTopologyReceiptV1` or accept
    dynamic commands.
 
-Every initialization, handoff commit, and dynamic topology successor also
-requires a unique `TopologyMutationAuthorizationReceipt`. The policy/approval
-authority issues it only after validating and binding the initiating principal,
-interactive session or delegation lineage, current principal/session/
-delegation/role-assignment/policy epochs, required change/incident/emergency
-record, approval quorum and separation-of-duty evidence, expected topology
-generation, canonical successor-manifest digest, action-claim ID/digest and
-expiry, and authorization expiry. Break-glass use additionally binds a reason,
-narrow scope, duration, incident linkage, named accountable owner, and required
-retrospective review deadline. The topology owner revalidates every bound epoch
-and atomically consumes the authorization receipt, its replay tombstone, the
-orchestrator action claim when applicable, the successor CAS, and fence outbox.
-Identity or attestation alone never authorizes topology mutation. Receipt
-absence, reuse, self-approval, stale policy/identity epoch, manifest
-substitution, or expired break-glass authority returns
-`TopologyMutationAuthorizationBlocked`.
+Every initialization, handoff commit, and dynamic topology successor requires a
+unique `TopologyMutationAuthorizationReceipt` issued only by independent
+`VIT-INV-061 TopologyMutationAuthorizationState`. The topology owner cannot
+share its issuer authority or credential and can never mint its own receipt.
+One authoritative lineage owner holds proposal, quorum/separation decision,
+issuance uniqueness, revocation, supersession, expiry, and issuance
+high-watermarks. A stable request ID makes issuance idempotent; a lost response
+becomes `TopologyMutationAuthorizationIssuanceUnknown` and is reconciled with
+that owner rather than reissued.
+
+Issuance is the authorization linearization point. In its own transaction,
+VIT-INV-061 validates the initiating principal, interactive session or
+delegation lineage, current principal/session/delegation/role-assignment/policy
+epochs, change/incident/emergency record, approval quorum and separation of
+duties. It then issues one immutable, narrowly scoped, short-lived receipt
+binding authorization lineage/generation, mutation ID, expected topology
+generation, canonical successor-manifest digest, issued-at, fixed
+`commit_before`, issuer identity/fence/key epoch, and authentication profile.
+If any contributing authority changes before issuance, issuance fails. A
+change, revocation, or supersession after issuance prevents new receipts but
+does not retroactively invalidate that exact already issued grant before
+`commit_before`; expiry always blocks it. This bounded irrevocable-grant model
+is explicit and does not pretend that external epoch reads and the topology CAS
+share one transaction.
+
+The receipt is profile-discriminated. `OrchestratorAttestedFencedLease` requires
+the exact action-claim ID/digest/expiry fields and canonical-none hardware-proof
+fields. `HardwareAttestedKey` requires current hardware proof fields and
+canonical-none action-claim fields. Mixed, missing, or inapplicable field
+combinations reject. Break-glass issuance additionally comes from an
+independently recoverable authority and binds reason, narrow scope, duration,
+incident linkage, accountable owner, and retrospective-review deadline.
+VIT-INV-060 authenticates the receipt and atomically consumes it, its local
+replay tombstone, the applicable workload proof, successor CAS, and fence
+outbox. Receipt absence, issuer/topology-owner collision, reuse, self-approval,
+stale-at-issuance evidence, manifest substitution, mixed profile fields, or
+expiry returns `TopologyMutationAuthorizationBlocked`.
 
 The handoff state is the exclusive source selector: before commit the compiled
 singleton is authoritative and the row is inert; after commit `VIT-INV-060` is
@@ -343,6 +365,12 @@ convergence/initialization/handoff boundaries and never infers `Committed`.
 The rollout process manager reads an authenticated
 `CurrentPlacementTopologyReceiptV1`, seals its exact topology generation and
 manifest digest into the rollout manifest, and later revalidates that receipt.
+Every receipt binds the verifier request nonce/challenge, monotonic
+topology-receipt sequence, topology and placement generations, canonical
+manifest digest, member tombstone/fence state, topology-owner identity and
+fencing token, issued-at, expiry, maximum time uncertainty, signer/key epoch,
+and exact `CatalogReceiptAuthenticationV1` profile. An authenticated old
+receipt is not current authority.
 It cannot issue topology generations or placement fences. A topology change
 blocks the affected rollout and requires a new rollout manifest; a rollout
 message cannot make topology current. Search, discovery, orchestration APIs,
@@ -352,7 +380,14 @@ After handoff commit, `VIT-LAW-007@g02` independently re-reads a current
 authenticated topology receipt during local admission, readiness, dispatch,
 and transmission start. The receipt's deployment, service role, enforcement
 partition, placement identity/generation, manifest digest, and topology
-generation must match the local owner. Unavailability or mismatch blocks even
+generation must match the local owner. Each local admission owner durably
+ratchets `LastObservedTopologyGeneration` and
+`LastObservedTopologyReceiptSequence`; lower, repeated under a new challenge,
+wrong-nonce, expired, excessive-uncertainty, or signer/fence-stale receipts
+fail even when cryptographically valid. Readiness binds those fields into
+`OnlineWorkloadFreshnessProofV1`; dispatch and transmission start obtain a
+fresh response or operate only inside the maximum currentness window frozen at
+`0.140.1`. Unavailability or mismatch blocks even
 when the latest catalog rollout is already complete and an old placement's
 fence message was suppressed; no new catalog rollout is needed to make that
 stale placement unsafe.
@@ -596,8 +631,10 @@ under `VIT-LAW-008@g01`; only then does locally admitted generation 2 authorize
 initialization, exact verification, and the one-time handoff CAS. Epoch 12 also
 activates `VIT-LAW-007@g02`, so current topology independently gates normal
 admission, readiness, dispatch, and transmission start after commit. Each
-topology mutation requires policy/approval authorization distinct from
-workload authentication.
+topology mutation requires a bounded VIT-INV-061-issued authorization distinct
+from workload authentication; VIT-INV-060 cannot issue it and consumes it
+without claiming external-epoch atomicity. Challenge/sequence/expiry receipt
+fields and local observation ratchets make “current topology” replay safe.
 `0.142.0–0.143.0` prove split service
 and HA behavior. `0.145.0` proves backup/restore cannot clone a local
 owner, invent a receipt, resurrect topology, or roll back catalog/validity

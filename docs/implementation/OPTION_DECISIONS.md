@@ -59,8 +59,10 @@ one single-active lease/fence, simultaneous-use detection, and an online,
 single-use `WorkloadLeaseActionClaim` for each operation in the closed
 action-authority scope matrix. Freeze readiness separately as read-only use of
 bounded reusable `OnlineWorkloadFreshnessProofV1`, including its maximum age,
-topology/catalog/identity/fence bindings, and fail-closed unavailable/stale
-result. Freeze that local positive receipt/admission creation, topology
+topology challenge/receipt sequence/generation, catalog/identity/fence,
+issued-at/expiry/uncertainty/signer bindings, local last-observed ratchets, and
+fail-closed unavailable/stale/replayed result. Freeze dispatch/start fresh-
+response or maximum-currentness-window rules. Freeze that local positive receipt/admission creation, topology
 mutation, dispatch, and transmission start consume claims; authenticated
 global/rollout owner-to-owner protocol and revocation/distrust/fence
 application do not. Freeze its maximum claim lifetime,
@@ -103,12 +105,22 @@ without generation/export/rotation authority. Freeze authenticated
 predecessor, expected/resulting global versions, outcome, distrust/revocation,
 sender/key epochs, idempotency, and replay tombstones.
 Freeze `TopologyMutationAuthorizationReceipt` separately from workload
-authentication. Bind initiating principal/session/delegation lineage, current
-principal/session/delegation/role/policy epochs, change/incident/emergency
-record, approval quorum/separation, expected topology generation, canonical
-successor digest, action claim/expiry, authorization expiry, and bounded
-break-glass reason/scope/duration/owner/retrospective review. Require atomic
-receipt/claim/tombstone/topology-CAS/fence-outbox consumption.
+authentication and select independent `VIT-INV-061` as its sole issuer;
+VIT-INV-060 may only authenticate and consume. Freeze stable authorization
+lineage/generation, mutation/manifest uniqueness, approval/quorum/SoD
+ownership, idempotent issuance/typed unknown response, revocation/supersession/
+expiry, independent break-glass recovery, restore high-watermarks/tombstones,
+and issuer/topology credential separation. Select issuance-time linearization:
+the issuer validates current principal/session/delegation/role/policy epochs and
+change/incident/emergency/approval evidence, then creates one narrow immutable
+grant with fixed `commit_before`; changes before issuance deny, while changes
+after issuance block new grants but cannot retroactively revoke that exact
+receipt before expiry. Freeze profile discrimination: orchestrator receipt
+requires action-claim fields and canonical-none hardware fields; hardware
+receipt requires current hardware proof and canonical-none claim fields.
+VIT-INV-060 atomically consumes only the authenticated receipt, applicable
+workload proof, local tombstones, topology CAS, and fence outbox; no distributed
+transaction or commit-time external-epoch atomicity is claimed.
 Freeze the credential-operation mechanism used by every
 `ProviderExecutionProfile`: external KMS/secret services retain master keys;
 upstream and general executor components receive only opaque tenant/provider/

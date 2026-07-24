@@ -44,9 +44,14 @@ audit decision.
   successor topology/placement manifests; one active rollout generation with
   irreversible authorization receipt/outbox pinning and permanent
   pre-authorization loser supersession; staged exact-singleton topology handoff
-  only after generation-2 admission and with exclusive authority; policy/
-  approval-bound topology mutation authorization atomically consumed with the
-  successor, action claim, tombstones, and fence outbox; current-topology
+  only after generation-2 admission and with exclusive authority; one
+  independent topology-authorization issuer with issuance-time authority/
+  quorum checks, short immutable grants, idempotent unknown-response recovery,
+  revocation/supersession of future issuance, independent break-glass recovery,
+  and restore high-watermarks; profile-discriminated authorization locally
+  consumed with the successor, applicable workload proof, tombstones, and fence
+  outbox without cross-owner atomicity; challenge/sequence/expiry topology
+  receipts and monotonic local observation ratchets; current-topology
   normal-path admission/readiness/dispatch/start checks independent of rollout
   and fence delivery; closed single-use-claim, bounded readiness-freshness, and
   owner-protocol scope; co-transactional local consumption/outcome with

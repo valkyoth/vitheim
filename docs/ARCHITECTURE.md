@@ -51,11 +51,17 @@ fences, and tombstones; rollout generation 2 consumes its authenticated
 snapshot only after epoch 12 activates/converges under generation 1 and
 every required local owner has admitted generation 2, authorizing
 initialization, exact equality verification, and the dormant-singleton handoff
-CAS. Each handoff or successor atomically consumes distinct policy/approval
-authorization and selected-profile workload action authority. Once committed,
+CAS. Independent `VIT-INV-061` is the only topology-authorization issuer:
+issuance validates current authority and creates one narrow immutable grant
+with fixed expiry; VIT-INV-060 only consumes the authenticated,
+profile-discriminated receipt and applicable workload proof in its local CAS.
+Later authority changes block new grants rather than pretending to atomically
+revoke the already issued bounded grant across transaction domains. Once committed,
 `VIT-LAW-007@g02` makes current topology a normal admission, readiness,
 dispatch, and transmission-start dependency, so a stale placement is blocked
-even after rollout completion or loss of its fence message; static and dynamic sources
+even after rollout completion or loss of its fence message. Nonce/sequence/
+expiry-bound topology receipts plus local last-observed generation/sequence
+ratchets reject signed-old and restored-old evidence; static and dynamic sources
 are never co-authoritative. Each catalog lineage has one monotonic active rollout
 generation, irreversible `ActivationAuthorized` state with atomic receipt/
 outbox and pinning, and permanent pre-authorization `Superseded` losers.

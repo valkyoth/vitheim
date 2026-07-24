@@ -123,10 +123,16 @@ bounded readiness-freshness proof fields, and tombstone-first replay outcome
 without allowing a historical result to become current authority. The future
 `VIT-CAP-060` contract separately persists
 the closed uninitialized/dormant/committed handoff selector and exact completed-
-rollout/artifact/manifest/local-admission bindings, topology-mutation
-authorization receipt/tombstone, bound identity/session/delegation/role/policy
-epochs, approval/break-glass evidence, selected-profile claim, and atomic
-successor/fence outbox; no adapter may infer
+rollout/artifact/manifest/local-admission bindings, independently issued
+topology-authorization receipt and local consumption tombstone,
+profile-discriminated workload proof, atomic successor/fence outbox, monotonic
+topology-receipt sequence, and receipt challenge/generation/manifest/tombstone/
+owner-fence/time/uncertainty/signer fields. VIT-CAP-058 persists the greatest
+locally observed topology generation and receipt sequence. Future
+`VIT-CAP-061` separately persists authorization lineage/generation,
+proposal/quorum/SoD, issuance request/unique mutation/manifest, immutable
+`commit_before`, revocation/supersession, typed unknown response, independent
+break-glass authority, and restore high-watermarks/tombstones. No adapter may infer
 initialization or completion. Negotiate the planning
 superset separately from immutable active payload/envelope support. Exact
 `CompiledCatalog` and `SignedCatalog` capabilities report independently; no
@@ -292,8 +298,12 @@ prepare/activate/converge/finalize/revoke boundary;
 claim crash-after-commit, expiry-before-response, revocation-before-replay,
 restore-before-tombstone reconciliation, digest-mismatched historical replay,
 freshness-proof misuse as mutation authority, missing/replayed/self-approved/
-stale-policy/manifest-substituted topology authorization, and split
-authorization/claim/topology-CAS/fence-outbox fixtures;
+stale-at-issuance/manifest-substituted topology authorization, issuer/topology
+collision, issue-versus-epoch-change/revoke ordering, post-issuance bounded
+grant behavior, lost issuance response, circular break-glass, mixed hardware/
+claim profile fields, signed-old/wrong-challenge/lower-sequence topology
+receipt, proxy/cache replay, clock rollback, topology-owner failover, older
+restore, and split authorization/claim/topology-CAS/fence-outbox fixtures;
 and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,

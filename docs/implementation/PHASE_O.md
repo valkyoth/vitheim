@@ -12,6 +12,7 @@ resolves its proposal in the same commit.
 ## `0.141.0` — Single-Node Production Packaging
 Status: planned.
 <!-- vitheim-invariant VIT-INV-060 0.141.0 -->
+<!-- vitheim-invariant VIT-INV-061 0.141.0 -->
 
 Setup: supported OS/arch, packages/images, users/paths,
 permissions, secure defaults, upgrades, compiled
@@ -65,17 +66,31 @@ changes the row to `Committed`. Only then is `VIT-INV-060` the authority and
 allowed to issue `CurrentPlacementTopologyReceiptV1` or accept dynamic
 commands; the compiled singleton becomes provenance only. At every boundary
 exactly one source is authoritative, and recovery never infers `Committed`.
-Initialization, commit, and each successor require a current
-`TopologyMutationAuthorizationReceipt` binding principal, session/delegation,
-principal/session/delegation/role/policy epochs, change/incident/emergency
-record, approval and separation-of-duty evidence, expected topology generation,
-successor digest, action claim and expiry, plus bounded break-glass and
-retrospective-review evidence where applicable. Consume the receipt, replay
-tombstone, selected-profile action claim, topology CAS, and fence outbox in one
-transaction. After commit, local admission, readiness, dispatch, and
-transmission start independently re-read a current topology receipt and reject
-placement mismatch even after the latest rollout completed or fence delivery
-was lost.
+Initialization, commit, and each successor require a receipt from independent
+`VIT-INV-061 TopologyMutationAuthorizationState`; VIT-INV-060 cannot mint it.
+The authorization owner has one stable lineage/generation, unique mutation/
+manifest binding, quorum/SoD decision, revocation/supersession/expiry,
+idempotent issuance with typed unknown-response recovery, independent
+break-glass recovery authority, and backup/restore high-watermarks/tombstones.
+Issuance is the linearization point: the owner validates current principal,
+session/delegation, role, policy, change/incident/emergency and approval state,
+then issues one immutable narrow grant with fixed `commit_before`. A change
+before issuance denies; a change after issuance blocks new grants but cannot
+retroactively revoke the exact issued grant before its short fixed expiry.
+VIT-INV-060 consumes the authenticated receipt, local replay tombstone,
+profile-applicable workload proof, topology CAS, and fence outbox in one local
+transaction—never a distributed epoch/CAS transaction. The receipt discriminates
+the orchestrator profile's required action claim from hardware profile's
+canonical-none claim and required hardware proof.
+
+After commit, every `CurrentPlacementTopologyReceiptV1` carries a verifier
+challenge, monotonic receipt sequence, topology/placement generation, manifest/
+tombstone/fence state, owner identity/fence, issued-at/expiry/uncertainty, and
+signer/key/authentication profile. Local owners ratchet last-observed topology
+generation and receipt sequence. Admission, readiness, dispatch, and
+transmission start reject signed-old, replayed, wrong-challenge, expired, or
+lower-ratchet receipts even after the latest rollout completed or fence
+delivery was lost.
 Persist monotonic topology/member placement generations, predecessor fences,
 permanent tombstones, and the transactional fence outbox. The rollout root
 remains a reader and cannot issue membership, generation, or fence authority.
@@ -84,10 +99,10 @@ Goal: hardened repeatable single-node install.
 Deliverables: signed packages, startup floor-profile compatibility gate,
 active-evaluator binary/corpus/language compatibility gate, governed higher-
 floor and key-set migration/drain tooling, topology bootstrap/handoff tool,
-`VIT-CAP-060` uninitialized/dormant/committed persistence, ordering, and
-exclusivity probe, generation-2 law realizations/catalog artifact,
-topology-authorization schema/policy/approval adapter, normal-path topology
-recheck probe, and runbook.
+`VIT-CAP-060` uninitialized/dormant/committed persistence, ordering, receipt-
+sequence, and exclusivity probe; `VIT-CAP-061` independent authorization
+lineage/issuance/recovery adapter; generation-2 law realizations/catalog
+artifact; challenge/currentness ratchet probe; and runbook.
 Verification: clean
 install, permissions, rootless/non-root, secrets, restart, rolling upgrade,
 downgrade/rollback to a lower compiled floor, lower-default release, conflicting
@@ -118,12 +133,17 @@ restore, discovery treated as authority, and restore pass. The normal-path
 suite replaces a placement after the latest catalog rollout, suppresses the
 predecessor fence, and proves current-topology unavailability or mismatch
 independently blocks admission, readiness, dispatch, and start. It also rejects
-missing/replayed/self-approved/stale-policy/manifest-substituted topology
-authorizations and crash-tests atomic receipt/claim/CAS consumption. Exit
-criteria: the
+missing/replayed/self-approved/stale-at-issuance/manifest-substituted topology
+authorizations; issuer/topology-owner collision; issue-versus-policy/session/
+revocation ordering; lost issuance response; circular break-glass; mixed
+hardware/action-claim fields; signed-old/proxy/cache replay; wrong challenge;
+lower receipt sequence; clock rollback; topology-owner failover; older restore;
+and crash-tests local receipt/workload-proof/CAS consumption without claiming
+cross-owner atomicity. Exit criteria: the
 documented profile is operable securely and no package change can start below or
 lower the durable admitted platform-floor ratchet; no split deployment starts
-without exactly one current `VIT-INV-060` owner and verified
+without exactly one current `VIT-INV-060` owner, one independent
+`VIT-INV-061` issuer, and verified
 `VIT-LAW-007@g02` and `VIT-LAW-008@g02`. `v0.141.0 implementation stop
 reached. Run pentest for this exact commit.`
 
@@ -136,7 +156,12 @@ owner key to every law-enforcing API/worker/ingest/executor placement:
 deployment, region, service role, enforcement partition, and placement
 generation only through typed `VIT-INV-060` join/leave/move/replace/service-
 role/split/merge successor commands. Discovery and orchestrator observations
-cannot allocate a key. Bind its selected `WorkloadIdentityProofProfileV1`,
+cannot allocate a key. Route topology-authorization proposal/approval/issuance
+to VIT-INV-061 and topology consumption to VIT-INV-060 over an authenticated
+idempotent protocol with typed issuance uncertainty; the two services cannot
+share an authority credential. Bind each topology receipt to a fresh challenge,
+monotonic sequence, bounded currentness window, owner fence, and local
+observation ratchets. Bind its selected `WorkloadIdentityProofProfileV1`,
 issuer/subject/audience, key thumbprint/attestation, issuance/expiry/revocation,
 single-active lease/fence where required, and online single-use
 `WorkloadLeaseActionClaim` only for operations in the frozen scope matrix under
@@ -309,7 +334,12 @@ uniqueness; atomic authorization-state/receipt/outbox commit and pinning;
 authenticated authorization and global-result receipts with replay tombstones;
 activate-versus-revoke serialization by the global CAS; external action-claim
 issuance plus co-transactional local consumption/uncertainty; and deadline
-reconciliation. `VIT-INV-060`, not rollout or discovery, owns current
+reconciliation. Independently exercise VIT-INV-061 issue-versus-epoch-change/
+revoke/supersede ordering, immutable bounded-grant semantics, lost issuance
+response, issuer failover/restore, and separation from VIT-INV-060. Exercise
+topology receipt challenge/sequence/expiry ratchets through owner failover,
+proxy replay, clock rollback, and restored older state. `VIT-INV-060`, not
+rollout or discovery, owns current
 topology generation, placement successors, fences, and tombstones. The selected
 baseline is `AllRequired`. Any approved
 quorum must durably fence every unprepared placement first. Join, leave,
@@ -513,9 +543,13 @@ manifest/outbox/inbox/receipts/deadlines, including irreversible authorization
 state, canonical authorization receipt/outbox atomicity, pinned active
 generation, authenticated global-result receipt, both replay tombstones,
 external action-claim issuer sequence plus local consumption tombstone/outcome/
-uncertainty, and sender/verifier MAC policy; and the independent `VIT-INV-060` handoff
+uncertainty, and sender/verifier MAC policy; the independent `VIT-INV-060` handoff
 selector/topology owner/current generation/canonical membership digest/member
-placement generations/fences/tombstones/fence outbox; the active catalog ID/epoch,
+placement generations/fences/tombstones/fence outbox/topology-receipt sequence;
+every VIT-INV-058 last-observed topology generation/receipt-sequence ratchet;
+and the independent VIT-INV-061 authorization lineage/generation, revocation/
+supersession, issuance request/receipt high-watermarks, unknown responses,
+tombstones, and break-glass recovery state; the active catalog ID/epoch,
 recomputed payload/envelope and actual
 predecessor digests, exact profile, activation floor, product/edition/
 compatibility scope, validity policy/times/maximum uncertainty, signer/key/

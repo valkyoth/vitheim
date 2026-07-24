@@ -21,7 +21,9 @@ logic, and concrete P/N/M/F tests. No unknown, prose-interpreted, or unresolved
 realization ships.
 The planning superset is absent from runtime authority. `VIT-INV-057` has one
 evidenced global owner; `VIT-INV-059` has one durable rollout-root owner;
-`VIT-INV-060` has one independent current topology-generation owner; every
+`VIT-INV-060` has one independent current topology-generation owner;
+`VIT-INV-061` has one separately credentialed topology-authorization issuer;
+every
 local `VIT-INV-058` is exactly one enforcement-partition placement generation
 with the selected attested/fenced workload proof, authenticated receipts,
 boot identity, binary/semantic digests, and fencing.
@@ -30,12 +32,22 @@ handoff: epoch-12 generation-1 activation/convergence and every local
 generation-2 admission precede `InitializeTopologyAuthorityHandoff`, exact
 equality verification, and commit. Evidence proves no early generation-2
 command and no boundary with dual or absent topology authority. The
-handoff and every successor have current policy/approval-bound
-`TopologyMutationAuthorizationReceipt` evidence atomically consumed with the
-selected-profile claim, topology CAS, tombstones, and fence outbox.
+handoff and every successor use a VIT-INV-061-issued immutable authorization
+whose issuance linearized current identity/session/delegation/role/policy/
+approval checks. Evidence proves changes before issuance deny; changes after
+issuance block new grants while an existing exact grant remains usable only
+until fixed `commit_before`; lost issuance response reconciles idempotently;
+break-glass authority recovers independently; and VIT-INV-060 cannot self-
+issue. The topology transaction locally consumes the profile-discriminated
+receipt, applicable workload proof, topology CAS, tombstones, and fence outbox
+without claiming external epoch atomicity.
 `VIT-LAW-007@g02` independently rejects unavailable or mismatched topology at
 local admission, readiness, dispatch, and start, including after rollout
-completion and suppressed predecessor-fence delivery. The orchestrator identity
+completion and suppressed predecessor-fence delivery. Its verifier challenge,
+monotonic receipt sequence, topology/placement generations, owner fence,
+expiry/uncertainty/signer fields, and local last-observed ratchets reject
+signed-old/proxy replay, clock rollback, topology-owner failover rollback, and
+older restore. The orchestrator identity
 profile uses bounded reusable `OnlineWorkloadFreshnessProofV1` only for
 readiness, single-use claims only for the frozen mutation scope, and
 authenticated owner protocols for control/safety withdrawal, with zero offline

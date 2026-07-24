@@ -202,6 +202,12 @@ expect_realization_failure "a missing topology-mutation authorization receipt"
 sed -i 's/`RecheckTopologyAtTransmissionStart`, //' "$realizations"
 expect_realization_failure "a missing dynamic topology start recheck"
 
+sed -i 's/`LastObservedTopologyReceiptSequence`, //' "$realizations"
+expect_realization_failure "a missing topology-receipt anti-replay ratchet"
+
+sed -i 's/`IssueTopologyMutationAuthorization`, //' "$realizations"
+expect_realization_failure "a missing independent topology authorization issuer"
+
 sed -i 's/, VIT-LST-001-g01-N//' "$realizations"
 expect_realization_failure "a missing negative semantic contract"
 

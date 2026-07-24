@@ -8,6 +8,15 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added independent `VIT-INV-061` topology-authorization issuance with
+  issuance-time current-authority checks, immutable bounded grants, idempotent
+  unknown-response recovery, independent break-glass recovery, and strict
+  separation from the topology owner.
+- Added challenge/sequence/generation/expiry-bound topology receipts and local
+  last-observed ratchets to reject signed-old, cache-replayed, failover-rolled-
+  back, or restored-old currentness evidence.
+- Made topology authorization receipts profile-discriminated: orchestrator
+  claims and hardware proof are mutually exclusive canonical variants.
 - Added `VIT-LAW-007@g02` so dynamic topology independently gates local
   admission, readiness, dispatch, and transmission start after handoff,
   including lost-fence stale-placement tests.
@@ -15,8 +24,8 @@ All notable Vitheim changes are documented here. The format follows
   freshness proof, and tombstone-first replay precedence that returns only
   historical outcomes after expiry or revocation.
 - Added policy- and approval-bound `TopologyMutationAuthorizationReceipt`
-  with atomic authorization/claim/topology-CAS/fence-outbox consumption and
-  break-glass review bindings.
+  with independent issuance, local receipt/profile-proof/topology-CAS/fence-
+  outbox consumption, and break-glass review bindings.
 - Moved topology initialization behind epoch-12 convergence and every local
   generation-2 admission, adding explicit `Uninitialized` state so no
   generation-2 transition executes before its semantic realization is active.
