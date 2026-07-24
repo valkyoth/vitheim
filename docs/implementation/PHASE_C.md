@@ -349,6 +349,37 @@ Normal stage-one commits, and break-glass saturation cannot block Recovery.
 Any adapter unable to prove both the partitions and aggregate ceiling refuses
 the protected VIT-CAP-061 profile.
 
+VIT-INV-061 owns one immutable
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileV1` lineage.
+Every profile binds stable ID, monotonic generation/epoch, canonical digest,
+predecessor, closed `Proposed`/`PendingDrain`/`Active`/`Superseded`/`Rejected`
+state, expected-version activation CAS, per-lane limits/reserves, aggregate
+ceilings, and authenticated
+`TopologyAuthorizationPresentationChargeLedgerProvisioningEvidenceV1`.
+No limit mutates in place and exactly one generation is active. The predecessor
+remains active while its successor is proposed or pending drain. A proposal
+may become pending drain or rejected; proposed or pending drain becomes active
+only in one local expected-version transaction that simultaneously supersedes
+the predecessor. Superseded and rejected are terminal, and no transition
+returns to proposal or active. A reduction of
+Recovery/BreakGlass capacity or change to aggregate ceilings requires current
+change-or-incident authorization, separated requestor/approver/activator roles
+and quorum. Activation first proves every lane's successor limits cover current
+usage, awaiting charges, terminalization reservations, checkpoint backlog,
+maintenance obligations and protected reserve. If not, the successor remains
+`PendingDrain` or is rejected; existing obligations cannot be cancelled,
+reclassified, or forced into another lane. Capacity never transfers between
+lanes, although a separately approved successor can assign future unencumbered
+capacity. Aggregate increases require adapter-authenticated physical disk, I/O
+and worker provisioning evidence rechecked at activation. Stale CAS,
+predecessor forks, old profile
+generations and downgrade writers deny.
+
+Recovery authenticates the lineage and selects the greatest profile generation
+and its exact digest before reconstructing usage, reservations, backlog and
+maintenance work. It never merges the greatest numeric limits: an older,
+larger profile cannot revive capacity removed by a newer active generation.
+
 For successful first-seen issuance, stage-two charge consumption, request-
 sequence allocation, request-rate charging, quota validation, every applicable
 admission counter/reserve mutation,
@@ -936,7 +967,17 @@ the rejected Normal request. Prove Recovery and BreakGlass still complete both
 protocol stages. Saturate BreakGlass independently and prove Recovery remains
 available. Exercise every lane at its boundary and prove the aggregate disk/
 worker ceiling remains bounded, lifecycle work never borrows another lane, and
-a backend without provable isolation refuses VIT-CAP-061. Drive every
+a backend without provable isolation refuses VIT-CAP-061. Race profile shrink
+against stage-one reservation, stage-two terminalization, checkpoint creation
+and compaction; interrupt activation before and after its CAS; fail over
+between generations; restore an older larger profile; present insufficient or
+forged physical-capacity evidence; and attempt to reassign Recovery capacity
+to Normal or BreakGlass. Prove unsafe shrink remains `PendingDrain` or rejects,
+the predecessor stays active until its atomic supersession, invalid or reversed
+state edges deny, the exact active generation/digest wins, every existing
+obligation remains in its original lane, old writers deny, and numeric maximum
+merging never occurs.
+Drive every
 permitted charge-disposition edge and reject undeclared edges, terminal-to-
 terminal substitution, terminal-to-awaiting rollback, timeout-derived
 abandonment, compaction before checkpoint, and compacted loss of the original
@@ -1000,7 +1041,8 @@ executor/pool profiles with a global ceiling, two-stage presentation charge
 rows/evidence/sequence/closed dispositions/result links/continuity/checkpoints/
 compaction and atomic saturation behavior, non-borrowable per-lane charge
 rows/bytes/awaiting/backlog/checkpoint/archive-I/O/compaction-worker
-reservations below aggregate disk/work ceilings, authenticated endpoint/
+reservations below aggregate disk/work ceilings, immutable capacity-profile
+lineage/activation/drain/provisioning-evidence rows, authenticated endpoint/
 audience/credential-profile presentation-lane mappings with generation/fence/
 revocation state, separate normal/recovery/break-glass counters and
 reserve, issuer range manifests, consumer sparse commitments, and eligible-
@@ -1518,7 +1560,8 @@ Preserve `TopologyAuthorizationRequestSequence`,
 lane mappings, sole VIT-INV-061 ownership/SoD activation, and their generations/
 fences/revocations, every presentation-charge ID/sequence/binding/disposition/
 continuity/checkpoint, per-lane lifecycle capacity/reservation/maintenance
-high-watermark and aggregate disk/work ceiling,
+high-watermark and aggregate disk/work ceiling, active capacity-profile ID/
+generation/digest/predecessor/state/provisioning evidence,
 layered deployment/issuer/principal presentation-rate/request-rate/admission/
 outstanding counters,
 immutable original quota claim sets/budget epochs/class/reserve sources,

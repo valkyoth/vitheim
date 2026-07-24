@@ -166,6 +166,16 @@ below aggregate disk/work ceilings. Stage one reserves its lane's later
 terminalization/checkpoint work. Normal saturation affects only Normal;
 break-glass saturation cannot block Recovery; an implementation unable to
 prove both properties refuses VIT-CAP-061.
+VIT-INV-061 implements the immutable
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileV1` lineage with
+stable ID, monotonic generation/epoch, canonical digest, predecessor, closed
+state, expected-version activation CAS, governed emergency/aggregate changes,
+drain-before-shrink checks, and authenticated physical provisioning evidence.
+Profiles never mutate in place. Current obligations never change lanes, an
+unsafe shrink remains `PendingDrain` or rejects, and aggregate increases cannot
+exceed proven disk/I/O/worker capacity. Recovery chooses the greatest
+authenticated generation and exact digest before reconstructing usage; it
+never revives an older larger numeric ceiling.
 `TopologyAuthorizationRequestRateBudgetV1` is charged exactly once for every
 first-seen canonical request ID/digest and is bound to its monotonic
 `TopologyAuthorizationRequestSequence`; exact retries charge presentation rate
@@ -296,6 +306,8 @@ profiles/global ceiling, two-stage presentation-charge evidence/continuity/
 checkpoint, closed irreversible dispositions/result links, atomic ledger-
 saturation behavior, per-lane ledger rows/bytes/awaiting/backlog and reserved
 checkpoint/archive/compaction capacity under aggregate disk/work ceilings,
+capacity-profile lineage/generation/digest/state/activation/drain and physical-
+provisioning evidence,
 separate authenticated-presentation and first-seen-request
 rate budgets, atomic
 issuance bundle, request and authorization sequences, denial-request and
@@ -506,7 +518,7 @@ lane/class enforcement, non-borrowable ingress resource routing, VIT-INV-061
 mapping ownership/SoD, two-stage charge evidence and mapping recheck, distinct
 closed disposition/result-link/checkpoint and ledger-saturation semantics,
 non-borrowable per-lane ledger/awaiting/backlog/I/O/worker capacity and
-aggregate ceilings,
+aggregate ceilings, capacity-profile generation/activation and drain state,
 presentation/request/admission/outstanding
 accounting, separate
 reconciliation-receipt routing and terminal-only settlement typing,
@@ -671,7 +683,10 @@ checkpoints and ledger saturation state; failover cannot refund or reuse an
 orphan, merge the stages, skip the current mapping recheck, change a terminal
 kind or compact before its checkpoint. It also cannot merge per-lane ledger or
 maintenance reservations: Normal or break-glass saturation must leave Recovery
-able to finish both stages below the aggregate disk/worker ceiling. Authenticate every
+able to finish both stages below the aggregate disk/worker ceiling. Failover
+also selects one greatest authenticated capacity-profile generation/digest;
+it cannot merge numeric ceilings, bypass pending drain, accept an old writer,
+or move an obligation between lanes. Authenticate every
 `TopologyAuthorizationConsumerTerminalReceiptV1` across the split-service
 boundary; preserve its complete envelope, closed outcome, result/outbox
 sequence and sender-only consumer role. Preserve reconciliation under its
@@ -904,7 +919,8 @@ mappings with sole-owner/SoD state and greatest generation/fence/revocation,
 stage-one charge evidence/closed irreversible dispositions/result links/
 continuity/checkpoint/ledger saturation and stage-two mapping-recheck semantics,
 per-lane ledger capacity/reservations/maintenance high-watermarks and aggregate
-disk/work ceilings,
+disk/work ceilings, capacity-profile lineage/generation/digest/state/
+activation/drain/provisioning evidence,
 authenticated-presentation-rate/first-seen-request-rate/successful-admission/
 outstanding budgets, issuance
 and request sequences, exact-horizon hot results, denial-request and issuance
@@ -1124,7 +1140,8 @@ derivation/rotation/revocation/restore/non-borrowing/class matching, two-stage
 charge evidence/closed disposition/result-link/orphan/continuity/mapping-TOCTOU
 and atomic ledger-saturation accounting, non-borrowable per-lane charge rows/
 bytes/awaiting/backlog/checkpoint/archive-I/O/compaction-worker capacity,
-lifecycle reservations and aggregate disk/work ceilings,
+lifecycle reservations and aggregate disk/work ceilings, capacity-profile
+activation/shrink/provisioning/failover/restore concurrency,
 authenticated-presentation rate/first-seen-request rate/
 successful-admission/outstanding/request-and-issuance-sequence/hot-row/denial-
 and-issuance-checkpoint/archive/
@@ -1368,6 +1385,7 @@ presentation-lane-owner-SoD-mapping-generation-fence-revocation/
 presentation-charge-ID-evidence-closed-disposition-result-link-continuity-
 checkpoint-ledger-saturation/
 per-lane-ledger-awaiting-backlog-checkpoint-archive-compaction-capacity/
+capacity-profile-lineage-generation-activation-drain-provisioning/
 presentation-rate/request-rate/admission-rate/outstanding-budget/original-quota-claim-set/
 request-sequence/authorization-issuance-sequence/exact-horizon/denial-request-
 checkpoint/issuance-checkpoint/predecessor/covered-through/set/archive/
@@ -1432,7 +1450,11 @@ row/byte/awaiting/backlog/checkpoint/archive-I/O/compaction-worker resource and
 prove Recovery and BreakGlass complete both stages, then saturate BreakGlass
 and prove Recovery remains available. Attack cross-lane borrowing during
 crash, RPC timeout, failover, restore and migration, and prove aggregate disk/
-work ceilings remain bounded.
+work ceilings remain bounded. Race governed shrink with reservation,
+terminalization and compaction; interrupt activation; forge provisioning
+evidence; restore an older larger generation; use downgrade writers; and try
+to reassign Recovery capacity. Prove the exact authenticated profile
+generation/digest, pending-drain obligations and original lane always win.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 

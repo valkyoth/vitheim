@@ -140,7 +140,14 @@ bytes, awaiting records, checkpoint backlog, checkpoint/archive I/O, and
 compaction workers into non-borrowable Normal/Recovery/BreakGlass capacity
 below aggregate disk/work ceilings. Stage-one admission reserves its own
 lane's terminalization and checkpoint work; Normal or break-glass saturation
-cannot block Recovery, and an incapable adapter refuses VIT-CAP-061. A once-per-
+cannot block Recovery, and an incapable adapter refuses VIT-CAP-061.
+An immutable VIT-INV-061-owned capacity-profile lineage controls those limits
+by stable ID, monotonic generation/epoch, canonical digest, predecessor and
+expected-version activation. Shrinks remain pending until current usage,
+awaiting charges, lifecycle reservations, backlog and protected reserves fit;
+capacity cannot move between lanes, increases require authenticated physical
+provisioning evidence, and restore selects the greatest authenticated profile
+generation rather than the largest numeric ceilings. A once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive

@@ -113,6 +113,18 @@ aggregate disk and work ceilings. Stage one reserves its own lane's later
 terminalization/checkpoint obligation. Normal saturation affects only Normal;
 break-glass saturation cannot block Recovery. A production adapter that cannot
 prove this refuses VIT-CAP-061 and cannot claim the protected profile.
+VIT-INV-061 owns an immutable versioned capacity-profile lineage. The active
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileV1` binds stable
+ID, monotonic generation/epoch, canonical digest, predecessor, expected-version
+activation, lane limits/reserves, aggregate ceilings, closed state, governance,
+and authenticated physical provisioning evidence. A shrink remains
+`PendingDrain` until all current usage, awaiting charges, lifecycle
+reservations, backlog, maintenance obligations, and protected reserves fit.
+No obligation is cancelled or moved between lanes; capacity never transfers
+between lanes. Emergency reductions and aggregate changes require separated
+approval, and increases require proven disk/I/O/worker capacity. Restore uses
+the greatest authenticated profile generation and exact digest, never the
+greatest numeric ceiling; stale generations and downgrade writers fail closed.
 Every first-seen authenticated canonical request receives monotonic
 `TopologyAuthorizationRequestSequence` bound to its request-rate charge. Exact
 retries charge presentation rate again but reuse the request charge, sequence,
@@ -213,7 +225,11 @@ recheck, charge-ledger saturation before debit, complete closed-disposition
 transition/irreversibility/checkpoint-compaction proof, stalled and saturated
 Normal ledger/awaiting/backlog/I/O/workers while both emergency lanes finish
 both stages, saturated BreakGlass while Recovery remains available, aggregate
-disk/worker bounds and cross-lane non-borrowing, lineage change before a receipt
+disk/worker bounds and cross-lane non-borrowing, shrink races against stage one,
+stage two and compaction, interrupted activation, generation-skew failover,
+older-larger-profile restore, insufficient provisioning evidence, downgrade
+writer rejection and attempts to assign Recovery capacity elsewhere, lineage
+change before a receipt
 deadline, issuer-forged consumer
 evidence, policy/principal/budget-epoch changes before original-claim
 settlement, timeout/partial/duplicate settlement, caller-sub-limit

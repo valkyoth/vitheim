@@ -116,6 +116,17 @@ with no partial write. The only later dispositions are irreversible
 row only after its predecessor-linked checkpoint preserves the original kind
 and result/evidence commitment. Timeout never selects a disposition.
 
+Durable charge rows, bytes, awaiting state, backlog, checkpoint/archive I/O,
+and compaction workers are partitioned by lane below aggregate ceilings.
+VIT-INV-061 changes those limits only through immutable
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileV1` successors
+with monotonic generation/digest, predecessor and expected-version activation.
+Shrinks remain pending until all current usage, reservations, maintenance
+obligations and protected reserves fit; obligations never change lane.
+Increases require authenticated physical provisioning evidence. Failover and
+restore select the greatest authenticated profile generation/digest and
+reconstruct usage, never the greatest numeric ceilings.
+
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again
 but reuse that request charge, sequence and outcome; concurrent identical calls

@@ -446,6 +446,17 @@ dispositions are irreversible
 `ContinuityFencedOrphaned`; `CheckpointedCompacted` preserves the original
 terminal kind and result/evidence commitment after its checkpoint. Timeout is
 not a transition.
+VIT-INV-061 alone owns the immutable
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileV1` lineage:
+stable ID, monotonic generation/epoch, canonical digest, predecessor, closed
+state and expected-version activation CAS. Emergency reductions and aggregate
+changes require separated approval. A shrink stays `PendingDrain` or rejects
+until every lane's usage, awaiting charges, reservations, backlog, maintenance
+obligations and protected reserve fit. Obligations never change lane, capacity
+never transfers, and increases require authenticated physical disk/I/O/worker
+evidence. Restore selects the greatest authenticated generation/digest and
+reconstructs usage; it never merges maximum numeric ceilings or accepts a
+downgrade writer.
 `TopologyAuthorizationRequestRateBudgetV1` charges exactly once for every
 first-seen canonical request ID/digest and binds that charge to monotonic
 `TopologyAuthorizationRequestSequence`. Exact retries charge presentation rate

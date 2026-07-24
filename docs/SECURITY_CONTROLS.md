@@ -89,6 +89,13 @@ audit decision.
   `ContinuityFencedOrphaned` outcomes are irreversible; and
   `CheckpointedCompacted` preservation of the original terminal kind and
   result/evidence commitment;
+  non-borrowable Normal/Recovery/BreakGlass charge-ledger rows, bytes, awaiting
+  state, backlog, checkpoint/archive I/O, and compaction workers below
+  aggregate ceilings; immutable VIT-INV-061 capacity-profile successors with
+  expected-version activation, governed emergency/aggregate changes,
+  drain-before-shrink, physical provisioning proof, downgrade fencing, and
+  restore by greatest authenticated generation/digest rather than numeric
+  maximum;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

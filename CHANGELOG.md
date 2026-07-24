@@ -8,6 +8,11 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added an immutable VIT-INV-061-owned presentation-charge capacity-profile
+  lineage with expected-version activation, governed emergency/aggregate
+  resizing, drain-before-shrink semantics, physical provisioning evidence,
+  downgrade fencing, and restore by authenticated profile generation rather
+  than maximum numeric limit.
 - Partitioned the durable topology presentation-charge ledger and its
   checkpoint/archive/compaction work by `Normal`, `Recovery`, and
   `BreakGlass` lane. Each lane now has non-borrowable row, byte, awaiting,

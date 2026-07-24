@@ -452,6 +452,32 @@ Normal stage one, break-glass saturation cannot block Recovery, and idle
 emergency capacity is never loaned to create Normal cleanup obligations.
 Select only storage profiles that can prove these properties; all others
 refuse VIT-CAP-061.
+Freeze VIT-INV-061 as the sole owner of the immutable
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileV1` lineage.
+The profile binds stable ID, monotonic generation/epoch, canonical digest,
+predecessor, closed activation state, expected-version CAS, per-lane limits and
+reserves, aggregate ceilings, and authenticated physical disk/I/O/worker
+provisioning evidence. Freeze `Proposed`, `PendingDrain`, `Active`,
+`Superseded`, and `Rejected` as the only states and forbid in-place mutation.
+The predecessor remains active while a successor is proposed or pending drain.
+Activation is one expected-version transaction that makes the proposed or
+pending-drain successor active and the predecessor superseded. Rejected and
+superseded are terminal; no state returns to proposal or active.
+Reducing either emergency lane or changing aggregate ceilings requires current
+change-or-incident authority with separated requestor, approver, and activator
+roles plus quorum. A shrink activates only when every successor lane limit
+covers current usage, awaiting charges, terminalization reservations,
+checkpoint backlog, maintenance obligations, and protected reserve; otherwise
+it remains pending or rejects. Existing obligations never move lanes, and
+capacity is never transferred between lanes. An increase requires evidence
+that the selected adapter has physically provisioned the additional disk, I/O,
+and worker capacity, reauthenticated at activation. Old generations and
+downgrade writers deny.
+
+Freeze recovery by greatest authenticated profile generation and exact digest,
+followed by reconstruction of usage/reservations. Never merge maximum numeric
+ceilings across backups or peers; an older larger profile is not authority
+after a newer downsizing profile.
 Freeze the canonical principal/authority budget key and anti-identity-splitting
 rule; every caller sub-limit is additive to, never a replacement for, deployment
 and issuer/class ceilings. Freeze a closed `Normal`/`Recovery`/`BreakGlass` budget
@@ -971,7 +997,8 @@ resource partitions/global ceiling, stage-one presentation-charge evidence/
 sequence/closed irreversible disposition/result link/continuity/checkpoint and
 atomic saturation semantics, per-lane charge-ledger rows/bytes/awaiting/
 backlog/checkpoint/archive-I/O/compaction-worker reservations and aggregate
-disk/work ceilings, authenticated presentation-lane
+disk/work ceilings, capacity-profile lineage/generation/digest/state/
+activation/provisioning evidence and drain obligations, authenticated presentation-lane
 endpoint/audience/credential-profile mappings and their generation/fence/
 revocation high-watermarks and sole-owner/SoD state,
 principal presentation-rate/request-rate/admission/outstanding counters,
