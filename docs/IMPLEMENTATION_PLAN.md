@@ -171,7 +171,13 @@ Canonical non-wrapping predecessor-linked activation records commit with head/
 supersession/fence/audit/result/outbox and checkpoint before deletion; gaps,
 forks, reorder, duplicates or rollback deny recovery. Checkpoints also preserve
 authorization consumption/result/time/key high-watermarks, validation evidence
-and replay tombstones. A once-per-
+and replay tombstones. Select bounded authenticated sparse replay archives;
+permanent unbounded retention and arbitrary-ID dense watermark inference are
+forbidden. Archive exact results or authenticated result references with
+request/lifecycle/scope/predecessor/key commitments, bounded proof work and a
+durable cursor. Late exact retry returns the archived result, changed retry
+conflicts, and missing/unverifiable history fails closed without execution. A
+once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive

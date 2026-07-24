@@ -157,6 +157,20 @@ unexpired during a long drain; later revocation leaves the fence safe and
 requires fresh activation authority or separately authorized rejection.
 Unauthorized, expired-unused, replayed, self-approved,
 cross-scope, or substituted requests write no successor/fence/event/outbox.
+Production uses authenticated sparse replay archives and forbids permanent
+unbounded retention. Canonical
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayCheckpointV1`
+and archive entries bind the sparse action/idempotency ID, request/
+authorization digest, terminal lifecycle, complete result or authenticated
+result reference, action/profile/scope/policy, predecessor checkpoint,
+encoding/key epoch and archive commitment. Exact late retry returns the
+archived result; changed retry conflicts; exact-set non-membership is never
+inferred from a dense watermark. Missing archive/key/chunk/proof returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainHistoricalStateUnavailable`
+without execution. Frozen proof budgets bound bytes/entries/chunks/depth/
+decode/work/jobs, a durable verification cursor resumes bounded work, and
+Recovery maintenance reservations backpressure new authority before archive
+permanence can be lost.
 `PendingDrain` atomically installs a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` binding
 predecessor/successor generations and digests, canonically derived affected
@@ -187,7 +201,12 @@ preserves the complete activation head and active/pending/fence tuple,
 authorization-consumption/result/time/key high-watermarks, canonical
 authorization/validation-evidence digests, trusted-time profile/epoch and
 validated interval, signer/key epochs/authentication profile, and replay
-tombstones before record deletion.
+tombstones before record deletion. It also preserves sparse replay checkpoint/
+archive commitments, complete results or authenticated references,
+predecessor checkpoints, proof-budget profile, verification cursor,
+encoding/key epoch, archive availability and exact membership/non-membership
+semantics; digests/high-watermarks alone never reconstruct a result or prove an
+arbitrary ID unseen.
 Fence lifecycle helpers are not callable authority. The PendingDrain
 transaction emits
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`;
@@ -324,6 +343,11 @@ and profile substitution, authorization-checkpoint deletion and time/key/
 consumption/result/tombstone rollback, activation-record deletion/reorder/fork/
 gap/duplicate/sequence-exhaustion/checkpoint rollback/response loss and
 active-row contradiction,
+sparse/nonsequential action IDs, first late exact and changed-digest retry,
+archive outage, missing result reference/chunk/key, checkpoint fork, proof
+bytes/entries/chunks/depth/decode/work/jobs exhaustion, verification-cursor and
+compaction crashes, cross-backend migration, and any attempt to infer unseen
+authority from a dense watermark,
 continuous traffic during shrink, admission/fence-install and final-admission/
 activation races, rejection-versus-admission, installed-fence crash/failover/
 restore, stale-worker bypass, and competing successors, lineage change before a receipt

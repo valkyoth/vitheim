@@ -514,6 +514,34 @@ the original result with no new side effect; different bytes/digest conflicts;
 consumed, expired-unused, and revoked-unused authority can never authorize
 another action.
 
+Select authenticated sparse replay archiving; permanently retaining every
+authorization and result is rejected because it violates bounded storage and
+maintenance guarantees. Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayCheckpointV1`
+and
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayArchiveV1`
+with stable action/idempotency ID, canonical request and authorization digests,
+terminal lifecycle state, complete action result or authenticated archive
+reference, action/profile/tenant/deployment/policy bindings, predecessor
+checkpoint, encoding/key epoch, and archive commitment. Sparse membership
+returns the historical result or conflict; non-membership is an authenticated
+exact-set proof and is never inferred from a dense watermark over arbitrary
+IDs. Missing history returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainHistoricalStateUnavailable`
+without execution.
+
+Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
+and
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
+with maximum encoded bytes, entries, chunks, proof depth, decode allocation,
+verification work and concurrent jobs. Checkpoint/archive commitment,
+high-watermarks/cursor and hot deletion are one transaction after durable
+archive verification. Archive/key/chunk loss, outage, budget exhaustion or
+incomplete proof fails closed. Reserve bounded archive, verification, and
+backlog capacity from Recovery maintenance resources; saturation backpressures
+new drain authorization.
+
 Recheck current policy/authority/approval, conservative trusted-time interval,
 expiry, diff/coverage, and predecessor version before consumption. Ratchet
 local time/profile, issuer continuity, signer/key epoch, consumption/result,
@@ -579,8 +607,13 @@ canonical authorization/validation-evidence digests; trusted-time profile,
 epoch, and validation interval; signer/key epochs and authentication profile;
 and replay tombstones. Restore rejects gaps, forks, reorder, duplicates,
 active-row disagreement, absent checkpoints and rolled-back external
-time/key/consumption/result/activation high-watermarks; response loss for every
-drain action reuses the stable canonical result.
+time/key/consumption/result/activation high-watermarks. It additionally
+preserves the sparse checkpoint/archive root, complete result or authenticated
+reference, predecessor checkpoint, proof-budget profile, verification cursor,
+encoding/key epoch, availability evidence and membership/non-membership
+semantics. A digest/high-watermark cannot reconstruct a result or declare an
+arbitrary ID unseen; response loss after hot deletion resolves only to the
+archived result, historical conflict, or typed historical-state-unavailable.
 
 Freeze recovery as
 `TopologyAuthorizationPresentationChargeLedgerCapacityRecoveryStateV1`:

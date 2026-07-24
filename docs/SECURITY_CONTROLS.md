@@ -123,6 +123,13 @@ audit decision.
   checkpoint-before-delete covering authorization/result/time/key
   high-watermarks, validation evidence and replay tombstones, and chain/head/
   high-watermark rollback refusal;
+  bounded authenticated sparse drain-replay checkpoints/archives preserving
+  exact canonical results or authenticated references, request/lifecycle/
+  scope/predecessor/key commitments, exact-set membership/non-membership,
+  resource-bounded verification and durable cursors; no permanent unbounded
+  retention or arbitrary-ID dense-watermark inference; unavailable archive,
+  key, chunk or proof fails closed without execution under reserved Recovery
+  maintenance capacity;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

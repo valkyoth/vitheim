@@ -419,6 +419,40 @@ entry. Reuse with different canonical bytes or digest returns typed
 and writes nothing. Consumed authority cannot authorize another action;
 expired-unused and revoked-unused authority remain permanently non-consumable.
 
+Select authenticated sparse replay archiving rather than permanent exact
+retention. Permanent retention is rejected because unbounded replay-critical
+rows would contradict the bounded storage, maintenance, and recovery-capacity
+contracts. Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayCheckpointV1`
+and
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayArchiveV1`.
+Each sparse entry binds the stable action/idempotency ID, canonical request
+digest, authorization digest and terminal lifecycle state, complete canonical
+action result or authenticated result-archive reference, action kind,
+predecessor/successor identities, tenant/deployment, policy epoch, predecessor
+checkpoint digest, encoding/key epoch, and archive commitment. Membership
+proves the exact historical request/result; changed request bytes prove
+historical conflict. Non-membership is valid only for the exact sparse
+authenticated set and never follows from an action, nonce, idempotency, or
+other dense high-watermark.
+
+Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
+with exact maximum checkpoint/archive/root/chunk encoded bytes, entries and
+chunks, proof depth, decode allocation, verification work, roots/chunks per
+job, and concurrent jobs, plus durable
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`.
+Checkpoint installation, archive commitment, replay high-watermarks/cursor,
+and hot-row deletion commit in one transaction after the archive is
+authenticated and durably available. Missing/unverifiable history, key or
+chunk loss, archive outage, proof-budget exhaustion, or incomplete
+verification returns typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainHistoricalStateUnavailable`
+without consuming authority or executing an action. Bounded archive and
+verification backlog reserves are charged to the non-borrowable Recovery
+maintenance capacity; saturation applies backpressure before accepting another
+authorization whose permanent replay proof cannot be guaranteed.
+
 `TransitionTopologyAuthorizationPresentationChargeLedgerCapacityProfileToPendingDrain`
 authenticates that authorization and rechecks current policy, change/incident
 authority, approval validity/quorum/separation, typed diff, derived coverage,
@@ -498,7 +532,13 @@ preserves the complete activation head plus active/pending/fence recovery
 tuple; drain-authorization consumption and result high-watermarks; canonical
 authorization and validation-evidence digests; trusted-time profile/epoch and
 validated interval; signer/key epochs and authentication profile; and every
-replay tombstone needed to prevent resurrection. Checkpoint precedes deletion
+replay tombstone needed to prevent resurrection. It also commits the complete
+sparse replay checkpoint/archive root, entry/result or authenticated result
+reference, predecessor checkpoint, proof-budget profile, verification cursor,
+encoding/key epoch, archive availability evidence, and exact sparse
+membership/non-membership semantics. A digest or high-watermark alone is never
+an exact-retry result or proof that an arbitrary ID was unseen. Checkpoint and
+archive publication precede deletion
 and local or external replicated time, key, consumption, result, and activation
 high-watermarks cannot roll back. Response loss for begin-drain, activation,
 rejection, or abandonment replays the same stable action result; it never
@@ -520,8 +560,9 @@ tuple of the active profile selected from the greatest authenticated committed
 activation record, an optional pending successor, its optional exact drain
 fence, the lineage-generation high-watermark, and the activation-sequence
 high-watermark plus drain-authorization consumption/result/time/key
-high-watermarks and replay tombstones. Raw profile generation never implies
-activation. Rejected and
+high-watermarks, replay tombstones, sparse replay checkpoint/archive roots,
+proof-budget profile, archive/key availability and verification cursor. Raw
+profile generation never implies activation. Rejected and
 unactivated proposed generations remain historical only. A recovered pending
 successor and fence are applied jointly to new admission; recovery recomputes
 the canonical affected-lane and reduced-aggregate sets from the profile diff
@@ -534,6 +575,11 @@ rolled-back local/external high-watermark deny startup/admission. Recovery then
 reconstructs usage, reservations, backlog and maintenance work. It never merges
 the greatest numeric limits: an older,
 larger profile cannot revive capacity removed by a newer active generation.
+An exact late retry after compaction returns the archived canonical action
+result; changed bytes/digest return the historical conflict. Missing or
+unverifiable sparse history returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainHistoricalStateUnavailable`
+and cannot make the action unseen, reusable, or executable.
 
 For successful first-seen issuance, stage-two charge consumption, request-
 sequence allocation, request-rate charging, quota validation, every applicable
@@ -1182,6 +1228,16 @@ Delete the authorization checkpoint before hot replay-state deletion and prove
 recovery denies rather than resurrecting authority. Prove activation sequence
 exhaustion fails before mutation, direct activation records canonical-none
 fence fields, and every active-row-versus-record contradiction denies recovery.
+Use sparse, nonsequential action/idempotency IDs and exercise first late exact
+retry after compaction, changed-digest late retry, authenticated sparse
+membership and non-membership, archive outage, result-reference loss, missing/
+reordered/duplicated/substituted chunks, checkpoint fork, key rotation/loss,
+oversized encoding, excessive entries/chunks/depth/decode allocation/
+verification work/jobs, verification-cursor crash/restart, compaction crash at
+every checkpoint/archive/delete boundary, failover/restore, and cross-backend
+migration. Only the archived original result, historical conflict, or typed
+historical-state-unavailable is permitted; no dense watermark can establish an
+arbitrary ID as unseen.
 Drive every
 permitted charge-disposition edge and reject undeclared edges, terminal-to-
 terminal substitution, terminal-to-awaiting rollback, timeout-derived

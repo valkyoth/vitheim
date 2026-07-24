@@ -485,6 +485,25 @@ until fresh activation authority or separately authorized rejection.
 Rejection/abandonment uses separate action-authority and audit. Unauthorized,
 expired-unused, replayed, self-approved, cross-scope or substituted requests
 write nothing.
+Authenticated sparse replay archiving is mandatory; permanent unbounded
+retention is forbidden.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayCheckpointV1`
+and
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayArchiveV1`
+bind each sparse action/idempotency ID, request/authorization digest, terminal
+lifecycle, complete result or authenticated result reference, action/profile/
+scope/policy, predecessor checkpoint, encoding/key epoch and archive
+commitment. Exact membership returns result or conflict; exact-set
+non-membership is never inferred from a dense watermark. Missing history
+returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainHistoricalStateUnavailable`
+without execution.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
+bounds bytes/entries/chunks/depth/decode/work/jobs and a durable
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`
+resumes verification. Checkpoint/archive/cursor/delete commits atomically;
+archive/key/chunk loss, outage, budget exhaustion or backlog saturation fails
+closed under reserved Recovery maintenance capacity.
 `PendingDrain` atomically installs
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 the active predecessor and pending successor generations/digests, affected
@@ -513,7 +532,11 @@ indivisible. Predecessor-linked authenticated
 precedes record deletion and preserves the active/pending/fence tuple,
 authorization-consumption/result/time/key high-watermarks, canonical
 authorization/validation-evidence digests, trusted-time interval/profile/epoch,
-signer/key epochs/authentication profile and replay tombstones.
+signer/key epochs/authentication profile and replay tombstones, plus the sparse
+checkpoint/archive root, complete result or authenticated reference,
+predecessor checkpoint, proof-budget profile, verification cursor,
+encoding/key epoch, availability evidence and exact membership/non-membership
+semantics. Digest or high-watermark alone is insufficient.
 Install/clear helpers are uncallable. PendingDrain emits atomic
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`;
 activation/rejection emits atomic
@@ -521,7 +544,11 @@ activation/rejection emits atomic
 Recovery reconstructs
 `TopologyAuthorizationPresentationChargeLedgerCapacityRecoveryStateV1` with
 activation-selected active profile, optional pending successor/exact fence,
-lineage and activation high-watermarks, and verified derived coverage.
+lineage and activation high-watermarks, authorization sparse replay archive/
+checkpoint/key/cursor state, and verified derived coverage. Late exact retry
+returns the archived result, changed retry returns historical conflict, and
+unavailable proof returns typed historical-state-unavailable without
+execution.
 Multiple-active, contradictory-record, unreachable-predecessor, or
 pending/fence half-state, activation gap/fork/reorder/duplicate, active-row
 disagreement, missing checkpoint, or high-watermark rollback fails closed.

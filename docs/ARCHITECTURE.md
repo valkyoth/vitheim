@@ -160,6 +160,15 @@ supersession, optional fence event, audit, result and outbox. Authenticated
 checkpoints preserve authorization consumption/results, trusted-time/key
 validation state, and replay tombstones before deletion; chain/head/
 high-watermark disagreement denies recovery.
+Drain authorization uses a bounded authenticated sparse replay checkpoint and
+archive, never permanent unbounded retention or dense-watermark inference over
+arbitrary IDs. Each entry preserves the exact canonical request and result or
+an authenticated result reference plus lifecycle, scope, predecessor, key and
+archive commitments. Exact late retry returns that result, changed retry
+conflicts, and missing archive/key/chunk/proof returns typed historical-state-
+unavailable without execution. Bounded proof resources, a durable cursor,
+checkpoint-before-delete atomicity and reserved Recovery maintenance capacity
+make archive outage or saturation fail closed.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again

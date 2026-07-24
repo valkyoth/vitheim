@@ -204,6 +204,20 @@ begin-drain authorization remains historical proof after expiry; authority
 revocation leaves the fence in force until fresh activation authority or
 separately authorized rejection. Unauthorized, expired-unused, replayed,
 self-approved, cross-scope, or substituted requests write no transition state.
+Use authenticated sparse replay archives, not permanent unbounded retention.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationReplayCheckpointV1`
+and its archive bind each sparse action/idempotency ID, request/authorization
+digest, lifecycle, complete result or authenticated result reference, exact
+action/profile/scope/policy fields, predecessor checkpoint, encoding/key epoch
+and archive commitment. Exact late retry returns the archived result; changed
+request returns conflict. Authenticated non-membership is exact-set proof and
+never a dense watermark inference. Missing archive/key/chunk/proof returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainHistoricalStateUnavailable`
+without execution. `...CapacityDrainReplayProofBudgetV1` bounds bytes, entries,
+chunks, depth, decode allocation, verification work and jobs; a durable
+`...CapacityDrainReplayVerificationCursor` makes verification restartable.
+Archive/checkpoint/cursor/delete is atomic and bounded Recovery maintenance
+capacity applies backpressure before replay permanence is endangered.
 Entering pending drain persists
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 predecessor/successor generations and digests, canonically derived affected
@@ -235,7 +249,11 @@ must preserve the activation head and active/pending/fence tuple,
 authorization-consumption/result/time/key high-watermarks, canonical
 authorization and validation-evidence digests, trusted-time profile/epoch and
 validated interval, signer/key epochs/authentication profile, and replay
-tombstones before record deletion.
+tombstones before record deletion. It also preserves the sparse replay
+checkpoint/archive commitment, complete result or authenticated reference,
+predecessor checkpoint, proof-budget profile, verification cursor,
+encoding/key epoch, availability evidence and exact membership/non-membership
+semantics. Digest or high-watermark alone is insufficient.
 Fence install/clear helpers are not commands:
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`
 occurs only in the atomic PendingDrain transaction and
@@ -1577,6 +1595,12 @@ authorization replay checkpoints and roll back time/key/consumption/result/
 activation or external high-watermarks; force sequence exhaustion, response
 loss and active-row disagreement. Require fail-atomic denial or exact
 idempotent replay without authorization resurrection.
+After compaction, test sparse/nonsequential IDs, first late exact and
+changed-digest retry, exact membership/non-membership, archive outage, result
+reference/key/chunk loss, checkpoint fork, proof bytes/entries/chunks/depth/
+decode/work/jobs exhaustion, cursor crash, compaction crash and cross-backend
+migration. Accept only archived result, historical conflict or typed
+historical-state-unavailable, never execution from missing history.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 

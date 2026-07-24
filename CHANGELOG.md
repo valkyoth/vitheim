@@ -8,6 +8,9 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Selected bounded authenticated sparse archives for exact drain-action replay
+  after compaction, with canonical result recovery, historical conflicts,
+  resource-bounded proof verification, and fail-closed unavailable history.
 - Closed the capacity-drain authorization lifecycle with atomic consumption,
   permanent replay tombstones, stable exact-retry results, typed conflicting
   retries, trusted-time/key/continuity ratchets, long-drain semantics, and
