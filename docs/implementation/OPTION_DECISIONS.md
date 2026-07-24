@@ -441,6 +441,17 @@ choose a disposition. Stage one atomically commits debit, complete evidence,
 charge sequence, and awaiting disposition; charge-ledger row/byte/backlog
 saturation fails with no partial state before lookup. Bound and checkpoint
 terminal charge evidence before compaction.
+Freeze `TopologyAuthorizationPresentationChargeLedgerCapacityV1` as a storage
+and maintenance contract keyed by the authenticated presentation lane.
+`Normal`, `Recovery`, and `BreakGlass` have independent non-borrowable hot-row,
+encoded-byte, `ChargedAwaitingStageTwo`, checkpoint-backlog, checkpoint/archive
+I/O, and compaction-worker ceilings below one aggregate disk/work ceiling.
+Every stage-one admission reserves sufficient capacity in its own lane for
+terminalization and checkpointing. Normal saturation therefore rejects only
+Normal stage one, break-glass saturation cannot block Recovery, and idle
+emergency capacity is never loaned to create Normal cleanup obligations.
+Select only storage profiles that can prove these properties; all others
+refuse VIT-CAP-061.
 Freeze the canonical principal/authority budget key and anti-identity-splitting
 rule; every caller sub-limit is additive to, never a replacement for, deployment
 and issuer/class ceilings. Freeze a closed `Normal`/`Recovery`/`BreakGlass` budget
@@ -958,7 +969,9 @@ Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/
 sequence/closed irreversible disposition/result link/continuity/checkpoint and
-atomic saturation semantics, authenticated presentation-lane
+atomic saturation semantics, per-lane charge-ledger rows/bytes/awaiting/
+backlog/checkpoint/archive-I/O/compaction-worker reservations and aggregate
+disk/work ceilings, authenticated presentation-lane
 endpoint/audience/credential-profile mappings and their generation/fence/
 revocation high-watermarks and sole-owner/SoD state,
 principal presentation-rate/request-rate/admission/outstanding counters,

@@ -159,6 +159,13 @@ Stage one atomically commits debit, evidence, sequence and awaiting disposition;
 ledger row/byte/backlog saturation returns
 `TopologyAuthorizationPresentationChargeLedgerSaturated` before lookup with no
 partial state.
+`TopologyAuthorizationPresentationChargeLedgerCapacityV1` implements
+non-borrowable Normal/Recovery/BreakGlass hot-row, byte, awaiting-record,
+checkpoint-backlog, checkpoint/archive-I/O, and compaction-worker capacity
+below aggregate disk/work ceilings. Stage one reserves its lane's later
+terminalization/checkpoint work. Normal saturation affects only Normal;
+break-glass saturation cannot block Recovery; an implementation unable to
+prove both properties refuses VIT-CAP-061.
 `TopologyAuthorizationRequestRateBudgetV1` is charged exactly once for every
 first-seen canonical request ID/digest and is bound to its monotonic
 `TopologyAuthorizationRequestSequence`; exact retries charge presentation rate
@@ -287,7 +294,9 @@ credential-profile presentation-lane mappings with VIT-INV-061 ownership/SoD
 and generation/fence/revocation state, non-borrowable ingress-lane resource
 profiles/global ceiling, two-stage presentation-charge evidence/continuity/
 checkpoint, closed irreversible dispositions/result links, atomic ledger-
-saturation behavior, separate authenticated-presentation and first-seen-request
+saturation behavior, per-lane ledger rows/bytes/awaiting/backlog and reserved
+checkpoint/archive/compaction capacity under aggregate disk/work ceilings,
+separate authenticated-presentation and first-seen-request
 rate budgets, atomic
 issuance bundle, request and authorization sequences, denial-request and
 issuance checkpoint chains/high-watermarks/bounded proof-work, original quota-
@@ -496,6 +505,8 @@ ingress-work enforcement, authenticated presentation-lane mapping and exact
 lane/class enforcement, non-borrowable ingress resource routing, VIT-INV-061
 mapping ownership/SoD, two-stage charge evidence and mapping recheck, distinct
 closed disposition/result-link/checkpoint and ledger-saturation semantics,
+non-borrowable per-lane ledger/awaiting/backlog/I/O/worker capacity and
+aggregate ceilings,
 presentation/request/admission/outstanding
 accounting, separate
 reconciliation-receipt routing and terminal-only settlement typing,
@@ -658,7 +669,9 @@ or ambiguous lane mappings deny, and lane capacity never merges. Preserve
 stage-one charge evidence/closed dispositions/result links/owner continuity/
 checkpoints and ledger saturation state; failover cannot refund or reuse an
 orphan, merge the stages, skip the current mapping recheck, change a terminal
-kind or compact before its checkpoint. Authenticate every
+kind or compact before its checkpoint. It also cannot merge per-lane ledger or
+maintenance reservations: Normal or break-glass saturation must leave Recovery
+able to finish both stages below the aggregate disk/worker ceiling. Authenticate every
 `TopologyAuthorizationConsumerTerminalReceiptV1` across the split-service
 boundary; preserve its complete envelope, closed outcome, result/outbox
 sequence and sender-only consumer role. Preserve reconciliation under its
@@ -890,6 +903,8 @@ ceiling, authenticated presentation-lane endpoint/audience/credential-profile
 mappings with sole-owner/SoD state and greatest generation/fence/revocation,
 stage-one charge evidence/closed irreversible dispositions/result links/
 continuity/checkpoint/ledger saturation and stage-two mapping-recheck semantics,
+per-lane ledger capacity/reservations/maintenance high-watermarks and aggregate
+disk/work ceilings,
 authenticated-presentation-rate/first-seen-request-rate/successful-admission/
 outstanding budgets, issuance
 and request sequences, exact-horizon hot results, denial-request and issuance
@@ -1107,7 +1122,9 @@ topology-authorization ingress-work limits, non-borrowable ingress resource
 partitions/global ceiling, authenticated presentation-lane owner/SoD/
 derivation/rotation/revocation/restore/non-borrowing/class matching, two-stage
 charge evidence/closed disposition/result-link/orphan/continuity/mapping-TOCTOU
-and atomic ledger-saturation accounting,
+and atomic ledger-saturation accounting, non-borrowable per-lane charge rows/
+bytes/awaiting/backlog/checkpoint/archive-I/O/compaction-worker capacity,
+lifecycle reservations and aggregate disk/work ceilings,
 authenticated-presentation rate/first-seen-request rate/
 successful-admission/outstanding/request-and-issuance-sequence/hot-row/denial-
 and-issuance-checkpoint/archive/
@@ -1350,6 +1367,7 @@ ingress-work-budget/ingress-lane-resource-profile-global-ceiling/
 presentation-lane-owner-SoD-mapping-generation-fence-revocation/
 presentation-charge-ID-evidence-closed-disposition-result-link-continuity-
 checkpoint-ledger-saturation/
+per-lane-ledger-awaiting-backlog-checkpoint-archive-compaction-capacity/
 presentation-rate/request-rate/admission-rate/outstanding-budget/original-quota-claim-set/
 request-sequence/authorization-issuance-sequence/exact-horizon/denial-request-
 checkpoint/issuance-checkpoint/predecessor/covered-through/set/archive/
@@ -1396,7 +1414,10 @@ testers across all trust boundaries, including provider-profile governance,
 serialized remote credential rotation/takeover/orphan cleanup/count quotas,
 provider permission evaluator governance/reevaluation, evidence-backed whole-
 credential quarantine resolution, independent remediation authority, and
-the credential broker/executor TCB. Goal: remediate complete attack paths.
+the credential broker/executor TCB; include topology-authorization durable
+charge-ledger lane isolation, maintenance scheduling, failover/restore
+reservations, and aggregate disk/work ceilings. Goal: remediate complete attack
+paths.
 Deliverables: findings, fixes, regression tests, and clean retest evidence.
 Verification: external pentest plus tenant/auth/plugin/AI/storage/operations/
 supply-chain regression passes; test unauthorized or semantically expanded
@@ -1406,6 +1427,12 @@ evaluator downgrade/budget/construct confusion, unsafe subset admission, whole-
 credential quarantine bypass, evaluator activation/revocation/epoch/startup
 bypass, unsafe clear/old-work revival, remediation escalation/circularity/no-
 path automation, and forged/stale/broader capability snapshots.
+For topology authorization, independently stall and saturate every Normal
+row/byte/awaiting/backlog/checkpoint/archive-I/O/compaction-worker resource and
+prove Recovery and BreakGlass complete both stages, then saturate BreakGlass
+and prove Recovery remains available. Attack cross-lane borrowing during
+crash, RPC timeout, failover, restore and migration, and prove aggregate disk/
+work ceilings remain bounded.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 

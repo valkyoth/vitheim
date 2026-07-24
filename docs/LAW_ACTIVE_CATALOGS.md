@@ -434,7 +434,14 @@ without refund. Crash between stages leaves an orphan spent charge, retry gets
 a new charge and fenced-continuity evidence is unusable; evidence/dispositions
 are bounded and checkpoint-before-delete. Stage one atomically creates debit,
 evidence, sequence and `ChargedAwaitingStageTwo`, or ledger saturation fails
-before lookup without state. The only terminal dispositions are irreversible
+before lookup without state.
+`TopologyAuthorizationPresentationChargeLedgerCapacityV1` supplies
+non-borrowable Normal/Recovery/BreakGlass hot rows, bytes, awaiting records,
+checkpoint backlog, checkpoint/archive I/O, and compaction workers below
+aggregate disk/work ceilings. Stage-one admission reserves its own lane's
+terminalization/checkpoint work; Normal or break-glass saturation cannot block
+Recovery, and an incapable adapter refuses VIT-CAP-061. The only terminal
+dispositions are irreversible
 `Consumed`, `MappingChanged`, `ControlledAbortAbandoned`, and
 `ContinuityFencedOrphaned`; `CheckpointedCompacted` preserves the original
 terminal kind and result/evidence commitment after its checkpoint. Timeout is

@@ -336,6 +336,19 @@ No terminal kind can change, return to awaiting, or refund. Terminal evidence
 is bounded by rows/bytes/age and compacted without changing aggregate debit
 history.
 
+`TopologyAuthorizationPresentationChargeLedgerCapacityV1` makes the durable
+charge lifecycle non-borrowable by authenticated presentation lane, not merely
+the presentation-rate counter. `Normal`, `Recovery`, and `BreakGlass` each
+receive independent ceilings for hot rows, encoded bytes,
+`ChargedAwaitingStageTwo`, checkpoint backlog, checkpoint/archive I/O, and
+compaction workers under one aggregate disk and maintenance-work safety
+ceiling. A successful stage-one admission reserves enough lane-local lifecycle
+capacity for stage two to consume or terminalize and checkpoint the charge;
+later cleanup cannot borrow another lane. Normal saturation rejects only
+Normal stage-one commits, and break-glass saturation cannot block Recovery.
+Any adapter unable to prove both the partitions and aggregate ceiling refuses
+the protected VIT-CAP-061 profile.
+
 For successful first-seen issuance, stage-two charge consumption, request-
 sequence allocation, request-rate charging, quota validation, every applicable
 admission counter/reserve mutation,
@@ -915,8 +928,15 @@ and after each commit on every adapter. Prove protected lookup never starts
 before durable charge evidence, a crash between stages leaves the charge spent
 and forces a new charge, old continuity evidence cannot be reused, mapping
 change fails before request allocation, and request/outcome/issuance remains
-all-or-none. Exhaust charge-ledger rows, bytes and checkpoint backlog before
-stage one and prove no debit/evidence/initial disposition exists. Drive every
+all-or-none. Stall Normal checkpoint/archive processing and compaction workers,
+then exhaust Normal charge-ledger rows, bytes,
+`ChargedAwaitingStageTwo` records, checkpoint backlog, I/O, and worker capacity
+before stage one and prove no debit/evidence/initial disposition exists for
+the rejected Normal request. Prove Recovery and BreakGlass still complete both
+protocol stages. Saturate BreakGlass independently and prove Recovery remains
+available. Exercise every lane at its boundary and prove the aggregate disk/
+worker ceiling remains bounded, lifecycle work never borrows another lane, and
+a backend without provable isolation refuses VIT-CAP-061. Drive every
 permitted charge-disposition edge and reject undeclared edges, terminal-to-
 terminal substitution, terminal-to-awaiting rollback, timeout-derived
 abandonment, compaction before checkpoint, and compacted loss of the original
@@ -978,7 +998,9 @@ hot store, authenticated checkpoint/high-watermark, archive index, and bounded
 compaction worker; include non-borrowable ingress-lane accept/TLS/decode/
 executor/pool profiles with a global ceiling, two-stage presentation charge
 rows/evidence/sequence/closed dispositions/result links/continuity/checkpoints/
-compaction and atomic saturation behavior, authenticated endpoint/
+compaction and atomic saturation behavior, non-borrowable per-lane charge
+rows/bytes/awaiting/backlog/checkpoint/archive-I/O/compaction-worker
+reservations below aggregate disk/work ceilings, authenticated endpoint/
 audience/credential-profile presentation-lane mappings with generation/fence/
 revocation state, separate normal/recovery/break-glass counters and
 reserve, issuer range manifests, consumer sparse commitments, and eligible-
@@ -1495,7 +1517,8 @@ Preserve `TopologyAuthorizationRequestSequence`,
 `TopologyAuthorizationPresentationLaneV1`, endpoint/audience/credential-profile
 lane mappings, sole VIT-INV-061 ownership/SoD activation, and their generations/
 fences/revocations, every presentation-charge ID/sequence/binding/disposition/
-continuity/checkpoint,
+continuity/checkpoint, per-lane lifecycle capacity/reservation/maintenance
+high-watermark and aggregate disk/work ceiling,
 layered deployment/issuer/principal presentation-rate/request-rate/admission/
 outstanding counters,
 immutable original quota claim sets/budget epochs/class/reserve sources,

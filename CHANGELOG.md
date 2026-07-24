@@ -8,6 +8,11 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Partitioned the durable topology presentation-charge ledger and its
+  checkpoint/archive/compaction work by `Normal`, `Recovery`, and
+  `BreakGlass` lane. Each lane now has non-borrowable row, byte, awaiting,
+  backlog, I/O, and worker capacity below aggregate disk/work ceilings, so
+  Normal or break-glass saturation cannot starve Recovery.
 - Added monotonic topology-authorization request sequencing and bounded
   checkpoint-before-delete denial history, so compacted denials cannot become
   fresh after policy changes or grow without explicit storage/proof limits.

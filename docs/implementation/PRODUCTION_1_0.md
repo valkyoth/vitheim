@@ -105,6 +105,14 @@ preserves the original terminal kind and result/evidence commitment. Timeout
 cannot create a disposition. Stage one atomically writes debit, evidence,
 sequence and awaiting state; ledger row/byte/backlog saturation fails before
 lookup without any of those writes.
+`TopologyAuthorizationPresentationChargeLedgerCapacityV1` partitions durable
+charge lifecycle capacity by authenticated lane. Normal, Recovery, and
+BreakGlass each have non-borrowable hot rows, encoded bytes, awaiting records,
+checkpoint backlog, checkpoint/archive I/O, and compaction workers below
+aggregate disk and work ceilings. Stage one reserves its own lane's later
+terminalization/checkpoint obligation. Normal saturation affects only Normal;
+break-glass saturation cannot block Recovery. A production adapter that cannot
+prove this refuses VIT-CAP-061 and cannot claim the protected profile.
 Every first-seen authenticated canonical request receives monotonic
 `TopologyAuthorizationRequestSequence` bound to its request-rate charge. Exact
 retries charge presentation rate again but reuse the request charge, sequence,
@@ -202,7 +210,10 @@ break-glass-versus-recovery isolation, lane/class mismatch, mapping SoD/
 ownership and rotation/revocation races between stages, crash at both stage
 commits, orphan non-refund/new retry charge/continuity fencing/current mapping
 recheck, charge-ledger saturation before debit, complete closed-disposition
-transition/irreversibility/checkpoint-compaction proof, lineage change before a receipt
+transition/irreversibility/checkpoint-compaction proof, stalled and saturated
+Normal ledger/awaiting/backlog/I/O/workers while both emergency lanes finish
+both stages, saturated BreakGlass while Recovery remains available, aggregate
+disk/worker bounds and cross-lane non-borrowing, lineage change before a receipt
 deadline, issuer-forged consumer
 evidence, policy/principal/budget-epoch changes before original-claim
 settlement, timeout/partial/duplicate settlement, caller-sub-limit

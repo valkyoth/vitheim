@@ -134,7 +134,13 @@ atomically couples debit, evidence, sequence, and awaiting disposition or fails
 before lookup on ledger saturation. The closed disposition table has four
 irreversible terminal kinds—consumed, mapping changed, controlled abort, and
 continuity-fenced orphan—and checkpointed compaction preserves the original
-kind/result commitment. A once-per-
+kind/result commitment.
+`TopologyAuthorizationPresentationChargeLedgerCapacityV1` partitions hot rows,
+bytes, awaiting records, checkpoint backlog, checkpoint/archive I/O, and
+compaction workers into non-borrowable Normal/Recovery/BreakGlass capacity
+below aggregate disk/work ceilings. Stage-one admission reserves its own
+lane's terminalization and checkpoint work; Normal or break-glass saturation
+cannot block Recovery, and an incapable adapter refuses VIT-CAP-061. A once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive
