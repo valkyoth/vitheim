@@ -77,6 +77,18 @@ session/delegation, role, policy, change/incident/emergency and approval state,
 then issues one immutable narrow grant with fixed `commit_before`. A change
 before issuance denies; a change after issuance blocks new grants but cannot
 retroactively revoke the exact issued grant before its short fixed expiry.
+The authenticated receipt binds mutation class, `issued_at`, `commit_before`,
+maximum time uncertainty, trusted-time profile/epoch, and issuer continuity
+identity. The `0.140.1` protocol ceilings are five minutes for initialization,
+two minutes for handoff commit or any dynamic successor, and the lesser of the
+class ceiling and sixty seconds for break-glass. Issuance fails closed without
+an admitted conservative trusted-time interval and continuity or above either
+uncertainty ceiling. VIT-INV-060 durably ratchets its own last trusted lower
+bound, profile epoch, continuity identity, and expired-receipt tombstone. Its
+fresh consumer interval plus admitted commit slack must prove the topology CAS
+commits strictly before `commit_before`; rollback, uncertainty widening,
+unaccounted suspend, restore, failover discontinuity, or issuer/consumer clock
+disagreement cannot extend validity.
 VIT-INV-060 consumes the authenticated receipt, local replay tombstone,
 profile-applicable workload proof, topology CAS, and fence outbox in one local
 transaction—never a distributed epoch/CAS transaction. The receipt discriminates
@@ -137,8 +149,11 @@ missing/replayed/self-approved/stale-at-issuance/manifest-substituted topology
 authorizations; issuer/topology-owner collision; issue-versus-policy/session/
 revocation ordering; lost issuance response; circular break-glass; mixed
 hardware/action-claim fields; signed-old/proxy/cache replay; wrong challenge;
-lower receipt sequence; clock rollback; topology-owner failover; older restore;
-and crash-tests local receipt/workload-proof/CAS consumption without claiming
+lower receipt sequence; clock rollback and forward NTP steps; uncertainty
+widening; suspend/resume; snapshot restore; issuer/consumer clock disagreement;
+authorization-time profile/epoch/continuity substitution; expiry-versus-CAS
+race; topology-owner failover; older restore; and crash-tests local
+receipt/workload-proof/CAS consumption without claiming
 cross-owner atomicity. Exit criteria: the
 documented profile is operable securely and no package change can start below or
 lower the durable admitted platform-floor ratchet; no split deployment starts
@@ -159,7 +174,13 @@ role/split/merge successor commands. Discovery and orchestrator observations
 cannot allocate a key. Route topology-authorization proposal/approval/issuance
 to VIT-INV-061 and topology consumption to VIT-INV-060 over an authenticated
 idempotent protocol with typed issuance uncertainty; the two services cannot
-share an authority credential. Bind each topology receipt to a fresh challenge,
+share an authority credential. Carry the authorization receipt's authenticated
+time profile/epoch, issuer continuity identity, class ceiling, issued-at,
+commit-before, and maximum uncertainty across that boundary without translating
+them to local wall-clock defaults. Each consumer uses a local conservative
+trusted interval and monotonic continuity/time ratchet, so service clock skew or
+NTP disagreement can only shorten or deny the grant. Bind each topology receipt
+to a fresh challenge,
 monotonic sequence, bounded currentness window, owner fence, and local
 observation ratchets. Bind its selected `WorkloadIdentityProofProfileV1`,
 issuer/subject/audience, key thumbprint/attestation, issuance/expiry/revocation,
@@ -335,8 +356,13 @@ authenticated authorization and global-result receipts with replay tombstones;
 activate-versus-revoke serialization by the global CAS; external action-claim
 issuance plus co-transactional local consumption/uncertainty; and deadline
 reconciliation. Independently exercise VIT-INV-061 issue-versus-epoch-change/
-revoke/supersede ordering, immutable bounded-grant semantics, lost issuance
-response, issuer failover/restore, and separation from VIT-INV-060. Exercise
+revoke/supersede ordering, immutable class-bounded-grant semantics, fail-closed
+trusted-time issuance, lost issuance response, issuer failover/restore, and
+separation from VIT-INV-060. Independently fail over the VIT-INV-060 consumer
+while rolling clocks backward/forward, widening uncertainty, suspending and
+resuming, restoring snapshots, disagreeing with issuer time, and racing expiry
+against topology CAS; the consumer time/continuity ratchet must allow only one
+proven pre-expiry commit or non-retryable reconciliation. Exercise
 topology receipt challenge/sequence/expiry ratchets through owner failover,
 proxy replay, clock rollback, and restored older state. `VIT-INV-060`, not
 rollout or discovery, owns current
@@ -549,7 +575,10 @@ placement generations/fences/tombstones/fence outbox/topology-receipt sequence;
 every VIT-INV-058 last-observed topology generation/receipt-sequence ratchet;
 and the independent VIT-INV-061 authorization lineage/generation, revocation/
 supersession, issuance request/receipt high-watermarks, unknown responses,
-tombstones, and break-glass recovery state; the active catalog ID/epoch,
+tombstones, break-glass recovery state, authenticated time profile/epoch, and
+issuer continuity evidence; plus every consumer's last trusted lower-bound,
+profile-epoch/continuity ratchet, and expired-authorization tombstone; the active
+catalog ID/epoch,
 recomputed payload/envelope and actual
 predecessor digests, exact profile, activation floor, product/edition/
 compatibility scope, validity policy/times/maximum uncertainty, signer/key/
@@ -572,7 +601,12 @@ continuity fails closed. The
 planning superset and backup medium never become platform-law trust roots. Goal:
 verified recoverability. Deliverables: backup/restore tools and DR evidence.
 Verification: substitution, partial/stale backup, lost/rotated key, held/erased
-data, point-in-time restore, every `0.18.2` atomic work variant and denial-only
+data, point-in-time restore, stale authorization-time lower-bound/profile-epoch/
+continuity state, missing expired-receipt tombstone, snapshot copied across
+continuity identities, restore during suspend or an NTP step, issuer/consumer
+time disagreement, and restore racing authorization expiry/topology CAS; every
+case proves the restored grant is expired, denied, or already consumed and
+never receives a later deadline; every `0.18.2` atomic work variant and denial-only
 audit-chain integrity, external anchors, registered tenant-surface disposition,
 typed external-copy evidence-strength honesty, measurement rollup manifests,
 rollup checkpoint inclusion and substitution-expiry gates, mandatory deletion
@@ -685,7 +719,9 @@ state, accept an incomplete/lossy/overflowing typed-key migration, erase cross-c
 separation evidence, lower/omit the durable platform-floor ratchet, start a
 restored node below it, activate stale prepared parent state, or authorize a
 delayed transition from historical decisions alone; and every related surface
-has its own disposition proof.
+has its own disposition proof. Recovery cannot extend or replay a topology-
+mutation authorization, lower its consumer trusted-time/continuity ratchet, or
+erase its expiry tombstone.
 `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification

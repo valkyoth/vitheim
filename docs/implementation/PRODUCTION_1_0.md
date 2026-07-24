@@ -38,9 +38,21 @@ approval checks. Evidence proves changes before issuance deny; changes after
 issuance block new grants while an existing exact grant remains usable only
 until fixed `commit_before`; lost issuance response reconciles idempotently;
 break-glass authority recovers independently; and VIT-INV-060 cannot self-
-issue. The topology transaction locally consumes the profile-discriminated
+issue. Evidence proves the authenticated issued-at/deadline, mutation class,
+maximum uncertainty, trusted-time profile/epoch, and issuer continuity fields;
+the frozen five-minute initialization, two-minute commit/dynamic, and
+sixty-second break-glass ceilings; fail-closed issuance; and an independent
+consumer lower-bound/profile/continuity/expiry ratchet. Clock rollback, NTP
+steps, uncertainty widening, suspend/resume, snapshot restore, issuer/consumer
+disagreement, failover, and expiry racing the CAS never extend validity. The
+topology transaction locally consumes the profile-discriminated
 receipt, applicable workload proof, topology CAS, tombstones, and fence outbox
 without claiming external epoch atomicity.
+The production risk register explicitly accepts only the residual window
+created by issuance-time linearization: compromised credentials may retain an
+already issued exact grant for at most its immutable class ceiling (never more
+than sixty seconds for break-glass), subject to current trusted-time proof and
+single consumption. Compromise response blocks every subsequent issuance.
 `VIT-LAW-007@g02` independently rejects unavailable or mismatched topology at
 local admission, readiness, dispatch, and start, including after rollout
 completion and suppressed predecessor-fence delivery. Its verifier challenge,

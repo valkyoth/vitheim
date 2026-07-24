@@ -53,7 +53,13 @@ every required local owner has admitted generation 2, authorizing
 initialization, exact equality verification, and the dormant-singleton handoff
 CAS. Independent `VIT-INV-061` is the only topology-authorization issuer:
 issuance validates current authority and creates one narrow immutable grant
-with fixed expiry; VIT-INV-060 only consumes the authenticated,
+with fixed expiry. Its authenticated issued-at/deadline, mutation class,
+uncertainty ceiling, trusted-time profile/epoch, and issuer continuity identity
+use the same conservative interval vocabulary as catalog validity. VIT-INV-060
+keeps an independent local lower-bound/continuity/expiry ratchet and consumes
+only when its fresh interval proves the topology CAS commits before the frozen
+class deadline; clock rollback, suspend, restore, failover, and cross-service
+clock disagreement cannot extend the grant. VIT-INV-060 only consumes the authenticated,
 profile-discriminated receipt and applicable workload proof in its local CAS.
 Later authority changes block new grants rather than pretending to atomically
 revoke the already issued bounded grant across transaction domains. Once committed,

@@ -99,7 +99,15 @@ rollout completion or missing fence delivery. Every topology handoff/mutation
 uses a short immutable authorization independently issued by `VIT-INV-061`
 after current authority/quorum validation; changes before issuance deny and
 changes after issuance block new grants while the exact grant remains usable
-only until fixed `commit_before`. VIT-INV-060 only consumes that
+only until fixed `commit_before`. `0.140.1` freezes concrete class ceilings
+(five minutes for initialization, two minutes for commit/dynamic successors,
+and at most sixty seconds for break-glass) and a shared conservative trusted-
+time vocabulary. The authenticated grant carries issued-at/deadline,
+uncertainty, time-profile epoch, and issuer continuity; issuance and consumption
+fail closed on unavailable or discontinuous time. VIT-INV-060 ratchets its own
+trusted lower bound/continuity and consumes only when its interval proves the
+CAS will commit before expiry, so rollback, suspend, restore, failover, or clock
+disagreement cannot lengthen authority. VIT-INV-060 only consumes that
 profile-discriminated receipt and local workload proof with its CAS—there is no
 cross-owner atomic transaction. Challenge/sequence/expiry-bound topology
 receipts and local observation ratchets prevent signed-old replay. Rollout

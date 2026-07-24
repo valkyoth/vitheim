@@ -208,6 +208,15 @@ expect_realization_failure "a missing topology-receipt anti-replay ratchet"
 sed -i 's/`IssueTopologyMutationAuthorization`, //' "$realizations"
 expect_realization_failure "a missing independent topology authorization issuer"
 
+sed -i 's/`TrustedTopologyAuthorizationTime`, //' "$realizations"
+expect_realization_failure "a missing trusted topology-authorization time capability"
+
+sed -i 's/`AdvanceTopologyAuthorizationTimeRatchet`, //' "$realizations"
+expect_realization_failure "a missing topology-authorization time ratchet"
+
+sed -i 's/`TopologyMutationAuthorizationExpired`, //' "$realizations"
+expect_realization_failure "a missing topology-authorization expiry outcome"
+
 sed -i 's/, VIT-LST-001-g01-N//' "$realizations"
 expect_realization_failure "a missing negative semantic contract"
 

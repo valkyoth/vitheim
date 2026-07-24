@@ -48,7 +48,13 @@ audit decision.
   independent topology-authorization issuer with issuance-time authority/
   quorum checks, short immutable grants, idempotent unknown-response recovery,
   revocation/supersession of future issuance, independent break-glass recovery,
-  and restore high-watermarks; profile-discriminated authorization locally
+  and restore high-watermarks; authenticated mutation class/issued-at/deadline/
+  maximum-uncertainty/trusted-time-profile/issuer-continuity fields with
+  concrete five-minute initialization, two-minute commit-or-successor, and
+  sixty-second break-glass ceilings; fail-closed issuance and rollback-
+  resistant consumer lower-bound/profile/continuity/expiry ratchets proving
+  pre-expiry CAS despite clock steps, suspend, restore, failover, or skew;
+  profile-discriminated authorization locally
   consumed with the successor, applicable workload proof, tombstones, and fence
   outbox without cross-owner atomicity; challenge/sequence/expiry topology
   receipts and monotonic local observation ratchets; current-topology

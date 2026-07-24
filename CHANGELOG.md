@@ -8,6 +8,10 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Bound topology-mutation authorization expiry to authenticated trusted-time
+  profile/epoch/continuity evidence, concrete per-class lifetime ceilings,
+  fail-closed issuance, conservative consumer intervals, rollback-resistant
+  time ratchets, expiry tombstones, and explicit residual-risk acceptance.
 - Added independent `VIT-INV-061` topology-authorization issuance with
   issuance-time current-authority checks, immutable bounded grants, idempotent
   unknown-response recovery, independent break-glass recovery, and strict

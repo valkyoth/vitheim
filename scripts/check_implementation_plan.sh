@@ -286,6 +286,18 @@ require_text docs/implementation/PHASE_B.md \
 require_text docs/implementation/PHASE_O.md \
     '<!-- vitheim-invariant VIT-INV-060 0.141.0 -->' \
     'independent dynamic placement topology owner'
+require_text docs/implementation/PHASE_O.md \
+    '<!-- vitheim-invariant VIT-INV-061 0.141.0 -->' \
+    'independent topology-authorization issuer'
+require_text docs/implementation/OPTION_DECISIONS.md \
+    '`TrustedTopologyAuthorizationTime` capability' \
+    'trusted topology-authorization time profile'
+require_text docs/implementation/OPTION_DECISIONS.md \
+    '`InitializeTopologyAuthorityHandoff` is five minutes' \
+    'concrete topology-authorization class lifetime'
+require_text docs/implementation/PHASE_O.md \
+    'authorization-time profile/epoch/continuity substitution; expiry-versus-CAS' \
+    'topology-authorization expiry race verification'
 require_text docs/LAW_SEMANTIC_REALIZATIONS.md \
     '# Law Semantic Realization Registry' \
     'executable law semantic realization registry'

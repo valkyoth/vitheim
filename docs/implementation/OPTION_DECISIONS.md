@@ -115,12 +115,40 @@ the issuer validates current principal/session/delegation/role/policy epochs and
 change/incident/emergency/approval evidence, then creates one narrow immutable
 grant with fixed `commit_before`; changes before issuance deny, while changes
 after issuance block new grants but cannot retroactively revoke that exact
-receipt before expiry. Freeze profile discrimination: orchestrator receipt
+receipt before expiry. Freeze the authorization-time profile by reusing the
+`TrustedCatalogTime` interval vocabulary through a separately domain-separated
+`TrustedTopologyAuthorizationTime` capability. The authenticated receipt binds
+`issued_at`, `commit_before`, `maximum_time_uncertainty_ns`, trusted-time
+profile ID and epoch, issuer time-continuity ID, and mutation class. Issuance
+fails closed when trusted time or continuity is unavailable, the reported
+uncertainty exceeds the receipt or platform ceiling, or the requested interval
+exceeds its class maximum. Freeze those inclusive maximum lifetimes:
+`InitializeTopologyAuthorityHandoff` is five minutes,
+`CommitTopologyAuthorityHandoff` is two minutes, every dynamic
+join/leave/move/replace/service-role/split/merge successor is two minutes, and
+break-glass is the lesser of its mutation-class maximum and sixty seconds.
+These are protocol ceilings, not configurable defaults; changing one requires
+a new law generation and security review.
+The consumer maintains its own last trusted lower-bound/profile-epoch/
+continuity ratchet and permanent expired-receipt tombstone. It may enter the
+topology CAS only when a fresh conservative `[earliest, latest]` interval,
+including admitted commit slack, proves `latest < commit_before`, uncertainty
+is within both ceilings, and continuity/profile evidence is current. A time
+rollback, NTP step that widens uncertainty, suspend/resume without accounted
+continuity, snapshot restore, failover discontinuity, issuer/consumer
+disagreement, or inability to prove the CAS committed before expiry blocks or
+reconciles without retrying the receipt. Restore merges the greatest externally
+retained/local time ratchet before use and never extends a deadline. Freeze
+profile discrimination: orchestrator receipt
 requires action-claim fields and canonical-none hardware fields; hardware
 receipt requires current hardware proof and canonical-none claim fields.
 VIT-INV-060 atomically consumes only the authenticated receipt, applicable
 workload proof, local tombstones, topology CAS, and fence outbox; no distributed
-transaction or commit-time external-epoch atomicity is claimed.
+transaction or commit-time external-epoch atomicity is claimed. Record the
+residual risk explicitly: compromised credentials that already obtained a
+receipt retain only that exact grant for at most the frozen class lifetime
+(sixty seconds for break-glass), subject to trusted-time proof and single
+consumption; compromise response prevents every later issuance.
 Freeze the credential-operation mechanism used by every
 `ProviderExecutionProfile`: external KMS/secret services retain master keys;
 upstream and general executor components receive only opaque tenant/provider/
@@ -623,6 +651,15 @@ The HA profile also resolves every declaration-derived invariant owner,
 transaction domain, stable contract ID, lifecycle/supersession fence, mixed-
 version rule, recovery field, and rollback floor. Only local credential
 activation is atomic; remote create/revoke is explicitly asynchronous.
+For topology authorization, preserve the exact `0.140.1` class ceilings and
+authenticated issued-at/deadline/uncertainty/time-profile/issuer-continuity
+fields across every service and region. Freeze independent issuer and consumer
+trusted-time adapters, maximum commit slack, local lower-bound/profile-epoch/
+continuity ratchets, externally retained high-watermarks, and expired-receipt
+tombstones. Issuer or consumer failover, NTP steps, suspend/resume, snapshot
+restore, and cross-region disagreement may deny or shorten a receipt but never
+extend it; an expiry-versus-topology-CAS race must produce either one proven
+pre-expiry commit or a non-retryable reconciliation state.
 It resolves `VIT-LAW-006` end to end on every failover path: no node may claim
 transmission start unless it can recheck the exact independent authority,
 target, provider, capability, lease/claimant, time, and quota roots, while

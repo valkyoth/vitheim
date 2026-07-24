@@ -334,14 +334,39 @@ delegation lineage, current principal/session/delegation/role-assignment/policy
 epochs, change/incident/emergency record, approval quorum and separation of
 duties. It then issues one immutable, narrowly scoped, short-lived receipt
 binding authorization lineage/generation, mutation ID, expected topology
-generation, canonical successor-manifest digest, issued-at, fixed
-`commit_before`, issuer identity/fence/key epoch, and authentication profile.
+generation, canonical successor-manifest digest, mutation class, `issued_at`,
+fixed `commit_before`, maximum time uncertainty, trusted-time profile ID/epoch,
+issuer time-continuity ID, issuer identity/fence/key epoch, and authentication
+profile.
 If any contributing authority changes before issuance, issuance fails. A
 change, revocation, or supersession after issuance prevents new receipts but
 does not retroactively invalidate that exact already issued grant before
 `commit_before`; expiry always blocks it. This bounded irrevocable-grant model
 is explicit and does not pretend that external epoch reads and the topology CAS
 share one transaction.
+
+Authorization time reuses the conservative interval vocabulary defined in
+“Trustworthy Bounded-Window Time” through domain-separated
+`TrustedTopologyAuthorizationTime`. The immutable protocol ceilings frozen at
+`0.140.1` are five minutes for `InitializeTopologyAuthorityHandoff`, two minutes
+for `CommitTopologyAuthorityHandoff`, two minutes for every dynamic
+join/leave/move/replace/service-role/split/merge successor, and the lesser of
+the applicable class ceiling and sixty seconds for break-glass. Issuance
+requires a current `[earliest, latest]`, valid continuity, and reported
+uncertainty no greater than both receipt and platform ceilings; otherwise it
+fails closed.
+
+VIT-INV-060 independently obtains a fresh trusted interval and persists the
+greatest observed lower bound, time-profile epoch, local continuity identity,
+and permanent expired-authorization tombstone. After acquiring every topology
+transaction lock and before the CAS linearization, the interval's `latest` plus
+the admitted maximum commit slack must be strictly less than `commit_before`.
+If commit timing becomes uncertain, the operation reconciles as unknown and
+the same receipt is never retried as fresh authority. Clock rollback, an NTP
+step or issuer/consumer disagreement that widens uncertainty, unaccounted
+suspend/resume, snapshot restore, or failover discontinuity fails closed.
+Restore merges the greatest external/local time ratchet before receipt use and
+cannot extend the deadline.
 
 The receipt is profile-discriminated. `OrchestratorAttestedFencedLease` requires
 the exact action-claim ID/digest/expiry fields and canonical-none hardware-proof
@@ -354,7 +379,11 @@ VIT-INV-060 authenticates the receipt and atomically consumes it, its local
 replay tombstone, the applicable workload proof, successor CAS, and fence
 outbox. Receipt absence, issuer/topology-owner collision, reuse, self-approval,
 stale-at-issuance evidence, manifest substitution, mixed profile fields, or
-expiry returns `TopologyMutationAuthorizationBlocked`.
+expiry returns `TopologyMutationAuthorizationBlocked`. The residual risk of
+issuance-time linearization is explicit: compromised credentials can retain an
+already issued exact grant for no longer than its frozen class ceiling (at most
+sixty seconds for break-glass), and only while the trusted-time proof remains
+valid and before its single consumption; compromise blocks later issuance.
 
 The handoff state is the exclusive source selector: before commit the compiled
 singleton is authoritative and the row is inert; after commit `VIT-INV-060` is
