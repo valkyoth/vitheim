@@ -113,7 +113,12 @@ clock disagreement cannot lengthen authority. `0.21.0` freezes canonical
 `0.22.0–0.27.0` prove every backend pause/failover outcome; `0.29.0–0.30.0`
 prevent migration/export field loss; and `0.140.2` admits only a concrete
 commit-time predicate or hard no-late-commit fence. Client timeouts are never
-deadline authority. VIT-INV-060 only consumes that
+deadline authority. The same versions freeze and prove bounded authorization
+anti-replay: pre-allocation rate/outstanding quotas, monotonic issuance
+sequences, an exact replay horizon, authenticated checkpoint/archive
+commitments, checkpoint-before-delete compaction, fail-closed missing history,
+and storage-growth alerts. Phase O implements, failover-tests, restores, soaks,
+and hardens the selected construction before `1.0.0`. VIT-INV-060 only consumes that
 profile-discriminated receipt and local workload proof with its CAS—there is no
 cross-owner atomic transaction. Challenge/sequence/expiry-bound topology
 receipts and local observation ratchets prevent signed-old replay. Rollout

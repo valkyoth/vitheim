@@ -181,8 +181,9 @@ deadlock-retry semantics, and fail-closed behavior.
 Freeze the canonical `TopologyMutationAuthorizationReceiptV1` codec here. Its
 domain-separated, length-prefixed authentication preimage includes schema
 version; authorization lineage/generation and stable request ID; mutation ID
-and class; deployment and expected topology generation; canonical successor-
-manifest digest; principal/session/delegation/role/policy/change/incident/
+and class; monotonic `AuthorizationIssuanceSequence`; deployment and expected
+topology generation; canonical successor-manifest digest; principal/session/
+delegation/role/policy/change/incident/
 emergency/approval bindings; `issued_at`; `commit_before`; maximum uncertainty;
 trusted-time profile ID/epoch; issuer continuity ID; issuer identity/fence/key
 epoch; authentication profile discriminator; and its exact applicable action-
@@ -210,6 +211,39 @@ separate residual-risk decision; it is not accepted by `VIT-LAW-008@g02`.
 Response loss may yield typed reconciliation only when the backend proof still
 guarantees that any successful commit linearized before expiry and no absent
 transaction can later commit.
+
+Freeze `TopologyAuthorizationReplayLifecycleV1` as part of VIT-CAP-060/061.
+Every durable authorization allocation receives a monotonic
+`AuthorizationIssuanceSequence` bound into
+`TopologyMutationAuthorizationReceiptV1`. Per-deployment and per-issuer/class
+attempt-rate and outstanding-authorization quotas execute before allocation;
+unknown issuance and unresolved consumption continue to count until safely
+reconciled or terminally checkpointed. A closed `HotExact` ->
+`CheckpointPending` -> `ArchivedCompacted` lifecycle keeps the exact request,
+mutation, receipt, and typed result locally replayable for a frozen minimum
+exact-outcome horizon. Compaction first atomically installs an authenticated,
+predecessor-linked `TopologyAuthorizationReplayCheckpointV1` and advances a
+never-decreasing covered-through issuance high-watermark, then may remove
+covered hot rows. The checkpoint binds deployment and issuer lineage,
+inclusive issuance range, prior checkpoint digest, canonical sorted
+request/mutation/receipt terminal-state set commitment, typed-result archive
+digest/profile, schema/algorithm version, counters, signing identity/key epoch,
+and creation time.
+
+Any receipt or request at or below the compacted high-watermark is historical,
+never absent or fresh. Within the exact horizon its original typed outcome must
+replay. After that horizon an authenticated archive proof may reproduce the
+exact outcome; if the archive, membership/non-membership proof, checkpoint key,
+or predecessor is unavailable, return
+`TopologyAuthorizationHistoricalStateUnavailable`, deny mutation and new
+allocation for the ambiguous key/range, and never reissue or infer
+non-consumption. Checkpoint coalescing preserves the predecessor commitment and
+covered-through meaning. Key rotation cross-authenticates the successor
+checkpoint key. Restore, migration, import, or failover merges the greatest
+checkpoint/high-watermark before serving. Rate/backlog/cardinality limits,
+compaction failure backpressure, hot/checkpoint/archive bytes and rows, oldest
+uncompacted sequence/age, quota saturation, proof availability, and alert
+thresholds are mandatory capability fields rather than operator folklore.
 
 Goal: prevent adapters from silently weakening correctness.
 
@@ -298,6 +332,11 @@ issuer/consumer time high-watermark, continuity field, expiry tombstone, or
 atomic bundle member; uses client-side deadline checks; reports an unproven
 commit mechanism; permits a timeout-abandoned transaction to commit later; or
 allows migration, downgrade, backup, restore, or import to reset those fields.
+Reject VIT-CAP-060/061 when issuance can bypass its rate/outstanding budget,
+the exact replay horizon or maximum hot/backlog cardinality is unspecified,
+compaction deletes before checkpoint installation, a covered request can look
+absent, archive/proof loss permits reissue, checkpoint/key rotation is
+unauthenticated, or storage-growth accounting and fail-closed alerts are absent.
 
 Exit criteria: correctness never depends on an unverified optional capability.
 `v0.21.0 implementation stop reached. Run pentest for this exact commit.`
@@ -362,6 +401,14 @@ which of those occurred but the backend must prove no transaction can commit
 later. Reject statement-time-only checks, best-effort cancellation, late
 commit, reset ratchets, lost expiry tombstones, and receipt V1 encoding/
 authentication-preimage drift;
+add a `TopologyAuthorizationReplayLifecycleV1` state-machine oracle covering
+quota-before-allocation, horizon boundaries, checkpoint install versus hot-row
+delete, concurrent old replay versus compaction, archive availability, proof
+corruption, checkpoint coalescing, signing-key rotation, crash/restart, and
+cardinality/backlog saturation. It must prove every covered receipt remains
+denied or replays its original typed outcome, never appears unused, and that
+archive/proof unavailability returns
+`TopologyAuthorizationHistoricalStateUnavailable` without reissue;
 and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
@@ -537,12 +584,16 @@ Goal: support development, evaluation, tests, and documented single-node use.
 Deliverables: semantic adapter, migration set, secure file setup, backup/restore
 tooling, capability profile, canonical
 `TopologyMutationAuthorizationReceiptV1` codec/readback, complete issuer/
-consumer time schema, and atomic deadline-CAS evidence.
+consumer time schema, atomic deadline-CAS evidence, quota rows, exact-replay
+hot store, authenticated checkpoint/high-watermark, archive index, and bounded
+compaction worker.
 
 Verification: injection, locking, crash rollback, symlink/permission attacks,
 tenant isolation, interrupted migration, restore, every omitted/reset receipt/
 time/profile/continuity/tombstone field, every `0.22.0` deadline-CAS pause
-point, timeout with attempted late commit, and conformance pass.
+point, timeout with attempted late commit, replay-horizon/quota/checkpoint/
+archive/compaction crash and concurrent-replay cases, bounded file growth under
+maximum admitted issuance, and conformance pass.
 
 Exit criteria: no HA claim and all single-node semantics are evidenced.
 `v0.23.0 implementation stop reached. Run pentest for this exact commit.`
@@ -613,7 +664,10 @@ integrity commitment, and configuration adapters; migrations, operator guide,
 backup/restore, observability, canonical
 `TopologyMutationAuthorizationReceiptV1` bytes/digest, complete VIT-CAP-060/061
 issuer and consumer time columns/high-watermarks/tombstones, and the atomic
-deadline-CAS mechanism/result ledger. Startup fails capability negotiation if any
+deadline-CAS mechanism/result ledger; plus pre-allocation budgets, hot exact
+results, authenticated replay checkpoints/covered-through high-watermarks,
+archive proofs, compaction/backpressure state, and growth metrics. Startup
+fails capability negotiation if any
 mandatory semantic component or transaction-domain placement is absent.
 
 Verification: injection, auth downgrade, transaction crashes, concurrent append,
@@ -675,8 +729,9 @@ cancelled/prepared recovery, blocked-parent successor recovery, composite lock-o
 cross-partition rejection, tenant bypass, pool exhaustion, migration rollback,
 restore, every omitted/reset authorization receipt/time/profile/continuity/
 expiry-tombstone field, every lock/time/CAS/commit/timeout/response-loss/
-failover pause from `0.22.0`, attempted post-deadline commit, and conformance
-pass.
+failover pause from `0.22.0`, attempted post-deadline commit, quota and
+checkpoint races, compaction crash/failover/key rotation/concurrent replay,
+archive loss, bounded growth under maximum admitted rate, and conformance pass.
 
 Exit criteria: production claims match tested deployment profiles only.
 `v0.24.0 implementation stop reached. Run pentest for this exact commit.`
@@ -705,6 +760,9 @@ Verification: encoding/collation confusion, isolation anomalies, injection,
 deadlock retry, rollback, tenant partition, restore, omission/reset of every
 receipt V1 and issuer/consumer time/continuity/tombstone field, the complete
 deadline-CAS pause/failover matrix, attempted late commit, and conformance pass.
+The adapter also proves the common issuance budget, exact-replay horizon,
+authenticated checkpoint/compaction, unavailable-archive denial, and bounded-
+growth contract or refuses VIT-CAP-060/061.
 
 Exit criteria: no backend-specific behavior leaks into domain correctness.
 `v0.25.0 implementation stop reached. Run pentest for this exact commit.`
@@ -732,7 +790,8 @@ Verification: operator/query injection, partial transactions, retry duplication,
 cross-tenant filters, failover, migration interruption, omission/reset of every
 receipt V1 and issuer/consumer time/continuity/tombstone field, all deadline-CAS
 pause points including primary failover and response loss, attempted late
-commit, and conformance pass.
+commit, common quota/horizon/checkpoint/compaction/archive-loss/bounded-growth
+cases, and conformance pass.
 
 Exit criteria: document flexibility never weakens mandatory journal semantics.
 `v0.26.0 implementation stop reached. Run pentest for this exact commit.`
@@ -759,7 +818,9 @@ optimization boundary, and operational guide.
 Verification: namespace escape, query injection, unauthorized edges, transaction
 failure, capability lies, backup/restore, omission/reset of every receipt V1 and
 issuer/consumer time/continuity/tombstone field, every deadline-CAS pause/
-failover/response-loss case, attempted late commit, and full conformance pass.
+failover/response-loss case, attempted late commit, common quota/horizon/
+checkpoint/compaction/archive-loss/bounded-growth cases, and full conformance
+pass.
 
 Exit criteria: optional graph behavior is replaceable and policy equivalent.
 `v0.27.0 implementation stop reached. Run pentest for this exact commit.`
@@ -973,6 +1034,14 @@ unready. It cannot synthesize omitted fields, map unknown time profiles, reset
 continuity, erase expiry/consumption, change the deadline-CAS mechanism, or
 permit an older binary/schema to write. Downgrade below this schema is rejected
 before opening the authority rows.
+Preserve `AuthorizationIssuanceSequence`, pre-allocation budget state,
+outstanding counts, exact replay-horizon metadata, every hot result not yet
+covered, authenticated replay checkpoint chain/current digest,
+covered-through high-watermark, accumulator/archive digest/profile, compaction
+cursor/backlog, and key epochs. Migration installs and verifies the destination
+checkpoint before deleting or transforming a source row; it cannot restart
+sequence space, reopen a compacted key, silently shorten the exact horizon,
+weaken proof availability, or treat an unavailable archive as absence.
 Replacement creates a successor placement generation and fresh admission;
 migration never clones authority from a copied local row.
 Migration authority cannot come from a manifest or catalog stored under the
@@ -1036,6 +1105,10 @@ omitted/defaulted/truncated authorization receipt V1 field, reset issuer or
 consumer time high-watermark, continuity substitution, erased expiry tombstone,
 changed deadline-CAS mechanism, partial atomic bundle migration, downgrade
 writer admission, or post-migration late commit,
+reset issuance sequence/budget/high-watermark, omitted uncompacted hot result,
+checkpoint-chain fork, accumulator/archive substitution, compaction before
+checkpoint commit, shortened replay horizon, unavailable historical proof
+treated as unused, or key-rotation loss,
 missing campaign membership journal/scan receipt/final barrier/mismatch state,
 missing operation-profile discriminator, cancelled-prepared recovery receipt
 loss/duplication, and restored independent-parent-release cases.
@@ -1062,6 +1135,9 @@ and deadline/reconciliation state; separate VIT-INV-060/061 canonical
 watermarks, consumer lower-bound/profile-epoch/continuity ratchet, consumed/
 expired tombstones, topology/member generations/fences/outbox, exact
 `DeadlineConditionalTopologyCasV1` mechanism/profile and result evidence,
+`TopologyAuthorizationReplayLifecycleV1` quotas/horizon/hot results,
+checkpoint chain/current digest/covered-through high-watermark, set and archive
+commitments, compaction cursor/backlog, key epochs, and growth-accounting state,
 encryption/signing ports, position mapping, and budgets.
 
 Goal: migrate between backends without claiming direct database interchange.
@@ -1072,6 +1148,13 @@ manifest/admission/semantic-realization closure. Import preserves every
 authorization schema field without defaulting and admits the destination only
 if it proves the same or stronger no-late-commit mechanism; otherwise imported
 topology authority remains fenced and unready. Import calls the shared
+replay-lifecycle verifier and admits issuance only after the destination proves
+the same-or-longer exact horizon, no-lower quotas/backpressure safety, complete
+uncompacted hot results, an authenticated checkpoint/predecessor chain and
+covered-through high-watermark, usable membership/non-membership proofs, and
+no sequence/key reuse. Missing archival payload may remain unavailable, but
+that range is durably fail-closed and cannot be interpreted as unused. It then
+calls the shared
 canonical verifier with destination build scope and the actual predecessor
 artifact; it never infers, upgrades, or trusts a law generation from mutable
 payload content.
@@ -1081,6 +1164,9 @@ resume, blob mismatch, exhaustion, catalog or ancestor omission/substitution,
 self-consistent untrusted manifest, unknown semantic ID, silent generation
 upgrade, omitted/reset receipt/time/profile/continuity/tombstone field,
 deadline-CAS mechanism downgrade, timeout-abandoned late commit, round-trip,
+replay-horizon shortening, quota/budget reset, missing hot result, checkpoint
+fork or rollback, accumulator/archive/key substitution, compaction-cursor
+rewind, unavailable proof treated as absence, issuance-sequence reuse,
 and cross-adapter conformance pass.
 
 Exit criteria: successful import proves complete semantic and integrity parity.

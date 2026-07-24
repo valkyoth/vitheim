@@ -303,7 +303,20 @@ post-commit timestamps do not qualify. If either default backend cannot prove
 the capability, that deployment profile remains blocked rather than changing
 the authorization linearization point. MySQL, MongoDB, and SurrealDB may claim
 dynamic topology only after the same conformance proof; otherwise their
-capability report must reject it. The
+capability report must reject it. The same decision freezes
+`TopologyAuthorizationReplayLifecycleV1`: exact per-deployment and issuer/class
+attempt-rate and outstanding-authorization limits, the minimum exact-outcome
+replay horizon, maximum hot-row/byte and compaction-backlog limits, checkpoint
+cadence, archival availability objective, alert thresholds, and fail-closed
+saturation behavior. Select one project-owned, versioned canonical
+authenticated-set/checkpoint construction and key-rotation profile. Every
+issuance gets a monotonic sequence; checkpoint installation and covered-through
+high-watermark advance before hot deletion; exact replay after the horizon
+requires authenticated archive evidence; and missing proof blocks the affected
+issuance key/range rather than making it unused. Freeze storage accounting for
+hot results, checkpoints, archives, proof indexes, outstanding grants, and
+compaction backlog. A backend that cannot prove bounded growth and anti-replay
+preservation refuses VIT-CAP-060/061. The
 global, rollout, topology, and local update domains cannot share an authority
 row. Discovery/orchestrator state is non-authoritative.
 Planning-superset storage is non-authoritative and physically/logically
@@ -391,7 +404,12 @@ capability evidence is reviewed. Also inject every `0.22.0` lock/time/CAS/
 commit/timeout/response-loss/failover pause into each selected backend and
 reject omitted receipt/time fields, ratchet or tombstone reset, mechanism
 downgrade, uncertain-late commit, non-lossy migration failure, and downgrade
-writer admission.
+writer admission. Also saturate rate/outstanding/hot/backlog limits; race
+issuance and old replay against checkpointing, coalescing, hot deletion,
+archive outage, key rotation, backup, restore, migration, and backend failover;
+prove no covered key becomes absent/reusable, exact outcomes remain guaranteed
+for the frozen horizon, unavailable historical evidence fails closed, and
+steady-state storage stays within the admitted model.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
 requires a distributed work transaction are rejected, not relabeled supported.
 `v0.140.2 implementation stop reached. Run pentest for this exact commit.`
@@ -604,6 +622,15 @@ deletion verification, backup expiry, residency matrices, and a zero-missing-
 surface registry report with typed external-copy evidence strengths and
 closure-policy results; include a related-surface disposition matrix, per-
 surface evidence, and allowed non-sensitive tombstone/authority-loss schema.
+Classify topology-authorization hot outcomes and archives separately from the
+minimal anti-replay checkpoint. Exact historical payload follows its applicable
+retention/hold/erasure decision; the checkpoint retains only the least non-
+sensitive lineage/sequence/key commitments and counters necessary to ensure an
+erased or unavailable record can never regain authority. Erasure may change an
+old replay outside the guaranteed exact-outcome horizon from exact outcome to
+`TopologyAuthorizationHistoricalStateUnavailable`, but never to absent,
+reissuable, or consumable. Sensitive fields and plaintext receipt payloads are
+forbidden in the long-lived accumulator/checkpoint.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
 evidence custody, false equivalence between local proof/provider attestation/

@@ -331,6 +331,21 @@ require_text docs/implementation/PHASE_C.md \
 require_text docs/implementation/PHASE_C.md \
     'mechanism/profile and result ledger' \
     'deadline mechanism migration preservation'
+require_text docs/implementation/PHASE_C.md \
+    'Freeze `TopologyAuthorizationReplayLifecycleV1`' \
+    'bounded topology authorization replay lifecycle'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationReplayCheckpointV1`' \
+    'authenticated topology replay checkpoint'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyAuthorizationHistoricalStateUnavailable`' \
+    'fail-closed unavailable historical state'
+require_text docs/implementation/OPTION_DECISIONS.md \
+    'attempt-rate and outstanding-authorization limits' \
+    'production topology replay horizon decision'
+require_text docs/implementation/PHASE_O.md \
+    'topology-authorization sustained-abuse/quota/horizon/' \
+    'topology replay bounded-storage soak'
 require_text docs/implementation/PHASE_B.md \
     '`EvaluatorInvalidationCampaignRoot`' \
     'durable evaluator invalidation campaign root'

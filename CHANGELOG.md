@@ -8,6 +8,10 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added a bounded topology-authorization anti-replay lifecycle with pre-
+  allocation quotas, exact replay horizons, authenticated archival checkpoints,
+  monotonic compaction high-watermarks, fail-closed unavailable-history
+  behavior, storage-growth accounting, and abuse/HA/DR/soak verification.
 - Added canonical topology-authorization receipt persistence and a mandatory
   backend deadline-conditional topology CAS, with atomic time/claim/topology/
   fence state, no-late-commit proofs, per-backend pause/failover conformance,

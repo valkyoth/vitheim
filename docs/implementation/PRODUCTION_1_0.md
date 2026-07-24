@@ -55,6 +55,19 @@ deadline result, and fence outbox. Evidence at every lock/time/CAS/commit/
 timeout/response-loss/failover pause proves only a pre-expiry commit or a
 transaction that cannot commit later. An uncertain response reconciles without
 ordinary retry and without weakening that proof.
+Production also freezes `TopologyAuthorizationReplayLifecycleV1`: monotonic
+issuance sequences; pre-allocation per-deployment and issuer/class rate and
+outstanding limits; a minimum exact-outcome horizon; bounded hot rows/bytes and
+compaction backlog; authenticated predecessor-linked checkpoints, set/archive
+commitments, key rotation and covered-through high-watermarks; and growth/
+proof-availability alerts. Compaction commits the checkpoint before deleting
+hot state. Replays within the horizon return the original typed outcome; older
+replays return authenticated archival evidence or
+`TopologyAuthorizationHistoricalStateUnavailable`. Missing archive/proof state
+fails closed and never permits consumption, reissue, or inference of absence.
+Soak, HA, migration/import, and DR evidence proves bounded storage and no
+receipt resurrection across concurrent replay, checkpointing, key rotation,
+archive outage, crash, failover, or restore.
 The production risk register explicitly accepts only the residual window
 created by issuance-time linearization: compromised credentials may retain an
 already issued exact grant for at most its immutable class ceiling (never more

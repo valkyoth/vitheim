@@ -194,7 +194,9 @@ The action-authority scope is closed and is frozen at `0.140.1`:
 | --- | --- | --- |
 | Readiness observation | reusable, bounded `OnlineWorkloadFreshnessProofV1`; no action claim | read-only; stale, unavailable, fenced, or topology-mismatched proof returns unready and cannot create authority |
 | Positive local prepare, convergence, or admission receipt creation/commit | single-use `WorkloadLeaseActionClaim` | consume the claim, commit the receipt/admission and its typed result in one local owner transaction |
+| Topology-authorization allocation | current principal/session/delegation/policy/approval plus pre-allocation `TopologyAuthorizationAdmissionBudgetV1` | VIT-INV-061 allocates one monotonic issuance sequence and exact typed result in its local transaction; quota rejection allocates no authority |
 | Topology handoff initialization/commit or topology successor mutation | independently issued `TopologyMutationAuthorizationReceiptV1`; orchestrator profile additionally requires a single-use `WorkloadLeaseActionClaim`, while hardware profile requires canonical-none claim fields and current hardware proof | `DeadlineConditionalTopologyCasV1` consumes the receipt, profile-applicable workload proof, time ratchet/tombstones, expected-version topology CAS, member fences/tombstones, and fence outbox in one VIT-INV-060 transaction |
+| Topology-authorization replay checkpoint/compaction | no new workload or mutation authority; only the current VIT-INV-060 or VIT-INV-061 owner may compact its own local terminal state | atomically install authenticated predecessor-linked checkpoint and covered-through high-watermark before deleting hot rows; archive/proof loss returns unavailable-history denial and never absence |
 | Dispatch | single-use `WorkloadLeaseActionClaim` | consume with the exact dispatch bundle and outcome in the dispatch owner transaction |
 | Transmission start | single-use `WorkloadLeaseActionClaim` | consume with the unique start claim immediately before provider I/O |
 | Global catalog proposal/activation/succession/revocation/distrust | no workload action claim for owner-to-owner delivery | authenticated control receipt and durable outbox/inbox protocol; an operator command separately requires current policy/session/approval authority |
@@ -334,7 +336,8 @@ delegation lineage, current principal/session/delegation/role-assignment/policy
 epochs, change/incident/emergency record, approval quorum and separation of
 duties. It then issues one immutable, narrowly scoped
 `TopologyMutationAuthorizationReceiptV1`
-binding authorization lineage/generation, mutation ID, expected topology
+binding authorization lineage/generation, monotonic
+`AuthorizationIssuanceSequence`, mutation ID, expected topology
 generation, canonical successor-manifest digest, mutation class, `issued_at`,
 fixed `commit_before`, maximum time uncertainty, trusted-time profile ID/epoch,
 issuer time-continuity ID, issuer identity/fence/key epoch, and authentication
@@ -381,6 +384,32 @@ step or issuer/consumer disagreement that widens uncertainty, unaccounted
 suspend/resume, snapshot restore, or failover discontinuity fails closed.
 Restore merges the greatest external/local time ratchet before receipt use and
 cannot extend the deadline.
+
+`TopologyAuthorizationReplayLifecycleV1` bounds anti-replay storage without
+weakening logical permanence. Before VIT-INV-061 allocates durable authority,
+`TopologyAuthorizationAdmissionBudgetV1` enforces frozen per-deployment and
+issuer/class attempt-rate and outstanding limits; each allocation gets a
+monotonic `AuthorizationIssuanceSequence` bound into the receipt. Both
+VIT-INV-061 issuance results and VIT-INV-060 consumption/expiry/deadline results
+remain exactly replayable in hot storage for the frozen horizon. Each owner
+then compacts only its own state by atomically installing authenticated
+predecessor-linked `TopologyAuthorizationReplayCheckpointV1` and advancing its
+covered-through high-watermark before deleting covered hot rows. The
+checkpoint commits to the canonical request/mutation/receipt terminal-state
+set, typed-result archive, counters, schema/algorithm, and signing key epoch.
+
+At or below the covered-through watermark means historical, never absent.
+Within the exact horizon, replay returns the original typed outcome. Later, an
+authenticated archive proof may return it; missing/corrupt archive,
+membership/non-membership proof, checkpoint predecessor, or key yields
+`TopologyAuthorizationHistoricalStateUnavailable` and blocks affected
+consumption and ambiguous-key issuance. It never permits reissue or inference
+of non-consumption. Checkpoint coalescing/key rotation preserve the authenticated
+predecessor and coverage meaning. Restore/import merge the greatest sequence,
+checkpoint digest, covered-through watermark and key epoch before serving.
+Backlog saturation fails closed before allocation, and hot/checkpoint/archive/
+proof-index bytes and rows, outstanding counts, oldest uncompacted age, proof
+availability and quota/backlog thresholds are measured and alerted.
 
 The receipt is profile-discriminated. `OrchestratorAttestedFencedLease` requires
 the exact action-claim ID/digest/expiry fields and canonical-none hardware-proof

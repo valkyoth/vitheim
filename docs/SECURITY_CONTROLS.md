@@ -59,6 +59,11 @@ audit decision.
   predicate or hard no-late-commit fence; atomic time-ratchet/receipt/claim/
   topology/member-fence/tombstone/outbox persistence and typed reconciliation
   where client timeouts never permit a later commit;
+  bounded `TopologyAuthorizationReplayLifecycleV1` with pre-allocation rate/
+  outstanding quotas, monotonic issuance sequence, exact replay horizon,
+  authenticated checkpoint/archive commitments, checkpoint-before-delete
+  compaction, fail-closed unavailable history, key/restore ratchets, and
+  storage/backlog accounting and alerts;
   profile-discriminated authorization locally
   consumed with the successor, applicable workload proof, tombstones, and fence
   outbox without cross-owner atomicity; challenge/sequence/expiry topology

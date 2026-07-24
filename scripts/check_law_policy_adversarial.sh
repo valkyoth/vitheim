@@ -226,6 +226,18 @@ expect_realization_failure "a missing definitely-not-committed topology outcome"
 sed -i 's/`TopologyMutationCommitReconciling`, //' "$realizations"
 expect_realization_failure "a missing topology commit reconciliation outcome"
 
+sed -i 's/`TopologyAuthorizationAdmissionBudgetV1`, //' "$realizations"
+expect_realization_failure "a missing topology authorization admission budget"
+
+sed -i 's/`AuthorizationIssuanceSequence`, //' "$realizations"
+expect_realization_failure "a missing topology authorization issuance sequence"
+
+sed -i 's/`TopologyAuthorizationReplayCheckpointV1`, //' "$realizations"
+expect_realization_failure "a missing topology authorization replay checkpoint"
+
+sed -i 's/`TopologyAuthorizationHistoricalStateUnavailable`, //' "$realizations"
+expect_realization_failure "a missing unavailable historical-state denial"
+
 sed -i 's/, VIT-LST-001-g01-N//' "$realizations"
 expect_realization_failure "a missing negative semantic contract"
 

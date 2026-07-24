@@ -66,6 +66,13 @@ timeouts never prove absence; reconciliation permits no later commit. Clock
 rollback, suspend, restore, failover, and cross-service clock disagreement
 cannot extend the grant. VIT-INV-060 only consumes the authenticated,
 profile-discriminated receipt and applicable workload proof in its local CAS.
+VIT-INV-060/061 also share a bounded replay lifecycle: allocation is rate- and
+outstanding-limited, every receipt carries a monotonic issuance sequence, exact
+results remain hot for a frozen horizon, and an authenticated predecessor-
+linked checkpoint advances a covered-through high-watermark before compaction.
+Compacted state is permanently historical. Missing archive or set proof returns
+typed unavailable-history denial and can never become absence, reissue, or
+reconsumption; checkpoint/key/sequence ratchets survive migration and restore.
 Later authority changes block new grants rather than pretending to atomically
 revoke the already issued bounded grant across transaction domains. Once committed,
 `VIT-LAW-007@g02` makes current topology a normal admission, readiness,

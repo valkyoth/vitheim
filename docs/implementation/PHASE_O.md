@@ -99,6 +99,19 @@ profile-applicable workload proof, topology CAS, and fence outbox in one local
 transaction—never a distributed epoch/CAS transaction. The receipt discriminates
 the orchestrator profile's required action claim from hardware profile's
 canonical-none claim and required hardware proof.
+VIT-INV-061 assigns every allocation a monotonic
+`AuthorizationIssuanceSequence` and applies the frozen per-deployment and
+issuer/class rate/outstanding budget before allocating durable authority.
+VIT-INV-060 and VIT-INV-061 implement
+`TopologyAuthorizationReplayLifecycleV1`: exact hot replay through the frozen
+horizon, authenticated predecessor-linked checkpoint and archival commitments,
+atomic covered-through high-watermark before hot deletion, and bounded
+compaction/backpressure. A compacted receipt remains permanently historical.
+If an old outcome or membership/non-membership proof cannot be authenticated,
+`TopologyAuthorizationHistoricalStateUnavailable` denies consumption and
+ambiguous-key issuance; it never means unused. Checkpoint key rotation,
+coalescing, storage counters, proof availability, quota/backlog thresholds, and
+alerts are operationally mandatory.
 
 After commit, every `CurrentPlacementTopologyReceiptV1` carries a verifier
 challenge, monotonic receipt sequence, topology/placement generation, manifest/
@@ -121,6 +134,8 @@ sequence, and exclusivity probe; `VIT-CAP-061` independent authorization
 lineage/issuance/recovery adapter; generation-2 law realizations/catalog
 artifact; canonical `TopologyMutationAuthorizationReceiptV1` codec;
 deadline-conditional topology-CAS backend probe/result ledger;
+replay-lifecycle budgets, exact-horizon hot store, authenticated checkpoint/
+archive proof and compactor, storage-growth metrics/alerts;
 challenge/currentness ratchet probe; and runbook.
 Verification: clean
 install, permissions, rootless/non-root, secrets, restart, rolling upgrade,
@@ -161,7 +176,10 @@ widening; suspend/resume; snapshot restore; issuer/consumer clock disagreement;
 authorization-time profile/epoch/continuity substitution; expiry-versus-CAS
 race; pauses after locks/time/before CAS/during commit/client timeout/response
 loss; attempted late commit; mechanism downgrade; topology-owner/backend
-failover; older restore; and crash-tests local
+failover; replay-horizon boundary, quota saturation, concurrent replay during
+checkpoint/install/delete, compaction crash/restart, archive/proof outage,
+checkpoint/key rotation, bounded-growth saturation; older restore; and crash-
+tests local
 receipt/workload-proof/CAS consumption without claiming
 cross-owner atomicity. Exit criteria: the
 documented profile is operable securely and no package change can start below or
@@ -378,6 +396,14 @@ proven pre-expiry commit or definitely absent commit; reconciliation may hide
 which result occurred but the storage fence must prevent any later commit.
 Pause after locks/time/before CAS/during commit and at timeout/response loss,
 then fail over the database and attempt a late commit. Exercise
+issuer and consumer failover during rate admission, issuance-sequence
+allocation, checkpoint installation, archive publication, hot-row deletion,
+checkpoint coalescing, and key rotation. Concurrent old replay must return its
+exact in-horizon outcome, an authenticated archived outcome, or
+`TopologyAuthorizationHistoricalStateUnavailable`; it can never allocate,
+consume, or mutate again. Partition from archive/proof storage blocks the
+affected issuance key/range and compaction backlog saturation applies
+backpressure before new durable authorization. Exercise
 topology receipt challenge/sequence/expiry ratchets through owner failover,
 proxy replay, clock rollback, and restored older state. `VIT-INV-060`, not
 rollout or discovery, owns current
@@ -594,7 +620,11 @@ tombstones, break-glass recovery state, authenticated time profile/epoch, and
 issuer continuity evidence; plus every consumer's last trusted lower-bound,
 profile-epoch/continuity ratchet, and expired-authorization tombstone; the selected
 `DeadlineConditionalTopologyCasV1` mechanism/profile, typed result ledger, and
-canonical authorization receipt V1 bytes/digest; the active
+canonical authorization receipt V1 bytes/digest; replay-lifecycle attempt/
+outstanding budgets, issuance sequence, exact-horizon hot results, checkpoint
+chain/current digest/covered-through high-watermark, accumulator and archive
+commitments, compaction cursor/backlog, proof/key epochs, and growth counters;
+the active
 catalog ID/epoch,
 recomputed payload/envelope and actual
 predecessor digests, exact profile, activation floor, product/edition/
@@ -625,7 +655,13 @@ time disagreement, and restore racing authorization expiry/topology CAS; every
 case proves the restored grant is expired, denied, or already consumed and
 never receives a later deadline or leaves an absent transaction able to commit;
 restore also rejects a downgraded deadline-CAS mechanism, missing result ledger,
-noncanonical receipt bytes, and any partial issuer/consumer schema; every
+noncanonical receipt bytes, any partial issuer/consumer schema, issuance-
+sequence or budget rollback, missing uncompacted hot results, checkpoint fork/
+rollback, accumulator/archive substitution, compaction-cursor rewind,
+unauthenticated key rotation, or unavailable historical evidence treated as
+absence. Exact payload erasure may yield
+`TopologyAuthorizationHistoricalStateUnavailable`, but the minimal restored
+checkpoint still denies replay/reissue; every
 `0.18.2` atomic work variant and denial-only
 audit-chain integrity, external anchors, registered tenant-surface disposition,
 typed external-copy evidence-strength honesty, measurement rollup manifests,
@@ -775,6 +811,8 @@ replacement, remediation ceremony quorum/channel/KMS/recovery-epoch and
 exercise contention, evaluator campaign root/enumeration/materialization/
 completeness contention, invariant declaration/owner/lifecycle/contract/fence
 coverage,
+topology-authorization issuance-rate/outstanding/hot-row/checkpoint/archive/
+proof-index/compaction-backlog cardinality and byte budgets,
 starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
@@ -798,7 +836,8 @@ campaign enumeration/completeness and partitioned fair-scheduler/fresh-evidence
 oracle, quarantine-resolution/no-
 old-work-revival oracle, independent-remediation bootstrap/simultaneous-loss/
 compromise/channel/KMS/outage/manual-limit/exercise oracle, invariant-registry
-coverage oracle,
+coverage oracle, topology-authorization sustained-abuse/quota/horizon/
+checkpoint/compaction/archive-outage/key-rotation/bounded-storage oracle,
 leak/escalation evidence, and signed reports. Verification: atomic
 bounded claim sets across every work bundle, concurrent overlapping-set
 canonical acquisition, deadlock/livelock freedom, partial-reservation crash and
@@ -864,7 +903,11 @@ tenant exhaustion, one-tenant unknown-outcome floods, per-tenant/global
 starvation, emergency-reserve borrowing, noisy tenants, observation late-
 arrival/authoritative-rollup recalculation/downsampling,
 paging/status retry/reconciliation, queue/index/embedding/plugin/report
-exhaustion, leaks, cascading failures, and long soak/chaos pass. Exit criteria:
+exhaustion, topology-authorization attempt floods, unresolved-grant saturation,
+compaction lag, checkpoint/archive proof outage, concurrent historical replay,
+key rotation, bounded steady-state hot storage and checkpoint coalescing,
+fail-closed issuance backpressure, leaks, cascading failures, and long soak/
+chaos pass. Exit criteria:
 regressions, cross-kind settlement, partial/mutated/cross-partition set
 acceptance, capacity-lease over-allocation, deadlock/livelock, unbounded quota
 liability, lost/duplicated encumbrance, capacity free at both transfer ends,
@@ -882,7 +925,9 @@ credential-quarantine/resolution/new-generation/tombstone bypass, evaluator-
 lineage/reevaluation/startup bypass, remediation-authority isolation/manual-
 limit bypass, prepared-cancellation recovery bypass, delayed-authority bypass, retry-driven
 duplicate work, unfair or
-blocked recovery, and unsafe saturation block release.
+blocked recovery, unbounded authorization anti-replay state, covered receipt
+resurrection, archive loss interpreted as absence, and unsafe saturation block
+release.
 `v0.146.0
 implementation stop reached. Run pentest for this exact commit.`
 
@@ -906,6 +951,10 @@ reevaluation/startup assurance report, quarantine-resolution evidence/
 separation/consistency/new-generation/tombstone assurance report, independent
 remediation credential/profile/lineage/audit/egress/cleanup-quota/manual-limit
 assurance report,
+topology-authorization replay-checkpoint canonicalization/authentication/key-
+rotation, accumulator membership/non-membership, archive integrity,
+compaction-ordering, quota/backpressure, sensitive-data minimization, and
+bounded-growth assurance report,
 and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
@@ -945,7 +994,9 @@ evaluator-lineage/generation/admission/epoch/reevaluation/startup compatibility,
 quarantine-resolution/new-generation/tombstone/evidence compatibility,
 remediation-profile/credential-lineage/audit/epoch/quota/manual-limit
 compatibility, plus cancellation-recovery
-generation/receipt compatibility.
+generation/receipt compatibility, and topology-authorization issuance-sequence/
+budget/exact-horizon/checkpoint/predecessor/covered-through/set/archive/
+compaction/key-epoch/historical-unavailable compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
 golden mixed-version event corpus, migration/rebuild suites, and deprecation
 rules. Verification: downgrade/skew/unknown versions, upcaster determinism,
@@ -961,7 +1012,9 @@ canonical-result/freshness/provider-validator/quarantine skew, evaluator-
 lineage/admission/epoch/reevaluation/startup skew, quarantine transition/
 resolution/tombstone skew, remediation profile/lineage/quota/manual-limit skew, operation-profile
 confusion, bearer TCB drift, cancellation-recovery successor/
-receipt/deadline skew, and independent-parent-release rejection.
+receipt/deadline skew, replay-checkpoint algorithm/key/horizon skew, old writer
+after compaction, checkpoint fork/rollback, archive-loss-as-absence, and
+independent-parent-release rejection.
 Exit criteria: supported combinations are exact and no compatible version path
 can lower the durable platform floor, reactivate a superseded rollout, or
 broaden executor credential/network authority.
