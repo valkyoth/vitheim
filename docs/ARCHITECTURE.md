@@ -58,8 +58,13 @@ uncertainty ceiling, trusted-time profile/epoch, and issuer continuity identity
 use the same conservative interval vocabulary as catalog validity. VIT-INV-060
 keeps an independent local lower-bound/continuity/expiry ratchet and consumes
 only when its fresh interval proves the topology CAS commits before the frozen
-class deadline; clock rollback, suspend, restore, failover, and cross-service
-clock disagreement cannot extend the grant. VIT-INV-060 only consumes the authenticated,
+class deadline through mandatory `DeadlineConditionalTopologyCasV1`. The
+storage authority evaluates deadline at commit or provides a hard no-late-
+commit fence and atomically persists the time ratchet, receipt/claim
+tombstones, topology CAS, member fences/tombstones, and fence outbox. Client
+timeouts never prove absence; reconciliation permits no later commit. Clock
+rollback, suspend, restore, failover, and cross-service clock disagreement
+cannot extend the grant. VIT-INV-060 only consumes the authenticated,
 profile-discriminated receipt and applicable workload proof in its local CAS.
 Later authority changes block new grants rather than pretending to atomically
 revoke the already issued bounded grant across transaction domains. Once committed,

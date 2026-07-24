@@ -8,6 +8,10 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added canonical topology-authorization receipt persistence and a mandatory
+  backend deadline-conditional topology CAS, with atomic time/claim/topology/
+  fence state, no-late-commit proofs, per-backend pause/failover conformance,
+  and non-lossy migration, restore, and import requirements.
 - Bound topology-mutation authorization expiry to authenticated trusted-time
   profile/epoch/continuity evidence, concrete per-class lifetime ceilings,
   fail-closed issuance, conservative consumer intervals, rollback-resistant

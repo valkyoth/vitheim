@@ -313,6 +313,24 @@ require_text docs/implementation/PHASE_B.md \
 require_text docs/implementation/PHASE_C.md \
     '`VIT-LAW-001@g02`' \
     'generation-pinned storage conformance'
+require_text docs/implementation/PHASE_C.md \
+    '`TopologyMutationAuthorizationReceiptV1` canonical bytes/digest' \
+    'canonical topology authorization receipt storage'
+require_text docs/implementation/PHASE_C.md \
+    '`DeadlineConditionalTopologyCasV1`' \
+    'deadline-conditional topology commit port'
+require_text docs/implementation/PHASE_C.md \
+    '`latest + maximum_commit_slack < commit_before` at the backend' \
+    'backend-authoritative topology commit deadline'
+require_text docs/implementation/PHASE_C.md \
+    'pauses immediately after lock acquisition, after trusted-time observation' \
+    'deadline commit pause-point oracle'
+require_text docs/implementation/PHASE_C.md \
+    'unsupported and refuse dynamic-topology-owner startup' \
+    'backend refusal without deadline proof'
+require_text docs/implementation/PHASE_C.md \
+    'mechanism/profile and result ledger' \
+    'deadline mechanism migration preservation'
 require_text docs/implementation/PHASE_B.md \
     '`EvaluatorInvalidationCampaignRoot`' \
     'durable evaluator invalidation campaign root'

@@ -196,7 +196,7 @@ expect_realization_failure "a missing pre-initialization topology state"
 sed -i 's/`CommitTopologyAuthorityHandoff`, //' "$realizations"
 expect_realization_failure "a missing topology-authority handoff transition"
 
-sed -i 's/`TopologyMutationAuthorizationReceipt`, //' "$realizations"
+sed -i 's/`TopologyMutationAuthorizationReceiptV1`, //' "$realizations"
 expect_realization_failure "a missing topology-mutation authorization receipt"
 
 sed -i 's/`RecheckTopologyAtTransmissionStart`, //' "$realizations"
@@ -216,6 +216,15 @@ expect_realization_failure "a missing topology-authorization time ratchet"
 
 sed -i 's/`TopologyMutationAuthorizationExpired`, //' "$realizations"
 expect_realization_failure "a missing topology-authorization expiry outcome"
+
+sed -i 's/`DeadlineConditionalTopologyCasV1`, //' "$realizations"
+expect_realization_failure "a missing deadline-conditional topology CAS"
+
+sed -i 's/`TopologyMutationDefinitelyNotCommitted`, //' "$realizations"
+expect_realization_failure "a missing definitely-not-committed topology outcome"
+
+sed -i 's/`TopologyMutationCommitReconciling`, //' "$realizations"
+expect_realization_failure "a missing topology commit reconciliation outcome"
 
 sed -i 's/, VIT-LST-001-g01-N//' "$realizations"
 expect_realization_failure "a missing negative semantic contract"

@@ -124,15 +124,23 @@ without allowing a historical result to become current authority. The future
 `VIT-CAP-060` contract separately persists
 the closed uninitialized/dormant/committed handoff selector and exact completed-
 rollout/artifact/manifest/local-admission bindings, independently issued
-topology-authorization receipt and local consumption tombstone,
-profile-discriminated workload proof, atomic successor/fence outbox, monotonic
+`TopologyMutationAuthorizationReceiptV1` canonical bytes/digest and local
+consumption tombstone, mutation class, `issued_at`, immutable `commit_before`,
+maximum uncertainty, trusted-time profile ID/epoch, issuer continuity ID,
+profile-discriminated workload proof, consumer last trusted lower bound/time-
+profile epoch/continuity ID, permanent expired-receipt tombstone, atomic
+successor/fence outbox, monotonic
 topology-receipt sequence, and receipt challenge/generation/manifest/tombstone/
 owner-fence/time/uncertainty/signer fields. VIT-CAP-058 persists the greatest
 locally observed topology generation and receipt sequence. Future
 `VIT-CAP-061` separately persists authorization lineage/generation,
 proposal/quorum/SoD, issuance request/unique mutation/manifest, immutable
-`commit_before`, revocation/supersession, typed unknown response, independent
-break-glass authority, and restore high-watermarks/tombstones. No adapter may infer
+receipt bytes/digest, mutation class, `issued_at`, `commit_before`, uncertainty
+ceiling, trusted-time profile/epoch, issuer continuity, revocation/supersession,
+typed unknown response, independent break-glass authority, and issuance/time
+high-watermarks/tombstones. Backup and restore merge every monotonic issuer and
+consumer time field with the greatest externally retained/local value and can
+never reset continuity, erase expiry, or extend a deadline. No adapter may infer
 initialization or completion. Negotiate the planning
 superset separately from immutable active payload/envelope support. Exact
 `CompiledCatalog` and `SignedCatalog` capabilities report independently; no
@@ -169,6 +177,39 @@ receipt/final-barrier/materialization/reconciliation/stuck state,
 explicit credential-operation/TCB placement, cancellation-recovery
 successor semantics, bounded
 deadlock-retry semantics, and fail-closed behavior.
+
+Freeze the canonical `TopologyMutationAuthorizationReceiptV1` codec here. Its
+domain-separated, length-prefixed authentication preimage includes schema
+version; authorization lineage/generation and stable request ID; mutation ID
+and class; deployment and expected topology generation; canonical successor-
+manifest digest; principal/session/delegation/role/policy/change/incident/
+emergency/approval bindings; `issued_at`; `commit_before`; maximum uncertainty;
+trusted-time profile ID/epoch; issuer continuity ID; issuer identity/fence/key
+epoch; authentication profile discriminator; and its exact applicable action-
+claim or hardware-proof fields with canonical-none values for the other
+profile. Unknown fields, duplicate fields, noncanonical order/encoding, omitted
+time/profile/continuity fields, and version substitution reject before
+authentication.
+
+Any adapter claiming `VIT-CAP-060` must also claim
+`DeadlineConditionalTopologyCasV1`. That port atomically consumes the exact
+receipt, applicable workload claim and replay tombstones; advances the consumer
+trusted-time lower-bound/profile-epoch/continuity ratchet; evaluates
+`latest + maximum_commit_slack < commit_before` at the backend's authoritative
+commit linearization point; commits the topology successor/member fences/
+permanent tombstones/fence outbox and a typed deadline result; or proves the
+transaction absent. A closed mechanism enum permits only
+`AuthoritativeCommitTimePredicate`, where the deadline predicate executes
+inside the same authoritative commit operation using an admitted time source,
+or `HardNoLateCommitFence`, where backend-enforced cancellation/fencing
+provably prevents commit after the deadline. A statement-time predicate,
+client timer, socket timeout, cancellation request, connection loss, or
+post-commit audit timestamp is not this capability. An alternative
+authorization linearization point requires a successor law generation and
+separate residual-risk decision; it is not accepted by `VIT-LAW-008@g02`.
+Response loss may yield typed reconciliation only when the backend proof still
+guarantees that any successful commit linearized before expiry and no absent
+transaction can later commit.
 
 Goal: prevent adapters from silently weakening correctness.
 
@@ -252,6 +293,12 @@ transition/outcome/recovery/P/N/M/F realization;
 distributed-exactly-once capacity-transfer claim, unbounded or identity-changing
 deadlock retry, and optional-performance fallback tests pass.
 
+Also reject a `VIT-CAP-060` claim that omits any canonical receipt field,
+issuer/consumer time high-watermark, continuity field, expiry tombstone, or
+atomic bundle member; uses client-side deadline checks; reports an unproven
+commit mechanism; permits a timeout-abandoned transaction to commit later; or
+allows migration, downgrade, backup, restore, or import to reset those fields.
+
 Exit criteria: correctness never depends on an unverified optional capability.
 `v0.21.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -303,7 +350,18 @@ collision, issue-versus-epoch-change/revoke ordering, post-issuance bounded
 grant behavior, lost issuance response, circular break-glass, mixed hardware/
 claim profile fields, signed-old/wrong-challenge/lower-sequence topology
 receipt, proxy/cache replay, clock rollback, topology-owner failover, older
-restore, and split authorization/claim/topology-CAS/fence-outbox fixtures;
+restore, omitted/substituted canonical authorization time/profile fields, and
+split authorization/consumer-time-ratchet/expiry-tombstone/claim/topology-CAS/
+fence-outbox fixtures. Add a `DeadlineConditionalTopologyCasV1` oracle that
+pauses immediately after lock acquisition, after trusted-time observation,
+before CAS submission, during backend commit, at client timeout/response loss,
+and across backend failover. Advance time beyond `commit_before` at each point
+and accept only a typed provably pre-expiry commit or
+`TopologyMutationDefinitelyNotCommitted`; a reconciliation result may hide
+which of those occurred but the backend must prove no transaction can commit
+later. Reject statement-time-only checks, best-effort cancellation, late
+commit, reset ratchets, lost expiry tombstones, and receipt V1 encoding/
+authentication-preimage drift;
 and destructive reference
 adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
@@ -468,15 +526,23 @@ bundling/native-code policy, maintenance, license, and file-encryption strategy.
 Setup: document single-node limits, dedicated database-file-per-tenant strong
 profile, shared-file evaluation-only profile, ownership, secure paths, journal
 mode, transactions, busy handling, migrations, backup, cancellation, keys, and
-the version-bound implementation-admission record.
+the version-bound implementation-admission record. To claim `VIT-CAP-060`,
+select and evidence one admitted `DeadlineConditionalTopologyCasV1` mechanism
+inside SQLite itself; host timers, busy timeouts, connection interruption, and
+statement-time predicates are insufficient. Otherwise report the capability
+unsupported and refuse dynamic-topology-owner startup.
 
 Goal: support development, evaluation, tests, and documented single-node use.
 
 Deliverables: semantic adapter, migration set, secure file setup, backup/restore
-tooling, and capability profile.
+tooling, capability profile, canonical
+`TopologyMutationAuthorizationReceiptV1` codec/readback, complete issuer/
+consumer time schema, and atomic deadline-CAS evidence.
 
 Verification: injection, locking, crash rollback, symlink/permission attacks,
-tenant isolation, interrupted migration, restore, and conformance pass.
+tenant isolation, interrupted migration, restore, every omitted/reset receipt/
+time/profile/continuity/tombstone field, every `0.22.0` deadline-CAS pause
+point, timeout with attempted late commit, and conformance pass.
 
 Exit criteria: no HA claim and all single-node semantics are evidenced.
 `v0.23.0 implementation stop reached. Run pentest for this exact commit.`
@@ -490,6 +556,10 @@ Setup: define TLS/authentication, non-owner least-privilege role, composite keys
 foreign keys, `ENABLE` plus `FORCE ROW LEVEL SECURITY`, transaction-local tenant
 binding with pool cleanup/startup probes, prepared queries, migrations, and cancellation.
 Record the version-bound implementation admission before adapter code begins.
+The production profile must select and prove either an authoritative
+commit-time predicate or hard no-late-commit fence for
+`DeadlineConditionalTopologyCasV1`; PostgreSQL statement/transaction timestamps,
+client timeouts, cancel requests, and connection loss alone do not qualify.
 
 Goal: establish the deepest-tested reference production backend.
 
@@ -540,7 +610,10 @@ rotation/takeover guard rows, credential-operation-profile/TCB placement,
 and scoped egress/pool partition evidence,
 canonical composite lock-order/deadlock-retry implementation,
 integrity commitment, and configuration adapters; migrations, operator guide,
-backup/restore, and observability. Startup fails capability negotiation if any
+backup/restore, observability, canonical
+`TopologyMutationAuthorizationReceiptV1` bytes/digest, complete VIT-CAP-060/061
+issuer and consumer time columns/high-watermarks/tombstones, and the atomic
+deadline-CAS mechanism/result ledger. Startup fails capability negotiation if any
 mandatory semantic component or transaction-domain placement is absent.
 
 Verification: injection, auth downgrade, transaction crashes, concurrent append,
@@ -600,7 +673,10 @@ cancel-before-preparation, cancellation after every preparation point, lost/
 duplicate recovery receipt, independent parent restore, parent drift and overdue
 cancelled/prepared recovery, blocked-parent successor recovery, composite lock-order inversion and bounded retry,
 cross-partition rejection, tenant bypass, pool exhaustion, migration rollback,
-restore, and conformance pass.
+restore, every omitted/reset authorization receipt/time/profile/continuity/
+expiry-tombstone field, every lock/time/CAS/commit/timeout/response-loss/
+failover pause from `0.22.0`, attempted post-deadline commit, and conformance
+pass.
 
 Exit criteria: production claims match tested deployment profiles only.
 `v0.24.0 implementation stop reached. Run pentest for this exact commit.`
@@ -613,7 +689,11 @@ implementation-admission record approve the exact driver/TLS profile.
 Setup: prefer database-per-tenant strong isolation; otherwise require composite
 tenant constraints, generated statements, least-privilege views/routines, and
 explicitly weaker non-production classification; map isolation, locking,
-encodings/collations, TLS/auth, migrations, and cancellation.
+encodings/collations, TLS/auth, migrations, and cancellation. A
+`VIT-CAP-060` claim additionally selects and proves an admitted
+`DeadlineConditionalTopologyCasV1` commit-time mechanism; ordinary server/client
+timeouts and best-effort cancellation do not qualify, and absence keeps dynamic
+topology unsupported.
 
 Goal: evaluate portable business correctness without making a `1.0.0`
 production-support claim by default.
@@ -622,7 +702,9 @@ Deliverables: semantic adapter, migration/operation guide, capability profile,
 and portability discrepancy register.
 
 Verification: encoding/collation confusion, isolation anomalies, injection,
-deadlock retry, rollback, tenant partition, restore, and conformance pass.
+deadlock retry, rollback, tenant partition, restore, omission/reset of every
+receipt V1 and issuer/consumer time/continuity/tombstone field, the complete
+deadline-CAS pause/failover matrix, attempted late commit, and conformance pass.
 
 Exit criteria: no backend-specific behavior leaks into domain correctness.
 `v0.25.0 implementation stop reached. Run pentest for this exact commit.`
@@ -634,7 +716,11 @@ implementation-admission record approve the exact driver/TLS profile.
 
 Setup: bind tenant into every document ID, unique index, shard key, session and
 transaction; co-locate stream head/events/receipts/outbox for atomicity; define
-write concern, migrations, retry semantics, and topology limits.
+write concern, migrations, retry semantics, and topology limits. A
+`VIT-CAP-060` profile must keep every authorization/consumer-time bundle member
+in one transaction and prove an admitted `DeadlineConditionalTopologyCasV1`
+mechanism under the selected write concern and failover model; driver timeout
+or session cancellation is insufficient.
 
 Goal: evaluate canonical event-journal behavior on a document backend without a
 `1.0.0` production-support claim by default.
@@ -643,7 +729,10 @@ Deliverables: semantic adapter, collection/index definitions, capability profile
 backup/restore procedure, and divergence notes.
 
 Verification: operator/query injection, partial transactions, retry duplication,
-cross-tenant filters, failover, migration interruption, and conformance pass.
+cross-tenant filters, failover, migration interruption, omission/reset of every
+receipt V1 and issuer/consumer time/continuity/tombstone field, all deadline-CAS
+pause points including primary failover and response loss, attempted late
+commit, and conformance pass.
 
 Exit criteria: document flexibility never weakens mandatory journal semantics.
 `v0.26.0 implementation stop reached. Run pentest for this exact commit.`
@@ -655,7 +744,11 @@ implementation-admission record approve the exact client/TLS profile.
 
 Setup: use strict tenant namespaces/databases, schema and record permissions,
 least-privilege non-system application identity, transactions, graph features,
-query parameters, migrations, capability probes, and version support.
+query parameters, migrations, capability probes, and version support. A
+`VIT-CAP-060` claim requires an admitted
+`DeadlineConditionalTopologyCasV1` mechanism proven against the exact supported
+server version; a query-time predicate, RPC timeout, or cancellation request is
+not sufficient, and an incapable version reports dynamic topology unsupported.
 
 Goal: evaluate graph capabilities as optimization without changing correctness
 or claiming default `1.0.0` support.
@@ -664,7 +757,9 @@ Deliverables: semantic adapter, schema/migrations, capability profile, graph
 optimization boundary, and operational guide.
 
 Verification: namespace escape, query injection, unauthorized edges, transaction
-failure, capability lies, backup/restore, and full conformance pass.
+failure, capability lies, backup/restore, omission/reset of every receipt V1 and
+issuer/consumer time/continuity/tombstone field, every deadline-CAS pause/
+failover/response-loss case, attempted late commit, and full conformance pass.
 
 Exit criteria: optional graph behavior is replaceable and policy equivalent.
 `v0.27.0 implementation stop reached. Run pentest for this exact commit.`
@@ -866,6 +961,18 @@ active rollout generation, authenticated global-result receipt/replay
 tombstone, external claim issuance sequence, co-transactional local consumption
 tombstones/outcomes/typed uncertainty, deadlines/escalation, exact local owner
 identities, and all fences.
+Preserve `VIT-INV-060` and `VIT-INV-061` separately: canonical
+`TopologyMutationAuthorizationReceiptV1` bytes/digest and authentication
+profile; every mutation/time/profile/continuity field; issuer issuance/time
+high-watermarks; consumer trusted lower-bound/profile-epoch/continuity ratchet;
+consumed and expired receipt tombstones; exact
+`DeadlineConditionalTopologyCasV1` mechanism/profile and result ledger;
+topology generations, member fences/tombstones, and fence outbox. A migration
+updates this complete set transactionally or remains pre-migration and
+unready. It cannot synthesize omitted fields, map unknown time profiles, reset
+continuity, erase expiry/consumption, change the deadline-CAS mechanism, or
+permit an older binary/schema to write. Downgrade below this schema is rejected
+before opening the authority rows.
 Replacement creates a successor placement generation and fresh admission;
 migration never clones authority from a copied local row.
 Migration authority cannot come from a manifest or catalog stored under the
@@ -925,6 +1032,10 @@ intersection, altered/noncanonical manifest, digest mismatch, or future-
 generation conformance claim, self-consistent-but-untrusted successor,
 catalog/root substitution or rollback, omitted predecessor admission tuple, or
 unknown/missing semantic realization,
+omitted/defaulted/truncated authorization receipt V1 field, reset issuer or
+consumer time high-watermark, continuity substitution, erased expiry tombstone,
+changed deadline-CAS mechanism, partial atomic bundle migration, downgrade
+writer admission, or post-migration late commit,
 missing campaign membership journal/scan receipt/final barrier/mismatch state,
 missing operation-profile discriminator, cancelled-prepared recovery receipt
 loss/duplication, and restored independent-parent-release cases.
@@ -946,14 +1057,21 @@ root epoch/revocation/successor fields and full generation ancestry; the
 keys/fences, messages, receipts, irreversible authorization state, atomically
 paired authorization outbox, authenticated global result/replay tombstones,
 pinned active generation, action-claim issuer/consumption/uncertainty state,
-and deadline/reconciliation state,
+and deadline/reconciliation state; separate VIT-INV-060/061 canonical
+`TopologyMutationAuthorizationReceiptV1` bytes/digest, issuer time fields/high-
+watermarks, consumer lower-bound/profile-epoch/continuity ratchet, consumed/
+expired tombstones, topology/member generations/fences/outbox, exact
+`DeadlineConditionalTopologyCasV1` mechanism/profile and result evidence,
 encryption/signing ports, position mapping, and budgets.
 
 Goal: migrate between backends without claiming direct database interchange.
 
 Deliverables: streaming exporter/importer, preflight verifier, reconciliation
 report, resumable checkpoints, source/destination mapping, and explicit
-manifest/admission/semantic-realization closure. Import calls the shared
+manifest/admission/semantic-realization closure. Import preserves every
+authorization schema field without defaulting and admits the destination only
+if it proves the same or stronger no-late-commit mechanism; otherwise imported
+topology authority remains fenced and unready. Import calls the shared
 canonical verifier with destination build scope and the actual predecessor
 artifact; it never infers, upgrades, or trusts a law generation from mutable
 payload content.
@@ -961,7 +1079,9 @@ payload content.
 Verification: truncation/substitution/reorder, wrong tenant/key/version, duplicate
 resume, blob mismatch, exhaustion, catalog or ancestor omission/substitution,
 self-consistent untrusted manifest, unknown semantic ID, silent generation
-upgrade, round-trip, and cross-adapter conformance pass.
+upgrade, omitted/reset receipt/time/profile/continuity/tombstone field,
+deadline-CAS mechanism downgrade, timeout-abandoned late commit, round-trip,
+and cross-adapter conformance pass.
 
 Exit criteria: successful import proves complete semantic and integrity parity.
 `v0.30.0 implementation stop reached. Run pentest for this exact commit.`

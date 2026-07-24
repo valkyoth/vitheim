@@ -106,8 +106,14 @@ time vocabulary. The authenticated grant carries issued-at/deadline,
 uncertainty, time-profile epoch, and issuer continuity; issuance and consumption
 fail closed on unavailable or discontinuous time. VIT-INV-060 ratchets its own
 trusted lower bound/continuity and consumes only when its interval proves the
-CAS will commit before expiry, so rollback, suspend, restore, failover, or clock
-disagreement cannot lengthen authority. VIT-INV-060 only consumes that
+CAS will commit before expiry through a backend-enforced
+`DeadlineConditionalTopologyCasV1`, so rollback, suspend, restore, failover, or
+clock disagreement cannot lengthen authority. `0.21.0` freezes canonical
+`TopologyMutationAuthorizationReceiptV1` storage and the deadline-CAS port;
+`0.22.0–0.27.0` prove every backend pause/failover outcome; `0.29.0–0.30.0`
+prevent migration/export field loss; and `0.140.2` admits only a concrete
+commit-time predicate or hard no-late-commit fence. Client timeouts are never
+deadline authority. VIT-INV-060 only consumes that
 profile-discriminated receipt and local workload proof with its CAS—there is no
 cross-owner atomic transaction. Challenge/sequence/expiry-bound topology
 receipts and local observation ratchets prevent signed-old replay. Rollout

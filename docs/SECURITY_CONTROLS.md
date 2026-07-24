@@ -54,6 +54,11 @@ audit decision.
   sixty-second break-glass ceilings; fail-closed issuance and rollback-
   resistant consumer lower-bound/profile/continuity/expiry ratchets proving
   pre-expiry CAS despite clock steps, suspend, restore, failover, or skew;
+  canonical `TopologyMutationAuthorizationReceiptV1` persistence and mandatory
+  backend `DeadlineConditionalTopologyCasV1` with an authoritative commit-time
+  predicate or hard no-late-commit fence; atomic time-ratchet/receipt/claim/
+  topology/member-fence/tombstone/outbox persistence and typed reconciliation
+  where client timeouts never permit a later commit;
   profile-discriminated authorization locally
   consumed with the successor, applicable workload proof, tombstones, and fence
   outbox without cross-owner atomicity; challenge/sequence/expiry topology

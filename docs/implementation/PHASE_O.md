@@ -86,7 +86,12 @@ an admitted conservative trusted-time interval and continuity or above either
 uncertainty ceiling. VIT-INV-060 durably ratchets its own last trusted lower
 bound, profile epoch, continuity identity, and expired-receipt tombstone. Its
 fresh consumer interval plus admitted commit slack must prove the topology CAS
-commits strictly before `commit_before`; rollback, uncertainty widening,
+commits strictly before `commit_before` through the selected
+`DeadlineConditionalTopologyCasV1` backend mechanism, never a client precheck
+or timeout. The port atomically commits the time ratchet, receipt/claim
+tombstones, topology CAS, member fences/tombstones, and fence outbox, and its
+authoritative commit-time predicate or hard no-late-commit fence proves an
+absent transaction cannot commit after expiry. Rollback, uncertainty widening,
 unaccounted suspend, restore, failover discontinuity, or issuer/consumer clock
 disagreement cannot extend validity.
 VIT-INV-060 consumes the authenticated receipt, local replay tombstone,
@@ -114,7 +119,9 @@ floor and key-set migration/drain tooling, topology bootstrap/handoff tool,
 `VIT-CAP-060` uninitialized/dormant/committed persistence, ordering, receipt-
 sequence, and exclusivity probe; `VIT-CAP-061` independent authorization
 lineage/issuance/recovery adapter; generation-2 law realizations/catalog
-artifact; challenge/currentness ratchet probe; and runbook.
+artifact; canonical `TopologyMutationAuthorizationReceiptV1` codec;
+deadline-conditional topology-CAS backend probe/result ledger;
+challenge/currentness ratchet probe; and runbook.
 Verification: clean
 install, permissions, rootless/non-root, secrets, restart, rolling upgrade,
 downgrade/rollback to a lower compiled floor, lower-default release, conflicting
@@ -152,7 +159,9 @@ hardware/action-claim fields; signed-old/proxy/cache replay; wrong challenge;
 lower receipt sequence; clock rollback and forward NTP steps; uncertainty
 widening; suspend/resume; snapshot restore; issuer/consumer clock disagreement;
 authorization-time profile/epoch/continuity substitution; expiry-versus-CAS
-race; topology-owner failover; older restore; and crash-tests local
+race; pauses after locks/time/before CAS/during commit/client timeout/response
+loss; attempted late commit; mechanism downgrade; topology-owner/backend
+failover; older restore; and crash-tests local
 receipt/workload-proof/CAS consumption without claiming
 cross-owner atomicity. Exit criteria: the
 documented profile is operable securely and no package change can start below or
@@ -179,7 +188,10 @@ time profile/epoch, issuer continuity identity, class ceiling, issued-at,
 commit-before, and maximum uncertainty across that boundary without translating
 them to local wall-clock defaults. Each consumer uses a local conservative
 trusted interval and monotonic continuity/time ratchet, so service clock skew or
-NTP disagreement can only shorten or deny the grant. Bind each topology receipt
+NTP disagreement can only shorten or deny the grant. The remote storage
+boundary preserves the exact admitted `DeadlineConditionalTopologyCasV1`
+profile; RPC cancellation or service timeout cannot substitute for its backend
+commit guarantee. Bind each topology receipt
 to a fresh challenge,
 monotonic sequence, bounded currentness window, owner fence, and local
 observation ratchets. Bind its selected `WorkloadIdentityProofProfileV1`,
@@ -362,7 +374,10 @@ separation from VIT-INV-060. Independently fail over the VIT-INV-060 consumer
 while rolling clocks backward/forward, widening uncertainty, suspending and
 resuming, restoring snapshots, disagreeing with issuer time, and racing expiry
 against topology CAS; the consumer time/continuity ratchet must allow only one
-proven pre-expiry commit or non-retryable reconciliation. Exercise
+proven pre-expiry commit or definitely absent commit; reconciliation may hide
+which result occurred but the storage fence must prevent any later commit.
+Pause after locks/time/before CAS/during commit and at timeout/response loss,
+then fail over the database and attempt a late commit. Exercise
 topology receipt challenge/sequence/expiry ratchets through owner failover,
 proxy replay, clock rollback, and restored older state. `VIT-INV-060`, not
 rollout or discovery, owns current
@@ -577,7 +592,9 @@ and the independent VIT-INV-061 authorization lineage/generation, revocation/
 supersession, issuance request/receipt high-watermarks, unknown responses,
 tombstones, break-glass recovery state, authenticated time profile/epoch, and
 issuer continuity evidence; plus every consumer's last trusted lower-bound,
-profile-epoch/continuity ratchet, and expired-authorization tombstone; the active
+profile-epoch/continuity ratchet, and expired-authorization tombstone; the selected
+`DeadlineConditionalTopologyCasV1` mechanism/profile, typed result ledger, and
+canonical authorization receipt V1 bytes/digest; the active
 catalog ID/epoch,
 recomputed payload/envelope and actual
 predecessor digests, exact profile, activation floor, product/edition/
@@ -606,7 +623,10 @@ continuity state, missing expired-receipt tombstone, snapshot copied across
 continuity identities, restore during suspend or an NTP step, issuer/consumer
 time disagreement, and restore racing authorization expiry/topology CAS; every
 case proves the restored grant is expired, denied, or already consumed and
-never receives a later deadline; every `0.18.2` atomic work variant and denial-only
+never receives a later deadline or leaves an absent transaction able to commit;
+restore also rejects a downgraded deadline-CAS mechanism, missing result ledger,
+noncanonical receipt bytes, and any partial issuer/consumer schema; every
+`0.18.2` atomic work variant and denial-only
 audit-chain integrity, external anchors, registered tenant-surface disposition,
 typed external-copy evidence-strength honesty, measurement rollup manifests,
 rollup checkpoint inclusion and substitution-expiry gates, mandatory deletion
@@ -721,7 +741,9 @@ restored node below it, activate stale prepared parent state, or authorize a
 delayed transition from historical decisions alone; and every related surface
 has its own disposition proof. Recovery cannot extend or replay a topology-
 mutation authorization, lower its consumer trusted-time/continuity ratchet, or
-erase its expiry tombstone.
+erase its expiry tombstone. It cannot downgrade the deadline-CAS mechanism,
+convert reconciliation into retry authority, or let a previously absent
+transaction commit.
 `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification

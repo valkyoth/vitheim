@@ -104,7 +104,7 @@ without generation/export/rotation authority. Freeze authenticated
 `CatalogGlobalActivationResultReceipt`, including rollout/manifest/catalog/
 predecessor, expected/resulting global versions, outcome, distrust/revocation,
 sender/key epochs, idempotency, and replay tombstones.
-Freeze `TopologyMutationAuthorizationReceipt` separately from workload
+Freeze `TopologyMutationAuthorizationReceiptV1` separately from workload
 authentication and select independent `VIT-INV-061` as its sole issuer;
 VIT-INV-060 may only authenticate and consume. Freeze stable authorization
 lineage/generation, mutation/manifest uniqueness, approval/quorum/SoD
@@ -133,11 +133,17 @@ The consumer maintains its own last trusted lower-bound/profile-epoch/
 continuity ratchet and permanent expired-receipt tombstone. It may enter the
 topology CAS only when a fresh conservative `[earliest, latest]` interval,
 including admitted commit slack, proves `latest < commit_before`, uncertainty
-is within both ceilings, and continuity/profile evidence is current. A time
+is within both ceilings, and continuity/profile evidence is current. This
+proof is executed through `DeadlineConditionalTopologyCasV1`, not by a client-
+side precheck. The selected backend must enforce the predicate at its
+authoritative commit linearization point or provide a hard no-late-commit
+fence; a process pause, client timeout, cancel request, or connection loss
+cannot leave a transaction able to commit after the deadline. A time
 rollback, NTP step that widens uncertainty, suspend/resume without accounted
 continuity, snapshot restore, failover discontinuity, issuer/consumer
 disagreement, or inability to prove the CAS committed before expiry blocks or
-reconciles without retrying the receipt. Restore merges the greatest externally
+reconciles without retrying the receipt; reconciliation may hide a pre-expiry
+commit but must prove an absent transaction cannot later commit. Restore merges the greatest externally
 retained/local time ratchet before use and never extends a deadline. Freeze
 profile discrimination: orchestrator receipt
 requires action-claim fields and canonical-none hardware fields; hardware
@@ -282,7 +288,22 @@ partition for `VIT-INV-060`: closed
 state, exact artifact/rollout/manifest/local-admission binding, expected-version
 current-generation row, canonical membership manifest/digest, monotonic member
 placement generations, predecessor fences, permanent tombstones, and
-transactional fence outbox. The
+transactional fence outbox. Map the complete canonical
+`TopologyMutationAuthorizationReceiptV1` bytes/digest and VIT-INV-061 issuer
+mutation/time/profile/continuity fields/high-watermarks separately from the
+VIT-INV-060 consumer lower-bound/profile-epoch/continuity ratchet, consumed and
+expired receipt tombstones, applicable workload claim, topology CAS, member
+fences/tombstones, and fence outbox. Select the exact
+`DeadlineConditionalTopologyCasV1` mechanism for SQLite single-node and
+PostgreSQL HA: only an authoritative commit-time predicate or proven hard no-
+late-commit fence qualifies. The entire successful bundle is one local
+transaction; denial persists only its typed ratchet/expiry evidence. Client
+clocks/timeouts, statement timestamps, best-effort cancellation, and
+post-commit timestamps do not qualify. If either default backend cannot prove
+the capability, that deployment profile remains blocked rather than changing
+the authorization linearization point. MySQL, MongoDB, and SurrealDB may claim
+dynamic topology only after the same conformance proof; otherwise their
+capability report must reject it. The
 global, rollout, topology, and local update domains cannot share an authority
 row. Discovery/orchestrator state is non-authoritative.
 Planning-superset storage is non-authoritative and physically/logically
@@ -366,7 +387,11 @@ successor, independent parent restore, duplicated/lost recovery receipt, missing
 current-state/authority recovery check or deadline escalation, incomplete/lossy/overflowing safety-floor key migration,
 unit/period/kind/lane/region/settlement-policy substitution, missing transition epoch,
 advertised active/active authoritative writes, backup/export, and fail-closed
-capability evidence is reviewed.
+capability evidence is reviewed. Also inject every `0.22.0` lock/time/CAS/
+commit/timeout/response-loss/failover pause into each selected backend and
+reject omitted receipt/time fields, ratchet or tombstone reset, mechanism
+downgrade, uncertain-late commit, non-lossy migration failure, and downgrade
+writer admission.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
 requires a distributed work transaction are rejected, not relabeled supported.
 `v0.140.2 implementation stop reached. Run pentest for this exact commit.`

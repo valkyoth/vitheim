@@ -141,7 +141,7 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
             done
             ;;
         VIT-LAW-008@g02)
-            for symbol in Uninitialized TopologyMutationAuthorizationState TrustedTopologyAuthorizationTime TopologyAuthorizationTimeUnavailable IssueTopologyMutationAuthorization TopologyMutationAuthorizationIssuanceUnknown TopologyMutationAuthorizationReceipt AdvanceTopologyAuthorizationTimeRatchet AuthorizeTopologyMutation ConsumeTopologyMutationAuthorization TopologyMutationAuthorizationExpired InitializeTopologyAuthorityHandoff DormantInitialized CommitTopologyAuthorityHandoff Committed CurrentPlacementTopologyReceiptV1 FencePlacementGeneration CatalogTopologyChanged TopologyMutationAuthorizationBlocked; do
+            for symbol in Uninitialized TopologyMutationAuthorizationState TrustedTopologyAuthorizationTime TopologyAuthorizationTimeUnavailable IssueTopologyMutationAuthorization TopologyMutationAuthorizationIssuanceUnknown TopologyMutationAuthorizationReceiptV1 AdvanceTopologyAuthorizationTimeRatchet AuthorizeTopologyMutation DeadlineConditionalTopologyCasV1 ConsumeTopologyMutationAuthorization TopologyMutationCommittedBeforeDeadline TopologyMutationDefinitelyNotCommitted TopologyMutationCommitReconciling TopologyMutationAuthorizationExpired InitializeTopologyAuthorityHandoff DormantInitialized CommitTopologyAuthorityHandoff Committed CurrentPlacementTopologyReceiptV1 FencePlacementGeneration CatalogTopologyChanged TopologyMutationAuthorizationBlocked; do
                 case "$transitions" in
                     *"\`$symbol\`"*) ;;
                     *) fail "$semantic omits topology rollout symbol $symbol" ;;

@@ -44,10 +44,17 @@ the frozen five-minute initialization, two-minute commit/dynamic, and
 sixty-second break-glass ceilings; fail-closed issuance; and an independent
 consumer lower-bound/profile/continuity/expiry ratchet. Clock rollback, NTP
 steps, uncertainty widening, suspend/resume, snapshot restore, issuer/consumer
-disagreement, failover, and expiry racing the CAS never extend validity. The
-topology transaction locally consumes the profile-discriminated
-receipt, applicable workload proof, topology CAS, tombstones, and fence outbox
-without claiming external epoch atomicity.
+disagreement, failover, and expiry racing the CAS never extend validity.
+The shipped backend has a conformance-proven
+`DeadlineConditionalTopologyCasV1` profile—an authoritative commit-time
+predicate or hard no-late-commit fence, never a client timeout. It atomically
+persists the consumer time ratchet, canonical
+`TopologyMutationAuthorizationReceiptV1` consumption/expiry tombstones,
+applicable workload proof/claim, topology CAS, member fences/tombstones, typed
+deadline result, and fence outbox. Evidence at every lock/time/CAS/commit/
+timeout/response-loss/failover pause proves only a pre-expiry commit or a
+transaction that cannot commit later. An uncertain response reconciles without
+ordinary retry and without weakening that proof.
 The production risk register explicitly accepts only the residual window
 created by issuance-time linearization: compromised credentials may retain an
 already issued exact grant for at most its immutable class ceiling (never more

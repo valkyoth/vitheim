@@ -194,7 +194,7 @@ The action-authority scope is closed and is frozen at `0.140.1`:
 | --- | --- | --- |
 | Readiness observation | reusable, bounded `OnlineWorkloadFreshnessProofV1`; no action claim | read-only; stale, unavailable, fenced, or topology-mismatched proof returns unready and cannot create authority |
 | Positive local prepare, convergence, or admission receipt creation/commit | single-use `WorkloadLeaseActionClaim` | consume the claim, commit the receipt/admission and its typed result in one local owner transaction |
-| Topology handoff initialization/commit or topology successor mutation | independently issued `TopologyMutationAuthorizationReceipt`; orchestrator profile additionally requires a single-use `WorkloadLeaseActionClaim`, while hardware profile requires canonical-none claim fields and current hardware proof | consume the receipt, profile-applicable workload proof, expected-version topology CAS, local tombstones, and fence outbox in one VIT-INV-060 transaction |
+| Topology handoff initialization/commit or topology successor mutation | independently issued `TopologyMutationAuthorizationReceiptV1`; orchestrator profile additionally requires a single-use `WorkloadLeaseActionClaim`, while hardware profile requires canonical-none claim fields and current hardware proof | `DeadlineConditionalTopologyCasV1` consumes the receipt, profile-applicable workload proof, time ratchet/tombstones, expected-version topology CAS, member fences/tombstones, and fence outbox in one VIT-INV-060 transaction |
 | Dispatch | single-use `WorkloadLeaseActionClaim` | consume with the exact dispatch bundle and outcome in the dispatch owner transaction |
 | Transmission start | single-use `WorkloadLeaseActionClaim` | consume with the unique start claim immediately before provider I/O |
 | Global catalog proposal/activation/succession/revocation/distrust | no workload action claim for owner-to-owner delivery | authenticated control receipt and durable outbox/inbox protocol; an operator command separately requires current policy/session/approval authority |
@@ -319,7 +319,7 @@ The ceremony is:
    dynamic commands.
 
 Every initialization, handoff commit, and dynamic topology successor requires a
-unique `TopologyMutationAuthorizationReceipt` issued only by independent
+unique `TopologyMutationAuthorizationReceiptV1` issued only by independent
 `VIT-INV-061 TopologyMutationAuthorizationState`. The topology owner cannot
 share its issuer authority or credential and can never mint its own receipt.
 One authoritative lineage owner holds proposal, quorum/separation decision,
@@ -332,12 +332,18 @@ Issuance is the authorization linearization point. In its own transaction,
 VIT-INV-061 validates the initiating principal, interactive session or
 delegation lineage, current principal/session/delegation/role-assignment/policy
 epochs, change/incident/emergency record, approval quorum and separation of
-duties. It then issues one immutable, narrowly scoped, short-lived receipt
+duties. It then issues one immutable, narrowly scoped
+`TopologyMutationAuthorizationReceiptV1`
 binding authorization lineage/generation, mutation ID, expected topology
 generation, canonical successor-manifest digest, mutation class, `issued_at`,
 fixed `commit_before`, maximum time uncertainty, trusted-time profile ID/epoch,
 issuer time-continuity ID, issuer identity/fence/key epoch, and authentication
 profile.
+The canonical V1 authentication preimage is domain-separated and length-
+prefixed and covers every preceding authorization, topology, time, issuer, and
+profile-applicable workload-proof field. Unknown/duplicate fields, noncanonical
+ordering/encoding, omitted time/profile/continuity data, mixed profile fields,
+or schema-version substitution reject before authentication.
 If any contributing authority changes before issuance, issuance fails. A
 change, revocation, or supersession after issuance prevents new receipts but
 does not retroactively invalidate that exact already issued grant before
@@ -359,10 +365,18 @@ fails closed.
 VIT-INV-060 independently obtains a fresh trusted interval and persists the
 greatest observed lower bound, time-profile epoch, local continuity identity,
 and permanent expired-authorization tombstone. After acquiring every topology
-transaction lock and before the CAS linearization, the interval's `latest` plus
-the admitted maximum commit slack must be strictly less than `commit_before`.
-If commit timing becomes uncertain, the operation reconciles as unknown and
-the same receipt is never retried as fresh authority. Clock rollback, an NTP
+transaction lock, it calls mandatory `DeadlineConditionalTopologyCasV1`. The
+storage authority evaluates the interval's `latest` plus admitted maximum
+commit slack strictly below `commit_before` at the authoritative commit
+linearization point and atomically persists the consumer time ratchet, receipt/
+claim tombstones, topology CAS, member fences/tombstones, and fence outbox.
+The admitted backend mechanism is either an in-commit authoritative-time
+predicate or a hard no-late-commit fence. Client checks, statement timestamps,
+timeouts, cancel requests, and connection loss are never deadline authority.
+If the response becomes uncertain, reconciliation may discover an already
+committed pre-expiry result, but backend evidence must prove an absent
+transaction can never commit later; the same receipt is never retried as fresh
+authority. Clock rollback, an NTP
 step or issuer/consumer disagreement that widens uncertainty, unaccounted
 suspend/resume, snapshot restore, or failover discontinuity fails closed.
 Restore merges the greatest external/local time ratchet before receipt use and
