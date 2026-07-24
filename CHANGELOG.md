@@ -8,6 +8,11 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added a durable lane-scoped capacity drain fence for pending charge-ledger
+  profile reductions. New stage-one work must satisfy both active and pending
+  limits, over-target lanes receive a typed pre-debit draining denial, existing
+  obligations retain completion capacity, and fence install/clear/activation
+  is expected-version serialized and recovery authenticated.
 - Added an immutable VIT-INV-061-owned presentation-charge capacity-profile
   lineage with expected-version activation, governed emergency/aggregate
   resizing, drain-before-shrink semantics, physical provisioning evidence,

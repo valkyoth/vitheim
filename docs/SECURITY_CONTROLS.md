@@ -96,6 +96,11 @@ audit decision.
   drain-before-shrink, physical provisioning proof, downgrade fencing, and
   restore by greatest authenticated generation/digest rather than numeric
   maximum;
+  atomic lane-scoped PendingDrain fence installation; one nonterminal successor;
+  stage-one fit against active and successor profiles; typed pre-debit draining
+  denial; exact expected-version fence clear/activation; authenticated
+  failover/restore; stale-worker and competing-successor rejection; and
+  Recovery isolation;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

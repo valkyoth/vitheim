@@ -126,6 +126,13 @@ obligations and protected reserves fit; obligations never change lane.
 Increases require authenticated physical provisioning evidence. Failover and
 restore select the greatest authenticated profile generation/digest and
 reconstruct usage, never the greatest numeric ceilings.
+Pending shrink installs an authenticated lane-scoped drain fence. Stage one
+must satisfy active and pending profiles or receive a typed denial before
+debit/evidence creation; accepted obligations retain their completion path.
+Activation or authorized rejection consumes the exact fence under
+expected-version CAS. Competing, stale, missing or worker-cleared fences fail
+closed across RPC, failover and restore, and Normal/BreakGlass drain cannot
+block Recovery.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again

@@ -474,8 +474,25 @@ that the selected adapter has physically provisioned the additional disk, I/O,
 and worker capacity, reauthenticated at activation. Old generations and
 downgrade writers deny.
 
+Freeze `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`.
+Entering `PendingDrain` atomically binds the active predecessor ID/generation/
+digest, pending successor generation/digest, affected lanes, install sequence,
+expected version, and owner continuity into one durable fence. Permit only one
+nonterminal successor/fence per active predecessor. Every stage-one admission
+locks the fence and must fit both active and applicable successor limits,
+including lifecycle reservation; otherwise typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDraining` rejects before
+debit/evidence creation. Existing obligations retain their lane reservations
+and completion path. Activation atomically rechecks the fence, usage,
+reservations, backlog, maintenance, provisioning evidence and predecessor.
+Authorized rejection or controlled abandonment moves the successor to
+`Rejected` and clears the exact fence under expected-version CAS. Missing,
+stale, competing, worker-cleared or unauthenticated restored fence state denies.
+Normal/BreakGlass drains cannot affect Recovery resources.
+
 Freeze recovery by greatest authenticated profile generation and exact digest,
-followed by reconstruction of usage/reservations. Never merge maximum numeric
+followed by reconstruction of usage/reservations and any installed drain
+fence. Never merge maximum numeric
 ceilings across backups or peers; an older larger profile is not authority
 after a newer downsizing profile.
 Freeze the canonical principal/authority budget key and anti-identity-splitting
@@ -998,7 +1015,8 @@ sequence/closed irreversible disposition/result link/continuity/checkpoint and
 atomic saturation semantics, per-lane charge-ledger rows/bytes/awaiting/
 backlog/checkpoint/archive-I/O/compaction-worker reservations and aggregate
 disk/work ceilings, capacity-profile lineage/generation/digest/state/
-activation/provisioning evidence and drain obligations, authenticated presentation-lane
+activation/provisioning evidence and drain obligations, exact lane-scoped
+drain-fence state, authenticated presentation-lane
 endpoint/audience/credential-profile mappings and their generation/fence/
 revocation high-watermarks and sole-owner/SoD state,
 principal presentation-rate/request-rate/admission/outstanding counters,

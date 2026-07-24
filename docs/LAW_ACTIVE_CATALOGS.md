@@ -457,6 +457,18 @@ never transfers, and increases require authenticated physical disk/I/O/worker
 evidence. Restore selects the greatest authenticated generation/digest and
 reconstructs usage; it never merges maximum numeric ceilings or accepts a
 downgrade writer.
+`PendingDrain` atomically installs
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
+the active predecessor and pending successor generations/digests, affected
+lanes, sequence, expected version, and continuity. One predecessor has at most
+one nonterminal successor/fence. Stage one must fit both active and pending
+limits or return
+`TopologyAuthorizationPresentationChargeLedgerCapacityDraining` before debit
+or evidence. Existing obligations retain completion capacity. Activation or
+authorized rejection locks and consumes only the exact fence after rechecking
+usage, reservations, backlog, maintenance, provisioning, and predecessor.
+Competing/stale/missing/restored-unauthenticated fences and worker bypass deny;
+Normal/BreakGlass draining cannot block Recovery.
 `TopologyAuthorizationRequestRateBudgetV1` charges exactly once for every
 first-seen canonical request ID/digest and binds that charge to monotonic
 `TopologyAuthorizationRequestSequence`. Exact retries charge presentation rate

@@ -147,7 +147,13 @@ expected-version activation. Shrinks remain pending until current usage,
 awaiting charges, lifecycle reservations, backlog and protected reserves fit;
 capacity cannot move between lanes, increases require authenticated physical
 provisioning evidence, and restore selects the greatest authenticated profile
-generation rather than the largest numeric ceilings. A once-per-
+generation rather than the largest numeric ceilings. Pending shrink installs a
+durable lane-scoped drain fence. New stage-one work must satisfy both active
+and successor limits or receive a typed pre-debit draining denial, while
+existing reservations continue to terminalization/checkpoint. Activation or
+authorized rejection atomically rechecks and consumes the exact fence;
+failover/restore cannot lose or bypass it, and Normal/BreakGlass draining never
+blocks Recovery. A once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive

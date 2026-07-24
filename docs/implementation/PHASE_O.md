@@ -176,6 +176,19 @@ unsafe shrink remains `PendingDrain` or rejects, and aggregate increases cannot
 exceed proven disk/I/O/worker capacity. Recovery chooses the greatest
 authenticated generation and exact digest before reconstructing usage; it
 never revives an older larger numeric ceiling.
+Entering pending drain persists
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
+predecessor/successor generations and digests, affected lanes, install
+sequence, expected version and owner continuity. One active predecessor permits
+one nonterminal successor/fence. Stage one locks it and must satisfy active plus
+pending limits or returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDraining` before any
+debit/evidence write. Existing obligations keep their original completion
+reservation. Activation or authorized rejection locks and consumes the exact
+fence in the same expected-version transaction after rechecking live usage,
+reservations, backlog, maintenance, provisioning and predecessor. Competing,
+stale, missing, unauthenticated-restored or worker-cleared fence state denies;
+Normal/BreakGlass drain never blocks Recovery.
 `TopologyAuthorizationRequestRateBudgetV1` is charged exactly once for every
 first-seen canonical request ID/digest and is bound to its monotonic
 `TopologyAuthorizationRequestSequence`; exact retries charge presentation rate
@@ -307,7 +320,8 @@ checkpoint, closed irreversible dispositions/result links, atomic ledger-
 saturation behavior, per-lane ledger rows/bytes/awaiting/backlog and reserved
 checkpoint/archive/compaction capacity under aggregate disk/work ceilings,
 capacity-profile lineage/generation/digest/state/activation/drain and physical-
-provisioning evidence,
+provisioning evidence, exact drain-fence identity/lanes/sequence/continuity and
+typed draining result,
 separate authenticated-presentation and first-seen-request
 rate budgets, atomic
 issuance bundle, request and authorization sequences, denial-request and
@@ -519,6 +533,7 @@ mapping ownership/SoD, two-stage charge evidence and mapping recheck, distinct
 closed disposition/result-link/checkpoint and ledger-saturation semantics,
 non-borrowable per-lane ledger/awaiting/backlog/I/O/worker capacity and
 aggregate ceilings, capacity-profile generation/activation and drain state,
+exact drain-fence state and stricter admission result,
 presentation/request/admission/outstanding
 accounting, separate
 reconciliation-receipt routing and terminal-only settlement typing,
@@ -686,7 +701,8 @@ maintenance reservations: Normal or break-glass saturation must leave Recovery
 able to finish both stages below the aggregate disk/worker ceiling. Failover
 also selects one greatest authenticated capacity-profile generation/digest;
 it cannot merge numeric ceilings, bypass pending drain, accept an old writer,
-or move an obligation between lanes. Authenticate every
+move an obligation between lanes, lose a fence, or admit new work against only
+the predecessor ceiling. Authenticate every
 `TopologyAuthorizationConsumerTerminalReceiptV1` across the split-service
 boundary; preserve its complete envelope, closed outcome, result/outbox
 sequence and sender-only consumer role. Preserve reconciliation under its
@@ -920,7 +936,7 @@ stage-one charge evidence/closed irreversible dispositions/result links/
 continuity/checkpoint/ledger saturation and stage-two mapping-recheck semantics,
 per-lane ledger capacity/reservations/maintenance high-watermarks and aggregate
 disk/work ceilings, capacity-profile lineage/generation/digest/state/
-activation/drain/provisioning evidence,
+activation/drain/provisioning evidence and exact drain-fence state,
 authenticated-presentation-rate/first-seen-request-rate/successful-admission/
 outstanding budgets, issuance
 and request sequences, exact-horizon hot results, denial-request and issuance
@@ -1141,7 +1157,8 @@ charge evidence/closed disposition/result-link/orphan/continuity/mapping-TOCTOU
 and atomic ledger-saturation accounting, non-borrowable per-lane charge rows/
 bytes/awaiting/backlog/checkpoint/archive-I/O/compaction-worker capacity,
 lifecycle reservations and aggregate disk/work ceilings, capacity-profile
-activation/shrink/provisioning/failover/restore concurrency,
+activation/shrink/provisioning/failover/restore concurrency, continuous
+admission and fence install/clear/activate races,
 authenticated-presentation rate/first-seen-request rate/
 successful-admission/outstanding/request-and-issuance-sequence/hot-row/denial-
 and-issuance-checkpoint/archive/
@@ -1386,6 +1403,7 @@ presentation-charge-ID-evidence-closed-disposition-result-link-continuity-
 checkpoint-ledger-saturation/
 per-lane-ledger-awaiting-backlog-checkpoint-archive-compaction-capacity/
 capacity-profile-lineage-generation-activation-drain-provisioning/
+capacity-drain-fence-admission-denial-install-clear-recovery/
 presentation-rate/request-rate/admission-rate/outstanding-budget/original-quota-claim-set/
 request-sequence/authorization-issuance-sequence/exact-horizon/denial-request-
 checkpoint/issuance-checkpoint/predecessor/covered-through/set/archive/
@@ -1455,6 +1473,12 @@ terminalization and compaction; interrupt activation; forge provisioning
 evidence; restore an older larger generation; use downgrade writers; and try
 to reassign Recovery capacity. Prove the exact authenticated profile
 generation/digest, pending-drain obligations and original lane always win.
+Sustain admissions while draining; race fence installation with admission,
+activation with the last predecessor-only admission, and authorized rejection
+with admission. Crash/fail over/restore with the fence installed, use stale
+workers to clear or bypass it, and target one predecessor with competing
+successors. Prove typed pre-debit denial, exact-fence consumption and Recovery
+availability.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 

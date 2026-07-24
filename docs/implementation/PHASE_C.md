@@ -375,9 +375,35 @@ and worker provisioning evidence rechecked at activation. Stale CAS,
 predecessor forks, old profile
 generations and downgrade writers deny.
 
+Transition into `PendingDrain` atomically installs
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` with the
+active predecessor ID/generation/digest, successor generation/digest, affected
+lanes, install sequence, expected version, and owner continuity. One active
+predecessor admits at most one nonterminal successor and one fence. Stage-one
+admission locks the fence and must fit both the active profile and every
+applicable pending successor, including the new charge's terminalization and
+checkpoint reservation. If current usage or the proposed reservation exceeds
+the successor ceiling, return
+`TopologyAuthorizationPresentationChargeLedgerCapacityDraining` before debit,
+evidence, sequence, disposition, or protected lookup. Accepted obligations
+retain their original lane reservations and continue through stage two,
+terminalization, checkpoint, archive, and compaction.
+
+Successor activation locks and rechecks the fence, live usage, reservations,
+backlog, maintenance obligations, physical provisioning evidence, and
+predecessor version in its atomic activate/supersede transaction. Authorized
+rejection or controlled abandonment atomically moves the successor to
+`Rejected` and removes only that exact fence under expected-version CAS.
+Workers cannot clear it. Competing successors, stale fence generation,
+ambiguous lineage, or unauthenticated/missing fence recovery state deny.
+Normal and BreakGlass fences affect only their lanes and cannot consume or
+block Recovery resources; a Recovery successor must retain the protected
+reserve.
+
 Recovery authenticates the lineage and selects the greatest profile generation
 and its exact digest before reconstructing usage, reservations, backlog and
-maintenance work. It never merges the greatest numeric limits: an older,
+maintenance work plus the exact installed drain fence. It never merges the
+greatest numeric limits: an older,
 larger profile cannot revive capacity removed by a newer active generation.
 
 For successful first-seen issuance, stage-two charge consumption, request-
@@ -976,7 +1002,14 @@ to Normal or BreakGlass. Prove unsafe shrink remains `PendingDrain` or rejects,
 the predecessor stays active until its atomic supersession, invalid or reversed
 state edges deny, the exact active generation/digest wins, every existing
 obligation remains in its original lane, old writers deny, and numeric maximum
-merging never occurs.
+merging never occurs. Sustain stage-one traffic throughout shrink; race
+admission with fence installation, activation with the final old-profile
+admission, and rejection/controlled abandonment with admission. Crash, fail
+over and restore with a fence installed; attempt stale-worker clear/bypass and
+multiple successors for one predecessor. Prove over-target work receives the
+typed pre-debit draining denial, accepted obligations finish normally, only
+the exact fence can be consumed, and Normal/BreakGlass drain cannot starve
+Recovery.
 Drive every
 permitted charge-disposition edge and reject undeclared edges, terminal-to-
 terminal substitution, terminal-to-awaiting rollback, timeout-derived
@@ -1042,7 +1075,8 @@ rows/evidence/sequence/closed dispositions/result links/continuity/checkpoints/
 compaction and atomic saturation behavior, non-borrowable per-lane charge
 rows/bytes/awaiting/backlog/checkpoint/archive-I/O/compaction-worker
 reservations below aggregate disk/work ceilings, immutable capacity-profile
-lineage/activation/drain/provisioning-evidence rows, authenticated endpoint/
+lineage/activation/drain/provisioning-evidence rows plus the authenticated
+lane-scoped drain-fence row and typed draining result, authenticated endpoint/
 audience/credential-profile presentation-lane mappings with generation/fence/
 revocation state, separate normal/recovery/break-glass counters and
 reserve, issuer range manifests, consumer sparse commitments, and eligible-
@@ -1561,7 +1595,8 @@ lane mappings, sole VIT-INV-061 ownership/SoD activation, and their generations/
 fences/revocations, every presentation-charge ID/sequence/binding/disposition/
 continuity/checkpoint, per-lane lifecycle capacity/reservation/maintenance
 high-watermark and aggregate disk/work ceiling, active capacity-profile ID/
-generation/digest/predecessor/state/provisioning evidence,
+generation/digest/predecessor/state/provisioning evidence, pending successor
+and exact drain-fence identity/generation/digest/lanes/sequence/continuity,
 layered deployment/issuer/principal presentation-rate/request-rate/admission/
 outstanding counters,
 immutable original quota claim sets/budget epochs/class/reserve sources,

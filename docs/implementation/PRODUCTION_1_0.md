@@ -125,6 +125,18 @@ between lanes. Emergency reductions and aggregate changes require separated
 approval, and increases require proven disk/I/O/worker capacity. Restore uses
 the greatest authenticated profile generation and exact digest, never the
 greatest numeric ceiling; stale generations and downgrade writers fail closed.
+`PendingDrain` atomically installs a durable
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` binding
+predecessor/successor generations and digests, affected lanes, sequence,
+expected version, and continuity. Stage one must fit active plus pending limits
+or return typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDraining` before debit
+or evidence; existing obligations retain their reserved completion path.
+Activation rechecks fence, usage, reservations, backlog, maintenance,
+provisioning, and predecessor atomically. Authorized rejection clears only the
+exact fence with its terminal transition. Competing/stale/missing/restored-
+unauthenticated fences and worker bypass deny, while Normal/BreakGlass drains
+cannot block Recovery.
 Every first-seen authenticated canonical request receives monotonic
 `TopologyAuthorizationRequestSequence` bound to its request-rate charge. Exact
 retries charge presentation rate again but reuse the request charge, sequence,
@@ -228,8 +240,10 @@ both stages, saturated BreakGlass while Recovery remains available, aggregate
 disk/worker bounds and cross-lane non-borrowing, shrink races against stage one,
 stage two and compaction, interrupted activation, generation-skew failover,
 older-larger-profile restore, insufficient provisioning evidence, downgrade
-writer rejection and attempts to assign Recovery capacity elsewhere, lineage
-change before a receipt
+writer rejection and attempts to assign Recovery capacity elsewhere,
+continuous traffic during shrink, admission/fence-install and final-admission/
+activation races, rejection-versus-admission, installed-fence crash/failover/
+restore, stale-worker bypass, and competing successors, lineage change before a receipt
 deadline, issuer-forged consumer
 evidence, policy/principal/budget-epoch changes before original-claim
 settlement, timeout/partial/duplicate settlement, caller-sub-limit
