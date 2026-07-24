@@ -137,6 +137,11 @@ audit decision.
   verified/orphan data, unknown external outcomes retain hot state, local
   unknowns reconcile the bundle, and orphan GC requires no committed reference
   or authenticated successor equivalence without a distributed transaction;
+- proof-to-execution admission binds the proof for writer-authoritative head
+  `H` to an unchanged head, exact-key lock, current-hot absence and unique
+  replay insert in one local write transaction; head change returns a typed
+  no-write restart, compaction uses the same head-first lock order, and async
+  replicas, followers, caches or weak snapshots never authorize;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

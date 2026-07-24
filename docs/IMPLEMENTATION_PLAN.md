@@ -183,6 +183,11 @@ plus current hot rows. Immutable chunks stage and verify before one local head-
 CAS/exact-delete transaction; readers ignore noncommitted publications,
 unknown external outcomes preserve hot state, local unknowns reconcile the
 atomic bundle, and fenced orphan cleanup assumes no distributed transaction. A
+proof-to-execution guard verifies against writer-authoritative head `H` outside
+the transaction, then locks/re-reads the head and exact key, checks current hot
+state, and inserts the unique replay claim with the atomic result bundle.
+Changed heads restart without writes; compaction shares the head-first lock
+order, and replicas, caches, or weak snapshots cannot authorize. A
 once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance

@@ -556,6 +556,25 @@ creates a successor cumulative head. No database/object-store distributed
 transaction is assumed.
 
 Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionGuardV1`.
+Read authoritative head `H`; fetch and bounded-verify its archive proof outside
+the database transaction; then begin one local write transaction, lock/re-read
+the authoritative head and exact action/idempotency key in the declared order,
+and require exact equality with `H`. A mismatch returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayHeadChanged`
+without a write and restarts proof verification. Under those same locks, check
+the hot row. Only proof non-membership for unchanged `H` plus exact hot-row
+absence may insert the unique replay row and atomically commit consumption,
+result, mutation, event, audit and outbox.
+
+Authority-bearing head/key/hot reads must be writer-authoritative and
+linearizable. Asynchronous replicas, followers, caches, changing/weak
+snapshots, or isolation profiles unable to preserve the head/key predicate
+cannot authorize execution. Compaction and first execution use head-first then
+canonical-key/covered-row locking. Freeze the exact supported isolation/
+locking clauses per selected backend; otherwise it refuses VIT-CAP-061.
+
+Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 and
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`

@@ -184,6 +184,20 @@ Readers ignore staged/verified/orphan data; unknown external publication keeps
 hot rows, unknown local commit reconciles the indivisible bundle, and orphan
 GC requires no committed reference or authenticated successor equivalence.
 Vitheim never assumes a database/object-store distributed transaction.
+Production freezes
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionGuardV1`.
+The reader obtains writer-authoritative head `H` and bounded-verifies its proof
+outside the database transaction. One local write transaction then locks the
+authoritative head followed by the exact action/idempotency key, re-reads and
+requires exactly `H`, and checks current hot state. A changed head returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayHeadChanged`
+with no write and requires fresh proof verification. Only proof
+non-membership for unchanged `H` plus hot absence may insert the unique replay
+row and atomically commit consumption, result, mutation, event, audit, and
+outbox. A unique conflict is an exact retry or historical conflict, never
+permission to execute twice. Compaction follows the same head-first lock order.
+Async replicas, followers, caches, and weak or changing snapshots never supply
+authority, and unsupported adapters refuse `VIT-CAP-061`.
 `PendingDrain` atomically installs a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` binding
 predecessor/successor generations and digests, canonically derived affected
@@ -369,6 +383,10 @@ competing publishers, stale-head readers, head exhaustion/fork/predecessor/
 root/scope/version substitution, checkpoint coalescing, delayed object-store
 visibility, unknown upload/verify/local-commit results, staged/orphan reads,
 premature orphan cleanup and committed-head rollback,
+proof for head `H` paired with hot absence created by `H+1`, ignored typed
+head-change restart, follower/cache/weak-snapshot authorization, unique replay
+claim bypass, and deterministic pauses after proof verification, after head
+lock and before unique insert while compaction and first execution race,
 continuous traffic during shrink, admission/fence-install and final-admission/
 activation races, rejection-versus-admission, installed-fence crash/failover/
 restore, stale-worker bypass, and competing successors, lineage change before a receipt

@@ -178,6 +178,12 @@ staged/verified/orphan data, unknown external publication retains hot rows,
 unknown local commit reconciles the indivisible bundle, and orphan cleanup
 requires no committed reference or an equivalent authenticated successor.
 This protocol never assumes a database/object-store distributed transaction.
+The reader-side admission guard verifies a bounded archive proof for
+writer-authoritative head `H` outside the transaction, then locks/re-reads the
+head and exact action/idempotency key, checks current hot state, and uniquely
+claims execution in one local write transaction. A changed head causes a typed
+no-write restart. Compaction uses the same head-first lock order; replicas,
+caches, and weak snapshots cannot provide execution authority.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again

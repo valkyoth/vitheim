@@ -229,6 +229,22 @@ unknown local commit reconciles the whole bundle. Orphan GC requires no head
 reference or authenticated successor equivalence. There is no distributed
 transaction. Bounded Recovery maintenance capacity applies backpressure before
 replay permanence is endangered.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionGuardV1`
+closes the reader-side proof-to-execution race. A reader obtains the
+writer-authoritative head `H` and bounded-verifies the archive proof for
+exactly `H` outside its database transaction. It then opens one local write
+transaction, locks the authoritative head and exact action/idempotency key in
+that order, and re-reads the head. Any mismatch returns typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayHeadChanged`
+without writing and restarts proof verification. With those locks held, the
+reader checks current hot state. Only non-membership under unchanged `H` plus
+hot-row absence may atomically insert the unique replay row and commit
+consumption, result, mutation, event, audit, and outbox. A uniqueness conflict
+resolves as an exact retry or historical conflict, never a second execution.
+Async replicas, followers, caches, and weak or changing snapshots provide no
+authority; an adapter unable to provide these semantics refuses the capability
+with `VIT-CAP-061`. Compaction and first execution use the same head-first,
+key/covered-row-second lock order.
 Entering pending drain persists
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 predecessor/successor generations and digests, canonically derived affected
@@ -1620,7 +1636,13 @@ exercise competing publishers, stale-head readers, head exhaustion/fork/
 predecessor/root/scope/version substitution, coalescing, delayed visibility,
 unknown upload/verify/local-commit outcomes, staged/orphan reads, premature
 orphan GC and committed-head rollback. Only the greatest cumulative committed
-head plus current hot rows is authoritative.
+head plus current hot rows is authoritative. Pause a reader after proof
+verification but before its transaction, after its head lock but before its
+hot-row read, and after confirmed absence but before unique insert while
+compaction and a competing first execution run. Also split replica head/hot
+visibility deliberately. Every changed head must produce the typed no-write
+restart, every unique conflict must resolve without a second execution, and no
+follower, cache, or weak snapshot may authorize.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 

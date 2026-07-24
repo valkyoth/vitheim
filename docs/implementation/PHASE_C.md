@@ -473,6 +473,37 @@ and cannot replace, fork, or weaken the current head. This protocol uses no
 database/object-store distributed transaction.
 
 Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionGuardV1`
+as the proof-to-first-execution linearization contract. The reader first reads
+authoritative cumulative head `H`, then fetches and resource-bounded verifies
+the archive proof for exactly `H` outside the database transaction. The proof
+guard binds tenant/deployment scope, action/idempotency key, canonical request
+digest, head sequence/root/digest/version, proof digest and verification
+profile/cursor.
+
+The reader then begins one local write transaction and locks, in the declared
+order, the authoritative per-scope replay-head row and exact action/
+idempotency-key row. It re-reads the head and requires byte-for-byte equality
+with `H`; mismatch returns typed
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayHeadChanged`
+with no write and restarts bounded proof verification outside the transaction.
+With the same head/key locks held, it checks current hot state. Only an
+authenticated non-membership proof for that unchanged greatest committed head
+plus absence of the exact hot row may proceed to first execution. The
+transaction inserts the unique replay row and atomically commits authorization
+consumption, canonical result, mutation, event, audit and outbox. Unique-key
+conflict is resolved as exact retry or historical conflict, never another
+execution.
+
+Every authority-bearing head, key and hot-row read uses the authoritative
+writer/linearizable local transaction. An asynchronous replica, follower,
+cache, read-only snapshot, statement-level changing snapshot, or any isolation
+mode unable to hold a stable head/key predicate cannot authorize execution and
+must refuse VIT-CAP-061. Compaction and first execution share the head-first,
+then canonical-key/covered-row lock order, preventing an old-head proof from
+being paired with post-compaction hot-row absence.
+
+Freeze
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 with exact maximum checkpoint/archive/root/chunk encoded bytes, entries and
 chunks, proof depth, decode allocation, verification work, roots/chunks per
@@ -1289,6 +1320,14 @@ before and after successor publication, committed-head rollback, and crash at
 every publication-state edge. A stale or individual archive proof cannot
 authorize non-membership; staged/orphan chunks are ignored; unknown publication
 keeps hot state or reconciles the indivisible committed-head/delete bundle.
+Add deterministic proof-to-execution pauses after proof verification before
+the transaction, after head lock/re-read before hot-state lookup, after
+observing absence before unique replay-row insertion, and at every concurrent
+compaction/first-execution interleaving. Serve mismatched head/hot-row versions
+from asynchronous replicas, followers, weak snapshots and caches. Require
+typed head-changed restart or refusal; no schedule may combine proof for `H`
+with absence created by `H+1`, execute twice, or perform network proof work
+while holding the write transaction.
 Drive every
 permitted charge-disposition edge and reject undeclared edges, terminal-to-
 terminal substitution, terminal-to-awaiting rollback, timeout-derived
@@ -1326,6 +1365,17 @@ resource budget.
 
 Exit criteria: an adapter cannot claim support by skipping or weakening tests.
 `v0.22.0 implementation stop reached. Run pentest for this exact commit.`
+
+Every `0.23.0`–`0.27.0` database adapter must map
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionGuardV1`
+to an evidenced writer-authoritative isolation and locking profile. Its
+capability probe must prove head-first/key-second locking, exact head re-read,
+current-hot lookup and unique replay insertion share one local write
+transaction with the atomic result bundle. Read replicas, followers, caches
+and statement-level changing snapshots are never eligible authority sources.
+An adapter that cannot prove the required predicate/row-lock and uniqueness
+semantics must report `VIT-CAP-061` unsupported and refuse the feature; an
+emulation that narrows the guarantee is not parity.
 
 ## `0.23.0` — SQLite Adapter
 
@@ -1834,6 +1884,13 @@ and new `VIT-INV-*` lifecycle rows must contain symmetric supersession, stable
 history to make the new owner appear original, activate both owners, or remove
 the superseded row. The generated recovery manifest includes every applicable
 stable invariant field before the new owner becomes authoritative.
+Replay migrations additionally preserve the authoritative cumulative head,
+head/key lock-order contract, uniqueness constraint and existing replay
+claims, current hot rows, admission-guard isolation profile and typed
+head-changed behavior as one compatibility boundary. A migration or import
+cannot route authority reads to a replica, synthesize absence, reset a unique
+claim, or admit the destination until it proves equal-or-stronger
+`VIT-CAP-061` semantics.
 Treat every law-generation activation as a registered migration as well. It
 must preserve the predecessor record, resolve the exact dependency delta only
 after every added root is effective, persist the activation fence and contract
@@ -2034,6 +2091,9 @@ authorization schema field without defaulting and admits the destination only
 if it proves the same or stronger no-late-commit mechanism; otherwise imported
 topology authority remains fenced and unready. Import calls the shared
 replay-lifecycle verifier and admits issuance only after the destination proves
+the same writer-authoritative admission guard, exact head/key lock order,
+head-change restart, current-hot check and unique replay claim; otherwise
+drain-action execution remains fenced. It also proves
 the same-or-longer exact horizon, no-lower quotas/backpressure safety, complete
 uncompacted hot results, an authenticated checkpoint/predecessor chain and
 issuer manifests/dense watermark plus consumer sparse/eligible-dense proof,

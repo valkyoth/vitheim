@@ -512,6 +512,18 @@ verified/orphan data. Unknown external publication retains hot rows; unknown
 local commit reconciles the indivisible bundle. Orphan GC requires no
 committed reference or authenticated successor equivalence. No distributed
 transaction is assumed.
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionGuardV1`
+requires a proof for writer-authoritative head `H` to be verified outside the
+database transaction, then binds it inside one local write transaction by
+locking the authoritative head and exact action/idempotency key, re-reading
+exactly `H`, and checking current hot state. A mismatch returns
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayHeadChanged`
+without writing and restarts proof verification. Only non-membership for
+unchanged `H` plus hot absence may insert the unique replay row and atomically
+commit consumption/result/mutation/event/audit/outbox. Unique conflict never
+permits second execution. The compactor uses the same head-first lock order.
+Async replicas, followers, caches, and weak/changing snapshots cannot
+authorize; unsupported adapters refuse `VIT-CAP-061`.
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayProofBudgetV1`
 bounds bytes/entries/chunks/depth/decode/work/jobs and a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayVerificationCursor`

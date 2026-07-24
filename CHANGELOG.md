@@ -11,6 +11,11 @@ All notable Vitheim changes are documented here. The format follows
 - Added a cumulative per-scope drain-replay head and staged immutable archive
   publication protocol, preventing stale-checkpoint non-membership proofs and
   avoiding any database/object-store distributed-transaction assumption.
+- Added a proof-to-execution drain-replay admission guard: verify against
+  writer-authoritative head `H`, then lock/re-read that head and the exact key,
+  check hot state, and uniquely claim execution in one local transaction.
+  Head changes restart without writes; replicas and weak snapshots cannot
+  authorize.
 - Selected bounded authenticated sparse archives for exact drain-action replay
   after compaction, with canonical result recovery, historical conflicts,
   resource-bounded proof verification, and fail-closed unavailable history.
