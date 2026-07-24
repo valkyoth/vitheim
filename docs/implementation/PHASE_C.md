@@ -385,6 +385,34 @@ and worker provisioning evidence rechecked at activation. Stale CAS,
 predecessor forks, old profile
 generations and downgrade writers deny.
 
+Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationV1`
+because entering PendingDrain immediately changes admission and is itself a
+denial-capable capacity reduction. The canonical authorization binds
+deployment and tenant; action kind; predecessor and successor profile IDs,
+generations and digests; the exact typed diff digest; derived lanes and reduced
+aggregate dimensions; policy epoch; change-or-incident authority; requestor,
+approver identities, activator, quorum and separation proof; issued/expiry
+times; nonce; and idempotency ID. It authorizes one exact begin-drain,
+activation, rejection, or controlled-abandonment action and cannot be reused
+across an action, predecessor, successor, diff, deployment, tenant, or policy
+epoch. Every Normal, Recovery, BreakGlass, and aggregate drain requires current
+authorization and at least the same requestor/approver/activator separation as
+the effective reduction.
+
+`TransitionTopologyAuthorizationPresentationChargeLedgerCapacityProfileToPendingDrain`
+authenticates that authorization and rechecks current policy, change/incident
+authority, approval validity/quorum/separation, typed diff, derived coverage,
+expiry, nonce/idempotency, and predecessor expected version before any state or
+fence write. Activation requires its own single-action authorization, binds the
+installed begin-drain authorization digest, and rechecks both immutable drain
+bindings and current policy/authority/approval/predecessor state.
+Rejection and controlled abandonment require their own action-bound current
+authorization and append audit evidence, preventing an unauthorized actor from
+cycling drains. Unauthorized, expired, replayed, self-approved, cross-tenant,
+or digest/subfield-substituted requests fail before successor-state, fence,
+event, audit-success, or outbox writes.
+
 Transition into `PendingDrain` atomically installs
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` with the
 active predecessor ID/generation/digest, successor generation/digest, affected
@@ -419,6 +447,30 @@ Normal and BreakGlass fences affect only their lanes and cannot consume or
 block Recovery resources; a Recovery successor must retain the protected
 reserve.
 
+Every successful activation appends canonical
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationRecordV1`.
+It binds the non-wrapping activation sequence and predecessor activation-record
+digest; old/new profile IDs, generations, digests, and states; expected and
+committed aggregate versions; transition class and typed-diff digest; exact
+drain-fence identity/digest and consumption sequence, or canonical-none for a
+permitted direct activation; provisioning-evidence digest; exact policy/
+change/incident begin-drain and activation-authorization digests; owner
+partition and continuity/
+fencing identity; transaction identity and journal position; canonical
+encoding version; and integrity/checkpoint binding. Sequence exhaustion fails
+closed before mutation and sequences never wrap or reuse.
+
+The activation record, active-head update, predecessor supersession, successor
+activation, optional exact fence consumption, fence-consumed event, journal
+append, audit evidence, idempotent result, and outbox evidence commit in one
+local transaction. A record cannot be deleted until an authenticated
+predecessor-linked
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationCheckpointV1`
+preserves the complete activation head plus active/pending/fence recovery
+tuple. Checkpoint precedes deletion and external replicated high-watermarks
+cannot roll back. Response loss replays the same transaction identity/result;
+it never appends another sequence.
+
 Fence installation and consumption are not independently callable commands.
 `TransitionTopologyAuthorizationPresentationChargeLedgerCapacityProfileToPendingDrain`
 is the only command that enters PendingDrain.
@@ -441,7 +493,9 @@ the canonical affected-lane and reduced-aggregate sets from the profile diff
 and verifies them against the authenticated fence before admitting work.
 Multiple active profiles, pending-without-fence, fence-without-pending,
 contradictory activation records, unreachable predecessors, incomparable
-schemas, or a rolled-back high-watermark deny startup/admission. Recovery then
+schemas, gaps/forks/reordering/duplicate activation sequences,
+active-row/record disagreement, a missing activation checkpoint, or a
+rolled-back local/external high-watermark deny startup/admission. Recovery then
 reconstructs usage, reservations, backlog and maintenance work. It never merges
 the greatest numeric limits: an older,
 larger profile cannot revive capacity removed by a newer active generation.
@@ -1066,6 +1120,18 @@ rejected generations above the active one, multiple-active and contradictory
 activation records, unreachable predecessors, pending/fence half-state, and
 affected-lane mismatch. Prove direct fence install/clear calls are
 unrepresentable or denied and only the atomic transition events exist.
+Attempt every unauthorized, expired, replayed, self-approved, cross-tenant,
+wrong-policy, wrong-predecessor/successor, diff/coverage/digest-substituted, and
+nonce/idempotency-reused begin-drain against Normal, Recovery, BreakGlass, and
+aggregate reductions; prove no successor/fence/event/outbox write. Race policy,
+approval, predecessor version, and expiry changes with fence install and
+activation. Attempt unauthorized rejection/abandonment and repeated
+install/remove cycling; require action-bound authorization and audit evidence.
+Delete, reorder, fork, duplicate, substitute, or roll back activation records,
+checkpoints, active-head rows, journal positions, transaction identities,
+external high-watermarks, and response-loss results. Prove activation sequence
+exhaustion fails before mutation, direct activation records canonical-none
+fence fields, and every active-row-versus-record contradiction denies recovery.
 Drive every
 permitted charge-disposition edge and reject undeclared edges, terminal-to-
 terminal substitution, terminal-to-awaiting rollback, timeout-derived
@@ -1132,6 +1198,7 @@ compaction and atomic saturation behavior, non-borrowable per-lane charge
 rows/bytes/awaiting/backlog/checkpoint/archive-I/O/compaction-worker
 reservations below aggregate disk/work ceilings, immutable capacity-profile
 lineage/typed-diff/activation-record/sequence/drain/provisioning-evidence rows,
+drain-authorization identity/digest/replay state, activation checkpoints,
 lineage/activation high-watermarks, the authenticated derived lane/aggregate
 drain-fence row, atomic fence events and typed draining result, authenticated endpoint/
 audience/credential-profile presentation-lane mappings with generation/fence/
@@ -1653,7 +1720,8 @@ fences/revocations, every presentation-charge ID/sequence/binding/disposition/
 continuity/checkpoint, per-lane lifecycle capacity/reservation/maintenance
 high-watermark and aggregate disk/work ceiling, active capacity-profile ID/
 generation/digest/predecessor/state/typed diff/provisioning evidence, committed
-activation record/sequence, lineage/activation high-watermarks, pending
+activation record/sequence/checkpoint, drain-authorization digests/replay
+state, lineage/activation high-watermarks, pending
 successor and exact drain-fence identity/generation/digest/derived lanes/
 reduced aggregates/sequence/continuity plus atomic fence events,
 layered deployment/issuer/principal presentation-rate/request-rate/admission/

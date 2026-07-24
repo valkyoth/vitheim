@@ -8,6 +8,10 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added action-bound authorization for every capacity-drain transition and a
+  canonical non-wrapping predecessor-linked activation record/checkpoint whose
+  active-head, supersession, fence, audit, result, and outbox effects commit
+  atomically and recover fail closed.
 - Strengthened capacity-profile transitions so every lane, reserve, aggregate,
   storage, I/O, or worker reduction must pass through PendingDrain; aggregate
   fences derive all capable consumer lanes; recovery follows committed

@@ -181,6 +181,16 @@ storage, I/O, or worker field must pass `Proposed` -> `PendingDrain` ->
 `Active`. Only an overflow-safe typed comparison proving every field equal or
 increasing permits direct Proposed activation; unknown, omitted, incomparable,
 or mixed-schema fields require drain.
+Every drain, including Normal-only drain, first authenticates
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationV1`
+binding deployment/tenant, action, exact predecessor/successor/diff/derived
+coverage, policy/change/incident epoch, requestor/approvers/activator/quorum/
+SoD, expiry, nonce, and idempotency. Install and activation recheck current
+authority and predecessor version. Rejection/abandonment requires its own
+action-bound authorization and audit record. Activation uses a separate action
+authorization, binds the installed begin-drain authorization digest, and
+rechecks both. Unauthorized, expired, replayed,
+self-approved, cross-scope, or substituted requests write no transition state.
 Entering pending drain persists
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 predecessor/successor generations and digests, canonically derived affected
@@ -197,6 +207,19 @@ fence in the same expected-version transaction after rechecking live usage,
 reservations, backlog, maintenance, provisioning and predecessor. Competing,
 stale, missing, unauthenticated-restored or worker-cleared fence state denies;
 Normal/BreakGlass drain never blocks Recovery.
+Activation appends
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationRecordV1`
+with non-wrapping sequence/predecessor digest, old/new profile state, expected/
+committed aggregate versions, transition/diff, fence consumption or
+canonical-none, provisioning/begin-drain/activation-authorization digests,
+owner continuity,
+transaction/journal identity, encoding and checkpoint binding. Record append,
+active head, supersession/activation, optional fence event, audit/idempotent
+result/outbox commit atomically; exhaustion denies. Predecessor-linked
+authenticated
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationCheckpointV1`
+must preserve the activation head and active/pending/fence tuple before record
+deletion.
 Fence install/clear helpers are not commands:
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`
 occurs only in the atomic PendingDrain transaction and
@@ -207,7 +230,9 @@ the activation-selected active profile, optional pending successor/exact
 fence, lineage-generation high-watermark, and activation-sequence
 high-watermark; it verifies the derived lane/aggregate coverage. Multiple
 active profiles, pending/fence half-state, contradictory activation records,
-unreachable predecessors, or direct fence lifecycle invocation fail closed.
+unreachable predecessors, activation gaps/forks/reordering/duplicate
+sequences, active-row disagreement, missing checkpoints, rolled-back external
+high-watermarks, or direct fence lifecycle invocation fail closed.
 `TopologyAuthorizationRequestRateBudgetV1` is charged exactly once for every
 first-seen canonical request ID/digest and is bound to its monotonic
 `TopologyAuthorizationRequestSequence`; exact retries charge presentation rate
@@ -340,7 +365,8 @@ saturation behavior, per-lane ledger rows/bytes/awaiting/backlog and reserved
 checkpoint/archive/compaction capacity under aggregate disk/work ceilings,
 capacity-profile lineage/generation/digest/state/activation/drain and physical-
 provisioning evidence, typed reduction classification, activation sequence/
-high-watermark, exact drain-fence identity/derived lanes/reduced aggregates/
+record/checkpoint/high-watermark and drain-authorization/replay state, exact
+drain-fence identity/derived lanes/reduced aggregates/
 sequence/continuity, atomic fence events and typed draining result,
 separate authenticated-presentation and first-seen-request
 rate budgets, atomic
@@ -553,7 +579,8 @@ mapping ownership/SoD, two-stage charge evidence and mapping recheck, distinct
 closed disposition/result-link/checkpoint and ledger-saturation semantics,
 non-borrowable per-lane ledger/awaiting/backlog/I/O/worker capacity and
 aggregate ceilings, capacity-profile generation/typed-diff/activation-sequence
-and drain state, exact derived-lane/aggregate drain-fence state, atomic fence
+and activation-record/checkpoint/drain-authorization state, exact
+derived-lane/aggregate drain-fence state, atomic fence
 events and stricter admission result,
 presentation/request/admission/outstanding
 accounting, separate
@@ -960,8 +987,9 @@ stage-one charge evidence/closed irreversible dispositions/result links/
 continuity/checkpoint/ledger saturation and stage-two mapping-recheck semantics,
 per-lane ledger capacity/reservations/maintenance high-watermarks and aggregate
 disk/work ceilings, capacity-profile lineage/generation/digest/state/
-typed-diff/activation-sequence/drain/provisioning evidence and exact
-derived-lane/aggregate drain-fence state plus atomic fence lifecycle events,
+typed-diff/activation-sequence/drain/provisioning evidence, activation records/
+checkpoints/drain authorizations and exact derived-lane/aggregate drain-fence
+state plus atomic fence lifecycle events,
 authenticated-presentation-rate/first-seen-request-rate/successful-admission/
 outstanding budgets, issuance
 and request sequences, exact-horizon hot results, denial-request and issuance
@@ -1183,7 +1211,8 @@ and atomic ledger-saturation accounting, non-borrowable per-lane charge rows/
 bytes/awaiting/backlog/checkpoint/archive-I/O/compaction-worker capacity,
 lifecycle reservations and aggregate disk/work ceilings, capacity-profile
 typed reduction classification, mandatory-drain activation, aggregate-row
-locking, activation-record recovery, shrink/provisioning/failover/restore
+locking, drain-authorization replay/expiry/SoD, activation-record checkpoint/
+recovery, shrink/provisioning/failover/restore
 concurrency, continuous admission and atomic fence-event/activate/reject races,
 authenticated-presentation rate/first-seen-request rate/
 successful-admission/outstanding/request-and-issuance-sequence/hot-row/denial-
@@ -1430,6 +1459,7 @@ checkpoint-ledger-saturation/
 per-lane-ledger-awaiting-backlog-checkpoint-archive-compaction-capacity/
 capacity-profile-lineage-generation-activation-drain-provisioning/
 capacity-drain-fence-derived-coverage-admission-denial-atomic-events-recovery/
+capacity-drain-authorization-activation-record-checkpoint/
 presentation-rate/request-rate/admission-rate/outstanding-budget/original-quota-claim-set/
 request-sequence/authorization-issuance-sequence/exact-horizon/denial-request-
 checkpoint/issuance-checkpoint/predecessor/covered-through/set/archive/
@@ -1515,7 +1545,13 @@ workers to clear or bypass it, and target one predecessor with competing
 successors. Prove typed pre-debit denial, exact-fence consumption and Recovery
 availability. Attempt direct install/clear helper invocation and prove it is
 unrepresentable or denied; only atomic fence-installed/fence-consumed events
-are accepted.
+are accepted. Attack unauthorized/expired/replayed/self-approved/cross-scope/
+substituted drain authority for every lane and aggregate; race policy,
+approval, predecessor and expiry against install/activation; attempt
+unauthorized rejection/abandonment cycling. Delete, fork, reorder, duplicate or
+gap activation records; roll back checkpoints/external high-watermarks; force
+sequence exhaustion, response loss and active-row disagreement. Require
+fail-atomic denial or exact idempotent replay.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 

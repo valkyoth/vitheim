@@ -94,11 +94,12 @@ audit decision.
   aggregate ceilings; immutable VIT-INV-061 capacity-profile successors with
   expected-version activation, governed emergency/aggregate changes,
   drain-before-shrink, physical provisioning proof, downgrade fencing, and
-  restore by greatest authenticated generation/digest rather than numeric
-  maximum;
+  restore from the greatest authenticated committed activation record rather
+  than raw generation or numeric maximum;
   atomic lane-scoped PendingDrain fence installation; one nonterminal successor;
   stage-one fit against active and successor profiles; typed pre-debit draining
-  denial; exact expected-version fence clear/activation; authenticated
+  denial; exact action-authorized expected-version activation/rejection with
+  atomic fence consumption; authenticated
   failover/restore; stale-worker and competing-successor rejection; and
   Recovery isolation;
   mandatory PendingDrain for every canonical reduction; overflow-safe typed
@@ -107,6 +108,12 @@ audit decision.
   lane/aggregate capacity-row locking; activation-record-selected recovery
   with lineage/activation high-watermarks; and atomic, uncallable fence
   lifecycle events;
+  action-bound drain authorization for Normal/Recovery/BreakGlass/aggregate
+  actions with exact scope/diff/coverage/policy/approval/SoD/expiry/nonce/
+  idempotency/replay binding and separately authorized rejection/abandonment;
+  canonical non-wrapping predecessor-linked activation records atomically
+  committed with head/supersession/fence/audit/result/outbox, authenticated
+  checkpoint-before-delete, and chain/head/high-watermark rollback refusal;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

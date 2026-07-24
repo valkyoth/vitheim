@@ -462,6 +462,15 @@ never transfers, and increases require authenticated physical disk/I/O/worker
 evidence. Restore selects active state from the greatest authenticated
 committed activation record rather than greatest raw generation; it never
 merges maximum numeric ceilings or accepts a downgrade writer.
+Every PendingDrain transition requires current
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationV1`,
+including Normal-only drain. It binds deployment/tenant, action, exact
+predecessor/successor/diff/derived coverage, policy/change/incident authority,
+requestor/approvers/activator/quorum/SoD, expiry, nonce and idempotency.
+Install rechecks it; activation uses a separate action authorization binding
+the begin-drain authorization digest and rechecks both; rejection/abandonment
+uses separate action-authority and audit. Unauthorized, expired, replayed, self-approved,
+cross-scope or substituted requests write nothing.
 `PendingDrain` atomically installs
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`, binding
 the active predecessor and pending successor generations/digests, affected
@@ -477,6 +486,17 @@ authorized rejection locks and consumes only the exact fence after rechecking
 usage, reservations, backlog, maintenance, provisioning, and predecessor.
 Competing/stale/missing/restored-unauthenticated fences and worker bypass deny;
 Normal/BreakGlass draining cannot block Recovery.
+Activation atomically persists
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationRecordV1`
+with non-wrapping sequence/predecessor digest, old/new state, expected/
+committed aggregate versions, transition/diff, fence consumption or
+canonical-none, provisioning/begin-drain/activation-authorization digests,
+owner continuity,
+transaction/journal identity, encoding and integrity binding. Record/head/
+supersession/activation/optional fence event/audit/idempotent result/outbox are
+indivisible. Predecessor-linked authenticated
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationCheckpointV1`
+precedes record deletion and preserves the active/pending/fence tuple.
 Install/clear helpers are uncallable. PendingDrain emits atomic
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`;
 activation/rejection emits atomic
@@ -486,7 +506,8 @@ Recovery reconstructs
 activation-selected active profile, optional pending successor/exact fence,
 lineage and activation high-watermarks, and verified derived coverage.
 Multiple-active, contradictory-record, unreachable-predecessor, or
-pending/fence half-state fails closed.
+pending/fence half-state, activation gap/fork/reorder/duplicate, active-row
+disagreement, missing checkpoint, or high-watermark rollback fails closed.
 `TopologyAuthorizationRequestRateBudgetV1` charges exactly once for every
 first-seen canonical request ID/digest and binds that charge to monotonic
 `TopologyAuthorizationRequestSequence`. Exact retries charge presentation rate

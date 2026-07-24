@@ -158,7 +158,13 @@ unknown/incomparable schemas drain conservatively. Aggregate reductions derive
 all capable consumer lanes and enforce successor lane plus aggregate limits
 under fixed row locking. Recovery selects active state from committed
 activation records, restores pending/fence state and high-watermarks
-separately, and exposes no independent fence install/clear command. A once-per-
+separately, and exposes no independent fence install/clear command. Drain entry
+itself is authorized for every lane and aggregate with exact scope/action/diff/
+policy/approval/SoD/expiry/nonce/idempotency/replay bindings; activation
+rechecks it and rejection/abandonment is separately authorized and audited.
+Canonical non-wrapping predecessor-linked activation records commit with head/
+supersession/fence/audit/result/outbox and checkpoint before deletion; gaps,
+forks, reorder, duplicates or rollback deny recovery. A once-per-
 first-seen-request rate, successful-admission/outstanding quotas, monotonic
 request and issuance
 sequences, an exact replay horizon, authenticated checkpoint/archive

@@ -132,6 +132,16 @@ approval, and increases require proven disk/I/O/worker capacity. Restore uses
 the active profile selected by the greatest authenticated committed activation
 record, never raw greatest profile generation or greatest numeric ceiling;
 stale generations and downgrade writers fail closed.
+Every PendingDrain transition—including Normal-only drain—requires current
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationV1`.
+It binds deployment/tenant, action, exact predecessor/successor/diff/derived
+coverage, policy/change/incident epochs, requestor/approvers/activator/quorum/
+SoD, expiry, nonce, and idempotency. Fence install and activation revalidate
+the exact authorization; rejection/abandonment uses separate action-bound
+authority and audit evidence. Activation uses its own action authorization,
+binds the installed begin-drain authorization digest, and rechecks both.
+Unauthorized, expired, replayed, self-approved,
+cross-scope, or substituted requests write no successor/fence/event/outbox.
 `PendingDrain` atomically installs a durable
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1` binding
 predecessor/successor generations and digests, canonically derived affected
@@ -148,6 +158,18 @@ provisioning, and predecessor atomically. Authorized rejection clears only the
 exact fence with its terminal transition. Competing/stale/missing/restored-
 unauthenticated fences and worker bypass deny, while Normal/BreakGlass drains
 cannot block Recovery.
+Successful activation atomically persists
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationRecordV1`
+with non-wrapping sequence/predecessor digest, old/new profile state, expected/
+committed aggregate versions, transition/diff, fence consumption or
+canonical-none, provisioning/begin-drain/activation-authorization digests, owner continuity,
+transaction/journal identity, encoding and integrity/checkpoint binding.
+Active-head update, supersession, activation, optional fence consumption/event,
+audit/idempotent result/outbox, and record append are indivisible. Sequence
+exhaustion denies. Authenticated predecessor-linked
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationCheckpointV1`
+preserves the complete activation head and active/pending/fence tuple before
+record deletion.
 Fence lifecycle helpers are not callable authority. The PendingDrain
 transaction emits
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceInstalled`;
@@ -159,7 +181,9 @@ activation-selected active profile, optional pending successor/exact fence,
 lineage-generation and activation-sequence high-watermarks, and verified
 derived lane/aggregate coverage. Multiple active profiles, pending/fence
 half-state, contradictory activation records, unreachable predecessors, or
-direct fence install/clear invocation deny.
+direct fence install/clear invocation deny. Activation gaps, forks, reorder,
+duplicate sequences, active-row/record disagreement, missing checkpoints, and
+rolled-back external high-watermarks also deny.
 Every first-seen authenticated canonical request receives monotonic
 `TopologyAuthorizationRequestSequence` bound to its request-rate charge. Exact
 retries charge presentation rate again but reuse the request charge, sequence,
@@ -270,7 +294,12 @@ aggregate-only disk/I/O/worker reductions with unchanged lanes under traffic,
 fixed lane/aggregate row locking, higher proposed/pending/rejected generations
 above the active record, multiple-active/contradictory activation records,
 unreachable predecessors, pending/fence half-state, derived-set mismatch and
-direct fence-helper calls,
+direct fence-helper calls, unauthorized/expired/replayed/self-approved/
+cross-scope/substituted Normal/Recovery/BreakGlass/aggregate drain authority,
+policy/approval/predecessor/expiry install-and-activate races, unauthorized
+rejection/abandonment cycling, activation-record deletion/reorder/fork/gap/
+duplicate/sequence-exhaustion/checkpoint rollback/response loss and active-row
+contradiction,
 continuous traffic during shrink, admission/fence-install and final-admission/
 activation races, rejection-versus-admission, installed-fence crash/failover/
 restore, stale-worker bypass, and competing successors, lineage change before a receipt

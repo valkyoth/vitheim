@@ -247,6 +247,13 @@ and socket inside the hardened broker/executor TCB; provider-required export to
 a general connector is unsupported. State explicitly that bearer bytes may
 briefly exist in that hardened broker memory and define its zeroization,
 allocator/TLS-library, diagnostics, crash/core-dump, and swap limitations.
+Freeze the authentication and canonical-preimage profile for
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationV1`.
+It binds deployment/tenant/action/predecessor/successor/diff/derived coverage/
+policy/change-or-incident/requestor/approvers/activator/quorum/SoD/expiry/
+nonce/idempotency and is single-action, non-portable, non-replayable, and
+digest-linked into activation. Canonical-none fields exist only where the
+action contract explicitly permits them; unknown versions deny.
 Verification: independent supply-chain and cryptographic design review proves
 N0/N1 remain isolated and no protocol is improvised to avoid dependencies;
 deadline extension, wall-clock rollback, host suspend, restore, and monotonic-
@@ -481,6 +488,23 @@ that the selected adapter has physically provisioned the additional disk, I/O,
 and worker capacity, reauthenticated at activation. Old generations and
 downgrade writers deny.
 
+Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityDrainAuthorizationV1`
+for every Normal, Recovery, BreakGlass, and aggregate PendingDrain transition.
+Treat fence installation as an effective denial-capable reduction, not
+preparation. Bind deployment/tenant, action kind, exact predecessor/successor
+IDs/generations/digests, typed-diff digest, derived lanes/aggregates, policy
+epoch, change/incident authority, requestor/approvers/activator/quorum/
+separation proof, expiry, nonce, and idempotency ID. One authorization permits
+one exact begin-drain, activation, rejection, or controlled-abandonment action
+and is not portable or reusable. Recheck current policy/authority/approval,
+expiry, diff/coverage, and predecessor version before both fence install and
+activation. Activation uses its own single-action authorization, binds the
+installed begin-drain authorization digest, and rechecks both. Rejection/
+abandonment is separately action-authorized and audited.
+Unauthorized, expired, replayed, self-approved, cross-tenant, or substituted
+requests write no successor/fence/event/outbox state.
+
 Freeze `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceV1`.
 Entering `PendingDrain` atomically binds the active predecessor ID/generation/
 digest, pending successor generation/digest, affected lanes, reduced aggregate
@@ -509,6 +533,26 @@ as an event emitted only by the atomic PendingDrain transition and
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainFenceConsumed` as
 an event emitted only by atomic activation or authorized rejection. Direct
 install/clear invocation is unrepresentable and older/malformed attempts deny.
+
+Freeze
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationRecordV1`
+as the canonical activation truth. Bind non-wrapping activation sequence and
+predecessor activation digest; old/new profile identities, generations,
+digests and states; expected/committed aggregate versions; transition class/
+diff digest; exact fence identity/digest/consumption sequence or canonical-none;
+provisioning and policy/change/incident/drain-authorization digests; owner
+partition/continuity/fence; transaction identity/journal position; encoding
+version; and integrity/checkpoint binding. Activation record, active head,
+supersession, activation, optional fence consumption/event, audit, idempotent
+result, and outbox commit atomically. Sequences never wrap/reuse and exhaustion
+denies.
+
+Freeze predecessor-linked authenticated
+`TopologyAuthorizationPresentationChargeLedgerCapacityProfileActivationCheckpointV1`
+before record deletion. It preserves the complete activation head and active/
+pending/fence tuple. Restore rejects gaps, forks, reorder, duplicates,
+active-row disagreement, absent checkpoints and rolled-back external
+high-watermarks; response loss reuses the transaction result.
 
 Freeze recovery as
 `TopologyAuthorizationPresentationChargeLedgerCapacityRecoveryStateV1`:
@@ -955,6 +999,14 @@ needed for consumer gap proof; principal, approval, incident and receipt
 plaintext remain outside the long-lived manifest. Chunk roots, ordinals,
 subranges, counts, verification cursor, and resource-budget evidence reveal no
 caller identity and cannot become a secondary activity log.
+Classify drain authorizations, rejection/abandonment audit evidence, activation
+records, and activation checkpoints independently. A long-lived activation
+checkpoint retains only the least non-sensitive predecessor/head/sequence/
+integrity and active/pending/fence commitments needed to prevent rollback;
+detailed actor/approval/change/incident fields remain in policy-governed audit/
+archive records. Deletion cannot make authorization reusable, erase required
+SoD evidence inside its guaranteed audit horizon, break the activation chain,
+or turn prior active state into unknown authority.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
 evidence custody, false equivalence between local proof/provider attestation/
@@ -1044,7 +1096,8 @@ atomic saturation semantics, per-lane charge-ledger rows/bytes/awaiting/
 backlog/checkpoint/archive-I/O/compaction-worker reservations and aggregate
 disk/work ceilings, capacity-profile lineage/generation/digest/state/
 activation/provisioning evidence, typed reduction classification, activation
-sequence/high-watermark and drain obligations, exact lane-scoped/
+record/sequence/checkpoint/high-watermark, drain-authorization digest/replay
+state and drain obligations, exact lane-scoped/
 aggregate-derived drain-fence state and atomic lifecycle events, authenticated presentation-lane
 endpoint/audience/credential-profile mappings and their generation/fence/
 revocation high-watermarks and sole-owner/SoD state,

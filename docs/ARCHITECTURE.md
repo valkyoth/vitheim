@@ -143,6 +143,16 @@ fixed capacity-row lock order. Recovery selects active state from authenticated
 committed activation records and separately restores pending/fence state and
 lineage/activation high-watermarks. Fence installed/consumed are atomic events,
 not callable helper commands.
+Beginning any drain—including Normal-only drain—requires one current
+deployment/tenant/action/predecessor/successor/diff/coverage/policy/
+approval-bound authorization with SoD, expiry, nonce, idempotency and replay
+protection. Activation uses its own action authorization binding the installed
+begin-drain authorization and rechecks both; rejection/abandonment is separately
+authorized and audited. Successful activation commits a canonical
+non-wrapping predecessor-linked record atomically with the active head,
+supersession, optional fence event, audit, result and outbox. Authenticated
+checkpoints precede deletion; chain/head/high-watermark disagreement denies
+recovery.
 
 Every first-seen canonical request pays one separate request-rate charge and
 gets a monotonic request sequence. Exact retries pay presentation rate again
