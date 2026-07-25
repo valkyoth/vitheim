@@ -8,6 +8,17 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Completed the VIT-INV-062 coordinator-bootstrap authority protocol with a
+  stable identity, closed lifecycle, independent authorization and separation
+  of duties, bounded work/reservations, atomic generation/fence handoff,
+  canonical result/conflict and crash/response-loss recovery.
+- Registered executable terminal-history append semantics with authenticated
+  provenance/scope/manifests/result, sequence/idempotency, retention,
+  work/cleanup bounds and a disposition independent from irreversible
+  activation.
+- Standardized and machine-check the migration/import activation order as
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox.
+
 - Closed revocation-before-authorization ordering with explicit
   `AdmitMigrationImportActivationAuthorization` and a shared
   `RevokedBeforeAdmission` state. An authenticated early revocation now creates

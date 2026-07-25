@@ -495,3 +495,4 @@ scripts/check_authority_reviews.sh
 scripts/check_law_semantic_realizations.sh
 scripts/check_law_active_catalogs.sh
 scripts/check_law_policy_adversarial.sh
+scripts/check_migration_import_policy.sh

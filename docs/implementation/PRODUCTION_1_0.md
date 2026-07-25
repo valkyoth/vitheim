@@ -595,13 +595,17 @@ dormant-generation receipts, independently issued
 authenticated `MigrationImportActivationRevocationIntentV1` delivery state,
 and `MigrationImportActivationBarrierV1`. `VIT-INV-062` owns authoritative
 operation/job/budget/lifecycle/fence/candidate/authorization/revocation-inbox/barrier/result/
-cleanup control state but no domain state. `VIT-LAW-009` requires the supported
+cleanup control state plus the active coordinator generation, full bootstrap
+authority/budget/result and inert history append state, but no domain state.
+`VIT-LAW-009` requires the supported
 production profile to co-locate job, barrier and every selected invariant-owner
 activation guard. The only owner universe is the authenticated dependency
 closure of the currently admitted destination VIT-LAW-009 tuple/manifest; no
 separate invariant catalog is implemented. The manifest types VIT-INV-062 only
 as the live non-importable destination coordinator and every other applicable
-dependency as a domain contributor. One transaction rederives that split from
+dependency as a domain contributor. One transaction uses
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox,
+rederives that split from
 the closure plus schema, migration plan and contributor algorithm, rechecks current budget/final counters, job
 lease/fence, terminal disposition, trusted-time/key/continuity-bound
 authorization, staged root, complete unique owner receipts and versions,
@@ -624,9 +628,17 @@ The live destination operation/job/budget/fence/candidate/authorization/
 barrier/result/cleanup state is outside the imported candidate. Nonterminal
 source jobs, source/destination aliasing and cyclic self-import deny. Terminal
 source registry history is inert, collision-checked and archived only after
-activation. VIT-INV-062 schema succession uses a separate predecessor-owned
-drain, authenticated complete checkpoint, verified dormant local successor and
-atomic fenced handoff; source rows never seed it.
+activation under authenticated provenance/scope/manifests/terminal-result,
+sequence/idempotency, retention, bounded append work and protected cleanup.
+Archive disposition/result/conflict remains separate, so failure cannot reverse
+or ambiguously report activation. VIT-INV-062 schema succession uses a stable
+bootstrap identity and closed lifecycle, independent exact-target authorization
+with requestor/approver/activator/issuer/cancellation separation, bounded work
+and reservations, predecessor-owned drain, authenticated complete checkpoint,
+verified dormant local successor, canonical result/conflict and atomic active-
+generation/fence handoff; source rows never seed it. Every VIT-INV-062 mutation
+first locks and rechecks that non-wrapping generation; stale predecessor
+transactions and guard-unaware binaries cannot commit or become ready.
 Cross-database, cross-region or external-selector activation is unsupported
 through `1.0.0`; it requires a future explicitly owned invariant/composite law.
 Production evidence must include stale/future law generation, dependency
@@ -636,7 +648,9 @@ reuse, revocation before admission, lost/late authorization delivery, intent
 expiry before target authority, cross-target sequence suppression, activation/
 revocation/expiry races, nonterminal and terminal source jobs, identity
 collisions, destination-targeting/cyclic self-import, inert-history promotion,
-coordinator-bootstrap rollback, registry-forged receipt, importer owner
+history append collision/failure, stale work and old binaries crossing handoff,
+competing successors, bootstrap authorization replay/revocation/cancellation/
+rollback/restore/failover, registry-forged receipt, importer owner
 omission, key/sequence/continuity rollback and response loss after any terminal
 commit; each produces one atomic success or exact fail-closed/idempotent result.
 

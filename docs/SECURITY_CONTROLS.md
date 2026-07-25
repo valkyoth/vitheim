@@ -223,7 +223,9 @@ audit decision.
   before its target authorization, remote emission is not revocation, and a
   late intent after Consumed returns the activation result without reversal;
 - through `1.0.0` every affected owner guard is co-located with the job/barrier,
-  and one local transaction rechecks current budget/fence/authorization/
+  and one local transaction uses
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox,
+  then rechecks current budget/fence/authorization/
   manifest/receipts/owner versions, consumes authorization, then activates all
   owner generations plus result/audit/outbox or none; every pre-activation
   failure permanently fences the candidate, response-loss retry is idempotent,
@@ -232,9 +234,16 @@ audit decision.
 - VIT-INV-062 is never imported by the candidate it coordinates: destination
   operation/job/budget/fence/candidate/authorization/barrier/result/cleanup
   state remains live authority; nonterminal source jobs deny, terminal history
-  is inert and post-activation archival only, identity collisions fail closed,
-  and coordinator-schema migration requires a separate predecessor-owned
-  drain/checkpoint/dormant-successor/atomic-handoff bootstrap;
+  is inert and post-activation archival only under authenticated provenance,
+  sequence/idempotency, retention, bounded work and protected cleanup state;
+  archive collision/failure has a separate durable disposition and never
+  changes activation; identity collisions fail closed; and coordinator-schema
+  migration requires a separate stable-ID, independently authorized, budgeted
+  closed lifecycle for predecessor drain/checkpoint/dormant-successor and
+  atomic coordinator-generation/fence handoff with canonical result/conflict;
+- every VIT-INV-062 mutation locks and rechecks the active coordinator
+  generation/fence first; a stale transaction or binary that omits the guard
+  cannot commit or become ready after handoff;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

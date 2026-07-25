@@ -556,7 +556,9 @@ restore, failover, and release evidence.
    authority.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
    live coordinator job/barrier and every selected domain-owner guard to share one destination-local
-   transaction: after canonical locking, trusted manifest rederivation and
+   transaction. Its canonical order is
+   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox:
+   after locking, trusted manifest rederivation and
    current-state rechecks, authorization consumption and all owner activations
    commit with barrier/job result/audit/outbox or none do. Every selected domain owner
    retains domain authority. Cancellation, exhaustion, rejection or quarantine
@@ -568,10 +570,17 @@ restore, failover, and release evidence.
    candidate, authorization, barrier, result and cleanup state stay outside the
    staged candidate through result/outbox commit. Nonterminal source jobs,
    source/destination aliasing and cyclic self-import deny; terminal source
-   history is inert and archived only after activation, with typed identity
-   conflicts. VIT-INV-062 schema succession is a separate local
-   predecessor-owned drain/checkpoint/dormant-successor/CAS-handoff bootstrap,
-   never an imported replacement.
+   history is inert and archived only after activation, with authenticated
+   scope/provenance/manifests/terminal result, sequence/idempotency, retention,
+   bounded archive work and protected cleanup; archive failure has a separate
+   durable disposition and never changes activation. Typed identity conflicts
+   fail closed. VIT-INV-062 schema succession is a separate stable-ID,
+   independently authorized and budgeted closed lifecycle for local
+   predecessor drain/checkpoint/dormant-successor and coordinator-generation/
+   fence CAS handoff, with canonical exact-retry result/conflict, never an
+   imported replacement. Every VIT-INV-062 mutation locks and rechecks that
+   generation first, fencing predecessor-started work and binaries that omit
+   the guard.
 10. Every important result is explainable from commands, events, policy,
     workflow, evidence, provenance, and versioned configuration.
 11. The API is the product boundary; the UI is an API client and cannot acquire

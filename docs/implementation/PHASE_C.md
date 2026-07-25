@@ -2502,15 +2502,16 @@ security-control state. It cannot approve a domain transition, fabricate a
 receipt or make prepared state authoritative.
 
 The supported through-`1.0.0` activation profile requires the live coordinator
-job, candidate, barrier, authorization row and every affected domain-owner
-activation guard to be co-located in one destination-local transaction domain.
+generation, job, candidate, barrier, authorization row and every affected
+domain-owner activation guard to be co-located in one destination-local
+transaction domain. The canonical full order is
+`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox`.
 This is `VIT-LAW-009
 AtomicMigrationImportActivation`: trusted derivation selects the exact affected
 domain-owner set while every selected domain owner retains exclusive authority.
-Activation locks job, candidate/
-barrier, the authorization row, then owner rows in canonical manifest order;
-authorization admission, revocation and expiry use the identical
-job→candidate/barrier→authorization prefix; rechecks
+Authorization admission, revocation and expiry use that order's
+active-coordinator-generation→job→candidate/barrier→authorization prefix.
+Every path rechecks
 `AdmissionPrepared`, exact current job lease/fence, budget profile and final
 counters, absence of every failure disposition, current trusted time and
 authorization lifecycle, complete unique ordered receipts, exact staged root,
@@ -2538,12 +2539,72 @@ existing invariant owners. An active job with a missing/mismatched barrier,
 receipt or owner generation is corrupt authority state and fails closed rather
 than being reconstructed from staging.
 
-VIT-INV-062 never prepares itself as a domain generation. Its own schema can
-advance only through `MigrationImportCoordinatorBootstrapV1`: the current
-coordinator drains new admissions, terminalizes and outbox-settles live jobs,
-checkpoints every control-state high-watermark, verifies a dormant local
-successor, then commits one predecessor-bound handoff that fences the old
-coordinator. The import candidate cannot seed or authorize this bootstrap.
+VIT-INV-062 never prepares itself as a domain generation. One canonical
+`MigrationImportCoordinatorGenerationV1` row owns the active non-wrapping
+generation, schema/semantic/code digests, law generation, predecessor handoff
+digest and fence. Every VIT-INV-062 job admission, authorization admission,
+revocation, expiry, activation, cleanup, archive and bootstrap transaction must
+lock that row first and compare its expected generation/fence before any
+mutation. Handoff atomically advances it. A stale transaction begun under the
+predecessor therefore cannot commit afterward. Supported storage enforces the
+expected generation in its mutation interface/constraint and rejects an old
+binary that omits it; old binaries remain unready during bootstrap.
+
+Its schema can advance only through canonical
+`MigrationImportCoordinatorBootstrapV1`, which binds a stable `BootstrapId`,
+idempotency key, deployment/tenant scope, predecessor coordinator generation/
+fence/schema and checkpoint digest, successor generation/schema/code/semantic
+digests, exact admitted VIT-LAW-009 tuple/manifest, change and optional incident
+authority, work-budget profile, authorization digest, requested-at and
+canonical request digest. One predecessor generation has at most one
+nonterminal bootstrap and one successor identity.
+
+The bootstrap lifecycle is closed:
+
+- `Proposed -> Authorized -> Draining -> Checkpointed ->
+  SuccessorVerified -> Committed`;
+- `Proposed` or `Authorized -> Rejected`;
+- any nonterminal state before handoff may enter
+  `CancelledBeforeHandoff` through an independently authorized cancellation
+  that atomically clears the drain and advances the predecessor fence; and
+- an unrecoverable validation, authorization, budget or cleanup failure enters
+  `FailedFenced`.
+
+`Committed`, `Rejected`, `CancelledBeforeHandoff` and `FailedFenced` are
+terminal. Retryable work stays in its current state with monotonic attempts; no
+transition skips checkpoint or successor verification.
+
+Canonical `MigrationImportCoordinatorBootstrapAuthorizationV1` is independently
+issued and binds bootstrap/request digests; predecessor and successor
+generation/schema/code/semantic/law identities; requestor, approvers,
+activator, quorum and SoD; policy/change/incident authority; issued-at,
+not-before, expiry, maximum uncertainty and trusted-time profile/epoch; issuer
+continuity, signer/key/authentication profile; nonce and idempotency. Its closed
+row is `Issued`, `ConsumedAtHandoff`, `ExpiredUnused` or `RevokedUnused`.
+`AdmitMigrationImportCoordinatorBootstrapAuthorization` authenticates it.
+Every lifecycle advance requires current `Issued`; revocation or expiry before
+handoff prevents commit, and handoff consumes it atomically.
+
+`MigrationImportCoordinatorBootstrapWorkBudgetV1` durably limits rows/bytes,
+decode/allocation/hash/signature/proof and successor-verification work,
+checkpoint/copy/cleanup storage, attempts, elapsed time and concurrency. It
+precharges bounded quanta and reserves terminal result, rollback and protected
+Recovery cleanup capacity. Exhaustion fences the bootstrap and cannot discard
+the authenticated predecessor checkpoint.
+
+The current coordinator drains new admissions, terminalizes and outbox-settles
+live jobs, checkpoints every control-state high-watermark, creates and verifies
+a dormant local successor, then commits one predecessor-bound handoff. The
+handoff transaction uses
+active-coordinator-generation→bootstrap→bootstrap-authorization→checkpoint/
+successor→audit/result/outbox locking, rechecks zero live work and exact
+authorization/budget/checkpoint/successor evidence, advances the global
+generation/fence, consumes authorization, commits
+`MigrationImportCoordinatorBootstrapResultV1` and fences the old coordinator.
+Exact request retry returns that result; changed bytes, successor, authority or
+idempotency returns `MigrationImportCoordinatorBootstrapConflict` without
+mutation. Response loss recovers only from the generation row plus canonical
+result. The import candidate cannot seed or authorize bootstrap.
 
 A migration or import
 cannot route authority reads to a replica, synthesize absence, reset a unique
@@ -2753,6 +2814,21 @@ restore before and after tombstone creation or authorization admission; and
 response loss after either commit. Exercise every `VIT-LAW-009` generation
 transition; only one complete activation or the exact typed no-write/idempotent
 result is valid.
+Exercise every bootstrap lifecycle edge and reject every omitted/skipped edge.
+Race a predecessor job, authorization admission, revocation, activation,
+cleanup and archive transaction across handoff; old/mixed binaries, missing
+generation CAS, competing successors, changed-idempotency replay, bootstrap
+authorization replay/revocation/expiry, drain cancellation, budget exhaustion,
+checkpoint/successor substitution, response loss, failover, restore and
+rollback must yield one fenced coordinator generation and canonical result.
+
+This milestone also registers the VIT-LAW-009
+`MigrationImportRegistryHistoryV1`/`AppendMigrationImportRegistryHistory`
+semantic contract before cross-backend interchange consumes it at `0.30.0`.
+Local conformance proves authenticated scope/provenance/original terminal
+result/manifests, archive sequence/predecessor/idempotency, bounded work and
+protected cleanup, canonical disposition/result/conflict and the non-negotiable
+rule that post-activation archive failure cannot alter activation.
 
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
 `v0.29.0 implementation stop reached. Run pentest for this exact commit.`
@@ -2839,16 +2915,42 @@ authorization ID, candidate or barrier collisions return typed
 replace or resume either lineage. Cyclic self-import and source/destination
 aliasing deny.
 
+The `0.29.0` `MigrationImportRegistryHistoryV1` contract canonically binds
+history ID and idempotency;
+archival namespace, tenant/deployment and classification/retention policy;
+source coordinator generation/fence, original job/operation/candidate/barrier,
+terminal lifecycle and result bytes/digest; source export and destination import
+manifest/candidate/activation-result digests; authentication profile, signer/
+issuer/key epoch and provenance chain; non-wrapping archive sequence,
+predecessor digest and entry digest; and append-budget profile/counters. It is
+evidence only and cannot be decoded through a live job, authorization, barrier
+or owner-state interface.
+
+`AppendMigrationImportRegistryHistory` runs only after the canonical activation
+result/outbox commit, under
+active-coordinator-generation→archive-head→history/idempotency→archive-budget→
+audit/result/outbox locking. Its
+`MigrationImportRegistryHistoryAppendDispositionV1` is closed to nonterminal
+`Pending` and terminal `Appended`, `ConflictFenced`, `RejectedFenced` or
+`ManualRecoveryRequired`. One transaction authenticates provenance, precharges
+bounded `MigrationImportRegistryHistoryWorkBudgetV1` rows/bytes/decode/hash/
+signature/proof/storage work, CAS-advances the archive head and commits
+`MigrationImportRegistryHistoryAppendResultV1`. Exact retry returns the result;
+changed identity, bytes, provenance, namespace or idempotency returns
+`MigrationImportRegistryHistoryAppendConflict`. Retryable failure remains
+Pending with monotonic attempts; exhaustion uses protected cleanup capacity and
+becomes ManualRecoveryRequired. Archive failure or collision never rolls back,
+rewrites or makes ambiguous the already committed domain activation result;
+operators see activation success and its separate archive disposition.
+
 Migrating the VIT-INV-062 schema itself never uses a migration candidate.
-`MigrationImportCoordinatorBootstrapV1` is a separate destination-local
-predecessor-owned protocol: drain new admissions; let every live job reach a
-durable terminal plus outbox disposition; checkpoint operation claims, budgets,
-fences, authorization admission/revocation tombstones, sequence keys, barriers,
-results and cleanup; create and verify a dormant local successor schema; then
-CAS one predecessor-bound handoff and fence the old coordinator. Recovery
-selects exactly one side from that handoff. Imported source rows cannot seed the
-successor, and a backend unable to prove the checkpoint and atomic handoff
-refuses the coordinator-schema migration.
+Cross-backend work reuses the exact independently authorized, budgeted, closed
+`MigrationImportCoordinatorBootstrapV1` protocol from `0.29.0`, including the
+active coordinator generation/fence, predecessor checkpoint, dormant local
+successor verification, canonical result/conflict and response-loss recovery.
+Imported source rows cannot seed the successor, and a backend unable to prove
+every state, authorization, budget and atomic handoff requirement refuses the
+coordinator-schema migration.
 Import preserves every
 authorization schema field without defaulting and admits the destination only
 if it proves the same or stronger no-late-commit mechanism; otherwise imported
@@ -2936,6 +3038,12 @@ targeting the destination, source/destination aliasing, cyclic self-import,
 terminal-history promotion, archive response loss, coordinator-bootstrap
 drain with a live job, checkpoint omission, dormant-successor verification
 failure, handoff response loss, failover and restore before/after cutover,
+history authentication/provenance/tenant/namespace/result/manifest
+substitution, duplicate and conflicting append, sequence/predecessor fork,
+bounded rows/bytes/work exhaustion, retry-limit exhaustion, append response
+loss, retention/classification mismatch, protected-cleanup starvation and
+post-activation archive failure; activation remains canonical success with a
+separate exact archive disposition,
 and cross-adapter conformance pass.
 
 Exit criteria: successful import proves complete semantic and integrity parity.

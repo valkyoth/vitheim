@@ -33,6 +33,23 @@ sequence suppression, premature intent expiry, nonterminal/cyclic source jobs,
 identity collisions, inert-history promotion, bootstrap rollback, activation/
 revocation/expiry races, key/sequence/continuity rollback and response loss
 after any terminal commit without partial domain-owner visibility.
+All Phase O evidence also preserves the non-wrapping active coordinator
+generation/fence, which every VIT-INV-062 mutation locks and rechecks first.
+Activation uses exactly
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox.
+Bootstrap evidence covers stable identity/idempotency, its closed lifecycle,
+independently admitted exact-predecessor/successor authorization and separation
+of duties, bounded work/reservations/cleanup, checkpoint, atomic generation/
+fence handoff, canonical result/conflict and exact response-loss recovery.
+History evidence covers authenticated source/destination provenance and scope,
+original terminal result, export/import manifests, archival namespace,
+retention/classification, sequence/predecessor/idempotency, bounded append work,
+protected cleanup and durable disposition/result/conflict. Append begins only
+after activation; failure, collision or manual recovery never rolls activation
+back or makes its result ambiguous. RPC, HA, DR, soak, hardening, compatibility,
+external pentest and RC evidence must exercise stale predecessor transactions,
+guard-unaware binaries, competing successors, bootstrap replay/revocation/
+cancellation/rollback/restore/failover and archive failure at every boundary.
 
 ## `0.141.0` — Single-Node Production Packaging
 Status: planned.

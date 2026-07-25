@@ -58,6 +58,12 @@ closure. The derivation also binds one typed non-importable coordinator,
 VIT-INV-062, separately from the ordered importable domain contributors.
 Keeping the coordinator in the law dependency proof never authorizes source
 registry rows to replace or merge with the destination coordinator.
+Every VIT-LAW-009 mutation first checks the active coordinator generation/fence.
+Its bootstrap advances that value only through a stable-ID, independently
+authorized, budgeted closed lifecycle with a canonical result; old binaries or
+predecessor transactions that omit the expected generation deny. Authenticated
+terminal history is appended only after activation under its own bounded
+budget/disposition, and archive failure never changes activation authority.
 
 The initial scope contract is exact rather than descriptive:
 
