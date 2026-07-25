@@ -302,12 +302,17 @@ Freeze the same authentication, trusted-time and rollback-resistant ratchets for
 `MigrationImportCoordinatorBootstrapAuthorizationV1`. It binds stable bootstrap
 and idempotency IDs, predecessor/successor coordinator generations and fences,
 schemas, code/semantic/law/checkpoint digests, change or incident authority,
-requestor/approvers/activator, quorum/SoD and validity window. It is admitted
-independently of either coordinator, consumed only by the atomic handoff, and
-may expire or be revoked only while unused. Replay, competing-successor
-substitution, cancellation-authority substitution, stale generation or changed
-canonical material returns the stored result or a typed conflict without
-mutation.
+requestor/approvers/activator, quorum/SoD and validity window. Freeze distinct
+action/authentication domains for begin-drain, fresh checkpoint/verification-
+bound handoff and cancellation; no grant is reusable for another action. Each
+uses destination-local Absent/RevokedBeforeAdmission/Issued/Consumed/
+ExpiredUnused/RevokedUnused same-row ordering. Begin is consumed when the drain
+installs; final handoff consumes its fresh grant; cancellation consumes its own
+grant. Revocation/expiry before begin or handoff consumption atomically
+terminalizes safely, clears any drain, preserves evidence and advances the
+predecessor fence. Replay, competing-successor substitution, cancellation-
+authority substitution, stale generation or changed canonical material returns
+the stored per-action result or typed conflict without mutation.
 Exit criteria: Phase O has one approved, replaceable crypto/key profile.
 `v0.140.1 implementation stop reached. Run pentest for this exact commit.`
 
@@ -345,8 +350,9 @@ operation-key claim, `MigrationImportWorkBudgetV1` job/budget/reservations/
 cursor/staging, closed lifecycle, lease/fence, candidate/tombstone,
 authorization admission/consumption, pre/post-admission revocation, barrier
 head/sequence/predecessor/result, active coordinator generation/fence, inert
-history archive head/disposition/budget/result, coordinator-bootstrap identity/
-lifecycle/authorization/budget/checkpoint/handoff/result, quarantine and cleanup
+history obligation/archive head/disposition/budget/result/checkpoint,
+coordinator-bootstrap identity/lifecycle/begin-handoff-cancel authorization/
+budget/checkpoint/successor-receipt/handoff/result, quarantine and cleanup
 rows into one destination-local
 transaction domain,
 with source access read-only and final domain authority still owned by existing
@@ -392,18 +398,22 @@ staging. Terminal history binds stable identity/idempotency, authenticated
 provenance and scope, original terminal result, export/import manifests,
 archive namespace, retention/classification, sequence and predecessor; append
 starts only after activation and has a bounded work/row/byte budget plus
-protected cleanup reserve. Pending/Appended/ConflictFenced/RejectedFenced/
-ManualRecoveryRequired archive disposition and canonical result/conflict remain
-separate from the irreversible activation result. Coordinator-schema succession
-requires stable bootstrap identity, closed lifecycle, independent
-authorization, bounded work/reservations, predecessor-owned drain/checkpoint,
-dormant local successor, canonical result/conflict and atomic generation/fence
-handoff. Candidate final
+protected cleanup reserve. Pending/NoHistory/NotRequested/Appended/
+ConflictFenced/RejectedFenced/ManualRecoveryRequired archive disposition and
+canonical result/conflict remain
+separate from the irreversible activation result. Activation atomically creates
+bounded Pending or explicit NoHistory/NotRequested; absence is invalid and
+cleanup waits for the terminal append checkpoint. Coordinator-schema succession
+requires stable bootstrap identity, closed lifecycle, separate pre-admission-
+revocable begin/handoff/cancel authorizations, bounded work/reservations,
+predecessor-owned typed checkpoint, owner-authenticated dormant-successor
+verification receipt, canonical per-action result/conflict and atomic
+generation/fence handoff. Candidate final
 counters include a pessimistically precharged complete preparation/activation/
 result/recovery quantum, and `AdmissionPrepared` requires the atomically stored
 complete unique receipt set. Job, barrier and every
 affected domain-owner activation guard must fit one local transaction with fixed
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox
 locking and
 expected-version CAS. Storage must prove atomic all-domain-owner activation with the
 authorization consumption/tombstone and job result, or refuse before
@@ -1199,7 +1209,8 @@ and affected domain-owner credentials cannot satisfy the issuer role or
 self-approve. Freeze a distinct authorization-admission service identity and
 the predecessor/successor coordinator-bootstrap requestor, approver and
 activator separation, plus an independent bootstrap-authorization issuer and
-distinct cancellation authority. Neither coordinator, a migration actor nor an
+distinct begin, handoff and cancellation authority/admission identities.
+Neither coordinator, a migration actor nor an
 affected domain owner may issue, admit, approve, activate or cancel its own
 handoff; every role and validity recheck is bound to the exact active
 coordinator generation. Revocation and principal/session/policy changes before
@@ -1556,7 +1567,8 @@ revocation intent/inbox/exact-target sequence/target lifetime/tombstone/result/
 outbox, live coordinator state/exclusion, inert terminal-history archive,
 identity-conflict indexes, active coordinator generation/fence, terminal-history
 archive head/disposition/budget/result, coordinator-bootstrap stable identity/
-lifecycle/authorization/budget/checkpoint/handoff/result,
+lifecycle/begin-handoff-cancel authorizations and pre-admission tombstones/
+budget/checkpoint/successor receipt/handoff/per-action results,
 co-location proof and cleanup linkage as one
 VIT-INV-062/VIT-LAW-009 HA/restore unit. Failover cannot turn prepared into
 active, replay a terminal candidate or authorization, accept a partial or
@@ -1565,7 +1577,8 @@ receipt, admit delayed authority over a pre-admission tombstone, let another
 authorization's sequence suppress revocation, import/merge source coordinator
 state, resume a source job, promote inert history, roll back a bootstrap
 handoff, permit predecessor-started work to commit after handoff, make archive
-failure alter activation, or replace the selected local transaction with a
+failure alter activation, lose a Pending obligation, treat absence as
+NoHistory/NotRequested, clean before terminal checkpoint, or replace the selected local transaction with a
 remote selector.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane

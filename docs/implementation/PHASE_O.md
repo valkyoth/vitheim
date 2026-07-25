@@ -36,17 +36,21 @@ after any terminal commit without partial domain-owner visibility.
 All Phase O evidence also preserves the non-wrapping active coordinator
 generation/fence, which every VIT-INV-062 mutation locks and rechecks first.
 Activation uses exactly
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox.
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox.
 Bootstrap evidence covers stable identity/idempotency, its closed lifecycle,
-independently admitted exact-predecessor/successor authorization and separation
-of duties, bounded work/reservations/cleanup, checkpoint, atomic generation/
-fence handoff, canonical result/conflict and exact response-loss recovery.
+independently admitted, pre-admission-revocable begin, fresh handoff and
+cancellation authorizations with separation of duties, bounded work/
+reservations/cleanup, canonical checkpoint and successor receipt, atomic
+generation/fence handoff, per-action result/conflict and exact response-loss
+recovery. Revocation/expiry at every state cannot strand a drain.
 History evidence covers authenticated source/destination provenance and scope,
 original terminal result, export/import manifests, archival namespace,
 retention/classification, sequence/predecessor/idempotency, bounded append work,
 protected cleanup and durable disposition/result/conflict. Append begins only
-after activation; failure, collision or manual recovery never rolls activation
-back or makes its result ambiguous. RPC, HA, DR, soak, hardening, compatibility,
+after activation, but activation atomically creates Pending, NoHistory or
+NotRequested and cleanup waits for the terminal obligation checkpoint; failure,
+collision or manual recovery never rolls activation back or makes its result
+ambiguous. RPC, HA, DR, soak, hardening, compatibility,
 external pentest and RC evidence must exercise stale predecessor transactions,
 guard-unaware binaries, competing successors, bootstrap replay/revocation/
 cancellation/rollback/restore/failover and archive failure at every boundary.

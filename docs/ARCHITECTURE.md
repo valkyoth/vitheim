@@ -557,10 +557,11 @@ restore, failover, and release evidence.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
    live coordinator job/barrier and every selected domain-owner guard to share one destination-local
    transaction. Its canonical order is
-   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox:
+   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox:
    after locking, trusted manifest rederivation and
    current-state rechecks, authorization consumption and all owner activations
-   commit with barrier/job result/audit/outbox or none do. Every selected domain owner
+   commit with barrier/job result, exactly one Pending/NoHistory/NotRequested
+   history obligation, audit/outbox or none do. Every selected domain owner
    retains domain authority. Cancellation, exhaustion, rejection or quarantine
    before that commit permanently fences the candidate; afterward cleanup can
    remove only non-authoritative staging. Non-co-located selectors are
@@ -573,11 +574,15 @@ restore, failover, and release evidence.
    history is inert and archived only after activation, with authenticated
    scope/provenance/manifests/terminal result, sequence/idempotency, retention,
    bounded archive work and protected cleanup; archive failure has a separate
-   durable disposition and never changes activation. Typed identity conflicts
+   durable disposition and never changes activation. Cleanup waits for a
+   terminal append checkpoint, so absent worker delivery is recoverable and
+   absent state cannot impersonate NoHistory/NotRequested. Typed identity conflicts
    fail closed. VIT-INV-062 schema succession is a separate stable-ID,
    independently authorized and budgeted closed lifecycle for local
-   predecessor drain/checkpoint/dormant-successor and coordinator-generation/
-   fence CAS handoff, with canonical exact-retry result/conflict, never an
+   predecessor begin/drain, typed checkpoint/dormant-successor receipt and
+   coordinator-generation/fence CAS handoff. Begin, fresh final handoff and
+   cancellation use distinct pre-admission-revocable action grants with
+   canonical exact-retry results/conflicts, never an
    imported replacement. Every VIT-INV-062 mutation locks and rechecks that
    generation first, fencing predecessor-started work and binaries that omit
    the guard.

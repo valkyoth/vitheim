@@ -8,6 +8,13 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Split coordinator bootstrap into independently admitted begin-drain, fresh
+  handoff and cancellation actions with pre-admission revocation tombstones,
+  safe drain release, typed checkpoint/successor receipt and exact retry
+  results.
+- Made history archival crash-durable by creating Pending, NoHistory or
+  NotRequested atomically with activation and prohibiting cleanup until a
+  terminal obligation checkpoint.
 - Completed the VIT-INV-062 coordinator-bootstrap authority protocol with a
   stable identity, closed lifecycle, independent authorization and separation
   of duties, bounded work/reservations, atomic generation/fence handoff,
@@ -17,7 +24,7 @@ All notable Vitheim changes are documented here. The format follows
   work/cleanup bounds and a disposition independent from irreversible
   activation.
 - Standardized and machine-check the migration/import activation order as
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox.
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox.
 
 - Closed revocation-before-authorization ordering with explicit
   `AdmitMigrationImportActivationAuthorization` and a shared

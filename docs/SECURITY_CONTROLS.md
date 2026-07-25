@@ -224,10 +224,11 @@ audit decision.
   late intent after Consumed returns the activation result without reversal;
 - through `1.0.0` every affected owner guard is co-located with the job/barrier,
   and one local transaction uses
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox,
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox,
   then rechecks current budget/fence/authorization/
   manifest/receipts/owner versions, consumes authorization, then activates all
-  owner generations plus result/audit/outbox or none; every pre-activation
+  owner generations plus one bounded Pending/NoHistory/NotRequested history
+  obligation and result/audit/outbox or none; every pre-activation
   failure permanently fences the candidate, response-loss retry is idempotent,
   cleanup cannot promote or delete authority, and non-co-located selector
   fallback is unsupported;
@@ -237,10 +238,13 @@ audit decision.
   is inert and post-activation archival only under authenticated provenance,
   sequence/idempotency, retention, bounded work and protected cleanup state;
   archive collision/failure has a separate durable disposition and never
-  changes activation; identity collisions fail closed; and coordinator-schema
+  changes activation; cleanup waits for the terminal obligation checkpoint and
+  absence is never treated as NoHistory/NotRequested; identity collisions fail
+  closed; and coordinator-schema
   migration requires a separate stable-ID, independently authorized, budgeted
-  closed lifecycle for predecessor drain/checkpoint/dormant-successor and
-  atomic coordinator-generation/fence handoff with canonical result/conflict;
+  closed lifecycle with pre-admission-revocable begin, fresh handoff and
+  explicit cancellation grants, typed checkpoint/successor receipt, and atomic
+  coordinator-generation/fence handoff with canonical per-action result/conflict;
 - every VIT-INV-062 mutation locks and rechecks the active coordinator
   generation/fence first; a stale transaction or binary that omits the guard
   cannot commit or become ready after handoff;

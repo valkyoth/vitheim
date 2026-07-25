@@ -225,11 +225,14 @@ has no effect, and late revocation after Consumed returns the activation result
 without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 uses the canonical
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox
 order, rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all domain-owner versions, consumes and
 tombstones authorization, then activates every domain owner plus barrier/job result/
-audit/outbox, or none. Pre-activation rejection, exhaustion, cancellation or
+history obligation/audit/outbox, or none. Exactly one bounded Pending,
+NoHistory or NotRequested obligation co-commits; cleanup cannot remove its
+descriptors until a terminal append checkpoint. Pre-activation rejection,
+exhaustion, cancellation or
 quarantine permanently fences the candidate; post-activation cleanup touches
 only staging. VIT-INV-062 coordinates security-control completeness but never
 domain authority. Cross-backend import refuses nonterminal source jobs; imports
@@ -239,11 +242,17 @@ candidate/barrier identity collisions. VIT-INV-062 schema succession uses a
 separate stable-ID, independently authorized and budgeted closed lifecycle for
 predecessor drain, checkpoint, dormant local successor and atomic coordinator-
 generation/fence handoff, with canonical result/conflict recovery, never the
-candidate it coordinates. Every VIT-INV-062 mutation rechecks that generation
+candidate it coordinates. A pre-admission-revocable begin grant is consumed
+when the drain installs; a distinct fresh checkpoint/verification-bound handoff
+grant authorizes commit; and a third action-bound grant authorizes canonical
+idempotent cancellation. Authority loss releases the drain and advances the
+fence instead of stranding the bootstrap. Every VIT-INV-062 mutation rechecks that generation
 first, so old predecessor work cannot commit after handoff. History append has
 its own authenticated scope/provenance/manifests/terminal-result, sequence,
 idempotency, retention, bounded budget, cleanup reserve and durable disposition;
-its collision or failure cannot alter the activation result. A topology requiring a
+its collision or failure cannot alter the activation result. The activation-
+atomic obligation and archive head make missing work distinguishable from
+NoHistory/NotRequested. A topology requiring a
 distributed transaction or unreviewed global activation selector is refused.
 Archive exact results or authenticated result references with
 request/lifecycle/scope/predecessor/key commitments, bounded proof work and a

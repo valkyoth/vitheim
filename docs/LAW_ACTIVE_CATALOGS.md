@@ -60,10 +60,14 @@ Keeping the coordinator in the law dependency proof never authorizes source
 registry rows to replace or merge with the destination coordinator.
 Every VIT-LAW-009 mutation first checks the active coordinator generation/fence.
 Its bootstrap advances that value only through a stable-ID, independently
-authorized, budgeted closed lifecycle with a canonical result; old binaries or
-predecessor transactions that omit the expected generation deny. Authenticated
-terminal history is appended only after activation under its own bounded
-budget/disposition, and archive failure never changes activation authority.
+authorized, budgeted closed lifecycle. Begin, handoff and cancellation have
+separate pre-admission-revocable grants/results; the handoff binds a typed
+checkpoint and owner-authenticated successor receipt, while authority loss
+clears the drain and advances the fence. Old binaries or predecessor
+transactions that omit the expected generation deny. Activation creates a
+bounded Pending/NoHistory/NotRequested obligation atomically; authenticated
+append advances the archive head and cleanup waits for terminal checkpoint.
+Archive failure never changes activation authority.
 
 The initial scope contract is exact rather than descriptive:
 

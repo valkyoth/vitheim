@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox'
+canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox'
 
 fail() {
     echo "migration/import policy: $*" >&2
@@ -30,15 +30,44 @@ then
     fail "obsolete activation order without coordinator generation or authorization remains"
 fi
 
+if grep -R -Fq \
+    'ordered-domain-owner→audit/result/outbox' \
+    docs
+then
+    fail "obsolete activation order without the atomic history obligation remains"
+fi
+
 tmp_dir=$(mktemp -d)
 trap 'rm -rf "$tmp_dir"' EXIT HUP INT TERM
 
 for symbol in \
     MigrationImportCoordinatorGenerationV1 \
     MigrationImportCoordinatorBootstrapAuthorizationV1 \
+    MigrationImportCoordinatorBootstrapBeginAuthorizationV1 \
+    AdmitMigrationImportCoordinatorBootstrapBeginAuthorization \
+    MigrationImportCoordinatorBootstrapBeginAuthorizationRevokedBeforeAdmission \
+    BeginMigrationImportCoordinatorBootstrapDrain \
+    MigrationImportCoordinatorBootstrapBeginResultV1 \
+    MigrationImportCoordinatorBootstrapBeginConflict \
+    MigrationImportCoordinatorHandoffAuthorizationV1 \
+    AdmitMigrationImportCoordinatorHandoffAuthorization \
+    MigrationImportCoordinatorHandoffAuthorizationRevokedBeforeAdmission \
+    MigrationImportCoordinatorBootstrapCancellationAuthorizationV1 \
+    AdmitMigrationImportCoordinatorBootstrapCancellationAuthorization \
+    MigrationImportCoordinatorBootstrapCancellationAuthorizationRevokedBeforeAdmission \
+    CancelMigrationImportCoordinatorBootstrap \
+    MigrationImportCoordinatorBootstrapCancellationResultV1 \
+    MigrationImportCoordinatorBootstrapCancellationConflict \
+    MigrationImportCoordinatorBootstrapCheckpointV1 \
+    MigrationImportCoordinatorSuccessorVerificationReceiptV1 \
     MigrationImportCoordinatorBootstrapWorkBudgetV1 \
     MigrationImportCoordinatorBootstrapResultV1 \
     MigrationImportRegistryHistoryV1 \
+    MigrationImportRegistryHistoryAppendObligationV1 \
+    MigrationImportRegistryHistoryArchiveHeadV1 \
+    MigrationImportRegistryHistoryAppendCheckpointV1 \
+    MigrationImportRegistryHistoryNoHistory \
+    MigrationImportRegistryHistoryNotRequested \
     MigrationImportRegistryHistoryWorkBudgetV1 \
     MigrationImportRegistryHistoryAppendDispositionV1 \
     AppendMigrationImportRegistryHistory \

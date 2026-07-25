@@ -604,13 +604,14 @@ closure of the currently admitted destination VIT-LAW-009 tuple/manifest; no
 separate invariant catalog is implemented. The manifest types VIT-INV-062 only
 as the live non-importable destination coordinator and every other applicable
 dependency as a domain contributor. One transaction uses
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→audit/result/outbox,
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox,
 rederives that split from
 the closure plus schema, migration plan and contributor algorithm, rechecks current budget/final counters, job
 lease/fence, terminal disposition, trusted-time/key/continuity-bound
 authorization, staged root, complete unique owner receipts and versions,
 consumes/tombstones authorization, then activates every domain owner plus the live coordinator's barrier/job
-result/audit/outbox or none. Every pre-activation failure permanently fences the candidate;
+result, exactly one bounded Pending/NoHistory/NotRequested history obligation,
+audit/outbox or none. Every pre-activation failure permanently fences the candidate;
 prepared state is never authority. Activation is irreversible and response-loss
 retry returns its canonical result. Cleanup before activation touches only
 fenced dormant/staged state and after activation touches only staging.
@@ -631,11 +632,16 @@ source registry history is inert, collision-checked and archived only after
 activation under authenticated provenance/scope/manifests/terminal-result,
 sequence/idempotency, retention, bounded append work and protected cleanup.
 Archive disposition/result/conflict remains separate, so failure cannot reverse
-or ambiguously report activation. VIT-INV-062 schema succession uses a stable
-bootstrap identity and closed lifecycle, independent exact-target authorization
-with requestor/approver/activator/issuer/cancellation separation, bounded work
-and reservations, predecessor-owned drain, authenticated complete checkpoint,
-verified dormant local successor, canonical result/conflict and atomic active-
+or ambiguously report activation. Cleanup cannot delete obligation descriptors
+until a terminal append checkpoint, and absence cannot stand for NoHistory or
+NotRequested. VIT-INV-062 schema succession uses a stable bootstrap identity
+and closed lifecycle; distinct pre-admission-revocable begin, fresh handoff and
+cancellation authorizations enforce requestor/approver/activator/issuer/
+cancellation separation. Begin authority is consumed when drain installs;
+handoff authority binds the authenticated complete checkpoint and owner-
+authenticated dormant-successor verification receipt; authorization loss
+cannot strand the drain. Bounded work/reservations, per-action canonical
+result/conflict and atomic active-
 generation/fence handoff; source rows never seed it. Every VIT-INV-062 mutation
 first locks and rechecks that non-wrapping generation; stale predecessor
 transactions and guard-unaware binaries cannot commit or become ready.

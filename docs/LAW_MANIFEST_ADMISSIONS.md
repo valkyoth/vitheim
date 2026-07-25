@@ -38,10 +38,12 @@ An authenticated revocation creates a destination-local
 `RevokedUnused`; both use one exact-target sequence lineage and the same row as
 activation. Remote emission alone has no effect.
 Every mutation also binds the current `MigrationImportCoordinatorGenerationV1`
-and refuses a stale or omitted fence. Bootstrap is independently authorized,
-budgeted and exact-result idempotent; terminal-history append is authenticated,
-bounded and post-activation only, with a disposition that cannot modify the
-activation result. These protocols are part of every admitted VIT-LAW-009
+and refuses a stale or omitted fence. Bootstrap begin, fresh checkpoint/receipt-
+bound handoff and cancellation are distinct pre-admission-revocable actions
+with exact results; authority loss cannot strand the drain. Activation
+atomically creates a bounded Pending or explicit NoHistory/NotRequested history
+obligation. Append is authenticated and bounded, and cleanup waits for its
+terminal checkpoint. These protocols are part of every admitted VIT-LAW-009
 semantic realization, not optional registry behavior.
 
 Database access alone must never authorize either profile. Startup, adapter
@@ -57,7 +59,7 @@ Planning catalog revision: `1`
 
 Trust profile: `planning-superset-not-runtime-v1`
 
-Planning catalog digest: `sha256:05d209d873e981fbb76f18f4a9a1c4068426bb2984a90c4e5e9b868e1cb1051f`
+Planning catalog digest: `sha256:3fc8d1a2041738740b76be6bb77633c4c9a9d819ce483dceb28c97fa6860724d`
 
 The planning-catalog digest uses the length-prefixed encoding defined by
 `docs/LAW_GENERATION_MANIFEST.md`. Encode, in order, the ASCII format literal
@@ -101,17 +103,17 @@ Markdown presentation are excluded.
 | VIT-LAW-007@g02 | sha256:ab2dcb2593e25d58ec06dbd4f6add9789cdef308281efa9876241295ec2148b2 |
 | VIT-LAW-008@g01 | sha256:108df80613c6b4fc288a343ae04a81c90f6d3a403a1ea3c01d0c230cac5052e3 |
 | VIT-LAW-008@g02 | sha256:169c7f61d14749ca8b0a7536ea8a8e52333a3e80958c61f1282679d0706be622 |
-| VIT-LAW-009@g01 | sha256:35c9274b1deb3dd49dce047781d6889a3dad388719c2079108d67f1fa65755e4 |
-| VIT-LAW-009@g02 | sha256:5bf151c2ad668280099ce33fd5ea25ae7291548e1aba268dad02f48e36e47b71 |
-| VIT-LAW-009@g03 | sha256:4226b425c2a302baaa52efe26b9d8a4b4197c258f0db305be4fdf329027f393f |
-| VIT-LAW-009@g04 | sha256:1d9bcdb9a41a57d5a883c03f772b22dfc5badccec2e59207228025cca80726ab |
-| VIT-LAW-009@g05 | sha256:b5dcf47cec5c3cfc9a8863a79a6ca73d4e93f37f1c418abbe2b381d8b56aefbc |
-| VIT-LAW-009@g06 | sha256:4c7885f1886e4af3b3baf25edcb26e26c469944b9ff0f04fa92436d9152283b9 |
-| VIT-LAW-009@g07 | sha256:713d76e82a7e82e468c36ba8529f3e8476106e50ca3e3be32b709da11727f7d8 |
-| VIT-LAW-009@g08 | sha256:18282db5c63f64e27bf43dc5d6f01a509600c3a1aa24f291173333acc0513524 |
-| VIT-LAW-009@g09 | sha256:a023d8430d0f6fb25a8ce783c67c243be647e04eecb23e0265397677251d6739 |
-| VIT-LAW-009@g10 | sha256:8b3adaad6d050ce25340186571834eb013531357a357efa81bf063573e64677c |
-| VIT-LAW-009@g11 | sha256:727551c82b3ef525b7db17f280953377eaf80cca1468e760d35a211f426b4879 |
+| VIT-LAW-009@g01 | sha256:d920dabcacd0161a076a66ace5403af42cf01f2cb0ac45c5ddd7a47d9b27dc7a |
+| VIT-LAW-009@g02 | sha256:3ce9a456fc45cc1c4284826c860d38bd28b88b4919b6592551e09faa085c5dd8 |
+| VIT-LAW-009@g03 | sha256:acfb97b46d7014285f02bdf482d991f49bbf5b067afe339140f5dfcfd4a4b1ee |
+| VIT-LAW-009@g04 | sha256:f372fe5a91fdaf78101cabee420c15489fecfa827d0bae0d05388e908fc4e863 |
+| VIT-LAW-009@g05 | sha256:1573afabc71f7782990aa9ff1cb8f5d7efb2d8d09eef987e87b7db9217cc6571 |
+| VIT-LAW-009@g06 | sha256:77a61709e49c182d9598ff5940b4423d7d3d2bb878ad1d75479ca7180cefb8d2 |
+| VIT-LAW-009@g07 | sha256:36359791e94b54bd29288b34ba93a5ca367c9136e31810fe163b9ebc8978a92f |
+| VIT-LAW-009@g08 | sha256:8ecf897625aeb499aa81b32498c75e2fd65892331c9c7a6bcb5dbce630ac1f10 |
+| VIT-LAW-009@g09 | sha256:f3306c06b159b35425f5fef7baea9ef5840735d66804619f9846eb81806fde7b |
+| VIT-LAW-009@g10 | sha256:4842f26e4ac36d5a15f5b1eeb311cdd54eb4add038169e00d7a34a975702d531 |
+| VIT-LAW-009@g11 | sha256:49b66ec00e9f0389c5125fd01ce9bbfb2b4a72dfef9f7729ec9965ad8e6d8417 |
 
 `0.18.3` implements planning-superset validation and generation of the first
 active activation-floor catalog. Each later law-effective milestone generates
