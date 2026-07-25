@@ -2247,6 +2247,9 @@ implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.29.0` — Migration Registry And Resumable Migrations
 
+<!-- vitheim-invariant VIT-INV-062 0.29.0 -->
+<!-- vitheim-law VIT-LAW-009 0.29.0 -->
+
 Status: planned.
 
 Setup: define immutable migration identity/hash, ordering, preconditions,
@@ -2305,10 +2308,17 @@ version and canonical manifest digest; immutable budget-profile ID/generation/
 epoch/digest; authenticated initiating principal and request/approval digest;
 owner workload/boot/continuity; lease generation, fencing token and expected-
 version CAS; and conservative creation/deadline state. The destination-local
-migration registry is the sole writer of the job, budget, cursor, staging
-reservation, result and cleanup lifecycle. It schedules resource use but cannot
-make imported authority current; final admission remains with the existing
-invariant owners and shared verifiers.
+migration registry implements `VIT-INV-062
+MigrationImportJobAuthorityState` and is the sole writer of operation-key
+uniqueness, job/budget/reservations, cursor, lifecycle, lease/fence,
+candidate/tombstone, activation-barrier head/sequence/predecessor,
+authorization consumption, result and cleanup disposition. This
+security-control state is authoritative and must satisfy complete
+`VIT-ENF-062`, `VIT-CAP-062`, `VIT-TST-062`, `VIT-RCV-062` and `VIT-FEN-062`
+contracts. Its scheduler remains a non-domain authority: it cannot make
+imported ticket, asset, identity, policy, audit or other domain state current.
+Final domain admission remains exclusively with the existing invariant owners
+and their shared verifiers under `VIT-LAW-009`.
 
 The budget persists monotonic overflow-checked counters for cumulative source
 encoded and decoded bytes, decode allocation/work, manifest entries, records,
@@ -2355,17 +2365,35 @@ cannot revoke authority. Before activation, every terminal disposition
 atomically advances the job fence, permanently tombstones the candidate and
 prevents cleanup, retry, takeover, failover or restore from promoting it.
 
+Freeze trusted-code-derived `MigrationImportOwnerManifestV1`. Its canonical
+derivation binds source and destination schema manifests, migration-plan
+digest, active invariant-catalog and law-generation catalog digests, a fixed
+contributor-selection algorithm ID/version, and every applicable invariant ID
+with its expected generation. Importer input may be matching evidence but is
+never authority. VIT-INV-062 recomputes the manifest from independently
+verified local catalogs before sealing and again during activation. Omitted
+owners, unknown schema, future invariants, catalog drift, generation
+substitution and noncanonical non-applicable results deny. Any future invariant
+that can own migrated state must enter a successor `VIT-LAW-009` generation
+before that state can be imported.
+
 Freeze canonical `MigrationImportAdmissionCandidateV1`. It binds the job and
 operation key; exact tenant/deployment, source/destination and manifest digest;
 budget-profile identity and final cumulative counters; staged-state root;
-complete canonically ordered expected invariant-owner manifest; every owner
+complete trusted-code-derived owner manifest; every owner
 identity, authoritative key, expected version/epoch and proposed dormant
 generation/root; migration lease generation and fence; trusted-time interval,
-deadline and exact activation authorization; and candidate digest plus stable
+deadline and exact activation-authorization digest; and candidate digest plus stable
 idempotency identity. Each existing invariant owner validates its portion and
 prepares only a dormant, non-authoritative candidate generation. Its canonical
 authenticated `MigrationImportOwnerPreparationReceiptV1` binds all candidate,
-owner, version/epoch, dormant-generation/root, verifier/build and fence fields.
+owner-manifest, owner, version/epoch, dormant-generation/root, verifier/build
+and fence fields. Receipt authentication is issued only through an owner-held
+signing/MAC capability. VIT-INV-062 receives verification-only access and
+cannot fabricate owner preparation. Each receipt binds authentication profile,
+issuer/signer identity, key epoch, owner continuity and replay ID; a backend
+without portable verification must keep issuance and verification behind an
+unforgeable owner-only capability.
 Preparation never changes the current generation and one owner rejection
 permanently makes the candidate `AdmissionFailed`.
 Before sealing the candidate digest, the job pessimistically precharges the
@@ -2376,25 +2404,55 @@ No owner may perform uncharged preparation. The job moves from `Verified` to
 ordered receipt set and barrier draft; a partial set remains dormant in
 `Verified` and cannot be interpreted as ready.
 
+Freeze canonical `MigrationImportActivationAuthorizationV1`. It binds the
+candidate and job IDs/digests; tenant/deployment and exact operation scope;
+source/destination and schema manifests; staged root; owner-manifest digest;
+budget profile/final counters; requestor, approvers, quorum and separation of
+duties; policy, change and optional incident authority; issued-at, not-before,
+expiry, maximum uncertainty, trusted-time profile/epoch and issuer continuity;
+signer/issuer identity, key epoch and authentication profile; and nonce/
+idempotency identity. `MigrationImportActivationAuthorizationAuthorityPortV1`
+is an independent authority-capability boundary. VIT-INV-062 and every domain
+owner have verification-only access: registry, importer and migration runners
+cannot mint or self-approve activation.
+
+Its durable `MigrationImportActivationAuthorizationConsumptionV1` lifecycle is
+closed to `Issued`, `Consumed`, `ExpiredUnused` and `RevokedUnused`.
+Consumption is single-use and candidate-specific. Authorization bytes/digest,
+the permanent consumption tombstone, time/profile/continuity/key ratchets,
+canonical `MigrationImportActivationResultV1`, all owner activations,
+barrier/job result, audit and outbox commit in the same destination-local
+transaction. Exact post-commit retry returns the original result. Reuse for a
+different candidate, staged root, owner manifest, counters, request bytes or
+action returns typed `MigrationImportActivationAuthorizationConflict` without
+mutation. Revocation or expiry racing commit has one result: the authorization
+is consumed by the complete activation bundle or enters an irreversible unused
+terminal and can never activate.
+
 Freeze canonical `MigrationImportActivationBarrierV1` containing the exact
 candidate digest, complete ordered owner-manifest and preparation-receipt set,
 expected current destination generations, current job state/lease/fence and
-budget profile/final counters, activation authorization and trusted-time
-evidence, non-wrapping activation sequence/predecessor, and canonical result.
-The migration registry coordinates completeness evidence only; it cannot
-approve a domain transition, fabricate a receipt or make prepared state
-authoritative.
+budget profile/final counters, activation authorization and closed consumption
+state, trusted-time evidence, non-wrapping activation sequence/predecessor, and
+canonical result. VIT-INV-062 coordinates completeness and owns only this
+security-control state. It cannot approve a domain transition, fabricate a
+receipt or make prepared state authoritative.
 
 The supported through-`1.0.0` activation profile requires the job, candidate,
 barrier and every affected invariant-owner activation guard to be co-located in
-one destination-local transaction domain. Activation locks job, candidate/
+one destination-local transaction domain. This is `VIT-LAW-009
+AtomicMigrationImportActivation`: trusted derivation selects the exact affected
+owner set while every selected owner retains exclusive domain authority.
+Activation locks job, candidate/
 barrier, then owner rows in canonical manifest order; rechecks
 `AdmissionPrepared`, exact current job lease/fence, budget profile and final
 counters, absence of every failure disposition, current trusted time and
-authorization, complete unique ordered receipts, exact staged root, and every
+authorization lifecycle, complete unique ordered receipts, exact staged root,
+the independently rederived owner manifest, and every
 unchanged owner version/epoch; invokes each owner's own verifier; then
-atomically activates all dormant owner generations, commits the barrier
-sequence/result, moves the job to `Activated`, and writes audit/result/outbox.
+atomically consumes and tombstones authorization, activates all dormant owner
+generations, commits the barrier sequence/result, moves the job to `Activated`,
+and writes audit/result/outbox.
 Missing, duplicate, reordered or substituted receipts, stale owner/job state,
 partial preparation, expired authority or any owner rejection commits no
 activation. Exact concurrent or response-loss retry returns the one barrier
@@ -2607,6 +2665,12 @@ preparation; restore a prepared but unactivated candidate; and present
 complete local transaction activates every owner plus job/result/audit/outbox,
 or none does; no prepared state is readable as authority and no failure cleanup
 can later promote it.
+Test cross-candidate authorization reuse, revocation versus commit, issuer-key
+and continuity rollback, expiry after partial preparation, registry-forged
+owner receipts, importer-supplied owner omission, active-catalog drift and
+response loss after authorization consumption. Exercise every `VIT-LAW-009`
+generation transition; only one complete activation or the exact typed
+no-write/blocking result is valid.
 
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
 `v0.29.0 implementation stop reached. Run pentest for this exact commit.`
@@ -2658,11 +2722,17 @@ precharged reservations, typed exhaustion, bounded quarantine and cleanup
 lifecycle from `0.29.0`; export enumeration, transfer and destination staging
 are charged to that same operation rather than separate resettable budgets.
 It also reuses the exact `MigrationImportJobLifecycleV1`,
-`MigrationImportAdmissionCandidateV1`, owner preparation receipts and
-`MigrationImportActivationBarrierV1` from `0.29.0`. Import never exposes a
+`MigrationImportAdmissionCandidateV1`, trusted-code-derived
+`MigrationImportOwnerManifestV1`, owner-held authenticated preparation
+receipts, independent `MigrationImportActivationAuthorizationV1` and its closed
+consumption lifecycle, and `MigrationImportActivationBarrierV1` from
+`0.29.0`. VIT-INV-062 rederives the exact owner set from exported and local
+schema manifests, migration-plan digest and active invariant/law catalogs;
+exported/importer-supplied owner selection is never authority. Import never exposes a
 partially prepared owner: all owner generations remain dormant until the one
 supported destination-local activation transaction atomically commits the
-complete owner set, barrier, job result, audit and outbox. A destination that
+complete owner set, authorization consumption/tombstone, barrier, job result,
+audit and outbox under VIT-LAW-009. A destination that
 would require a cross-partition, cross-region or external activation selector
 refuses before staging rather than weakening the handoff.
 Import preserves every

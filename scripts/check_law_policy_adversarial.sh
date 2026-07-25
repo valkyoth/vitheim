@@ -432,7 +432,10 @@ expect_active_catalog_failure "an incomplete effective law frontier"
 sed -i '/^| 1 |/s/, VIT-LAW-008@g01//' "$active_catalogs"
 expect_active_catalog_failure "a missing catalog-rollout law frontier"
 
-sed -i '/^| 12 |/s/VIT-LAW-008@g02/VIT-LAW-008@g01/' "$active_catalogs"
+sed -i '/^| 3 |/s/, VIT-LAW-009@g01//' "$active_catalogs"
+expect_active_catalog_failure "a missing migration-import activation law frontier"
+
+sed -i '/^| 13 |/s/VIT-LAW-008@g02/VIT-LAW-008@g01/' "$active_catalogs"
 expect_active_catalog_failure "a stale pre-topology rollout generation"
 
 sed -i '/^| 2 | VIT-LAWCAT-ACTIVE-/d' "$active_catalogs"

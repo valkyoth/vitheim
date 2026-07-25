@@ -89,7 +89,7 @@ with atomic authorization receipt/outbox and pinned generation, closed
 converge/complete/block/revoke/abandon/supersede states, transactional delivery,
 and authenticated identity/fence-bound receipts without a distributed
 transaction. `0.18.3` permits only the compiled immutable single-placement
-topology. At `0.141.0`, epoch 12 activates/converges under generation 1/static
+topology. At `0.141.0`, epoch 13 activates/converges under generation 1/static
 authority; after every local generation-2 admission, generation 2 initializes/
 verifies the exact dormant singleton and commits the handoff that makes
 independent `VIT-INV-060` current. The two topology sources are never co-
@@ -192,21 +192,29 @@ protected Recovery capacity; each bounded quantum is precharged before work.
 Typed exhaustion leaves the source unchanged and destination unready, enters
 bounded resumable cleanup, and stores only bounded metadata/digests in
 quarantine.
-The same milestones close the activation handoff. One
-`MigrationImportAdmissionCandidateV1` binds the final counters, staged root,
-complete ordered invariant-owner manifest, expected versions/epochs, dormant
-generations, lease/fence, trusted-time-bound authorization and idempotency
-digest. Each existing owner prepares and authenticates only its dormant
-generation. One `MigrationImportActivationBarrierV1` binds the complete unique
-receipt set and current job/owner state. Through `1.0.0`, job, barrier and every
-owner activation guard are co-located: one canonical local transaction rechecks
-the still-`AdmissionPrepared` job, budget/fence/authorization and all owner
-versions, then activates every owner plus barrier/job result/audit/outbox, or
-none. Pre-activation rejection, exhaustion, cancellation or quarantine
-permanently fences the candidate; post-activation cleanup touches only staging.
-The registry coordinates completeness, never domain authority. A topology
-requiring a distributed transaction or unreviewed global activation selector
-is refused.
+The same milestones declare `VIT-INV-062 MigrationImportJobAuthorityState` for
+operation uniqueness, budget/reservations, closed job/fence/candidate/
+authorization/barrier/result/cleanup control state and `VIT-LAW-009
+AtomicMigrationImportActivation` for the exact all-owner commit. Trusted code
+derives `MigrationImportOwnerManifestV1` from source/destination schema
+manifests, migration-plan digest and active invariant/law catalogs; importer
+input cannot select or omit owners. `MigrationImportAdmissionCandidateV1`
+binds that manifest, final counters, staged root, expected owner versions/
+epochs and dormant generations, lease/fence, independently issued activation
+authorization and idempotency digest. Each existing owner authenticates only
+its dormant generation through an owner-held capability; VIT-INV-062 has
+verify-only access. `MigrationImportActivationAuthorizationV1` is
+candidate-specific and has only Issued, Consumed, ExpiredUnused or RevokedUnused
+states. One `MigrationImportActivationBarrierV1` binds the complete receipt set
+and current job/owner state. Through `1.0.0`, one co-located local transaction
+rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
+authorization lifecycle, receipts and all owner versions, consumes and
+tombstones authorization, then activates every owner plus barrier/job result/
+audit/outbox, or none. Pre-activation rejection, exhaustion, cancellation or
+quarantine permanently fences the candidate; post-activation cleanup touches
+only staging. VIT-INV-062 coordinates security-control completeness but never
+domain authority. A topology requiring a distributed transaction or unreviewed
+global activation selector is refused.
 Archive exact results or authenticated result references with
 request/lifecycle/scope/predecessor/key commitments, bounded proof work and a
 durable cursor. Late exact retry returns the archived result, changed retry

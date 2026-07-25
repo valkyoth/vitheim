@@ -9,6 +9,19 @@ dependencies, unresolved proposed authority, noncanonical manifest bytes, or
 manifest-digest mismatch are release blockers. Any Phase O status transition
 resolves its proposal in the same commit.
 
+Every Phase O milestone carries `VIT-INV-062
+MigrationImportJobAuthorityState` and the effective `VIT-LAW-009` generation.
+Operational evidence must preserve trusted derivation of
+`MigrationImportOwnerManifestV1`, owner-held preparation-receipt authentication,
+independent activation-authorization issuance, its closed
+Issued/Consumed/ExpiredUnused/RevokedUnused lifecycle, time/key/continuity
+ratchets and atomic consumption tombstone. The registry remains authoritative
+for its control state but never for selected owners' domain state. HA, DR,
+soak, audit, compatibility, external pentest and RC evidence must reject
+importer owner omission, registry-forged receipts, cross-candidate reuse,
+revocation/expiry races, key or continuity rollback and response loss after
+consumption without partial owner visibility.
+
 ## `0.141.0` — Single-Node Production Packaging
 Status: planned.
 <!-- vitheim-invariant VIT-INV-060 0.141.0 -->
@@ -53,14 +66,14 @@ Before any split-service or HA topology is legal, activate
 handoff from `CompiledStaticPlacementTopologyV1` to
 `VIT-INV-060 PlacementTopologyGenerationState` without circularly depending on
 generation 2. Keep the row `Uninitialized` and the compiled singleton solely
-authoritative while active `VIT-LAW-008@g01` activates and converges epoch 12,
+authoritative while active `VIT-LAW-008@g01` activates and converges epoch 13,
 whose catalog contains `VIT-LAW-008@g02`. Only after every required local owner
 admits generation 2 may the generation-2 realization execute
 `InitializeTopologyAuthorityHandoff`; its expected-version CAS creates
 `DormantInitialized` with bytes/digest exactly equal to the compiled singleton,
 while the row remains inert. Independently verify that equality, then execute
 `CommitTopologyAuthorityHandoff`: one expected-version CAS binds the
-completed epoch-12 rollout ID/generation, catalog envelope digest, compiled
+completed epoch-13 rollout ID/generation, catalog envelope digest, compiled
 artifact digest, identical dormant manifest digest, and handoff receipt, and
 changes the row to `Committed`. Only then is `VIT-INV-060` the authority and
 allowed to issue `CurrentPlacementTopologyReceiptV1` or accept dynamic
@@ -560,7 +573,7 @@ credential-operation-profile mismatch,
 forged/mutable topology bootstrap, rollout-authored generation, expected-version
 race, mismatched dormant manifest/artifact/catalog/rollout binding, handoff
 initialization or commit before generation-2 local admission, dual static/
-dynamic authority, inferred initialization/commit, crash before/after epoch-12
+dynamic authority, inferred initialization/commit, crash before/after epoch-13
 activation, local admission, dormant initialization, equality verification, and
 handoff CAS, missing member/fence/tombstone, older-topology
 restore, discovery treated as authority, and restore pass. The normal-path
@@ -852,16 +865,18 @@ rollout generation with permanent successor supersession, complete-successor
 rollback, prepared-cancellation recovery successor, and fully typed floor-key migration,
 canonical composite acquisition/retry, and fair partitioned control-plane
 capacity.
-Fail over `MigrationImportWorkBudgetV1` as one fenced destination-local job
+Fail over VIT-INV-062 `MigrationImportWorkBudgetV1` as one fenced destination-local job
 lineage. Job/material uniqueness, immutable profile, all cumulative operation
 and principal/tenant/deployment counters, reservations, cursor, staged-state
 high-watermarks, result and cleanup/quarantine disposition survive promotion;
 new processes, cursors, reconnects and adapter retries cannot allocate fresh
 work or borrow protected Recovery cleanup.
 Fail over the complete activation handoff with it: closed job phase and
-terminal disposition, candidate/tombstone, canonical owner manifest, dormant
-generations, preparation receipts, barrier sequence/predecessor/result,
-activation authorization and cleanup linkage. A new coordinator may resume
+terminal disposition, candidate/tombstone, trusted manifest derivation
+inputs/output, dormant generations, receipt authentication/key/continuity/
+replay identity, barrier sequence/predecessor/result, complete activation-
+authorization bytes/lifecycle/consumption tombstone/time/key/continuity
+ratchets and cleanup linkage. A new coordinator may resume
 completeness work under a higher job fence but cannot activate stale receipts.
 Failover after preparation or an unknown activation response re-reads the one
 local transaction result; it never exposes a partial owner set or replaces the

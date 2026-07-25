@@ -21,6 +21,11 @@ local catalog/distrust/trusted-time ratchet. `VIT-INV-059` owns rollout proof
 state, while dynamic topology is later owned only by `VIT-INV-060`.
 Topology-mutation authorization issuance is separately owned by `VIT-INV-061`;
 the topology owner can verify and consume but never issue its own permission.
+Migration/import control state is separately owned by `VIT-INV-062`, while
+`VIT-LAW-009` preserves each selected domain owner and permits activation only
+for a trusted-code-derived exact contributor set under an independently issued
+single-use authorization. An importer-supplied owner list or a registry-created
+owner receipt is never catalog or domain authority.
 
 Database access alone must never authorize either profile. Startup, adapter
 admission, migration, restore, failover, import, and recovery reject a
@@ -35,7 +40,7 @@ Planning catalog revision: `1`
 
 Trust profile: `planning-superset-not-runtime-v1`
 
-Planning catalog digest: `sha256:a345928a62af6ec237c1ff20a4a0ce37ba11218672da7098c651ecfcbe456175`
+Planning catalog digest: `sha256:4107001f8c1adbcb942e8d1ea85f70aaebc0e9989acb1183bbb7167b73b9aaa8`
 
 The planning-catalog digest uses the length-prefixed encoding defined by
 `docs/LAW_GENERATION_MANIFEST.md`. Encode, in order, the ASCII format literal
@@ -78,7 +83,18 @@ Markdown presentation are excluded.
 | VIT-LAW-007@g01 | sha256:d36ba8b53e831437107f1f78610dfa889ccdfdd9288a58f90b01affb4caee5d7 |
 | VIT-LAW-007@g02 | sha256:ab2dcb2593e25d58ec06dbd4f6add9789cdef308281efa9876241295ec2148b2 |
 | VIT-LAW-008@g01 | sha256:108df80613c6b4fc288a343ae04a81c90f6d3a403a1ea3c01d0c230cac5052e3 |
-| VIT-LAW-008@g02 | sha256:930fc75c679f1c37f080028fb4c25a4d5bf43234117baa96baab400b50db4473 |
+| VIT-LAW-008@g02 | sha256:169c7f61d14749ca8b0a7536ea8a8e52333a3e80958c61f1282679d0706be622 |
+| VIT-LAW-009@g01 | sha256:541e5087c7ea737fac278bfc1b1323f3c685157c95c932858521d049f00d6f8c |
+| VIT-LAW-009@g02 | sha256:4908fe6f15ed006d0eba35ac00a84d27a37e99c9fb2e3a90b2e9147146f2924a |
+| VIT-LAW-009@g03 | sha256:d98cc031e06ab55ee03e5770878e2f4d8c3949db5e04b144600eaf323b28018e |
+| VIT-LAW-009@g04 | sha256:aa3598ca4b4fa16e92bcda72a570889f2aff62284e5a4b2d5c9a978575ef16ab |
+| VIT-LAW-009@g05 | sha256:e272d65999319dc125dd1b4c7395ffdd92e40ee33e90a70f99615b2b1447cc07 |
+| VIT-LAW-009@g06 | sha256:0b7110826603b4fd42627b39f4d3d8e1a04c6130d2e6aef9b88bbb910fa849fd |
+| VIT-LAW-009@g07 | sha256:69be0bb67611c8f0be12b115300932b746770de9b0007324196bdb04dce0d11c |
+| VIT-LAW-009@g08 | sha256:54435a91c41a9ce2f89363003cdbb5bdfdcb31fe2969a6feed4a0f58da5e3792 |
+| VIT-LAW-009@g09 | sha256:82196e584c63347391119c13f29a1a8d801fac16d7bf7dccbde058bc83a6f070 |
+| VIT-LAW-009@g10 | sha256:9463b50c4ac91928ca7d8d77e029bcaaa5726b286401c787ca79a0049ae3df5b |
+| VIT-LAW-009@g11 | sha256:b21e2b2904e1022c7e1ef502a0f9de5806c6a5123bbf38a7e9ad678a326cb5ec |
 
 `0.18.3` implements planning-superset validation and generation of the first
 active activation-floor catalog. Each later law-effective milestone generates
@@ -96,7 +112,7 @@ global/rollout/local ownership, trusted-time ratchets, persistence, and
 admission; `0.29.0–0.30.0`
 preserve them through migration, export, and import. `0.140.1`, `0.140.2`, and
 `0.140.6` freeze exact cryptographic/time, storage, and deployment profiles.
-`0.141.0` activates/converges epoch 12 under generation 1, requires every local
+`0.141.0` activates/converges epoch 13 under generation 1, requires every local
 generation-2 admission, and only then lets generation 2 initialize/verify the
 exact dormant singleton and commit the one-time handoff to independent
 `VIT-INV-060` topology authority.

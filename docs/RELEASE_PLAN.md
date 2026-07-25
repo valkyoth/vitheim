@@ -142,7 +142,7 @@ implementations remain blocked rather than being implemented casually.
 | `0.28.1` | S3-compatible object-storage adapter | Tenant/object confusion, endpoint spoofing, multipart races, retention/deletion |
 | `0.28.2` | KMS and secret-provider adapters | Serialized provisioning/inventory/orphan/count controls plus governed evaluator upgrade/reevaluation, strong-resolution evidence, independent recovery or manual limitation |
 | `0.28.3` | In-process secret and brokered-bearer memory handling | HTTP/TLS/redirect/error/log/crash/core-dump/swap canaries, stale cache, honest transient-memory/erasure limits |
-| `0.29.0` | Resumable invariant-owner and trusted law/catalog migrations preserving monotonic authority, under one durable operation-wide `MigrationImportWorkBudgetV1` and closed activation handoff | Migrate only complete canonical two-head state. Singular schemas were never admitted: quarantine before destination mutation, retain conservative charges/unready state, never infer genesis/chains/coverage, and require a new reviewed future milestone for any real external compatibility population. Persist one destination-local job lineage and cumulative byte/item/crypto/proof/staging/stream/checkpoint/retry/time/cleanup/concurrency counters across crash, resume, failover and native retries; precharge bounded quanta, reserve staging/verification/result/cleanup capacity, type exhaustion, preserve the source, fence promotion and keep quarantine digest-only. Prepare owner generations as dormant under one exact candidate/manifest/receipt set; one co-located transaction rechecks job/budget/fence/authorization and owner versions, then activates every owner plus barrier/result/audit/outbox or none. All pre-activation failures permanently fence the candidate |
+| `0.29.0` | Declare `VIT-INV-062 MigrationImportJobAuthorityState` and `VIT-LAW-009 AtomicMigrationImportActivation` for resumable migration/import | Migrate only complete canonical two-head state. Persist one destination-local operation/job/budget/reservation/lifecycle/fence/candidate/tombstone/authorization/barrier/result/cleanup lineage with cumulative work counters across crash/failover. Derive `MigrationImportOwnerManifestV1` in trusted code from both schema manifests, migration plan and active invariant/law catalogs; importer input cannot select owners. Owners issue authenticated dormant receipts through owner-held capability; VIT-INV-062 verifies but cannot forge. Consume one independently issued candidate-bound authorization with closed Issued/Consumed/ExpiredUnused/RevokedUnused lifecycle in the same co-located transaction that activates every selected owner plus barrier/result/audit/outbox, or none. Every owner retains domain authority; all pre-activation failures permanently fence the candidate |
 | `0.30.0` | Cross-backend export and import with explicit law trust closure, the same durable budget, and exact candidate-to-owner activation protocol | Require the complete canonical two-head tuple, unified namespace, atomic checkpoint bundle and mixed-trigger proof; missing/defaulted or singular state is quarantined before import mutation, retains charges, fences execution and refuses the profile. Export enumeration, transfer, decode, verification and staging cannot create fresh counters, jobs, cursors or reservations. Partial owner preparation is never authority; destinations lacking the one local all-owner activation boundary refuse before staging |
 | `0.30.1` | Durable queue preserving governed provider and cancellation-recovery authority | Existing guard/orphan/count/recovery state remains complete; evaluator revocation/resolution never revives work; queues cannot evaluate, clear, or remediate |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
@@ -503,16 +503,19 @@ are independently evidenced as production-ready.
   digest/metadata quarantine, and finishes through protected non-borrowable
   Recovery capacity. Only an explicitly authorized, predecessor-bound successor
   profile can increase limits.
-- Production import cutover uses the closed job lifecycle, one exact
-  `MigrationImportAdmissionCandidateV1`, ordered owner manifest, authenticated
-  dormant-generation preparation receipts and
-  `MigrationImportActivationBarrierV1`. The registry coordinates completeness
-  only. Job/barrier and every affected owner guard are co-located; one fixed-
-  order transaction rechecks current job/budget/fence/authorization/owners and
-  activates all owner generations plus barrier/result/audit/outbox or none.
+- Production import cutover is governed by VIT-INV-062 and VIT-LAW-009. Trusted
+  code derives the exact owner manifest from schema/migration/catalog authority;
+  importer input cannot select owners. Owner-held capabilities authenticate
+  dormant receipts, while the registry has verify-only access. One independent
+  candidate-bound activation authorization closes as consumed, expired-unused
+  or revoked-unused. Job/barrier and every selected owner guard are co-located;
+  one fixed-order transaction rederives owners, rechecks job/budget/fence/
+  receipts/authorization/owner versions, consumes authorization and activates
+  all owner generations plus barrier/result/audit/outbox or none.
   Pre-activation failure permanently fences the candidate, prepared state never
   authorizes, response-loss retry is idempotent and cleanup cannot promote or
-  delete authority. Remote/cross-region selector cutover is unsupported.
+  delete authority. VIT-INV-062 owns control state, not domain state.
+  Remote/cross-region selector cutover is unsupported.
 - Immutable versioned provider execution profiles bind every transmitted
   operation to its exact claim, tenant/provider/account/action/request/
   destination and scoped opaque secret handle. Executors hold no master-key

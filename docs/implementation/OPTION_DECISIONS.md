@@ -278,6 +278,15 @@ redirect/diagnostic/crash memory canaries.
 Also prove a self-consistent forged manifest/catalog, stale catalog, signer/root
 substitution, rollback past catalog or generation floors, and artifact/catalog
 scope mismatch fail closed.
+Freeze the `MigrationImportActivationAuthorizationV1` authentication suite,
+independent issuer and verifier-only capability distribution, key identity/
+epoch and rotation rules, trusted-time source/profile/epoch, maximum
+uncertainty, issuer continuity ratchet, nonce/idempotency rules, bounded
+lifetime and archived consumption-tombstone authentication. Freeze owner
+preparation receipt authentication so VIT-INV-062 can verify but cannot mint
+any owner's receipt. Key rollback, continuity substitution, cross-candidate
+reuse, registry forgery, ambiguous revocation-versus-commit and response loss
+after consumption must all fail closed or reproduce the exact committed result.
 Exit criteria: Phase O has one approved, replaceable crypto/key profile.
 `v0.140.1 implementation stop reached. Run pentest for this exact commit.`
 
@@ -310,10 +319,13 @@ channel/KMS bindings, quorum receipts, compromise/loss/recovery epochs, exercise
 evidence, and offline/manual state. Map durable evaluator re-evaluation job
 generation, tenant/provider/account queue, cursors, leases, provider-rate and
 fair-share counters, priority, cleanup lane, freshness/refetch state, and
-escalation. Map `MigrationImportWorkBudgetV1` job/budget/cursor/staging/result/
-quarantine/cleanup rows into one destination-local transaction domain, with
-source access read-only and final authority admission still owned by existing
-invariant owners. Freeze exact maximum operation and principal/tenant/
+escalation. Map the complete `VIT-INV-062 MigrationImportJobAuthorityState`:
+operation-key claim, `MigrationImportWorkBudgetV1` job/budget/reservations/
+cursor/staging, closed lifecycle, lease/fence, candidate/tombstone,
+authorization consumption, barrier head/sequence/predecessor/result,
+quarantine and cleanup rows into one destination-local transaction domain,
+with source access read-only and final domain authority still owned by existing
+invariant owners under `VIT-LAW-009`. Freeze exact maximum operation and principal/tenant/
 deployment values for encoded/decoded bytes, allocation/decode/hash/signature/
 proof work, manifests/records/blobs/chunks, temporary/staged bytes and rows,
 open files and streams, checkpoints/resumes/reconnects/adapter retries,
@@ -326,15 +338,24 @@ lifecycle refuses migration/import rather than relying on process memory.
 Freeze the production activation choice: only the co-located
 `MigrationImportActivationBarrierV1` profile is supported through `1.0.0`.
 Persist the closed job lifecycle, candidate and candidate tombstone, canonical
-owner manifest, dormant owner generations, authenticated preparation receipts,
-barrier sequence/predecessor/result and cleanup linkage. Candidate final
+trusted-code-derived `MigrationImportOwnerManifestV1`, dormant owner
+generations, owner-authenticated preparation receipts, independently issued
+`MigrationImportActivationAuthorizationV1`, its closed
+Issued/Consumed/ExpiredUnused/RevokedUnused consumption lifecycle, time/key/
+continuity ratchets, barrier sequence/predecessor/result and cleanup linkage.
+The manifest derivation freezes source/destination schema manifests,
+migration-plan digest, active invariant/law catalog digests and contributor
+algorithm/version; importer input cannot add, remove or select an owner.
+VIT-INV-062 and domain owners receive verification-only activation authority
+and the registry cannot forge an owner receipt. Candidate final
 counters include a pessimistically precharged complete preparation/activation/
 result/recovery quantum, and `AdmissionPrepared` requires the atomically stored
 complete unique receipt set. Job, barrier and every
 affected owner activation guard must fit one local transaction with fixed
 job→candidate/barrier→ordered-owner→audit/result/outbox locking and
 expected-version CAS. Storage must prove atomic all-owner activation with the
-job result or refuse before migration/import reads or stages authority.
+authorization consumption/tombstone and job result, or refuse before
+migration/import reads or stages authority.
 Cross-database, cross-region and external-selector activation are unsupported;
 admitting one later requires a separately owned invariant/composite law and
 reviewed milestone because the selector would become authority.
@@ -1118,6 +1139,15 @@ claim mapping, worker-instance/lease-fence identity profile, and unsupported
 combinations. Any
 future Vitheim OAuth authorization server
 requires a new implementation milestone and cannot be selected here.
+Also freeze the identity and authorization contributors for
+`MigrationImportActivationAuthorizationV1`: requestor, approvers, activator,
+quorum/SoD, policy/change/incident authority, exact tenant/deployment scope and
+the independent issuer role. The importer, migration runner, VIT-INV-062 owner
+and affected domain-owner credentials cannot satisfy the issuer role or
+self-approve. Revocation and principal/session/policy changes before issuance
+deny; a correctly issued authorization remains usable only for its exact
+candidate and immutable validity window until atomically consumed or closed
+unused.
 Verification: protocol conformance, mix-up/replay/fixation/recovery, false
 sender constraint, proof/token substitution, bearer privilege escalation,
 first-use stolen bearer behavior, effect dispatch after credential/session/
@@ -1447,18 +1477,21 @@ Vitheim release admitted that schema, `0.29.0` defines no split migration, and
 preflight quarantines it before authority mutation while retaining conservative
 capacity and an unready destination. A future genuine compatibility need
 requires a separately versioned source-specific decision and security review.
-Preserve every `MigrationImportWorkBudgetV1` identity/profile/counter,
+Preserve every VIT-INV-062 `MigrationImportWorkBudgetV1` identity/profile/counter,
 operation-key uniqueness claim, cursor, reservation, lease/fence, typed
 exhaustion result and cleanup/quarantine disposition across failover, restore
 and region movement. A promoted writer cannot reset cumulative work, allocate
 a second nonterminal job for the same material, reinterpret exhaustion as fresh
 work, borrow Recovery cleanup capacity or promote staged authority.
-Preserve `MigrationImportJobLifecycleV1`, candidate/tombstone, complete owner
-manifest, dormant generations, preparation receipts, activation-barrier
-sequence/predecessor/result, activation authorization, co-location proof and
-cleanup linkage as one HA/restore unit. Failover cannot turn prepared into
-active, replay a terminal candidate, accept a partial receipt set, or replace
-the selected local transaction with a remote selector.
+Preserve `MigrationImportJobLifecycleV1`, candidate/tombstone, trusted manifest
+derivation inputs/output, dormant generations, receipt authentication/key/
+continuity/replay identity, activation-barrier sequence/predecessor/result,
+complete activation-authorization bytes and closed consumption/tombstone/
+time/key/continuity state, co-location proof and cleanup linkage as one
+VIT-INV-062/VIT-LAW-009 HA/restore unit. Failover cannot turn prepared into
+active, replay a terminal candidate or authorization, accept a partial or
+importer-selected receipt set, forge an owner receipt, or replace the selected
+local transaction with a remote selector.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/

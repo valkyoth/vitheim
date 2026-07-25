@@ -304,16 +304,16 @@ The ceremony is:
 1. keep the compiled singleton as the sole topology authority and
    `VIT-INV-060` in `Uninitialized`;
 2. use currently active `VIT-LAW-008@g01` and that static singleton to activate
-   and converge `VIT-LAWCAT-ACTIVE-e012-v1`, which contains
+   and converge `VIT-LAWCAT-ACTIVE-e013-v1`, which contains
    `VIT-LAW-008@g02`;
 3. only after every required local owner has admitted generation 2, execute
    `InitializeTopologyAuthorityHandoff`; its expected-version CAS creates
    `DormantInitialized` with bytes/digest exactly equal to the compiled
    singleton, while the compiled artifact remains the sole authority;
 4. independently verify the stored manifest bytes/digest against the compiled
-   singleton and completed epoch-12/local-admission evidence;
+   singleton and completed epoch-13/local-admission evidence;
 5. execute `CommitTopologyAuthorityHandoff`; its expected-version CAS binds the
-   completed epoch-12 rollout ID/generation,
+   completed epoch-13 rollout ID/generation,
    catalog envelope digest, compiled static artifact digest, identical dormant
    manifest digest, and handoff receipt, then changes the row to `Committed`;
    and
@@ -1055,16 +1055,17 @@ when the activation milestone leaves planned status.
 | --- | --- | --- | --- | --- | --- | --- |
 | 1 | VIT-LAWCAT-ACTIVE-e001-v1 | `0.18.3` | CompiledCatalog | none | VIT-LAW-001@g02, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-005@g04, VIT-LAW-006@g01, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e001-v1.catalog` |
 | 2 | VIT-LAWCAT-ACTIVE-e002-v1 | `0.18.4` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e001-envelope-v1 | VIT-LAW-001@g02, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g01, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e002-v1.catalog` |
-| 3 | VIT-LAWCAT-ACTIVE-e003-v1 | `0.51.1` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e002-envelope-v1 | VIT-LAW-001@g03, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g02, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e003-v1.catalog` |
-| 4 | VIT-LAWCAT-ACTIVE-e004-v1 | `0.52.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e003-envelope-v1 | VIT-LAW-001@g04, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g03, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e004-v1.catalog` |
-| 5 | VIT-LAWCAT-ACTIVE-e005-v1 | `0.52.1` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e004-envelope-v1 | VIT-LAW-001@g05, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g04, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e005-v1.catalog` |
-| 6 | VIT-LAWCAT-ACTIVE-e006-v1 | `0.53.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e005-envelope-v1 | VIT-LAW-001@g06, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g05, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e006-v1.catalog` |
-| 7 | VIT-LAWCAT-ACTIVE-e007-v1 | `0.53.1` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e006-envelope-v1 | VIT-LAW-001@g07, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g06, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e007-v1.catalog` |
-| 8 | VIT-LAWCAT-ACTIVE-e008-v1 | `0.55.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e007-envelope-v1 | VIT-LAW-001@g08, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g07, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e008-v1.catalog` |
-| 9 | VIT-LAWCAT-ACTIVE-e009-v1 | `0.56.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e008-envelope-v1 | VIT-LAW-001@g09, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g08, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e009-v1.catalog` |
-| 10 | VIT-LAWCAT-ACTIVE-e010-v1 | `0.57.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e009-envelope-v1 | VIT-LAW-001@g10, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g09, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e010-v1.catalog` |
-| 11 | VIT-LAWCAT-ACTIVE-e011-v1 | `0.59.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e010-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e011-v1.catalog` |
-| 12 | VIT-LAWCAT-ACTIVE-e012-v1 | `0.141.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e011-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g02, VIT-LAW-008@g02 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e012-v1.catalog` |
+| 3 | VIT-LAWCAT-ACTIVE-e003-v1 | `0.29.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e002-envelope-v1 | VIT-LAW-001@g02, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g01, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e003-v1.catalog` |
+| 4 | VIT-LAWCAT-ACTIVE-e004-v1 | `0.51.1` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e003-envelope-v1 | VIT-LAW-001@g03, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g02, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g02 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e004-v1.catalog` |
+| 5 | VIT-LAWCAT-ACTIVE-e005-v1 | `0.52.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e004-envelope-v1 | VIT-LAW-001@g04, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g03, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g03 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e005-v1.catalog` |
+| 6 | VIT-LAWCAT-ACTIVE-e006-v1 | `0.52.1` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e005-envelope-v1 | VIT-LAW-001@g05, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g04, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g04 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e006-v1.catalog` |
+| 7 | VIT-LAWCAT-ACTIVE-e007-v1 | `0.53.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e006-envelope-v1 | VIT-LAW-001@g06, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g05, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g05 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e007-v1.catalog` |
+| 8 | VIT-LAWCAT-ACTIVE-e008-v1 | `0.53.1` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e007-envelope-v1 | VIT-LAW-001@g07, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g06, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g06 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e008-v1.catalog` |
+| 9 | VIT-LAWCAT-ACTIVE-e009-v1 | `0.55.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e008-envelope-v1 | VIT-LAW-001@g08, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g07, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g07 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e009-v1.catalog` |
+| 10 | VIT-LAWCAT-ACTIVE-e010-v1 | `0.56.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e009-envelope-v1 | VIT-LAW-001@g09, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g08, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g08 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e010-v1.catalog` |
+| 11 | VIT-LAWCAT-ACTIVE-e011-v1 | `0.57.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e010-envelope-v1 | VIT-LAW-001@g10, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g09, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g09 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e011-v1.catalog` |
+| 12 | VIT-LAWCAT-ACTIVE-e012-v1 | `0.59.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e011-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g10 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e012-v1.catalog` |
+| 13 | VIT-LAWCAT-ACTIVE-e013-v1 | `0.141.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e012-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g02, VIT-LAW-008@g02, VIT-LAW-009@g11 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e013-v1.catalog` |
 
 `0.18.3` delivers the canonical codec, shared verification core, CLI, first
 compiled artifact, exact local owner identity, split global/rollout/local
@@ -1077,6 +1078,9 @@ tombstones, claim high-watermarks/outcomes, and local identity/ratchets into
 checkpoints.
 `0.21.0–0.22.0` negotiate and destructively conform storage without making it a
 trust root. `0.29.0–0.30.0` prove migration/import with the real verifier.
+Epoch 3 activates `VIT-LAW-009@g01` at `0.29.0`; every later epoch carries the
+matching VIT-LAW-009 successor generation so trusted owner-manifest derivation
+cannot silently omit a newly effective invariant owner.
 `0.140.1` freezes compiled versus signed profile, signature suite/root ceremony,
 time source, maximum uncertainty, workload-identity/claim proof, receipt
 authentication, and sender/verifier MAC roles. `0.140.2` freezes separate
@@ -1084,9 +1088,9 @@ global, rollout-root, future topology, external-issuer evidence, and local
 consumption placement. `0.140.6` freezes `AllRequired` or a fully fenced quorum,
 topology evolution, distribution, failover, revocation, claim uncertainty, time
 loss, and recovery. `0.141.0` hands the compiled static topology to
-`VIT-INV-060` without circular authority: epoch 12 is activated and converged
+`VIT-INV-060` without circular authority: epoch 13 is activated and converged
 under `VIT-LAW-008@g01`; only then does locally admitted generation 2 authorize
-initialization, exact verification, and the one-time handoff CAS. Epoch 12 also
+initialization, exact verification, and the one-time handoff CAS. Epoch 13 also
 activates `VIT-LAW-007@g02`, so current topology independently gates normal
 admission, readiness, dispatch, and transmission start after commit. Each
 topology mutation requires a bounded VIT-INV-061-issued authorization distinct

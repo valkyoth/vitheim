@@ -28,7 +28,7 @@ local `VIT-INV-058` is exactly one enforcement-partition placement generation
 with the selected attested/fenced workload proof, authenticated receipts,
 boot identity, binary/semantic digests, and fencing.
 The topology owner reached `Committed` only through the staged exact-singleton
-handoff: epoch-12 generation-1 activation/convergence and every local
+handoff: epoch-13 generation-1 activation/convergence and every local
 generation-2 admission precede `InitializeTopologyAuthorityHandoff`, exact
 equality verification, and commit. Evidence proves no early generation-2
 command and no boundary with dual or absent topology authority. The
@@ -589,19 +589,29 @@ explicit change authority and binds the predecessor plus every cumulative
 counter; a new process, cursor or job ID confers no fresh capacity.
 Authority cutover additionally uses the frozen closed
 `MigrationImportJobLifecycleV1`, `MigrationImportAdmissionCandidateV1`,
-canonical ordered owner manifest, authenticated dormant-generation preparation
-receipts and `MigrationImportActivationBarrierV1`. The registry owns
-completeness evidence only. The supported production profile co-locates job,
-barrier and every affected invariant-owner activation guard; one transaction
-rechecks current budget/final counters, job lease/fence, terminal disposition,
-trusted-time-bound authorization, staged root, complete unique receipts and
-owner versions, then activates every owner plus barrier/job result/audit/outbox
-or none. Every pre-activation failure permanently fences the candidate;
+trusted-code-derived `MigrationImportOwnerManifestV1`, owner-authenticated
+dormant-generation receipts, independently issued
+`MigrationImportActivationAuthorizationV1` with closed consumption lifecycle,
+and `MigrationImportActivationBarrierV1`. `VIT-INV-062` owns authoritative
+operation/job/budget/lifecycle/fence/candidate/authorization/barrier/result/
+cleanup control state but no domain state. `VIT-LAW-009` requires the supported
+production profile to co-locate job, barrier and every selected invariant-owner
+activation guard; one transaction rederives the owner manifest from schema,
+migration-plan and active catalogs, rechecks current budget/final counters, job
+lease/fence, terminal disposition, trusted-time/key/continuity-bound
+authorization, staged root, complete unique owner receipts and versions,
+consumes/tombstones authorization, then activates every owner plus barrier/job
+result/audit/outbox or none. Every pre-activation failure permanently fences the candidate;
 prepared state is never authority. Activation is irreversible and response-loss
 retry returns its canonical result. Cleanup before activation touches only
 fenced dormant/staged state and after activation touches only staging.
 Cross-database, cross-region or external-selector activation is unsupported
 through `1.0.0`; it requires a future explicitly owned invariant/composite law.
+Production evidence must include cross-candidate authorization reuse,
+revocation-versus-commit, expiry after partial preparation, registry-forged
+receipt, importer owner omission, key/continuity rollback and response loss
+after authorization consumption; each produces one atomic success or exact
+fail-closed/idempotent result.
 
 Goal: release the first production-supported Vitheim platform with claims no
 broader than its evidence.

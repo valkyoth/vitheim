@@ -194,15 +194,27 @@ audit decision.
   concurrency; creation reserves terminal and Recovery-protected cleanup
   capacity, work precharges bounded quanta, exhaustion fences promotion and
   preserves the source, and quarantine stores only bounded metadata/digests;
-- migration/import activation uses a closed lifecycle and canonical candidate,
-  complete ordered invariant-owner manifest, authenticated dormant-preparation
-  receipts and activation barrier; through `1.0.0` every affected owner guard
-  is co-located with the job/barrier, and one local transaction rechecks current
-  budget/fence/authorization/owner versions before activating all owner
-  generations plus result/audit/outbox or none; every pre-activation failure
-  permanently fences the candidate, response-loss retry is idempotent, cleanup
-  cannot promote or delete authority, and non-co-located selector fallback is
-  unsupported;
+- `VIT-INV-062 MigrationImportJobAuthorityState` owns migration/import
+  operation uniqueness, budget/reservations, closed lifecycle, lease/fence,
+  candidate/tombstone, authorization consumption, barrier/result and cleanup
+  security-control state, but owns no imported domain state;
+- `VIT-LAW-009 AtomicMigrationImportActivation` derives the complete ordered
+  `MigrationImportOwnerManifestV1` in trusted code from both schema manifests,
+  migration-plan digest and active invariant/law catalogs; importer-supplied
+  selection is never authority, and every selected owner retains domain
+  ownership;
+- owner-held authentication produces dormant-preparation receipts while
+  VIT-INV-062 has verify-only access; activation uses an independently issued,
+  candidate-bound `MigrationImportActivationAuthorizationV1` with a closed
+  Issued/Consumed/ExpiredUnused/RevokedUnused lifecycle, trusted-time/key/
+  continuity ratchets and permanent consumption tombstone;
+- through `1.0.0` every affected owner guard is co-located with the job/barrier,
+  and one local transaction rechecks current budget/fence/authorization/
+  manifest/receipts/owner versions, consumes authorization, then activates all
+  owner generations plus result/audit/outbox or none; every pre-activation
+  failure permanently fences the candidate, response-loss retry is idempotent,
+  cleanup cannot promote or delete authority, and non-co-located selector
+  fallback is unsupported;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

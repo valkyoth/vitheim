@@ -8,12 +8,16 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
-- Closed the migration/import activation handoff with a fenced job lifecycle,
-  exact admission candidate and ordered owner manifest, authenticated dormant-
-  generation preparation receipts, and an idempotent activation barrier. The
-  supported production profile activates every existing invariant owner plus
-  job/result/audit/outbox in one local transaction or none; terminal failures
-  permanently fence candidates, and remote selector fallback is unsupported.
+- Registered migration/import control authority as `VIT-INV-062` and atomic
+  all-owner cutover as `VIT-LAW-009`, with successor generations as later
+  invariant owners enter the roadmap. Trusted code derives the exact owner
+  manifest from schema, migration-plan and active-catalog authority; owners
+  authenticate dormant receipts through capabilities the registry can verify
+  but not use to forge. A candidate-bound independently issued authorization
+  closes as consumed, expired-unused or revoked-unused and is tombstoned in the
+  same local transaction that activates every selected owner plus job/result/
+  audit/outbox, or none. Terminal failures permanently fence candidates and
+  remote selector fallback remains unsupported.
 - Added one durable operation-wide `MigrationImportWorkBudgetV1` for migrations
   and imports, with immutable job uniqueness, monotonic cumulative resource
   counters across crash/retry/failover, pessimistic precharge, admission-time
@@ -163,7 +167,7 @@ All notable Vitheim changes are documented here. The format follows
 - Added policy- and approval-bound `TopologyMutationAuthorizationReceipt`
   with independent issuance, local receipt/profile-proof/topology-CAS/fence-
   outbox consumption, and break-glass review bindings.
-- Moved topology initialization behind epoch-12 convergence and every local
+- Moved topology initialization behind epoch-13 convergence and every local
   generation-2 admission, adding explicit `Uninitialized` state so no
   generation-2 transition executes before its semantic realization is active.
 - Added authenticated `CatalogActivationAuthorizationReceipt` and
@@ -177,7 +181,7 @@ All notable Vitheim changes are documented here. The format follows
   generation pinning, globally serialized activate-versus-revoke recovery, and
   explicit abandon/supersede/failover/delay race tests.
 - Replaced the circular topology transition with a staged
-  `DormantInitialized` to `Committed` handoff: epoch 12 activates and converges
+  `DormantInitialized` to `Committed` handoff: epoch 13 activates and converges
   under generation 1 before an exact rollout/artifact/manifest/local-admission
   CAS transfers exclusive authority to `VIT-INV-060`.
 - Closed workload and receipt assurance gaps with online single-use

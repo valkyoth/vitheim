@@ -48,7 +48,7 @@ authority. The bootstrap topology is a compiled immutable singleton.
 `VIT-INV-060` later becomes the sole dynamic topology-generation owner with
 expected-version successor manifests, monotonic member placement generations,
 fences, and tombstones; rollout generation 2 consumes its authenticated
-snapshot only after epoch 12 activates/converges under generation 1 and
+snapshot only after epoch 13 activates/converges under generation 1 and
 every required local owner has admitted generation 2, authorizing
 initialization, exact equality verification, and the dormant-singleton handoff
 CAS. Independent `VIT-INV-061` is the only topology-authorization issuer:
@@ -526,18 +526,28 @@ restore, failover, and release evidence.
    bounded work quanta are precharged before use; exhaustion fences promotion,
    preserves the source, and runs bounded Recovery-protected cleanup with
    digest-only quarantine metadata.
-   Imported authority follows a closed staged lifecycle. Existing invariant
-   owners prepare candidate generations as dormant and authenticate receipts
-   over one exact candidate, owner manifest, staged root, versions, budget
-   counters and migration fence. Through `1.0.0`, the job/barrier and every
-   affected owner activation guard must share one destination-local transaction:
-   after canonical locking and current-state rechecks, all owners activate with
-   the barrier/job result/audit/outbox or none do. The migration registry proves
-   completeness but grants no domain authority. Cancellation, exhaustion,
-   rejection or quarantine before that commit permanently fences the candidate;
-   afterward cleanup can remove only non-authoritative staging. Non-co-located
-   selectors are unsupported because they would require an explicitly owned
-   new authority root and composite law.
+   Imported authority follows a closed staged lifecycle under `VIT-INV-062
+   MigrationImportJobAuthorityState`. That owner is authoritative only for
+   operation uniqueness, budget/reservations, lifecycle/fence, candidate/
+   tombstone, authorization consumption, barrier/result and cleanup state.
+   Trusted code derives `MigrationImportOwnerManifestV1` from both schema
+   manifests, migration-plan digest and active invariant/law catalogs; the
+   importer cannot choose contributors. Existing invariant owners prepare
+   dormant generations and authenticate receipts through owner-held
+   capabilities that VIT-INV-062 can verify but not forge.
+   `MigrationImportActivationAuthorizationV1` comes from an independent issuer,
+   is bound to one candidate/manifest/staged root/counter set, and closes as
+   Consumed, ExpiredUnused or RevokedUnused with permanent replay state.
+   Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
+   job/barrier and every selected owner guard to share one destination-local
+   transaction: after canonical locking, trusted manifest rederivation and
+   current-state rechecks, authorization consumption and all owner activations
+   commit with barrier/job result/audit/outbox or none do. Every selected owner
+   retains domain authority. Cancellation, exhaustion, rejection or quarantine
+   before that commit permanently fences the candidate; afterward cleanup can
+   remove only non-authoritative staging. Non-co-located selectors are
+   unsupported because they require a separately reviewed authority root and
+   successor composite law.
 10. Every important result is explainable from commands, events, policy,
     workflow, evidence, provenance, and versioned configuration.
 11. The API is the product boundary; the UI is an API client and cannot acquire

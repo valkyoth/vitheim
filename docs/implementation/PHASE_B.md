@@ -2070,7 +2070,7 @@ profile, time source, and maximum uncertainty are frozen before production at
 and HA rollout policy, topology evolution, revocation propagation, time loss,
 and recovery at `0.140.6`. `0.141.0` introduces the independently owned dynamic
 topology root and `VIT-LAW-008@g02` before any split-service deployment. It
-first activates and converges the epoch-12 catalog under generation 1/static
+first activates and converges the epoch-13 catalog under generation 1/static
 authority. Only after every required local owner admits generation 2 may the
 generation-2 realization initialize the exact dormant singleton, verify it,
 and commit the bound handoff.
