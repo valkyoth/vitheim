@@ -23,9 +23,15 @@ Topology-mutation authorization issuance is separately owned by `VIT-INV-061`;
 the topology owner can verify and consume but never issue its own permission.
 Migration/import control state is separately owned by `VIT-INV-062`, while
 `VIT-LAW-009` preserves each selected domain owner and permits activation only
-for a trusted-code-derived exact contributor set under an independently issued
-single-use authorization. An importer-supplied owner list or a registry-created
-owner receipt is never catalog or domain authority.
+for the exact contributor set derived by trusted code from the authenticated
+dependency closure of the currently admitted destination `VIT-LAW-009`
+generation and manifest, source/destination schemas, migration plan, and
+contributor algorithm. No separate runtime invariant catalog or authority root
+exists. An importer-supplied owner list, pseudo catalog, or registry-created
+owner receipt is never catalog or domain authority. Independently issued
+single-use activation authority can be revoked only by a destination-local
+same-row `Issued` to `RevokedUnused` CAS after an authenticated revocation
+intent is admitted; remote emission alone has no effect.
 
 Database access alone must never authorize either profile. Startup, adapter
 admission, migration, restore, failover, import, and recovery reject a
@@ -40,7 +46,7 @@ Planning catalog revision: `1`
 
 Trust profile: `planning-superset-not-runtime-v1`
 
-Planning catalog digest: `sha256:4107001f8c1adbcb942e8d1ea85f70aaebc0e9989acb1183bbb7167b73b9aaa8`
+Planning catalog digest: `sha256:595be4b42ce63f303797fb2186ad2e9c416a358b2b2d2ee885561e519f291e2a`
 
 The planning-catalog digest uses the length-prefixed encoding defined by
 `docs/LAW_GENERATION_MANIFEST.md`. Encode, in order, the ASCII format literal
@@ -84,17 +90,17 @@ Markdown presentation are excluded.
 | VIT-LAW-007@g02 | sha256:ab2dcb2593e25d58ec06dbd4f6add9789cdef308281efa9876241295ec2148b2 |
 | VIT-LAW-008@g01 | sha256:108df80613c6b4fc288a343ae04a81c90f6d3a403a1ea3c01d0c230cac5052e3 |
 | VIT-LAW-008@g02 | sha256:169c7f61d14749ca8b0a7536ea8a8e52333a3e80958c61f1282679d0706be622 |
-| VIT-LAW-009@g01 | sha256:541e5087c7ea737fac278bfc1b1323f3c685157c95c932858521d049f00d6f8c |
-| VIT-LAW-009@g02 | sha256:4908fe6f15ed006d0eba35ac00a84d27a37e99c9fb2e3a90b2e9147146f2924a |
-| VIT-LAW-009@g03 | sha256:d98cc031e06ab55ee03e5770878e2f4d8c3949db5e04b144600eaf323b28018e |
-| VIT-LAW-009@g04 | sha256:aa3598ca4b4fa16e92bcda72a570889f2aff62284e5a4b2d5c9a978575ef16ab |
-| VIT-LAW-009@g05 | sha256:e272d65999319dc125dd1b4c7395ffdd92e40ee33e90a70f99615b2b1447cc07 |
-| VIT-LAW-009@g06 | sha256:0b7110826603b4fd42627b39f4d3d8e1a04c6130d2e6aef9b88bbb910fa849fd |
-| VIT-LAW-009@g07 | sha256:69be0bb67611c8f0be12b115300932b746770de9b0007324196bdb04dce0d11c |
-| VIT-LAW-009@g08 | sha256:54435a91c41a9ce2f89363003cdbb5bdfdcb31fe2969a6feed4a0f58da5e3792 |
-| VIT-LAW-009@g09 | sha256:82196e584c63347391119c13f29a1a8d801fac16d7bf7dccbde058bc83a6f070 |
-| VIT-LAW-009@g10 | sha256:9463b50c4ac91928ca7d8d77e029bcaaa5726b286401c787ca79a0049ae3df5b |
-| VIT-LAW-009@g11 | sha256:b21e2b2904e1022c7e1ef502a0f9de5806c6a5123bbf38a7e9ad678a326cb5ec |
+| VIT-LAW-009@g01 | sha256:a36bef6f6c041245c84b651938c042cc285d6719aa63ccb5366a2ed33c524e2e |
+| VIT-LAW-009@g02 | sha256:a16ce15764f267ceb970f980177fe74c648f89835925d91c410f085400913728 |
+| VIT-LAW-009@g03 | sha256:6639ffc1cb82c9048563ba56c2adde5245e83c75de602faa2b878602bf58371d |
+| VIT-LAW-009@g04 | sha256:b56efdbec898e7f3909f77782422851a0d43f5e4752d543c795a847dafda8c12 |
+| VIT-LAW-009@g05 | sha256:f78587d631bb932c2158d66f8c2c23bfc1d397e92e9ee5192a670c4d3af9f953 |
+| VIT-LAW-009@g06 | sha256:fb0cd8d11de7ad259585c6985c09b10ff5496ce53cbab72bc137bb4614f2b03b |
+| VIT-LAW-009@g07 | sha256:ee5f13b43b479383c8005e8762a3042a3b180655fbef666ac78247462af79fa1 |
+| VIT-LAW-009@g08 | sha256:c1346802376e009019243e61ee4ddbf64cc02b925000982931628a46f34ecb45 |
+| VIT-LAW-009@g09 | sha256:a6aee601f5cf44a777106fa56e831a7ec3c278773d3e7f97ac2029dafe9d9222 |
+| VIT-LAW-009@g10 | sha256:076c10f93c3e449d3f5b67e1294b9f006d4311b7deeb72df515ff12fd263331e |
+| VIT-LAW-009@g11 | sha256:4f3a0000afe2d782b2156f2c6ec3feb9c24360d62713c6891661583182e2f72d |
 
 `0.18.3` implements planning-superset validation and generation of the first
 active activation-floor catalog. Each later law-effective milestone generates

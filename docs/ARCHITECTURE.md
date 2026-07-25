@@ -531,13 +531,21 @@ restore, failover, and release evidence.
    operation uniqueness, budget/reservations, lifecycle/fence, candidate/
    tombstone, authorization consumption, barrier/result and cleanup state.
    Trusted code derives `MigrationImportOwnerManifestV1` from both schema
-   manifests, migration-plan digest and active invariant/law catalogs; the
-   importer cannot choose contributors. Existing invariant owners prepare
+   manifests, migration-plan digest, the currently admitted destination
+   VIT-LAW-009 tuple/manifest, its authenticated dependency set and contributor
+   algorithm. That admitted law closure is the only runtime owner universe; no
+   separate invariant catalog exists and the importer cannot choose
+   contributors. Existing invariant owners prepare
    dormant generations and authenticate receipts through owner-held
    capabilities that VIT-INV-062 can verify but not forge.
    `MigrationImportActivationAuthorizationV1` comes from an independent issuer,
    is bound to one candidate/manifest/staged root/counter set, and closes as
    Consumed, ExpiredUnused or RevokedUnused with permanent replay state.
+   Revocation is locally linearized: the independent issuer sends authenticated
+   `MigrationImportActivationRevocationIntentV1`, but it takes effect only when
+   VIT-INV-062 commits its inbox receipt, monotonic issuer sequence and CAS from
+   Issued to RevokedUnused on the same row activation consumes. A late intent
+   after Consumed returns the activation result and cannot reverse authority.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
    job/barrier and every selected owner guard to share one destination-local
    transaction: after canonical locking, trusted manifest rederivation and

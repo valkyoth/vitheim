@@ -284,9 +284,14 @@ epoch and rotation rules, trusted-time source/profile/epoch, maximum
 uncertainty, issuer continuity ratchet, nonce/idempotency rules, bounded
 lifetime and archived consumption-tombstone authentication. Freeze owner
 preparation receipt authentication so VIT-INV-062 can verify but cannot mint
-any owner's receipt. Key rollback, continuity substitution, cross-candidate
-reuse, registry forgery, ambiguous revocation-versus-commit and response loss
-after consumption must all fail closed or reproduce the exact committed result.
+any owner's receipt. Freeze `MigrationImportActivationRevocationIntentV1`
+authentication, issuer revocation-sequence continuity, signed outbox and local
+inbox receipts, intent/result idempotency, and the rule that only the local
+same-row Issued-to-RevokedUnused CAS is effective. Key/sequence rollback,
+continuity substitution, cross-candidate reuse, registry forgery, intent
+delay/reorder/duplication, ambiguous revocation-versus-consume CAS and response
+loss after either terminal commit must fail closed or reproduce the exact
+committed result.
 Exit criteria: Phase O has one approved, replaceable crypto/key profile.
 `v0.140.1 implementation stop reached. Run pentest for this exact commit.`
 
@@ -344,10 +349,17 @@ generations, owner-authenticated preparation receipts, independently issued
 Issued/Consumed/ExpiredUnused/RevokedUnused consumption lifecycle, time/key/
 continuity ratchets, barrier sequence/predecessor/result and cleanup linkage.
 The manifest derivation freezes source/destination schema manifests,
-migration-plan digest, active invariant/law catalog digests and contributor
-algorithm/version; importer input cannot add, remove or select an owner.
+migration-plan digest, the admitted destination VIT-LAW-009 tuple/manifest and
+authenticated dependency closure, and contributor algorithm/version. This is
+the only owner universe: no independent `InvariantCatalogV1` storage, signer or
+activation lineage is selected, and importer input cannot add, remove or select
+an owner.
 VIT-INV-062 and domain owners receive verification-only activation authority
-and the registry cannot forge an owner receipt. Candidate final
+and the registry cannot forge an owner receipt. Persist the authenticated
+revocation-intent inbox, monotonic issuer sequence, exact retry/conflict result
+and tombstone with the authorization row. Activation, revocation and expiry use
+the fixed job→candidate/barrier→authorization lock prefix; storage unable to
+CAS one terminal on that row refuses the profile. Candidate final
 counters include a pessimistically precharged complete preparation/activation/
 result/recovery quantum, and `AdmissionPrepared` requires the atomically stored
 complete unique receipt set. Job, barrier and every
@@ -1146,8 +1158,12 @@ the independent issuer role. The importer, migration runner, VIT-INV-062 owner
 and affected domain-owner credentials cannot satisfy the issuer role or
 self-approve. Revocation and principal/session/policy changes before issuance
 deny; a correctly issued authorization remains usable only for its exact
-candidate and immutable validity window until atomically consumed or closed
-unused.
+candidate and immutable validity window until atomically consumed, expired or
+locally revoked. Post-issuance issuer withdrawal is effective only after an
+authenticated `MigrationImportActivationRevocationIntentV1` commits the
+destination-local Issued-to-RevokedUnused CAS. Remote emission or transport
+acknowledgement alone does not revoke; a late intent after Consumed returns the
+activation result and cannot reverse authority.
 Verification: protocol conformance, mix-up/replay/fixation/recovery, false
 sender constraint, proof/token substitution, bearer privilege escalation,
 first-use stolen bearer behavior, effect dispatch after credential/session/
@@ -1484,14 +1500,17 @@ and region movement. A promoted writer cannot reset cumulative work, allocate
 a second nonterminal job for the same material, reinterpret exhaustion as fresh
 work, borrow Recovery cleanup capacity or promote staged authority.
 Preserve `MigrationImportJobLifecycleV1`, candidate/tombstone, trusted manifest
-derivation inputs/output, dormant generations, receipt authentication/key/
+derivation inputs/output including the admitted VIT-LAW-009 tuple/manifest/
+dependency closure, dormant generations, receipt authentication/key/
 continuity/replay identity, activation-barrier sequence/predecessor/result,
 complete activation-authorization bytes and closed consumption/tombstone/
-time/key/continuity state, co-location proof and cleanup linkage as one
+time/key/continuity state, revocation intent/inbox/issuer-sequence/tombstone/
+result/outbox, co-location proof and cleanup linkage as one
 VIT-INV-062/VIT-LAW-009 HA/restore unit. Failover cannot turn prepared into
 active, replay a terminal candidate or authorization, accept a partial or
-importer-selected receipt set, forge an owner receipt, or replace the selected
-local transaction with a remote selector.
+importer-selected receipt set or pseudo invariant catalog, forge an owner
+receipt, apply stale/reordered revocation, or replace the selected local
+transaction with a remote selector.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/

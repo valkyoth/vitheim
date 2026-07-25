@@ -161,6 +161,14 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
                 esac
             done
             ;;
+        VIT-LAW-009@*)
+            for symbol in DeriveMigrationImportOwnerManifest MigrationImportActivationRevocationIntentV1 ApplyMigrationImportActivationRevocationIntent MigrationImportActivationRevocationResultV1 MigrationImportActivationRevocationConflict ActivateMigrationImportCandidate MigrationImportActivationBlocked; do
+                case "$transitions" in
+                    *"\`$symbol\`"*) ;;
+                    *) fail "$semantic omits migration/import activation symbol $symbol" ;;
+                esac
+            done
+            ;;
     esac
 
     gate_version=$(awk -v effective="$effective" '

@@ -363,6 +363,12 @@ expect_realization_failure "a missing topology authorization original quota clai
 sed -i 's/`TopologyAuthorizationReceiptRevocationIntentV1`, //' "$realizations"
 expect_realization_failure "a missing receipt-specific revocation intent"
 
+sed -i 's/`MigrationImportActivationRevocationIntentV1`, //' "$realizations"
+expect_realization_failure "a missing migration/import activation revocation intent"
+
+sed -i 's/`MigrationImportActivationRevocationResultV1`, //' "$realizations"
+expect_realization_failure "a missing migration/import activation revocation result"
+
 sed -i 's/`TopologyAuthorizationConsumerTerminalReceiptV1`, //' "$realizations"
 expect_realization_failure "a missing consumer terminal receipt"
 

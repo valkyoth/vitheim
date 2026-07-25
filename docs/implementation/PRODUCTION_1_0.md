@@ -592,12 +592,16 @@ Authority cutover additionally uses the frozen closed
 trusted-code-derived `MigrationImportOwnerManifestV1`, owner-authenticated
 dormant-generation receipts, independently issued
 `MigrationImportActivationAuthorizationV1` with closed consumption lifecycle,
+authenticated `MigrationImportActivationRevocationIntentV1` delivery state,
 and `MigrationImportActivationBarrierV1`. `VIT-INV-062` owns authoritative
-operation/job/budget/lifecycle/fence/candidate/authorization/barrier/result/
+operation/job/budget/lifecycle/fence/candidate/authorization/revocation-inbox/barrier/result/
 cleanup control state but no domain state. `VIT-LAW-009` requires the supported
 production profile to co-locate job, barrier and every selected invariant-owner
-activation guard; one transaction rederives the owner manifest from schema,
-migration-plan and active catalogs, rechecks current budget/final counters, job
+activation guard. The only owner universe is the authenticated dependency
+closure of the currently admitted destination VIT-LAW-009 tuple/manifest; no
+separate invariant catalog is implemented. One transaction rederives the owner
+manifest from that closure plus schema, migration plan and contributor
+algorithm, rechecks current budget/final counters, job
 lease/fence, terminal disposition, trusted-time/key/continuity-bound
 authorization, staged root, complete unique owner receipts and versions,
 consumes/tombstones authorization, then activates every owner plus barrier/job
@@ -605,12 +609,21 @@ result/audit/outbox or none. Every pre-activation failure permanently fences the
 prepared state is never authority. Activation is irreversible and response-loss
 retry returns its canonical result. Cleanup before activation touches only
 fenced dormant/staged state and after activation touches only staging.
+Post-issuance revocation is effective only when VIT-INV-062 authenticates the
+intent and atomically commits the destination-local inbox receipt, monotonic
+issuer sequence, Issued-to-RevokedUnused CAS, tombstone, result, audit and
+outbox on the same row activation consumes. Emission alone does not revoke;
+exact retry returns the result, changed intent conflicts and late intent after
+Consumed returns the activation result without reversal.
 Cross-database, cross-region or external-selector activation is unsupported
 through `1.0.0`; it requires a future explicitly owned invariant/composite law.
-Production evidence must include cross-candidate authorization reuse,
-revocation-versus-commit, expiry after partial preparation, registry-forged
-receipt, importer owner omission, key/continuity rollback and response loss
-after authorization consumption; each produces one atomic success or exact
+Production evidence must include stale/future law generation, dependency
+omission/injection, contributor mismatch, catalog/generation digest
+substitution, forged pseudo invariant catalog, cross-candidate authorization
+reuse, revocation emission/delivery/local-CAS versus activation, delayed/
+duplicate/reordered intent, expiry after partial preparation, registry-forged
+receipt, importer owner omission, key/sequence/continuity rollback and response
+loss after revocation or consumption; each produces one atomic success or exact
 fail-closed/idempotent result.
 
 Goal: release the first production-supported Vitheim platform with claims no

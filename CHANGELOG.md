@@ -8,10 +8,24 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Closed the migration/import owner-universe ambiguity without introducing
+  another authority root: `MigrationImportOwnerManifestV1` is now derived from
+  the authenticated dependency closure of the currently admitted destination
+  `VIT-LAW-009` tuple and manifest plus bound schema, migration-plan and
+  contributor-algorithm inputs. Stale/future law generations, dependency
+  omission/injection, algorithm substitution, and pseudo invariant catalogs
+  fail closed.
+- Defined authenticated migration/import activation revocation as an
+  issuer-outbox/destination-inbox protocol with a monotonic non-wrapping
+  sequence and exact retry/conflict results. Revocation becomes effective only
+  through a destination-local `Issued` to `RevokedUnused` CAS on the same
+  authorization row activation consumes; activation, revocation, and expiry
+  therefore have exactly one terminal winner, and a late intent cannot reverse
+  a consumed activation.
 - Registered migration/import control authority as `VIT-INV-062` and atomic
   all-owner cutover as `VIT-LAW-009`, with successor generations as later
   invariant owners enter the roadmap. Trusted code derives the exact owner
-  manifest from schema, migration-plan and active-catalog authority; owners
+  manifest from schema, migration-plan and admitted-law authority; owners
   authenticate dormant receipts through capabilities the registry can verify
   but not use to forge. A candidate-bound independently issued authorization
   closes as consumed, expired-unused or revoked-unused and is tombstoned in the

@@ -197,16 +197,23 @@ operation uniqueness, budget/reservations, closed job/fence/candidate/
 authorization/barrier/result/cleanup control state and `VIT-LAW-009
 AtomicMigrationImportActivation` for the exact all-owner commit. Trusted code
 derives `MigrationImportOwnerManifestV1` from source/destination schema
-manifests, migration-plan digest and active invariant/law catalogs; importer
-input cannot select or omit owners. `MigrationImportAdmissionCandidateV1`
+manifests, migration-plan digest, the currently admitted destination
+VIT-LAW-009 tuple/manifest, its authenticated dependency set and the versioned
+contributor algorithm. That law dependency closure is the only owner universe;
+no separate runtime invariant catalog exists, and importer input cannot select
+or omit owners. `MigrationImportAdmissionCandidateV1`
 binds that manifest, final counters, staged root, expected owner versions/
 epochs and dormant generations, lease/fence, independently issued activation
 authorization and idempotency digest. Each existing owner authenticates only
 its dormant generation through an owner-held capability; VIT-INV-062 has
 verify-only access. `MigrationImportActivationAuthorizationV1` is
 candidate-specific and has only Issued, Consumed, ExpiredUnused or RevokedUnused
-states. One `MigrationImportActivationBarrierV1` binds the complete receipt set
-and current job/owner state. Through `1.0.0`, one co-located local transaction
+states. Revocation requires authenticated
+`MigrationImportActivationRevocationIntentV1` delivery and one destination-
+local CAS from Issued to RevokedUnused on the same row activation consumes;
+remote emission alone has no effect, and late revocation after Consumed returns
+the activation result without reversal. One `MigrationImportActivationBarrierV1`
+binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all owner versions, consumes and
 tombstones authorization, then activates every owner plus barrier/job result/

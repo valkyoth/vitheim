@@ -12,15 +12,20 @@ resolves its proposal in the same commit.
 Every Phase O milestone carries `VIT-INV-062
 MigrationImportJobAuthorityState` and the effective `VIT-LAW-009` generation.
 Operational evidence must preserve trusted derivation of
-`MigrationImportOwnerManifestV1`, owner-held preparation-receipt authentication,
-independent activation-authorization issuance, its closed
+`MigrationImportOwnerManifestV1` from the currently admitted VIT-LAW-009
+tuple/manifest and authenticated dependency closure, with no separate invariant
+catalog; owner-held preparation-receipt authentication; independent
+activation-authorization issuance; its closed
 Issued/Consumed/ExpiredUnused/RevokedUnused lifecycle, time/key/continuity
-ratchets and atomic consumption tombstone. The registry remains authoritative
+ratchets; authenticated revocation-intent inbox, monotonic issuer sequence and
+same-row local CAS; and atomic consumption/revocation tombstones. The registry remains authoritative
 for its control state but never for selected owners' domain state. HA, DR,
 soak, audit, compatibility, external pentest and RC evidence must reject
-importer owner omission, registry-forged receipts, cross-candidate reuse,
-revocation/expiry races, key or continuity rollback and response loss after
-consumption without partial owner visibility.
+stale/future law generations, dependency omission/injection, forged pseudo
+catalogs, importer owner omission, registry-forged receipts, cross-candidate
+reuse, revocation emission/delivery/local-CAS and expiry races, key/sequence/
+continuity rollback and response loss after either terminal commit without
+partial owner visibility.
 
 ## `0.141.0` — Single-Node Production Packaging
 Status: planned.
@@ -873,10 +878,12 @@ new processes, cursors, reconnects and adapter retries cannot allocate fresh
 work or borrow protected Recovery cleanup.
 Fail over the complete activation handoff with it: closed job phase and
 terminal disposition, candidate/tombstone, trusted manifest derivation
-inputs/output, dormant generations, receipt authentication/key/continuity/
+inputs/output including admitted law tuple/manifest/dependency closure, dormant
+generations, receipt authentication/key/continuity/
 replay identity, barrier sequence/predecessor/result, complete activation-
 authorization bytes/lifecycle/consumption tombstone/time/key/continuity
-ratchets and cleanup linkage. A new coordinator may resume
+ratchets, revocation intent/inbox/issuer sequence/tombstone/result/outbox and
+cleanup linkage. A new coordinator may resume
 completeness work under a higher job fence but cannot activate stale receipts.
 Failover after preparation or an unknown activation response re-reads the one
 local transaction result; it never exposes a partial owner set or replaces the

@@ -200,14 +200,21 @@ audit decision.
   security-control state, but owns no imported domain state;
 - `VIT-LAW-009 AtomicMigrationImportActivation` derives the complete ordered
   `MigrationImportOwnerManifestV1` in trusted code from both schema manifests,
-  migration-plan digest and active invariant/law catalogs; importer-supplied
-  selection is never authority, and every selected owner retains domain
-  ownership;
+  migration-plan digest, the currently admitted VIT-LAW-009 tuple/manifest and
+  its authenticated dependency set; this law closure is the only owner universe,
+  no separate runtime invariant catalog exists, importer-supplied selection is
+  never authority, and every selected owner retains domain ownership;
 - owner-held authentication produces dormant-preparation receipts while
   VIT-INV-062 has verify-only access; activation uses an independently issued,
   candidate-bound `MigrationImportActivationAuthorizationV1` with a closed
   Issued/Consumed/ExpiredUnused/RevokedUnused lifecycle, trusted-time/key/
   continuity ratchets and permanent consumption tombstone;
+- revocation becomes effective only when an authenticated candidate-bound
+  `MigrationImportActivationRevocationIntentV1` advances the monotonic issuer
+  sequence and CAS-transitions the destination-local authorization row from
+  Issued to RevokedUnused with inbox receipt/result/audit/outbox; remote
+  emission is not revocation, activation uses the same row, and a late intent
+  after Consumed returns the activation result without reversal;
 - through `1.0.0` every affected owner guard is co-located with the job/barrier,
   and one local transaction rechecks current budget/fence/authorization/
   manifest/receipts/owner versions, consumes authorization, then activates all

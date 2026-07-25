@@ -49,6 +49,13 @@ The tuple set must equal the latest generation of every law effective at the
 activation floor plus every predecessor; omission and future inclusion both
 fail closed.
 
+For `VIT-LAW-009`, the authenticated dependency closure of that exact active
+tuple is also the migration/import owner universe. Trusted code combines it
+with the bound schema manifests, migration plan, and contributor algorithm to
+derive `MigrationImportOwnerManifestV1`. No parallel `InvariantCatalogV1`,
+importer-selected list, or mutable registry view may replace or supplement that
+closure.
+
 The initial scope contract is exact rather than descriptive:
 
 - product scope: `vitheim`;
