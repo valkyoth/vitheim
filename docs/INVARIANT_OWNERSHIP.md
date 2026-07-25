@@ -157,19 +157,26 @@ are mandatory wherever a row below admits that workload profile.
 This refinement is normative for VIT-INV-062. Its authority rows additionally
 include one bootstrap-revocation inbox/sequence/result lineage shared by begin,
 handoff and cancellation actions, plus history-recovery authorization, successor-
-budget, attempt and result rows. VIT-ENF-062-F admits only
+budget, cumulative-lineage counters, authorization-revocation inbox/sequence/
+tombstone, retry-exhaustion result, custody records, attempt and result rows.
+VIT-ENF-062-F admits only
 `ApplyMigrationImportCoordinatorBootstrapAuthorizationRevocation` for bootstrap
 revocation effect and only
 `ResolveMigrationImportRegistryHistoryRecovery` for ManualRecoveryPending exit.
 The first operation atomically commits the exact-action inbox, sequence,
 tombstone, required bootstrap terminalization and result. The second preserves
-descriptors/reservations until one independently authorized successor-budget
-append, WaivedFenced or AbandonedWithEvidence terminal is checkpointed.
+descriptors/reservations and enforces RetryAppend→Appended/pending,
+Waive→WaivedFenced and Abandon→AbandonedWithEvidence. Successor exhaustion
+stays pending; fresh action authority cannot reset cumulative counters.
+Recovery-authorization revocation has the same destination-only same-row
+ordering. Waiver/abandonment commit canonical records only after current
+retention/classification/legal-hold and independent compliance/legal recheck.
 VIT-TST-062-N-F rejects remote-effect inference, cross-action sequence
-suppression, substituted budget lineage, early checkpoint/cleanup and recovery
-without SoD. VIT-RCV-062 restores both complete atomic lineages before work and
-never converts ManualRecoveryPending, missing recovery state or a remote
-revocation message into a terminal.
+suppression, RetryAppend-to-Abandon escalation, counter reset, substituted
+budget/policy/hold lineage, forged custody record, early checkpoint/cleanup and
+recovery without SoD. VIT-RCV-062 restores all complete atomic lineages before
+work and never converts ManualRecoveryPending, missing recovery state or a
+remote revocation message into a terminal.
 
 ### Topology Authorization Replay Lifecycle Refinement
 

@@ -69,8 +69,10 @@ only in its destination transaction. Old binaries or predecessor
 transactions that omit the expected generation deny. Activation creates a
 bounded Pending/NoHistory/NotRequested obligation atomically; authenticated
 append advances the archive head. Exhaustion remains ManualRecoveryPending
-until independently authorized successor-budget append, evidenced waiver or
-evidenced abandonment; cleanup waits for a true terminal checkpoint.
+until exact independent action authority acts. RetryAppend cannot waive/
+abandon, all successor work shares cumulative lineage limits, recovery
+revocation is destination-local, and waiver/abandonment records bind current
+policy/legal-hold/compliance authority; cleanup waits for a true terminal checkpoint.
 Archive failure never changes activation authority.
 
 The initial scope contract is exact rather than descriptive:

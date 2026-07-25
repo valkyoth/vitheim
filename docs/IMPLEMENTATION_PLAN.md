@@ -256,9 +256,14 @@ idempotency, retention, bounded budget, cleanup reserve and durable disposition;
 its collision or failure cannot alter the activation result. The activation-
 atomic obligation and archive head make missing work distinguishable from
 NoHistory/NotRequested. Exhaustion retains nonterminal ManualRecoveryPending
-and its descriptors until an independently authorized bounded successor-budget
-append, evidenced waiver or evidenced abandonment reaches a checkpointed
-terminal. A topology requiring a
+and its descriptors. RetryAppend reaches only Appended or
+ManualRecoveryPending; successor exhaustion produces typed evidence, not
+abandonment. Every fresh action requires independent authority, while one
+cumulative obligation-lineage budget prevents work/time/attempt/byte/successor
+counter reset. Recovery revocation takes effect only in its destination row.
+Waiver/abandonment terminals require their own canonical custody records,
+current retention/classification/legal-hold proof and independent compliance/
+legal approval before a checkpoint. A topology requiring a
 distributed transaction or unreviewed global activation selector is refused.
 Archive exact results or authenticated result references with
 request/lifecycle/scope/predecessor/key commitments, bounded proof work and a

@@ -53,10 +53,13 @@ retention/classification, sequence/predecessor/idempotency, bounded append work,
 protected cleanup and durable disposition/result/conflict. Append begins only
 after activation, but activation atomically creates Pending, NoHistory or
 NotRequested. Exhaustion retains ManualRecoveryPending until an independently
-authorized RetryAppend, Waive or Abandon resolution reaches Appended,
-WaivedFenced or AbandonedWithEvidence; cleanup waits for the terminal obligation
-checkpoint. Failure, collision or recovery never rolls activation back or makes
-its result ambiguous. RPC, HA, DR, soak, hardening, compatibility,
+authorized exact action acts. RetryAppend reaches Appended or pending only and
+typed successor exhaustion never abandons; cumulative lineage counters span
+every grant. Recovery revocation is destination-local. Waive/Abandon alone
+commit canonical custody records after current policy/legal-hold/compliance
+recheck; cleanup waits for the terminal obligation checkpoint. Failure,
+collision or recovery never rolls activation back or makes its result
+ambiguous. RPC, HA, DR, soak, hardening, compatibility,
 external pentest and RC evidence must exercise stale predecessor transactions,
 guard-unaware binaries, competing successors, bootstrap replay/revocation/
 cancellation/rollback/restore/failover and archive failure at every boundary.
@@ -920,8 +923,9 @@ ratchets, explicit admission/RevokedBeforeAdmission, revocation intent/inbox/
 exact-target sequence/target lifetime/tombstone/result/outbox, live coordinator
 exclusion, inert history archive, identity conflicts, coordinator-bootstrap
 checkpoint/handoff, shared exact-action revocation inbox/sequence/result,
-history ManualRecoveryPending descriptors/recovery authority/successor budget/
-attempt/result and cleanup linkage. A new coordinator may resume
+history ManualRecoveryPending descriptors/recovery authority and revocation/
+cumulative-lineage and successor budgets/retry-exhaustion result/custody
+records/attempt/result and cleanup linkage. A new coordinator may resume
 completeness work under a higher job fence but cannot activate stale receipts.
 Failover after preparation or an unknown activation response re-reads the one
 local transaction result; it never exposes a partial owner set or replaces the
@@ -1250,8 +1254,9 @@ generations, preparation receipts, explicit authorization admission,
 RevokedBeforeAdmission and RevokedUnused tombstones, target-scoped revocation
 sequence/lifetime, live coordinator exclusion, inert history archive, identity
 conflicts, bootstrap checkpoint/handoff/shared revocation inbox/sequence/result,
-history ManualRecoveryPending/recovery authority/successor budget/result/
-checkpoint, activation barrier sequence/
+history ManualRecoveryPending/recovery authority/revocation/cumulative and
+successor budgets/retry-exhaustion result/policy-hold receipts/custody records/
+result/checkpoint, activation barrier sequence/
 predecessor/result and authorization;
 the active
 catalog ID/epoch,
@@ -1509,7 +1514,8 @@ manifest with coordinator/contributor roles, dormant-domain-generation/receipt
 set, authorization admission/pre-admission revocation, exact-target sequence,
 live-coordinator exclusion, source-job/archive/collision/bootstrap rules,
 shared bootstrap revocation apply/sequence rules, history recovery authority/
-successor-budget/retention rules, co-located activation barrier and cleanup-
+revocation/action-matrix/cumulative-budget/legal-hold/custody-record rules,
+co-located activation barrier and cleanup-
 versus-authority separation,
 starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
@@ -1972,7 +1978,10 @@ VIT-INV-062 jobs, stable-ID collisions, a destination-targeting job and cyclic
 self-import; attempt inert-history promotion and coordinator-bootstrap
 rollback, claim remote revocation effect, suppress one bootstrap action with
 another action's sequence, exhaust history append into ManualRecoveryPending,
-substitute its successor budget, forge waiver/abandonment or clean retained
+make RetryAppend abandon, reset cumulative counters through fresh grants,
+reorder recovery revocation, substitute retention/classification/legal-hold
+epochs, forge compliance/legal approval or lower custody evidence floors,
+substitute successor budgets, forge waiver/abandonment or clean retained
 descriptors; leave one domain owner unprepared/rejecting; race cleanup and
 takeover; lose responses; run concurrent activators; fail over after prepare;
 and restore prepared, terminal or falsely active state. Prove the fixed local
@@ -2029,6 +2038,7 @@ cleanup link, including coordinator/contributor classification, authorization
 admission, RevokedBeforeAdmission, exact-target sequence/lifetime, live
 coordinator exclusion, inert archive/identity conflicts and coordinator
 bootstrap handoff/shared revocation state, plus history ManualRecoveryPending/
-recovery authority/successor budget/result/checkpoint. Exit criteria:
+recovery authority/revocation/cumulative and successor budgets/retry-exhaustion
+result/policy-hold receipts/custody records/result/checkpoint. Exit criteria:
 no known blocking gap remains.
 `v0.150.0 implementation stop reached. Run pentest for this exact commit.`

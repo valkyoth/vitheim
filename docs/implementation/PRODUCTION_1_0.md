@@ -636,10 +636,14 @@ or ambiguously report activation. Cleanup cannot delete obligation descriptors
 until a terminal append checkpoint, and absence cannot stand for NoHistory or
 NotRequested. Initial-budget exhaustion is nonterminal
 ManualRecoveryPending: retained descriptors and reservations survive until an
-independently admitted recovery authorization causes one bounded successor-
-budget append or an evidenced WaivedFenced/AbandonedWithEvidence terminal.
-Exact recovery retries return the canonical result and changed recovery
-material conflicts. VIT-INV-062 schema succession uses a stable bootstrap identity
+independently admitted exact action acts. RetryAppend reaches only Appended or
+ManualRecoveryPending; successor exhaustion stores its typed result and cannot
+abandon. One immutable cumulative lineage budget spans initial and successor
+work/time/attempt/byte/count counters. Recovery revocation is effective only in
+the destination same-row inbox/tombstone/result commit. Waive/Abandon alone
+commit their canonical custody records after current retention/classification/
+legal-hold and independent compliance/legal approval rechecks. Exact retries
+return the canonical result and changed material conflicts. VIT-INV-062 schema succession uses a stable bootstrap identity
 and closed lifecycle; distinct pre-admission-revocable begin, fresh handoff and
 cancellation authorizations enforce requestor/approver/activator/issuer/
 cancellation separation. Begin authority is consumed when drain installs;
@@ -665,8 +669,10 @@ collisions, destination-targeting/cyclic self-import, inert-history promotion,
 history append collision/failure, stale work and old binaries crossing handoff,
 competing successors, bootstrap authorization replay/revocation/cancellation/
 cross-action sequence suppression, remote-effect inference, recovery-budget
-substitution, premature ManualRecoveryPending cleanup, waiver/abandonment
-forgery, rollback/restore/failover, registry-forged receipt, importer owner
+substitution, RetryAppend-to-Abandon escalation, cumulative-counter reset,
+recovery-revocation reorder, stale policy/hold receipt, forged compliance/legal
+approval, custody-floor weakening, premature ManualRecoveryPending cleanup,
+waiver/abandonment forgery, rollback/restore/failover, registry-forged receipt, importer owner
 omission, key/sequence/continuity rollback and response loss after any terminal
 commit; each produces one atomic success or exact fail-closed/idempotent result.
 

@@ -2929,9 +2929,18 @@ semantic contract before cross-backend interchange consumes it at `0.30.0`.
 Local conformance proves authenticated scope/provenance/original terminal
 result/manifests, archive sequence/predecessor/idempotency, bounded work and
 protected cleanup, nonterminal manual recovery with independently authorized
-successor budget or evidenced waiver/abandonment, canonical disposition/result/
-conflict and the non-negotiable rule that post-activation archive failure
-cannot alter activation.
+successor budget or separately authorized evidenced waiver/abandonment,
+cumulative obligation-lineage budgets, same-row recovery-authorization
+revocation, canonical custody records/disposition/result/conflict and the
+non-negotiable rule that post-activation archive failure cannot alter
+activation. Exhaust every RetryAppend successor and prove it returns
+ManualRecoveryPending with `MigrationImportRegistryHistorySuccessorBudgetExhausted`,
+never AbandonedWithEvidence. Race fresh RetryAppend/Waive/Abandon admission,
+revocation, expiry and consumption; reset attempts/counters through new
+authorizations and backends; substitute policy/hold epochs or approvals; and
+activate legal hold before commit. Only the action-authorized transition may
+win, cumulative counters never decrease, and hold-weakened waiver/abandonment
+writes nothing.
 
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
 `v0.29.0 implementation stop reached. Run pentest for this exact commit.`
@@ -3067,22 +3076,81 @@ issued, single-use authorization for exactly one `RetryAppend`, `Waive` or
 `Abandon` action. It binds the obligation and descriptor digests, exhausted
 budget lineage/result, current archive-head identity/sequence, source and
 destination scope, requested successor budget profile and strict ceilings,
-reason/change/incident authority, requestor/approver/operator/quorum/SoD,
-trusted-time/profile/continuity/key fields, nonce and idempotency.
+reason/change/incident authority, retention and classification policy identity/
+generation/digest, legal-hold state/epoch, records/compliance/legal approval
+authority, required evidence-retention floor, requestor/approver/operator/
+quorum/SoD, trusted-time/profile/continuity/key fields, nonce and idempotency.
 `AdmitMigrationImportRegistryHistoryRecoveryAuthorization` shares its row with
 revocation and expiry and closes it over `RevokedBeforeAdmission`, `Issued`,
 `Consumed`, `ExpiredUnused` and `RevokedUnused`.
 
+Recovery authorization revocation is a complete delivery protocol.
+`MigrationImportRegistryHistoryRecoveryAuthorizationRevocationIntentV1` binds
+the obligation, descriptor and action, exact authorization identity/digest,
+issuer identity/continuity, target authorization lifetime, reason, non-wrapping
+sequence, nonce and idempotency. Its
+`MigrationImportRegistryHistoryRecoveryAuthorizationRevocationSequenceKeyV1`
+is scoped to issuer identity/continuity, tenant/deployment, obligation,
+recovery action and exact authorization identity/digest, and its lifetime
+covers the target authorization.
+`ApplyMigrationImportRegistryHistoryRecoveryAuthorizationRevocation` locks the
+active coordinator generation, obligation and same authorization row used by
+admission/expiry/consumption. One destination transaction authenticates the
+intent, advances the target sequence and commits inbox receipt, permanent
+RevokedBeforeAdmission or RevokedUnused tombstone,
+`MigrationImportRegistryHistoryRecoveryAuthorizationRevocationResultV1`,
+audit and outbox. Remote emission has no effect. Exact duplicate returns that
+result; changed target/action/bytes/continuity/sequence/idempotency returns
+`MigrationImportRegistryHistoryRecoveryAuthorizationRevocationConflict`
+without mutation. A late valid revocation after consumption returns the
+committed recovery result and cannot change the action or disposition. Restore
+recovers authorization, inbox, sequence watermark, tombstone and result as one
+atomic lineage before admission or recovery resumes.
+
+`MigrationImportRegistryHistoryRecoveryLineageBudgetV1` binds immutable
+overflow-safe cumulative ceilings for the entire obligation: initial and every
+successor work quantum, rows/bytes, decode/hash/signature/proof/storage work,
+attempts, conservative elapsed time and successor count. Every budget has a
+non-wrapping successor ordinal and exact predecessor/result digest; all
+precharges advance the obligation-level counters. A fresh authorization can
+use only remaining lineage capacity, never reset counters by changing issuer,
+profile, action, attempt, process, backend or idempotency. Once a cumulative
+dimension is exhausted, RetryAppend admission fails closed; the obligation
+stays ManualRecoveryPending until distinct Waive or Abandon authority is
+admitted or policy later increases the lineage through a separately reviewed
+successor profile.
+
 `ResolveMigrationImportRegistryHistoryRecovery` locks
 active-coordinator-generation→history-obligation→recovery-authorization→archive-head→history/
-idempotency→successor-archive-budget→audit/result/outbox. It reauthenticates the
-retained descriptors and exact exhausted predecessor, consumes the action grant
-and either appends under the bounded predecessor-linked successor budget or
-ends as `WaivedFenced` or `AbandonedWithEvidence`. Retryable worker interruption
-retains `ManualRecoveryPending`, the consumed recovery-attempt identity and
-monotonic successor counters; it resumes only that attempt and cannot install a
-second budget. Exhaustion of the authorized successor ends
-`AbandonedWithEvidence`. `MigrationImportRegistryHistoryRecoveryResultV1`
+idempotency→recovery-lineage-budget→successor-archive-budget→retention/legal-hold→audit/result/outbox.
+It reauthenticates the retained descriptors and exact exhausted predecessor,
+rechecks current retention/classification/legal-hold generations and evidence
+floor, then consumes the exact action grant. Its closed transition matrix is:
+
+- `RetryAppend` may reach only `Appended` or `ManualRecoveryPending`.
+  Retryable interruption retains the consumed attempt and resumes only that
+  attempt. Successor exhaustion commits typed
+  `MigrationImportRegistryHistorySuccessorBudgetExhausted`, settles that
+  successor, retains all recovery material and returns ManualRecoveryPending.
+  Another successor requires a fresh RetryAppend authorization and remaining
+  cumulative lineage capacity.
+- `Waive` may reach only `WaivedFenced` and atomically commits
+  `MigrationImportRegistryHistoryWaiverRecordV1`.
+- `Abandon` may reach only `AbandonedWithEvidence` and atomically commits
+  `MigrationImportRegistryHistoryAbandonmentRecordV1`.
+
+RetryAppend authority can never create either waiver or abandonment terminal,
+including on budget exhaustion. Moving from an exhausted retry to abandonment
+therefore requires a fresh Abandon authorization. Both terminal records bind
+the obligation/descriptors, action authorization and result, retention and
+classification policy identity/generation/digest, legal-hold state/epoch,
+records/compliance/legal approvals and SoD, required evidence-retention floor,
+reason/change/incident authority, audit/outbox and commit-time policy receipt.
+An active legal hold categorically rejects Waive or Abandon whenever its
+evidence floor or custody effect would weaken the hold; no emergency flag,
+retry authority or stale policy receipt overrides that denial.
+
+`MigrationImportRegistryHistoryRecoveryResultV1`
 records the chosen action, predecessor/successor budgets, archive-head outcome,
 retention decision, evidence digest, audit and outbox positions. Exact
 response-loss retry joins or returns that result; changed action, descriptor,
@@ -3097,13 +3165,16 @@ predecessor checkpoint. Candidate/history descriptors, staging reservations and
 related cleanup cannot be deleted or settled until this checkpoint commits.
 Crash after activation but before worker delivery therefore recovers Pending;
 restore of `ManualRecoveryPending` must recover its retained descriptors,
-exhausted and successor budgets, authorization lifecycle, recovery result and
-archive-head predecessor before any worker or cleanup runs.
+exhausted/successor/cumulative lineage budgets, authorization revocation inbox/
+sequence/tombstone lifecycle, recovery result and archive-head predecessor
+before any worker or cleanup runs.
 NoHistory/NotRequested remain explicit; cleanup racing append or recovery fails
 closed. `WaivedFenced` retains the authenticated waiver and minimum policy
-evidence; `AbandonedWithEvidence` retains descriptors/results required by the
-classification and legal-retention policy. Neither terminal can be decoded as
-an archive entry or retried under a new identity.
+evidence through its canonical waiver record; `AbandonedWithEvidence` retains
+its canonical abandonment record plus descriptors/results required by
+classification, legal hold and retention policy. Neither terminal can be
+decoded as an archive entry or retried under a new identity, and neither record
+may be deleted below its commit-time evidence floor.
 Archive failure or collision never rolls back, rewrites or makes ambiguous the
 already committed domain activation result; operators see activation success
 and its separate archive disposition.

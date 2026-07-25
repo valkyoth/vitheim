@@ -578,9 +578,12 @@ restore, failover, and release evidence.
    terminal append checkpoint, so absent worker delivery is recoverable and
    absent state cannot impersonate NoHistory/NotRequested. Exhaustion enters
    nonterminal ManualRecoveryPending and retains descriptors/reservations until
-   independent recovery authority permits one bounded successor-budget append,
-   evidenced waiver or evidenced abandonment; only its resulting terminal can
-   be checkpointed and cleaned. Typed identity conflicts fail closed.
+   independent recovery authority permits its exact action. RetryAppend cannot
+   waive or abandon; successor exhaustion stays pending with typed evidence and
+   a cumulative lineage budget prevents reset. Recovery revocation is
+   destination-local. Waive/Abandon require separate current-policy/legal-hold/
+   compliance authority and canonical custody records; only their true terminal
+   can be checkpointed and cleaned. Typed identity conflicts fail closed.
    VIT-INV-062 schema succession is a separate stable-ID,
    independently authorized and budgeted closed lifecycle for local
    predecessor begin/drain, typed checkpoint/dormant-successor receipt and

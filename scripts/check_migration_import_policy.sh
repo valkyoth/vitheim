@@ -37,6 +37,17 @@ then
     fail "obsolete activation order without the atomic history obligation remains"
 fi
 
+for requirement in \
+    'RetryAppend authority can never create either waiver or abandonment terminal' \
+    'requires a fresh Abandon authorization' \
+    'use only remaining lineage capacity' \
+    'An active legal hold categorically rejects Waive or Abandon' \
+    'Remote emission has no effect'
+do
+    grep -Fq "$requirement" docs/implementation/PHASE_C.md ||
+        fail "Phase C omits recovery requirement: $requirement"
+done
+
 tmp_dir=$(mktemp -d)
 trap 'rm -rf "$tmp_dir"' EXIT HUP INT TERM
 
@@ -82,6 +93,15 @@ for symbol in \
     MigrationImportRegistryHistoryAppendResultV1 \
     MigrationImportRegistryHistoryRecoveryAuthorizationV1 \
     AdmitMigrationImportRegistryHistoryRecoveryAuthorization \
+    MigrationImportRegistryHistoryRecoveryAuthorizationRevocationIntentV1 \
+    MigrationImportRegistryHistoryRecoveryAuthorizationRevocationSequenceKeyV1 \
+    ApplyMigrationImportRegistryHistoryRecoveryAuthorizationRevocation \
+    MigrationImportRegistryHistoryRecoveryAuthorizationRevocationResultV1 \
+    MigrationImportRegistryHistoryRecoveryAuthorizationRevocationConflict \
+    MigrationImportRegistryHistoryRecoveryLineageBudgetV1 \
+    MigrationImportRegistryHistorySuccessorBudgetExhausted \
+    MigrationImportRegistryHistoryWaiverRecordV1 \
+    MigrationImportRegistryHistoryAbandonmentRecordV1 \
     ResolveMigrationImportRegistryHistoryRecovery \
     MigrationImportRegistryHistoryRecoveryResultV1 \
     MigrationImportRegistryHistoryRecoveryConflict

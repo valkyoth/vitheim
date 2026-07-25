@@ -318,7 +318,11 @@ required bootstrap terminalization and result; remote emission has no effect.
 Freeze `MigrationImportRegistryHistoryRecoveryAuthorizationV1` independently
 from activation/bootstrap authority, binding retained descriptors, exhausted
 budget/result, requested action and bounded successor profile, archive head,
-SoD, trusted time, key continuity, nonce and idempotency.
+retention/classification/legal-hold authority and evidence floor, SoD, trusted
+time, key continuity, nonce and idempotency. Freeze its exact-target
+revocation intent, action/authorization-scoped sequence, target-covering
+lifetime, destination inbox/tombstone/result transaction and late-consumed
+result behavior; remote emission is not revocation.
 Revocation/expiry before begin or handoff consumption atomically
 terminalizes safely, clears any drain, preserves evidence and advances the
 predecessor fence. Replay, competing-successor substitution, cancellation-
@@ -417,9 +421,15 @@ bounded descriptors and reservations in nonterminal ManualRecoveryPending.
 An independently admitted
 `MigrationImportRegistryHistoryRecoveryAuthorizationV1` permits one exact
 RetryAppend, Waive or Abandon action;
-`ResolveMigrationImportRegistryHistoryRecovery` either appends under one
-predecessor-linked bounded successor budget or reaches an evidenced terminal,
-with canonical retry result/conflict. Activation atomically creates bounded
+`ResolveMigrationImportRegistryHistoryRecovery` enforces RetryAppend to
+Appended/ManualRecoveryPending only, Waive to WaivedFenced only and Abandon to
+AbandonedWithEvidence only. Successor exhaustion returns typed
+`MigrationImportRegistryHistorySuccessorBudgetExhausted` and requires a fresh
+authorization for any next action. One cumulative obligation-lineage budget
+bounds all initial/successor work, elapsed time, attempts, bytes and successor
+count. Canonical waiver/abandonment records bind current policy, legal-hold,
+compliance/legal approval and evidence-floor receipts.
+Activation atomically creates bounded
 Pending or explicit NoHistory/NotRequested; absence is invalid and cleanup
 waits for the terminal append checkpoint. Coordinator-schema succession
 requires stable bootstrap identity, closed lifecycle, separate pre-admission-
@@ -1252,7 +1262,8 @@ sequence key. Remote emission or transport acknowledgement alone does not
 revoke; delayed authorization joins an existing tombstone and a late intent
 after Consumed returns the activation result without reversal. The same
 remote-effect rule applies to the action-discriminated bootstrap revocation
-inbox, with sequence scope including the exact bootstrap action/grant.
+inbox, with sequence scope including the exact bootstrap action/grant, and to
+history-recovery revocation, scoped to exact obligation/action/authorization.
 Verification: protocol conformance, mix-up/replay/fixation/recovery, false
 sender constraint, proof/token substitution, bearer privilege escalation,
 first-use stolen bearer behavior, effect dispatch after credential/session/
@@ -1473,10 +1484,14 @@ these legs or remove their stable settlement record before the replay-retention
 contract permits it.
 Freeze history-recovery retention independently from activation and ordinary
 staging. ManualRecoveryPending retains the bounded authenticated descriptors,
-exhausted/successor budget lineage, reservations, authorization/attempt/result
-and archive-head predecessor needed to resume or prove disposition. WaivedFenced
-retains its authorization and minimum policy evidence; AbandonedWithEvidence
-retains the classification/legal-hold-required descriptors and terminal result.
+exhausted/successor/cumulative budget lineage, reservations, authorization/
+revocation/attempt/result and archive-head predecessor needed to resume or prove
+disposition. WaivedFenced retains its canonical waiver record and minimum
+policy evidence; AbandonedWithEvidence retains its canonical abandonment
+record, classification/legal-hold-required descriptors and terminal result.
+Commit rechecks policy identity/generation/digest, legal-hold state/epoch,
+records/compliance/legal approval SoD and evidence floor. Active hold denies
+any waiver or abandonment that weakens custody, without emergency override.
 Erasure may minimize payload only under the precedence matrix and cannot turn
 either state into absent, archived, retryable under a new identity or eligible
 for cleanup before the terminal checkpoint.
@@ -1607,7 +1622,9 @@ revocation intent/inbox/exact-target sequence/target lifetime/tombstone/result/
 outbox, live coordinator state/exclusion, inert terminal-history archive,
 identity-conflict indexes, active coordinator generation/fence, terminal-history
 archive head/disposition/budget/ManualRecoveryPending descriptors/recovery
-authorization/successor budget/attempt/result/checkpoint, coordinator-bootstrap stable identity/
+authorization/revocation inbox/sequence/tombstone/cumulative and successor
+budgets/attempt/result/waiver-or-abandonment record/checkpoint,
+coordinator-bootstrap stable identity/
 lifecycle/begin-handoff-cancel authorizations and pre-admission tombstones/
 shared action-revocation inbox/sequence/target lifetime/result/budget/checkpoint/
 successor receipt/handoff/per-action results,
@@ -1620,9 +1637,11 @@ authorization's sequence suppress revocation, import/merge source coordinator
 state, resume a source job, promote inert history, roll back a bootstrap
 handoff, permit predecessor-started work to commit after handoff, make archive
 failure alter activation, infer bootstrap revocation from remote emission, lose
-a Pending or ManualRecoveryPending obligation, substitute the recovery budget,
-forge waiver/abandonment, treat absence as NoHistory/NotRequested, clean before
-terminal checkpoint, or replace the selected local transaction with a
+a Pending or ManualRecoveryPending obligation, infer recovery revocation from
+remote emission, reset cumulative recovery counters, let RetryAppend abandon,
+substitute the recovery budget/policy/hold epoch, forge waiver/abandonment,
+treat absence as NoHistory/NotRequested, clean before terminal checkpoint, or
+replace the selected local transaction with a
 remote selector.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane

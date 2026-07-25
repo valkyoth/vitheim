@@ -241,9 +241,11 @@ audit decision.
   changes activation; cleanup waits for the terminal obligation checkpoint and
   absence is never treated as NoHistory/NotRequested; exhausted work remains
   nonterminal ManualRecoveryPending with descriptors/reservations retained
-  until independent recovery authority installs one bounded successor append
-  or records an evidenced waiver/abandonment terminal; identity collisions fail
-  closed; and coordinator-schema
+  until exact recovery authority acts; RetryAppend can reach only Appended or
+  ManualRecoveryPending, cumulative lineage limits never reset, recovery
+  revocation is destination-local, and Waive/Abandon require distinct current
+  policy/legal-hold/compliance authority plus canonical custody records;
+  identity collisions fail closed; and coordinator-schema
   migration requires a separate stable-ID, independently authorized, budgeted
   closed lifecycle with pre-admission-revocable begin, fresh handoff and
   explicit cancellation grants, typed checkpoint/successor receipt, and atomic

@@ -8,6 +8,14 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Closed history-recovery action escalation: RetryAppend now reaches only
+  Appended or ManualRecoveryPending, successor exhaustion has a typed result,
+  and Waive/Abandon require fresh matching authority and canonical custody
+  records.
+- Added cumulative obligation-lineage recovery budgets, a destination-local
+  recovery-authorization revocation protocol, and commit-time retention,
+  classification, legal-hold, compliance/legal approval and evidence-floor
+  enforcement.
 - Defined one typed, action-discriminated bootstrap-authorization revocation
   delivery/apply protocol for begin, handoff and cancellation grants. It binds
   the exact target and lifetime, isolates sequences per action, and takes
