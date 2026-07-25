@@ -70,8 +70,11 @@ transactions that omit the expected generation deny. Activation creates a
 bounded Pending/NoHistory/NotRequested obligation atomically; authenticated
 append advances the archive head. Exhaustion remains ManualRecoveryPending
 until exact independent action authority acts. RetryAppend cannot waive/
-abandon, all successor work shares cumulative lineage limits, recovery
-revocation is destination-local, and waiver/abandonment records bind current
+abandon. Closed action-tagged authorization/results and a total six-state row
+return canonical winners. All successor work shares immutable platform-capped
+cumulative lineage limits with no amendment through `1.0.0`; recovery
+revocation binds complete authentication/time fields and is destination-local.
+Waiver/abandonment records bind current
 policy/legal-hold/compliance authority; cleanup waits for a true terminal checkpoint.
 Archive failure never changes activation authority.
 

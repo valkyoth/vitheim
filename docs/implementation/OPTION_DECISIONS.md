@@ -316,13 +316,18 @@ non-wrapping sequence scoped per bootstrap/action/authorization. Its
 destination apply authenticates the inbox and atomically commits the tombstone,
 required bootstrap terminalization and result; remote emission has no effect.
 Freeze `MigrationImportRegistryHistoryRecoveryAuthorizationV1` independently
-from activation/bootstrap authority, binding retained descriptors, exhausted
-budget/result, requested action and bounded successor profile, archive head,
-retention/classification/legal-hold authority and evidence floor, SoD, trusted
-time, key continuity, nonce and idempotency. Freeze its exact-target
-revocation intent, action/authorization-scoped sequence, target-covering
-lifetime, destination inbox/tombstone/result transaction and late-consumed
-result behavior; remote emission is not revocation.
+from activation/bootstrap authority. Freeze its closed action-tagged request
+and result payloads: RetryAppend alone carries predecessor/successor-budget
+material, Waive alone carries waiver policy/custody material and Abandon alone
+carries abandonment policy/custody material; other-action fields are
+canonically absent. Freeze the total Absent/RevokedBeforeAdmission/Issued/
+Consumed/ExpiredUnused/RevokedUnused table and canonical admission, expiry,
+revocation and recovery winner results. Freeze its exact-target revocation
+intent with signer identity, key identity/epoch, authentication profile,
+issued-at, not-before, exact target expiry, maximum uncertainty and trusted-time
+profile/epoch, action/authorization-scoped sequence, destination inbox/
+tombstone/result transaction and late-consumed result behavior; remote emission
+is not revocation and expiry winning remains expiry.
 Revocation/expiry before begin or handoff consumption atomically
 terminalizes safely, clears any drain, preserves evidence and advances the
 predecessor fence. Replay, competing-successor substitution, cancellation-
@@ -427,7 +432,13 @@ AbandonedWithEvidence only. Successor exhaustion returns typed
 `MigrationImportRegistryHistorySuccessorBudgetExhausted` and requires a fresh
 authorization for any next action. One cumulative obligation-lineage budget
 bounds all initial/successor work, elapsed time, attempts, bytes and successor
-count. Canonical waiver/abandonment records bind current policy, legal-hold,
+count. Its initial ceilings fit
+`MigrationImportRegistryHistoryRecoveryPlatformHardMaximumV1`; no amendment or
+increase operation exists through `1.0.0`, and every adapter preserves counters
+and ceilings exactly or refuses. Authorization and result storage use closed
+action-tagged layouts, and the authorization row stores the total six-state
+lifecycle plus canonical admission/expiry/revocation/recovery winner.
+Canonical waiver/abandonment records bind current policy, legal-hold,
 compliance/legal approval and evidence-floor receipts.
 Activation atomically creates bounded
 Pending or explicit NoHistory/NotRequested; absence is invalid and cleanup
@@ -1623,7 +1634,8 @@ outbox, live coordinator state/exclusion, inert terminal-history archive,
 identity-conflict indexes, active coordinator generation/fence, terminal-history
 archive head/disposition/budget/ManualRecoveryPending descriptors/recovery
 authorization/revocation inbox/sequence/tombstone/cumulative and successor
-budgets/attempt/result/waiver-or-abandonment record/checkpoint,
+budgets/platform-hard-maximum/no-amendment rule/action-tagged request and result/
+six-state winner results/attempt/waiver-or-abandonment record/checkpoint,
 coordinator-bootstrap stable identity/
 lifecycle/begin-handoff-cancel authorizations and pre-admission tombstones/
 shared action-revocation inbox/sequence/target lifetime/result/budget/checkpoint/
@@ -1638,7 +1650,8 @@ state, resume a source job, promote inert history, roll back a bootstrap
 handoff, permit predecessor-started work to commit after handoff, make archive
 failure alter activation, infer bootstrap revocation from remote emission, lose
 a Pending or ManualRecoveryPending obligation, infer recovery revocation from
-remote emission, reset cumulative recovery counters, let RetryAppend abandon,
+remote emission, reset or increase cumulative recovery counters, convert an
+expiry winner, admit mixed/noncanonical recovery action fields, let RetryAppend abandon,
 substitute the recovery budget/policy/hold epoch, forge waiver/abandonment,
 treat absence as NoHistory/NotRequested, clean before terminal checkpoint, or
 replace the selected local transaction with a

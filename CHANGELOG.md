@@ -8,6 +8,16 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Closed the remaining history-recovery protocol ambiguities. Recovery
+  authorizations and results now use canonical action-tagged unions; the
+  authorization row has a total Absent/RevokedBeforeAdmission/Issued/Consumed/
+  ExpiredUnused/RevokedUnused transition table and typed admission/expiry
+  results; and the revocation wire type explicitly binds signer, key epoch,
+  authentication profile and trusted-time fields.
+- Prohibited history-recovery lineage-budget amendments through `1.0.0`.
+  Initial cumulative ceilings must fit a versioned platform hard maximum, and
+  no policy, successor grant, backend migration, restore or rollback can create
+  capacity or reduce consumed counters.
 - Closed history-recovery action escalation: RetryAppend now reaches only
   Appended or ManualRecoveryPending, successor exhaustion has a typed result,
   and Waive/Abandon require fresh matching authority and canonical custody

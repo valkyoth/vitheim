@@ -41,6 +41,9 @@ for requirement in \
     'RetryAppend authority can never create either waiver or abandonment terminal' \
     'requires a fresh Abandon authorization' \
     'use only remaining lineage capacity' \
+    'No lineage-budget amendment or increase operation is supported through `1.0.0`' \
+    'Returns the expiry result without converting expiry to revocation' \
+    'unknown action discriminants' \
     'An active legal hold categorically rejects Waive or Abandon' \
     'Remote emission has no effect'
 do
@@ -92,18 +95,26 @@ for symbol in \
     AppendMigrationImportRegistryHistory \
     MigrationImportRegistryHistoryAppendResultV1 \
     MigrationImportRegistryHistoryRecoveryAuthorizationV1 \
+    MigrationImportRegistryHistoryRecoveryActionV1 \
+    MigrationImportRegistryHistoryRecoveryAuthorizationStateV1 \
     AdmitMigrationImportRegistryHistoryRecoveryAuthorization \
+    MigrationImportRegistryHistoryRecoveryAuthorizationAdmissionResultV1 \
+    ExpireMigrationImportRegistryHistoryRecoveryAuthorization \
+    MigrationImportRegistryHistoryRecoveryAuthorizationExpiryResultV1 \
+    MigrationImportRegistryHistoryRecoveryAuthorizationConflict \
     MigrationImportRegistryHistoryRecoveryAuthorizationRevocationIntentV1 \
     MigrationImportRegistryHistoryRecoveryAuthorizationRevocationSequenceKeyV1 \
     ApplyMigrationImportRegistryHistoryRecoveryAuthorizationRevocation \
     MigrationImportRegistryHistoryRecoveryAuthorizationRevocationResultV1 \
     MigrationImportRegistryHistoryRecoveryAuthorizationRevocationConflict \
     MigrationImportRegistryHistoryRecoveryLineageBudgetV1 \
+    MigrationImportRegistryHistoryRecoveryPlatformHardMaximumV1 \
     MigrationImportRegistryHistorySuccessorBudgetExhausted \
     MigrationImportRegistryHistoryWaiverRecordV1 \
     MigrationImportRegistryHistoryAbandonmentRecordV1 \
     ResolveMigrationImportRegistryHistoryRecovery \
     MigrationImportRegistryHistoryRecoveryResultV1 \
+    MigrationImportRegistryHistoryRecoveryResultPayloadV1 \
     MigrationImportRegistryHistoryRecoveryConflict
 do
     cp docs/LAW_SEMANTIC_REALIZATIONS.md "$tmp_dir/realizations"

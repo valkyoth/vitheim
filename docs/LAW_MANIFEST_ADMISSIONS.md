@@ -47,8 +47,11 @@ atomically creates a bounded Pending or explicit NoHistory/NotRequested history
 obligation. Append is authenticated and bounded, and cleanup waits for its
 terminal checkpoint. Exhaustion remains ManualRecoveryPending until independent
 recovery authority performs its exact action. RetryAppend cannot abandon,
-cumulative lineage counters cannot reset, recovery revocation is locally
-linearized, and Waive/Abandon require distinct custody records plus current
+cumulative lineage counters cannot reset or increase and initial ceilings fit
+the platform hard maximum. Recovery request/results are closed action-tagged
+unions; the total six-state row returns canonical admission/expiry/revocation/
+recovery winners, and authenticated recovery revocation is locally linearized.
+Waive/Abandon require distinct custody records plus current
 policy/legal-hold/compliance authority. These protocols are part of every admitted VIT-LAW-009
 semantic realization, not optional registry behavior.
 

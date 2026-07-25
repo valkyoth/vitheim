@@ -55,7 +55,11 @@ after activation, but activation atomically creates Pending, NoHistory or
 NotRequested. Exhaustion retains ManualRecoveryPending until an independently
 authorized exact action acts. RetryAppend reaches Appended or pending only and
 typed successor exhaustion never abandons; cumulative lineage counters span
-every grant. Recovery revocation is destination-local. Waive/Abandon alone
+every grant, fit a platform hard maximum and have no increase path through
+`1.0.0`. Recovery request/results are closed action-tagged unions with
+canonical absence; the total six-state row returns typed admission, expiry,
+revocation or recovery winners without converting expiry. Recovery revocation
+is destination-local and binds explicit signer/key/authentication/time fields. Waive/Abandon alone
 commit canonical custody records after current policy/legal-hold/compliance
 recheck; cleanup waits for the terminal obligation checkpoint. Failure,
 collision or recovery never rolls activation back or makes its result
@@ -924,8 +928,9 @@ exact-target sequence/target lifetime/tombstone/result/outbox, live coordinator
 exclusion, inert history archive, identity conflicts, coordinator-bootstrap
 checkpoint/handoff, shared exact-action revocation inbox/sequence/result,
 history ManualRecoveryPending descriptors/recovery authority and revocation/
-cumulative-lineage and successor budgets/retry-exhaustion result/custody
-records/attempt/result and cleanup linkage. A new coordinator may resume
+cumulative-lineage and successor budgets/platform hard maximum/no-amendment
+rule/action-tagged request and result/six-state winner results/retry-exhaustion
+result/custody records/attempt/result and cleanup linkage. A new coordinator may resume
 completeness work under a higher job fence but cannot activate stale receipts.
 Failover after preparation or an unknown activation response re-reads the one
 local transaction result; it never exposes a partial owner set or replaces the
@@ -1255,8 +1260,9 @@ RevokedBeforeAdmission and RevokedUnused tombstones, target-scoped revocation
 sequence/lifetime, live coordinator exclusion, inert history archive, identity
 conflicts, bootstrap checkpoint/handoff/shared revocation inbox/sequence/result,
 history ManualRecoveryPending/recovery authority/revocation/cumulative and
-successor budgets/retry-exhaustion result/policy-hold receipts/custody records/
-result/checkpoint, activation barrier sequence/
+successor budgets/platform-hard-maximum/no-amendment rule/action-tagged
+request-result/six-state winner results/retry-exhaustion result/policy-hold
+receipts/custody records/result/checkpoint, activation barrier sequence/
 predecessor/result and authorization;
 the active
 catalog ID/epoch,
@@ -1514,7 +1520,8 @@ manifest with coordinator/contributor roles, dormant-domain-generation/receipt
 set, authorization admission/pre-admission revocation, exact-target sequence,
 live-coordinator exclusion, source-job/archive/collision/bootstrap rules,
 shared bootstrap revocation apply/sequence rules, history recovery authority/
-revocation/action-matrix/cumulative-budget/legal-hold/custody-record rules,
+revocation/total-state-table/action-tagged-codec/action-matrix/platform-capped
+no-increase cumulative-budget/legal-hold/custody-record rules,
 co-located activation barrier and cleanup-
 versus-authority separation,
 starvation bounds,
@@ -1716,7 +1723,8 @@ dormant-generation non-authority, coordinator/contributor classification,
 authorization admission and RevokedBeforeAdmission semantics, scoped sequence/
 lifetime, live coordinator exclusion, inert archive/collision/bootstrap,
 shared exact-action bootstrap revocation and retained ManualRecoveryPending
-resolution, fixed activation lock order, all-domain-owner atomicity, response-loss
+resolution with closed request/result variants, total authorization state table
+and immutable platform-capped lineage, fixed activation lock order, all-domain-owner atomicity, response-loss
 idempotency and cleanup-separation assurance report, and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
@@ -1802,7 +1810,8 @@ candidate/tombstone, owner-manifest, dormant-generation, preparation-receipt,
 authorization-admission/RevokedBeforeAdmission/target-sequence/lifetime,
 live-coordinator exclusion, inert-history/identity-conflict/bootstrap/shared-
 revocation-inbox-and-sequence, ManualRecoveryPending/recovery-authorization/
-successor-budget/recovery-result/terminal-evidence,
+action-tagged request-result/six-state winner/successor-budget/platform-hard-
+maximum/no-amendment rule/recovery-result/terminal-evidence,
 activation-barrier sequence/predecessor/result/authorization and cleanup-link
 compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
@@ -1979,7 +1988,10 @@ self-import; attempt inert-history promotion and coordinator-bootstrap
 rollback, claim remote revocation effect, suppress one bootstrap action with
 another action's sequence, exhaust history append into ManualRecoveryPending,
 make RetryAppend abandon, reset cumulative counters through fresh grants,
-reorder recovery revocation, substitute retention/classification/legal-hold
+try to increase ceilings through policy/profile/backend/restore, mix action
+payload fields, use unknown/noncanonical discriminants or options, convert an
+expiry winner into revocation, omit/substitute revocation signer/key/profile/
+time fields, reorder recovery revocation, substitute retention/classification/legal-hold
 epochs, forge compliance/legal approval or lower custody evidence floors,
 substitute successor budgets, forge waiver/abandonment or clean retained
 descriptors; leave one domain owner unprepared/rejecting; race cleanup and
@@ -2039,6 +2051,8 @@ admission, RevokedBeforeAdmission, exact-target sequence/lifetime, live
 coordinator exclusion, inert archive/identity conflicts and coordinator
 bootstrap handoff/shared revocation state, plus history ManualRecoveryPending/
 recovery authority/revocation/cumulative and successor budgets/retry-exhaustion
-result/policy-hold receipts/custody records/result/checkpoint. Exit criteria:
+result/platform-hard-maximum/no-amendment rule/action-tagged request-result/
+six-state winner results/policy-hold receipts/custody records/result/checkpoint.
+Exit criteria:
 no known blocking gap remains.
 `v0.150.0 implementation stop reached. Run pentest for this exact commit.`

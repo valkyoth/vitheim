@@ -581,7 +581,12 @@ restore, failover, and release evidence.
    independent recovery authority permits its exact action. RetryAppend cannot
    waive or abandon; successor exhaustion stays pending with typed evidence and
    a cumulative lineage budget prevents reset. Recovery revocation is
-   destination-local. Waive/Abandon require separate current-policy/legal-hold/
+   destination-local. The initial cumulative ceiling is bounded by the
+   platform hard maximum and has no amendment/increase path through `1.0.0`.
+   Recovery request/result payloads are closed action-tagged unions; fields for
+   other actions must be absent. Admission, expiry, revocation and consumption
+   share a total six-state row with canonical winner results, including expiry
+   remaining expiry when it wins. Waive/Abandon require separate current-policy/legal-hold/
    compliance authority and canonical custody records; only their true terminal
    can be checkpointed and cleaned. Typed identity conflicts fail closed.
    VIT-INV-062 schema succession is a separate stable-ID,

@@ -163,6 +163,11 @@ VIT-ENF-062-F admits only
 `ApplyMigrationImportCoordinatorBootstrapAuthorizationRevocation` for bootstrap
 revocation effect and only
 `ResolveMigrationImportRegistryHistoryRecovery` for ManualRecoveryPending exit.
+That same owner stores the closed action-tagged authorization/result payloads,
+the complete six-state authorization row and canonical admission/expiry/
+revocation/recovery winner results. It enforces the versioned platform hard
+maximum and immutable obligation ceiling; no amendment or increase exists
+through `1.0.0`.
 The first operation atomically commits the exact-action inbox, sequence,
 tombstone, required bootstrap terminalization and result. The second preserves
 descriptors/reservations and enforces RetryAppend→Appended/pending,

@@ -639,8 +639,15 @@ ManualRecoveryPending: retained descriptors and reservations survive until an
 independently admitted exact action acts. RetryAppend reaches only Appended or
 ManualRecoveryPending; successor exhaustion stores its typed result and cannot
 abandon. One immutable cumulative lineage budget spans initial and successor
-work/time/attempt/byte/count counters. Recovery revocation is effective only in
-the destination same-row inbox/tombstone/result commit. Waive/Abandon alone
+work/time/attempt/byte/count counters. Its initial ceilings fit the versioned
+platform hard maximum, and no amendment/increase operation exists through
+`1.0.0`. Recovery authorizations and results use closed action-tagged payloads
+with canonical absence of other-action fields. Admission, expiry, revocation
+and consumption follow the total six-state same-row table and return the
+canonical typed winner; expiry cannot be converted to revocation. Recovery
+revocation is effective only in the destination same-row inbox/tombstone/result
+commit and its canonical wire material binds signer identity, key epoch,
+authentication profile and complete trusted-time fields. Waive/Abandon alone
 commit their canonical custody records after current retention/classification/
 legal-hold and independent compliance/legal approval rechecks. Exact retries
 return the canonical result and changed material conflicts. VIT-INV-062 schema succession uses a stable bootstrap identity
@@ -669,8 +676,10 @@ collisions, destination-targeting/cyclic self-import, inert-history promotion,
 history append collision/failure, stale work and old binaries crossing handoff,
 competing successors, bootstrap authorization replay/revocation/cancellation/
 cross-action sequence suppression, remote-effect inference, recovery-budget
-substitution, RetryAppend-to-Abandon escalation, cumulative-counter reset,
-recovery-revocation reorder, stale policy/hold receipt, forged compliance/legal
+substitution, RetryAppend-to-Abandon escalation, cumulative-counter reset or
+ceiling increase, unknown/mixed/noncanonical action payloads, changed-action
+identity reuse, expiry-to-revocation conversion, incomplete revocation
+authentication/time material, recovery-revocation reorder, stale policy/hold receipt, forged compliance/legal
 approval, custody-floor weakening, premature ManualRecoveryPending cleanup,
 waiver/abandonment forgery, rollback/restore/failover, registry-forged receipt, importer owner
 omission, key/sequence/continuity rollback and response loss after any terminal

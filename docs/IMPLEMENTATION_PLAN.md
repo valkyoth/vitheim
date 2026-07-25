@@ -260,7 +260,15 @@ and its descriptors. RetryAppend reaches only Appended or
 ManualRecoveryPending; successor exhaustion produces typed evidence, not
 abandonment. Every fresh action requires independent authority, while one
 cumulative obligation-lineage budget prevents work/time/attempt/byte/successor
-counter reset. Recovery revocation takes effect only in its destination row.
+counter reset. Its initial ceilings must fit the platform hard maximum and
+cannot be amended or increased through `1.0.0`. Recovery authority and result
+use closed RetryAppend/Waive/Abandon tagged unions with canonical absence of
+other-action fields. Admission, expiry, revocation and consumption share one
+total six-state row; typed admission/expiry/revocation/recovery results make
+every exact retry and winner reproducible, with expiry never converted into
+revocation. Recovery revocation takes effect only in its destination row and
+binds explicit signer, key-epoch, authentication-profile and trusted-time
+fields.
 Waiver/abandonment terminals require their own canonical custody records,
 current retention/classification/legal-hold proof and independent compliance/
 legal approval before a checkpoint. A topology requiring a

@@ -243,7 +243,12 @@ audit decision.
   nonterminal ManualRecoveryPending with descriptors/reservations retained
   until exact recovery authority acts; RetryAppend can reach only Appended or
   ManualRecoveryPending, cumulative lineage limits never reset, recovery
-  revocation is destination-local, and Waive/Abandon require distinct current
+  ceilings fit a platform hard maximum and cannot be increased through
+  `1.0.0`, recovery authorization/result payloads are closed action-tagged
+  unions, the shared six-state lifecycle returns the canonical admission,
+  expiry, revocation or recovery winner without state conversion, recovery
+  revocation is destination-local with explicit signer/key/time binding, and
+  Waive/Abandon require distinct current
   policy/legal-hold/compliance authority plus canonical custody records;
   identity collisions fail closed; and coordinator-schema
   migration requires a separate stable-ID, independently authorized, budgeted
