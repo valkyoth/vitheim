@@ -40,10 +40,14 @@ activation. Remote emission alone has no effect.
 Every mutation also binds the current `MigrationImportCoordinatorGenerationV1`
 and refuses a stale or omitted fence. Bootstrap begin, fresh checkpoint/receipt-
 bound handoff and cancellation are distinct pre-admission-revocable actions
-with exact results; authority loss cannot strand the drain. Activation
+with exact results; their one action-discriminated revocation protocol has a
+target-scoped sequence/lifetime and destination-only atomic effect, so
+authority loss cannot strand the drain. Activation
 atomically creates a bounded Pending or explicit NoHistory/NotRequested history
 obligation. Append is authenticated and bounded, and cleanup waits for its
-terminal checkpoint. These protocols are part of every admitted VIT-LAW-009
+terminal checkpoint. Exhaustion remains ManualRecoveryPending until independent
+recovery authority completes one bounded successor-budget append or an
+evidenced waiver/abandonment. These protocols are part of every admitted VIT-LAW-009
 semantic realization, not optional registry behavior.
 
 Database access alone must never authorize either profile. Startup, adapter

@@ -308,7 +308,18 @@ bound handoff and cancellation; no grant is reusable for another action. Each
 uses destination-local Absent/RevokedBeforeAdmission/Issued/Consumed/
 ExpiredUnused/RevokedUnused same-row ordering. Begin is consumed when the drain
 installs; final handoff consumes its fresh grant; cancellation consumes its own
-grant. Revocation/expiry before begin or handoff consumption atomically
+grant. Freeze one
+`MigrationImportCoordinatorBootstrapAuthorizationRevocationIntentV1`
+authentication domain with action discrimination, exact authorization digest,
+issuer continuity, target-covering lifetime, nonce/idempotency and a
+non-wrapping sequence scoped per bootstrap/action/authorization. Its
+destination apply authenticates the inbox and atomically commits the tombstone,
+required bootstrap terminalization and result; remote emission has no effect.
+Freeze `MigrationImportRegistryHistoryRecoveryAuthorizationV1` independently
+from activation/bootstrap authority, binding retained descriptors, exhausted
+budget/result, requested action and bounded successor profile, archive head,
+SoD, trusted time, key continuity, nonce and idempotency.
+Revocation/expiry before begin or handoff consumption atomically
 terminalizes safely, clears any drain, preserves evidence and advances the
 predecessor fence. Replay, competing-successor substitution, cancellation-
 authority substitution, stale generation or changed canonical material returns
@@ -398,12 +409,19 @@ staging. Terminal history binds stable identity/idempotency, authenticated
 provenance and scope, original terminal result, export/import manifests,
 archive namespace, retention/classification, sequence and predecessor; append
 starts only after activation and has a bounded work/row/byte budget plus
-protected cleanup reserve. Pending/NoHistory/NotRequested/Appended/
-ConflictFenced/RejectedFenced/ManualRecoveryRequired archive disposition and
-canonical result/conflict remain
-separate from the irreversible activation result. Activation atomically creates
-bounded Pending or explicit NoHistory/NotRequested; absence is invalid and
-cleanup waits for the terminal append checkpoint. Coordinator-schema succession
+protected cleanup reserve. Pending/ManualRecoveryPending/
+NoHistory/NotRequested/Appended/ConflictFenced/RejectedFenced/WaivedFenced/
+AbandonedWithEvidence archive disposition and canonical result/conflict remain
+separate from the irreversible activation result. Budget exhaustion retains
+bounded descriptors and reservations in nonterminal ManualRecoveryPending.
+An independently admitted
+`MigrationImportRegistryHistoryRecoveryAuthorizationV1` permits one exact
+RetryAppend, Waive or Abandon action;
+`ResolveMigrationImportRegistryHistoryRecovery` either appends under one
+predecessor-linked bounded successor budget or reaches an evidenced terminal,
+with canonical retry result/conflict. Activation atomically creates bounded
+Pending or explicit NoHistory/NotRequested; absence is invalid and cleanup
+waits for the terminal append checkpoint. Coordinator-schema succession
 requires stable bootstrap identity, closed lifecycle, separate pre-admission-
 revocable begin/handoff/cancel authorizations, bounded work/reservations,
 predecessor-owned typed checkpoint, owner-authenticated dormant-successor
@@ -418,6 +436,14 @@ locking and
 expected-version CAS. Storage must prove atomic all-domain-owner activation with the
 authorization consumption/tombstone and job result, or refuse before
 migration/import reads or stages authority.
+All three bootstrap grants use the one action-discriminated
+`MigrationImportCoordinatorBootstrapAuthorizationRevocationIntentV1` protocol.
+Freeze its exact-authorization/action sequence key, target-covering lifetime,
+issuer continuity, destination inbox/apply transaction, permanent tombstone,
+bootstrap terminalization, result/conflict and restore semantics. Remote
+emission is never effect, and no adapter may implement grant-specific
+revocation outside
+`ApplyMigrationImportCoordinatorBootstrapAuthorizationRevocation`.
 Cross-database, cross-region and external-selector activation are unsupported;
 admitting one later requires a separately owned invariant/composite law and
 reviewed milestone because the selector would become authority.
@@ -1210,6 +1236,9 @@ self-approve. Freeze a distinct authorization-admission service identity and
 the predecessor/successor coordinator-bootstrap requestor, approver and
 activator separation, plus an independent bootstrap-authorization issuer and
 distinct begin, handoff and cancellation authority/admission identities.
+Freeze separate history-recovery requestor, approver, operator and issuer/
+admitter identities; no activation, bootstrap, archive worker or affected
+domain owner can unilaterally enlarge the successor budget, waive or abandon.
 Neither coordinator, a migration actor nor an
 affected domain owner may issue, admit, approve, activate or cancel its own
 handoff; every role and validity recheck is bound to the exact active
@@ -1221,7 +1250,9 @@ authenticated `MigrationImportActivationRevocationIntentV1` commits either
 RevokedBeforeAdmission or Issued-to-RevokedUnused under the exact-target
 sequence key. Remote emission or transport acknowledgement alone does not
 revoke; delayed authorization joins an existing tombstone and a late intent
-after Consumed returns the activation result without reversal.
+after Consumed returns the activation result without reversal. The same
+remote-effect rule applies to the action-discriminated bootstrap revocation
+inbox, with sequence scope including the exact bootstrap action/grant.
 Verification: protocol conformance, mix-up/replay/fixation/recovery, false
 sender constraint, proof/token substitution, bearer privilege escalation,
 first-use stolen bearer behavior, effect dispatch after credential/session/
@@ -1440,6 +1471,15 @@ deletion settles those remaining original legs; checkpoint occupancy stays
 charged to the checkpoint/archive lifecycle. Privacy deletion cannot collapse
 these legs or remove their stable settlement record before the replay-retention
 contract permits it.
+Freeze history-recovery retention independently from activation and ordinary
+staging. ManualRecoveryPending retains the bounded authenticated descriptors,
+exhausted/successor budget lineage, reservations, authorization/attempt/result
+and archive-head predecessor needed to resume or prove disposition. WaivedFenced
+retains its authorization and minimum policy evidence; AbandonedWithEvidence
+retains the classification/legal-hold-required descriptors and terminal result.
+Erasure may minimize payload only under the precedence matrix and cannot turn
+either state into absent, archived, retryable under a new identity or eligible
+for cleanup before the terminal checkpoint.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
 evidence custody, false equivalence between local proof/provider attestation/
@@ -1566,9 +1606,11 @@ time/key/continuity state, authorization admission, RevokedBeforeAdmission,
 revocation intent/inbox/exact-target sequence/target lifetime/tombstone/result/
 outbox, live coordinator state/exclusion, inert terminal-history archive,
 identity-conflict indexes, active coordinator generation/fence, terminal-history
-archive head/disposition/budget/result, coordinator-bootstrap stable identity/
+archive head/disposition/budget/ManualRecoveryPending descriptors/recovery
+authorization/successor budget/attempt/result/checkpoint, coordinator-bootstrap stable identity/
 lifecycle/begin-handoff-cancel authorizations and pre-admission tombstones/
-budget/checkpoint/successor receipt/handoff/per-action results,
+shared action-revocation inbox/sequence/target lifetime/result/budget/checkpoint/
+successor receipt/handoff/per-action results,
 co-location proof and cleanup linkage as one
 VIT-INV-062/VIT-LAW-009 HA/restore unit. Failover cannot turn prepared into
 active, replay a terminal candidate or authorization, accept a partial or
@@ -1577,8 +1619,10 @@ receipt, admit delayed authority over a pre-admission tombstone, let another
 authorization's sequence suppress revocation, import/merge source coordinator
 state, resume a source job, promote inert history, roll back a bootstrap
 handoff, permit predecessor-started work to commit after handoff, make archive
-failure alter activation, lose a Pending obligation, treat absence as
-NoHistory/NotRequested, clean before terminal checkpoint, or replace the selected local transaction with a
+failure alter activation, infer bootstrap revocation from remote emission, lose
+a Pending or ManualRecoveryPending obligation, substitute the recovery budget,
+forge waiver/abandonment, treat absence as NoHistory/NotRequested, clean before
+terminal checkpoint, or replace the selected local transaction with a
 remote selector.
 Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane

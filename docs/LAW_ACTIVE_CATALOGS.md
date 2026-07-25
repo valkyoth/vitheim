@@ -63,10 +63,14 @@ Its bootstrap advances that value only through a stable-ID, independently
 authorized, budgeted closed lifecycle. Begin, handoff and cancellation have
 separate pre-admission-revocable grants/results; the handoff binds a typed
 checkpoint and owner-authenticated successor receipt, while authority loss
-clears the drain and advances the fence. Old binaries or predecessor
+clears the drain and advances the fence. One action-discriminated revocation
+protocol binds exact grant/action sequence and target lifetime and takes effect
+only in its destination transaction. Old binaries or predecessor
 transactions that omit the expected generation deny. Activation creates a
 bounded Pending/NoHistory/NotRequested obligation atomically; authenticated
-append advances the archive head and cleanup waits for terminal checkpoint.
+append advances the archive head. Exhaustion remains ManualRecoveryPending
+until independently authorized successor-budget append, evidenced waiver or
+evidenced abandonment; cleanup waits for a true terminal checkpoint.
 Archive failure never changes activation authority.
 
 The initial scope contract is exact rather than descriptive:

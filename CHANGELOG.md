@@ -8,6 +8,15 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Defined one typed, action-discriminated bootstrap-authorization revocation
+  delivery/apply protocol for begin, handoff and cancellation grants. It binds
+  the exact target and lifetime, isolates sequences per action, and takes
+  effect only when the destination transaction commits inbox, tombstone,
+  bootstrap outcome, result, audit and outbox.
+- Replaced terminal `ManualRecoveryRequired` archive exhaustion with retained
+  nonterminal `ManualRecoveryPending` and an independently authorized recovery
+  operation. One bounded successor-budget append, evidenced waiver or evidenced
+  abandonment must reach a true terminal checkpoint before cleanup.
 - Split coordinator bootstrap into independently admitted begin-drain, fresh
   handoff and cancellation actions with pre-admission revocation tombstones,
   safe drain release, typed checkpoint/successor receipt and exact retry

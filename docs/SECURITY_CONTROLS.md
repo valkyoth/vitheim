@@ -239,12 +239,20 @@ audit decision.
   sequence/idempotency, retention, bounded work and protected cleanup state;
   archive collision/failure has a separate durable disposition and never
   changes activation; cleanup waits for the terminal obligation checkpoint and
-  absence is never treated as NoHistory/NotRequested; identity collisions fail
+  absence is never treated as NoHistory/NotRequested; exhausted work remains
+  nonterminal ManualRecoveryPending with descriptors/reservations retained
+  until independent recovery authority installs one bounded successor append
+  or records an evidenced waiver/abandonment terminal; identity collisions fail
   closed; and coordinator-schema
   migration requires a separate stable-ID, independently authorized, budgeted
   closed lifecycle with pre-admission-revocable begin, fresh handoff and
   explicit cancellation grants, typed checkpoint/successor receipt, and atomic
   coordinator-generation/fence handoff with canonical per-action result/conflict;
+- begin, handoff and cancellation revocation share one action-discriminated
+  authenticated intent, exact-authorization/action sequence key and target-
+  covering lifetime; only its destination-local same-row apply transaction
+  commits inbox, tombstone, required bootstrap terminalization, result/audit/
+  outbox, while remote emission has no effect;
 - every VIT-INV-062 mutation locks and rechecks the active coordinator
   generation/fence first; a stale transaction or binary that omits the guard
   cannot commit or become ready after handoff;

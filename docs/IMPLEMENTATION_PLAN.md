@@ -246,13 +246,19 @@ candidate it coordinates. A pre-admission-revocable begin grant is consumed
 when the drain installs; a distinct fresh checkpoint/verification-bound handoff
 grant authorizes commit; and a third action-bound grant authorizes canonical
 idempotent cancellation. Authority loss releases the drain and advances the
-fence instead of stranding the bootstrap. Every VIT-INV-062 mutation rechecks that generation
+fence instead of stranding the bootstrap. One action-discriminated revocation
+intent/apply protocol binds the exact grant/action, issuer continuity, target
+lifetime and target-scoped sequence; only its destination-local inbox/
+tombstone/bootstrap-result transaction has effect. Every VIT-INV-062 mutation rechecks that generation
 first, so old predecessor work cannot commit after handoff. History append has
 its own authenticated scope/provenance/manifests/terminal-result, sequence,
 idempotency, retention, bounded budget, cleanup reserve and durable disposition;
 its collision or failure cannot alter the activation result. The activation-
 atomic obligation and archive head make missing work distinguishable from
-NoHistory/NotRequested. A topology requiring a
+NoHistory/NotRequested. Exhaustion retains nonterminal ManualRecoveryPending
+and its descriptors until an independently authorized bounded successor-budget
+append, evidenced waiver or evidenced abandonment reaches a checkpointed
+terminal. A topology requiring a
 distributed transaction or unreviewed global activation selector is refused.
 Archive exact results or authenticated result references with
 request/lifecycle/scope/predecessor/key commitments, bounded proof work and a

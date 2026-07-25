@@ -2623,6 +2623,40 @@ Cancellation-authority loss leaves the already authorized begin/handoff path
 unchanged and permits only a fresh bounded cancellation grant; it cannot reset
 attempt or elapsed-time budgets.
 
+Authenticated bootstrap revocation is one sealed, action-discriminated delivery
+protocol, not three adapter-defined side effects.
+`MigrationImportCoordinatorBootstrapAuthorizationRevocationIntentV1` binds the
+bootstrap/request digest, begin/handoff/cancellation action kind, exact
+authorization identity and canonical digest, predecessor and successor
+generations/fences/schema/code/semantic/law identities, issuer identity and
+continuity, signer/key/authentication profile, target authorization
+not-before/expiry and maximum uncertainty, reason, non-wrapping sequence, nonce
+and idempotency. Its
+`MigrationImportCoordinatorBootstrapAuthorizationRevocationSequenceKeyV1` is
+scoped to issuer identity/continuity, tenant/deployment, bootstrap ID, action
+kind and exact authorization identity/digest; activity against one grant cannot
+suppress revocation of another. The intent remains admissible for at least the
+complete target-authorization lifetime. Transport delay, receipt at a relay or
+remote outbox commit is never revocation.
+
+`ApplyMigrationImportCoordinatorBootstrapAuthorizationRevocation` first locks
+the active coordinator generation, then the bootstrap and exact action-
+authorization row. One destination-local transaction authenticates the intent
+and current issuer continuity, advances the target-scoped sequence, commits the
+inbox receipt and permanent tombstone, changes Absent to
+`RevokedBeforeAdmission` or Issued to `RevokedUnused`, terminalizes the
+bootstrap and clears its drain when the action semantics above require it, and
+stores `MigrationImportCoordinatorBootstrapAuthorizationRevocationResultV1`,
+audit and result outbox. Exact duplicate delivery returns that result. Changed
+bootstrap/action/authorization bytes, target lifetime, issuer continuity,
+sequence, nonce or idempotency returns
+`MigrationImportCoordinatorBootstrapAuthorizationRevocationConflict` without
+mutation. A valid late intent against a consumed grant returns the already
+committed begin/handoff/cancellation result without reversal. Admission,
+expiry, consumption and revocation therefore linearize on the same destination
+row, and restore must recover the inbox, sequence high-watermark, tombstone,
+bootstrap terminalization and result as one atomic outcome.
+
 `CancelMigrationImportCoordinatorBootstrap` locks active generation, bootstrap,
 cancellation authorization, drain/checkpoint/successor and budget rows; rechecks
 the exact nonterminal state; consumes the cancellation grant; clears the drain;
@@ -2881,20 +2915,23 @@ Race a predecessor job, authorization admission, revocation, activation,
 cleanup and archive transaction across handoff; old/mixed binaries, missing
 generation CAS, competing successors, changed-idempotency replay, bootstrap
 begin/handoff/cancellation authorization replay, revocation-before-admission,
-expiry before and after consumption at every lifecycle state, delayed
-admission over tombstone, drain cancellation, cancellation-versus-handoff,
-lost cancellation response, budget exhaustion, checkpoint/verification-receipt
-omission or substitution, Recovery cleanup after authority loss, response loss,
-failover, restore and rollback must yield one fenced coordinator generation
-and canonical result.
+remote emission without destination apply, per-action sequence isolation,
+changed-intent conflict, expiry before and after consumption at every lifecycle
+state, delayed admission over tombstone, drain cancellation,
+cancellation-versus-handoff, lost cancellation response, budget exhaustion,
+checkpoint/verification-receipt omission or substitution, Recovery cleanup
+after authority loss, response loss, failover, restore and rollback must yield
+one fenced coordinator generation and canonical result.
 
 This milestone also registers the VIT-LAW-009
 `MigrationImportRegistryHistoryV1`/`AppendMigrationImportRegistryHistory`
 semantic contract before cross-backend interchange consumes it at `0.30.0`.
 Local conformance proves authenticated scope/provenance/original terminal
 result/manifests, archive sequence/predecessor/idempotency, bounded work and
-protected cleanup, canonical disposition/result/conflict and the non-negotiable
-rule that post-activation archive failure cannot alter activation.
+protected cleanup, nonterminal manual recovery with independently authorized
+successor budget or evidenced waiver/abandonment, canonical disposition/result/
+conflict and the non-negotiable rule that post-activation archive failure
+cannot alter activation.
 
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
 `v0.29.0 implementation stop reached. Run pentest for this exact commit.`
@@ -3011,8 +3048,9 @@ idempotency→archive-budget→audit/result/outbox locking. Canonical
 namespace, non-wrapping sequence, predecessor/root/entry digest, key/profile,
 publication identity and covered obligation/result. The
 `MigrationImportRegistryHistoryAppendDispositionV1` is closed to nonterminal
-`Pending` and terminal `NoHistory`, `NotRequested`, `Appended`,
-`ConflictFenced`, `RejectedFenced` or `ManualRecoveryRequired`. One transaction
+`Pending` and `ManualRecoveryPending`, and terminal `NoHistory`,
+`NotRequested`, `Appended`, `ConflictFenced`, `RejectedFenced`,
+`WaivedFenced` or `AbandonedWithEvidence`. One transaction
 authenticates provenance, precharges bounded
 `MigrationImportRegistryHistoryWorkBudgetV1` rows/bytes/decode/hash/signature/
 proof/storage work, CAS-advances the archive head and commits
@@ -3020,7 +3058,36 @@ proof/storage work, CAS-advances the archive head and commits
 changed identity, bytes, provenance, namespace or idempotency returns
 `MigrationImportRegistryHistoryAppendConflict`. Retryable failure remains
 Pending with monotonic attempts; exhaustion uses protected cleanup capacity and
-becomes ManualRecoveryRequired.
+becomes `ManualRecoveryPending`. That transition persists the exhausted budget,
+failure/result evidence, bounded source descriptors and reservations; it does
+not create a terminal checkpoint and authorizes no deletion.
+
+`MigrationImportRegistryHistoryRecoveryAuthorizationV1` is an independently
+issued, single-use authorization for exactly one `RetryAppend`, `Waive` or
+`Abandon` action. It binds the obligation and descriptor digests, exhausted
+budget lineage/result, current archive-head identity/sequence, source and
+destination scope, requested successor budget profile and strict ceilings,
+reason/change/incident authority, requestor/approver/operator/quorum/SoD,
+trusted-time/profile/continuity/key fields, nonce and idempotency.
+`AdmitMigrationImportRegistryHistoryRecoveryAuthorization` shares its row with
+revocation and expiry and closes it over `RevokedBeforeAdmission`, `Issued`,
+`Consumed`, `ExpiredUnused` and `RevokedUnused`.
+
+`ResolveMigrationImportRegistryHistoryRecovery` locks
+active-coordinator-generation→history-obligation→recovery-authorization→archive-head→history/
+idempotency→successor-archive-budget→audit/result/outbox. It reauthenticates the
+retained descriptors and exact exhausted predecessor, consumes the action grant
+and either appends under the bounded predecessor-linked successor budget or
+ends as `WaivedFenced` or `AbandonedWithEvidence`. Retryable worker interruption
+retains `ManualRecoveryPending`, the consumed recovery-attempt identity and
+monotonic successor counters; it resumes only that attempt and cannot install a
+second budget. Exhaustion of the authorized successor ends
+`AbandonedWithEvidence`. `MigrationImportRegistryHistoryRecoveryResultV1`
+records the chosen action, predecessor/successor budgets, archive-head outcome,
+retention decision, evidence digest, audit and outbox positions. Exact
+response-loss retry joins or returns that result; changed action, descriptor,
+budget lineage, authority or idempotency returns
+`MigrationImportRegistryHistoryRecoveryConflict` without mutation.
 
 Every terminal obligation is sealed into
 `MigrationImportRegistryHistoryAppendCheckpointV1`, which binds its original
@@ -3029,7 +3096,14 @@ canonical absence, budget/cleanup settlement, audit/outbox positions and
 predecessor checkpoint. Candidate/history descriptors, staging reservations and
 related cleanup cannot be deleted or settled until this checkpoint commits.
 Crash after activation but before worker delivery therefore recovers Pending;
-NoHistory/NotRequested remain explicit; cleanup racing append fails closed.
+restore of `ManualRecoveryPending` must recover its retained descriptors,
+exhausted and successor budgets, authorization lifecycle, recovery result and
+archive-head predecessor before any worker or cleanup runs.
+NoHistory/NotRequested remain explicit; cleanup racing append or recovery fails
+closed. `WaivedFenced` retains the authenticated waiver and minimum policy
+evidence; `AbandonedWithEvidence` retains descriptors/results required by the
+classification and legal-retention policy. Neither terminal can be decoded as
+an archive entry or retried under a new identity.
 Archive failure or collision never rolls back, rewrites or makes ambiguous the
 already committed domain activation result; operators see activation success
 and its separate archive disposition.

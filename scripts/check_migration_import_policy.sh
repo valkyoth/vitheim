@@ -58,6 +58,11 @@ for symbol in \
     CancelMigrationImportCoordinatorBootstrap \
     MigrationImportCoordinatorBootstrapCancellationResultV1 \
     MigrationImportCoordinatorBootstrapCancellationConflict \
+    MigrationImportCoordinatorBootstrapAuthorizationRevocationIntentV1 \
+    MigrationImportCoordinatorBootstrapAuthorizationRevocationSequenceKeyV1 \
+    ApplyMigrationImportCoordinatorBootstrapAuthorizationRevocation \
+    MigrationImportCoordinatorBootstrapAuthorizationRevocationResultV1 \
+    MigrationImportCoordinatorBootstrapAuthorizationRevocationConflict \
     MigrationImportCoordinatorBootstrapCheckpointV1 \
     MigrationImportCoordinatorSuccessorVerificationReceiptV1 \
     MigrationImportCoordinatorBootstrapWorkBudgetV1 \
@@ -70,11 +75,19 @@ for symbol in \
     MigrationImportRegistryHistoryNotRequested \
     MigrationImportRegistryHistoryWorkBudgetV1 \
     MigrationImportRegistryHistoryAppendDispositionV1 \
+    MigrationImportRegistryHistoryManualRecoveryPending \
+    MigrationImportRegistryHistoryWaivedFenced \
+    MigrationImportRegistryHistoryAbandonedWithEvidence \
     AppendMigrationImportRegistryHistory \
-    MigrationImportRegistryHistoryAppendResultV1
+    MigrationImportRegistryHistoryAppendResultV1 \
+    MigrationImportRegistryHistoryRecoveryAuthorizationV1 \
+    AdmitMigrationImportRegistryHistoryRecoveryAuthorization \
+    ResolveMigrationImportRegistryHistoryRecovery \
+    MigrationImportRegistryHistoryRecoveryResultV1 \
+    MigrationImportRegistryHistoryRecoveryConflict
 do
     cp docs/LAW_SEMANTIC_REALIZATIONS.md "$tmp_dir/realizations"
-    sed -i "s/\`$symbol\`, //g" "$tmp_dir/realizations"
+    sed -i "s/$symbol/MUTATED_SYMBOL/g" "$tmp_dir/realizations"
     if scripts/check_law_semantic_realizations.sh \
         docs/LAW_GENERATIONS.md \
         "$tmp_dir/realizations" \
@@ -83,5 +96,15 @@ do
         fail "semantic gate accepts VIT-LAW-009 without $symbol"
     fi
 done
+
+if grep -Fq 'ManualRecoveryRequired' \
+    docs/LAW_SEMANTIC_REALIZATIONS.md \
+    docs/implementation/PHASE_C.md \
+    docs/implementation/OPTION_DECISIONS.md \
+    docs/implementation/PHASE_O.md \
+    docs/implementation/PRODUCTION_1_0.md
+then
+    fail "terminal ManualRecoveryRequired remains in an authoritative protocol"
+fi
 
 echo "migration/import policy passed"

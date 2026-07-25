@@ -42,15 +42,21 @@ independently admitted, pre-admission-revocable begin, fresh handoff and
 cancellation authorizations with separation of duties, bounded work/
 reservations/cleanup, canonical checkpoint and successor receipt, atomic
 generation/fence handoff, per-action result/conflict and exact response-loss
-recovery. Revocation/expiry at every state cannot strand a drain.
+recovery. Their shared action-discriminated revocation intent has one
+exact-authorization/action sequence lineage and target-covering lifetime, and
+only the destination apply transaction commits its inbox, tombstone, required
+bootstrap terminalization, result, audit and outbox. Revocation/expiry at every
+state cannot strand a drain.
 History evidence covers authenticated source/destination provenance and scope,
 original terminal result, export/import manifests, archival namespace,
 retention/classification, sequence/predecessor/idempotency, bounded append work,
 protected cleanup and durable disposition/result/conflict. Append begins only
 after activation, but activation atomically creates Pending, NoHistory or
-NotRequested and cleanup waits for the terminal obligation checkpoint; failure,
-collision or manual recovery never rolls activation back or makes its result
-ambiguous. RPC, HA, DR, soak, hardening, compatibility,
+NotRequested. Exhaustion retains ManualRecoveryPending until an independently
+authorized RetryAppend, Waive or Abandon resolution reaches Appended,
+WaivedFenced or AbandonedWithEvidence; cleanup waits for the terminal obligation
+checkpoint. Failure, collision or recovery never rolls activation back or makes
+its result ambiguous. RPC, HA, DR, soak, hardening, compatibility,
 external pentest and RC evidence must exercise stale predecessor transactions,
 guard-unaware binaries, competing successors, bootstrap replay/revocation/
 cancellation/rollback/restore/failover and archive failure at every boundary.
@@ -913,7 +919,9 @@ authorization bytes/lifecycle/consumption tombstone/time/key/continuity
 ratchets, explicit admission/RevokedBeforeAdmission, revocation intent/inbox/
 exact-target sequence/target lifetime/tombstone/result/outbox, live coordinator
 exclusion, inert history archive, identity conflicts, coordinator-bootstrap
-checkpoint/handoff and cleanup linkage. A new coordinator may resume
+checkpoint/handoff, shared exact-action revocation inbox/sequence/result,
+history ManualRecoveryPending descriptors/recovery authority/successor budget/
+attempt/result and cleanup linkage. A new coordinator may resume
 completeness work under a higher job fence but cannot activate stale receipts.
 Failover after preparation or an unknown activation response re-reads the one
 local transaction result; it never exposes a partial owner set or replaces the
@@ -1241,7 +1249,9 @@ tombstone, ordered coordinator/domain-contributor manifest, dormant domain
 generations, preparation receipts, explicit authorization admission,
 RevokedBeforeAdmission and RevokedUnused tombstones, target-scoped revocation
 sequence/lifetime, live coordinator exclusion, inert history archive, identity
-conflicts, bootstrap checkpoint/handoff, activation barrier sequence/
+conflicts, bootstrap checkpoint/handoff/shared revocation inbox/sequence/result,
+history ManualRecoveryPending/recovery authority/successor budget/result/
+checkpoint, activation barrier sequence/
 predecessor/result and authorization;
 the active
 catalog ID/epoch,
@@ -1498,7 +1508,9 @@ Recovery cleanup capacity, plus the closed job lifecycle, candidate/owner
 manifest with coordinator/contributor roles, dormant-domain-generation/receipt
 set, authorization admission/pre-admission revocation, exact-target sequence,
 live-coordinator exclusion, source-job/archive/collision/bootstrap rules,
-co-located activation barrier and cleanup-versus-authority separation,
+shared bootstrap revocation apply/sequence rules, history recovery authority/
+successor-budget/retention rules, co-located activation barrier and cleanup-
+versus-authority separation,
 starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
@@ -1697,7 +1709,8 @@ report; closed lifecycle, canonical candidate/manifest/receipt/barrier codecs,
 dormant-generation non-authority, coordinator/contributor classification,
 authorization admission and RevokedBeforeAdmission semantics, scoped sequence/
 lifetime, live coordinator exclusion, inert archive/collision/bootstrap,
-fixed activation lock order, all-domain-owner atomicity, response-loss
+shared exact-action bootstrap revocation and retained ManualRecoveryPending
+resolution, fixed activation lock order, all-domain-owner atomicity, response-loss
 idempotency and cleanup-separation assurance report, and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
@@ -1781,7 +1794,9 @@ reservation, cursor/checkpoint, terminal-result, cleanup/quarantine and
 authorized-successor compatibility, plus job-phase/terminal-disposition,
 candidate/tombstone, owner-manifest, dormant-generation, preparation-receipt,
 authorization-admission/RevokedBeforeAdmission/target-sequence/lifetime,
-live-coordinator exclusion, inert-history/identity-conflict/bootstrap,
+live-coordinator exclusion, inert-history/identity-conflict/bootstrap/shared-
+revocation-inbox-and-sequence, ManualRecoveryPending/recovery-authorization/
+successor-budget/recovery-result/terminal-evidence,
 activation-barrier sequence/predecessor/result/authorization and cleanup-link
 compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
@@ -1955,7 +1970,10 @@ authorization through expiry, reorder unrelated target sequences, and race
 admission/revocation/expiry/activation; present active and terminal source
 VIT-INV-062 jobs, stable-ID collisions, a destination-targeting job and cyclic
 self-import; attempt inert-history promotion and coordinator-bootstrap
-rollback; leave one domain owner unprepared/rejecting; race cleanup and
+rollback, claim remote revocation effect, suppress one bootstrap action with
+another action's sequence, exhaust history append into ManualRecoveryPending,
+substitute its successor budget, forge waiver/abandonment or clean retained
+descriptors; leave one domain owner unprepared/rejecting; race cleanup and
 takeover; lose responses; run concurrent activators; fail over after prepare;
 and restore prepared, terminal or falsely active state. Prove the fixed local
 transaction exposes the complete matching domain-owner set and canonical
@@ -2010,6 +2028,7 @@ generation, preparation receipt, activation barrier/result/authorization and
 cleanup link, including coordinator/contributor classification, authorization
 admission, RevokedBeforeAdmission, exact-target sequence/lifetime, live
 coordinator exclusion, inert archive/identity conflicts and coordinator
-bootstrap handoff. Exit criteria:
+bootstrap handoff/shared revocation state, plus history ManualRecoveryPending/
+recovery authority/successor budget/result/checkpoint. Exit criteria:
 no known blocking gap remains.
 `v0.150.0 implementation stop reached. Run pentest for this exact commit.`

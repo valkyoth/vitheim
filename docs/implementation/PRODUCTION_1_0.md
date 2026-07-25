@@ -634,15 +634,23 @@ sequence/idempotency, retention, bounded append work and protected cleanup.
 Archive disposition/result/conflict remains separate, so failure cannot reverse
 or ambiguously report activation. Cleanup cannot delete obligation descriptors
 until a terminal append checkpoint, and absence cannot stand for NoHistory or
-NotRequested. VIT-INV-062 schema succession uses a stable bootstrap identity
+NotRequested. Initial-budget exhaustion is nonterminal
+ManualRecoveryPending: retained descriptors and reservations survive until an
+independently admitted recovery authorization causes one bounded successor-
+budget append or an evidenced WaivedFenced/AbandonedWithEvidence terminal.
+Exact recovery retries return the canonical result and changed recovery
+material conflicts. VIT-INV-062 schema succession uses a stable bootstrap identity
 and closed lifecycle; distinct pre-admission-revocable begin, fresh handoff and
 cancellation authorizations enforce requestor/approver/activator/issuer/
 cancellation separation. Begin authority is consumed when drain installs;
 handoff authority binds the authenticated complete checkpoint and owner-
 authenticated dormant-successor verification receipt; authorization loss
 cannot strand the drain. Bounded work/reservations, per-action canonical
-result/conflict and atomic active-
-generation/fence handoff; source rows never seed it. Every VIT-INV-062 mutation
+result/conflict and one action-discriminated revocation intent/apply protocol
+bind exact authorization, target lifetime, per-action sequence, destination
+inbox/tombstone/bootstrap outcome and restore. Remote emission is not effect.
+Atomic active-generation/fence handoff follows; source rows never seed it.
+Every VIT-INV-062 mutation
 first locks and rechecks that non-wrapping generation; stale predecessor
 transactions and guard-unaware binaries cannot commit or become ready.
 Cross-database, cross-region or external-selector activation is unsupported
@@ -656,7 +664,9 @@ revocation/expiry races, nonterminal and terminal source jobs, identity
 collisions, destination-targeting/cyclic self-import, inert-history promotion,
 history append collision/failure, stale work and old binaries crossing handoff,
 competing successors, bootstrap authorization replay/revocation/cancellation/
-rollback/restore/failover, registry-forged receipt, importer owner
+cross-action sequence suppression, remote-effect inference, recovery-budget
+substitution, premature ManualRecoveryPending cleanup, waiver/abandonment
+forgery, rollback/restore/failover, registry-forged receipt, importer owner
 omission, key/sequence/continuity rollback and response loss after any terminal
 commit; each produces one atomic success or exact fail-closed/idempotent result.
 

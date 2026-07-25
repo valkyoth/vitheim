@@ -576,13 +576,21 @@ restore, failover, and release evidence.
    bounded archive work and protected cleanup; archive failure has a separate
    durable disposition and never changes activation. Cleanup waits for a
    terminal append checkpoint, so absent worker delivery is recoverable and
-   absent state cannot impersonate NoHistory/NotRequested. Typed identity conflicts
-   fail closed. VIT-INV-062 schema succession is a separate stable-ID,
+   absent state cannot impersonate NoHistory/NotRequested. Exhaustion enters
+   nonterminal ManualRecoveryPending and retains descriptors/reservations until
+   independent recovery authority permits one bounded successor-budget append,
+   evidenced waiver or evidenced abandonment; only its resulting terminal can
+   be checkpointed and cleaned. Typed identity conflicts fail closed.
+   VIT-INV-062 schema succession is a separate stable-ID,
    independently authorized and budgeted closed lifecycle for local
    predecessor begin/drain, typed checkpoint/dormant-successor receipt and
    coordinator-generation/fence CAS handoff. Begin, fresh final handoff and
    cancellation use distinct pre-admission-revocable action grants with
-   canonical exact-retry results/conflicts, never an
+   canonical exact-retry results/conflicts. One action-discriminated bootstrap
+   revocation envelope binds exact grant/action, target lifetime, issuer
+   continuity and target-scoped sequence; only the destination apply commits
+   inbox, tombstone, required bootstrap terminalization, result/audit/outbox.
+   They never become an
    imported replacement. Every VIT-INV-062 mutation locks and rechecks that
    generation first, fencing predecessor-started work and binaries that omit
    the guard.
