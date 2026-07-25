@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox'
-history_order='active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
+canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox'
+history_order='active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
 
 fail() {
     echo "migration/import policy: $*" >&2
@@ -69,10 +69,18 @@ then
     fail "obsolete activation order without corruption-fence genesis remains"
 fi
 
+if grep -R -Fq \
+    'ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold' \
+    docs
+then
+    fail "obsolete activation order without anchor source-manifest/genesis remains"
+fi
+
 for obsolete_order in \
     'history-obligation→corruption-fence→archive-head→history/idempotency→recovery-lineage-budget' \
     'history-obligation→lineage-disposition→recovery-lineage-budget→corruption-fence' \
-    'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head'
+    'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head' \
+    'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt'
 do
     if grep -R -Fq "$obsolete_order" docs
     then
@@ -116,11 +124,22 @@ for requirement in \
     'holds a budget while waiting for the fence' \
     'MigrationImportRegistryHistoryCorruptionClearanceAuthorizationV1' \
     'destination-ratcheted state' \
+    'fence-wide coordination lineage' \
+    'remaining fence-lifetime budget' \
+    'No adapter may lazily initialize it' \
+    'full expected source set from the current manifest' \
     'profile selects a non-empty mandatory class set' \
     'normative same-row' \
     'precharges its bounded worst-case quantum' \
-    'component-wise maximum' \
+    'partial typed' \
+    'remaining capacity is derived only by checked' \
+    'one internally consistent authenticated snapshot' \
+    'Property/model tests prove each' \
     'keyed by old obligation identity and exact Fenced generation' \
+    'one parent row' \
+    'PermanentlyRejected' \
+    'Malformed, unauthenticated, stale,' \
+    'Permanent rejection requires an independently issued/admitted' \
     'authentic but older bundle' \
     'The only v1 fallback' \
     'Corruption is an observed durable state' \
@@ -222,6 +241,16 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionClearanceAuthorizationOutcomeV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAuthorizationConflict \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSetV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestAuthorityPortV1 \
+    AdvanceMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifest \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestAdvanceResultV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestConflict \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceScopeV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceScopeDispositionV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceScopeHardMaximumV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceScopeConflict \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryAuthorityPortV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryAdvanceResultV1 \
@@ -238,11 +267,18 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionClearanceBudgetExceeded \
     MigrationImportRegistryHistoryCorruptionClearanceAuthorizationLost \
     MigrationImportRegistryHistoryCorruptionClearanceCounterJoinV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceStateJoinV1 \
     RestoreMigrationImportRegistryHistoryAtomicBundle \
     MigrationImportRegistryHistoryCorruptionClearanceResultV1 \
     MigrationImportRegistryHistoryCorruptionClearanceUnprovable \
     RebuildMigrationImportRegistryHistoryUnderSuccessorCoordinator \
     MigrationImportRegistryHistoryCorruptionRebuildRecordV1 \
+    MigrationImportRegistryHistoryCorruptionRebuildProposalAttemptV1 \
+    MigrationImportRegistryHistoryCorruptionRebuildProposalNotAdmitted \
+    MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationV1 \
+    PermanentlyRejectMigrationImportRegistryHistoryCorruptionRebuild \
+    MigrationImportRegistryHistoryCorruptionRebuildRejectionResultV1 \
+    MigrationImportRegistryHistoryCorruptionRebuildRejectionConflict \
     MigrationImportRegistryHistoryCorruptionRebuildStateV1 \
     MigrationImportRegistryHistoryCorruptionRebuildResultV1 \
     MigrationImportRegistryHistoryCorruptionRebuildConflict \

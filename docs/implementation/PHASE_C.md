@@ -2441,7 +2441,8 @@ signer/issuer identity, key epoch and authentication profile; and nonce/
 idempotency identity. It binds the candidate's exact history-disposition tag,
 the variant-specific Pending lineage/budget, NoHistory proof or NotRequested
 custody/approval digest, and the retention/classification/legal-hold identities
-and epochs approved at issuance. `MigrationImportActivationAuthorizationAuthorityPortV1`
+and epochs plus clearance-anchor source-manifest identity/generation/digest
+approved at issuance. `MigrationImportActivationAuthorizationAuthorityPortV1`
 is an independent authority-capability boundary. VIT-INV-062 and every domain
 owner have verification-only access: registry, importer and migration runners
 cannot mint or self-approve activation.
@@ -2508,7 +2509,8 @@ candidate digest, complete ordered owner-manifest and preparation-receipt set,
 expected current destination generations, current job state/lease/fence and
 budget profile/final counters, activation authorization and closed consumption
 state, the exact history-disposition tag, variant-specific evidence digests and
-retention/classification/legal-hold identities/epochs, trusted-time evidence,
+retention/classification/legal-hold identities/epochs, exact clearance-anchor
+source-manifest identity/generation/digest, trusted-time evidence,
 non-wrapping activation sequence/predecessor, and canonical result. VIT-INV-062 coordinates completeness and owns only this
 security-control state. It cannot approve a domain transition, fabricate a
 receipt or make prepared state authoritative.
@@ -2517,7 +2519,7 @@ The supported through-`1.0.0` activation profile requires the live coordinator
 generation, job, candidate, barrier, authorization row and every affected
 domain-owner activation guard to be co-located in one destination-local
 transaction domain. The canonical full order is
-`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox`.
+`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox`.
 This is `VIT-LAW-009
 AtomicMigrationImportActivation`: trusted derivation selects the exact affected
 domain-owner set while every selected domain owner retains exclusive authority.
@@ -2534,9 +2536,11 @@ domain-owner generations, commits the barrier sequence/result, moves the job to
 `Activated`, creates exactly one bounded history-append obligation or explicit
 NoHistory/NotRequested terminal, and writes audit/result/outbox.
 It rechecks the current history-disposition evidence and custody epochs against
-the candidate, barrier and authorization immediately before commit. Any tag,
+the candidate, barrier and authorization and locks/rechecks the bound anchor
+source manifest immediately before commit. Any tag,
 Pending budget/lineage digest, NoHistory proof, NotRequested custody/approval
-digest or policy epoch change requires a fresh activation authorization and
+digest, policy epoch or anchor source-manifest change requires a fresh
+activation authorization and
 returns `MigrationImportActivationHistoryDispositionConflict`; it is never
 substituted under a generally worded activation grant.
 Missing, duplicate, reordered or substituted receipts, stale owner/job state,
@@ -2987,12 +2991,23 @@ authorization operation table and durable attempt lifecycle. Crash, cancel,
 take over and lose responses before/after every proof precharge, cursor/result
 commit and terminal CAS; cumulative charges never reset or disappear, one
 authorization has at most one active attempt, and every CAS loser rereads and
-reapplies the table identically on every adapter. Old, forked, incomplete,
-unanchored or over-budget evidence leaves the fence permanent or requires fresh
-authority exactly as the state machine specifies. Race successor rebuild
-proposal/activation across coordinator generations and require one predecessor-
-bound successor mapping; only that separately authorized path may create a new
-obligation while the old one stays fenced.
+reapplies the table identically on every adapter. Admit multiple otherwise valid
+grants against one fence generation and prove the clearance scope selects only
+one live authorization/attempt. Rotate expiry, revocation, stale anchors and
+per-grant exhaustion through replacement generations; every precharge remains
+in the scope lifetime counters and no replacement exceeds remaining capacity.
+PermanentlyUnprovable, Cleared and RebuildActivated tombstones reject all later
+admission. Omit activation-created anchor-registry genesis, substitute its
+source manifest, weaken sources/classes/quorum/nonresponse/time/continuity
+without transition authority, or lazily initialize it and require denial.
+Old, forked, incomplete, unanchored or over-budget evidence leaves the fence
+permanent or requires fresh authority exactly as the state machine specifies.
+Property-test the typed restoration algebra for idempotence, associativity,
+commutativity, conservation, overflow and incompatible/forked evidence. Race
+bounded rebuild proposals, retryable rejection, independently authorized
+permanent rejection and activation across coordinator generations; require one
+parent, at most one activated successor and commit-time recheck of fence,
+unprovable result, anchor/source-policy, coordinator and custody state.
 Exercise admission, expiry, revocation and consumption from every state in the
 total table, including every exact duplicate, changed-material conflict and
 race; expiry winning must return its canonical expiry result without becoming
@@ -3169,6 +3184,35 @@ barrier and activation authorization bind this initial fence identity/
 generation beside the history-disposition commitment. Activation therefore
 commits obligation, Healthy fence, lineage disposition and the variant-specific
 lineage/proof/custody evidence atomically or commits none.
+
+The candidate, barrier and activation authorization also bind the current
+independently governed
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestV1`.
+The manifest binds exact expected source identities and classes, manifest
+generation/digest and policy generation, required per-class quorum and bounded
+nonresponse policy, collection interval/expiry/maximum uncertainty/trusted-time
+profile, and source signer/key-continuity requirements.
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestAuthorityPortV1`
+is separate from clearance, detection, import and collection roles.
+`AdvanceMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifest`
+uses a non-wrapping predecessor chain and canonical
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestAdvanceResultV1`/
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestConflict`
+exact-retry semantics.
+Removing a source/class, lowering quorum, widening nonresponse, time uncertainty
+or expiry, or weakening continuity requires an independent action-bound
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationV1`
+with policy/custody/legal-hold rechecks, quorum/SoD, trusted time, audit and
+outbox; ordinary update cannot weaken it.
+
+Activation locks/rechecks that manifest and atomically creates
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryV1` generation
+zero beside every obligation and Healthy fence. Genesis has canonical no-
+predecessor encoding, binds the exact manifest generation/digest and mandatory
+class/quorum policy, and starts each component high-watermark at its canonical
+empty lower bound. No adapter may lazily initialize it. Absence, defaulting or
+a genesis/manifest mismatch is corruption and denies append, fencing,
+clearance, cleanup and import.
 
 `AppendMigrationImportRegistryHistory` consumes only a durable Pending
 obligation after the canonical activation result/outbox commit, under
@@ -3363,7 +3407,7 @@ Healthy.
 
 Every append, detection, recovery, clearance, checkpoint and cleanup path uses
 one universal relative order:
-active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
 An operation locks only its present/applicable rows and reservations, but it
 never acquires a later position before an earlier one. In particular no path
 holds a budget while waiting for the fence, and detection of a missing lineage
@@ -3376,7 +3420,9 @@ transaction binds the obligation, expected Healthy/ClearedAfterRestore fence
 generation, observed lineage presence/bytes/digest, corruption reason,
 coordinator generation/fence, detector identity, bounded evidence, idempotency
 and audit/outbox positions, then increments the fence generation and commits
-Fenced plus canonical
+Fenced, canonical
+`MigrationImportRegistryHistoryCorruptionClearanceScopeV1` generation zero for
+that exact obligation/Fenced generation, and canonical
 `MigrationImportRegistryHistoryCorruptionResultV1`. Exact retry returns that
 result; changed observation under the same idempotency returns
 `MigrationImportRegistryHistoryCorruptionConflict`. Detection has no effect
@@ -3387,13 +3433,30 @@ corruption result, permits no append/recovery/checkpoint/cleanup and never
 creates lineage or infers counters.
 
 Clearance is not ordinary editing and has its own complete authority protocol.
+The clearance scope is the fence-wide coordination lineage, not an
+authorization-local cache. Its closed disposition is Open,
+PermanentlyUnprovable, Cleared or RebuildActivated under
+`MigrationImportRegistryHistoryCorruptionClearanceScopeDispositionV1`. It binds the sole active
+authorization identity and non-wrapping authorization generation; immutable
+`MigrationImportRegistryHistoryCorruptionClearanceScopeHardMaximumV1`;
+overflow-checked cumulative
+decode/hash/signature/proof/bytes/time/retry counters; current anchor source-
+manifest and registry generations/digests; and terminal result/audit/outbox.
+Every authorization admission, proof precharge, terminal attempt, restore and
+rebuild locks/rechecks this row. Absence, generation rollback or mismatch
+returns `MigrationImportRegistryHistoryCorruptionClearanceScopeConflict`
+without mutation.
+
 Canonical
 `MigrationImportRegistryHistoryCorruptionClearanceAuthorizationV1` binds the
 exact obligation, current Fenced generation and observed-corruption digest;
 exact proposed restoration bundle/root and expected current archive,
 checkpoint, attempt, cumulative-lineage and result heads; a versioned
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSetV1`; immutable
-`MigrationImportRegistryHistoryCorruptionClearanceVerificationBudgetV1`;
+`MigrationImportRegistryHistoryCorruptionClearanceVerificationBudgetV1` whose
+ceilings do not exceed the scope’s remaining lifetime capacity; exact clearance
+scope identity/authorization generation; source-manifest and anchor-registry
+generations/digests;
 requestor/approvers/operator, quorum and SoD; signer/issuer/key/profile/
 continuity; trusted-time interval/profile/epoch; nonce and idempotency.
 `MigrationImportRegistryHistoryCorruptionClearanceAuthorizationAuthorityPortV1`
@@ -3407,19 +3470,24 @@ the clearance issuer. Canonical
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryV1` is keyed by
 stable tenant/deployment/obligation scope and binds a non-wrapping registry
 generation, predecessor digest, versioned required anchor classes, per-class
-minimum quorum, component-wise high-watermarks, anchor issuer/key epoch/
-continuity/time/provenance and the admitted collection-receipt digest.
+minimum quorum, typed high-watermarks, exact current
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestV1`
+generation/digest, anchor issuer/key epoch/continuity/time/provenance and the
+admitted collection-receipt digest.
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryAuthorityPortV1`
 is the independent destination admission boundary.
 `AdvanceMigrationImportRegistryHistoryCorruptionClearanceAnchorRegistry`
 accepts only an independently authenticated
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorCollectionReceiptV1`
-that binds the full queried source set, authenticated responses and bounded
-nonresponses, registry predecessor and proposed anchor set. Its destination-
+that binds the full expected source set from the current manifest,
+authenticated responses and policy-bounded nonresponses, collection interval/
+expiry/uncertainty/trusted-time evidence, source key continuity, registry
+predecessor and proposed anchor set. Its destination-
 local transaction rejects a missing required class, insufficient quorum,
 omission of any already-known anchor, component downgrade, predecessor mismatch
-or generation wrap, then advances the registry monotonically with audit/result/
-outbox and canonical
+or generation wrap, stale/changed source manifest, unexpected/unqueried source,
+unpermitted nonresponse or time/continuity failure, then advances the registry
+monotonically with audit/result/outbox and canonical
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryAdvanceResultV1`.
 Exact response-loss retry joins that result; reused advancement identity with
 changed registry/receipt/class/quorum/high-watermark material returns
@@ -3429,14 +3497,28 @@ history state cannot nominate or sign the collection receipt. The production
 profile selects a non-empty mandatory class set and quorum; unconstrained
 “and/or” anchor semantics are unsupported.
 
-Authorization admission binds and rechecks the current anchor-registry
-generation/digest, exact required class/quorum profile and collection receipt.
-Final restoration locks and rechecks them again. A stale set presented before
+Authorization admission binds and rechecks the current clearance scope,
+source-manifest and anchor-registry generations/digests, exact expected sources,
+required class/quorum/nonresponse/time profile and collection receipt. It CAS-
+installs the sole active authorization and next non-wrapping authorization
+generation only while the scope is Open and no other authorization/attempt is
+live. Final restoration locks and rechecks all three lineages again. A stale set presented before
 admission returns typed no-write
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSetStale`; advancement
 after admission makes the current attempt terminal, consumes that authorization
 with the same typed result and leaves Fenced, so a fresh authorization must bind
 the advanced registry.
+
+Expiry, RevokedUnused, terminal AnchorSetStale or per-authorization
+BudgetExceeded may release the active slot only in the same transaction that
+terminalizes the attempt and preserves its proof charges. A replacement grant
+increments the scope authorization generation and receives no more than the
+remaining fence-lifetime budget. EvidenceWait never releases the slot.
+Authenticated Unprovable or exhaustion of the scope hard maximum atomically
+sets PermanentlyUnprovable and a durable tombstone; admission then always
+denies. Successful restore sets Cleared. Rebuild activation sets
+RebuildActivated. Every terminal disposition invalidates any stale competing
+grant/worker by the scope generation, and none may return to Open.
 
 `AdmitMigrationImportRegistryHistoryCorruptionClearanceAuthorization` is the
 only Absent-to-Issued path. The closed
@@ -3471,14 +3553,15 @@ anchor, bundle, budget, time or idempotency material conflicts without
 mutation.
 
 Clearance authorization and restoration implement this normative same-row
-table. An exact operation has identical canonical authorization, attempt,
+authorization and clearance-scope table. An exact operation has identical canonical
+scope/authorization generation, authorization, attempt, source-manifest,
 anchor-registry, bundle and idempotency material:
 
 | Current authorization state | Admission | Expiry | Revocation | Restore / verify | Exact duplicate, CAS loss or changed material |
 |---|---|---|---|---|---|
-| Absent | A valid current unexpired grant commits Issued and Admitted; an authentic expired grant commits ExpiredUnused and returns Expired; a stale anchor set is no-write AnchorSetStale | NotAdmitted without a write | A valid intent commits RevokedBeforeAdmission and returns Revoked | NotAdmitted without an attempt or charge | Admission/revocation may create the row; guessed expiry/restore cannot. Exact losers join the winner; changed material conflicts |
+| Absent | Only an Open scope with no active grant may CAS the next authorization generation and admit a valid current unexpired grant; an authentic expired grant commits ExpiredUnused without occupying the slot; stale manifest/registry input is no-write AnchorSetStale | NotAdmitted without a write | A valid intent commits RevokedBeforeAdmission and returns Revoked | NotAdmitted without an attempt or charge | Admission/revocation may create the row; guessed expiry/restore cannot. Exact losers join the winner; a second live grant or changed material denies/conflicts |
 | RevokedBeforeAdmission | Revoked | Revoked | Revoked | Revoked without an attempt | Exact operations join revocation; changed material conflicts |
-| Issued | Admitted | Before exact trusted expiry returns Admitted without mutation; at/after expiry CAS to ExpiredUnused and Expired | CAS to RevokedUnused and Revoked | Create or join the unique durable attempt. Success, Unprovable, BudgetExceeded or post-admission AnchorSetStale CAS to Consumed with its terminal attempt result; EvidenceTemporarilyUnavailable retains Issued and the same resumable attempt | Expiry, revocation and terminal restore race by one CAS. A loser rereads/reapplies this row and the attempt row; changed material conflicts |
+| Issued | Admitted only when it remains the scope’s active generation | Before exact trusted expiry returns Admitted without mutation; at/after expiry CAS to ExpiredUnused, releases the scope slot and returns Expired | CAS to RevokedUnused, releases the scope slot and returns Revoked | Create or join the unique durable attempt. Success CASes scope to Cleared; Unprovable or lifetime exhaustion CASes PermanentlyUnprovable; per-grant BudgetExceeded or post-admission AnchorSetStale consumes the grant and releases the slot; EvidenceTemporarilyUnavailable retains Issued and the slot | Expiry, revocation and terminal restore race by one scope/row CAS. A loser rereads/reapplies both rows and the attempt; changed material conflicts |
 | Consumed | Returns the stored terminal attempt result | Returns that attempt result | Returns that attempt result | Returns that attempt result and never restores twice | Exact operations join one result; changed material conflicts |
 | ExpiredUnused | Expired | Expired | Expired without conversion | Expired and, if an attempt exists, terminalize it as AuthorizationLost | Exact operations join expiry; changed material conflicts |
 | RevokedUnused | Revoked | Revoked | Revoked | Revoked and, if an attempt exists, terminalize it as AuthorizationLost | Exact operations join revocation; changed material conflicts |
@@ -3495,6 +3578,7 @@ joins the same live attempt; another worker may take over only after the lease
 and fencing-token CAS, and the old token cannot commit.
 
 Every proof execution transaction precharges its bounded worst-case quantum
+atomically against both attempt counters and the clearance-scope lifetime counters
 before external fetch, decode, allocation, hash or signature work. Completion
 commits the cursor/result under the same quantum identity. Exact response-loss
 retry joins a committed step; an ambiguous or crashed incomplete execution
@@ -3507,8 +3591,9 @@ attempt while Issued. `MigrationImportRegistryHistoryCorruptionClearanceUnprovab
 admission `MigrationImportRegistryHistoryCorruptionClearanceAnchorSetStale` are
 terminal, consume the grant and leave Fenced. Unprovable permits only the
 successor rebuild below. BudgetExceeded permits only a fresh independently
-approved authorization and new attempt within the platform cap; it cannot
-resume or enlarge the consumed grant. AnchorSetStale permits only a fresh
+approved authorization and new attempt within the scope’s remaining lifetime
+capacity and platform cap; it cannot reset lifetime counters, resume or enlarge
+the consumed grant. AnchorSetStale permits only a fresh
 authorization binding the advanced registry.
 `MigrationImportRegistryHistoryCorruptionClearanceAuthorizationLost` is
 terminal when expiry/revocation wins, preserves all charges/evidence, performs
@@ -3524,11 +3609,27 @@ anchor registry and equals the locked expected current heads; a historically
 authentic but older bundle cannot roll back newer counters, heads or results.
 Canonical
 `MigrationImportRegistryHistoryCorruptionClearanceCounterJoinV1` computes each
-restored counter as the overflow-checked component-wise maximum of all
-authenticated independent evidence, anchor high-watermarks and surviving
-trusted local high-watermarks. The committed vector must equal that join,
-remain within the immutable platform cap and use compatible counter semantics;
-overflow, incomparable evidence, cap excess or any other value remains fenced.
+monotonic consumed-work G-counter as the overflow-checked component-wise maximum
+of authenticated comparable evidence. It is only one case in the partial typed
+`MigrationImportRegistryHistoryCorruptionClearanceStateJoinV1` algebra:
+
+- immutable ceilings/profile identities require exact equality;
+- remaining capacity is derived only by checked ceiling-minus-consumed
+  subtraction and is never joined independently;
+- ordinals, archive/journal/checkpoint heads and results select one
+  authenticated causal chain that contains the others; forked or incomparable
+  chains have no join;
+- balances, reservations and conservation-linked fields come only from one internally consistent authenticated snapshot;
+  they are never assembled by
+  field-wise maxima; and
+- G-counter joins require compatible dimensions/epochs and remain within the
+  immutable platform and clearance-scope hard maxima.
+
+The committed state must equal this typed join. Overflow, unequal immutable
+material, broken subtraction/conservation, incomparable evidence, cap excess or
+any undefined combination remains fenced. Property/model tests prove each
+defined join’s idempotence, associativity and commutativity plus conservation,
+causal-head selection, overflow denial and rejection of incompatible evidence.
 Its universal-order local transaction consumes the single-use authorization,
 commits the computed bytes/counters, increments Fenced to
 ClearedAfterRestore, and writes
@@ -3550,20 +3651,53 @@ generation and new obligation identity from independently anchored evidence.
 Canonical `MigrationImportRegistryHistoryCorruptionRebuildRecordV1` is uniquely
 keyed by old obligation identity and exact Fenced generation and binds the
 corruption-result digest, anchor-registry generation/set/collection receipt,
-terminal unprovable/attempt result, proposed successor coordinator generation/
-new obligation, stable rebuild/idempotency identity, old immutable evidence
-archive namespace, new disjoint live archive namespace and result/audit/outbox.
-Its closed `MigrationImportRegistryHistoryCorruptionRebuildStateV1` is
-Proposed, Activated or Rejected. Proposal locks the predecessor key and creates
-at most one row. Activation atomically commits one
+terminal unprovable/clearance-scope result, stable rebuild identity, immutable
+proposal-attempt count/work ceilings, old immutable evidence archive namespace,
+and result/audit/outbox. It is the one parent row; its closed
+`MigrationImportRegistryHistoryCorruptionRebuildStateV1` is Open, Activated or
+PermanentlyRejected.
+
+Each valid candidate uses an immutable bounded
+`MigrationImportRegistryHistoryCorruptionRebuildProposalAttemptV1` with
+non-wrapping ordinal, stable idempotency identity, proposed successor
+coordinator generation/new obligation and disjoint live archive namespace,
+authorization/evidence/policy digests, budget charges and Proposed,
+RejectedRetryable or Activated result. Malformed, unauthenticated, stale,
+wrong-predecessor or over-budget proposals return a typed no-write
+`MigrationImportRegistryHistoryCorruptionRebuildProposalNotAdmitted`; they do
+not create the parent, consume an ordinal or block a corrected proposal.
+A valid proposal that loses a commit-time recheck may become
+RejectedRetryable while the parent stays Open and capacity remains.
+
+Permanent rejection requires an independently issued/admitted, action-bound
+`MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationV1`
+binding the parent/predecessor/fence generation, terminal unprovable result,
+reason/custody justification, retention/classification/legal-hold epochs,
+quorum/SoD, signer/key/continuity, trusted time and idempotency. Only
+`PermanentlyRejectMigrationImportRegistryHistoryCorruptionRebuild` consumes it
+and atomically moves Open to PermanentlyRejected with canonical result/audit/
+outbox and
+`MigrationImportRegistryHistoryCorruptionRebuildRejectionResultV1`; changed
+authority/parent/reason/custody/time/idempotency returns
+`MigrationImportRegistryHistoryCorruptionRebuildRejectionConflict` without
+mutation. No importer, failed candidate, coordinator, worker or adapter may infer
+permanent rejection.
+
+Activation atomically rechecks the parent is Open; exact old obligation and
+Fenced generation; terminal PermanentlyUnprovable scope/result; current anchor
+source-manifest and registry generations/digests; coordinator generation; and
+current retention/classification/legal-hold/custody state. It then commits one
 `MigrationImportRegistryHistoryCorruptionRebuildResultV1`, the successor
-coordinator generation and new Healthy obligation; exact retry joins it and a
-different successor returns
+coordinator generation and new Healthy obligation, marks that attempt and
+parent Activated, and moves the clearance scope to RebuildActivated. Exact
+retry joins it and a different/late successor returns
 `MigrationImportRegistryHistoryCorruptionRebuildConflict` without mutation.
+The parent CAS and unique activated-successor index ensure at most one attempt
+can activate across all coordinator generations.
 Until Activated no rebuilt history is current; afterward reads, exports and
 custody selection follow only the mapped successor while the old namespace
 remains immutable corruption evidence and is never merged or presented as
-current. Rejected is terminal and creates no successor.
+current. PermanentlyRejected is terminal and creates no successor.
 It never clears, overwrites or reuses the old fenced obligation. Restore,
 migration, failover and rollback preserve every Healthy/Fenced/
 ClearedAfterRestore generation, anchor-registry ratchet/receipt, authorization,
@@ -3653,14 +3787,17 @@ verifier before any worker: every obligation has a non-wrapping
 Healthy/Fenced/ClearedAfterRestore fence lineage; candidate/barrier/activation
 authorization retain their exact disposition/evidence/policy commitments; the
 universal lock order is supported; and every clearance authorization,
-revocation/tombstone, proof budget, ratcheted anchor-registry generation/
-predecessor/high-watermark, authenticated collection receipt, durable attempt/
-lease/fence/cursor/precharge/result, canonical counter join and unique
-predecessor-successor rebuild mapping is complete. Missing/defaulted fence or
-registry state, an old bundle below a current required anchor, reset proof
-charge, duplicate successor, ambiguous archive selection or a backend unable to
-atomically consume clearance authority refuses import and leaves the obligation
-fenced.
+revocation/tombstone, clearance-scope authorization generation/lifetime
+counters/terminal disposition, proof budget, source-manifest lineage,
+activation-created anchor-registry genesis and later registry generation/
+predecessor/typed high-watermark, authenticated collection receipt, durable
+attempt/lease/fence/cursor/precharge/result, typed state join and parent rebuild/
+bounded proposal/rejection-authorization/successor mapping is complete.
+Missing/defaulted fence, scope, source-manifest or registry genesis/state; an
+old bundle below a current required anchor; reset lifetime charge; field-wise
+invalid join; lost/recreated rebuild parent; duplicate successor; ambiguous
+archive selection; or a backend unable to atomically consume clearance
+authority refuses import and leaves the obligation fenced.
 It then calls the shared replay-lifecycle verifier and admits issuance only
 after the destination proves
 the same writer-authoritative admission guard, exact replay-head/

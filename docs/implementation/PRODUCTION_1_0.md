@@ -604,14 +604,15 @@ closure of the currently admitted destination VIT-LAW-009 tuple/manifest; no
 separate invariant catalog is implemented. The manifest types VIT-INV-062 only
 as the live non-importable destination coordinator and every other applicable
 dependency as a domain contributor. One transaction uses
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox,
 rederives that split from
 the closure plus schema, migration plan and contributor algorithm, rechecks current budget/final counters, job
 lease/fence, terminal disposition, trusted-time/key/continuity-bound
 authorization, staged root, complete unique owner receipts and versions,
 the exact history-disposition tag, variant-specific Pending budget/lineage,
 NoHistory proof or NotRequested custody/approval digest and bound retention/
-classification/legal-hold epochs,
+classification/legal-hold epochs, and the independently governed anchor-source
+manifest identity/generation/digest,
 consumes/tombstones authorization, then activates every domain owner plus the live coordinator's barrier/job
 result, exactly one Pending/zero-counter-lineage or
 NoHistory/source-manifest-bound zero-eligibility proof or
@@ -621,7 +622,9 @@ none. Candidate, barrier and activation authorization carry that identical
 history commitment; any change returns
 `MigrationImportActivationHistoryDispositionConflict` and requires fresh
 authority. Every obligation also receives Healthy non-wrapping corruption-fence
-generation zero in the activation transaction. Every pre-activation failure permanently fences the candidate;
+generation zero and anchor-registry generation zero bound to that source
+manifest in the activation transaction; absence or lazy initialization denies.
+Every pre-activation failure permanently fences the candidate;
 prepared state is never authority. Activation is irreversible and response-loss
 retry returns its canonical result. Cleanup before activation touches only
 fenced dormant/staged state and after activation touches only staging.
@@ -663,7 +666,7 @@ Missing lineage for either nonterminal atomically installs an exact-obligation
 has closed Healthy/Fenced/ClearedAfterRestore generations; absence, rollback or
 wraparound denies. Append, detection, recovery, clearance, checkpoint and
 cleanup all use
-active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering, so no path
 holds a budget while waiting for the fence. Fenced blocks append, recovery and
 cleanup for only that obligation. It clears only when an independently issued,
@@ -675,15 +678,19 @@ commits the exact activation bundle plus complete post-activation charges,
 results, archive head and checkpoints through every mandatory class/quorum in
 the current destination-ratcheted anchor registry and independently
 authenticated collection receipt. Admission and final commit recheck the
-registry generation. One authorization has one leased durable attempt with a
-crash-surviving cursor, proof precharges/cumulative counters and terminal
-result; every authorization state/operation and CAS loser follows the normative
-table. Restored counters equal the overflow-checked component-wise join of all
-authenticated high-watermarks. A stale, forked, incomplete, inferred,
-unanchored or over-budget bundle leaves the fence unchanged under its typed
-attempt result. The only fallback commits one predecessor/fence-generation-
-unique rebuild record that selects one successor coordinator/obligation and
-disjoint live archive namespace while retaining the old fenced evidence.
+source-manifest and registry generation. Each Fenced generation has one durable
+clearance scope that admits one live authorization/attempt generation, carries
+all lifetime proof precharges across permitted replacement grants and
+terminalizes as PermanentlyUnprovable, Cleared or RebuildActivated. EvidenceWait
+keeps the slot; replacements after expiry/revocation/stale/per-grant exhaustion
+receive only remaining scope capacity. Typed restoration algebra uses checked
+maximum only for comparable consumed-work G-counters, exact immutable ceilings,
+derived remaining capacity, one containing causal head chain and one consistent
+balance/reservation snapshot. Undefined/forked joins remain fenced. The only
+fallback uses one predecessor/fence-generation parent with bounded proposal
+attempts, no-write invalid proposals, independently authorized permanent
+rejection and at most one activated successor/disjoint live archive namespace
+while retaining the old fenced evidence.
 Its initial ceilings fit the versioned
 platform hard maximum, and no amendment/increase operation exists through
 `1.0.0`. Recovery authorization/result union tags are the sole authoritative
@@ -741,11 +748,15 @@ post-authorization disposition/evidence/policy substitution, missing fence
 genesis or absence-as-Healthy, fence/budget lock inversion, generation rollback/
 wrap, corruption-fence widening/bypass, forged/replayed/revoked/expired
 clearance authority, stale signed anchor-set omission, local registry
-nomination, missing mandatory class/quorum or forged collection receipt,
-proof-budget escape/reset, attempt takeover/CAS/cursor replay, temporary-
-evidence retry amplification, authorization loss, stale/forked/unanchored/
-partial/inferred clearance, registry/high-watermark rollback, counter
-underjoin/overflow, duplicate successor or dual-current archive, old-fence
+nomination, missing/lazy registry genesis, unauthorized source/class/quorum/
+nonresponse/time/continuity weakening or forged collection receipt, competing
+valid scope grants, proof-budget escape/fence-lifetime reset, terminal-scope
+reopening, EvidenceWait replacement, attempt takeover/CAS/cursor replay,
+temporary-evidence retry amplification, authorization loss, stale/forked/
+unanchored/partial/inferred clearance, registry/high-watermark rollback,
+field-wise ceiling/remaining/balance merge, forked-head join or overflow,
+invalid proposal consuming its parent, inferred/unauthorized permanent
+rejection, proposal-bound escape, duplicate successor or dual-current archive, old-fence
 deletion during successor rebuild, guessed-identity expiry tombstone, adapter-specific
 outcome/conflict, Fenced-as-LineageCorrupt encoding, valid-operation
 misclassification, skipped CAS reread, dual terminal winners, outer/payload

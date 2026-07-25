@@ -224,7 +224,7 @@ audit decision.
   late intent after Consumed returns the activation result without reversal;
 - through `1.0.0` every affected owner guard is co-located with the job/barrier,
   and one local transaction uses
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox,
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox,
   then rechecks current budget/fence/authorization/
   manifest/receipts/owner versions, consumes authorization, then activates all
   owner generations plus Pending/zero-counter-lineage or
@@ -249,15 +249,18 @@ audit decision.
   NoHistory/NotRequested prove no executable lineage, and missing nonterminal
   lineage commits an obligation-scoped corruption fence/result. Activation
   creates a Healthy generation-zero fence for every obligation; absence denies,
+  binds the governed anchor-source manifest, creates registry generation zero,
   and every history path follows one fence-before-budget lock order. Append,
   recovery and cleanup stop until a separately issued/admitted/revocable/
   expiring single-use clearance authorization and a destination-ratcheted
   mandatory-class/quorum anchor registry with authenticated collection receipt
-  prove the exact activation and complete post-activation lineage. One leased
-  attempt persists proof precharges/cursor/results, and restore commits the
-  authenticated component-wise counter join. Unprovable state stays fenced; a
-  predecessor-unique rebuild record selects one successor and cannot clear,
-  reuse or hide the old evidence namespace. Candidate, barrier and activation authority
+  prove the exact activation and complete post-activation lineage. One fence-
+  wide scope admits one live grant/attempt generation and preserves lifetime
+  charges/tombstones. Typed restoration algebra separates monotonic counters,
+  exact ceilings, derived capacity, causal heads and consistent snapshots.
+  Unprovable state stays fenced; one rebuild parent owns bounded proposals,
+  independently authorized permanent rejection and one successor without
+  hiding old evidence. Candidate, barrier and activation authority
   bind the exact disposition/evidence/policy epochs. NoHistory proves zero
   eligibility; NotRequested commits current retention/classification/hold/
   evidence-floor/compliance/legal/SoD authority and cannot weaken an active

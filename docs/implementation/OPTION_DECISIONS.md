@@ -347,6 +347,11 @@ per-class minimum quorum across signed checkpoints, externally retained head
 commitments and witnesses; every required class must be satisfied, so open
 “and/or” selection is unsupported. No local database row or clearance role
 alone may nominate the set or assert restoration completeness.
+Freeze the independently governed anchor-source-manifest authentication and
+policy-transition profile: exact source/class identities, quorum/nonresponse,
+collection time/uncertainty, key continuity and non-wrapping manifest lineage.
+Any weakening requires action-bound custody/legal-hold/SoD authority; ordinary
+rotation can only preserve or strengthen the active profile.
 Freeze its exact-target revocation
 intent with signer identity, key identity/epoch, authentication profile,
 issued-at, not-before, exact target expiry, maximum uncertainty and trusted-time
@@ -471,7 +476,7 @@ ClearedAfterRestore are explicit higher-generation transitions, and absence/
 rollback/wraparound denies. All history operations use the fixed universal
 fence-before-lineage/budget order and skip only inapplicable positions without
 reordering:
-active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
 `FenceMigrationImportRegistryHistoryCorruption` atomically records
 the observation, evidence, reason, generation, detector identity, canonical
 `MigrationImportRegistryHistoryCorruptionResultV1`, audit and outbox. The fence
@@ -490,21 +495,28 @@ Persist the complete
 `MigrationImportRegistryHistoryCorruptionClearanceAuthorizationV1` row beside
 its independent admission/revocation/expiry/consumption lifecycle, exact-target
 sequence, tombstones/results and immutable proof-work budget. Persist the
-non-wrapping predecessor-bound clearance-anchor registry, mandatory class/
-quorum profile, component-wise high-watermarks and independently authenticated
-collection receipt. Persist one unique durable clearance attempt per
-authorization with lifecycle, lease/fencing token, cursor, precharged
-cumulative counters and terminal result, plus the normative six-state
-authorization operation table. EvidenceWait resumes the same attempt;
-Unprovable, BudgetExceeded and post-admission AnchorSetStale consume authority
-without clearing; expiry/revocation terminalizes the attempt as
-AuthorizationLost. Restore consumes Issued authority in the same transaction
-as ClearedAfterRestore and commits the overflow-checked component-wise maximum
-of authenticated independent high-watermarks, never an inferred value.
-Persist one predecessor/fence-generation-keyed
-`MigrationImportRegistryHistoryCorruptionRebuildRecordV1` with
-Proposed/Activated/Rejected state, disjoint old/new archive namespaces and one
-successor identity. A stale bundle or mapping ambiguity refuses.
+activation-bound anchor source-manifest lineage and activation-created
+generation-zero registry; absence/default/lazy initialization denies. Persist
+the later non-wrapping registry, typed high-watermarks and independently
+authenticated full-manifest collection receipt. Fencing creates one
+obligation/fence-generation clearance scope with sole active authorization,
+non-wrapping authorization generation, immutable lifetime hard maximum,
+cumulative precharges and Open/PermanentlyUnprovable/Cleared/RebuildActivated
+disposition. Replacement after expiry/revocation/stale/per-grant exhaustion
+uses only remaining lifetime capacity; EvidenceWait retains the slot and
+terminal scope dispositions reject admission.
+Persist one unique durable clearance attempt per admitted scope generation with
+lifecycle, lease/fencing token, cursor, precharged counters and result, plus the
+normative authorization/scope table. Restore consumes Issued authority and
+sets scope Cleared in the same transaction as ClearedAfterRestore. Freeze typed
+state algebra: comparable consumed-work G-counters use checked maximum,
+ceilings equal exactly, remaining is derived, causal heads select one containing
+chain, and balances/reservations use one consistent snapshot.
+Persist one predecessor/fence-generation-keyed parent rebuild record with
+Open/Activated/PermanentlyRejected state, bounded proposal attempts, independent
+permanent-rejection authority, one activated successor and disjoint namespace
+selection. Invalid/stale/unauthorized proposals are no-write. A stale bundle,
+invalid join, exhausted/recreated scope or mapping ambiguity refuses.
 An independently admitted
 `MigrationImportRegistryHistoryRecoveryAuthorizationV1` permits one exact
 RetryAppend, Waive or Abandon action;
@@ -544,7 +556,7 @@ counters include a pessimistically precharged complete preparation/activation/
 result/recovery quantum, and `AdmissionPrepared` requires the atomically stored
 complete unique receipt set. Job, barrier and every
 affected domain-owner activation guard must fit one local transaction with fixed
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox
 locking and
 expected-version CAS. Storage must prove atomic all-domain-owner activation with the
 authorization consumption/tombstone and job result, or refuse before
@@ -1360,9 +1372,12 @@ domain owner cannot alone authorize, admit or execute restoration. Ordinary
 history-recovery authority is not clearance authority, and no clearance role
 may collect/admit the anchor registry or provide its required independent
 quorum. Anchor-registry issuer/admitter, collection-receipt signers and
-clearance decision quorum remain separated. Freeze distinct clearance-attempt
-worker/takeover identity and successor-rebuild requestor/approver/operator
-roles; none may self-authorize or choose a competing successor.
+clearance decision quorum remain separated. Anchor-source-manifest owner and
+weakening-transition approvers are independent from those roles. Freeze
+distinct clearance-scope admission owner, attempt worker/takeover identity,
+successor-rebuild requestor/approver/operator and permanent-rejection issuer/
+admitter roles; none may self-authorize, occupy multiple scope generations,
+permanently reject from candidate failure or choose a competing successor.
 Neither coordinator, a migration actor nor an
 affected domain owner may issue, admit, approve, activate or cancel its own
 handoff; every role and validity recheck is bound to the exact active
@@ -1612,12 +1627,15 @@ of `NoHistory`. A corruption-fenced obligation retains the fence, observations,
 evidence and every available activation/charge/result/head/checkpoint fragment
 plus every fence generation, clearance authorization/tombstone/result, proof-
 budget charge, anchor-registry generation/predecessor/high-watermarks,
-collection receipt, clearance attempt/cursor/counters/result and externally
+source-manifest lineage/transition authority, activation-created registry
+genesis, collection receipt, clearance scope/generation/lifetime counters/
+terminal tombstone, clearance attempt/cursor/counters/result and externally
 retained anchor commitment until exact atomic restoration clears it; ordinary
 erasure or cleanup cannot weaken or clear the fence. A successor-generation
-rebuild retains its unique predecessor mapping, old permanent fence, disjoint
-archive-namespace relationship and minimal anchor/authority evidence under the
-same custody precedence.
+rebuild retains its parent, proposal attempts, permanent-rejection authority,
+unique activated-successor mapping, old permanent fence, disjoint archive-
+namespace relationship and minimal anchor/authority evidence under the same
+custody precedence.
 Commit rechecks policy identity/generation/digest, legal-hold state/epoch,
 records/compliance/legal approval SoD and evidence floor. Active hold denies
 any NotRequested choice, waiver or abandonment that weakens custody, without
@@ -1762,9 +1780,12 @@ CAS-loser reread/first-terminal-winner semantics/attempt/
 waiver-or-abandonment record/checkpoint/activation-created non-wrapping
 Healthy/Fenced/ClearedAfterRestore corruption-fence state, universal lock
 order, evidence/result, clearance authorization lifecycle/revocation/tombstone/
-proof budget/anchor registry and collection receipt/attempt lease-fence-cursor-
-counters-result/canonical counter join, atomic restoration bundle and clearance,
-unique predecessor-bound rebuild record/archive selection,
+proof budget/source-manifest lineage/activation-created anchor-registry genesis/
+registry and collection receipt/clearance scope authorization-generation/
+lifetime counters/terminal tombstone/attempt lease-fence-cursor-counters-result/
+typed state join, atomic restoration bundle and clearance, parent rebuild/
+bounded proposals/permanent-rejection authority/unique successor/archive
+selection,
 candidate/barrier/activation-authorization history-disposition commitments,
 coordinator-bootstrap stable identity/
 lifecycle/begin-handoff-cancel authorizations and pre-admission tombstones/
@@ -1790,8 +1811,12 @@ treat absence as NoHistory/NotRequested, widen a corruption fence beyond its
 exact obligation, treat absent fence as Healthy, invert fence and budget locks,
 bypass it during append/recovery/cleanup, clear it without a consumed exact
 authorization or with partial/stale/unanchored/inferred lineage, downgrade/
-omit a required anchor, reset attempt charges, run competing workers, restore
-a noncanonical counter join, roll back a registry/high-watermark, create two
+omit a source manifest or required anchor, lazily create registry genesis,
+weaken source/quorum/nonresponse/time/continuity without authority, admit two
+live grants for one scope, reset fence-lifetime charges, replace EvidenceWait,
+run competing workers, field-wise join ceilings/remaining/balances or forked
+heads, roll back a registry/high-watermark, let invalid proposal consume the
+parent, infer permanent rejection, exceed proposal bounds, create two
 successors or select both old/new histories as current, substitute an
 authorized history disposition, classify
 Fenced as conflict, misclassify a different valid operation as

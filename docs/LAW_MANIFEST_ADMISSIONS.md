@@ -55,12 +55,14 @@ NoHistory proves zero eligibility and NotRequested carries a commit-time
 custody/approval record. Missing lineage
 commits an obligation-scoped corruption fence. Every obligation has an
 activation-created Healthy generation-zero fence; absence denies and every
-history operation locks fence before lineage/budget. Clearance requires its
+history operation locks fence before lineage/budget. Activation binds the
+governed anchor-source manifest and creates registry generation zero. Clearance requires its
 own admitted/revocable/expiring single-use authorization, destination-ratcheted
 mandatory-class/quorum anchor registry and authenticated collection receipt.
-A leased attempt preserves proof precharges/cursor/results, restoration uses
-the canonical authenticated counter join, and one predecessor-unique rebuild
-mapping selects one successor while the old evidence stays fenced. Candidate, barrier and
+A fence-wide scope admits one live authorization/attempt and retains lifetime
+proof counters/tombstones. Restoration uses typed state algebra. One rebuild
+parent owns bounded proposals, independent permanent rejection and one
+successor while old evidence stays fenced. Candidate, barrier and
 activation authorization bind the exact history disposition, evidence digest
 and policy epochs. Recovery request/
 result tags are the sole action discriminator. The total six-state row returns

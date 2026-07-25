@@ -225,7 +225,7 @@ has no effect, and late revocation after Consumed returns the activation result
 without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 uses the canonical
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox
 order, rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all domain-owner versions, consumes and
 tombstones authorization, then activates every domain owner plus barrier/job result/
@@ -269,13 +269,15 @@ record in the activation transaction and active-hold weakening denies. Missing
 nonterminal lineage commits an obligation-scoped corruption fence/result before
 return; append, recovery and cleanup stop. Activation creates every fence as
 Healthy generation zero, absence fails closed and all history paths use one
-fence-before-budget order. Clearance has a distinct admitted/revocable/
+fence-before-budget order. Activation binds the governed anchor-source manifest
+and creates registry generation zero; lazy initialization denies. Clearance has a distinct admitted/revocable/
 expiring single-use authorization, destination-ratcheted mandatory-class/
-quorum anchor registry and authenticated collection receipt. One leased
-durable attempt precharges proof work and persists its cursor/counters/results;
-restoration commits the authenticated component-wise counter join. If
-unprovable, a predecessor-unique rebuild mapping may select one successor while
-the old obligation/evidence namespace remains fenced.
+quorum anchor registry and authenticated collection receipt. One fence-wide
+scope admits one live authorization/attempt and retains lifetime proof charges
+across replacements. Restoration uses field-specific typed state algebra. If
+unprovable, one rebuild parent permits bounded proposals, independently
+authorized permanent rejection and one successor while the old evidence stays
+fenced.
 Candidate, barrier and activation authorization bind the exact Pending/
 NoHistory/NotRequested tag, variant evidence and custody epochs, so changed
 history treatment requires fresh activation authority.

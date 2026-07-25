@@ -76,11 +76,13 @@ abandon. Activation creates zero-counter cumulative lineage beside Pending and
 initial append co-charges it with the attempt budget; NoHistory proves zero eligibility while NotRequested commits current custody/approval evidence. Missing lineage commits
 an obligation fence. Activation creates a Healthy generation-zero fence for
 every obligation; absence denies and every history path locks it before
-lineage/budget. Clearance has its own admitted/revocable/expiring single-use
+lineage/budget. Activation binds the governed anchor-source manifest and creates
+registry generation zero. Clearance has its own admitted/revocable/expiring single-use
 authorization and a destination-ratcheted mandatory-class/quorum anchor
-registry with authenticated collection receipt. A unique leased attempt
-persists proof precharges/cursor/results; restoration uses the authenticated
-counter join, and one predecessor-bound rebuild mapping selects one successor.
+registry with authenticated collection receipt. A fence-wide scope admits one
+live authorization/attempt and retains lifetime proof counters; restoration
+uses typed state algebra. One rebuild parent owns bounded proposals, independent
+permanent rejection and one successor.
 Unprovable lineage stays fenced. Candidate, barrier and activation authority
 bind the exact disposition/evidence/policy epochs.
 Closed authorization/result tags are the

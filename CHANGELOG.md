@@ -8,14 +8,28 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added one fence-wide corruption-clearance scope with a sole active
+  authorization generation, immutable lifetime work maximum, cumulative
+  charges and terminal Cleared, PermanentlyUnprovable or RebuildActivated
+  disposition; replacement grants receive only unspent lifetime capacity.
+- Made activation create both the clearance-anchor registry generation zero
+  and an independently governed source manifest that fixes expected source
+  identities/classes, quorum, nonresponse, time and key-continuity policy.
+- Replaced the terminal singleton rebuild proposal with one immutable parent,
+  bounded retryable proposal attempts, at most one activated successor and an
+  independently authorized, custody-justified permanent-rejection path.
+- Defined a partial typed clearance-state algebra: only compatible consumed
+  G-counters use checked maxima, while ceilings require equality, remaining
+  capacity is derived, causal heads select one chain and accounting fields use
+  one authenticated snapshot.
 - Replaced self-asserted “greatest-known” clearance anchors with a
   destination-ratcheted mandatory-class/quorum registry and independently
   authenticated collection receipt.
 - Defined the complete clearance authorization operation table and a unique
   durable leased attempt whose proof precharges, cursor, counters and terminal
   result survive crashes, takeover and response loss.
-- Canonicalized restored counters as the overflow-checked component-wise join
-  of authenticated high-watermarks.
+- Canonicalized restored consumed-work counters as the overflow-checked
+  component-wise join of compatible authenticated high-watermarks.
 - Added a predecessor/fence-generation-unique rebuild record with one successor
   and explicit old-evidence/new-live archive selection.
 - Unified every history mutation under one deadlock-safe fence-before-budget

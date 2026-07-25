@@ -557,7 +557,7 @@ restore, failover, and release evidence.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
    live coordinator job/barrier and every selected domain-owner guard to share one destination-local
    transaction. Its canonical order is
-   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox:
+   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox:
    after locking, trusted manifest rederivation and
    current-state rechecks, authorization consumption and all owner activations
    commit with barrier/job result, exactly one Pending plus zero-counter
@@ -589,15 +589,19 @@ restore, failover, and release evidence.
    Corruption commits an obligation-scoped durable fence/result that append,
    recovery and cleanup recheck. Activation creates a Healthy generation-zero
    fence for every obligation and absence fails closed; every history path
-   locks fence before lineage/budget state. Clearance uses an independent
+   locks fence before lineage/budget state. Activation binds the independently
+   governed anchor-source manifest and creates registry generation zero; no
+   adapter initializes it lazily. Clearance uses an independent
    admitted/revocable/expiring single-use authorization, bounded proof work and
    a destination-ratcheted anchor registry whose mandatory classes/quorums and
    independently authenticated collection receipt define greatest-known state.
-   One leased durable attempt persists proof precharges/cursor/results, and the
-   operation table governs every authorization race. Restore commits only the
-   component-wise authenticated high-watermark counter join. Unprovable history
-   stays fenced; a predecessor/fence-generation-unique rebuild mapping selects
-   one successor/live archive namespace and leaves the old evidence intact. The candidate,
+   One fence-wide scope admits one live authorization/attempt generation and
+   retains lifetime proof counters through replacements/terminal tombstones.
+   Typed restoration algebra uses maxima only for comparable consumed-work
+   G-counters, exact ceilings, derived remaining, causal heads and one consistent
+   balance/reservation snapshot. Unprovable history stays fenced; one rebuild
+   parent owns bounded proposals, independently authorized permanent rejection
+   and one successor/live archive namespace while retaining old evidence. The candidate,
    barrier and activation authorization bind the exact history-disposition tag,
    variant proof/budget/custody digest and policy epochs. NoHistory proves
    zero eligibility. NotRequested binds current classification/retention/
