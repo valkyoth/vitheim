@@ -225,7 +225,7 @@ has no effect, and late revocation after Consumed returns the activation result
 without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 uses the canonical
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox
 order, rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all domain-owner versions, consumes and
 tombstones authorization, then activates every domain owner plus barrier/job result/
@@ -269,12 +269,21 @@ record in the activation transaction and active-hold weakening denies. Missing
 nonterminal lineage commits an obligation-scoped corruption fence/result before
 return; append, recovery and cleanup stop. Activation creates every fence as
 Healthy generation zero, absence fails closed and all history paths use one
-fence-before-budget order. Activation binds the governed anchor-source manifest
-and creates registry generation zero; lazy initialization denies. Clearance has a distinct admitted/revocable/
+fence-before-budget order. A separately authorized manifest-lineage bootstrap
+creates exactly one generation zero before activation; successors atomically
+CAS manifest/current-head/activation-record/result/audit/outbox, and restore
+selects the greatest authenticated committed record rather than a raw
+generation. Activation binds that head, creates registry generation zero and
+reserves non-borrowable Recovery capacity for fence/scope/terminal/result/
+audit/outbox state from a trusted profile/platform bound. Clearance has a distinct admitted/revocable/
 expiring single-use authorization, destination-ratcheted mandatory-class/
 quorum anchor registry and authenticated collection receipt. One fence-wide
 scope admits one live authorization/attempt and retains lifetime proof charges
-across replacements. Restoration uses field-specific typed state algebra. If
+across replacements. Registry advancement atomically rebinds an Open scope,
+terminalizes any live grant as stale without losing charges and never rewrites
+a terminal scope. Manifest weakening and permanent rebuild rejection each use
+the complete destination-local admission/revocation/expiry/consumption table;
+remote grants or revocations have no effect. Restoration uses field-specific typed state algebra. If
 unprovable, one rebuild parent permits bounded proposals, independently
 authorized permanent rejection and one successor while the old evidence stays
 fenced.

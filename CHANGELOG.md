@@ -8,12 +8,24 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added an independently authorized source-manifest lineage bootstrap with one
+  genesis, CAS-protected current head, authenticated committed activation
+  records and fork/gap/reorder-safe restore/import selection.
+- Made anchor-registry advancement atomically rebind an Open clearance scope,
+  including charge-preserving AnchorSetStale terminalization of any live grant
+  and attempt, so a valid scope cannot remain stranded on an old registry.
+- Completed destination-local admission, pre-admission and Issued revocation,
+  expiry, consumption, tombstone and CAS-race protocols for source-policy
+  weakening and permanent rebuild rejection.
+- Added activation-time non-borrowable corruption-control reservations and
+  trusted capacity-profile/platform-bound derivation of clearance-scope maxima,
+  ensuring ordinary saturation cannot block fencing or terminalization.
 - Added one fence-wide corruption-clearance scope with a sole active
   authorization generation, immutable lifetime work maximum, cumulative
   charges and terminal Cleared, PermanentlyUnprovable or RebuildActivated
   disposition; replacement grants receive only unspent lifetime capacity.
-- Made activation create both the clearance-anchor registry generation zero
-  and an independently governed source manifest that fixes expected source
+- Made activation bind the independently initialized source-manifest head and
+  create clearance-anchor registry generation zero with fixed expected source
   identities/classes, quorum, nonresponse, time and key-continuity policy.
 - Replaced the terminal singleton rebuild proposal with one immutable parent,
   bounded retryable proposal attempts, at most one activated successor and an

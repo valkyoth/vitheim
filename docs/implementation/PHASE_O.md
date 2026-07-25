@@ -36,7 +36,7 @@ after any terminal commit without partial domain-owner visibility.
 All Phase O evidence also preserves the non-wrapping active coordinator
 generation/fence, which every VIT-INV-062 mutation locks and rechecks first.
 Activation uses exactly
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox.
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox.
 Bootstrap evidence covers stable identity/idempotency, its closed lifecycle,
 independently admitted, pre-admission-revocable begin, fresh handoff and
 cancellation authorizations with separation of duties, bounded work/
@@ -65,11 +65,17 @@ generation zero for every obligation, and absence denies. Initial append co-char
 budgets. Missing nonterminal lineage installs a durable exact-obligation
 `MigrationImportRegistryHistoryCorruptionFenceV1` that blocks append, recovery
 and cleanup. Activation also binds the independently governed expected anchor-
-source manifest and creates registry generation zero; absence or lazy genesis
-denies. Only independently authorized complete atomic restoration of the
+source-manifest current head after a destination-local, independently
+authorized single genesis and authenticated committed activation-record chain;
+fork/gap/reorder, raw-generation selection, absence or lazy genesis denies.
+Activation creates registry generation zero and a non-borrowable Recovery
+control reservation, derived by trusted code under an authenticated active
+capacity profile and immutable platform maximum, for fence/scope/
+terminalization/result/audit/outbox state across every disposition and ordinary
+capacity saturation. Only independently authorized complete atomic restoration of the
 activation bundle and all post-activation charges/results/head/checkpoints may
 clear it. Every path follows
-active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering. Clearance
 consumes an independently issued/admitted/revocable/expiring single-use
 authorization, stays inside its proof budget and proves coverage through
@@ -78,6 +84,10 @@ registry and independently authenticated collection receipt. One unique leased
 attempt persists its cursor, precharged counters and terminal result across
 crash/takeover; a fence-wide scope admits only one live authorization/attempt
 generation and carries immutable lifetime counters through every replacement.
+Registry advancement locks registry→scope→active authorization→attempt and
+atomically rebinds an Open scope: no-live-grant preserves its generation and
+counters, while a live grant becomes AnchorSetStale with charges retained and
+the authorization generation advanced. Terminal scope bytes never change.
 Terminal Unprovable/Cleared/RebuildActivated scope cannot reopen. Typed state
 algebra uses checked maximum only for comparable consumed-work G-counters,
 exact ceilings, derived remaining capacity, causal head selection and one
@@ -85,7 +95,12 @@ consistent balance/reservation snapshot. Stale, incomplete, inferred or
 unanchored lineage remains fenced. One parent rebuild record owns bounded
 proposal attempts; invalid proposals are no-write, permanent rejection needs
 independent authority, and at most one successor/live namespace activates while
-the old fence/evidence namespace remains.
+the old fence/evidence namespace remains. Manifest initialization/weakening and
+permanent rebuild rejection each preserve the complete destination-local
+Absent/RevokedBeforeAdmission/Issued/Consumed/ExpiredUnused/RevokedUnused
+admission, pre-admission/Issued revocation, expiry, same-transaction consumption,
+result/audit/outbox and CAS-loser table; remote issuance/revocation alone has no
+effect.
 Exhaustion retains ManualRecoveryPending until an independently
 authorized exact action acts. RetryAppend reaches Appended or pending only and
 typed successor exhaustion never abandons; cumulative lineage counters span
@@ -973,9 +988,11 @@ sole-tag request and result/derived indexes/Issued-only expiry/closed outcomes/r
 result/distinct NoHistory proof and NotRequested custody record/Fenced outcome/
 three-variant changed-material conflict envelope and terminal-race state/
 activation-bound disposition evidence/Healthy-Fenced-ClearedAfterRestore
-generation/universal lock order/clearance authorization, source-manifest/
-activation-created registry genesis/ratcheted registry/collection receipt,
-fence-wide scope authorization generation/lifetime counters/tombstone, proof
+generation/universal lock order/clearance authorization, source-manifest
+lineage/genesis/current head/activation records/full destructive-grant
+lifecycles, activation-created registry genesis/ratcheted registry/atomic scope-
+rebinding result, protected control reserve/profile/platform bound/collection
+receipt, fence-wide scope authorization generation/lifetime counters/tombstone, proof
 budget, durable attempt/cursor/precharges/result, typed state join,
 restoration/clearance and rebuild parent/proposals/permanent rejection/unique
 successor/archive-selection linkage. A new coordinator may resume
@@ -1314,8 +1331,10 @@ sole-tag derived indexes/Issued-only expiry/closed outcomes/retry-exhaustion res
 receipts/distinct NoHistory/NotRequested custody evidence/Fenced outcome/
 three-variant conflict and CAS terminal-race state/activation disposition
 commitments/exact-obligation Healthy-Fenced-ClearedAfterRestore lineage/
-universal lock order/clearance authority, source-manifest/registry genesis and
-ratchet/receipt, clearance scope/lifetime counters/tombstone, proof budget/
+universal lock order/clearance authority, source-manifest lineage/current head/
+activation records/destructive-grant tombstones, registry genesis/ratchet/
+scope-rebinding receipt, protected control reserve/profile/platform bound,
+clearance scope/lifetime counters/tombstone, proof budget/
 attempt lease-fence-cursor-counters-result/typed join/restoration/clearance/
 rebuild parent-proposals-rejection-unique-successor mapping/checkpoint, activation barrier sequence/
 predecessor/result and authorization;
@@ -1581,8 +1600,9 @@ platform-capped no-increase cumulative-budget/distinct NoHistory/NotRequested
 custody rules/Fenced outcome/three-variant conflict and CAS terminal-race
 rules/activation-bound disposition/universal lock order/exact-obligation fence
 lineage and authorized destination-ratcheted-anchor, durable-attempt,
-fence-wide-scope, typed-state-join and parent/proposal/rejection/unique-successor
-atomic-clearance/rebuild rules,
+fence-wide-scope with atomic registry rebinding, typed-state-join and parent/
+proposal/complete-rejection-authorization/unique-successor atomic-clearance/
+rebuild rules, plus protected corruption-control reserve saturation,
 co-located activation barrier and cleanup-
 versus-authority separation,
 starvation bounds,
@@ -1885,7 +1905,9 @@ activation-created-lineage/no-executable-proof/dual-charge/successor-budget/
 platform-hard-maximum/no-amendment rule/distinct NoHistory/NotRequested
 evidence/Fenced-outcome/three-variant-conflict/race-state/activation-disposition-
 commitment/fence-generation/universal-lock/clearance-authority-budget/source-
-manifest-registry-genesis/registry-receipt/scope-generation-lifetime-tombstone/
+manifest-lineage-genesis-current-head-activation-record/destructive-grant/
+registry-genesis-rebinding-receipt/control-reserve-profile-platform-bound/
+scope-generation-lifetime-tombstone/
 attempt-cursor-precharges-result/typed-state-join/restoration-clearance/rebuild-
 parent-proposals-rejection-unique-successor/
 recovery-result/terminal-evidence,
@@ -2066,7 +2088,10 @@ rollback, claim remote revocation effect, suppress one bootstrap action with
 another action's sequence, exhaust history append into ManualRecoveryPending,
 make RetryAppend abandon, reset cumulative counters through fresh grants,
 try to increase ceilings through policy/profile/backend/restore, omit or lazily
-create initial lineage, split initial attempt/cumulative charging, replace
+create initial lineage, split initial attempt/cumulative charging, fork/gap/
+reorder or raw-select the source-manifest genesis/current-head activation chain,
+remotely issue/revoke or bypass the complete manifest-weakening/rebuild-
+rejection authorization table, replace
 NoHistory proof with absence, forge a custody-free NotRequested or substitute
 the two dispositions after activation authorization, change bound evidence/
 policy epochs, omit the activation-created fence or treat absence as Healthy,
@@ -2076,7 +2101,10 @@ replay/revoke/expire/reuse clearance authority, exhaust proof work, clear with
 incomplete, stale, forked, inferred or externally unanchored lineage, roll back
 a ratcheted registry/high-watermark, omit or weaken the expected source
 manifest/class/quorum/nonresponse/time/continuity, lazily initialize registry
-genesis, forge its collection receipt, admit competing scope grants, reset
+genesis, forge its collection receipt, advance registry without atomic Open-
+scope rebinding/active-grant terminalization, exhaust ordinary capacity before
+fencing, reduce the profile after activation or inject a detector/adapter scope
+maximum, admit competing scope grants, reset
 fence-lifetime proof charges, replace EvidenceWait, race attempt takeover, loop
 temporary evidence, field-wise merge ceilings/remaining/balances or forked
 heads, let invalid proposals consume the rebuild parent, infer permanent
@@ -2156,9 +2184,11 @@ Issued-only expiry/closed outcomes including Fenced and three-variant conflicts/
 CAS terminal-race state/activation disposition commitments/universal lock order/
 distinct NoHistory proof and NotRequested custody record/policy-hold receipts/
 exact-obligation fence generations/evidence/clearance authority/proof budget/
-source-manifest-registry-genesis/anchor-registry receipt/clearance scope-
-generation-lifetime-tombstone/attempt cursor-precharges-result/typed state join/
-restoration/clearance/result/rebuild parent-proposals-rejection-successor/
+source-manifest-lineage/genesis/current-head/activation-record/destructive-
+authority-tombstones/anchor-registry-genesis-rebinding receipt/control-reserve-
+profile-platform-bound/clearance scope-generation-lifetime-tombstone/attempt
+cursor-precharges-result/typed state join/restoration/clearance/result/rebuild
+parent-proposals/complete-rejection-authority/successor/
 checkpoint.
 Exit criteria:
 no known blocking gap remains.

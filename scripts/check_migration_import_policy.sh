@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox'
-history_order='active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
+canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox'
+history_order='active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
 
 fail() {
     echo "migration/import policy: $*" >&2
@@ -76,11 +76,19 @@ then
     fail "obsolete activation order without anchor source-manifest/genesis remains"
 fi
 
+if grep -R -Fq \
+    'ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition' \
+    docs
+then
+    fail "obsolete activation order without manifest head or control reserve remains"
+fi
+
 for obsolete_order in \
     'history-obligation→corruption-fence→archive-head→history/idempotency→recovery-lineage-budget' \
     'history-obligation→lineage-disposition→recovery-lineage-budget→corruption-fence' \
     'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head' \
-    'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt'
+    'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt' \
+    'active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry'
 do
     if grep -R -Fq "$obsolete_order" docs
     then
@@ -127,6 +135,16 @@ for requirement in \
     'fence-wide coordination lineage' \
     'remaining fence-lifetime budget' \
     'No adapter may lazily initialize it' \
+    'only absent/Uninitialized-to-generation-zero path' \
+    'greatest authenticated committed activation record' \
+    'locks registry,' \
+    'no stranded Open scope' \
+    'destructive-authority protocols, not signed blobs' \
+    'Remote issuance or revocation has no effect' \
+    'MigrationImportRegistryHistoryCorruptionControlReserveV1' \
+    'Ordinary work cannot borrow the' \
+    'A detector or' \
+    'all ordinary capacity is exhausted' \
     'full expected source set from the current manifest' \
     'profile selects a non-empty mandatory class set' \
     'normative same-row' \
@@ -247,9 +265,32 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestAdvanceResultV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestConflict \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestLineageV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestLineageStateV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCurrentHeadV1 \
+    InitializeMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifest \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestActivationRecordV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestInitializationResultV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestInitializationConflict \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionActionV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationStateV1 \
+    AdmitMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorization \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationAdmissionResultV1 \
+    ExpireMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorization \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationExpiryResultV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationRevocationIntentV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationRevocationSequenceKeyV1 \
+    ApplyMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationRevocation \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationRevocationResultV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationOutcomeV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationConflict \
     MigrationImportRegistryHistoryCorruptionClearanceScopeV1 \
     MigrationImportRegistryHistoryCorruptionClearanceScopeDispositionV1 \
     MigrationImportRegistryHistoryCorruptionClearanceScopeHardMaximumV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceScopeAnchorRebindingResultV1 \
+    MigrationImportRegistryHistoryCorruptionControlReserveV1 \
+    MigrationImportRegistryHistoryCorruptionControlCapacityProfileV1 \
+    MigrationImportRegistryHistoryCorruptionControlPlatformHardMaximumV1 \
     MigrationImportRegistryHistoryCorruptionClearanceScopeConflict \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryAuthorityPortV1 \
@@ -276,6 +317,17 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionRebuildProposalAttemptV1 \
     MigrationImportRegistryHistoryCorruptionRebuildProposalNotAdmitted \
     MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationV1 \
+    MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationStateV1 \
+    AdmitMigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorization \
+    MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationAdmissionResultV1 \
+    ExpireMigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorization \
+    MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationExpiryResultV1 \
+    MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationRevocationIntentV1 \
+    MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationRevocationSequenceKeyV1 \
+    ApplyMigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationRevocation \
+    MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationRevocationResultV1 \
+    MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationOutcomeV1 \
+    MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationConflict \
     PermanentlyRejectMigrationImportRegistryHistoryCorruptionRebuild \
     MigrationImportRegistryHistoryCorruptionRebuildRejectionResultV1 \
     MigrationImportRegistryHistoryCorruptionRebuildRejectionConflict \

@@ -350,8 +350,14 @@ alone may nominate the set or assert restoration completeness.
 Freeze the independently governed anchor-source-manifest authentication and
 policy-transition profile: exact source/class identities, quorum/nonresponse,
 collection time/uncertainty, key continuity and non-wrapping manifest lineage.
-Any weakening requires action-bound custody/legal-hold/SoD authority; ordinary
-rotation can only preserve or strengthen the active profile.
+Freeze one independently authorized generation-zero initialization, stable
+tenant/deployment lineage identity, Uninitialized/Active state, CAS current
+head and authenticated committed activation record; raw-generation, fork, gap
+or reorder selection is unsupported. Initialization and any weakening use the
+complete destination-local six-state admission/pre-admission revocation/Issued
+revocation/expiry/consumption protocol with exact bytes, time, key, quorum/SoD,
+tombstone, result, audit and outbox. Ordinary rotation can only preserve or
+strengthen the active profile.
 Freeze its exact-target revocation
 intent with signer identity, key identity/epoch, authentication profile,
 issued-at, not-before, exact target expiry, maximum uncertainty and trusted-time
@@ -476,7 +482,7 @@ ClearedAfterRestore are explicit higher-generation transitions, and absence/
 rollback/wraparound denies. All history operations use the fixed universal
 fence-before-lineage/budget order and skip only inapplicable positions without
 reordering:
-active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
 `FenceMigrationImportRegistryHistoryCorruption` atomically records
 the observation, evidence, reason, generation, detector identity, canonical
 `MigrationImportRegistryHistoryCorruptionResultV1`, audit and outbox. The fence
@@ -494,11 +500,18 @@ restoration material.
 Persist the complete
 `MigrationImportRegistryHistoryCorruptionClearanceAuthorizationV1` row beside
 its independent admission/revocation/expiry/consumption lifecycle, exact-target
-sequence, tombstones/results and immutable proof-work budget. Persist the
-activation-bound anchor source-manifest lineage and activation-created
+sequence, tombstones/results and immutable proof-work budget. Persist the pre-
+activation anchor source-manifest lineage/genesis/current head/activation
+records/policy-transition authorization lifecycle and activation-created
 generation-zero registry; absence/default/lazy initialization denies. Persist
 the later non-wrapping registry, typed high-watermarks and independently
-authenticated full-manifest collection receipt. Fencing creates one
+authenticated full-manifest collection receipt. Registry advance atomically
+rebinds an Open scope; a live grant/attempt terminalizes AnchorSetStale with
+charges preserved and authorization generation advanced, while terminal scopes
+never change. Persist the activation-created non-borrowable corruption-control
+reserve, authenticated capacity-profile binding and immutable platform bound;
+trusted code alone derives the scope maximum and ordinary saturation cannot
+block fencing or bounded terminalization. Fencing creates one
 obligation/fence-generation clearance scope with sole active authorization,
 non-wrapping authorization generation, immutable lifetime hard maximum,
 cumulative precharges and Open/PermanentlyUnprovable/Cleared/RebuildActivated
@@ -514,7 +527,8 @@ ceilings equal exactly, remaining is derived, causal heads select one containing
 chain, and balances/reservations use one consistent snapshot.
 Persist one predecessor/fence-generation-keyed parent rebuild record with
 Open/Activated/PermanentlyRejected state, bounded proposal attempts, independent
-permanent-rejection authority, one activated successor and disjoint namespace
+permanent-rejection authority and its complete destination-local admission/
+revocation/expiry/consumption lifecycle, one activated successor and disjoint namespace
 selection. Invalid/stale/unauthorized proposals are no-write. A stale bundle,
 invalid join, exhausted/recreated scope or mapping ambiguity refuses.
 An independently admitted
@@ -556,7 +570,7 @@ counters include a pessimistically precharged complete preparation/activation/
 result/recovery quantum, and `AdmissionPrepared` requires the atomically stored
 complete unique receipt set. Job, barrier and every
 affected domain-owner activation guard must fit one local transaction with fixed
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox
 locking and
 expected-version CAS. Storage must prove atomic all-domain-owner activation with the
 authorization consumption/tombstone and job result, or refuse before
@@ -1303,6 +1317,13 @@ at each activation lock; omit, duplicate, reorder or substitute owner-manifest
 members and receipts; test partial preparation, one-owner rejection, concurrent
 activation, response loss, failover after prepare and prepared-state restore.
 Atomic activation must expose every domain owner plus the barrier/result or none.
+For history control state, race manifest genesis/current-head CAS and every
+destructive-grant transition; restore only the greatest authenticated committed
+activation record. Advance registry against no grant, a live attempt and each
+terminal scope and require one atomic rebinding result. Saturate normal rows,
+bytes, audit and outbox for Pending, NoHistory and NotRequested, then reduce the
+capacity profile; the admitted non-borrowable reserve still permits fencing and
+bounded terminalization without changing its trusted-derived scope maximum.
 Missing barrier/receipt/owner state fails closed, and every topology outside
 the selected co-located profile is rejected before staging.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
@@ -1372,11 +1393,12 @@ domain owner cannot alone authorize, admit or execute restoration. Ordinary
 history-recovery authority is not clearance authority, and no clearance role
 may collect/admit the anchor registry or provide its required independent
 quorum. Anchor-registry issuer/admitter, collection-receipt signers and
-clearance decision quorum remain separated. Anchor-source-manifest owner and
-weakening-transition approvers are independent from those roles. Freeze
+clearance decision quorum remain separated. Anchor-source-manifest bootstrap/
+successor owner, policy-transition issuer/admitter/revoker and weakening
+approvers are independent from those roles. Freeze
 distinct clearance-scope admission owner, attempt worker/takeover identity,
 successor-rebuild requestor/approver/operator and permanent-rejection issuer/
-admitter roles; none may self-authorize, occupy multiple scope generations,
+admitter/revoker roles; none may self-authorize, occupy multiple scope generations,
 permanently reject from candidate failure or choose a competing successor.
 Neither coordinator, a migration actor nor an
 affected domain owner may issue, admit, approve, activate or cancel its own
@@ -1627,8 +1649,10 @@ of `NoHistory`. A corruption-fenced obligation retains the fence, observations,
 evidence and every available activation/charge/result/head/checkpoint fragment
 plus every fence generation, clearance authorization/tombstone/result, proof-
 budget charge, anchor-registry generation/predecessor/high-watermarks,
-source-manifest lineage/transition authority, activation-created registry
-genesis, collection receipt, clearance scope/generation/lifetime counters/
+source-manifest lineage/genesis/current head/activation records/transition-
+authority tombstones, activation-created registry genesis/rebinding result,
+protected control reserve/profile/platform bound, collection receipt,
+clearance scope/generation/lifetime counters/
 terminal tombstone, clearance attempt/cursor/counters/result and externally
 retained anchor commitment until exact atomic restoration clears it; ordinary
 erasure or cleanup cannot weaken or clear the fence. A successor-generation
@@ -1780,11 +1804,13 @@ CAS-loser reread/first-terminal-winner semantics/attempt/
 waiver-or-abandonment record/checkpoint/activation-created non-wrapping
 Healthy/Fenced/ClearedAfterRestore corruption-fence state, universal lock
 order, evidence/result, clearance authorization lifecycle/revocation/tombstone/
-proof budget/source-manifest lineage/activation-created anchor-registry genesis/
-registry and collection receipt/clearance scope authorization-generation/
+proof budget/source-manifest lineage/genesis/current head/activation records/
+transition-authority tombstones/activation-created anchor-registry genesis/
+registry/scope-rebinding result/control reserve-profile-platform bound and
+collection receipt/clearance scope authorization-generation/
 lifetime counters/terminal tombstone/attempt lease-fence-cursor-counters-result/
 typed state join, atomic restoration bundle and clearance, parent rebuild/
-bounded proposals/permanent-rejection authority/unique successor/archive
+bounded proposals/complete permanent-rejection authority lifecycle/unique successor/archive
 selection,
 candidate/barrier/activation-authorization history-disposition commitments,
 coordinator-bootstrap stable identity/
@@ -1812,7 +1838,14 @@ exact obligation, treat absent fence as Healthy, invert fence and budget locks,
 bypass it during append/recovery/cleanup, clear it without a consumed exact
 authorization or with partial/stale/unanchored/inferred lineage, downgrade/
 omit a source manifest or required anchor, lazily create registry genesis,
-weaken source/quorum/nonresponse/time/continuity without authority, admit two
+fork/gap/reorder or raw-select its manifest head/activation record, infer
+manifest initialization/weakening or permanent rejection from a remote grant/
+revocation, bypass either complete destructive-authority table, advance the
+registry without atomic Open-scope rebinding/stale-grant terminalization, lose
+the corruption-control reserve, let ordinary saturation block fence/scope/
+terminal result, reduce an existing reservation with its capacity profile or
+accept a detector/adapter scope maximum, weaken source/quorum/nonresponse/time/
+continuity without authority, admit two
 live grants for one scope, reset fence-lifetime charges, replace EvidenceWait,
 run competing workers, field-wise join ceilings/remaining/balances or forked
 heads, roll back a registry/high-watermark, let invalid proposal consume the

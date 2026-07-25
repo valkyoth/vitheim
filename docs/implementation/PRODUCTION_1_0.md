@@ -604,7 +604,7 @@ closure of the currently admitted destination VIT-LAW-009 tuple/manifest; no
 separate invariant catalog is implemented. The manifest types VIT-INV-062 only
 as the live non-importable destination coordinator and every other applicable
 dependency as a domain contributor. One transaction uses
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox,
 rederives that split from
 the closure plus schema, migration plan and contributor algorithm, rechecks current budget/final counters, job
 lease/fence, terminal disposition, trusted-time/key/continuity-bound
@@ -612,7 +612,12 @@ authorization, staged root, complete unique owner receipts and versions,
 the exact history-disposition tag, variant-specific Pending budget/lineage,
 NoHistory proof or NotRequested custody/approval digest and bound retention/
 classification/legal-hold epochs, and the independently governed anchor-source
-manifest identity/generation/digest,
+manifest lineage/current-head/authenticated committed activation record after
+its one independently authorized destination-local genesis. Fork/gap/reorder,
+raw-generation selection and lazy initialization deny. The same activation
+creates the obligation-scoped anchor-registry generation zero and a
+non-borrowable Recovery control reservation whose trusted active capacity
+profile/platform bound covers fence/scope/terminal/result/audit/outbox state,
 consumes/tombstones authorization, then activates every domain owner plus the live coordinator's barrier/job
 result, exactly one Pending/zero-counter-lineage or
 NoHistory/source-manifest-bound zero-eligibility proof or
@@ -666,7 +671,7 @@ Missing lineage for either nonterminal atomically installs an exact-obligation
 has closed Healthy/Fenced/ClearedAfterRestore generations; absence, rollback or
 wraparound denies. Append, detection, recovery, clearance, checkpoint and
 cleanup all use
-active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering, so no path
 holds a budget while waiting for the fence. Fenced blocks append, recovery and
 cleanup for only that obligation. It clears only when an independently issued,
@@ -683,13 +688,22 @@ clearance scope that admits one live authorization/attempt generation, carries
 all lifetime proof precharges across permitted replacement grants and
 terminalizes as PermanentlyUnprovable, Cleared or RebuildActivated. EvidenceWait
 keeps the slot; replacements after expiry/revocation/stale/per-grant exhaustion
-receive only remaining scope capacity. Typed restoration algebra uses checked
+receive only remaining scope capacity. Registry advancement atomically rebinds
+an Open scope; a live grant/attempt becomes AnchorSetStale with charges
+preserved and authorization generation advanced, while terminal scopes do not
+change. Manifest initialization/weakening and permanent rebuild rejection use
+complete destination-local Absent/RevokedBeforeAdmission/Issued/Consumed/
+ExpiredUnused/RevokedUnused admission, revocation, expiry and same-transaction
+consumption protocols; remote messages have no effect. Trusted code derives the
+scope maximum from the reserved authenticated profile under the immutable
+platform maximum, and normal saturation or later profile reduction cannot
+block fencing/terminalization or alter an existing reservation. Typed restoration algebra uses checked
 maximum only for comparable consumed-work G-counters, exact immutable ceilings,
 derived remaining capacity, one containing causal head chain and one consistent
 balance/reservation snapshot. Undefined/forked joins remain fenced. The only
 fallback uses one predecessor/fence-generation parent with bounded proposal
 attempts, no-write invalid proposals, independently authorized permanent
-rejection and at most one activated successor/disjoint live archive namespace
+rejection with that complete lifecycle and at most one activated successor/disjoint live archive namespace
 while retaining the old fenced evidence.
 Its initial ceilings fit the versioned
 platform hard maximum, and no amendment/increase operation exists through
@@ -749,7 +763,12 @@ genesis or absence-as-Healthy, fence/budget lock inversion, generation rollback/
 wrap, corruption-fence widening/bypass, forged/replayed/revoked/expired
 clearance authority, stale signed anchor-set omission, local registry
 nomination, missing/lazy registry genesis, unauthorized source/class/quorum/
-nonresponse/time/continuity weakening or forged collection receipt, competing
+nonresponse/time/continuity weakening or forged collection receipt, manifest
+genesis/head fork/gap/reorder/raw-generation selection, abbreviated or remote-
+only destructive authority/revocation, registry advance without atomic scope
+rebind/stale terminalization, ordinary-capacity saturation blocking fence/
+terminal state, capacity-profile reduction losing a reserve, detector/adapter
+scope-maximum injection, competing
 valid scope grants, proof-budget escape/fence-lifetime reset, terminal-scope
 reopening, EvidenceWait replacement, attempt takeover/CAS/cursor replay,
 temporary-evidence retry amplification, authorization loss, stale/forked/
