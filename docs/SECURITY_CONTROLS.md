@@ -224,7 +224,7 @@ audit decision.
   late intent after Consumed returns the activation result without reversal;
 - through `1.0.0` every affected owner guard is co-located with the job/barrier,
   and one local transaction uses
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox,
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox,
   then rechecks current budget/fence/authorization/
   manifest/receipts/owner versions, consumes authorization, then activates all
   owner generations plus Pending/zero-counter-lineage or
@@ -250,11 +250,23 @@ audit decision.
   lineage commits an obligation-scoped corruption fence/result. Activation
   creates a Healthy generation-zero fence for every obligation; absence denies.
   Before activation, one independently authorized source-manifest genesis and
-  CAS-protected current-head/activation-record lineage rejects fork, gap,
-  reorder, raw-generation selection and lazy initialization. Activation binds
-  that head, creates registry generation zero and a non-borrowable Recovery
+  Prepared→ExternallyPublishedVerified→Active transition lineage rejects fork,
+  gap, reorder, raw-generation selection and lazy initialization. An
+  independent witness, secure monotonic store or external quorum verifies each
+  predecessor-linked checkpoint before current-head CAS. Restore/import checks
+  the external high-watermark; an older self-consistent local snapshot,
+  unavailable receipt/witness/key proof or local head below that watermark is
+  typed `ManifestHistoryUnavailableOrRolledBack` and unready. Activation binds
+  that witnessed head, creates registry generation zero and a non-borrowable Recovery
   control reservation for fence/scope/terminal/result/audit/outbox state under
-  a trusted capacity profile and immutable platform maximum. Every history
+  a trusted capacity profile and immutable platform maximum. It also creates an
+  obligation-wide control lineage holding the original reservation,
+  non-wrapping episode ordinal, maximum episodes, cumulative proof/retry/byte/
+  time/row/audit/outbox charges and remaining capacity. Every re-fence
+  precharges this lineage; clearance cannot reset it, and exhaustion or loss of
+  minimum future capacity permanently quarantines. Rebuild and custody-safe,
+  no-future-operation Release are explicit terminals; release checkpoints
+  before settling each original reserve leg exactly once. Every history
   path follows one fence-before-budget lock order. Append,
   recovery and cleanup stop until a separately issued/admitted/revocable/
   expiring single-use clearance authorization and a destination-ratcheted
@@ -265,8 +277,11 @@ audit decision.
   terminalizes a live stale grant with charges preserved and leaves terminal
   scopes unchanged. Source-policy weakening and permanent rebuild rejection
   each require complete destination-local admission, pre-admission/Issued
-  revocation, expiry and same-transaction consumption; remote messages confer
-  no effect. Typed restoration algebra separates monotonic counters,
+  revocation, expiry and same-transaction consumption. Their revocation intents
+  bind issuer/continuity, signer/key/epoch/profile, issued-at/not-before,
+  target-covering expiry, time uncertainty/profile/epoch, closed reason, nonce
+  and distinct revocation idempotency; omission/substitution denies and remote
+  messages confer no effect. Typed restoration algebra separates monotonic counters,
   exact ceilings, derived capacity, causal heads and consistent snapshots.
   Unprovable state stays fenced; one rebuild parent owns bounded proposals,
   independently authorized permanent rejection and one successor without

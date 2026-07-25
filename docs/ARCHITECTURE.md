@@ -557,7 +557,7 @@ restore, failover, and release evidence.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
    live coordinator job/barrier and every selected domain-owner guard to share one destination-local
    transaction. Its canonical order is
-   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox:
+   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox:
    after locking, trusted manifest rederivation and
    current-state rechecks, authorization consumption and all owner activations
    commit with barrier/job result, exactly one Pending plus zero-counter
@@ -591,13 +591,27 @@ restore, failover, and release evidence.
    fence for every obligation and absence fails closed; every history path
    locks fence before lineage/budget state. Before activation, an independently
    authorized source-manifest lineage performs its sole generation-zero
-   initialization and advances a CAS-protected current head only through
-   authenticated committed activation records; forks, gaps, raw-generation
-   selection and lazy initialization deny. Activation binds that current head,
+   initialization and advances only through
+   Prepared→ExternallyPublishedVerified→Active transitions. An independent
+   witness, secure monotonic store or external quorum verifies a
+   predecessor-linked checkpoint binding sequence, proposed head, manifest/
+   policy generations, authorization/result and trusted time/key continuity
+   before the current-head CAS. Restore/import verifies that external
+   high-watermark; a self-consistent older local database, unavailable receipt/
+   witness/key proof or local head below it returns typed
+   `ManifestHistoryUnavailableOrRolledBack` and remains unready. Forks, gaps,
+   raw-generation selection and lazy initialization deny. Activation binds that
+   externally witnessed current head,
    creates obligation-scoped registry generation zero and reserves
    non-borrowable Recovery rows/bytes/audit/outbox capacity for fencing, scope,
    terminalization and results under a trusted capacity profile/platform
-   maximum. Clearance uses an independent
+   maximum. One obligation-wide control lineage owns that original reserve,
+   precharges each non-wrapping fence episode and accumulates immutable episode
+   plus proof/retry/byte/time/row/audit/outbox limits across clearance and
+   re-fencing. Insufficient remaining or minimum future capacity permanently
+   quarantines the lineage. Rebuild is terminal for the predecessor; Release
+   requires a custody-safe no-future-operation checkpoint and exact-once
+   settlement of every original reserve leg. Clearance uses an independent
    admitted/revocable/expiring single-use authorization, bounded proof work and
    a destination-ratcheted anchor registry whose mandatory classes/quorums and
    independently authenticated collection receipt define greatest-known state.
@@ -608,6 +622,10 @@ restore, failover, and release evidence.
    Source-policy weakening and permanent rebuild rejection each use a complete
    destination-admitted, pre-admission-revocable, expiring, single-use
    authorization state machine and are consumed with the destructive change.
+   Their revocation intents canonically bind issuer/continuity,
+   signer/key/epoch/profile, issued-at/not-before, target-covering expiry,
+   time uncertainty/profile/epoch, closed reason, nonce and distinct revocation
+   idempotency; omission or substitution denies.
    Typed restoration algebra uses maxima only for comparable consumed-work
    G-counters, exact ceilings, derived remaining, causal heads and one consistent
    balance/reservation snapshot. Unprovable history stays fenced; one rebuild

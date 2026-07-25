@@ -1,8 +1,8 @@
 #!/bin/sh
 set -eu
 
-canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox'
-history_order='active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
+canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox'
+history_order='active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
 
 fail() {
     echo "migration/import policy: $*" >&2
@@ -83,12 +83,20 @@ then
     fail "obsolete activation order without manifest head or control reserve remains"
 fi
 
+if grep -R -Fq \
+    'corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition' \
+    docs
+then
+    fail "obsolete activation order without obligation-wide corruption-control lineage remains"
+fi
+
 for obsolete_order in \
     'history-obligation→corruption-fence→archive-head→history/idempotency→recovery-lineage-budget' \
     'history-obligation→lineage-disposition→recovery-lineage-budget→corruption-fence' \
     'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head' \
     'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt' \
-    'active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry'
+    'active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry' \
+    'active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition'
 do
     if grep -R -Fq "$obsolete_order" docs
     then
@@ -136,12 +144,20 @@ for requirement in \
     'remaining fence-lifetime budget' \
     'No adapter may lazily initialize it' \
     'only absent/Uninitialized-to-generation-zero path' \
-    'greatest authenticated committed activation record' \
+    'greatest authenticated Active activation record' \
+    'externally retained checkpoint high-' \
+    'No local manifest, activation-record or' \
+    'Prepared→ExternallyPublishedVerified→Active' \
     'locks registry,' \
     'no stranded Open scope' \
     'destructive-authority protocols, not signed blobs' \
     'Remote issuance or revocation has no effect' \
     'MigrationImportRegistryHistoryCorruptionControlReserveV1' \
+    'MigrationImportRegistryHistoryCorruptionControlLineageV1' \
+    'maximum episode count' \
+    'cannot replace it, replenish it or reset its counters' \
+    'sets the lineage PermanentlyQuarantined' \
+    'ReleaseMigrationImportRegistryHistoryCorruptionControlLineage' \
     'Ordinary work cannot borrow the' \
     'A detector or' \
     'all ordinary capacity is exhausted' \
@@ -158,6 +174,8 @@ for requirement in \
     'PermanentlyRejected' \
     'Malformed, unauthenticated, stale,' \
     'Permanent rejection requires an independently issued/admitted' \
+    'revocation issuer identity' \
+    'target-covering expiry/not-after' \
     'authentic but older bundle' \
     'The only v1 fallback' \
     'Corruption is an observed durable state' \
@@ -270,6 +288,18 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCurrentHeadV1 \
     InitializeMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifest \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestActivationRecordV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransitionV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransitionStateV1 \
+    PrepareMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransition \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransitionResultV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointAuthorityPortV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileV1 \
+    PublishAndVerifyMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpoint \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationReceiptV1 \
+    ActivateMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransition \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransitionConflict \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestHistoryUnavailableOrRolledBack \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestInitializationResultV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestInitializationConflict \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionActionV1 \
@@ -291,6 +321,16 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionControlReserveV1 \
     MigrationImportRegistryHistoryCorruptionControlCapacityProfileV1 \
     MigrationImportRegistryHistoryCorruptionControlPlatformHardMaximumV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageDispositionV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageHardMaximumV1 \
+    MigrationImportRegistryHistoryCorruptionControlMinimumFutureCapacityV1 \
+    MigrationImportRegistryHistoryCorruptionControlEpisodeV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageCheckpointV1 \
+    MigrationImportRegistryHistoryCorruptionControlReserveSettlementV1 \
+    ReleaseMigrationImportRegistryHistoryCorruptionControlLineage \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseResultV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageConflict \
     MigrationImportRegistryHistoryCorruptionClearanceScopeConflict \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryAuthorityPortV1 \

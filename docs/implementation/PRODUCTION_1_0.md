@@ -604,7 +604,7 @@ closure of the currently admitted destination VIT-LAW-009 tuple/manifest; no
 separate invariant catalog is implemented. The manifest types VIT-INV-062 only
 as the live non-importable destination coordinator and every other applicable
 dependency as a domain contributor. One transaction uses
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox,
 rederives that split from
 the closure plus schema, migration plan and contributor algorithm, rechecks current budget/final counters, job
 lease/fence, terminal disposition, trusted-time/key/continuity-bound
@@ -669,9 +669,21 @@ active hold denies NotRequested whenever declining archival weakens custody.
 Missing lineage for either nonterminal atomically installs an exact-obligation
 `MigrationImportRegistryHistoryCorruptionFenceV1`, never lazy repair. The fence
 has closed Healthy/Fenced/ClearedAfterRestore generations; absence, rollback or
-wraparound denies. Append, detection, recovery, clearance, checkpoint and
+wraparound denies. The bound anchor-source manifest advances only through
+Prepared→ExternallyPublishedVerified→Active transitions. A selected independent
+witness, secure monotonic store or external quorum verifies the predecessor-
+linked checkpoint before current-head CAS; restore/import verifies its external
+high-watermark, and a locally consistent older snapshot or unavailable receipt/
+witness/key proof is typed `ManifestHistoryUnavailableOrRolledBack` and unready.
+Activation creates one obligation-wide corruption-control lineage beside the
+original protected reserve. Every fence generation precharges its non-wrapping
+episode and cumulative proof/retry/byte/time/row/audit/outbox limits; clearance
+never resets them. Insufficient future capacity permanently quarantines,
+rebuild terminalizes the predecessor and Release requires a custody-safe
+no-future-operation checkpoint plus exact-once settlement of every original
+reserve leg. Append, detection, recovery, clearance, checkpoint and
 cleanup all use
-active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering, so no path
 holds a budget while waiting for the fence. Fenced blocks append, recovery and
 cleanup for only that obligation. It clears only when an independently issued,
@@ -694,10 +706,15 @@ preserved and authorization generation advanced, while terminal scopes do not
 change. Manifest initialization/weakening and permanent rebuild rejection use
 complete destination-local Absent/RevokedBeforeAdmission/Issued/Consumed/
 ExpiredUnused/RevokedUnused admission, revocation, expiry and same-transaction
-consumption protocols; remote messages have no effect. Trusted code derives the
-scope maximum from the reserved authenticated profile under the immutable
-platform maximum, and normal saturation or later profile reduction cannot
-block fencing/terminalization or alter an existing reservation. Typed restoration algebra uses checked
+consumption protocols. Their revocation intents bind issuer/continuity,
+signer/key/epoch/profile, issued-at/not-before, target-covering expiry,
+trusted-time uncertainty/profile/epoch, closed reason, nonce and distinct
+revocation idempotency; omission/substitution denies and remote messages have
+no effect. Trusted code derives each scope allocation from the obligation-wide
+lineage’s checked remaining reservation under its authenticated profile and
+immutable platform maximum. Normal saturation or later profile reduction
+cannot block fencing/terminalization, alter an existing reservation or create
+fresh capacity for a later fence. Typed restoration algebra uses checked
 maximum only for comparable consumed-work G-counters, exact immutable ceilings,
 derived remaining capacity, one containing causal head chain and one consistent
 balance/reservation snapshot. Undefined/forked joins remain fenced. The only
@@ -765,12 +782,18 @@ clearance authority, stale signed anchor-set omission, local registry
 nomination, missing/lazy registry genesis, unauthorized source/class/quorum/
 nonresponse/time/continuity weakening or forged collection receipt, manifest
 genesis/head fork/gap/reorder/raw-generation selection, abbreviated or remote-
-only destructive authority/revocation, registry advance without atomic scope
+only destructive authority/revocation, locally self-consistent rollback below
+the external checkpoint high-watermark, activation before publication
+verification, witness/key substitution or outage, destructive-revocation
+issuer/continuity/time/lifetime/reason/nonce/idempotency omission, registry
+advance without atomic scope
 rebind/stale terminalization, ordinary-capacity saturation blocking fence/
 terminal state, capacity-profile reduction losing a reserve, detector/adapter
 scope-maximum injection, competing
 valid scope grants, proof-budget escape/fence-lifetime reset, terminal-scope
-reopening, EvidenceWait replacement, attempt takeover/CAS/cursor replay,
+reopening, repeated clear/re-fence episode/reserve reset, missing/recreated
+obligation control lineage, minimum-future-capacity bypass, duplicated release
+settlement, EvidenceWait replacement, attempt takeover/CAS/cursor replay,
 temporary-evidence retry amplification, authorization loss, stale/forked/
 unanchored/partial/inferred clearance, registry/high-watermark rollback,
 field-wise ceiling/remaining/balance merge, forked-head join or overflow,

@@ -36,7 +36,7 @@ after any terminal commit without partial domain-owner visibility.
 All Phase O evidence also preserves the non-wrapping active coordinator
 generation/fence, which every VIT-INV-062 mutation locks and rechecks first.
 Activation uses exactly
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox.
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox.
 Bootstrap evidence covers stable identity/idempotency, its closed lifecycle,
 independently admitted, pre-admission-revocable begin, fresh handoff and
 cancellation authorizations with separation of duties, bounded work/
@@ -66,16 +66,28 @@ budgets. Missing nonterminal lineage installs a durable exact-obligation
 `MigrationImportRegistryHistoryCorruptionFenceV1` that blocks append, recovery
 and cleanup. Activation also binds the independently governed expected anchor-
 source-manifest current head after a destination-local, independently
-authorized single genesis and authenticated committed activation-record chain;
-fork/gap/reorder, raw-generation selection, absence or lazy genesis denies.
+authorized single genesis and
+Prepared→ExternallyPublishedVerified→Active transition chain. Each transition
+publishes and verifies its predecessor-linked checkpoint against the selected
+independent witness, secure monotonic store or external quorum before the
+current-head CAS. Restore/import verifies the external high-watermark; local
+rollback below it or unavailable receipt/witness/key continuity is typed
+`ManifestHistoryUnavailableOrRolledBack` and unready. Fork/gap/reorder,
+raw-generation selection, local-only latest claims, absence or lazy genesis
+deny.
 Activation creates registry generation zero and a non-borrowable Recovery
 control reservation, derived by trusted code under an authenticated active
 capacity profile and immutable platform maximum, for fence/scope/
 terminalization/result/audit/outbox state across every disposition and ordinary
-capacity saturation. Only independently authorized complete atomic restoration of the
+capacity saturation. It also creates one obligation-wide control lineage over
+the original reserve. Every fence generation precharges a non-wrapping episode
+and cumulative proof/retry/byte/time/row/audit/outbox limits; clearance never
+resets them. Insufficient future capacity permanently quarantines, rebuild is
+terminal for the predecessor, and custody-safe Release checkpoints before
+settling each original reserve leg exactly once. Only independently authorized complete atomic restoration of the
 activation bundle and all post-activation charges/results/head/checkpoints may
 clear it. Every path follows
-active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering. Clearance
 consumes an independently issued/admitted/revocable/expiring single-use
 authorization, stays inside its proof budget and proves coverage through
@@ -100,7 +112,10 @@ permanent rebuild rejection each preserve the complete destination-local
 Absent/RevokedBeforeAdmission/Issued/Consumed/ExpiredUnused/RevokedUnused
 admission, pre-admission/Issued revocation, expiry, same-transaction consumption,
 result/audit/outbox and CAS-loser table; remote issuance/revocation alone has no
-effect.
+effect. Their revocation intent preimages bind issuer/continuity,
+signer/key/epoch/profile, issued-at/not-before, target-covering expiry,
+trusted-time uncertainty/profile/epoch, closed reason, nonce and distinct
+revocation idempotency; field omission or substitution denies.
 Exhaustion retains ManualRecoveryPending until an independently
 authorized exact action acts. RetryAppend reaches Appended or pending only and
 typed successor exhaustion never abandons; cumulative lineage counters span
@@ -2090,6 +2105,9 @@ make RetryAppend abandon, reset cumulative counters through fresh grants,
 try to increase ceilings through policy/profile/backend/restore, omit or lazily
 create initial lineage, split initial attempt/cumulative charging, fork/gap/
 reorder or raw-select the source-manifest genesis/current-head activation chain,
+roll back a locally self-consistent database below the external manifest
+checkpoint high-watermark, activate a Prepared head before publication
+verification, substitute/unavailable a witness or rotate/revoke its key,
 remotely issue/revoke or bypass the complete manifest-weakening/rebuild-
 rejection authorization table, replace
 NoHistory proof with absence, forge a custody-free NotRequested or substitute
@@ -2105,7 +2123,10 @@ genesis, forge its collection receipt, advance registry without atomic Open-
 scope rebinding/active-grant terminalization, exhaust ordinary capacity before
 fencing, reduce the profile after activation or inject a detector/adapter scope
 maximum, admit competing scope grants, reset
-fence-lifetime proof charges, replace EvidenceWait, race attempt takeover, loop
+fence-lifetime proof charges, clear and repeatedly re-fence to reset episode/
+reserve capacity, omit/recreate the obligation-wide control lineage, exhaust
+minimum future capacity without permanent quarantine, duplicate custody-safe
+release settlement, replace EvidenceWait, race attempt takeover, loop
 temporary evidence, field-wise merge ceilings/remaining/balances or forked
 heads, let invalid proposals consume the rebuild parent, infer permanent
 rejection, exceed proposal bounds, create competing successors, expose both
@@ -2118,7 +2139,8 @@ outer/payload action or corrupt a
 derived action index, mix action payload fields, use unknown/noncanonical
 discriminants or options, convert an expiry winner into revocation,
 omit/substitute revocation signer/key/profile/
-time fields, reorder recovery revocation, substitute retention/classification/legal-hold
+issuer/continuity/issued-at/not-before/target-covering-expiry/time-uncertainty/
+reason/nonce/idempotency fields, reorder recovery revocation, substitute retention/classification/legal-hold
 epochs, forge compliance/legal approval or lower custody evidence floors,
 substitute successor budgets, forge waiver/abandonment or clean retained
 descriptors; leave one domain owner unprepared/rejecting; race cleanup and

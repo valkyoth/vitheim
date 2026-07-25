@@ -8,9 +8,19 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added externally published and verified source-manifest checkpoints so a
+  locally consistent older snapshot cannot roll back the authoritative current
+  head without failing the external high-watermark check.
+- Added an obligation-wide corruption-control lineage with bounded episode
+  count, cumulative cross-scope work/capacity counters, permanent quarantine,
+  checkpointed exact-once reserve settlement and custody-safe release.
+- Canonicalized every destructive revocation intent’s issuer, signer/key,
+  continuity, trusted-time, target-lifetime, reason, nonce and idempotency
+  preimage fields with omission/substitution tests.
 - Added an independently authorized source-manifest lineage bootstrap with one
   genesis, CAS-protected current head, authenticated committed activation
-  records and fork/gap/reorder-safe restore/import selection.
+  records, external rollback resistance and fork/gap/reorder-safe
+  restore/import selection.
 - Made anchor-registry advancement atomically rebind an Open clearance scope,
   including charge-preserving AnchorSetStale terminalization of any live grant
   and attempt, so a valid scope cannot remain stranded on an old registry.
@@ -19,7 +29,8 @@ All notable Vitheim changes are documented here. The format follows
   weakening and permanent rebuild rejection.
 - Added activation-time non-borrowable corruption-control reservations and
   trusted capacity-profile/platform-bound derivation of clearance-scope maxima,
-  ensuring ordinary saturation cannot block fencing or terminalization.
+  with obligation-wide episode accounting ensuring ordinary saturation or
+  repeated re-fencing cannot block/reset fencing or terminalization.
 - Added one fence-wide corruption-clearance scope with a sole active
   authorization generation, immutable lifetime work maximum, cumulative
   charges and terminal Cleared, PermanentlyUnprovable or RebuildActivated

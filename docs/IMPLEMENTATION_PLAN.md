@@ -225,7 +225,7 @@ has no effect, and late revocation after Consumed returns the activation result
 without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 uses the canonical
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox
 order, rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all domain-owner versions, consumes and
 tombstones authorization, then activates every domain owner plus barrier/job result/
@@ -270,12 +270,29 @@ nonterminal lineage commits an obligation-scoped corruption fence/result before
 return; append, recovery and cleanup stop. Activation creates every fence as
 Healthy generation zero, absence fails closed and all history paths use one
 fence-before-budget order. A separately authorized manifest-lineage bootstrap
-creates exactly one generation zero before activation; successors atomically
-CAS manifest/current-head/activation-record/result/audit/outbox, and restore
-selects the greatest authenticated committed record rather than a raw
-generation. Activation binds that head, creates registry generation zero and
+creates exactly one generation zero before activation. Every transition is
+first Prepared, then published and verified as a predecessor-linked checkpoint
+through the selected independent witness, secure monotonic store or external
+quorum, and only then made Active with the manifest/current-head/result/audit/
+outbox CAS. The checkpoint binds a non-wrapping sequence, predecessor, proposed
+head, manifest/policy generations, authorization/result and trusted time/key
+continuity. Restore/import verifies the external high-watermark and requires
+the greatest reachable Active record to equal the local head and publication
+receipt. A locally consistent older snapshot, missing external proof or local
+head below that watermark returns typed
+`ManifestHistoryUnavailableOrRolledBack` and leaves the deployment unready.
+Activation binds that witnessed head, creates registry generation zero and
 reserves non-borrowable Recovery capacity for fence/scope/terminal/result/
-audit/outbox state from a trusted profile/platform bound. Clearance has a distinct admitted/revocable/
+audit/outbox state from a trusted profile/platform bound. Activation also
+creates one obligation-wide corruption-control lineage over that original
+reserve. Its non-wrapping episode ordinal, maximum episodes, cumulative proof/
+retry/byte/time/row/audit/outbox counters and remaining capacity survive every
+clearance and re-fence; a scope, detector, restore or adapter cannot reset or
+replenish them. Each fence precharges an episode. Exhaustion or failure to
+retain minimum future-control capacity permanently quarantines the lineage and
+keeps the obligation fenced. Rebuild terminalizes the predecessor as Rebuilt;
+Release requires a custody-safe checkpoint proving that no future operation is
+possible and settles each original reserve leg exactly once. Clearance has a distinct admitted/revocable/
 expiring single-use authorization, destination-ratcheted mandatory-class/
 quorum anchor registry and authenticated collection receipt. One fence-wide
 scope admits one live authorization/attempt and retains lifetime proof charges
@@ -283,7 +300,11 @@ across replacements. Registry advancement atomically rebinds an Open scope,
 terminalizes any live grant as stale without losing charges and never rewrites
 a terminal scope. Manifest weakening and permanent rebuild rejection each use
 the complete destination-local admission/revocation/expiry/consumption table;
-remote grants or revocations have no effect. Restoration uses field-specific typed state algebra. If
+their destructive-revocation intent preimages bind issuer/continuity,
+signer/key/epoch/profile, issued-at/not-before, target-covering expiry,
+time uncertainty/profile/epoch, closed reason, nonce and a distinct revocation
+idempotency. Missing or substituted fields deny, and remote grants or
+revocations have no effect. Restoration uses field-specific typed state algebra. If
 unprovable, one rebuild parent permits bounded proposals, independently
 authorized permanent rejection and one successor while the old evidence stays
 fenced.

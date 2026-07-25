@@ -2519,7 +2519,7 @@ The supported through-`1.0.0` activation profile requires the live coordinator
 generation, job, candidate, barrier, authorization row and every affected
 domain-owner activation guard to be co-located in one destination-local
 transaction domain. The canonical full order is
-`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox`.
+`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox`.
 This is `VIT-LAW-009
 AtomicMigrationImportActivation`: trusted derivation selects the exact affected
 domain-owner set while every selected domain owner retains exclusive authority.
@@ -2999,13 +2999,22 @@ in the scope lifetime counters and no replacement exceeds remaining capacity.
 PermanentlyUnprovable, Cleared and RebuildActivated tombstones reject all later
 admission. Omit activation-created anchor-registry genesis, substitute its
 source manifest, present raw generation without a committed manifest activation
-record/current head, fork/gap/reorder genesis or a successor, weaken sources/
+record/current head and verified external checkpoint receipt/high-watermark,
+restore a locally self-consistent older manifest/head/activation snapshot,
+fork/gap/reorder genesis, checkpoint or a successor, withhold/revoke/rotate the
+witness/key or lose checkpoint proof, weaken sources/
 classes/quorum/nonresponse/time/continuity without an admitted transition
 grant, or lazily initialize either lineage and require denial. Exercise
+Prepared→ExternallyPublishedVerified→Active transitions and prove the current
+head never advances before independent publication verification. Exercise
 manifest initialization, weakening and rebuild-rejection admission, pre-
 admission/Issued revocation, expiry, consumption, response loss and every CAS
 race through the complete destructive-authority table; remote issuance/
-revocation alone has no effect. Advance the registry while Healthy/no-scope,
+revocation alone has no effect. Omit/substitute each destructive revocation
+issuer/continuity, signer/key/epoch/profile, issued-at/not-before/not-after,
+target-lifetime coverage, uncertainty/time-profile/epoch, reason, nonce,
+sequence and revocation-idempotency field and require canonical decode or
+admission denial. Advance the registry while Healthy/no-scope,
 with an Open scope and no live grant, with an Issued/EvidenceWait attempt and
 against every terminal scope; the registry
 and scope binding either commit their one canonical rebinding result or none,
@@ -3024,7 +3033,13 @@ activation reservation must still commit fence/scope/result/audit/outbox and
 every bounded terminalization. Reduce the active capacity profile afterward;
 existing reservations and scope maxima remain intact, detector/adapter limits
 are ignored, and new activation fails atomically when its full reserve is
-unavailable.
+unavailable. Repeatedly clear and re-fence through every allowed episode;
+episode ordinals and proof/retry/byte/time/row/audit/outbox charges increase
+once across scopes and never reset. Exhaust the episode count and each lineage
+counter, lose minimum future capacity, race rebuild and custody release, crash
+around checkpoint/settlement and retry settlement after response loss; require
+PermanentlyQuarantined or Rebuilt/Released exactly as specified, no operational
+return without the minimum reserve, and no duplicate/recreated capacity.
 Exercise admission, expiry, revocation and consumption from every state in the
 total table, including every exact duplicate, changed-material conflict and
 race; expiry winning must return its canonical expiry result without becoming
@@ -3213,13 +3228,19 @@ has closed
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCurrentHeadV1`.
 `InitializeMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifest`
 is the only absent/Uninitialized-to-generation-zero path. It consumes the
-independent policy-transition authorization defined below and uses an
-expected-version CAS to commit canonical no-predecessor manifest bytes,
-`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestActivationRecordV1`,
-current head,
-`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestInitializationResultV1`,
-audit and outbox together. Exact retry joins that result; an initialized
-lineage, changed bytes, identity/version mismatch or competing genesis returns
+independent policy-transition authorization defined below only at final
+activation. Initialization first creates a non-authoritative Prepared
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransitionV1`
+with canonical no-predecessor manifest bytes; it does not install a current
+head. Its closed
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransitionStateV1`
+is Prepared, ExternallyPublishedVerified or Active.
+`PrepareMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransition`
+also prepares every successor under exact expected head/predecessor bytes.
+Exact retry joins canonical
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransitionResultV1`;
+an initialized competing genesis, changed bytes, identity/version mismatch or
+competing transition returns
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestInitializationConflict`
 without mutation. There is exactly one genesis; no adapter, deployment
 configuration or activation worker can synthesize it.
@@ -3231,16 +3252,54 @@ profile, and source signer/key-continuity requirements.
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestAuthorityPortV1`
 is separate from clearance, detection, import and collection roles.
 `AdvanceMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifest`
-locks the current head and uses expected-version CAS, a non-wrapping generation,
-exact predecessor digest and canonical
+prepares under the current head using expected-version CAS, a non-wrapping
+generation, exact predecessor digest and canonical
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestAdvanceResultV1`/
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestConflict`
-exact-retry semantics. Genesis and every successor atomically commit manifest,
-current head, activation record, result, audit and outbox or none. Fork,
-duplicate generation, gap, reorder, predecessor mismatch and wrap are rejected.
-Restore/import selects the greatest authenticated committed activation record
-reachable from genesis and matching the current head, never the numerically
-greatest raw generation.
+exact-retry semantics.
+
+Every Prepared transition creates
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointV1`
+with non-wrapping checkpoint sequence, exact predecessor checkpoint, proposed
+current-head digest, manifest/policy generation, transition authorization and
+prepared-result digests, trusted-time evidence and signer/key/profile/
+continuity. Independent
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointAuthorityPortV1`
+publishes it under the selected non-empty
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileV1`
+to a witness, secure monotonic store or externally retained checkpoint quorum.
+`PublishAndVerifyMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpoint`
+authenticates the external high-watermark, checkpoint continuity/key rotation/
+revocation/time and canonical
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationReceiptV1`
+before CAS-moving only that transition to ExternallyPublishedVerified.
+Unavailable, insufficient, stale, revoked or discontinuous external evidence
+keeps it non-authoritative.
+
+Only
+`ActivateMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransition`
+may CAS an ExternallyPublishedVerified transition to Active and install the
+current head. Initialization/weakening consumes its still-Issued destructive
+grant in this same transaction; strengthening consumes the exact ordinary
+source-manifest authority result. Manifest, current head,
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestActivationRecordV1`,
+publication receipt,
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestInitializationResultV1`
+or advance result, audit and outbox commit together or none. Fork, duplicate
+generation/checkpoint, gap, reorder, predecessor mismatch and wrap are rejected.
+Exact retry joins the closed transition result; changed transition/publication/
+head/authority material returns
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransitionConflict`
+without mutation.
+
+Restore/import queries or verifies the externally retained checkpoint high-
+watermark and selects the greatest authenticated Active activation record
+reachable from genesis and matching both local current head and verified
+publication receipt. Local state below that watermark, a locally complete
+rollback, or unavailable proof returns typed
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestHistoryUnavailableOrRolledBack`
+and keeps the deployment unready. No local manifest, activation-record or
+current-head row alone may assert latest state.
 Removing a source/class, lowering quorum, widening nonresponse, time uncertainty
 or expiry, or weakening continuity requires an independent action-bound
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationV1`
@@ -3270,6 +3329,22 @@ reservation; a later capacity-profile reduction preserves already admitted
 reservations until the obligation reaches a terminal custody-safe state.
 Activation fails atomically if it cannot reserve the complete control-state
 envelope.
+
+That transaction also creates one obligation-wide
+`MigrationImportRegistryHistoryCorruptionControlLineageV1` with stable identity,
+zero consumed episode/counter state, no active Fenced scope and closed
+`MigrationImportRegistryHistoryCorruptionControlLineageDispositionV1` Active.
+Immutable
+`MigrationImportRegistryHistoryCorruptionControlLineageHardMaximumV1` binds the
+non-wrapping maximum episode count and cumulative proof/retry/byte/time/row/
+audit/outbox ceilings across every future corruption episode; versioned
+`MigrationImportRegistryHistoryCorruptionControlMinimumFutureCapacityV1` binds
+the smallest complete fence/scope/terminalization envelope that must remain
+reserved before an obligation may return to operational health. Both derive in
+trusted code from the reservation/profile under the immutable platform
+maximum. The lineage owns the original reservation identity and exact
+overflow-checked remaining capacity. A per-fence scope, detector, restore or
+adapter cannot replace it, replenish it or reset its counters.
 
 `AppendMigrationImportRegistryHistory` consumes only a durable Pending
 obligation after the canonical activation result/outbox commit, under
@@ -3464,7 +3539,7 @@ Healthy.
 
 Every append, detection, recovery, clearance, checkpoint and cleanup path uses
 one universal relative order:
-active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
 An operation locks only its present/applicable rows and reservations, but it
 never acquires a later position before an earlier one. In particular no path
 holds a budget while waiting for the fence, and detection of a missing lineage
@@ -3474,18 +3549,30 @@ semantics refuses the profile.
 
 `FenceMigrationImportRegistryHistoryCorruption` uses that order. Its one local
 transaction first claims the activation-created protected control reservation,
-then binds the obligation, expected Healthy/ClearedAfterRestore fence
-generation, observed lineage presence/bytes/digest, corruption reason,
+then locks the obligation-wide control lineage and binds the obligation,
+expected Healthy/ClearedAfterRestore fence generation, observed lineage
+presence/bytes/digest, corruption reason,
 coordinator generation/fence, detector identity, bounded evidence, idempotency
-and audit/outbox positions, then increments the fence generation and commits
-Fenced, canonical
+and audit/outbox positions. It first precharges one non-wrapping corruption-
+episode ordinal plus the complete worst-case episode rows/bytes/proof/retry/
+time/audit/outbox quantum against the lineage. Only remaining lineage capacity
+may fund the new immutable
+`MigrationImportRegistryHistoryCorruptionControlEpisodeV1` and canonical
 `MigrationImportRegistryHistoryCorruptionClearanceScopeV1` generation zero for
-that exact obligation/Fenced generation, and canonical
+that exact obligation/Fenced generation. The transaction then increments the
+fence generation, records the active fence/scope in the control lineage and
+commits Fenced, the episode/scope, and canonical
 `MigrationImportRegistryHistoryCorruptionResultV1`. The scope maximum is copied
-only from the trusted-code-derived value in that reservation, is bounded by the
-immutable platform maximum and is never detector- or adapter-supplied. Fence,
-scope, result, reservation accounting, audit and outbox commit together even
-when all ordinary capacity is exhausted. Exact retry returns that result;
+only from the lineage allocation, cannot exceed its checked remaining lifetime
+capacity and is never detector-, adapter- or new-fence-supplied. Every scope
+charge also atomically advances the obligation-wide lineage counters; clearance
+cannot refund or reset them. Fence, episode, scope, result, reservation/lineage
+accounting, audit and outbox commit together even when all ordinary capacity is exhausted.
+Episode-count/counter exhaustion or inability to retain
+`MigrationImportRegistryHistoryCorruptionControlMinimumFutureCapacityV1`
+sets the lineage PermanentlyQuarantined, commits the evidence/result using its
+protected terminal reserve and keeps the obligation Fenced without creating
+fresh operational capacity. Exact retry returns that result;
 changed observation under the same idempotency returns
 `MigrationImportRegistryHistoryCorruptionConflict`. Detection has no effect
 until this commit; the fence is obligation-scoped and cannot quarantine a
@@ -3505,8 +3592,10 @@ overflow-checked cumulative
 decode/hash/signature/proof/bytes/time/retry counters; current anchor source-
 manifest and registry generations/digests; and terminal result/audit/outbox.
 The hard maximum must equal the value derived by trusted code and reserved at
-activation from the authenticated active control-capacity profile; it cannot be
-increased or reconstructed from detector, adapter, restore or import input.
+activation from the authenticated active control-capacity profile and allocated
+to this episode by the obligation-wide control lineage. It cannot exceed
+lineage remaining capacity or be increased/reconstructed from a new fence,
+detector, adapter, restore or import input.
 Every authorization admission, proof precharge, terminal attempt, restore and
 rebuild locks/rechecks this row. Absence, generation rollback or mismatch
 returns `MigrationImportRegistryHistoryCorruptionClearanceScopeConflict`
@@ -3603,8 +3692,12 @@ increments the scope authorization generation and receives no more than the
 remaining fence-lifetime budget. EvidenceWait never releases the slot.
 Authenticated Unprovable or exhaustion of the scope hard maximum atomically
 sets PermanentlyUnprovable and a durable tombstone; admission then always
-denies. Successful restore sets Cleared. Rebuild activation sets
-RebuildActivated. Every terminal disposition invalidates any stale competing
+denies. Successful proof may set scope Cleared and fence ClearedAfterRestore
+only if the locked control lineage remains Active and retains its configured
+minimum future fencing/terminalization capacity; otherwise it atomically sets
+the control lineage PermanentlyQuarantined and leaves the fence operationally
+closed. Rebuild activation sets scope RebuildActivated and the control lineage
+Rebuilt. Every terminal disposition invalidates any stale competing
 grant/worker by the scope generation, and none may return to Open.
 
 `AdmitMigrationImportRegistryHistoryCorruptionClearanceAuthorization` is the
@@ -3665,7 +3758,8 @@ joins the same live attempt; another worker may take over only after the lease
 and fencing-token CAS, and the old token cannot commit.
 
 Every proof execution transaction precharges its bounded worst-case quantum
-atomically against both attempt counters and the clearance-scope lifetime counters
+atomically against attempt counters, clearance-scope lifetime counters and the
+obligation-wide control-lineage counters
 before external fetch, decode, allocation, hash or signature work. Completion
 commits the cursor/result under the same quantum identity. Exact response-loss
 retry joins a committed step; an ambiguous or crashed incomplete execution
@@ -3808,8 +3902,13 @@ Authenticated
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationRevocationIntentV1`
 and
 `MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationRevocationIntentV1`
-bind the exact target authorization bytes/digest and use target-scoped
-non-wrapping
+bind the exact target authorization bytes/digest; revocation issuer identity
+and continuity; signer identity, key identity/epoch and authentication profile;
+issued-at and not-before; target-covering expiry/not-after; maximum uncertainty
+and trusted-time profile/epoch; closed reason code; nonce; and a distinct
+revocation idempotency identity. The canonical not-after covers the complete
+target authorization lifetime and cannot be shortened by transport or adapter
+defaults. Both use target-scoped non-wrapping
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationRevocationSequenceKeyV1`
 or
 `MigrationImportRegistryHistoryCorruptionRebuildRejectionAuthorizationRevocationSequenceKeyV1`.
@@ -3875,6 +3974,31 @@ migration, failover and rollback preserve every Healthy/Fenced/
 ClearedAfterRestore generation, anchor-registry ratchet/receipt, authorization,
 attempt/cursor/charge/result and predecessor-successor mapping before any worker
 starts; omission, duplication or recreation refuses readiness.
+
+The control lineage disposition is exactly Active, PermanentlyQuarantined,
+Rebuilt or Released. Rebuild activation atomically records Rebuilt and prevents
+another corruption episode on the predecessor. PermanentlyQuarantined preserves
+the fence and enough non-borrowable capacity to record its final custody
+decision; neither state can return to Active. Before any reservation capacity
+is released, canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCheckpointV1` must cover
+every episode ordinal/scope/fence/result, cumulative counter, audit/outbox
+position and the exact original/remaining reservation. Only
+`ReleaseMigrationImportRegistryHistoryCorruptionControlLineage` may move an
+eligible Active, PermanentlyQuarantined or Rebuilt lineage to custody-safe
+Released after locking and proving retention/classification/legal-hold policy,
+terminal history disposition, no possible future history operation/corruption
+episode, and a complete checkpoint.
+`MigrationImportRegistryHistoryCorruptionControlReserveSettlementV1` settles
+each original reserved row/byte/audit/outbox leg exactly once in the same
+transaction as Released,
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseResultV1`, audit
+and outbox. Exact retry returns that result; changed lineage/checkpoint/custody/
+settlement/idempotency returns
+`MigrationImportRegistryHistoryCorruptionControlLineageConflict` without
+mutation. Missing episode records, reset counters, duplicate settlement,
+checkpoint-before-release violation or recreated capacity fails restore/import
+and keeps the destination unready.
 
 `ResolveMigrationImportRegistryHistoryRecovery` follows the universal history
 order.
@@ -3961,14 +4085,18 @@ authorization retain their exact disposition/evidence/policy commitments; the
 universal lock order is supported; and every clearance authorization,
 revocation/tombstone, clearance-scope authorization generation/lifetime
 counters/terminal disposition, proof budget, source-manifest lineage/genesis/
-current head/authenticated activation records/policy-transition authorization
-tombstones, activation-created anchor-registry genesis and later registry
+current head/authenticated activation records/checkpoint chain/publication
+receipts/externally verified high-watermark/policy-transition authorization
+tombstones, activation-created control lineage/episode ordinals/hard maxima/
+cumulative counters/active scope/disposition/checkpoint/reserve settlement,
+anchor-registry genesis and later registry
 generation/predecessor/typed high-watermark plus atomic scope-rebinding result,
 protected control reserve/profile/platform bound, authenticated collection receipt, durable
 attempt/lease/fence/cursor/precharge/result, typed state join and parent rebuild/
 bounded proposal/rejection-authorization/successor mapping is complete.
-Missing/defaulted fence, scope, source-manifest head/activation/destructive-
-authority state, control reserve/profile bound or registry genesis/rebinding state; an
+Missing/defaulted fence, scope, source-manifest head/activation/checkpoint/
+external-high-watermark/destructive-authority state, control reserve/profile/
+lineage/episode/settlement state or registry genesis/rebinding state; an
 old bundle below a current required anchor; reset lifetime charge; field-wise
 invalid join; lost/recreated rebuild parent; duplicate successor; ambiguous
 archive selection; or a backend unable to atomically consume clearance
