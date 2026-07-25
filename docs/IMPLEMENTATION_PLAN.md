@@ -225,7 +225,7 @@ has no effect, and late revocation after Consumed returns the activation result
 without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 uses the canonical
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox
 order, rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all domain-owner versions, consumes and
 tombstones authorization, then activates every domain owner plus barrier/job result/
@@ -267,19 +267,26 @@ cumulative rows. NoHistory proves authenticated zero eligibility; NotRequested c
 current retention/classification/legal-hold/evidence-floor/compliance/legal/SoD
 record in the activation transaction and active-hold weakening denies. Missing
 nonterminal lineage commits an obligation-scoped corruption fence/result before
-return; append, recovery and cleanup stop. Clearance requires independently
-authorized restoration of the exact activation bundle and complete subsequent
-charge/result/head lineage, never lazy repair or inferred counters.
+return; append, recovery and cleanup stop. Activation creates every fence as
+Healthy generation zero, absence fails closed and all history paths use one
+fence-before-budget order. Clearance has a distinct admitted/revocable/
+expiring single-use authorization, bounded proof budget and greatest-known
+external anchors; restoration must cover those anchors or the old obligation
+stays permanently fenced and only a new coordinator generation may rebuild.
+Candidate, barrier and activation authorization bind the exact Pending/
+NoHistory/NotRequested tag, variant evidence and custody epochs, so changed
+history treatment requires fresh activation authority.
 Its initial ceilings must fit the platform hard maximum and
 cannot be amended or increased through `1.0.0`. Recovery authority and result
 use closed RetryAppend/Waive/Abandon tagged unions with canonical absence of
 other-action fields, and the union tag is the sole action authority; any index
 is derived and read-verified. Admission, expiry, revocation and consumption
-share one total six-state row and return one closed outcome enum. Explicit
+share one total six-state row and return one closed outcome enum, including
+Fenced as observed state rather than conflict. Explicit
 expiry is Issued-only; absent expiry/consumption returns typed no-write
 NotAdmitted, while admission alone may authenticate an already expired grant.
-One closed operation-conflict wrapper carries authorization, revocation,
-recovery or lineage-corrupt detail. Different valid operations on one exact
+One closed operation-conflict wrapper carries only authorization, revocation
+or recovery mismatch detail. Different valid operations on one exact
 target reread the table after CAS loss; only changed target/idempotency material
 conflicts. Typed winner results make every exact retry reproducible, with expiry never
 converted into revocation. Recovery revocation takes effect only in its destination row and

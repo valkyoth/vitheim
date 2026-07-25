@@ -604,17 +604,24 @@ closure of the currently admitted destination VIT-LAW-009 tuple/manifest; no
 separate invariant catalog is implemented. The manifest types VIT-INV-062 only
 as the live non-importable destination coordinator and every other applicable
 dependency as a domain contributor. One transaction uses
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox,
 rederives that split from
 the closure plus schema, migration plan and contributor algorithm, rechecks current budget/final counters, job
 lease/fence, terminal disposition, trusted-time/key/continuity-bound
 authorization, staged root, complete unique owner receipts and versions,
+the exact history-disposition tag, variant-specific Pending budget/lineage,
+NoHistory proof or NotRequested custody/approval digest and bound retention/
+classification/legal-hold epochs,
 consumes/tombstones authorization, then activates every domain owner plus the live coordinator's barrier/job
 result, exactly one Pending/zero-counter-lineage or
 NoHistory/source-manifest-bound zero-eligibility proof or
 NotRequested/custody-governed
 `MigrationImportRegistryHistoryNotRequestedRecordV1` disposition, audit/outbox or
-none. Every pre-activation failure permanently fences the candidate;
+none. Candidate, barrier and activation authorization carry that identical
+history commitment; any change returns
+`MigrationImportActivationHistoryDispositionConflict` and requires fresh
+authority. Every obligation also receives Healthy non-wrapping corruption-fence
+generation zero in the activation transaction. Every pre-activation failure permanently fences the candidate;
 prepared state is never authority. Activation is irreversible and response-loss
 retry returns its canonical result. Cleanup before activation touches only
 fenced dormant/staged state and after activation touches only staging.
@@ -653,12 +660,23 @@ linkage. The activation transaction locks/rechecks those custody inputs and an
 active hold denies NotRequested whenever declining archival weakens custody.
 Missing lineage for either nonterminal atomically installs an exact-obligation
 `MigrationImportRegistryHistoryCorruptionFenceV1`, never lazy repair. The fence
-blocks append, recovery and cleanup for only that obligation. It clears only
-when independently authorized
+has closed Healthy/Fenced/ClearedAfterRestore generations; absence, rollback or
+wraparound denies. Append, detection, recovery, clearance, checkpoint and
+cleanup all use
+active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+skipping only inapplicable positions without reordering, so no path
+holds a budget while waiting for the fence. Fenced blocks append, recovery and
+cleanup for only that obligation. It clears only when an independently issued,
+admitted, revocable, expiring, single-use
+`MigrationImportRegistryHistoryCorruptionClearanceAuthorizationV1` is consumed
+within its immutable proof-work budget and
 `RestoreMigrationImportRegistryHistoryAtomicBundle` proves and atomically
 commits the exact activation bundle plus complete post-activation charges,
-results, archive head and checkpoints; incomplete or inferred lineage leaves
-the fence permanent.
+results, archive head and checkpoints through every greatest-known authenticated
+external anchor. A stale, forked, incomplete, inferred, unanchored or
+over-budget bundle leaves the fence permanent. The only fallback rebuilds into
+a separately authorized successor coordinator generation/new obligation and
+retains the old fenced evidence.
 Its initial ceilings fit the versioned
 platform hard maximum, and no amendment/increase operation exists through
 `1.0.0`. Recovery authorization/result union tags are the sole authoritative
@@ -667,7 +685,11 @@ from exact authorization bytes. Admission, expiry, revocation and consumption
 follow the total six-state row and return the one closed outcome plus the
 single
 `MigrationImportRegistryHistoryRecoveryAuthorizationOperationConflictV1`
-envelope. Admission may precede expiry or revocation; consumption, expiry and
+envelope. The outcome includes Fenced for durable corruption; the conflict
+envelope contains only Authorization, Revocation or Recovery changed-material
+variants. Admission/consumption observe Fenced without mutation, while expiry/
+revocation may still terminalize existing authority but cannot clear the
+fence. Admission may precede expiry or revocation; consumption, expiry and
 revocation race for one first terminal winner. A CAS loser rereads and reapplies
 the table. Different valid operations on the same exact authorization are not
 changed material; only changed target/identity/digest/scope or reused
@@ -708,8 +730,13 @@ cross-action sequence suppression, remote-effect inference, recovery-budget
 substitution, RetryAppend-to-Abandon escalation, cumulative-counter reset or
 ceiling increase, absent/lazily reconstructed initial lineage, split
 attempt/cumulative charge, custody-free NotRequested, false/absent NoHistory,
-corruption-fence widening/bypass, partial/inferred clearance, guessed-identity
-expiry tombstone, adapter-specific outcome/conflict, valid-operation
+post-authorization disposition/evidence/policy substitution, missing fence
+genesis or absence-as-Healthy, fence/budget lock inversion, generation rollback/
+wrap, corruption-fence widening/bypass, forged/replayed/revoked/expired
+clearance authority, proof-budget escape, stale/forked/unanchored/partial/
+inferred clearance, greatest-known-head rollback, old-fence deletion during
+successor rebuild, guessed-identity expiry tombstone, adapter-specific
+outcome/conflict, Fenced-as-LineageCorrupt encoding, valid-operation
 misclassification, skipped CAS reread, dual terminal winners, outer/payload
 action contradiction or
 derived-index mismatch, unknown/mixed/noncanonical action payloads,

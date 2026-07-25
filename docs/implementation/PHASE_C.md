@@ -2405,7 +2405,13 @@ complete trusted-code-derived owner manifest; every owner
 identity, authoritative key, expected version/epoch and proposed dormant
 generation/root; migration lease generation and fence; trusted-time interval,
 deadline and exact activation-authorization digest; and candidate digest plus stable
-idempotency identity. Each existing invariant owner validates its portion and
+idempotency identity. It also binds the exact
+`MigrationImportRegistryHistoryLineageDispositionV1` tag and its complete
+history commitment: Pending binds obligation, ordinary/cumulative budget and
+lineage-profile digests; NoHistory binds the zero-eligibility proof digest; and
+NotRequested binds the custody-record/approval digest. Every variant binds the
+retention/classification/legal-hold identities and epochs used to prepare it.
+Each existing invariant owner validates its portion and
 prepares only a dormant, non-authoritative candidate generation. Its canonical
 authenticated `MigrationImportOwnerPreparationReceiptV1` binds all candidate,
 owner-manifest, owner, version/epoch, dormant-generation/root, verifier/build
@@ -2432,7 +2438,10 @@ budget profile/final counters; requestor, approvers, quorum and separation of
 duties; policy, change and optional incident authority; issued-at, not-before,
 expiry, maximum uncertainty, trusted-time profile/epoch and issuer continuity;
 signer/issuer identity, key epoch and authentication profile; and nonce/
-idempotency identity. `MigrationImportActivationAuthorizationAuthorityPortV1`
+idempotency identity. It binds the candidate's exact history-disposition tag,
+the variant-specific Pending lineage/budget, NoHistory proof or NotRequested
+custody/approval digest, and the retention/classification/legal-hold identities
+and epochs approved at issuance. `MigrationImportActivationAuthorizationAuthorityPortV1`
 is an independent authority-capability boundary. VIT-INV-062 and every domain
 owner have verification-only access: registry, importer and migration runners
 cannot mint or self-approve activation.
@@ -2451,7 +2460,9 @@ canonical `MigrationImportActivationResultV1`, all domain-owner activations,
 barrier/job result, audit and outbox commit in the same destination-local
 transaction. Exact post-commit retry returns the original result. Reuse for a
 different candidate, staged root, owner manifest, counters, request bytes or
-action returns typed `MigrationImportActivationAuthorizationConflict` without
+history disposition/evidence/policy epoch returns typed
+`MigrationImportActivationHistoryDispositionConflict`; other changed action
+material returns typed `MigrationImportActivationAuthorizationConflict` without
 mutation.
 
 Revocation uses canonical `MigrationImportActivationRevocationIntentV1`
@@ -2496,8 +2507,9 @@ Freeze canonical `MigrationImportActivationBarrierV1` containing the exact
 candidate digest, complete ordered owner-manifest and preparation-receipt set,
 expected current destination generations, current job state/lease/fence and
 budget profile/final counters, activation authorization and closed consumption
-state, trusted-time evidence, non-wrapping activation sequence/predecessor, and
-canonical result. VIT-INV-062 coordinates completeness and owns only this
+state, the exact history-disposition tag, variant-specific evidence digests and
+retention/classification/legal-hold identities/epochs, trusted-time evidence,
+non-wrapping activation sequence/predecessor, and canonical result. VIT-INV-062 coordinates completeness and owns only this
 security-control state. It cannot approve a domain transition, fabricate a
 receipt or make prepared state authoritative.
 
@@ -2505,7 +2517,7 @@ The supported through-`1.0.0` activation profile requires the live coordinator
 generation, job, candidate, barrier, authorization row and every affected
 domain-owner activation guard to be co-located in one destination-local
 transaction domain. The canonical full order is
-`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox`.
+`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox`.
 This is `VIT-LAW-009
 AtomicMigrationImportActivation`: trusted derivation selects the exact affected
 domain-owner set while every selected domain owner retains exclusive authority.
@@ -2521,6 +2533,12 @@ then atomically consumes and tombstones authorization, activates all dormant
 domain-owner generations, commits the barrier sequence/result, moves the job to
 `Activated`, creates exactly one bounded history-append obligation or explicit
 NoHistory/NotRequested terminal, and writes audit/result/outbox.
+It rechecks the current history-disposition evidence and custody epochs against
+the candidate, barrier and authorization immediately before commit. Any tag,
+Pending budget/lineage digest, NoHistory proof, NotRequested custody/approval
+digest or policy epoch change requires a fresh activation authorization and
+returns `MigrationImportActivationHistoryDispositionConflict`; it is never
+substituted under a generally worded activation grant.
 Missing, duplicate, reordered or substituted receipts, stale owner/job state,
 partial preparation, expired authority or any owner rejection commits no
 activation. Exact concurrent or response-loss retry returns the one barrier
@@ -2943,16 +2961,28 @@ current retention/classification/legal-hold/evidence-floor/compliance/legal/SoD
 rechecks in its canonical record; activate a hold before commit and require
 denial whenever omission weakens custody. Both terminals commit their distinct
 evidence plus a canonical no-executable-lineage marker that binds why no budget
-row exists. For every initial append quantum, crash
+row exists. Substitute Pending/NoHistory/NotRequested after authorization,
+change any variant evidence digest or rotate a bound policy epoch: candidate,
+barrier and authorization mismatch must return the typed history-disposition
+conflict and require fresh authorization. Every obligation atomically receives
+Healthy fence generation zero; omit/delete/default/roll back the row and
+require fail-closed corruption rather than implicit health. For every initial append quantum, crash
 between both budget updates and work start; per-attempt and cumulative charges
 must commit together, never undercount, and never be created lazily. Missing or
 mismatched lineage for Pending/ManualRecoveryPending must return typed
 corruption only after the exact obligation-scoped fence/result commits. Race
 detectors, append, recovery and cleanup; exact detection joins one fence,
 changed evidence conflicts, scope cannot widen and no cleanup/checkpoint occurs.
-Clearance must fail unless it authenticates the activation bundle and complete
-post-activation charge/result/head lineage; incomplete evidence leaves the
-fence permanent. Restore/migration omission must remain fenced.
+Model-check every history-operation pair against the universal lock order,
+including a missing lineage row, and prove no fence-versus-budget inversion or
+backend-specific absent-row lock behavior can deadlock or bypass fencing.
+Clearance must authenticate/admit/consume one exact-target authorization,
+survive pre-admission and Issued revocation/expiry/response loss, stay within
+its proof budget and authenticate the activation bundle plus complete post-
+activation lineage through every greatest-known external anchor. Old,
+forked, incomplete, unanchored or over-budget evidence leaves the fence
+permanent; only the separately authorized successor-coordinator rebuild path
+may create a new obligation while the old one stays fenced.
 Exercise admission, expiry, revocation and consumption from every state in the
 total table, including every exact duplicate, changed-material conflict and
 race; expiry winning must return its canonical expiry result without becoming
@@ -2961,7 +2991,10 @@ NotAdmitted outcome without any row/tombstone/sequence/idempotency write;
 admission of an authenticated expired grant is the only absent-to-expired path.
 Every operation must encode its winning admission/expiry/revocation/recovery
 result through the same closed outcome enum and every detailed conflict through
-the matching variant of the one top-level operation-conflict wrapper. Race
+the matching Authorization/Revocation/Recovery variant of the one top-level
+operation-conflict wrapper. Fenced is an outcome, never a conflict: admission/
+consumption observes it without a write while expiry/revocation may still
+terminalize existing authority without clearing the fence. Race
 different operations on the same exact target and require CAS losers to reread/
 reapply the table, never conflict merely because operation kinds differ.
 Admission may be followed by revocation or expiry; the first of consumption,
@@ -3118,11 +3151,19 @@ executable budget row exists or is required and requiring canonical absence of
 all executable-lineage fields. An absent obligation or a mismatched
 obligation/lineage pair is corrupt activation state, never shorthand for a
 terminal.
+The same activation transaction creates exactly one
+`MigrationImportRegistryHistoryCorruptionFenceV1` for every Pending, NoHistory
+or NotRequested obligation. Its non-wrapping fence generation starts at zero
+in `Healthy`; absence is corruption and never means healthy. Candidate,
+barrier and activation authorization bind this initial fence identity/
+generation beside the history-disposition commitment. Activation therefore
+commits obligation, Healthy fence, lineage disposition and the variant-specific
+lineage/proof/custody evidence atomically or commits none.
 
 `AppendMigrationImportRegistryHistory` consumes only a durable Pending
 obligation after the canonical activation result/outbox commit, under
-active-coordinator-generation→history-obligation→corruption-fence→archive-head→history/
-idempotency→recovery-lineage-budget→archive-budget→audit/result/outbox locking.
+the universal history order defined below. It rejects an absent fence and
+proceeds only from Healthy or ClearedAfterRestore.
 Canonical
 `MigrationImportRegistryHistoryArchiveHeadV1` binds tenant/deployment/
 namespace, non-wrapping sequence, predecessor/root/entry digest, key/profile,
@@ -3194,16 +3235,21 @@ MigrationImportRegistryHistoryRecoveryAuthorizationOperationConflictV1>`. The cl
 outcome is exactly `Admitted(AdmissionResultV1)`,
 `Expired(ExpiryResultV1)`, `Revoked(RevocationResultV1)`,
 `Consumed(RecoveryResultV1)` or
-`NotAdmitted(MigrationImportRegistryHistoryRecoveryAuthorizationNotAdmitted)`.
+`NotAdmitted(MigrationImportRegistryHistoryRecoveryAuthorizationNotAdmitted)`,
+or `Fenced(MigrationImportRegistryHistoryCorruptionResultV1)`.
 NotAdmitted is a typed no-write observation: it creates no authorization row,
 sequence, tombstone, idempotency result or authority.
 The closed top-level conflict wrapper is exactly
 `Authorization(MigrationImportRegistryHistoryRecoveryAuthorizationConflict)`,
 `Revocation(MigrationImportRegistryHistoryRecoveryAuthorizationRevocationConflict)`,
-`Recovery(MigrationImportRegistryHistoryRecoveryConflict)` or
-`LineageCorrupt(MigrationImportRegistryHistoryCorruptionResultV1)`. Existing
+or `Recovery(MigrationImportRegistryHistoryRecoveryConflict)`. Existing
 detailed conflict records remain canonical inner variants and are never exposed
-as incompatible top-level API errors.
+as incompatible top-level API errors. Corruption is an observed durable state,
+not changed request material, and therefore appears only as Fenced outcome.
+Admission or consumption against Fenced returns that canonical no-write
+outcome. Expiry and revocation of an already Issued grant remain permitted
+safety-reducing transitions and return Expired or Revoked; they cannot clear,
+bypass or reinterpret the fence.
 
 Recovery authorization revocation is a complete delivery protocol.
 `MigrationImportRegistryHistoryRecoveryAuthorizationRevocationIntentV1` binds
@@ -3297,14 +3343,30 @@ no-executable-lineage proof for NoHistory/NotRequested.
 
 Corruption fencing is separately owned state and never a new append
 disposition. `MigrationImportRegistryHistoryCorruptionFenceV1` is keyed only by
-the exact obligation and has closed
-`MigrationImportRegistryHistoryCorruptionFenceStateV1` Fenced or Cleared
-states. `FenceMigrationImportRegistryHistoryCorruption` locks
-active-coordinator-generation→history-obligation→lineage-disposition→recovery-lineage-budget→corruption-fence→audit/result/outbox.
-Its one local transaction binds the obligation, observed lineage presence/
-bytes/digest, corruption reason, coordinator generation/fence, detector
-identity, bounded evidence, idempotency and audit/outbox positions, then
-commits Fenced plus canonical
+the exact obligation and has a non-wrapping fence generation plus closed
+`MigrationImportRegistryHistoryCorruptionFenceStateV1` Healthy, Fenced or
+ClearedAfterRestore states. Activation alone creates Healthy generation zero;
+Fencing and clearance each increment the generation, and later detection may
+move ClearedAfterRestore to a higher-generation Fenced. Absence, rollback,
+wraparound or an unexpected transition is corruption and never interpreted as
+Healthy.
+
+Every append, detection, recovery, clearance, checkpoint and cleanup path uses
+one universal relative order:
+active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+An operation locks only its present/applicable rows and reservations, but it
+never acquires a later position before an earlier one. In particular no path
+holds a budget while waiting for the fence, and detection of a missing lineage
+row locks the activation-created fence before testing or attempting to lock
+that lineage. An adapter unable to implement this same order and absent-row
+semantics refuses the profile.
+
+`FenceMigrationImportRegistryHistoryCorruption` uses that order. Its one local
+transaction binds the obligation, expected Healthy/ClearedAfterRestore fence
+generation, observed lineage presence/bytes/digest, corruption reason,
+coordinator generation/fence, detector identity, bounded evidence, idempotency
+and audit/outbox positions, then increments the fence generation and commits
+Fenced plus canonical
 `MigrationImportRegistryHistoryCorruptionResultV1`. Exact retry returns that
 result; changed observation under the same idempotency returns
 `MigrationImportRegistryHistoryCorruptionConflict`. Detection has no effect
@@ -3314,23 +3376,82 @@ lock/recheck the fence after the obligation lock. Fenced returns the canonical
 corruption result, permits no append/recovery/checkpoint/cleanup and never
 creates lineage or infers counters.
 
-Clearance is not ordinary editing.
-`RestoreMigrationImportRegistryHistoryAtomicBundle` requires independently
-authorized Recovery/restore authority, quorum and SoD; authenticates the exact
-activation-era barrier/result/obligation/lineage-disposition bundle plus every
-post-activation attempt/cumulative charge, append/recovery result, archive-head
-advance and checkpoint through the fenced observation; and refuses incomplete,
-forked or inferred evidence. Its same-order local transaction restores only
-those exact authenticated bytes and conservative counters, commits Cleared
-plus `MigrationImportRegistryHistoryCorruptionClearanceResultV1`, audit and
-outbox, or returns `MigrationImportRegistryHistoryCorruptionConflict` without
-mutation. If the complete lineage cannot be proven, Fenced is permanent and
-custody evidence remains retained. Restore, migration, failover and rollback
-preserve both Fenced/Cleared history and results before any worker starts.
+Clearance is not ordinary editing and has its own complete authority protocol.
+Canonical
+`MigrationImportRegistryHistoryCorruptionClearanceAuthorizationV1` binds the
+exact obligation, current Fenced generation and observed-corruption digest;
+exact proposed restoration bundle/root and expected current archive,
+checkpoint, attempt, cumulative-lineage and result heads; a versioned
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSetV1` with greatest-
+known signed checkpoint, externally retained head commitment and/or witness-
+quorum high-watermarks; immutable
+`MigrationImportRegistryHistoryCorruptionClearanceVerificationBudgetV1`;
+requestor/approvers/operator, quorum and SoD; signer/issuer/key/profile/
+continuity; trusted-time interval/profile/epoch; nonce and idempotency.
+`MigrationImportRegistryHistoryCorruptionClearanceAuthorizationAuthorityPortV1`
+is an independent issuer/admitter capability boundary. The detector, importer,
+activation actor, archive worker, affected domain owner and ordinary recovery
+issuer have verification-only access and cannot mint, admit or self-approve
+clearance.
 
-`ResolveMigrationImportRegistryHistoryRecovery` locks
-active-coordinator-generation→history-obligation→corruption-fence→recovery-authorization→archive-head→history/
-idempotency→recovery-lineage-budget→successor-archive-budget→retention/legal-hold→audit/result/outbox.
+`AdmitMigrationImportRegistryHistoryCorruptionClearanceAuthorization` is the
+only Absent-to-Issued path. The closed
+`MigrationImportRegistryHistoryCorruptionClearanceAuthorizationStateV1` is
+Absent, RevokedBeforeAdmission, Issued, Consumed, ExpiredUnused or
+RevokedUnused. Admission and
+`ExpireMigrationImportRegistryHistoryCorruptionClearanceAuthorization` return
+canonical
+`MigrationImportRegistryHistoryCorruptionClearanceAuthorizationAdmissionResultV1`
+and
+`MigrationImportRegistryHistoryCorruptionClearanceAuthorizationExpiryResultV1`.
+The authenticated
+`MigrationImportRegistryHistoryCorruptionClearanceAuthorizationRevocationIntentV1`
+uses an exact-authorization/obligation/fence-generation-scoped non-wrapping
+`MigrationImportRegistryHistoryCorruptionClearanceAuthorizationRevocationSequenceKeyV1`;
+only
+`ApplyMigrationImportRegistryHistoryCorruptionClearanceAuthorizationRevocation`
+may create RevokedBeforeAdmission or CAS Issued to RevokedUnused in the
+destination row and returns
+`MigrationImportRegistryHistoryCorruptionClearanceAuthorizationRevocationResultV1`.
+Remote emission has no effect. All operations return the
+closed
+`MigrationImportRegistryHistoryCorruptionClearanceAuthorizationOutcomeV1` or
+typed
+`MigrationImportRegistryHistoryCorruptionClearanceAuthorizationConflict`;
+exact response-loss retries return the committed result and changed target,
+anchor, bundle, budget, time or idempotency material conflicts without
+mutation.
+
+`RestoreMigrationImportRegistryHistoryAtomicBundle` accepts only an admitted
+Issued clearance authorization and the bounded proof budget. It authenticates
+the exact activation-era barrier/result/obligation/Healthy-fence/lineage-
+disposition bundle plus every post-activation attempt/cumulative charge,
+append/recovery result, archive-head advance and checkpoint. It must prove the
+proposed root covers through every greatest-known external anchor and equals
+the locked expected current heads; a historically authentic but older bundle
+cannot roll back newer counters, heads or results. Its universal-order local
+transaction consumes the single-use authorization, restores only those exact
+authenticated bytes and conservative counters, increments Fenced to
+ClearedAfterRestore, and commits
+`MigrationImportRegistryHistoryCorruptionClearanceResultV1`, authorization
+tombstone, audit and outbox atomically. Exact retry returns that result;
+changed material returns the authorization or corruption conflict without
+mutation.
+
+Missing, forked, stale, over-budget, inferred or externally unanchored
+completeness returns typed
+`MigrationImportRegistryHistoryCorruptionClearanceUnprovable` and leaves
+Fenced permanent with custody evidence retained. The only v1 fallback is
+`RebuildMigrationImportRegistryHistoryUnderSuccessorCoordinator`: a separately
+authorized coordinator-bootstrap and activation flow creates a new coordinator
+generation and new obligation identity from independently anchored evidence;
+it never clears, overwrites or reuses the old fenced obligation. Restore,
+migration, failover and rollback preserve every Healthy/Fenced/
+ClearedAfterRestore generation, authorization, anchor, budget and result before
+any worker starts.
+
+`ResolveMigrationImportRegistryHistoryRecovery` follows the universal history
+order.
 It reauthenticates the retained descriptors and exact exhausted predecessor,
 rechecks current retention/classification/legal-hold generations and evidence
 floor, then consumes the exact action grant. Its closed transition matrix is:
@@ -3407,8 +3528,17 @@ coordinator-schema migration.
 Import preserves every
 authorization schema field without defaulting and admits the destination only
 if it proves the same or stronger no-late-commit mechanism; otherwise imported
-topology authority remains fenced and unready. Import calls the shared
-replay-lifecycle verifier and admits issuance only after the destination proves
+topology authority remains fenced and unready. Import calls the shared history
+verifier before any worker: every obligation has a non-wrapping
+Healthy/Fenced/ClearedAfterRestore fence lineage; candidate/barrier/activation
+authorization retain their exact disposition/evidence/policy commitments; the
+universal lock order is supported; and every clearance authorization,
+revocation/tombstone, proof budget, external-anchor high-watermark and result is
+complete. Missing/defaulted fence state, an old bundle below a greatest-known
+anchor or a backend unable to atomically consume clearance authority refuses
+import and leaves the obligation fenced.
+It then calls the shared replay-lifecycle verifier and admits issuance only
+after the destination proves
 the same writer-authoritative admission guard, exact replay-head/
 optional-settlement-journal-head/key lock order,
 head-change restart, canonical dual-unique key, monotonic cumulative attempt

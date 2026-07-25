@@ -74,11 +74,17 @@ Authenticated append advances the archive head. Exhaustion remains ManualRecover
 until exact independent action authority acts. RetryAppend cannot waive/
 abandon. Activation creates zero-counter cumulative lineage beside Pending and
 initial append co-charges it with the attempt budget; NoHistory proves zero eligibility while NotRequested commits current custody/approval evidence. Missing lineage commits
-an obligation fence and only complete authenticated restoration clears it.
+an obligation fence. Activation creates a Healthy generation-zero fence for
+every obligation; absence denies and every history path locks it before
+lineage/budget. Clearance has its own admitted/revocable/expiring single-use
+authorization, bounded proof budget and greatest-known external anchors;
+unprovable lineage stays fenced. Candidate, barrier and activation authority
+bind the exact disposition/evidence/policy epochs.
 Closed authorization/result tags are the
 sole action discriminator. A total six-state row returns one closed outcome;
-expiry is Issued-only and absent expiry/consumption writes nothing. All work
-uses one closed conflict wrapper and CAS losers reread the state table. All work
+Fenced is an outcome rather than conflict, expiry is Issued-only and absent
+expiry/consumption writes nothing. All changed-material failures use one closed
+conflict wrapper and CAS losers reread the state table. All work
 shares immutable platform-capped cumulative lineage limits with no amendment
 through `1.0.0`; recovery
 revocation binds complete authentication/time fields and is destination-local.

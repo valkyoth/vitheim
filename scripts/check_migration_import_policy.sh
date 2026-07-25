@@ -1,7 +1,8 @@
 #!/bin/sh
 set -eu
 
-canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox'
+canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox'
+history_order='active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
 
 fail() {
     echo "migration/import policy: $*" >&2
@@ -21,6 +22,16 @@ for file in \
 do
     grep -Fq "$canonical" "$file" ||
         fail "$file omits the canonical activation lock order"
+done
+
+for file in \
+    docs/implementation/PHASE_C.md \
+    docs/implementation/OPTION_DECISIONS.md \
+    docs/implementation/PHASE_O.md \
+    docs/implementation/PRODUCTION_1_0.md
+do
+    grep -Fq "$history_order" "$file" ||
+        fail "$file omits the universal history lock order"
 done
 
 if grep -R -Fq \
@@ -51,6 +62,23 @@ then
     fail "obsolete activation order without retention/legal-hold locking remains"
 fi
 
+if grep -R -Fq \
+    'ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold' \
+    docs
+then
+    fail "obsolete activation order without corruption-fence genesis remains"
+fi
+
+for obsolete_order in \
+    'history-obligation→corruption-fence→archive-head→history/idempotency→recovery-lineage-budget' \
+    'history-obligation→lineage-disposition→recovery-lineage-budget→corruption-fence'
+do
+    if grep -R -Fq "$obsolete_order" docs
+    then
+        fail "obsolete history lock order remains: $obsolete_order"
+    fi
+done
+
 for obsolete in \
     'scope, action discriminator' \
     'descriptor and action, exact authorization identity/digest' \
@@ -75,8 +103,16 @@ for requirement in \
     'unknown action discriminants' \
     'An active legal hold categorically rejects Waive or Abandon' \
     'An active hold rejects NotRequested whenever declining archival' \
+    'Activation alone creates Healthy generation zero' \
+    'Absence, rollback,' \
+    'holds a budget while waiting for the fence' \
+    'MigrationImportRegistryHistoryCorruptionClearanceAuthorizationV1' \
+    'historically authentic but older bundle' \
+    'The only v1 fallback is' \
+    'Corruption is an observed durable state' \
+    'exact history-disposition tag' \
     'the fence is obligation-scoped and cannot quarantine a' \
-    'If the complete lineage cannot be proven, Fenced is permanent' \
+    'MigrationImportRegistryHistoryCorruptionClearanceUnprovable' \
     'different valid operations, not changed material' \
     'CAS loss, the loser rereads the row and reapplies this table' \
     'Remote emission has no effect'
@@ -90,6 +126,7 @@ trap 'rm -rf "$tmp_dir"' EXIT HUP INT TERM
 
 for symbol in \
     MigrationImportCoordinatorGenerationV1 \
+    MigrationImportActivationHistoryDispositionConflict \
     MigrationImportCoordinatorBootstrapAuthorizationV1 \
     MigrationImportCoordinatorBootstrapBeginAuthorizationV1 \
     AdmitMigrationImportCoordinatorBootstrapBeginAuthorization \
@@ -152,10 +189,30 @@ for symbol in \
     MigrationImportRegistryHistoryLineageStateMissing \
     MigrationImportRegistryHistoryCorruptionFenceV1 \
     MigrationImportRegistryHistoryCorruptionFenceStateV1 \
+    MigrationImportRegistryHistoryCorruptionFenceHealthy \
+    MigrationImportRegistryHistoryCorruptionFenceFenced \
+    MigrationImportRegistryHistoryCorruptionFenceClearedAfterRestore \
     FenceMigrationImportRegistryHistoryCorruption \
     MigrationImportRegistryHistoryCorruptionResultV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAuthorizationV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAuthorizationAuthorityPortV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAuthorizationStateV1 \
+    AdmitMigrationImportRegistryHistoryCorruptionClearanceAuthorization \
+    MigrationImportRegistryHistoryCorruptionClearanceAuthorizationAdmissionResultV1 \
+    ExpireMigrationImportRegistryHistoryCorruptionClearanceAuthorization \
+    MigrationImportRegistryHistoryCorruptionClearanceAuthorizationExpiryResultV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAuthorizationRevocationIntentV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAuthorizationRevocationSequenceKeyV1 \
+    ApplyMigrationImportRegistryHistoryCorruptionClearanceAuthorizationRevocation \
+    MigrationImportRegistryHistoryCorruptionClearanceAuthorizationRevocationResultV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAuthorizationOutcomeV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAuthorizationConflict \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSetV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceVerificationBudgetV1 \
     RestoreMigrationImportRegistryHistoryAtomicBundle \
     MigrationImportRegistryHistoryCorruptionClearanceResultV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceUnprovable \
+    RebuildMigrationImportRegistryHistoryUnderSuccessorCoordinator \
     MigrationImportRegistryHistoryCorruptionConflict \
     MigrationImportRegistryHistorySuccessorBudgetExhausted \
     MigrationImportRegistryHistoryWaiverRecordV1 \
@@ -175,6 +232,13 @@ do
         fail "semantic gate accepts VIT-LAW-009 without $symbol"
     fi
 done
+
+if grep -Fq \
+    'LineageCorrupt(MigrationImportRegistryHistoryCorruptionResultV1)' \
+    docs/implementation/PHASE_C.md
+then
+    fail "corruption remains misclassified as a changed-material conflict"
+fi
 
 if grep -Fq 'ManualRecoveryRequired' \
     docs/LAW_SEMANTIC_REALIZATIONS.md \

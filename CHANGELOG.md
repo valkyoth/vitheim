@@ -8,6 +8,18 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Unified every history mutation under one deadlock-safe fence-before-budget
+  lock order and made activation create a non-wrapping Healthy fence row for
+  every obligation; absent fence state now fails closed.
+- Added a complete single-use corruption-clearance authorization protocol with
+  admission/revocation/expiry, bounded proof work, greatest-known external
+  anchors and permanent fencing when completeness cannot be proven.
+- Bound the exact Pending, NoHistory or NotRequested disposition and its
+  evidence/policy epochs into the candidate, barrier and activation
+  authorization so executors cannot substitute history treatment.
+- Classified durable corruption as a Fenced operation outcome, not a
+  changed-material conflict; the conflict wrapper now contains only
+  authorization, revocation and recovery mismatches.
 - Closed the pre-archive custody path: NotRequested now commits a canonical
   current-policy/legal-hold/evidence-floor/compliance-approved record, while
   NoHistory remains a cryptographic zero-eligibility proof.
@@ -69,7 +81,7 @@ All notable Vitheim changes are documented here. The format follows
   work/cleanup bounds and a disposition independent from irreversible
   activation.
 - Standardized and machine-check the migration/import activation order as
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox.
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox.
 
 - Closed revocation-before-authorization ordering with explicit
   `AdmitMigrationImportActivationAuthorization` and a shared

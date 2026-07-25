@@ -557,7 +557,7 @@ restore, failover, and release evidence.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
    live coordinator job/barrier and every selected domain-owner guard to share one destination-local
    transaction. Its canonical order is
-   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox:
+   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox:
    after locking, trusted manifest rederivation and
    current-state rechecks, authorization consumption and all owner activations
    commit with barrier/job result, exactly one Pending plus zero-counter
@@ -587,8 +587,16 @@ restore, failover, and release evidence.
    beside Pending, initial append charges attempt and cumulative rows atomically,
    and missing Pending/ManualRecoveryPending lineage is corruption.
    Corruption commits an obligation-scoped durable fence/result that append,
-   recovery and cleanup recheck; clearance restores only an authenticated
-   activation bundle plus complete post-activation lineage. NoHistory proves
+   recovery and cleanup recheck. Activation creates a Healthy generation-zero
+   fence for every obligation and absence fails closed; every history path
+   locks fence before lineage/budget state. Clearance uses an independent
+   admitted/revocable/expiring single-use authorization, bounded proof work and
+   external greatest-known anchors, and restores only a bundle that covers all
+   authenticated activation/post-activation lineage and those anchors.
+   Unprovable history stays permanently fenced; a rebuild uses a new
+   coordinator generation and leaves the old evidence intact. The candidate,
+   barrier and activation authorization bind the exact history-disposition tag,
+   variant proof/budget/custody digest and policy epochs. NoHistory proves
    zero eligibility. NotRequested binds current classification/retention/
    legal-hold/evidence-floor/compliance/legal/SoD evidence in a canonical
    activation record and cannot weaken a hold. Both bind no-executable-lineage
@@ -597,10 +605,11 @@ restore, failover, and release evidence.
    Recovery request/result payloads are closed action-tagged unions; their tag
    is the sole action authority and any storage index is derived/read-verified.
    Admission, expiry, revocation and consumption share a total six-state row and
-   one outcome enum. Expiry is Issued-only; absent expiry/consumption returns
+   one outcome enum, where Fenced is observed state rather than conflict.
+   Expiry is Issued-only; absent expiry/consumption returns
    typed no-write NotAdmitted, and expiry remains expiry when it wins. One
-   closed operation-conflict wrapper preserves detailed authorization/
-   revocation/recovery/corruption conflicts; CAS losers reread the table and
+   closed operation-conflict wrapper preserves only detailed authorization/
+   revocation/recovery conflicts; CAS losers reread the table and
    different operations on the same exact target do not conflict.
    Waive/Abandon require separate current-policy/legal-hold/
    compliance authority and canonical custody records; only their true terminal

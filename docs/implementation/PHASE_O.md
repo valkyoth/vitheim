@@ -36,7 +36,7 @@ after any terminal commit without partial domain-owner visibility.
 All Phase O evidence also preserves the non-wrapping active coordinator
 generation/fence, which every VIT-INV-062 mutation locks and rechecks first.
 Activation uses exactly
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox.
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox.
 Bootstrap evidence covers stable identity/idempotency, its closed lifecycle,
 independently admitted, pre-admission-revocable begin, fresh handoff and
 cancellation authorizations with separation of duties, bounded work/
@@ -58,20 +58,30 @@ NotRequested instead commits
 `MigrationImportRegistryHistoryNotRequestedRecordV1` with the eligible-history
 commitment, current retention/classification and legal-hold inputs, evidence
 floor, provenance, approval SoD and activation/audit/outbox linkage; active hold
-rejects custody weakening. Initial append co-charges attempt and lineage
+rejects custody weakening. Candidate, barrier and activation authorization bind
+the exact disposition tag, variant evidence digest and custody epochs; change
+requires fresh authority. Activation also creates Healthy non-wrapping fence
+generation zero for every obligation, and absence denies. Initial append co-charges attempt and lineage
 budgets. Missing nonterminal lineage installs a durable exact-obligation
 `MigrationImportRegistryHistoryCorruptionFenceV1` that blocks append, recovery
 and cleanup. Only independently authorized complete atomic restoration of the
 activation bundle and all post-activation charges/results/head/checkpoints may
-clear it; incomplete or inferred lineage remains permanently fenced.
+clear it. Every path follows
+active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+skipping only inapplicable positions without reordering. Clearance
+consumes an independently issued/admitted/revocable/expiring single-use
+authorization, stays inside its proof budget and proves coverage through
+greatest-known external anchors; stale, incomplete, inferred or unanchored
+lineage remains permanently fenced. Successor-generation rebuild retains the
+old fence and uses a new obligation identity.
 Exhaustion retains ManualRecoveryPending until an independently
 authorized exact action acts. RetryAppend reaches Appended or pending only and
 typed successor exhaustion never abandons; cumulative lineage counters span
 every grant, fit a platform hard maximum and have no increase path through
 `1.0.0`. Recovery request/result union tags are the sole action authority and
 derived indexes are read-verified. The total six-state row returns one closed
-outcome and all operations use one closed Authorization/Revocation/Recovery/
-LineageCorrupt conflict envelope; expiry is Issued-only, absent expiry/
+outcome including Fenced and all changed-material failures use one closed
+Authorization/Revocation/Recovery conflict envelope; expiry is Issued-only, absent expiry/
 consumption is no-write NotAdmitted, and expiry cannot be converted. CAS losers
 reread/reapply the table, different valid operations are not changed material,
 and consumption/expiry/revocation have one first terminal winner. Recovery revocation
@@ -948,9 +958,11 @@ history ManualRecoveryPending descriptors/recovery authority and revocation/
 cumulative-lineage and successor budgets/platform hard maximum/no-amendment
 rule/activation-created zero lineage or no-executable proof/initial dual charges/
 sole-tag request and result/derived indexes/Issued-only expiry/closed outcomes/retry-exhaustion
-result/distinct NoHistory proof and NotRequested custody record/closed conflict
-envelope and terminal-race state/corruption fence, evidence, restoration and
-clearance/attempt/result and cleanup linkage. A new coordinator may resume
+result/distinct NoHistory proof and NotRequested custody record/Fenced outcome/
+three-variant changed-material conflict envelope and terminal-race state/
+activation-bound disposition evidence/Healthy-Fenced-ClearedAfterRestore
+generation/universal lock order/clearance authorization, proof budget, external
+anchors, restoration and clearance/attempt/result and cleanup linkage. A new coordinator may resume
 completeness work under a higher job fence but cannot activate stale receipts.
 Failover after preparation or an unknown activation response re-reads the one
 local transaction result; it never exposes a partial owner set or replaces the
@@ -1283,9 +1295,11 @@ history ManualRecoveryPending/recovery authority/revocation/cumulative and
 successor budgets/platform-hard-maximum/no-amendment rule/action-tagged
 request-result/activation-created lineage or no-executable proof/dual charges/
 sole-tag derived indexes/Issued-only expiry/closed outcomes/retry-exhaustion result/policy-hold
-receipts/distinct NoHistory/NotRequested custody evidence/closed conflict and
-CAS terminal-race state/exact-obligation corruption fence/evidence/
-restoration/clearance/result/checkpoint, activation barrier sequence/
+receipts/distinct NoHistory/NotRequested custody evidence/Fenced outcome/
+three-variant conflict and CAS terminal-race state/activation disposition
+commitments/exact-obligation Healthy-Fenced-ClearedAfterRestore lineage/
+universal lock order/clearance authority, proof budget, anchors/restoration/
+clearance/result/checkpoint, activation barrier sequence/
 predecessor/result and authorization;
 the active
 catalog ID/epoch,
@@ -1546,8 +1560,9 @@ shared bootstrap revocation apply/sequence rules, history recovery authority/
 revocation/total-state-table/closed-outcome/Issued-only-expiry/sole-tag-codec/
 derived-index/action-matrix/activation-created-lineage/atomic-initial-co-charge/
 platform-capped no-increase cumulative-budget/distinct NoHistory/NotRequested
-custody rules/closed conflict and CAS terminal-race rules/exact-obligation
-corruption-fence and complete atomic-clearance rules,
+custody rules/Fenced outcome/three-variant conflict and CAS terminal-race
+rules/activation-bound disposition/universal lock order/exact-obligation fence
+lineage and authorized budgeted externally anchored atomic-clearance rules,
 co-located activation barrier and cleanup-
 versus-authority separation,
 starvation bounds,
@@ -1752,9 +1767,11 @@ shared exact-action bootstrap revocation and retained ManualRecoveryPending
 resolution with closed request/result variants, total authorization state table
 and closed outcomes, sole-tag/derived-index semantics, Issued-only expiry,
 activation-created immutable platform-capped lineage and atomic initial
-co-charge, distinct NoHistory/NotRequested evidence, closed conflict and
-CAS-loser/first-terminal-winner semantics, exact-obligation corruption fencing
-and independently authorized complete atomic clearance, fixed activation lock
+co-charge, distinct NoHistory/NotRequested evidence, Fenced outcome and
+three-variant conflict plus CAS-loser/first-terminal-winner semantics,
+activation-bound disposition, activation-created fence lineage, universal
+history order and independently authorized budgeted externally anchored atomic
+clearance, fixed activation lock
 order, all-domain-owner atomicity, response-loss
 idempotency and cleanup-separation assurance report, and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
@@ -1844,7 +1861,9 @@ revocation-inbox-and-sequence, ManualRecoveryPending/recovery-authorization/
 sole-tag request-result/derived-index/closed-outcome/Issued-only-expiry/
 activation-created-lineage/no-executable-proof/dual-charge/successor-budget/
 platform-hard-maximum/no-amendment rule/distinct NoHistory/NotRequested
-evidence/closed-conflict/race-state/corruption-fence/restoration-clearance/
+evidence/Fenced-outcome/three-variant-conflict/race-state/activation-disposition-
+commitment/fence-generation/universal-lock/clearance-authority-budget-anchors/
+restoration-clearance/
 recovery-result/terminal-evidence,
 activation-barrier sequence/predecessor/result/authorization and cleanup-link
 compatibility.
@@ -2025,10 +2044,16 @@ make RetryAppend abandon, reset cumulative counters through fresh grants,
 try to increase ceilings through policy/profile/backend/restore, omit or lazily
 create initial lineage, split initial attempt/cumulative charging, replace
 NoHistory proof with absence, forge a custody-free NotRequested or substitute
-the two dispositions, widen a corruption fence beyond its obligation, bypass it
-during append/recovery/cleanup, clear it with incomplete or inferred lineage,
+the two dispositions after activation authorization, change bound evidence/
+policy epochs, omit the activation-created fence or treat absence as Healthy,
+wrap/roll back its generation, invert fence/budget locks, widen a corruption
+fence beyond its obligation, bypass it during append/recovery/cleanup, forge/
+replay/revoke/expire/reuse clearance authority, exhaust proof work, clear with
+incomplete, stale, forked, inferred or externally unanchored lineage, roll back
+a greatest-known head, erase the old fence during successor rebuild,
 expire/consume an Absent guessed identity, encode an adapter-specific outcome
-or conflict, misclassify a different valid operation as changed material, skip
+or conflict, encode Fenced as LineageCorrupt conflict, misclassify a different
+valid operation as changed material, skip
 the required reread after CAS loss, produce two terminal winners, contradict
 outer/payload action or corrupt a
 derived action index, mix action payload fields, use unknown/noncanonical
@@ -2096,9 +2121,11 @@ bootstrap handoff/shared revocation state, plus history ManualRecoveryPending/
 recovery authority/revocation/cumulative and successor budgets/retry-exhaustion
 result/platform-hard-maximum/no-amendment rule/activation-created lineage or
 no-executable proof/dual charges/sole-tag request-result/derived indexes/
-Issued-only expiry/closed outcomes and conflicts/CAS terminal-race state/
+Issued-only expiry/closed outcomes including Fenced and three-variant conflicts/
+CAS terminal-race state/activation disposition commitments/universal lock order/
 distinct NoHistory proof and NotRequested custody record/policy-hold receipts/
-exact-obligation corruption fence/evidence/restoration/clearance/result/
+exact-obligation fence generations/evidence/clearance authority/proof budget/
+external anchors/restoration/clearance/result/
 checkpoint.
 Exit criteria:
 no known blocking gap remains.

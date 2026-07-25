@@ -224,7 +224,7 @@ audit decision.
   late intent after Consumed returns the activation result without reversal;
 - through `1.0.0` every affected owner guard is co-located with the job/barrier,
   and one local transaction uses
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox,
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox,
   then rechecks current budget/fence/authorization/
   manifest/receipts/owner versions, consumes authorization, then activates all
   owner generations plus Pending/zero-counter-lineage or
@@ -247,18 +247,25 @@ audit decision.
   ManualRecoveryPending; activation creates immutable zero-counter lineage
   beside Pending, initial work atomically charges attempt and lineage budgets,
   NoHistory/NotRequested prove no executable lineage, and missing nonterminal
-  lineage commits an obligation-scoped corruption fence/result. Append,
-  recovery and cleanup stop until evidence-only governed restoration proves the
-  exact activation and complete post-activation lineage. NoHistory proves zero
+  lineage commits an obligation-scoped corruption fence/result. Activation
+  creates a Healthy generation-zero fence for every obligation; absence denies,
+  and every history path follows one fence-before-budget lock order. Append,
+  recovery and cleanup stop until a separately issued/admitted/revocable/
+  expiring single-use clearance authorization, bounded proof budget and
+  greatest-known external anchors prove the exact activation and complete
+  post-activation lineage. Unprovable state stays fenced; successor-generation
+  rebuild cannot clear or reuse it. Candidate, barrier and activation authority
+  bind the exact disposition/evidence/policy epochs. NoHistory proves zero
   eligibility; NotRequested commits current retention/classification/hold/
   evidence-floor/compliance/legal/SoD authority and cannot weaken an active
   hold. Cumulative lineage limits never reset, recovery
   ceilings fit a platform hard maximum and cannot be increased through
   `1.0.0`. Recovery authorization/result payload tags are the sole action
   discriminators and any index is derived/read-verified. The shared six-state
-  lifecycle returns one closed outcome; explicit expiry is Issued-only and
+  lifecycle returns one closed outcome including Fenced; explicit expiry is Issued-only and
   absent expiry/consumption is typed no-write NotAdmitted. One closed top-level
-  conflict wrapper carries every detailed conflict; CAS losers reread the state
+  conflict wrapper carries only changed-material authorization/revocation/
+  recovery conflicts; CAS losers reread the state
   table, and different valid operation kinds on one exact target are not
   changed material. Recovery
   revocation is destination-local with explicit signer/key/time binding, and

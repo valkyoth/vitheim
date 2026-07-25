@@ -53,10 +53,16 @@ the platform hard maximum. Activation creates zero-counter lineage with every
 Pending obligation; initial append co-charges it with the attempt budget, while
 NoHistory proves zero eligibility and NotRequested carries a commit-time
 custody/approval record. Missing lineage
-commits an obligation-scoped corruption fence, and only authenticated complete-
-lineage restoration can clear it. Recovery request/
+commits an obligation-scoped corruption fence. Every obligation has an
+activation-created Healthy generation-zero fence; absence denies and every
+history operation locks fence before lineage/budget. Clearance requires its
+own admitted/revocable/expiring single-use authorization, bounded proof budget
+and greatest-known external anchors; unprovable lineage stays fenced and a
+successor rebuild leaves the old evidence intact. Candidate, barrier and
+activation authorization bind the exact history disposition, evidence digest
+and policy epochs. Recovery request/
 result tags are the sole action discriminator. The total six-state row returns
-one closed outcome; expiry is Issued-only and absent expiry/consumption is typed
+one closed outcome including Fenced; expiry is Issued-only and absent expiry/consumption is typed
 no-write NotAdmitted. One closed conflict wrapper preserves detailed errors,
 and CAS losers reread/reapply the state table. Authenticated recovery revocation is locally linearized.
 Waive/Abandon require distinct custody records plus current
