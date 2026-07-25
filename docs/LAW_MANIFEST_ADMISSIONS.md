@@ -43,14 +43,18 @@ bound handoff and cancellation are distinct pre-admission-revocable actions
 with exact results; their one action-discriminated revocation protocol has a
 target-scoped sequence/lifetime and destination-only atomic effect, so
 authority loss cannot strand the drain. Activation
-atomically creates a bounded Pending or explicit NoHistory/NotRequested history
-obligation. Append is authenticated and bounded, and cleanup waits for its
+atomically creates Pending plus zero-counter lineage, or explicit
+NoHistory/NotRequested plus no-executable-lineage proof. Append is authenticated
+and bounded, and cleanup waits for its
 terminal checkpoint. Exhaustion remains ManualRecoveryPending until independent
 recovery authority performs its exact action. RetryAppend cannot abandon,
 cumulative lineage counters cannot reset or increase and initial ceilings fit
-the platform hard maximum. Recovery request/results are closed action-tagged
-unions; the total six-state row returns canonical admission/expiry/revocation/
-recovery winners, and authenticated recovery revocation is locally linearized.
+the platform hard maximum. Activation creates zero-counter lineage with every
+Pending obligation; initial append co-charges it with the attempt budget, while
+NoHistory/NotRequested carry no-executable-lineage proof. Recovery request/
+result tags are the sole action discriminator. The total six-state row returns
+one closed outcome; expiry is Issued-only and absent expiry/consumption is typed
+no-write NotAdmitted. Authenticated recovery revocation is locally linearized.
 Waive/Abandon require distinct custody records plus current
 policy/legal-hold/compliance authority. These protocols are part of every admitted VIT-LAW-009
 semantic realization, not optional registry behavior.

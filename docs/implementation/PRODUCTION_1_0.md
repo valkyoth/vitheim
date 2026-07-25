@@ -604,14 +604,15 @@ closure of the currently admitted destination VIT-LAW-009 tuple/manifest; no
 separate invariant catalog is implemented. The manifest types VIT-INV-062 only
 as the live non-importable destination coordinator and every other applicable
 dependency as a domain contributor. One transaction uses
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox,
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox,
 rederives that split from
 the closure plus schema, migration plan and contributor algorithm, rechecks current budget/final counters, job
 lease/fence, terminal disposition, trusted-time/key/continuity-bound
 authorization, staged root, complete unique owner receipts and versions,
 consumes/tombstones authorization, then activates every domain owner plus the live coordinator's barrier/job
-result, exactly one bounded Pending/NoHistory/NotRequested history obligation,
-audit/outbox or none. Every pre-activation failure permanently fences the candidate;
+result, exactly one Pending/zero-counter-lineage or
+NoHistory/NotRequested/no-executable-lineage-proof disposition, audit/outbox or
+none. Every pre-activation failure permanently fences the candidate;
 prepared state is never authority. Activation is irreversible and response-loss
 retry returns its canonical result. Cleanup before activation touches only
 fenced dormant/staged state and after activation touches only staging.
@@ -639,12 +640,18 @@ ManualRecoveryPending: retained descriptors and reservations survive until an
 independently admitted exact action acts. RetryAppend reaches only Appended or
 ManualRecoveryPending; successor exhaustion stores its typed result and cannot
 abandon. One immutable cumulative lineage budget spans initial and successor
-work/time/attempt/byte/count counters. Its initial ceilings fit the versioned
+work/time/attempt/byte/count counters. Activation created it with zero counters
+beside Pending; every initial append atomically charged it with the attempt
+budget. NoHistory/NotRequested carry canonical no-executable-lineage proof, and
+missing lineage for either nonterminal is corruption, never repairable lazily.
+Its initial ceilings fit the versioned
 platform hard maximum, and no amendment/increase operation exists through
-`1.0.0`. Recovery authorizations and results use closed action-tagged payloads
-with canonical absence of other-action fields. Admission, expiry, revocation
-and consumption follow the total six-state same-row table and return the
-canonical typed winner; expiry cannot be converted to revocation. Recovery
+`1.0.0`. Recovery authorization/result union tags are the sole authoritative
+action and any storage index is derived/read-verified; revocation derives action
+from exact authorization bytes. Admission, expiry, revocation and consumption
+follow the total six-state row and return the one closed outcome. Explicit
+expiry is Issued-only; absent expiry/consumption returns typed no-write
+NotAdmitted, and expiry cannot be converted to revocation. Recovery
 revocation is effective only in the destination same-row inbox/tombstone/result
 commit and its canonical wire material binds signer identity, key epoch,
 authentication profile and complete trusted-time fields. Waive/Abandon alone
@@ -677,8 +684,11 @@ history append collision/failure, stale work and old binaries crossing handoff,
 competing successors, bootstrap authorization replay/revocation/cancellation/
 cross-action sequence suppression, remote-effect inference, recovery-budget
 substitution, RetryAppend-to-Abandon escalation, cumulative-counter reset or
-ceiling increase, unknown/mixed/noncanonical action payloads, changed-action
-identity reuse, expiry-to-revocation conversion, incomplete revocation
+ceiling increase, absent/lazily reconstructed initial lineage, split
+attempt/cumulative charge, missing no-executable proof, guessed-identity expiry
+tombstone, adapter-specific outcome, outer/payload action contradiction or
+derived-index mismatch, unknown/mixed/noncanonical action payloads,
+changed-action identity reuse, expiry-to-revocation conversion, incomplete revocation
 authentication/time material, recovery-revocation reorder, stale policy/hold receipt, forged compliance/legal
 approval, custody-floor weakening, premature ManualRecoveryPending cleanup,
 waiver/abandonment forgery, rollback/restore/failover, registry-forged receipt, importer owner

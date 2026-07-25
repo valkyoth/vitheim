@@ -8,6 +8,15 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Made the cumulative history lineage authoritative from the first append:
+  activation now creates the immutable zero-counter row beside every Pending
+  obligation, initial work atomically charges both attempt and lineage budgets,
+  and restore/migration cannot lazily reconstruct missing lineage.
+- Closed recovery-operation representation: explicit expiry acts only on
+  Issued grants, absent expiry/consumption returns typed no-write NotAdmitted,
+  every operation returns one closed outcome enum, and the action union tag is
+  the sole authoritative discriminator across authorization, result and
+  revocation targeting.
 - Closed the remaining history-recovery protocol ambiguities. Recovery
   authorizations and results now use canonical action-tagged unions; the
   authorization row has a total Absent/RevokedBeforeAdmission/Issued/Consumed/
@@ -51,7 +60,7 @@ All notable Vitheim changes are documented here. The format follows
   work/cleanup bounds and a disposition independent from irreversible
   activation.
 - Standardized and machine-check the migration/import activation order as
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox.
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox.
 
 - Closed revocation-before-authorization ordering with explicit
   `AdmitMigrationImportActivationAuthorization` and a shared

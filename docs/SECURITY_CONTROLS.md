@@ -224,11 +224,12 @@ audit decision.
   late intent after Consumed returns the activation result without reversal;
 - through `1.0.0` every affected owner guard is co-located with the job/barrier,
   and one local transaction uses
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox,
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox,
   then rechecks current budget/fence/authorization/
   manifest/receipts/owner versions, consumes authorization, then activates all
-  owner generations plus one bounded Pending/NoHistory/NotRequested history
-  obligation and result/audit/outbox or none; every pre-activation
+  owner generations plus Pending/zero-counter-lineage or
+  NoHistory/NotRequested/no-executable-lineage-proof and result/audit/outbox or
+  none; every pre-activation
   failure permanently fences the candidate, response-loss retry is idempotent,
   cleanup cannot promote or delete authority, and non-co-located selector
   fallback is unsupported;
@@ -242,11 +243,15 @@ audit decision.
   absence is never treated as NoHistory/NotRequested; exhausted work remains
   nonterminal ManualRecoveryPending with descriptors/reservations retained
   until exact recovery authority acts; RetryAppend can reach only Appended or
-  ManualRecoveryPending, cumulative lineage limits never reset, recovery
+  ManualRecoveryPending; activation creates immutable zero-counter lineage
+  beside Pending, initial work atomically charges attempt and lineage budgets,
+  NoHistory/NotRequested prove no executable lineage, and missing nonterminal
+  lineage is corruption. Cumulative lineage limits never reset, recovery
   ceilings fit a platform hard maximum and cannot be increased through
-  `1.0.0`, recovery authorization/result payloads are closed action-tagged
-  unions, the shared six-state lifecycle returns the canonical admission,
-  expiry, revocation or recovery winner without state conversion, recovery
+  `1.0.0`. Recovery authorization/result payload tags are the sole action
+  discriminators and any index is derived/read-verified. The shared six-state
+  lifecycle returns one closed outcome; explicit expiry is Issued-only and
+  absent expiry/consumption is typed no-write NotAdmitted. Recovery
   revocation is destination-local with explicit signer/key/time binding, and
   Waive/Abandon require distinct current
   policy/legal-hold/compliance authority plus canonical custody records;

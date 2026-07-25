@@ -557,11 +557,12 @@ restore, failover, and release evidence.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
    live coordinator job/barrier and every selected domain-owner guard to share one destination-local
    transaction. Its canonical order is
-   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox:
+   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox:
    after locking, trusted manifest rederivation and
    current-state rechecks, authorization consumption and all owner activations
-   commit with barrier/job result, exactly one Pending/NoHistory/NotRequested
-   history obligation, audit/outbox or none do. Every selected domain owner
+   commit with barrier/job result, exactly one Pending plus zero-counter
+   lineage or NoHistory/NotRequested plus no-executable-lineage proof,
+   audit/outbox or none do. Every selected domain owner
    retains domain authority. Cancellation, exhaustion, rejection or quarantine
    before that commit permanently fences the candidate; afterward cleanup can
    remove only non-authoritative staging. Non-co-located selectors are
@@ -581,12 +582,17 @@ restore, failover, and release evidence.
    independent recovery authority permits its exact action. RetryAppend cannot
    waive or abandon; successor exhaustion stays pending with typed evidence and
    a cumulative lineage budget prevents reset. Recovery revocation is
-   destination-local. The initial cumulative ceiling is bounded by the
+   destination-local. Activation creates the zero-counter immutable lineage
+   beside Pending, initial append charges attempt and cumulative rows atomically,
+   and missing Pending/ManualRecoveryPending lineage is corruption.
+   NoHistory/NotRequested instead bind no-executable-lineage proof. The initial cumulative ceiling is bounded by the
    platform hard maximum and has no amendment/increase path through `1.0.0`.
-   Recovery request/result payloads are closed action-tagged unions; fields for
-   other actions must be absent. Admission, expiry, revocation and consumption
-   share a total six-state row with canonical winner results, including expiry
-   remaining expiry when it wins. Waive/Abandon require separate current-policy/legal-hold/
+   Recovery request/result payloads are closed action-tagged unions; their tag
+   is the sole action authority and any storage index is derived/read-verified.
+   Admission, expiry, revocation and consumption share a total six-state row and
+   one outcome enum. Expiry is Issued-only; absent expiry/consumption returns
+   typed no-write NotAdmitted, and expiry remains expiry when it wins.
+   Waive/Abandon require separate current-policy/legal-hold/
    compliance authority and canonical custody records; only their true terminal
    can be checkpointed and cleaned. Typed identity conflicts fail closed.
    VIT-INV-062 schema succession is a separate stable-ID,

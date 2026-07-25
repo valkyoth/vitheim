@@ -225,12 +225,13 @@ has no effect, and late revocation after Consumed returns the activation result
 without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 uses the canonical
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox
 order, rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all domain-owner versions, consumes and
 tombstones authorization, then activates every domain owner plus barrier/job result/
-history obligation/audit/outbox, or none. Exactly one bounded Pending,
-NoHistory or NotRequested obligation co-commits; cleanup cannot remove its
+history obligation/lineage disposition/audit/outbox, or none. Exactly one
+bounded Pending plus zero-counter lineage, or NoHistory/NotRequested plus
+no-executable-lineage proof, co-commits; cleanup cannot remove its
 descriptors until a terminal append checkpoint. Pre-activation rejection,
 exhaustion, cancellation or
 quarantine permanently fences the candidate; post-activation cleanup touches
@@ -260,13 +261,20 @@ and its descriptors. RetryAppend reaches only Appended or
 ManualRecoveryPending; successor exhaustion produces typed evidence, not
 abandonment. Every fresh action requires independent authority, while one
 cumulative obligation-lineage budget prevents work/time/attempt/byte/successor
-counter reset. Its initial ceilings must fit the platform hard maximum and
+counter reset. Activation creates it with zero counters beside every Pending
+obligation; each initial append precharge atomically advances its attempt and
+cumulative rows. NoHistory/NotRequested carry canonical no-executable-lineage
+proof, and missing nonterminal lineage is corruption, never lazily repaired.
+Its initial ceilings must fit the platform hard maximum and
 cannot be amended or increased through `1.0.0`. Recovery authority and result
 use closed RetryAppend/Waive/Abandon tagged unions with canonical absence of
-other-action fields. Admission, expiry, revocation and consumption share one
-total six-state row; typed admission/expiry/revocation/recovery results make
-every exact retry and winner reproducible, with expiry never converted into
-revocation. Recovery revocation takes effect only in its destination row and
+other-action fields, and the union tag is the sole action authority; any index
+is derived and read-verified. Admission, expiry, revocation and consumption
+share one total six-state row and return one closed outcome enum. Explicit
+expiry is Issued-only; absent expiry/consumption returns typed no-write
+NotAdmitted, while admission alone may authenticate an already expired grant.
+Typed winner results make every exact retry reproducible, with expiry never
+converted into revocation. Recovery revocation takes effect only in its destination row and
 binds explicit signer, key-epoch, authentication-profile and trusted-time
 fields.
 Waiver/abandonment terminals require their own canonical custody records,

@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox'
+canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox'
 
 fail() {
     echo "migration/import policy: $*" >&2
@@ -37,12 +37,34 @@ then
     fail "obsolete activation order without the atomic history obligation remains"
 fi
 
+if grep -R -Fq \
+    'ordered-domain-owner→history-obligation→audit/result/outbox' \
+    docs
+then
+    fail "obsolete activation order without the atomic lineage disposition remains"
+fi
+
+for obsolete in \
+    'scope, action discriminator' \
+    'descriptor and action, exact authorization identity/digest' \
+    'recovery action and exact authorization identity/digest'
+do
+    if grep -Fq "$obsolete" docs/implementation/PHASE_C.md
+    then
+        fail "Phase C retains duplicate action authority: $obsolete"
+    fi
+done
+
 for requirement in \
     'RetryAppend authority can never create either waiver or abandonment terminal' \
     'requires a fresh Abandon authorization' \
     'use only remaining lineage capacity' \
     'No lineage-budget amendment or increase operation is supported through `1.0.0`' \
-    'Returns the expiry result without converting expiry to revocation' \
+    'Pending` atomically creates both the' \
+    'No per-attempt precharge may commit without its cumulative charge' \
+    'sole authoritative action discriminator' \
+    'Returns typed `NotAdmitted` without a write' \
+    'Returns `Expired` without converting expiry to revocation' \
     'unknown action discriminants' \
     'An active legal hold categorically rejects Waive or Abandon' \
     'Remote emission has no effect'
@@ -83,6 +105,8 @@ for symbol in \
     MigrationImportCoordinatorBootstrapResultV1 \
     MigrationImportRegistryHistoryV1 \
     MigrationImportRegistryHistoryAppendObligationV1 \
+    MigrationImportRegistryHistoryLineageDispositionV1 \
+    MigrationImportRegistryHistoryNoExecutableLineageV1 \
     MigrationImportRegistryHistoryArchiveHeadV1 \
     MigrationImportRegistryHistoryAppendCheckpointV1 \
     MigrationImportRegistryHistoryNoHistory \
@@ -101,6 +125,8 @@ for symbol in \
     MigrationImportRegistryHistoryRecoveryAuthorizationAdmissionResultV1 \
     ExpireMigrationImportRegistryHistoryRecoveryAuthorization \
     MigrationImportRegistryHistoryRecoveryAuthorizationExpiryResultV1 \
+    MigrationImportRegistryHistoryRecoveryAuthorizationOutcomeV1 \
+    MigrationImportRegistryHistoryRecoveryAuthorizationNotAdmitted \
     MigrationImportRegistryHistoryRecoveryAuthorizationConflict \
     MigrationImportRegistryHistoryRecoveryAuthorizationRevocationIntentV1 \
     MigrationImportRegistryHistoryRecoveryAuthorizationRevocationSequenceKeyV1 \
@@ -109,6 +135,7 @@ for symbol in \
     MigrationImportRegistryHistoryRecoveryAuthorizationRevocationConflict \
     MigrationImportRegistryHistoryRecoveryLineageBudgetV1 \
     MigrationImportRegistryHistoryRecoveryPlatformHardMaximumV1 \
+    MigrationImportRegistryHistoryLineageStateMissing \
     MigrationImportRegistryHistorySuccessorBudgetExhausted \
     MigrationImportRegistryHistoryWaiverRecordV1 \
     MigrationImportRegistryHistoryAbandonmentRecordV1 \

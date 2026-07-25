@@ -320,12 +320,17 @@ from activation/bootstrap authority. Freeze its closed action-tagged request
 and result payloads: RetryAppend alone carries predecessor/successor-budget
 material, Waive alone carries waiver policy/custody material and Abandon alone
 carries abandonment policy/custody material; other-action fields are
-canonically absent. Freeze the total Absent/RevokedBeforeAdmission/Issued/
-Consumed/ExpiredUnused/RevokedUnused table and canonical admission, expiry,
-revocation and recovery winner results. Freeze its exact-target revocation
+canonically absent. Freeze the union tag as the only authoritative action in
+authorization and result; revocation derives action from exact authorization
+bytes/digest, and any storage index is derived/read-verified. Freeze the total
+Absent/RevokedBeforeAdmission/Issued/Consumed/ExpiredUnused/RevokedUnused table
+and one closed admission/expiry/revocation/recovery/NotAdmitted outcome. Explicit
+expiry operates only on stored Issued grants; expiry/consumption on Absent is
+typed no-write NotAdmitted and admission alone may authenticate expired input.
+Freeze its exact-target revocation
 intent with signer identity, key identity/epoch, authentication profile,
 issued-at, not-before, exact target expiry, maximum uncertainty and trusted-time
-profile/epoch, action/authorization-scoped sequence, destination inbox/
+profile/epoch, exact-authorization-scoped sequence, destination inbox/
 tombstone/result transaction and late-consumed result behavior; remote emission
 is not revocation and expiry winning remains expiry.
 Revocation/expiry before begin or handoff consumption atomically
@@ -423,6 +428,12 @@ NoHistory/NotRequested/Appended/ConflictFenced/RejectedFenced/WaivedFenced/
 AbandonedWithEvidence archive disposition and canonical result/conflict remain
 separate from the irreversible activation result. Budget exhaustion retains
 bounded descriptors and reservations in nonterminal ManualRecoveryPending.
+Activation storage atomically commits Pending, its per-attempt reservation and
+zero-counter immutable cumulative lineage with hard-maximum profile identity/
+version/digest, ceilings and ordinal zero. NoHistory/NotRequested instead commit
+canonical no-executable-lineage proof. Initial append locks cumulative lineage
+before attempt budget and co-charges both; missing lineage for either
+nonterminal state is corruption and cannot be synthesized by an adapter.
 An independently admitted
 `MigrationImportRegistryHistoryRecoveryAuthorizationV1` permits one exact
 RetryAppend, Waive or Abandon action;
@@ -435,14 +446,17 @@ bounds all initial/successor work, elapsed time, attempts, bytes and successor
 count. Its initial ceilings fit
 `MigrationImportRegistryHistoryRecoveryPlatformHardMaximumV1`; no amendment or
 increase operation exists through `1.0.0`, and every adapter preserves counters
-and ceilings exactly or refuses. Authorization and result storage use closed
-action-tagged layouts, and the authorization row stores the total six-state
-lifecycle plus canonical admission/expiry/revocation/recovery winner.
+and ceilings exactly or refuses. Authorization and result storage use one
+authoritative union tag, with derived action indexes verified on read.
+Revocation targets exact authorization bytes without a second action field.
+The authorization row stores the total six-state lifecycle plus one canonical
+operation-outcome representation; Issued-only expiry and absent NotAdmitted
+cannot create guessed tombstones.
 Canonical waiver/abandonment records bind current policy, legal-hold,
 compliance/legal approval and evidence-floor receipts.
-Activation atomically creates bounded
-Pending or explicit NoHistory/NotRequested; absence is invalid and cleanup
-waits for the terminal append checkpoint. Coordinator-schema succession
+Activation atomically creates Pending plus zero-counter cumulative lineage or
+NoHistory/NotRequested plus no-executable-lineage proof; absence is invalid and
+cleanup waits for the terminal append checkpoint. Coordinator-schema succession
 requires stable bootstrap identity, closed lifecycle, separate pre-admission-
 revocable begin/handoff/cancel authorizations, bounded work/reservations,
 predecessor-owned typed checkpoint, owner-authenticated dormant-successor
@@ -452,7 +466,7 @@ counters include a pessimistically precharged complete preparation/activation/
 result/recovery quantum, and `AdmissionPrepared` requires the atomically stored
 complete unique receipt set. Job, barrier and every
 affected domain-owner activation guard must fit one local transaction with fixed
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox
 locking and
 expected-version CAS. Storage must prove atomic all-domain-owner activation with the
 authorization consumption/tombstone and job result, or refuse before
@@ -1274,7 +1288,8 @@ revoke; delayed authorization joins an existing tombstone and a late intent
 after Consumed returns the activation result without reversal. The same
 remote-effect rule applies to the action-discriminated bootstrap revocation
 inbox, with sequence scope including the exact bootstrap action/grant, and to
-history-recovery revocation, scoped to exact obligation/action/authorization.
+history-recovery revocation, scoped to exact obligation/authorization; its
+action is derived only from the referenced canonical authorization bytes.
 Verification: protocol conformance, mix-up/replay/fixation/recovery, false
 sender constraint, proof/token substitution, bearer privilege escalation,
 first-use stolen bearer behavior, effect dispatch after credential/session/
@@ -1634,8 +1649,10 @@ outbox, live coordinator state/exclusion, inert terminal-history archive,
 identity-conflict indexes, active coordinator generation/fence, terminal-history
 archive head/disposition/budget/ManualRecoveryPending descriptors/recovery
 authorization/revocation inbox/sequence/tombstone/cumulative and successor
-budgets/platform-hard-maximum/no-amendment rule/action-tagged request and result/
-six-state winner results/attempt/waiver-or-abandonment record/checkpoint,
+budgets/platform-hard-maximum/no-amendment rule/activation-created zero lineage
+or no-executable proof/atomic initial co-charge/sole-tag request and result/
+derived action indexes/Issued-only expiry/closed outcomes/attempt/
+waiver-or-abandonment record/checkpoint,
 coordinator-bootstrap stable identity/
 lifecycle/begin-handoff-cancel authorizations and pre-admission tombstones/
 shared action-revocation inbox/sequence/target lifetime/result/budget/checkpoint/
@@ -1650,8 +1667,10 @@ state, resume a source job, promote inert history, roll back a bootstrap
 handoff, permit predecessor-started work to commit after handoff, make archive
 failure alter activation, infer bootstrap revocation from remote emission, lose
 a Pending or ManualRecoveryPending obligation, infer recovery revocation from
-remote emission, reset or increase cumulative recovery counters, convert an
-expiry winner, admit mixed/noncanonical recovery action fields, let RetryAppend abandon,
+remote emission, lazily create missing lineage, split initial attempt/cumulative
+charges, reset or increase cumulative recovery counters, create an expiry
+tombstone from Absent, encode an adapter-specific outcome, accept a derived
+action mismatch, admit mixed/noncanonical recovery action fields, let RetryAppend abandon,
 substitute the recovery budget/policy/hold epoch, forge waiver/abandonment,
 treat absence as NoHistory/NotRequested, clean before terminal checkpoint, or
 replace the selected local transaction with a

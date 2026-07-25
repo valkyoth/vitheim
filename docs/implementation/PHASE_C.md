@@ -2505,7 +2505,7 @@ The supported through-`1.0.0` activation profile requires the live coordinator
 generation, job, candidate, barrier, authorization row and every affected
 domain-owner activation guard to be co-located in one destination-local
 transaction domain. The canonical full order is
-`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation→audit/result/outbox`.
+`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox`.
 This is `VIT-LAW-009
 AtomicMigrationImportActivation`: trusted derivation selects the exact affected
 domain-owner set while every selected domain owner retains exclusive authority.
@@ -2936,17 +2936,32 @@ non-negotiable rule that post-activation archive failure cannot alter
 activation. Prove the initial lineage fits the platform hard maximum and that
 no policy/profile/issuer/action/backend/idempotency/migration/restore/rollback
 path can raise a ceiling, reduce a consumed counter or reuse an ordinal.
+Crash/fault every activation boundary and prove Pending never commits without
+its zero-counter immutable lineage row, while NoHistory/NotRequested commit
+only their no-executable-lineage proof. For every initial append quantum, crash
+between both budget updates and work start; per-attempt and cumulative charges
+must commit together, never undercount, and never be created lazily. Missing or
+mismatched lineage for Pending/ManualRecoveryPending must return typed
+corruption before append, recovery or cleanup; restore/migration omission must
+remain fenced.
 Exercise admission, expiry, revocation and consumption from every state in the
 total table, including every exact duplicate, changed-material conflict and
 race; expiry winning must return its canonical expiry result without becoming
-revocation. Omit or substitute each revocation signer/key-epoch/
+revocation. Expiry and consumption against Absent must return the one typed
+NotAdmitted outcome without any row/tombstone/sequence/idempotency write;
+admission of an authenticated expired grant is the only absent-to-expired path.
+Every operation must encode its winning admission/expiry/revocation/recovery
+result through the same closed outcome enum. Omit or substitute each revocation signer/key-epoch/
 authentication-profile/issued-at/not-before/target-expiry/uncertainty/trusted-
 time-profile/epoch field and require pre-mutation denial. Negative codec and
 semantic tests must reject Waive carrying retry-budget fields, RetryAppend
 carrying waiver or abandonment fields, changed action with a reused
 authorization identity, unknown or duplicate action discriminants, mixed
 variants, action-inapplicable fields, non-minimal options and `Some(empty)`.
-Apply the same canonical-absence tests to recovery results. Exhaust every
+Contradictory outer/payload action encodings must be unrepresentable; corrupt a
+derived storage/index action and require read failure. Apply the same sole-tag
+and canonical-absence tests to recovery results and revocation targeting.
+Exhaust every
 RetryAppend successor and prove it returns
 ManualRecoveryPending with `MigrationImportRegistryHistorySuccessorBudgetExhausted`,
 never AbandonedWithEvidence. Race fresh RetryAppend/Waive/Abandon admission,
@@ -3055,19 +3070,32 @@ or owner-state interface.
 
 The activation transaction always creates exactly one
 `MigrationImportRegistryHistoryAppendObligationV1` beside its barrier/result/
-outbox. `Pending` binds only bounded authenticated source-history descriptors,
+outbox. Its closed `MigrationImportRegistryHistoryLineageDispositionV1`
+commits exactly one lineage meaning. `Pending` atomically creates both the
+bounded ordinary work-budget reservation and
+`MigrationImportRegistryHistoryRecoveryLineageBudgetV1`. The lineage row binds
+the obligation, exact
+`MigrationImportRegistryHistoryRecoveryPlatformHardMaximumV1` profile identity,
+version and digest, immutable cumulative ceilings no greater than that profile,
+zero counters, initial ordinal zero and canonical predecessor absence.
+`Pending` binds only bounded authenticated source-history descriptors,
 entry/root digests, source/destination scope, archive namespace and policy,
-activation result, work-budget reservation and idempotency; it never copies
-unbounded history into the activation transaction. `NoHistory` is the terminal
-proof that the authenticated source manifest contains no eligible terminal
-registry history. `NotRequested` is the terminal proof that the bound retention
-policy explicitly declined archival. An absent row is corrupt activation state,
-never shorthand for either terminal.
+activation result, those budget identities/digests and idempotency; it never
+copies unbounded history into the activation transaction. `NoHistory` is the
+terminal proof that the authenticated source manifest contains no eligible
+terminal registry history. `NotRequested` is the terminal proof that the bound
+retention policy explicitly declined archival. Each commits canonical
+`MigrationImportRegistryHistoryNoExecutableLineageV1`, proving why no
+executable budget row exists or is required and requiring canonical absence of
+all executable-lineage fields. An absent obligation or a mismatched
+obligation/lineage pair is corrupt activation state, never shorthand for a
+terminal.
 
 `AppendMigrationImportRegistryHistory` consumes only a durable Pending
 obligation after the canonical activation result/outbox commit, under
 active-coordinator-generation→history-obligation→archive-head→history/
-idempotency→archive-budget→audit/result/outbox locking. Canonical
+idempotency→recovery-lineage-budget→archive-budget→audit/result/outbox locking.
+Canonical
 `MigrationImportRegistryHistoryArchiveHeadV1` binds tenant/deployment/
 namespace, non-wrapping sequence, predecessor/root/entry digest, key/profile,
 publication identity and covered obligation/result. The
@@ -3077,7 +3105,11 @@ publication identity and covered obligation/result. The
 `WaivedFenced` or `AbandonedWithEvidence`. One transaction
 authenticates provenance, precharges bounded
 `MigrationImportRegistryHistoryWorkBudgetV1` rows/bytes/decode/hash/signature/
-proof/storage work, CAS-advances the archive head and commits
+proof/storage work, and atomically advances the identical dimensions in the
+authoritative cumulative lineage counters before doing work.
+No per-attempt precharge may commit without its cumulative charge, or vice versa.
+It then
+CAS-advances the archive head and commits
 `MigrationImportRegistryHistoryAppendResultV1`. Exact retry returns the result;
 changed identity, bytes, provenance, namespace or idempotency returns
 `MigrationImportRegistryHistoryAppendConflict`. Retryable failure remains
@@ -3091,7 +3123,7 @@ issued, single-use authorization for exactly one action represented by the
 closed `MigrationImportRegistryHistoryRecoveryActionV1` tagged union. Its
 common envelope binds the obligation and descriptor digests, exhausted budget
 lineage/result, current archive-head identity/sequence, source and destination
-scope, action discriminator, requestor/approver/operator/quorum/SoD,
+scope, requestor/approver/operator/quorum/SoD,
 trusted-time/profile/continuity/key fields, nonce and idempotency. Its payload
 is exactly one of:
 
@@ -3112,6 +3144,11 @@ action-inapplicable fields, non-minimal option encodings and `Some(empty)`
 substitutions before allocation or row creation. Reusing an authorization
 identity with another action or payload is changed canonical material, never a
 new authorization or an exact retry.
+The union variant tag is the sole authoritative action discriminator.
+Any storage/index action column is derived
+from the canonical authorization bytes, is never independently writable or
+hashed as authority, and is verified equal on every read; mismatch is
+corruption and cannot be repaired by choosing either value.
 `AdmitMigrationImportRegistryHistoryRecoveryAuthorization` shares its row with
 revocation and expiry. The closed
 `MigrationImportRegistryHistoryRecoveryAuthorizationStateV1` is Absent,
@@ -3123,18 +3160,31 @@ through `ExpireMigrationImportRegistryHistoryRecoveryAuthorization` commits cano
 canonical authorization, intent, timing, sequence or idempotency material
 returns `MigrationImportRegistryHistoryRecoveryAuthorizationConflict` without
 mutation.
+All admission, expiry, revocation and consumption APIs return
+`Result<MigrationImportRegistryHistoryRecoveryAuthorizationOutcomeV1,
+MigrationImportRegistryHistoryRecoveryAuthorizationConflict>`. The closed
+outcome is exactly `Admitted(AdmissionResultV1)`,
+`Expired(ExpiryResultV1)`, `Revoked(RevocationResultV1)`,
+`Consumed(RecoveryResultV1)` or
+`NotAdmitted(MigrationImportRegistryHistoryRecoveryAuthorizationNotAdmitted)`.
+NotAdmitted is a typed no-write observation: it creates no authorization row,
+sequence, tombstone, idempotency result or authority.
 
 Recovery authorization revocation is a complete delivery protocol.
 `MigrationImportRegistryHistoryRecoveryAuthorizationRevocationIntentV1` binds
-the obligation, descriptor and action, exact authorization identity/digest,
+the obligation and descriptor, exact canonical authorization identity/digest,
 signer identity, key identity and epoch, authentication profile, issuer
 identity/continuity, issued-at, not-before, exact target expiry, maximum
 trusted-time uncertainty, trusted-time profile and epoch, reason, non-wrapping
 sequence, nonce and idempotency. Its
 `MigrationImportRegistryHistoryRecoveryAuthorizationRevocationSequenceKeyV1`
 is scoped to issuer identity/continuity, tenant/deployment, obligation,
-recovery action and exact authorization identity/digest, and its lifetime
+exact authorization identity/digest, and its lifetime
 covers the target authorization.
+The target action exists only as the tag inside the referenced canonical
+authorization bytes. Revocation intent, sequence key and result do not encode a
+second authoritative action. A denormalized action index is derived and
+read-verified under the same corruption rule as authorization storage.
 `ApplyMigrationImportRegistryHistoryRecoveryAuthorizationRevocation` locks the
 active coordinator generation, obligation and same authorization row used by
 admission/expiry/consumption. One destination transaction authenticates the
@@ -3142,7 +3192,7 @@ intent, advances the target sequence and commits inbox receipt, permanent
 RevokedBeforeAdmission or RevokedUnused tombstone,
 `MigrationImportRegistryHistoryRecoveryAuthorizationRevocationResultV1`,
 audit and outbox. Remote emission has no effect. Exact duplicate returns that
-result; changed target/action/bytes/continuity/sequence/idempotency returns
+result; changed target/authorization-bytes/continuity/sequence/idempotency returns
 `MigrationImportRegistryHistoryRecoveryAuthorizationRevocationConflict`
 without mutation. A late valid revocation after consumption returns the
 committed recovery result and cannot change the action or disposition. Restore
@@ -3150,22 +3200,25 @@ recovers authorization, inbox, sequence watermark, tombstone and result as one
 atomic lineage before admission or recovery resumes.
 
 Admission, expiry, revocation and consumption implement this total same-row
-state table; an “exact” operation has the identical canonical request/intent
-identity and digest, while changed material always returns
-`MigrationImportRegistryHistoryRecoveryAuthorizationConflict` without a
-write:
+state table. Explicit expiry operates only on a stored authenticated Issued
+grant and current trusted time; admission of an authentic already-expired grant
+is the sole Absent-to-ExpiredUnused transition. An “exact” operation has the
+identical canonical request/intent identity and digest. Where a durable winner
+exists, changed material returns
+`MigrationImportRegistryHistoryRecoveryAuthorizationConflict` without a write:
 
 | Current state | Admission | Expiry | Revocation | Consumption | Exact duplicate / changed material |
 |---|---|---|---|---|---|
-| Absent | A valid unexpired grant commits Issued and its admission result; admission at or after exact target expiry commits ExpiredUnused and its expiry result | A valid target commits ExpiredUnused and its expiry result | A valid intent commits RevokedBeforeAdmission and its revocation result | Denies because no Issued grant exists | The first same-row CAS wins; an exact loser joins that result and a changed loser conflicts |
-| RevokedBeforeAdmission | Returns the revocation result and never creates Issued | Returns the revocation result and never converts the tombstone | Returns the revocation result | Returns the revocation result without action | Exact operations join the revocation result; changed material conflicts |
-| Issued | Returns the admission result | Commits ExpiredUnused and its expiry result | Commits RevokedUnused and its revocation result | The exact authorized action commits Consumed and its recovery result | Exact admission joins its result; expiry, revocation and consumption race by one CAS; changed material conflicts |
-| Consumed | Returns the committed recovery result | Returns the committed recovery result | Returns the committed recovery result | Returns the committed recovery result | Exact operations join the recovery result; changed material conflicts and no action is reversed |
-| ExpiredUnused | Returns the expiry result and never creates Issued | Returns the expiry result | Returns the expiry result without converting expiry to revocation | Returns the expiry result without action | Exact operations join the expiry result; changed material conflicts |
-| RevokedUnused | Returns the revocation result and never creates Issued | Returns the revocation result | Returns the revocation result | Returns the revocation result without action | Exact operations join the revocation result; changed material conflicts |
+| Absent | A valid unexpired grant commits Issued and `Admitted`; admission at or after exact target expiry authenticates the complete grant, commits ExpiredUnused and returns `Expired` | Returns typed `NotAdmitted` without a write because no stored authenticated grant exists | A valid authenticated intent commits RevokedBeforeAdmission and returns `Revoked` | Returns typed `NotAdmitted` without a write | Admission or revocation may create the first row; guessed expiry/consumption identities cannot. An exact loser joins the winner and changed durable material conflicts |
+| RevokedBeforeAdmission | Returns `Revoked` and never creates Issued | Returns `Revoked` and never converts the tombstone | Returns `Revoked` | Returns `Revoked` without action | Exact operations join the revocation result; changed material conflicts |
+| Issued | Returns `Admitted` | Authenticates the stored grant, commits ExpiredUnused and returns `Expired` | Commits RevokedUnused and returns `Revoked` | The exact authorized action commits Consumed and returns `Consumed` | Exact admission joins its result; expiry, revocation and consumption race by one CAS; changed material conflicts |
+| Consumed | Returns `Consumed` | Returns `Consumed` | Returns `Consumed` | Returns `Consumed` | Exact operations join the recovery result; changed material conflicts and no action is reversed |
+| ExpiredUnused | Returns `Expired` and never creates Issued | Returns `Expired` | Returns `Expired` without converting expiry to revocation | Returns `Expired` without action | Exact operations join the expiry result; changed material conflicts |
+| RevokedUnused | Returns `Revoked` and never creates Issued | Returns `Revoked` | Returns `Revoked` | Returns `Revoked` without action | Exact operations join the revocation result; changed material conflicts |
 
-Every result identifies the state, exact authorization digest, winning
-operation, trusted-time decision and audit/outbox positions. There is no
+Every durable result identifies the state, exact authorization digest, winning
+operation, trusted-time decision and audit/outbox positions, and every API
+maps it to the single closed outcome enum. There is no adapter-specific union,
 implicit state, last-writer-wins conversion or transport-level effect.
 
 `MigrationImportRegistryHistoryRecoveryLineageBudgetV1` binds immutable
@@ -3187,6 +3240,14 @@ changes, successor grants, migration, restore and rollback cannot raise a
 ceiling, replace its lineage, reduce consumed counters or reuse a successor
 ordinal. An adapter that cannot prove this exact no-increase rule refuses the
 profile.
+The lineage row is created only by the activation transaction, never lazily by
+append, exhaustion, recovery, repair or restore. Missing, duplicate,
+zero-initialized-late, profile-mismatched or counter-inconsistent lineage state
+for Pending or ManualRecoveryPending returns typed
+`MigrationImportRegistryHistoryLineageStateMissing`, quarantines the obligation
+and authorizes no append/recovery/cleanup. Migration and restore require the
+exact lineage row for every nonterminal archival obligation and the canonical
+no-executable-lineage proof for NoHistory/NotRequested.
 
 `ResolveMigrationImportRegistryHistoryRecovery` locks
 active-coordinator-generation→history-obligation→recovery-authorization→archive-head→history/
@@ -3219,7 +3280,7 @@ evidence floor or custody effect would weaken the hold; no emergency flag,
 retry authority or stale policy receipt overrides that denial.
 
 `MigrationImportRegistryHistoryRecoveryResultV1` has a common authorization,
-obligation, descriptor, action, evidence, audit and outbox envelope plus closed
+obligation, descriptor, evidence, audit and outbox envelope plus closed
 `MigrationImportRegistryHistoryRecoveryResultPayloadV1`: `RetryAppend` alone
 records predecessor/successor budgets, successor ordinal and archive-head or
 typed exhaustion outcome; `Waive` alone records the canonical waiver and
@@ -3229,6 +3290,9 @@ absent. Unknown, mixed, action-inapplicable and noncanonical optional-field
 encodings are rejected. Exact response-loss retry joins or returns that result;
 changed action, descriptor, budget lineage, authority or idempotency returns
 `MigrationImportRegistryHistoryRecoveryConflict` without mutation.
+The payload variant tag is the sole result action discriminator. Any result
+index column is derived from canonical result bytes, never independently
+writable or hashed, and must match on every read or the row is corrupt.
 
 Every terminal obligation is sealed into
 `MigrationImportRegistryHistoryAppendCheckpointV1`, which binds its original
@@ -3236,11 +3300,12 @@ descriptor digest, final disposition/result/conflict, archive-head sequence or
 canonical absence, budget/cleanup settlement, audit/outbox positions and
 predecessor checkpoint. Candidate/history descriptors, staging reservations and
 related cleanup cannot be deleted or settled until this checkpoint commits.
-Crash after activation but before worker delivery therefore recovers Pending;
-restore of `ManualRecoveryPending` must recover its retained descriptors,
-exhausted/successor/cumulative lineage budgets, authorization revocation inbox/
-sequence/tombstone lifecycle, recovery result and archive-head predecessor
-before any worker or cleanup runs.
+Crash after activation but before worker delivery therefore recovers Pending
+with its activation-created cumulative lineage. Restore of every Pending or
+`ManualRecoveryPending` obligation must recover the exact lineage row; manual
+recovery additionally requires retained descriptors, exhausted/successor
+budgets, authorization revocation inbox/sequence/tombstone lifecycle, recovery
+result and archive-head predecessor before any worker or cleanup runs.
 NoHistory/NotRequested remain explicit; cleanup racing append or recovery fails
 closed. `WaivedFenced` retains the authenticated waiver and minimum policy
 evidence through its canonical waiver record; `AbandonedWithEvidence` retains
