@@ -270,9 +270,12 @@ nonterminal lineage commits an obligation-scoped corruption fence/result before
 return; append, recovery and cleanup stop. Activation creates every fence as
 Healthy generation zero, absence fails closed and all history paths use one
 fence-before-budget order. Clearance has a distinct admitted/revocable/
-expiring single-use authorization, bounded proof budget and greatest-known
-external anchors; restoration must cover those anchors or the old obligation
-stays permanently fenced and only a new coordinator generation may rebuild.
+expiring single-use authorization, destination-ratcheted mandatory-class/
+quorum anchor registry and authenticated collection receipt. One leased
+durable attempt precharges proof work and persists its cursor/counters/results;
+restoration commits the authenticated component-wise counter join. If
+unprovable, a predecessor-unique rebuild mapping may select one successor while
+the old obligation/evidence namespace remains fenced.
 Candidate, barrier and activation authorization bind the exact Pending/
 NoHistory/NotRequested tag, variant evidence and custody epochs, so changed
 history treatment requires fresh activation authority.

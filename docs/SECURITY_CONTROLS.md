@@ -251,10 +251,13 @@ audit decision.
   creates a Healthy generation-zero fence for every obligation; absence denies,
   and every history path follows one fence-before-budget lock order. Append,
   recovery and cleanup stop until a separately issued/admitted/revocable/
-  expiring single-use clearance authorization, bounded proof budget and
-  greatest-known external anchors prove the exact activation and complete
-  post-activation lineage. Unprovable state stays fenced; successor-generation
-  rebuild cannot clear or reuse it. Candidate, barrier and activation authority
+  expiring single-use clearance authorization and a destination-ratcheted
+  mandatory-class/quorum anchor registry with authenticated collection receipt
+  prove the exact activation and complete post-activation lineage. One leased
+  attempt persists proof precharges/cursor/results, and restore commits the
+  authenticated component-wise counter join. Unprovable state stays fenced; a
+  predecessor-unique rebuild record selects one successor and cannot clear,
+  reuse or hide the old evidence namespace. Candidate, barrier and activation authority
   bind the exact disposition/evidence/policy epochs. NoHistory proves zero
   eligibility; NotRequested commits current retention/classification/hold/
   evidence-floor/compliance/legal/SoD authority and cannot weaken an active

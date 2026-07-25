@@ -663,7 +663,7 @@ Missing lineage for either nonterminal atomically installs an exact-obligation
 has closed Healthy/Fenced/ClearedAfterRestore generations; absence, rollback or
 wraparound denies. Append, detection, recovery, clearance, checkpoint and
 cleanup all use
-active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering, so no path
 holds a budget while waiting for the fence. Fenced blocks append, recovery and
 cleanup for only that obligation. It clears only when an independently issued,
@@ -672,11 +672,18 @@ admitted, revocable, expiring, single-use
 within its immutable proof-work budget and
 `RestoreMigrationImportRegistryHistoryAtomicBundle` proves and atomically
 commits the exact activation bundle plus complete post-activation charges,
-results, archive head and checkpoints through every greatest-known authenticated
-external anchor. A stale, forked, incomplete, inferred, unanchored or
-over-budget bundle leaves the fence permanent. The only fallback rebuilds into
-a separately authorized successor coordinator generation/new obligation and
-retains the old fenced evidence.
+results, archive head and checkpoints through every mandatory class/quorum in
+the current destination-ratcheted anchor registry and independently
+authenticated collection receipt. Admission and final commit recheck the
+registry generation. One authorization has one leased durable attempt with a
+crash-surviving cursor, proof precharges/cumulative counters and terminal
+result; every authorization state/operation and CAS loser follows the normative
+table. Restored counters equal the overflow-checked component-wise join of all
+authenticated high-watermarks. A stale, forked, incomplete, inferred,
+unanchored or over-budget bundle leaves the fence unchanged under its typed
+attempt result. The only fallback commits one predecessor/fence-generation-
+unique rebuild record that selects one successor coordinator/obligation and
+disjoint live archive namespace while retaining the old fenced evidence.
 Its initial ceilings fit the versioned
 platform hard maximum, and no amendment/increase operation exists through
 `1.0.0`. Recovery authorization/result union tags are the sole authoritative
@@ -733,9 +740,13 @@ attempt/cumulative charge, custody-free NotRequested, false/absent NoHistory,
 post-authorization disposition/evidence/policy substitution, missing fence
 genesis or absence-as-Healthy, fence/budget lock inversion, generation rollback/
 wrap, corruption-fence widening/bypass, forged/replayed/revoked/expired
-clearance authority, proof-budget escape, stale/forked/unanchored/partial/
-inferred clearance, greatest-known-head rollback, old-fence deletion during
-successor rebuild, guessed-identity expiry tombstone, adapter-specific
+clearance authority, stale signed anchor-set omission, local registry
+nomination, missing mandatory class/quorum or forged collection receipt,
+proof-budget escape/reset, attempt takeover/CAS/cursor replay, temporary-
+evidence retry amplification, authorization loss, stale/forked/unanchored/
+partial/inferred clearance, registry/high-watermark rollback, counter
+underjoin/overflow, duplicate successor or dual-current archive, old-fence
+deletion during successor rebuild, guessed-identity expiry tombstone, adapter-specific
 outcome/conflict, Fenced-as-LineageCorrupt encoding, valid-operation
 misclassification, skipped CAS reread, dual terminal winners, outer/payload
 action contradiction or

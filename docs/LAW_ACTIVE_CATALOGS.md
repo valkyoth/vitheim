@@ -77,8 +77,11 @@ initial append co-charges it with the attempt budget; NoHistory proves zero elig
 an obligation fence. Activation creates a Healthy generation-zero fence for
 every obligation; absence denies and every history path locks it before
 lineage/budget. Clearance has its own admitted/revocable/expiring single-use
-authorization, bounded proof budget and greatest-known external anchors;
-unprovable lineage stays fenced. Candidate, barrier and activation authority
+authorization and a destination-ratcheted mandatory-class/quorum anchor
+registry with authenticated collection receipt. A unique leased attempt
+persists proof precharges/cursor/results; restoration uses the authenticated
+counter join, and one predecessor-bound rebuild mapping selects one successor.
+Unprovable lineage stays fenced. Candidate, barrier and activation authority
 bind the exact disposition/evidence/policy epochs.
 Closed authorization/result tags are the
 sole action discriminator. A total six-state row returns one closed outcome;

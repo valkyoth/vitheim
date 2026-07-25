@@ -591,10 +591,13 @@ restore, failover, and release evidence.
    fence for every obligation and absence fails closed; every history path
    locks fence before lineage/budget state. Clearance uses an independent
    admitted/revocable/expiring single-use authorization, bounded proof work and
-   external greatest-known anchors, and restores only a bundle that covers all
-   authenticated activation/post-activation lineage and those anchors.
-   Unprovable history stays permanently fenced; a rebuild uses a new
-   coordinator generation and leaves the old evidence intact. The candidate,
+   a destination-ratcheted anchor registry whose mandatory classes/quorums and
+   independently authenticated collection receipt define greatest-known state.
+   One leased durable attempt persists proof precharges/cursor/results, and the
+   operation table governs every authorization race. Restore commits only the
+   component-wise authenticated high-watermark counter join. Unprovable history
+   stays fenced; a predecessor/fence-generation-unique rebuild mapping selects
+   one successor/live archive namespace and leaves the old evidence intact. The candidate,
    barrier and activation authorization bind the exact history-disposition tag,
    variant proof/budget/custody digest and policy epochs. NoHistory proves
    zero eligibility. NotRequested binds current classification/retention/

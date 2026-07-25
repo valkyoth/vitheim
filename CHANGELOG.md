@@ -8,6 +8,16 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Replaced self-asserted “greatest-known” clearance anchors with a
+  destination-ratcheted mandatory-class/quorum registry and independently
+  authenticated collection receipt.
+- Defined the complete clearance authorization operation table and a unique
+  durable leased attempt whose proof precharges, cursor, counters and terminal
+  result survive crashes, takeover and response loss.
+- Canonicalized restored counters as the overflow-checked component-wise join
+  of authenticated high-watermarks.
+- Added a predecessor/fence-generation-unique rebuild record with one successor
+  and explicit old-evidence/new-live archive selection.
 - Unified every history mutation under one deadlock-safe fence-before-budget
   lock order and made activation create a non-wrapping Healthy fence row for
   every obligation; absent fence state now fails closed.

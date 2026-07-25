@@ -2,7 +2,7 @@
 set -eu
 
 canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold→audit/result/outbox'
-history_order='active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
+history_order='active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
 
 fail() {
     echo "migration/import policy: $*" >&2
@@ -71,13 +71,21 @@ fi
 
 for obsolete_order in \
     'history-obligation→corruption-fence→archive-head→history/idempotency→recovery-lineage-budget' \
-    'history-obligation→lineage-disposition→recovery-lineage-budget→corruption-fence'
+    'history-obligation→lineage-disposition→recovery-lineage-budget→corruption-fence' \
+    'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head'
 do
     if grep -R -Fq "$obsolete_order" docs
     then
         fail "obsolete history lock order remains: $obsolete_order"
     fi
 done
+
+if grep -R -Fq \
+    'externally retained head commitment and/or witness' \
+    docs
+then
+    fail "open-ended clearance anchor and/or semantics remain"
+fi
 
 for obsolete in \
     'scope, action discriminator' \
@@ -107,8 +115,14 @@ for requirement in \
     'Absence, rollback,' \
     'holds a budget while waiting for the fence' \
     'MigrationImportRegistryHistoryCorruptionClearanceAuthorizationV1' \
-    'historically authentic but older bundle' \
-    'The only v1 fallback is' \
+    'destination-ratcheted state' \
+    'profile selects a non-empty mandatory class set' \
+    'normative same-row' \
+    'precharges its bounded worst-case quantum' \
+    'component-wise maximum' \
+    'keyed by old obligation identity and exact Fenced generation' \
+    'authentic but older bundle' \
+    'The only v1 fallback' \
     'Corruption is an observed durable state' \
     'exact history-disposition tag' \
     'the fence is obligation-scoped and cannot quarantine a' \
@@ -208,11 +222,30 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionClearanceAuthorizationOutcomeV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAuthorizationConflict \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSetV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryAuthorityPortV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryAdvanceResultV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorRegistryAdvanceConflict \
+    AdvanceMigrationImportRegistryHistoryCorruptionClearanceAnchorRegistry \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorCollectionReceiptV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSetStale \
     MigrationImportRegistryHistoryCorruptionClearanceVerificationBudgetV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAttemptV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAttemptStateV1 \
+    BeginOrResumeMigrationImportRegistryHistoryCorruptionClearanceAttempt \
+    MigrationImportRegistryHistoryCorruptionClearanceAttemptResultV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceEvidenceTemporarilyUnavailable \
+    MigrationImportRegistryHistoryCorruptionClearanceBudgetExceeded \
+    MigrationImportRegistryHistoryCorruptionClearanceAuthorizationLost \
+    MigrationImportRegistryHistoryCorruptionClearanceCounterJoinV1 \
     RestoreMigrationImportRegistryHistoryAtomicBundle \
     MigrationImportRegistryHistoryCorruptionClearanceResultV1 \
     MigrationImportRegistryHistoryCorruptionClearanceUnprovable \
     RebuildMigrationImportRegistryHistoryUnderSuccessorCoordinator \
+    MigrationImportRegistryHistoryCorruptionRebuildRecordV1 \
+    MigrationImportRegistryHistoryCorruptionRebuildStateV1 \
+    MigrationImportRegistryHistoryCorruptionRebuildResultV1 \
+    MigrationImportRegistryHistoryCorruptionRebuildConflict \
     MigrationImportRegistryHistoryCorruptionConflict \
     MigrationImportRegistryHistorySuccessorBudgetExhausted \
     MigrationImportRegistryHistoryWaiverRecordV1 \

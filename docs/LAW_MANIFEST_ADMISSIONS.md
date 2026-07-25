@@ -56,9 +56,11 @@ custody/approval record. Missing lineage
 commits an obligation-scoped corruption fence. Every obligation has an
 activation-created Healthy generation-zero fence; absence denies and every
 history operation locks fence before lineage/budget. Clearance requires its
-own admitted/revocable/expiring single-use authorization, bounded proof budget
-and greatest-known external anchors; unprovable lineage stays fenced and a
-successor rebuild leaves the old evidence intact. Candidate, barrier and
+own admitted/revocable/expiring single-use authorization, destination-ratcheted
+mandatory-class/quorum anchor registry and authenticated collection receipt.
+A leased attempt preserves proof precharges/cursor/results, restoration uses
+the canonical authenticated counter join, and one predecessor-unique rebuild
+mapping selects one successor while the old evidence stays fenced. Candidate, barrier and
 activation authorization bind the exact history disposition, evidence digest
 and policy epochs. Recovery request/
 result tags are the sole action discriminator. The total six-state row returns

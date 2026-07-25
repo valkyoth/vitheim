@@ -67,13 +67,19 @@ budgets. Missing nonterminal lineage installs a durable exact-obligation
 and cleanup. Only independently authorized complete atomic restoration of the
 activation bundle and all post-activation charges/results/head/checkpoints may
 clear it. Every path follows
-active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering. Clearance
 consumes an independently issued/admitted/revocable/expiring single-use
 authorization, stays inside its proof budget and proves coverage through
-greatest-known external anchors; stale, incomplete, inferred or unanchored
-lineage remains permanently fenced. Successor-generation rebuild retains the
-old fence and uses a new obligation identity.
+every mandatory class/quorum in the current destination-ratcheted anchor
+registry and independently authenticated collection receipt. One unique leased
+attempt persists its cursor, precharged cumulative proof counters and terminal
+result across crash/takeover; the six-state authorization table decides every
+CAS loser. Restored counters equal the overflow-checked component-wise join of
+authenticated high-watermarks. Stale, incomplete, inferred or unanchored
+lineage remains fenced. One predecessor/fence-generation-keyed rebuild record
+selects a single successor and disjoint live namespace while retaining the old
+fence/evidence namespace.
 Exhaustion retains ManualRecoveryPending until an independently
 authorized exact action acts. RetryAppend reaches Appended or pending only and
 typed successor exhaustion never abandons; cumulative lineage counters span
@@ -961,8 +967,10 @@ sole-tag request and result/derived indexes/Issued-only expiry/closed outcomes/r
 result/distinct NoHistory proof and NotRequested custody record/Fenced outcome/
 three-variant changed-material conflict envelope and terminal-race state/
 activation-bound disposition evidence/Healthy-Fenced-ClearedAfterRestore
-generation/universal lock order/clearance authorization, proof budget, external
-anchors, restoration and clearance/attempt/result and cleanup linkage. A new coordinator may resume
+generation/universal lock order/clearance authorization, ratcheted anchor
+registry/collection receipt, proof budget, durable attempt/cursor/precharges/
+result, canonical counter join, restoration/clearance and unique rebuild/
+archive-selection linkage. A new coordinator may resume
 completeness work under a higher job fence but cannot activate stale receipts.
 Failover after preparation or an unknown activation response re-reads the one
 local transaction result; it never exposes a partial owner set or replaces the
@@ -1298,8 +1306,9 @@ sole-tag derived indexes/Issued-only expiry/closed outcomes/retry-exhaustion res
 receipts/distinct NoHistory/NotRequested custody evidence/Fenced outcome/
 three-variant conflict and CAS terminal-race state/activation disposition
 commitments/exact-obligation Healthy-Fenced-ClearedAfterRestore lineage/
-universal lock order/clearance authority, proof budget, anchors/restoration/
-clearance/result/checkpoint, activation barrier sequence/
+universal lock order/clearance authority, anchor-registry ratchet/receipt,
+proof budget/attempt lease-fence-cursor-counters-result/counter join/
+restoration/clearance/unique rebuild mapping/checkpoint, activation barrier sequence/
 predecessor/result and authorization;
 the active
 catalog ID/epoch,
@@ -1562,7 +1571,8 @@ derived-index/action-matrix/activation-created-lineage/atomic-initial-co-charge/
 platform-capped no-increase cumulative-budget/distinct NoHistory/NotRequested
 custody rules/Fenced outcome/three-variant conflict and CAS terminal-race
 rules/activation-bound disposition/universal lock order/exact-obligation fence
-lineage and authorized budgeted externally anchored atomic-clearance rules,
+lineage and authorized destination-ratcheted-anchor, durable-attempt,
+counter-join and predecessor-unique atomic-clearance/rebuild rules,
 co-located activation barrier and cleanup-
 versus-authority separation,
 starvation bounds,
@@ -1770,8 +1780,9 @@ activation-created immutable platform-capped lineage and atomic initial
 co-charge, distinct NoHistory/NotRequested evidence, Fenced outcome and
 three-variant conflict plus CAS-loser/first-terminal-winner semantics,
 activation-bound disposition, activation-created fence lineage, universal
-history order and independently authorized budgeted externally anchored atomic
-clearance, fixed activation lock
+history order and independently authorized, destination-ratcheted, durably
+attempted, canonical-counter-join atomic clearance plus unique rebuild mapping,
+fixed activation lock
 order, all-domain-owner atomicity, response-loss
 idempotency and cleanup-separation assurance report, and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
@@ -1862,8 +1873,9 @@ sole-tag request-result/derived-index/closed-outcome/Issued-only-expiry/
 activation-created-lineage/no-executable-proof/dual-charge/successor-budget/
 platform-hard-maximum/no-amendment rule/distinct NoHistory/NotRequested
 evidence/Fenced-outcome/three-variant-conflict/race-state/activation-disposition-
-commitment/fence-generation/universal-lock/clearance-authority-budget-anchors/
-restoration-clearance/
+commitment/fence-generation/universal-lock/clearance-authority-budget/anchor-
+registry-receipt/attempt-cursor-precharges-result/counter-join/restoration-
+clearance/rebuild-mapping/
 recovery-result/terminal-evidence,
 activation-barrier sequence/predecessor/result/authorization and cleanup-link
 compatibility.
@@ -2050,7 +2062,10 @@ wrap/roll back its generation, invert fence/budget locks, widen a corruption
 fence beyond its obligation, bypass it during append/recovery/cleanup, forge/
 replay/revoke/expire/reuse clearance authority, exhaust proof work, clear with
 incomplete, stale, forked, inferred or externally unanchored lineage, roll back
-a greatest-known head, erase the old fence during successor rebuild,
+a ratcheted registry/high-watermark, omit a required anchor class, forge its
+collection receipt, reset proof charges, race attempt takeover, loop temporary
+evidence, underjoin/overflow counters, create competing successors, expose both
+old/new namespaces as current or erase the old fence during successor rebuild,
 expire/consume an Absent guessed identity, encode an adapter-specific outcome
 or conflict, encode Fenced as LineageCorrupt conflict, misclassify a different
 valid operation as changed material, skip
@@ -2125,7 +2140,8 @@ Issued-only expiry/closed outcomes including Fenced and three-variant conflicts/
 CAS terminal-race state/activation disposition commitments/universal lock order/
 distinct NoHistory proof and NotRequested custody record/policy-hold receipts/
 exact-obligation fence generations/evidence/clearance authority/proof budget/
-external anchors/restoration/clearance/result/
+anchor-registry receipt/attempt cursor-precharges-result/counter join/
+restoration/clearance/result/unique rebuild mapping/
 checkpoint.
 Exit criteria:
 no known blocking gap remains.
