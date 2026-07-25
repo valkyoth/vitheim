@@ -54,7 +54,10 @@ tuple is also the migration/import owner universe. Trusted code combines it
 with the bound schema manifests, migration plan, and contributor algorithm to
 derive `MigrationImportOwnerManifestV1`. No parallel `InvariantCatalogV1`,
 importer-selected list, or mutable registry view may replace or supplement that
-closure.
+closure. The derivation also binds one typed non-importable coordinator,
+VIT-INV-062, separately from the ordered importable domain contributors.
+Keeping the coordinator in the law dependency proof never authorizes source
+registry rows to replace or merge with the destination coordinator.
 
 The initial scope contract is exact rather than descriptive:
 

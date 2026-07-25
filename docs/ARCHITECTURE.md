@@ -535,27 +535,43 @@ restore, failover, and release evidence.
    VIT-LAW-009 tuple/manifest, its authenticated dependency set and contributor
    algorithm. That admitted law closure is the only runtime owner universe; no
    separate invariant catalog exists and the importer cannot choose
-   contributors. Existing invariant owners prepare
+   contributors. VIT-INV-062 is the typed live destination coordinator, not an
+   importable contributor; every remaining applicable invariant is a domain
+   contributor. Existing domain owners prepare
    dormant generations and authenticate receipts through owner-held
    capabilities that VIT-INV-062 can verify but not forge.
    `MigrationImportActivationAuthorizationV1` comes from an independent issuer,
-   is bound to one candidate/manifest/staged root/counter set, and closes as
-   Consumed, ExpiredUnused or RevokedUnused with permanent replay state.
+   is bound to one candidate/manifest/staged root/counter set, and becomes
+   Issued only through explicit destination admission. Its closed lifecycle
+   also includes RevokedBeforeAdmission, Consumed, ExpiredUnused and
+   RevokedUnused with permanent replay state.
    Revocation is locally linearized: the independent issuer sends authenticated
    `MigrationImportActivationRevocationIntentV1`, but it takes effect only when
-   VIT-INV-062 commits its inbox receipt, monotonic issuer sequence and CAS from
-   Issued to RevokedUnused on the same row activation consumes. A late intent
-   after Consumed returns the activation result and cannot reverse authority.
+   VIT-INV-062 commits its inbox receipt and exact-authorization-scoped
+   monotonic issuer sequence, then either creates a RevokedBeforeAdmission
+   tombstone on the absent row or CAS-transitions Issued to RevokedUnused on
+   the same row admission and activation use. The intent lifetime covers the
+   target authorization lifetime. A late authorization joins the tombstone; a
+   late intent after Consumed returns the activation result and cannot reverse
+   authority.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
-   job/barrier and every selected owner guard to share one destination-local
+   live coordinator job/barrier and every selected domain-owner guard to share one destination-local
    transaction: after canonical locking, trusted manifest rederivation and
    current-state rechecks, authorization consumption and all owner activations
-   commit with barrier/job result/audit/outbox or none do. Every selected owner
+   commit with barrier/job result/audit/outbox or none do. Every selected domain owner
    retains domain authority. Cancellation, exhaustion, rejection or quarantine
    before that commit permanently fences the candidate; afterward cleanup can
    remove only non-authoritative staging. Non-co-located selectors are
    unsupported because they require a separately reviewed authority root and
    successor composite law.
+   The destination coordinator's current operation claim, job, budget, fence,
+   candidate, authorization, barrier, result and cleanup state stay outside the
+   staged candidate through result/outbox commit. Nonterminal source jobs,
+   source/destination aliasing and cyclic self-import deny; terminal source
+   history is inert and archived only after activation, with typed identity
+   conflicts. VIT-INV-062 schema succession is a separate local
+   predecessor-owned drain/checkpoint/dormant-successor/CAS-handoff bootstrap,
+   never an imported replacement.
 10. Every important result is explainable from commands, events, policy,
     workflow, evidence, provenance, and versioned configuration.
 11. The API is the product boundary; the UI is an API client and cannot acquire

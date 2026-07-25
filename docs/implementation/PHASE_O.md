@@ -15,17 +15,24 @@ Operational evidence must preserve trusted derivation of
 `MigrationImportOwnerManifestV1` from the currently admitted VIT-LAW-009
 tuple/manifest and authenticated dependency closure, with no separate invariant
 catalog; owner-held preparation-receipt authentication; independent
-activation-authorization issuance; its closed
-Issued/Consumed/ExpiredUnused/RevokedUnused lifecycle, time/key/continuity
-ratchets; authenticated revocation-intent inbox, monotonic issuer sequence and
-same-row local CAS; and atomic consumption/revocation tombstones. The registry remains authoritative
+activation-authorization issuance and explicit local admission; its closed
+RevokedBeforeAdmission/Issued/Consumed/ExpiredUnused/RevokedUnused lifecycle,
+time/key/continuity ratchets; authenticated revocation-intent inbox,
+exact-authorization sequence key, target lifetime and same-row local create/
+CAS; and atomic consumption/revocation tombstones. The owner manifest types
+VIT-INV-062 as live non-importable coordinator and other applicable
+dependencies as domain contributors. Live coordinator state, inert history
+archive, identity conflicts and predecessor-owned bootstrap handoff remain
+outside the staged candidate. The registry remains authoritative
 for its control state but never for selected owners' domain state. HA, DR,
 soak, audit, compatibility, external pentest and RC evidence must reject
 stale/future law generations, dependency omission/injection, forged pseudo
 catalogs, importer owner omission, registry-forged receipts, cross-candidate
-reuse, revocation emission/delivery/local-CAS and expiry races, key/sequence/
-continuity rollback and response loss after either terminal commit without
-partial owner visibility.
+reuse, revocation-before-admission, lost/late authorization, cross-target
+sequence suppression, premature intent expiry, nonterminal/cyclic source jobs,
+identity collisions, inert-history promotion, bootstrap rollback, activation/
+revocation/expiry races, key/sequence/continuity rollback and response loss
+after any terminal commit without partial domain-owner visibility.
 
 ## `0.141.0` — Single-Node Production Packaging
 Status: planned.
@@ -882,8 +889,10 @@ inputs/output including admitted law tuple/manifest/dependency closure, dormant
 generations, receipt authentication/key/continuity/
 replay identity, barrier sequence/predecessor/result, complete activation-
 authorization bytes/lifecycle/consumption tombstone/time/key/continuity
-ratchets, revocation intent/inbox/issuer sequence/tombstone/result/outbox and
-cleanup linkage. A new coordinator may resume
+ratchets, explicit admission/RevokedBeforeAdmission, revocation intent/inbox/
+exact-target sequence/target lifetime/tombstone/result/outbox, live coordinator
+exclusion, inert history archive, identity conflicts, coordinator-bootstrap
+checkpoint/handoff and cleanup linkage. A new coordinator may resume
 completeness work under a higher job fence but cannot activate stale receipts.
 Failover after preparation or an unknown activation response re-reads the one
 local transaction result; it never exposes a partial owner set or replaces the
@@ -1207,8 +1216,12 @@ every active or terminal `MigrationImportWorkBudgetV1` job/material key,
 immutable budget profile, cumulative operation/aggregate counters, reservations,
 cursor/checkpoints, lease/fence, staged-row high-watermarks, typed result and
 cleanup/quarantine disposition, closed activation lifecycle, candidate/
-tombstone, ordered owner manifest, dormant generations, preparation receipts,
-activation barrier sequence/predecessor/result and authorization;
+tombstone, ordered coordinator/domain-contributor manifest, dormant domain
+generations, preparation receipts, explicit authorization admission,
+RevokedBeforeAdmission and RevokedUnused tombstones, target-scoped revocation
+sequence/lifetime, live coordinator exclusion, inert history archive, identity
+conflicts, bootstrap checkpoint/handoff, activation barrier sequence/
+predecessor/result and authorization;
 the active
 catalog ID/epoch,
 recomputed payload/envelope and actual
@@ -1461,8 +1474,10 @@ cumulative byte/item/crypto/proof/temporary-storage/staged-row/open-stream/
 checkpoint/retry/elapsed/cleanup and concurrent-job limits, pessimistic quantum
 precharge, destination-local reservations, fenced promotion, and non-borrowable
 Recovery cleanup capacity, plus the closed job lifecycle, candidate/owner
-manifest/dormant-generation/receipt set, co-located activation barrier and
-cleanup-versus-authority separation,
+manifest with coordinator/contributor roles, dormant-domain-generation/receipt
+set, authorization admission/pre-admission revocation, exact-target sequence,
+live-coordinator exclusion, source-job/archive/collision/bootstrap rules,
+co-located activation barrier and cleanup-versus-authority separation,
 starvation bounds,
 emergency reserve, baselines, failure scenarios, and evidence retention. Goal:
 prove bounded behavior under stress.
@@ -1658,9 +1673,11 @@ monotonic cumulative-counter and pessimistic-precharge accounting, reservation
 conservation, cursor/retry/failover continuity, fenced promotion, typed
 exhaustion, digest-only quarantine, and protected Recovery-cleanup assurance
 report; closed lifecycle, canonical candidate/manifest/receipt/barrier codecs,
-dormant-generation non-authority, fixed activation lock order, all-owner
-atomicity, response-loss idempotency and cleanup-separation assurance report,
-and hardening guide.
+dormant-generation non-authority, coordinator/contributor classification,
+authorization admission and RevokedBeforeAdmission semantics, scoped sequence/
+lifetime, live coordinator exclusion, inert archive/collision/bootstrap,
+fixed activation lock order, all-domain-owner atomicity, response-loss
+idempotency and cleanup-separation assurance report, and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
 tree/artifact, permit clone/serialization/log/core-dump/swap canaries, failed
@@ -1742,6 +1759,8 @@ budget-profile/generation/epoch/digest, cumulative-counter, precharge,
 reservation, cursor/checkpoint, terminal-result, cleanup/quarantine and
 authorized-successor compatibility, plus job-phase/terminal-disposition,
 candidate/tombstone, owner-manifest, dormant-generation, preparation-receipt,
+authorization-admission/RevokedBeforeAdmission/target-sequence/lifetime,
+live-coordinator exclusion, inert-history/identity-conflict/bootstrap,
 activation-barrier sequence/predecessor/result/authorization and cleanup-link
 compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
@@ -1910,12 +1929,18 @@ converges without unbounded reconciliation.
 Attack the activation handoff at every instruction and commit boundary:
 exhaust/cancel/quarantine immediately before and during activation; substitute
 candidate, manifest, staged root, receipt, owner version, job fence, trusted
-time or authorization; leave one owner unprepared/rejecting; race cleanup and
+time or authorization; deliver revocation before authorization, lose or delay
+authorization through expiry, reorder unrelated target sequences, and race
+admission/revocation/expiry/activation; present active and terminal source
+VIT-INV-062 jobs, stable-ID collisions, a destination-targeting job and cyclic
+self-import; attempt inert-history promotion and coordinator-bootstrap
+rollback; leave one domain owner unprepared/rejecting; race cleanup and
 takeover; lose responses; run concurrent activators; fail over after prepare;
 and restore prepared, terminal or falsely active state. Prove the fixed local
-transaction exposes the complete matching owner set and canonical result or
-nothing, prepared state stays dormant, terminal state stays fenced, and no
-remote selector fallback exists.
+transaction exposes the complete matching domain-owner set and canonical
+result or nothing, delayed authority cannot cross a tombstone, live coordinator
+state cannot be replaced, prepared/history state stays non-authoritative,
+terminal state stays fenced, and no remote selector fallback exists.
 Exit criteria: all critical/high findings are fixed and retested.
 `v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 
@@ -1961,6 +1986,9 @@ every migration/import operation key, budget profile, cumulative counter,
 reservation, cursor, result, exhaustion, quarantine and cleanup record, and for
 every closed lifecycle phase, candidate/tombstone, owner manifest, dormant
 generation, preparation receipt, activation barrier/result/authorization and
-cleanup link. Exit criteria:
+cleanup link, including coordinator/contributor classification, authorization
+admission, RevokedBeforeAdmission, exact-target sequence/lifetime, live
+coordinator exclusion, inert archive/identity conflicts and coordinator
+bootstrap handoff. Exit criteria:
 no known blocking gap remains.
 `v0.150.0 implementation stop reached. Run pentest for this exact commit.`

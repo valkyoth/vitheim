@@ -203,18 +203,25 @@ audit decision.
   migration-plan digest, the currently admitted VIT-LAW-009 tuple/manifest and
   its authenticated dependency set; this law closure is the only owner universe,
   no separate runtime invariant catalog exists, importer-supplied selection is
-  never authority, and every selected owner retains domain ownership;
+  never authority, VIT-INV-062 is typed only as the live destination
+  coordinator, and every remaining selected contributor retains domain
+  ownership;
 - owner-held authentication produces dormant-preparation receipts while
   VIT-INV-062 has verify-only access; activation uses an independently issued,
-  candidate-bound `MigrationImportActivationAuthorizationV1` with a closed
-  Issued/Consumed/ExpiredUnused/RevokedUnused lifecycle, trusted-time/key/
-  continuity ratchets and permanent consumption tombstone;
+  candidate-bound `MigrationImportActivationAuthorizationV1`;
+  `AdmitMigrationImportActivationAuthorization` alone creates Issued, while the
+  closed lifecycle also contains RevokedBeforeAdmission, Consumed,
+  ExpiredUnused and RevokedUnused with trusted-time/key/continuity ratchets and
+  permanent tombstones; admission after target expiry creates ExpiredUnused,
+  never Issued;
 - revocation becomes effective only when an authenticated candidate-bound
   `MigrationImportActivationRevocationIntentV1` advances the monotonic issuer
-  sequence and CAS-transitions the destination-local authorization row from
-  Issued to RevokedUnused with inbox receipt/result/audit/outbox; remote
-  emission is not revocation, activation uses the same row, and a late intent
-  after Consumed returns the activation result without reversal;
+  authorization-scoped sequence and either creates a permanent
+  RevokedBeforeAdmission tombstone on an absent row or CAS-transitions Issued
+  to RevokedUnused with inbox receipt/result/audit/outbox; admission,
+  activation, expiry and revocation use the same row, the intent cannot expire
+  before its target authorization, remote emission is not revocation, and a
+  late intent after Consumed returns the activation result without reversal;
 - through `1.0.0` every affected owner guard is co-located with the job/barrier,
   and one local transaction rechecks current budget/fence/authorization/
   manifest/receipts/owner versions, consumes authorization, then activates all
@@ -222,6 +229,12 @@ audit decision.
   failure permanently fences the candidate, response-loss retry is idempotent,
   cleanup cannot promote or delete authority, and non-co-located selector
   fallback is unsupported;
+- VIT-INV-062 is never imported by the candidate it coordinates: destination
+  operation/job/budget/fence/candidate/authorization/barrier/result/cleanup
+  state remains live authority; nonterminal source jobs deny, terminal history
+  is inert and post-activation archival only, identity collisions fail closed,
+  and coordinator-schema migration requires a separate predecessor-owned
+  drain/checkpoint/dormant-successor/atomic-handoff bootstrap;
   a once-per-first-seen-request rate and successful-admission/outstanding quotas,
   monotonic request sequence for every first-seen canonical request,
   separate successful issuance sequence, exact replay horizon,

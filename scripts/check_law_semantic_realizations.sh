@@ -162,7 +162,7 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
             done
             ;;
         VIT-LAW-009@*)
-            for symbol in DeriveMigrationImportOwnerManifest MigrationImportActivationRevocationIntentV1 ApplyMigrationImportActivationRevocationIntent MigrationImportActivationRevocationResultV1 MigrationImportActivationRevocationConflict ActivateMigrationImportCandidate MigrationImportActivationBlocked; do
+            for symbol in DeriveMigrationImportOwnerManifest MigrationImportCoordinatorRoleV1 MigrationImportDomainContributorRoleV1 AdmitMigrationImportActivationAuthorization MigrationImportActivationAuthorizationRevokedBeforeAdmission MigrationImportActivationRevocationIntentV1 MigrationImportActivationRevocationSequenceKeyV1 ApplyMigrationImportActivationRevocationIntent MigrationImportActivationRevocationResultV1 MigrationImportActivationRevocationConflict MigrationImportRegistryIdentityConflict MigrationImportCoordinatorBootstrapV1 ActivateMigrationImportCandidate MigrationImportActivationBlocked; do
                 case "$transitions" in
                     *"\`$symbol\`"*) ;;
                     *) fail "$semantic omits migration/import activation symbol $symbol" ;;

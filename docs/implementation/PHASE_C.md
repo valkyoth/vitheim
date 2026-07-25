@@ -2387,6 +2387,17 @@ or noncanonical non-applicable result denies. Any future invariant that can own
 migrated state must enter a successor `VIT-LAW-009` generation and active law
 catalog before that state can be imported.
 
+The resolved dependency closure has two typed classes. Its one coordinator
+entry is exactly `VIT-INV-062` with role
+`DestinationMigrationImportCoordinator`; every other applicable entry is an
+`ImportableDomainContributor`. The coordinator remains in the law proof and
+activation lock set, but never contributes source rows, a dormant imported
+generation, or a replaceable owner receipt. `MigrationImportOwnerManifestV1`
+binds both the current destination coordinator identity/version/lease/fence and
+the ordered domain-contributor set so exclusion cannot be mistaken for
+omission. Any second coordinator, source-selected role, missing coordinator, or
+attempt to classify VIT-INV-062 as imported domain state denies.
+
 Freeze canonical `MigrationImportAdmissionCandidateV1`. It binds the job and
 operation key; exact tenant/deployment, source/destination and manifest digest;
 budget-profile identity and final cumulative counters; staged-state root;
@@ -2426,11 +2437,17 @@ is an independent authority-capability boundary. VIT-INV-062 and every domain
 owner have verification-only access: registry, importer and migration runners
 cannot mint or self-approve activation.
 
-Its durable `MigrationImportActivationAuthorizationConsumptionV1` lifecycle is
-closed to `Issued`, `Consumed`, `ExpiredUnused` and `RevokedUnused`.
+`AdmitMigrationImportActivationAuthorization` is the only operation that can
+make an authorization usable. It authenticates the canonical issuer bytes,
+rechecks candidate/scope/time/key/continuity and locks the authorization key
+shared with revocation before transitioning `Absent` to `Issued`. Its durable
+`MigrationImportActivationAuthorizationConsumptionV1` lifecycle is closed to
+`RevokedBeforeAdmission`, `Issued`, `Consumed`, `ExpiredUnused` and
+`RevokedUnused`. If trusted time proves the target lifetime ended before
+admission, the same operation creates `ExpiredUnused` and never `Issued`.
 Consumption is single-use and candidate-specific. Authorization bytes/digest,
 the permanent consumption tombstone, time/profile/continuity/key ratchets,
-canonical `MigrationImportActivationResultV1`, all owner activations,
+canonical `MigrationImportActivationResultV1`, all domain-owner activations,
 barrier/job result, audit and outbox commit in the same destination-local
 transaction. Exact post-commit retry returns the original result. Reuse for a
 different candidate, staged root, owner manifest, counters, request bytes or
@@ -2441,26 +2458,39 @@ Revocation uses canonical `MigrationImportActivationRevocationIntentV1`
 binding authorization and candidate digests; tenant/deployment and operation
 scope; issuer continuity; a non-wrapping monotonic issuer revocation sequence;
 signer identity/key epoch/authentication profile; reason code; issued-at,
-not-before, expiry, maximum uncertainty and trusted-time profile/epoch; and
-nonce/idempotency identity. The independent issuer emits it through an
+not-before, the exact target-authorization not-after, maximum uncertainty and
+trusted-time profile/epoch; and nonce/idempotency identity. It has no
+independent earlier expiry: its not-after equals the target authorization's
+signed expiry, and the permanent terminal/tombstone remains authoritative
+afterward. The sequence high-watermark key is exactly
+`MigrationImportActivationRevocationSequenceKeyV1(issuer identity, issuer
+continuity, tenant, deployment, authorization identity/digest, candidate
+digest)`. It orders successors for one target only; traffic for another
+authorization cannot advance or invalidate it. The independent issuer emits it through an
 authenticated outbox. VIT-INV-062 authenticates it through verify-only access
 and records a destination-local inbox receipt; remote emission, transport
 receipt or observation alone is not revocation.
 
 `ApplyMigrationImportActivationRevocationIntent` locks the same canonical
 authorization row as activation, verifies exact candidate/scope/current issuer
-continuity and monotonic sequence, and CAS-transitions only `Issued` to
-`RevokedUnused`. That local transaction atomically persists the intent bytes/
-digest, sequence high-watermark, inbox receipt, permanent revocation tombstone,
-canonical result, audit and result outbox. Revocation is effective only at this
-destination-local commit. Exact duplicate delivery returns the original
-revocation result; changed bytes, candidate, sequence or idempotency material
-returns typed `MigrationImportActivationRevocationConflict` without mutation.
+continuity and target-scoped monotonic sequence. If the row is absent, the
+operation atomically creates `RevokedBeforeAdmission` bound to the exact
+authorization identity/digest, candidate, scope and target lifetime. If it is
+`Issued`, the operation CAS-transitions it to `RevokedUnused`. Both paths
+atomically persist the intent bytes/digest, sequence high-watermark, inbox
+receipt, permanent revocation tombstone, canonical result, audit and result
+outbox. Revocation is effective only at this destination-local commit. Later
+authorization admission locks that same row and joins the exact
+`RevokedBeforeAdmission` result without ever creating `Issued`; changed
+authorization bytes/digest/scope conflict without mutation. Exact duplicate
+delivery returns the original revocation result; changed bytes, candidate,
+sequence or idempotency material returns typed
+`MigrationImportActivationRevocationConflict` without mutation.
 If activation already committed `Consumed`, a late valid revocation returns the
 canonical activation result and never reverses domain authority. Expiry uses
 the same row and CAS rule. Therefore activation, expiry and revocation have
 exactly one locally linearized result: complete consumption, expired-unused or
-revoked-unused.
+revoked-before-admission/revoked-unused.
 
 Freeze canonical `MigrationImportActivationBarrierV1` containing the exact
 candidate digest, complete ordered owner-manifest and preparation-receipt set,
@@ -2471,23 +2501,24 @@ canonical result. VIT-INV-062 coordinates completeness and owns only this
 security-control state. It cannot approve a domain transition, fabricate a
 receipt or make prepared state authoritative.
 
-The supported through-`1.0.0` activation profile requires the job, candidate,
-barrier and every affected invariant-owner activation guard to be co-located in
-one destination-local transaction domain. This is `VIT-LAW-009
+The supported through-`1.0.0` activation profile requires the live coordinator
+job, candidate, barrier, authorization row and every affected domain-owner
+activation guard to be co-located in one destination-local transaction domain.
+This is `VIT-LAW-009
 AtomicMigrationImportActivation`: trusted derivation selects the exact affected
-owner set while every selected owner retains exclusive domain authority.
+domain-owner set while every selected domain owner retains exclusive authority.
 Activation locks job, candidate/
 barrier, the authorization row, then owner rows in canonical manifest order;
-revocation and expiry use the identical job→candidate/barrier→authorization
-prefix; rechecks
+authorization admission, revocation and expiry use the identical
+job→candidate/barrier→authorization prefix; rechecks
 `AdmissionPrepared`, exact current job lease/fence, budget profile and final
 counters, absence of every failure disposition, current trusted time and
 authorization lifecycle, complete unique ordered receipts, exact staged root,
 the independently rederived owner manifest, and every
-unchanged owner version/epoch; invokes each owner's own verifier; then
-atomically consumes and tombstones authorization, activates all dormant owner
-generations, commits the barrier sequence/result, moves the job to `Activated`,
-and writes audit/result/outbox.
+unchanged domain-owner version/epoch; invokes each domain owner's own verifier;
+then atomically consumes and tombstones authorization, activates all dormant
+domain-owner generations, commits the barrier sequence/result, moves the job to
+`Activated`, and writes audit/result/outbox.
 Missing, duplicate, reordered or substituted receipts, stale owner/job state,
 partial preparation, expired authority or any owner rejection commits no
 activation. Exact concurrent or response-loss retry returns the one barrier
@@ -2506,6 +2537,13 @@ authoritative generations are thereafter governed and deleted solely by their
 existing invariant owners. An active job with a missing/mismatched barrier,
 receipt or owner generation is corrupt authority state and fails closed rather
 than being reconstructed from staging.
+
+VIT-INV-062 never prepares itself as a domain generation. Its own schema can
+advance only through `MigrationImportCoordinatorBootstrapV1`: the current
+coordinator drains new admissions, terminalizes and outbox-settles live jobs,
+checkpoints every control-state high-watermark, verifies a dormant local
+successor, then commits one predecessor-bound handoff that fences the old
+coordinator. The import candidate cannot seed or authorize this bootstrap.
 
 A migration or import
 cannot route authority reads to a replica, synthesize absence, reset a unique
@@ -2697,21 +2735,24 @@ or substitute manifest members and preparation receipts; leave one owner
 unprepared or rejecting; lose the activation response; fail over after
 preparation; restore a prepared but unactivated candidate; and present
 `Activated` with a missing barrier, receipt or owner generation. Exactly one
-complete local transaction activates every owner plus job/result/audit/outbox,
+complete local transaction activates every domain owner plus job/result/audit/outbox,
 or none does; no prepared state is readable as authority and no failure cleanup
 can later promote it.
 Test stale/future admitted VIT-LAW-009 generation, omitted/injected dependency,
 contributor-algorithm mismatch, active-catalog or generation-manifest digest
 substitution, and a self-consistent forged `InvariantCatalogV1`-shaped artifact.
 Test cross-candidate authorization reuse; revocation intent emission versus
-delivery versus local commit; activation/revocation/expiry CAS races; duplicate,
-reordered, delayed and changed-intent delivery; late revocation after
-consumption; issuer-key, sequence and continuity rollback; expiry after partial
-preparation; registry-forged owner receipts; importer-supplied owner omission;
-failover/restore around inbox commit; and response loss after revocation or
-authorization consumption. Exercise every `VIT-LAW-009` generation transition;
-only one complete activation or the exact typed no-write/idempotent result is
-valid.
+delivery versus local commit; revocation before authorization delivery;
+authorization loss and late admission against `RevokedBeforeAdmission`;
+activation/admission/revocation/expiry CAS races; duplicate, reordered, delayed
+and changed-intent delivery; unrelated-authorization sequence reordering; target
+authorization expiry during transport; late revocation after consumption;
+issuer-key, sequence and continuity rollback; expiry after partial preparation;
+registry-forged owner receipts; importer-supplied owner omission; failover/
+restore before and after tombstone creation or authorization admission; and
+response loss after either commit. Exercise every `VIT-LAW-009` generation
+transition; only one complete activation or the exact typed no-write/idempotent
+result is valid.
 
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
 `v0.29.0 implementation stop reached. Run pentest for this exact commit.`
@@ -2771,15 +2812,43 @@ consumption lifecycle, and `MigrationImportActivationBarrierV1` from
 schema manifests, migration-plan digest, the currently admitted destination
 VIT-LAW-009 tuple/manifest and its authenticated dependency closure;
 exported/importer-supplied owner selection or a separate invariant catalog is
-never authority. Import preserves revocation intents, local inbox receipts,
-issuer sequence high-watermarks, consumption/revocation tombstones and
+never authority. The derivation classifies VIT-INV-062 only as the live
+destination coordinator; it is never an importable domain contributor. The
+destination operation claim, budget, lifecycle, lease/fence, candidate,
+authorization admission/revocation state, barrier, result, cleanup and outbox
+remain authoritative outside the staged candidate through result/outbox
+commit. Import preserves revocation intents, local inbox receipts,
+exact-target sequence high-watermarks, consumption/revocation tombstones and
 canonical results. Import never exposes a
-partially prepared owner: all owner generations remain dormant until the one
+partially prepared domain owner: all domain-owner generations remain dormant until the one
 supported destination-local activation transaction atomically commits the
-complete owner set, authorization consumption/tombstone, barrier, job result,
+complete domain-owner set, authorization consumption/tombstone, barrier, job result,
 audit and outbox under VIT-LAW-009. A destination that
 would require a cross-partition, cross-region or external activation selector
 refuses before staging rather than weakening the handoff.
+
+Preflight refuses any source snapshot containing a nonterminal
+`MigrationImportJobAuthorityState` as importable state, including a job
+targeting this destination or referencing this operation. A source may export
+only bounded, authenticated terminal registry history as inert
+`MigrationImportRegistryHistoryV1`; it is excluded from owner roots and staged
+authority, then may be appended after activation to a separate archival
+namespace by a successor transaction. Stable job ID, operation-key,
+authorization ID, candidate or barrier collisions return typed
+`MigrationImportRegistryIdentityConflict` before staging and never merge,
+replace or resume either lineage. Cyclic self-import and source/destination
+aliasing deny.
+
+Migrating the VIT-INV-062 schema itself never uses a migration candidate.
+`MigrationImportCoordinatorBootstrapV1` is a separate destination-local
+predecessor-owned protocol: drain new admissions; let every live job reach a
+durable terminal plus outbox disposition; checkpoint operation claims, budgets,
+fences, authorization admission/revocation tombstones, sequence keys, barriers,
+results and cleanup; create and verify a dormant local successor schema; then
+CAS one predecessor-bound handoff and fence the old coordinator. Recovery
+selects exactly one side from that handoff. Imported source rows cannot seed the
+successor, and a backend unable to prove the checkpoint and atomic handoff
+refuses the coordinator-schema migration.
 Import preserves every
 authorization schema field without defaulting and admits the destination only
 if it proves the same or stronger no-late-commit mechanism; otherwise imported
@@ -2861,7 +2930,12 @@ fence, missing/duplicate/reordered/substituted preparation receipt, incomplete
 owner manifest, partial preparation, owner rejection, activation response
 loss, concurrent activation, failover after preparation, prepared-state
 restore, active-without-barrier/receipt/owner-generation corruption, and any
-non-co-located activation fallback,
+non-co-located activation fallback; active and terminal source VIT-INV-062
+jobs, identical job/operation/authorization/candidate/barrier IDs, source jobs
+targeting the destination, source/destination aliasing, cyclic self-import,
+terminal-history promotion, archive response loss, coordinator-bootstrap
+drain with a live job, checkpoint omission, dormant-successor verification
+failure, handoff response loss, failover and restore before/after cutover,
 and cross-adapter conformance pass.
 
 Exit criteria: successful import proves complete semantic and integrity parity.

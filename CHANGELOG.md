@@ -8,6 +8,18 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Closed revocation-before-authorization ordering with explicit
+  `AdmitMigrationImportActivationAuthorization` and a shared
+  `RevokedBeforeAdmission` state. An authenticated early revocation now creates
+  a permanent exact-target tombstone that delayed admission must join; sequence
+  continuity is scoped per authorization/candidate lineage and the intent
+  lifetime covers its target authorization.
+- Removed migration-coordinator self-import ambiguity without weakening the
+  VIT-LAW-009 closure. VIT-INV-062 is now the typed live, non-importable
+  destination coordinator; other applicable dependencies are domain
+  contributors. Nonterminal source jobs, cycles and identity collisions fail
+  closed, terminal registry history is inert post-activation archive only, and
+  coordinator-schema succession uses a separate predecessor-owned bootstrap.
 - Closed the migration/import owner-universe ambiguity without introducing
   another authority root: `MigrationImportOwnerManifestV1` is now derived from
   the authenticated dependency closure of the currently admitted destination
@@ -18,19 +30,20 @@ All notable Vitheim changes are documented here. The format follows
 - Defined authenticated migration/import activation revocation as an
   issuer-outbox/destination-inbox protocol with a monotonic non-wrapping
   sequence and exact retry/conflict results. Revocation becomes effective only
-  through a destination-local `Issued` to `RevokedUnused` CAS on the same
-  authorization row activation consumes; activation, revocation, and expiry
-  therefore have exactly one terminal winner, and a late intent cannot reverse
-  a consumed activation.
+  through a destination-local shared-row commit: absent authority becomes
+  `RevokedBeforeAdmission`, while `Issued` becomes `RevokedUnused`.
+  Authorization admission, activation, revocation, and expiry therefore have
+  exactly one terminal winner, and a late intent cannot reverse consumption.
 - Registered migration/import control authority as `VIT-INV-062` and atomic
-  all-owner cutover as `VIT-LAW-009`, with successor generations as later
+  domain-owner cutover as `VIT-LAW-009`, with successor generations as later
   invariant owners enter the roadmap. Trusted code derives the exact owner
   manifest from schema, migration-plan and admitted-law authority; owners
   authenticate dormant receipts through capabilities the registry can verify
   but not use to forge. A candidate-bound independently issued authorization
-  closes as consumed, expired-unused or revoked-unused and is tombstoned in the
-  same local transaction that activates every selected owner plus job/result/
-  audit/outbox, or none. Terminal failures permanently fence candidates and
+  closes as revoked-before-admission, consumed, expired-unused or revoked-unused
+  and is tombstoned in the same local transaction that activates every selected
+  domain owner plus job/result/audit/outbox, or none. Terminal failures
+  permanently fence candidates and
   remote selector fallback remains unsupported.
 - Added one durable operation-wide `MigrationImportWorkBudgetV1` for migrations
   and imports, with immutable job uniqueness, monotonic cumulative resource

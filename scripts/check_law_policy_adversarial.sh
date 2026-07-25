@@ -88,6 +88,13 @@ expect_realization_failure() {
     cp docs/LAW_SEMANTIC_REALIZATIONS.md "$realizations"
 }
 
+expect_missing_realization_symbol() {
+    symbol=$1
+    label=$2
+    sed -i 's/`'"$symbol"'`, //' "$realizations"
+    expect_realization_failure "$label"
+}
+
 reset_active_catalogs() {
     cp docs/LAW_ACTIVE_CATALOGS.md "$active_catalogs"
 }
@@ -363,11 +370,14 @@ expect_realization_failure "a missing topology authorization original quota clai
 sed -i 's/`TopologyAuthorizationReceiptRevocationIntentV1`, //' "$realizations"
 expect_realization_failure "a missing receipt-specific revocation intent"
 
-sed -i 's/`MigrationImportActivationRevocationIntentV1`, //' "$realizations"
-expect_realization_failure "a missing migration/import activation revocation intent"
-
-sed -i 's/`MigrationImportActivationRevocationResultV1`, //' "$realizations"
-expect_realization_failure "a missing migration/import activation revocation result"
+expect_missing_realization_symbol MigrationImportActivationRevocationIntentV1 "a missing migration/import activation revocation intent"
+expect_missing_realization_symbol MigrationImportActivationRevocationResultV1 "a missing migration/import activation revocation result"
+expect_missing_realization_symbol AdmitMigrationImportActivationAuthorization "a missing migration/import authorization admission transition"
+expect_missing_realization_symbol MigrationImportActivationAuthorizationRevokedBeforeAdmission "a missing migration/import pre-admission revocation terminal"
+expect_missing_realization_symbol MigrationImportActivationRevocationSequenceKeyV1 "a missing migration/import target-scoped revocation sequence"
+expect_missing_realization_symbol MigrationImportCoordinatorRoleV1 "a missing migration/import coordinator role"
+expect_missing_realization_symbol MigrationImportRegistryIdentityConflict "a missing migration/import registry identity conflict"
+expect_missing_realization_symbol MigrationImportCoordinatorBootstrapV1 "a missing migration/import coordinator bootstrap"
 
 sed -i 's/`TopologyAuthorizationConsumerTerminalReceiptV1`, //' "$realizations"
 expect_realization_failure "a missing consumer terminal receipt"

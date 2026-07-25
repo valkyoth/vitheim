@@ -599,32 +599,46 @@ cleanup control state but no domain state. `VIT-LAW-009` requires the supported
 production profile to co-locate job, barrier and every selected invariant-owner
 activation guard. The only owner universe is the authenticated dependency
 closure of the currently admitted destination VIT-LAW-009 tuple/manifest; no
-separate invariant catalog is implemented. One transaction rederives the owner
-manifest from that closure plus schema, migration plan and contributor
-algorithm, rechecks current budget/final counters, job
+separate invariant catalog is implemented. The manifest types VIT-INV-062 only
+as the live non-importable destination coordinator and every other applicable
+dependency as a domain contributor. One transaction rederives that split from
+the closure plus schema, migration plan and contributor algorithm, rechecks current budget/final counters, job
 lease/fence, terminal disposition, trusted-time/key/continuity-bound
 authorization, staged root, complete unique owner receipts and versions,
-consumes/tombstones authorization, then activates every owner plus barrier/job
+consumes/tombstones authorization, then activates every domain owner plus the live coordinator's barrier/job
 result/audit/outbox or none. Every pre-activation failure permanently fences the candidate;
 prepared state is never authority. Activation is irreversible and response-loss
 retry returns its canonical result. Cleanup before activation touches only
 fenced dormant/staged state and after activation touches only staging.
-Post-issuance revocation is effective only when VIT-INV-062 authenticates the
-intent and atomically commits the destination-local inbox receipt, monotonic
-issuer sequence, Issued-to-RevokedUnused CAS, tombstone, result, audit and
-outbox on the same row activation consumes. Emission alone does not revoke;
-exact retry returns the result, changed intent conflicts and late intent after
-Consumed returns the activation result without reversal.
+Authorization becomes Issued only through
+`AdmitMigrationImportActivationAuthorization`. Revocation is effective only
+when VIT-INV-062 authenticates the intent and atomically commits the
+destination-local inbox receipt, exact-authorization-scoped sequence and either
+an absent-to-RevokedBeforeAdmission create or Issued-to-RevokedUnused CAS,
+tombstone, result, audit and outbox on the same row admission/activation use.
+The intent lifetime covers the target authorization. Emission alone does not
+revoke; delayed authorization joins the tombstone, exact retry returns the
+result, changed intent conflicts and late intent after Consumed returns the
+activation result without reversal.
+The live destination operation/job/budget/fence/candidate/authorization/
+barrier/result/cleanup state is outside the imported candidate. Nonterminal
+source jobs, source/destination aliasing and cyclic self-import deny. Terminal
+source registry history is inert, collision-checked and archived only after
+activation. VIT-INV-062 schema succession uses a separate predecessor-owned
+drain, authenticated complete checkpoint, verified dormant local successor and
+atomic fenced handoff; source rows never seed it.
 Cross-database, cross-region or external-selector activation is unsupported
 through `1.0.0`; it requires a future explicitly owned invariant/composite law.
 Production evidence must include stale/future law generation, dependency
 omission/injection, contributor mismatch, catalog/generation digest
 substitution, forged pseudo invariant catalog, cross-candidate authorization
-reuse, revocation emission/delivery/local-CAS versus activation, delayed/
-duplicate/reordered intent, expiry after partial preparation, registry-forged
-receipt, importer owner omission, key/sequence/continuity rollback and response
-loss after revocation or consumption; each produces one atomic success or exact
-fail-closed/idempotent result.
+reuse, revocation before admission, lost/late authorization delivery, intent
+expiry before target authority, cross-target sequence suppression, activation/
+revocation/expiry races, nonterminal and terminal source jobs, identity
+collisions, destination-targeting/cyclic self-import, inert-history promotion,
+coordinator-bootstrap rollback, registry-forged receipt, importer owner
+omission, key/sequence/continuity rollback and response loss after any terminal
+commit; each produces one atomic success or exact fail-closed/idempotent result.
 
 Goal: release the first production-supported Vitheim platform with claims no
 broader than its evidence.
@@ -654,7 +668,9 @@ Deliverables:
   exhaustion, fenced promotion, digest-only quarantine, protected cleanup and
   runbooks for joining, resuming, failing over, restoring and explicitly
   superseding a job; closed candidate/preparation/barrier activation codecs,
-  fixed local lock order, owner verification ports and all-owner atomic cutover
+  coordinator/domain-contributor roles, explicit authorization admission,
+  pre-admission tombstones, live-coordinator exclusion, inert archive/bootstrap,
+  fixed local lock order, domain-owner verification ports and atomic cutover
   evidence, with unsupported non-co-located profiles named explicitly.
 - Signed source/artifacts/checksums, SBOM, provenance, licenses, compatibility
   evidence, pentest report, and complete release notes.

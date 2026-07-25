@@ -195,33 +195,48 @@ quarantine.
 The same milestones declare `VIT-INV-062 MigrationImportJobAuthorityState` for
 operation uniqueness, budget/reservations, closed job/fence/candidate/
 authorization/barrier/result/cleanup control state and `VIT-LAW-009
-AtomicMigrationImportActivation` for the exact all-owner commit. Trusted code
+AtomicMigrationImportActivation` for the exact domain-owner commit. Trusted code
 derives `MigrationImportOwnerManifestV1` from source/destination schema
 manifests, migration-plan digest, the currently admitted destination
 VIT-LAW-009 tuple/manifest, its authenticated dependency set and the versioned
 contributor algorithm. That law dependency closure is the only owner universe;
 no separate runtime invariant catalog exists, and importer input cannot select
-or omit owners. `MigrationImportAdmissionCandidateV1`
+or omit owners. The manifest types VIT-INV-062 as the one live destination
+coordinator and every other applicable dependency as an importable domain
+contributor. The coordinator participates in the proof and lock order, but its
+live control rows never enter the staged candidate or a dormant imported
+generation. `MigrationImportAdmissionCandidateV1`
 binds that manifest, final counters, staged root, expected owner versions/
 epochs and dormant generations, lease/fence, independently issued activation
 authorization and idempotency digest. Each existing owner authenticates only
 its dormant generation through an owner-held capability; VIT-INV-062 has
 verify-only access. `MigrationImportActivationAuthorizationV1` is
-candidate-specific and has only Issued, Consumed, ExpiredUnused or RevokedUnused
-states. Revocation requires authenticated
-`MigrationImportActivationRevocationIntentV1` delivery and one destination-
-local CAS from Issued to RevokedUnused on the same row activation consumes;
-remote emission alone has no effect, and late revocation after Consumed returns
-the activation result without reversal. One `MigrationImportActivationBarrierV1`
+candidate-specific. `AdmitMigrationImportActivationAuthorization` is its only
+Absent-to-Issued path; the closed lifecycle also includes
+RevokedBeforeAdmission, Consumed, ExpiredUnused and RevokedUnused; admission
+after target expiry records ExpiredUnused rather than Issued. Revocation
+requires authenticated `MigrationImportActivationRevocationIntentV1` delivery
+and one destination-local shared-row commit. When the row is absent it creates
+a permanent authorization-digest/candidate-bound RevokedBeforeAdmission
+tombstone that later admission must join. The issuer sequence is scoped to that
+exact authorization lineage, the
+intent cannot expire before its target authorization, remote emission alone
+has no effect, and late revocation after Consumed returns the activation result
+without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
-authorization lifecycle, receipts and all owner versions, consumes and
-tombstones authorization, then activates every owner plus barrier/job result/
+authorization lifecycle, receipts and all domain-owner versions, consumes and
+tombstones authorization, then activates every domain owner plus barrier/job result/
 audit/outbox, or none. Pre-activation rejection, exhaustion, cancellation or
 quarantine permanently fences the candidate; post-activation cleanup touches
 only staging. VIT-INV-062 coordinates security-control completeness but never
-domain authority. A topology requiring a distributed transaction or unreviewed
-global activation selector is refused.
+domain authority. Cross-backend import refuses nonterminal source jobs; imports
+terminal VIT-INV-062 history only after activation into an inert archival
+namespace; and returns a typed conflict for job/operation/authorization/
+candidate/barrier identity collisions. VIT-INV-062 schema succession uses a
+separate predecessor-owned drain, checkpoint, dormant local successor and
+atomic handoff, never the candidate it coordinates. A topology requiring a
+distributed transaction or unreviewed global activation selector is refused.
 Archive exact results or authenticated result references with
 request/lifecycle/scope/predecessor/key commitments, bounded proof work and a
 durable cursor. Late exact retry returns the archived result, changed retry
