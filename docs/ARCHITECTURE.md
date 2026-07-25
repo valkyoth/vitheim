@@ -557,11 +557,12 @@ restore, failover, and release evidence.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
    live coordinator job/barrier and every selected domain-owner guard to share one destination-local
    transaction. Its canonical order is
-   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox:
+   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox:
    after locking, trusted manifest rederivation and
    current-state rechecks, authorization consumption and all owner activations
    commit with barrier/job result, exactly one Pending plus zero-counter
-   lineage or NoHistory/NotRequested plus no-executable-lineage proof,
+   lineage, cryptographic NoHistory zero-eligibility proof or custody-governed
+   NotRequested record,
    audit/outbox or none do. Every selected domain owner
    retains domain authority. Cancellation, exhaustion, rejection or quarantine
    before that commit permanently fences the candidate; afterward cleanup can
@@ -585,13 +586,22 @@ restore, failover, and release evidence.
    destination-local. Activation creates the zero-counter immutable lineage
    beside Pending, initial append charges attempt and cumulative rows atomically,
    and missing Pending/ManualRecoveryPending lineage is corruption.
-   NoHistory/NotRequested instead bind no-executable-lineage proof. The initial cumulative ceiling is bounded by the
+   Corruption commits an obligation-scoped durable fence/result that append,
+   recovery and cleanup recheck; clearance restores only an authenticated
+   activation bundle plus complete post-activation lineage. NoHistory proves
+   zero eligibility. NotRequested binds current classification/retention/
+   legal-hold/evidence-floor/compliance/legal/SoD evidence in a canonical
+   activation record and cannot weaken a hold. Both bind no-executable-lineage
+   proof. The initial cumulative ceiling is bounded by the
    platform hard maximum and has no amendment/increase path through `1.0.0`.
    Recovery request/result payloads are closed action-tagged unions; their tag
    is the sole action authority and any storage index is derived/read-verified.
    Admission, expiry, revocation and consumption share a total six-state row and
    one outcome enum. Expiry is Issued-only; absent expiry/consumption returns
-   typed no-write NotAdmitted, and expiry remains expiry when it wins.
+   typed no-write NotAdmitted, and expiry remains expiry when it wins. One
+   closed operation-conflict wrapper preserves detailed authorization/
+   revocation/recovery/corruption conflicts; CAS losers reread the table and
+   different operations on the same exact target do not conflict.
    Waive/Abandon require separate current-policy/legal-hold/
    compliance authority and canonical custody records; only their true terminal
    can be checkpointed and cleaned. Typed identity conflicts fail closed.

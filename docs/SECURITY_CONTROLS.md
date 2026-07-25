@@ -224,11 +224,12 @@ audit decision.
   late intent after Consumed returns the activation result without reversal;
 - through `1.0.0` every affected owner guard is co-located with the job/barrier,
   and one local transaction uses
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox,
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox,
   then rechecks current budget/fence/authorization/
   manifest/receipts/owner versions, consumes authorization, then activates all
   owner generations plus Pending/zero-counter-lineage or
-  NoHistory/NotRequested/no-executable-lineage-proof and result/audit/outbox or
+  NoHistory/zero-eligibility-proof or NotRequested/custody-record and
+  result/audit/outbox or
   none; every pre-activation
   failure permanently fences the candidate, response-loss retry is idempotent,
   cleanup cannot promote or delete authority, and non-co-located selector
@@ -246,12 +247,20 @@ audit decision.
   ManualRecoveryPending; activation creates immutable zero-counter lineage
   beside Pending, initial work atomically charges attempt and lineage budgets,
   NoHistory/NotRequested prove no executable lineage, and missing nonterminal
-  lineage is corruption. Cumulative lineage limits never reset, recovery
+  lineage commits an obligation-scoped corruption fence/result. Append,
+  recovery and cleanup stop until evidence-only governed restoration proves the
+  exact activation and complete post-activation lineage. NoHistory proves zero
+  eligibility; NotRequested commits current retention/classification/hold/
+  evidence-floor/compliance/legal/SoD authority and cannot weaken an active
+  hold. Cumulative lineage limits never reset, recovery
   ceilings fit a platform hard maximum and cannot be increased through
   `1.0.0`. Recovery authorization/result payload tags are the sole action
   discriminators and any index is derived/read-verified. The shared six-state
   lifecycle returns one closed outcome; explicit expiry is Issued-only and
-  absent expiry/consumption is typed no-write NotAdmitted. Recovery
+  absent expiry/consumption is typed no-write NotAdmitted. One closed top-level
+  conflict wrapper carries every detailed conflict; CAS losers reread the state
+  table, and different valid operation kinds on one exact target are not
+  changed material. Recovery
   revocation is destination-local with explicit signer/key/time binding, and
   Waive/Abandon require distinct current
   policy/legal-hold/compliance authority plus canonical custody records;

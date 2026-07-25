@@ -2505,7 +2505,7 @@ The supported through-`1.0.0` activation profile requires the live coordinator
 generation, job, candidate, barrier, authorization row and every affected
 domain-owner activation guard to be co-located in one destination-local
 transaction domain. The canonical full order is
-`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox`.
+`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox`.
 This is `VIT-LAW-009
 AtomicMigrationImportActivation`: trusted derivation selects the exact affected
 domain-owner set while every selected domain owner retains exclusive authority.
@@ -2937,13 +2937,22 @@ activation. Prove the initial lineage fits the platform hard maximum and that
 no policy/profile/issuer/action/backend/idempotency/migration/restore/rollback
 path can raise a ceiling, reduce a consumed counter or reuse an ordinal.
 Crash/fault every activation boundary and prove Pending never commits without
-its zero-counter immutable lineage row, while NoHistory/NotRequested commit
-only their no-executable-lineage proof. For every initial append quantum, crash
+its zero-counter immutable lineage row. NoHistory must prove authenticated
+zero eligibility. NotRequested must bind the eligible digest/count and pass
+current retention/classification/legal-hold/evidence-floor/compliance/legal/SoD
+rechecks in its canonical record; activate a hold before commit and require
+denial whenever omission weakens custody. Both terminals commit their distinct
+evidence plus a canonical no-executable-lineage marker that binds why no budget
+row exists. For every initial append quantum, crash
 between both budget updates and work start; per-attempt and cumulative charges
 must commit together, never undercount, and never be created lazily. Missing or
 mismatched lineage for Pending/ManualRecoveryPending must return typed
-corruption before append, recovery or cleanup; restore/migration omission must
-remain fenced.
+corruption only after the exact obligation-scoped fence/result commits. Race
+detectors, append, recovery and cleanup; exact detection joins one fence,
+changed evidence conflicts, scope cannot widen and no cleanup/checkpoint occurs.
+Clearance must fail unless it authenticates the activation bundle and complete
+post-activation charge/result/head lineage; incomplete evidence leaves the
+fence permanent. Restore/migration omission must remain fenced.
 Exercise admission, expiry, revocation and consumption from every state in the
 total table, including every exact duplicate, changed-material conflict and
 race; expiry winning must return its canonical expiry result without becoming
@@ -2951,7 +2960,13 @@ revocation. Expiry and consumption against Absent must return the one typed
 NotAdmitted outcome without any row/tombstone/sequence/idempotency write;
 admission of an authenticated expired grant is the only absent-to-expired path.
 Every operation must encode its winning admission/expiry/revocation/recovery
-result through the same closed outcome enum. Omit or substitute each revocation signer/key-epoch/
+result through the same closed outcome enum and every detailed conflict through
+the matching variant of the one top-level operation-conflict wrapper. Race
+different operations on the same exact target and require CAS losers to reread/
+reapply the table, never conflict merely because operation kinds differ.
+Admission may be followed by revocation or expiry; the first of consumption,
+expiry and revocation to terminalize wins. Reused operation/idempotency identity
+with changed target bytes/identity/digest/scope conflicts. Omit or substitute each revocation signer/key-epoch/
 authentication-profile/issued-at/not-before/target-expiry/uncertainty/trusted-
 time-profile/epoch field and require pre-mutation denial. Negative codec and
 semantic tests must reject Waive carrying retry-budget fields, RetryAppend
@@ -3082,10 +3097,23 @@ zero counters, initial ordinal zero and canonical predecessor absence.
 entry/root digests, source/destination scope, archive namespace and policy,
 activation result, those budget identities/digests and idempotency; it never
 copies unbounded history into the activation transaction. `NoHistory` is the
-terminal proof that the authenticated source manifest contains no eligible
-terminal registry history. `NotRequested` is the terminal proof that the bound
-retention policy explicitly declined archival. Each commits canonical
-`MigrationImportRegistryHistoryNoExecutableLineageV1`, proving why no
+terminal cryptographic proof that the authenticated source manifest contains
+no eligible terminal registry history, binding its manifest identity/digest,
+eligibility algorithm/version, zero eligible count and empty-set commitment.
+`NotRequested` is a custody-governed terminal, not a policy shortcut. The
+activation transaction locks and rechecks current retention/classification/
+legal-hold authority before it commits canonical
+`MigrationImportRegistryHistoryNotRequestedRecordV1`. That record binds the
+authenticated source-history manifest and eligible-history digest/count,
+retention and classification policy identity/generation/digest, legal-hold
+state/epoch, required evidence-retention floor, policy-decision provenance,
+records/compliance/legal approval authority with requestor/approver/operator
+separation, activation result, commit-time policy receipt and audit/outbox
+positions. An active hold rejects NotRequested whenever declining archival
+would weaken custody; no stale receipt, emergency flag or ordinary retention
+setting overrides that denial. `NoHistory` and `NotRequested` each commit canonical
+`MigrationImportRegistryHistoryNoExecutableLineageV1` in addition to the
+distinct evidence above, proving why no
 executable budget row exists or is required and requiring canonical absence of
 all executable-lineage fields. An absent obligation or a mismatched
 obligation/lineage pair is corrupt activation state, never shorthand for a
@@ -3093,7 +3121,7 @@ terminal.
 
 `AppendMigrationImportRegistryHistory` consumes only a durable Pending
 obligation after the canonical activation result/outbox commit, under
-active-coordinator-generation→history-obligation→archive-head→history/
+active-coordinator-generation→history-obligation→corruption-fence→archive-head→history/
 idempotency→recovery-lineage-budget→archive-budget→audit/result/outbox locking.
 Canonical
 `MigrationImportRegistryHistoryArchiveHeadV1` binds tenant/deployment/
@@ -3162,13 +3190,20 @@ returns `MigrationImportRegistryHistoryRecoveryAuthorizationConflict` without
 mutation.
 All admission, expiry, revocation and consumption APIs return
 `Result<MigrationImportRegistryHistoryRecoveryAuthorizationOutcomeV1,
-MigrationImportRegistryHistoryRecoveryAuthorizationConflict>`. The closed
+MigrationImportRegistryHistoryRecoveryAuthorizationOperationConflictV1>`. The closed
 outcome is exactly `Admitted(AdmissionResultV1)`,
 `Expired(ExpiryResultV1)`, `Revoked(RevocationResultV1)`,
 `Consumed(RecoveryResultV1)` or
 `NotAdmitted(MigrationImportRegistryHistoryRecoveryAuthorizationNotAdmitted)`.
 NotAdmitted is a typed no-write observation: it creates no authorization row,
 sequence, tombstone, idempotency result or authority.
+The closed top-level conflict wrapper is exactly
+`Authorization(MigrationImportRegistryHistoryRecoveryAuthorizationConflict)`,
+`Revocation(MigrationImportRegistryHistoryRecoveryAuthorizationRevocationConflict)`,
+`Recovery(MigrationImportRegistryHistoryRecoveryConflict)` or
+`LineageCorrupt(MigrationImportRegistryHistoryCorruptionResultV1)`. Existing
+detailed conflict records remain canonical inner variants and are never exposed
+as incompatible top-level API errors.
 
 Recovery authorization revocation is a complete delivery protocol.
 `MigrationImportRegistryHistoryRecoveryAuthorizationRevocationIntentV1` binds
@@ -3194,7 +3229,7 @@ RevokedBeforeAdmission or RevokedUnused tombstone,
 audit and outbox. Remote emission has no effect. Exact duplicate returns that
 result; changed target/authorization-bytes/continuity/sequence/idempotency returns
 `MigrationImportRegistryHistoryRecoveryAuthorizationRevocationConflict`
-without mutation. A late valid revocation after consumption returns the
+inside the operation-conflict wrapper without mutation. A late valid revocation after consumption returns the
 committed recovery result and cannot change the action or disposition. Restore
 recovers authorization, inbox, sequence watermark, tombstone and result as one
 atomic lineage before admission or recovery resumes.
@@ -3205,7 +3240,9 @@ grant and current trusted time; admission of an authentic already-expired grant
 is the sole Absent-to-ExpiredUnused transition. An “exact” operation has the
 identical canonical request/intent identity and digest. Where a durable winner
 exists, changed material returns
-`MigrationImportRegistryHistoryRecoveryAuthorizationConflict` without a write:
+the matching inner conflict inside
+`MigrationImportRegistryHistoryRecoveryAuthorizationOperationConflictV1`
+without a write:
 
 | Current state | Admission | Expiry | Revocation | Consumption | Exact duplicate / changed material |
 |---|---|---|---|---|---|
@@ -3220,6 +3257,15 @@ Every durable result identifies the state, exact authorization digest, winning
 operation, trusted-time decision and audit/outbox positions, and every API
 maps it to the single closed outcome enum. There is no adapter-specific union,
 implicit state, last-writer-wins conversion or transport-level effect.
+Admission, expiry, revocation and consumption targeting the same exact
+authorization are different valid operations, not changed material. After a
+CAS loss, the loser rereads the row and reapplies this table. Admission may
+therefore be followed by valid revocation to RevokedUnused or valid expiry to
+ExpiredUnused. Consumption, expiry and revocation serialize on the row and
+their first terminal transition wins. A conflict requires changed target bytes,
+identity, digest or scope under the same operation identity, or reuse of an
+idempotency identity with changed canonical material; a fresh valid operation
+against the same target returns or advances the table outcome.
 
 `MigrationImportRegistryHistoryRecoveryLineageBudgetV1` binds immutable
 overflow-safe cumulative ceilings for the entire obligation: initial and every
@@ -3244,13 +3290,46 @@ The lineage row is created only by the activation transaction, never lazily by
 append, exhaustion, recovery, repair or restore. Missing, duplicate,
 zero-initialized-late, profile-mismatched or counter-inconsistent lineage state
 for Pending or ManualRecoveryPending returns typed
-`MigrationImportRegistryHistoryLineageStateMissing`, quarantines the obligation
-and authorizes no append/recovery/cleanup. Migration and restore require the
+`MigrationImportRegistryHistoryLineageStateMissing` and must durably fence the
+exact obligation before returning. Migration and restore require the
 exact lineage row for every nonterminal archival obligation and the canonical
 no-executable-lineage proof for NoHistory/NotRequested.
 
+Corruption fencing is separately owned state and never a new append
+disposition. `MigrationImportRegistryHistoryCorruptionFenceV1` is keyed only by
+the exact obligation and has closed
+`MigrationImportRegistryHistoryCorruptionFenceStateV1` Fenced or Cleared
+states. `FenceMigrationImportRegistryHistoryCorruption` locks
+active-coordinator-generation→history-obligation→lineage-disposition→recovery-lineage-budget→corruption-fence→audit/result/outbox.
+Its one local transaction binds the obligation, observed lineage presence/
+bytes/digest, corruption reason, coordinator generation/fence, detector
+identity, bounded evidence, idempotency and audit/outbox positions, then
+commits Fenced plus canonical
+`MigrationImportRegistryHistoryCorruptionResultV1`. Exact retry returns that
+result; changed observation under the same idempotency returns
+`MigrationImportRegistryHistoryCorruptionConflict`. Detection has no effect
+until this commit; the fence is obligation-scoped and cannot quarantine a
+tenant/deployment or alter append disposition. Append, recovery and cleanup
+lock/recheck the fence after the obligation lock. Fenced returns the canonical
+corruption result, permits no append/recovery/checkpoint/cleanup and never
+creates lineage or infers counters.
+
+Clearance is not ordinary editing.
+`RestoreMigrationImportRegistryHistoryAtomicBundle` requires independently
+authorized Recovery/restore authority, quorum and SoD; authenticates the exact
+activation-era barrier/result/obligation/lineage-disposition bundle plus every
+post-activation attempt/cumulative charge, append/recovery result, archive-head
+advance and checkpoint through the fenced observation; and refuses incomplete,
+forked or inferred evidence. Its same-order local transaction restores only
+those exact authenticated bytes and conservative counters, commits Cleared
+plus `MigrationImportRegistryHistoryCorruptionClearanceResultV1`, audit and
+outbox, or returns `MigrationImportRegistryHistoryCorruptionConflict` without
+mutation. If the complete lineage cannot be proven, Fenced is permanent and
+custody evidence remains retained. Restore, migration, failover and rollback
+preserve both Fenced/Cleared history and results before any worker starts.
+
 `ResolveMigrationImportRegistryHistoryRecovery` locks
-active-coordinator-generation→history-obligation→recovery-authorization→archive-head→history/
+active-coordinator-generation→history-obligation→corruption-fence→recovery-authorization→archive-head→history/
 idempotency→recovery-lineage-budget→successor-archive-budget→retention/legal-hold→audit/result/outbox.
 It reauthenticates the retained descriptors and exact exhausted predecessor,
 rechecks current retention/classification/legal-hold generations and evidence

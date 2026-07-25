@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox'
+canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox'
 
 fail() {
     echo "migration/import policy: $*" >&2
@@ -44,6 +44,13 @@ then
     fail "obsolete activation order without the atomic lineage disposition remains"
 fi
 
+if grep -R -Fq \
+    'ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox' \
+    docs
+then
+    fail "obsolete activation order without retention/legal-hold locking remains"
+fi
+
 for obsolete in \
     'scope, action discriminator' \
     'descriptor and action, exact authorization identity/digest' \
@@ -67,6 +74,11 @@ for requirement in \
     'Returns `Expired` without converting expiry to revocation' \
     'unknown action discriminants' \
     'An active legal hold categorically rejects Waive or Abandon' \
+    'An active hold rejects NotRequested whenever declining archival' \
+    'the fence is obligation-scoped and cannot quarantine a' \
+    'If the complete lineage cannot be proven, Fenced is permanent' \
+    'different valid operations, not changed material' \
+    'CAS loss, the loser rereads the row and reapplies this table' \
     'Remote emission has no effect'
 do
     grep -Fq "$requirement" docs/implementation/PHASE_C.md ||
@@ -111,6 +123,7 @@ for symbol in \
     MigrationImportRegistryHistoryAppendCheckpointV1 \
     MigrationImportRegistryHistoryNoHistory \
     MigrationImportRegistryHistoryNotRequested \
+    MigrationImportRegistryHistoryNotRequestedRecordV1 \
     MigrationImportRegistryHistoryWorkBudgetV1 \
     MigrationImportRegistryHistoryAppendDispositionV1 \
     MigrationImportRegistryHistoryManualRecoveryPending \
@@ -126,6 +139,7 @@ for symbol in \
     ExpireMigrationImportRegistryHistoryRecoveryAuthorization \
     MigrationImportRegistryHistoryRecoveryAuthorizationExpiryResultV1 \
     MigrationImportRegistryHistoryRecoveryAuthorizationOutcomeV1 \
+    MigrationImportRegistryHistoryRecoveryAuthorizationOperationConflictV1 \
     MigrationImportRegistryHistoryRecoveryAuthorizationNotAdmitted \
     MigrationImportRegistryHistoryRecoveryAuthorizationConflict \
     MigrationImportRegistryHistoryRecoveryAuthorizationRevocationIntentV1 \
@@ -136,6 +150,13 @@ for symbol in \
     MigrationImportRegistryHistoryRecoveryLineageBudgetV1 \
     MigrationImportRegistryHistoryRecoveryPlatformHardMaximumV1 \
     MigrationImportRegistryHistoryLineageStateMissing \
+    MigrationImportRegistryHistoryCorruptionFenceV1 \
+    MigrationImportRegistryHistoryCorruptionFenceStateV1 \
+    FenceMigrationImportRegistryHistoryCorruption \
+    MigrationImportRegistryHistoryCorruptionResultV1 \
+    RestoreMigrationImportRegistryHistoryAtomicBundle \
+    MigrationImportRegistryHistoryCorruptionClearanceResultV1 \
+    MigrationImportRegistryHistoryCorruptionConflict \
     MigrationImportRegistryHistorySuccessorBudgetExhausted \
     MigrationImportRegistryHistoryWaiverRecordV1 \
     MigrationImportRegistryHistoryAbandonmentRecordV1 \

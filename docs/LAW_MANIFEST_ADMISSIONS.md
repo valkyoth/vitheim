@@ -44,17 +44,21 @@ with exact results; their one action-discriminated revocation protocol has a
 target-scoped sequence/lifetime and destination-only atomic effect, so
 authority loss cannot strand the drain. Activation
 atomically creates Pending plus zero-counter lineage, or explicit
-NoHistory/NotRequested plus no-executable-lineage proof. Append is authenticated
+NoHistory zero-eligibility proof or NotRequested custody record. Append is authenticated
 and bounded, and cleanup waits for its
 terminal checkpoint. Exhaustion remains ManualRecoveryPending until independent
 recovery authority performs its exact action. RetryAppend cannot abandon,
 cumulative lineage counters cannot reset or increase and initial ceilings fit
 the platform hard maximum. Activation creates zero-counter lineage with every
 Pending obligation; initial append co-charges it with the attempt budget, while
-NoHistory/NotRequested carry no-executable-lineage proof. Recovery request/
+NoHistory proves zero eligibility and NotRequested carries a commit-time
+custody/approval record. Missing lineage
+commits an obligation-scoped corruption fence, and only authenticated complete-
+lineage restoration can clear it. Recovery request/
 result tags are the sole action discriminator. The total six-state row returns
 one closed outcome; expiry is Issued-only and absent expiry/consumption is typed
-no-write NotAdmitted. Authenticated recovery revocation is locally linearized.
+no-write NotAdmitted. One closed conflict wrapper preserves detailed errors,
+and CAS losers reread/reapply the state table. Authenticated recovery revocation is locally linearized.
 Waive/Abandon require distinct custody records plus current
 policy/legal-hold/compliance authority. These protocols are part of every admitted VIT-LAW-009
 semantic realization, not optional registry behavior.

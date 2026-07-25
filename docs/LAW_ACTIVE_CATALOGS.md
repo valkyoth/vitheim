@@ -68,14 +68,17 @@ protocol binds exact grant/action sequence and target lifetime and takes effect
 only in its destination transaction. Old binaries or predecessor
 transactions that omit the expected generation deny. Activation creates a
 bounded obligation and its lineage disposition atomically: Pending has
-zero-counter lineage, NoHistory/NotRequested has no-executable proof.
+zero-counter lineage, NoHistory has a zero-eligibility proof and NotRequested
+has a custody record.
 Authenticated append advances the archive head. Exhaustion remains ManualRecoveryPending
 until exact independent action authority acts. RetryAppend cannot waive/
 abandon. Activation creates zero-counter cumulative lineage beside Pending and
-initial append co-charges it with the attempt budget; NoHistory/NotRequested
-carry no-executable-lineage proof. Closed authorization/result tags are the
+initial append co-charges it with the attempt budget; NoHistory proves zero eligibility while NotRequested commits current custody/approval evidence. Missing lineage commits
+an obligation fence and only complete authenticated restoration clears it.
+Closed authorization/result tags are the
 sole action discriminator. A total six-state row returns one closed outcome;
 expiry is Issued-only and absent expiry/consumption writes nothing. All work
+uses one closed conflict wrapper and CAS losers reread the state table. All work
 shares immutable platform-capped cumulative lineage limits with no amendment
 through `1.0.0`; recovery
 revocation binds complete authentication/time fields and is destination-local.

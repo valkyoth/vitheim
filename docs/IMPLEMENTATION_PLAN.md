@@ -225,13 +225,13 @@ has no effect, and late revocation after Consumed returns the activation result
 without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 uses the canonical
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox
 order, rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all domain-owner versions, consumes and
 tombstones authorization, then activates every domain owner plus barrier/job result/
 history obligation/lineage disposition/audit/outbox, or none. Exactly one
-bounded Pending plus zero-counter lineage, or NoHistory/NotRequested plus
-no-executable-lineage proof, co-commits; cleanup cannot remove its
+bounded Pending plus zero-counter lineage, cryptographic NoHistory zero-
+eligibility proof, or custody-governed NotRequested record, co-commits; cleanup cannot remove its
 descriptors until a terminal append checkpoint. Pre-activation rejection,
 exhaustion, cancellation or
 quarantine permanently fences the candidate; post-activation cleanup touches
@@ -263,8 +263,13 @@ abandonment. Every fresh action requires independent authority, while one
 cumulative obligation-lineage budget prevents work/time/attempt/byte/successor
 counter reset. Activation creates it with zero counters beside every Pending
 obligation; each initial append precharge atomically advances its attempt and
-cumulative rows. NoHistory/NotRequested carry canonical no-executable-lineage
-proof, and missing nonterminal lineage is corruption, never lazily repaired.
+cumulative rows. NoHistory proves authenticated zero eligibility; NotRequested commits a
+current retention/classification/legal-hold/evidence-floor/compliance/legal/SoD
+record in the activation transaction and active-hold weakening denies. Missing
+nonterminal lineage commits an obligation-scoped corruption fence/result before
+return; append, recovery and cleanup stop. Clearance requires independently
+authorized restoration of the exact activation bundle and complete subsequent
+charge/result/head lineage, never lazy repair or inferred counters.
 Its initial ceilings must fit the platform hard maximum and
 cannot be amended or increased through `1.0.0`. Recovery authority and result
 use closed RetryAppend/Waive/Abandon tagged unions with canonical absence of
@@ -273,7 +278,10 @@ is derived and read-verified. Admission, expiry, revocation and consumption
 share one total six-state row and return one closed outcome enum. Explicit
 expiry is Issued-only; absent expiry/consumption returns typed no-write
 NotAdmitted, while admission alone may authenticate an already expired grant.
-Typed winner results make every exact retry reproducible, with expiry never
+One closed operation-conflict wrapper carries authorization, revocation,
+recovery or lineage-corrupt detail. Different valid operations on one exact
+target reread the table after CAS loss; only changed target/idempotency material
+conflicts. Typed winner results make every exact retry reproducible, with expiry never
 converted into revocation. Recovery revocation takes effect only in its destination row and
 binds explicit signer, key-epoch, authentication-profile and trusted-time
 fields.

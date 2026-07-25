@@ -8,6 +8,15 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Closed the pre-archive custody path: NotRequested now commits a canonical
+  current-policy/legal-hold/evidence-floor/compliance-approved record, while
+  NoHistory remains a cryptographic zero-eligibility proof.
+- Added an obligation-scoped durable history-corruption fence, canonical
+  result/conflict and evidence-only governed clearance that requires the exact
+  activation bundle plus complete post-activation charge/result lineage.
+- Unified recovery authorization errors under one closed operation-conflict
+  wrapper and specified CAS-loser reread semantics so different valid
+  operations on the same authorization are not changed-material conflicts.
 - Made the cumulative history lineage authoritative from the first append:
   activation now creates the immutable zero-counter row beside every Pending
   obligation, initial work atomically charges both attempt and lineage budgets,
@@ -60,7 +69,7 @@ All notable Vitheim changes are documented here. The format follows
   work/cleanup bounds and a disposition independent from irreversible
   activation.
 - Standardized and machine-check the migration/import activation order as
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox.
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox.
 
 - Closed revocation-before-authorization ordering with explicit
   `AdmitMigrationImportActivationAuthorization` and a shared

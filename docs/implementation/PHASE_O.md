@@ -36,7 +36,7 @@ after any terminal commit without partial domain-owner visibility.
 All Phase O evidence also preserves the non-wrapping active coordinator
 generation/fence, which every VIT-INV-062 mutation locks and rechecks first.
 Activation uses exactly
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox.
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold→audit/result/outbox.
 Bootstrap evidence covers stable identity/idempotency, its closed lifecycle,
 independently admitted, pre-admission-revocable begin, fresh handoff and
 cancellation authorizations with separation of duties, bounded work/
@@ -53,19 +53,32 @@ retention/classification, sequence/predecessor/idempotency, bounded append work,
 protected cleanup and durable disposition/result/conflict. Append begins only
 after activation, but activation atomically creates Pending, NoHistory or
 NotRequested. Pending includes immutable zero-counter cumulative lineage;
-NoHistory/NotRequested include no-executable-lineage proof. Initial append
-co-charges attempt and lineage budgets, and missing nonterminal lineage is
-corruption. Exhaustion retains ManualRecoveryPending until an independently
+NoHistory includes a source-manifest-bound cryptographic zero-eligibility proof.
+NotRequested instead commits
+`MigrationImportRegistryHistoryNotRequestedRecordV1` with the eligible-history
+commitment, current retention/classification and legal-hold inputs, evidence
+floor, provenance, approval SoD and activation/audit/outbox linkage; active hold
+rejects custody weakening. Initial append co-charges attempt and lineage
+budgets. Missing nonterminal lineage installs a durable exact-obligation
+`MigrationImportRegistryHistoryCorruptionFenceV1` that blocks append, recovery
+and cleanup. Only independently authorized complete atomic restoration of the
+activation bundle and all post-activation charges/results/head/checkpoints may
+clear it; incomplete or inferred lineage remains permanently fenced.
+Exhaustion retains ManualRecoveryPending until an independently
 authorized exact action acts. RetryAppend reaches Appended or pending only and
 typed successor exhaustion never abandons; cumulative lineage counters span
 every grant, fit a platform hard maximum and have no increase path through
 `1.0.0`. Recovery request/result union tags are the sole action authority and
 derived indexes are read-verified. The total six-state row returns one closed
-outcome; expiry is Issued-only, absent expiry/consumption is no-write
-NotAdmitted, and expiry cannot be converted. Recovery revocation
+outcome and all operations use one closed Authorization/Revocation/Recovery/
+LineageCorrupt conflict envelope; expiry is Issued-only, absent expiry/
+consumption is no-write NotAdmitted, and expiry cannot be converted. CAS losers
+reread/reapply the table, different valid operations are not changed material,
+and consumption/expiry/revocation have one first terminal winner. Recovery revocation
 is destination-local and binds explicit signer/key/authentication/time fields. Waive/Abandon alone
 commit canonical custody records after current policy/legal-hold/compliance
-recheck; cleanup waits for the terminal obligation checkpoint. Failure,
+recheck; NotRequested is governed by the same custody precedence, and cleanup
+waits for the terminal obligation checkpoint. Failure,
 collision or recovery never rolls activation back or makes its result
 ambiguous. RPC, HA, DR, soak, hardening, compatibility,
 external pentest and RC evidence must exercise stale predecessor transactions,
@@ -935,7 +948,9 @@ history ManualRecoveryPending descriptors/recovery authority and revocation/
 cumulative-lineage and successor budgets/platform hard maximum/no-amendment
 rule/activation-created zero lineage or no-executable proof/initial dual charges/
 sole-tag request and result/derived indexes/Issued-only expiry/closed outcomes/retry-exhaustion
-result/custody records/attempt/result and cleanup linkage. A new coordinator may resume
+result/distinct NoHistory proof and NotRequested custody record/closed conflict
+envelope and terminal-race state/corruption fence, evidence, restoration and
+clearance/attempt/result and cleanup linkage. A new coordinator may resume
 completeness work under a higher job fence but cannot activate stale receipts.
 Failover after preparation or an unknown activation response re-reads the one
 local transaction result; it never exposes a partial owner set or replaces the
@@ -1268,7 +1283,9 @@ history ManualRecoveryPending/recovery authority/revocation/cumulative and
 successor budgets/platform-hard-maximum/no-amendment rule/action-tagged
 request-result/activation-created lineage or no-executable proof/dual charges/
 sole-tag derived indexes/Issued-only expiry/closed outcomes/retry-exhaustion result/policy-hold
-receipts/custody records/result/checkpoint, activation barrier sequence/
+receipts/distinct NoHistory/NotRequested custody evidence/closed conflict and
+CAS terminal-race state/exact-obligation corruption fence/evidence/
+restoration/clearance/result/checkpoint, activation barrier sequence/
 predecessor/result and authorization;
 the active
 catalog ID/epoch,
@@ -1528,7 +1545,9 @@ live-coordinator exclusion, source-job/archive/collision/bootstrap rules,
 shared bootstrap revocation apply/sequence rules, history recovery authority/
 revocation/total-state-table/closed-outcome/Issued-only-expiry/sole-tag-codec/
 derived-index/action-matrix/activation-created-lineage/atomic-initial-co-charge/
-platform-capped no-increase cumulative-budget/legal-hold/custody-record rules,
+platform-capped no-increase cumulative-budget/distinct NoHistory/NotRequested
+custody rules/closed conflict and CAS terminal-race rules/exact-obligation
+corruption-fence and complete atomic-clearance rules,
 co-located activation barrier and cleanup-
 versus-authority separation,
 starvation bounds,
@@ -1733,7 +1752,10 @@ shared exact-action bootstrap revocation and retained ManualRecoveryPending
 resolution with closed request/result variants, total authorization state table
 and closed outcomes, sole-tag/derived-index semantics, Issued-only expiry,
 activation-created immutable platform-capped lineage and atomic initial
-co-charge, fixed activation lock order, all-domain-owner atomicity, response-loss
+co-charge, distinct NoHistory/NotRequested evidence, closed conflict and
+CAS-loser/first-terminal-winner semantics, exact-obligation corruption fencing
+and independently authorized complete atomic clearance, fixed activation lock
+order, all-domain-owner atomicity, response-loss
 idempotency and cleanup-separation assurance report, and hardening guide.
 Verification: compromised builder/dependency/action/key, secret canaries across
 diagnostics/plugins/crash paths, stale or name-only SBOM, wrong pentest parent/
@@ -1821,7 +1843,9 @@ live-coordinator exclusion, inert-history/identity-conflict/bootstrap/shared-
 revocation-inbox-and-sequence, ManualRecoveryPending/recovery-authorization/
 sole-tag request-result/derived-index/closed-outcome/Issued-only-expiry/
 activation-created-lineage/no-executable-proof/dual-charge/successor-budget/
-platform-hard-maximum/no-amendment rule/recovery-result/terminal-evidence,
+platform-hard-maximum/no-amendment rule/distinct NoHistory/NotRequested
+evidence/closed-conflict/race-state/corruption-fence/restoration-clearance/
+recovery-result/terminal-evidence,
 activation-barrier sequence/predecessor/result/authorization and cleanup-link
 compatibility.
 Goal: remove version ambiguity before RC. Deliverables: compatibility matrices,
@@ -2000,8 +2024,13 @@ another action's sequence, exhaust history append into ManualRecoveryPending,
 make RetryAppend abandon, reset cumulative counters through fresh grants,
 try to increase ceilings through policy/profile/backend/restore, omit or lazily
 create initial lineage, split initial attempt/cumulative charging, replace
-NoHistory proof with absence, expire/consume an Absent guessed identity, encode
-an adapter-specific outcome, contradict outer/payload action or corrupt a
+NoHistory proof with absence, forge a custody-free NotRequested or substitute
+the two dispositions, widen a corruption fence beyond its obligation, bypass it
+during append/recovery/cleanup, clear it with incomplete or inferred lineage,
+expire/consume an Absent guessed identity, encode an adapter-specific outcome
+or conflict, misclassify a different valid operation as changed material, skip
+the required reread after CAS loss, produce two terminal winners, contradict
+outer/payload action or corrupt a
 derived action index, mix action payload fields, use unknown/noncanonical
 discriminants or options, convert an expiry winner into revocation,
 omit/substitute revocation signer/key/profile/
@@ -2067,7 +2096,9 @@ bootstrap handoff/shared revocation state, plus history ManualRecoveryPending/
 recovery authority/revocation/cumulative and successor budgets/retry-exhaustion
 result/platform-hard-maximum/no-amendment rule/activation-created lineage or
 no-executable proof/dual charges/sole-tag request-result/derived indexes/
-Issued-only expiry/closed outcomes/policy-hold receipts/custody records/result/
+Issued-only expiry/closed outcomes and conflicts/CAS terminal-race state/
+distinct NoHistory proof and NotRequested custody record/policy-hold receipts/
+exact-obligation corruption fence/evidence/restoration/clearance/result/
 checkpoint.
 Exit criteria:
 no known blocking gap remains.
