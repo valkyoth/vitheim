@@ -331,17 +331,24 @@ format/proof/work maxima. Only ValidWeakening is authorizable;
 InvalidOrUnverifiable is terminal no-write. Large child sets use an epoch-cut
 re-cost campaign with one parent/selector active slot, a total state/recovery-
 intent table, fixed pre-cut snapshot and bounded authenticated post-cut fold/
-tail. Parent conservation includes active, campaign RecostPending and pending-
-successor aggregates; every application moves equal amounts between the latter
-two. A pre-reservation release settles only active charge and tombstones the
-snapshot member; later cases settle RecostPending or pending successor, and the
-reservation binds the folded-log cut. The closed campaign+mutation-fence product
-returns preflight-origin recovery to bounded Preflighting work, never an
-unbounded transaction. Activation/abort/one-shot-authorized quarantine share
-one terminal CAS/checkpoint that alone releases the slot. Final activation
+tail. Parent conservation includes active, campaign RecostPending, pending-
+successor and workspace aggregates; every application moves equal amounts
+between the middle two, while workspace reservation/settlement uses stable
+parent transfer/inverse identities. A pre-reservation release settles only
+active charge and tombstones the snapshot member; later cases settle
+RecostPending or pending successor, and the reservation binds the folded-log
+cut. The closed campaign+mutation-fence product returns preflight-origin
+recovery to bounded Preflighting work, never an unbounded transaction.
+Activation/abort/one-shot-authorized quarantine share one terminal CAS/
+checkpoint that alone releases the slot. Final activation
 consumes current authority and requires a Verified campaign-owned workspace
-whose state/cursor/physical high-watermark/source ledger covers build, catch-up,
-cleanup, quarantine and exact-once deletion settlement.
+whose checkpoint binds the same exact closed logical/physical cut. Its state/
+cursor/physical high-watermark/source ledger covers build, catch-up, bounded
+post-slot cleanup, quarantine and deletion-proved exact-once inverse settlement.
+The named settlement checkpoint binds the old terminal campaign fence and
+parent credit. Permanent quarantine has issuer-intent/destination-apply
+revocation and retains the entire parent member until broader custody-safe
+release; it never permits a campaign-level partial refund.
 A co-located Recovery parent
 ledger and immutable parent/child transfers atomically pair every child
 allocation/release with parent debit/credit; one logical operation maps to one

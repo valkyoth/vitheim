@@ -36,7 +36,9 @@ for phrase in \
     'WeakenBackendStorageCostProfile' \
     'campaign-owned RecostPending bucket' \
     'sum(campaign_recost_pending)' \
+    'sum(workspace_encumbrances)' \
     'aggregate_campaign_recost_pending' \
+    'aggregate_workspace_encumbrance' \
     'decreases AggregateCampaignRecostPending and increases' \
     'receives no successor credit because RecostPending does not' \
     'binds one specific authenticated folded-log high-' \
@@ -62,13 +64,30 @@ for phrase in \
     'still-Issued, unexpired and' \
     'None of those effects commits' \
     'shadow data/index bytes' \
-    'predecessor writers are fenced' \
+    'every old writer is fenced' \
     'workspace_total = workspace_available + workspace_reserved' \
+    'workspace_total = workspace_parent_encumbrance' \
+    'per-workspace total is funded, not independently reusable' \
+    'reservation atomically decreases ParentAvailable' \
+    'MigrationWorkspaceParentInverseTransferV1' \
     'Workspace rows are campaign-owned' \
+    'may proceed when the slot is None or names a newer campaign' \
+    'old Closed fence remains addressable' \
+    'one exact shared logical/physical cut' \
+    'workspace remains Catchup' \
+    'Complete pairs with mutation-fence Finalizing' \
+    'physical high-watermark equals that' \
+    'exact campaign/workspace checkpoint' \
+    'MigrationWorkspaceSettlementCheckpointV1' \
     'exactly once only after authenticated' \
     'Permanent quarantine is a destructive availability' \
     'Absent, RevokedBeforeAdmission, Issued, Consumed, ExpiredUnused or' \
     'may consume the still-Issued authorization' \
+    'is issuer-side only and creates signed' \
+    'target-scoped, non-wrapping' \
+    'may commit the destination effect through' \
+    'Absent→RevokedBeforeAdmission' \
+    'broader custody-safe parent-release' \
     'deployment-retirement fence is the first rank' \
     'campaign slot follows its parent ledger' \
     'or none of them' \
@@ -139,6 +158,8 @@ for symbol in \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCapacityLedgerV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceAggregateV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentTransferV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentInverseTransferV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1 \
     BuildMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
     SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
@@ -147,6 +168,7 @@ for symbol in \
     QuarantineMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
     SettleMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationConflict \
     StartMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign \
@@ -171,6 +193,13 @@ for symbol in \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationStateV1 \
     AdmitMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization \
     RevokeMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationIntentV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationSequenceV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationInboxV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationTombstoneV1 \
+    ApplyMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocation \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationResultV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationConflict \
     ExpireMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationResultV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationConflict \
@@ -237,6 +266,10 @@ for row in \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignAbortResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationSequenceRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationInboxRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationTombstoneRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReservationRow \
@@ -245,8 +278,11 @@ for row in \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCapacityLedgerRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceAggregateRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentTransferRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentInverseTransferRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveRow \
     MigrationImportRegistryHistoryRecoveryCapacityParentAggregateRow \

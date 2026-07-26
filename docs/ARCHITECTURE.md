@@ -651,7 +651,8 @@ restore, failover, and release evidence.
    overflowed or over-budget input is terminal no-write. Backend/schema
    activation uses one parent/selector active-slot epoch-cut campaign with fixed
    pre-cut snapshot, bounded post-cut fold/tail, separate active/campaign-
-   RecostPending/pending-successor aggregates and whole-delta reservation.
+   RecostPending/pending-successor/workspace aggregates and whole-delta
+   reservation.
    Pre-reservation release creates no successor credit and is tombstoned into
    the folded reservation cut; later releases settle the bucket they actually
    occupy. The closed campaign+mutation-fence product makes recovery origin-
@@ -659,7 +660,13 @@ restore, failover, and release evidence.
    quarantine share one terminal CAS/checkpoint and Closed never reopens.
    Activation consumes current authority and binds a Verified campaign-owned
    workspace with bounded build/catch-up/cleanup cursors, exact physical
-   capacity, high-watermark and deletion settlement.
+   capacity, and a checkpoint sharing the campaign's exact closed logical/
+   physical high-watermark. Workspace reservation/deletion settlement uses an
+   authenticated parent transfer/inverse and named settlement checkpoint.
+   Cleanup after slot clearing uses the current slot only for bounded rank
+   serialization and the old stable Closed fence. Quarantine revocation is
+   issuer-intent/destination-apply, and quarantined capacity remains a whole
+   parent member until broader custody-safe release.
    A co-located Recovery parent ledger atomically debits with child allocation
    and credits with child release under one transfer identity and equation;
    completion reserves use it too. One logical operation deterministically

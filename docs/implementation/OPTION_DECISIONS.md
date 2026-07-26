@@ -15,6 +15,11 @@ authority change inside a topology, dependency, or support-profile choice.
 ## `0.140.1` — Dependency, Cryptography, And KMS Decision
 
 Status: planned.
+Migration/import decision: freeze the permanent-quarantine revocation intent
+preimage, target-scoped non-wrapping sequence, issuer/signing-key continuity,
+covering time/uncertainty fields and exact shared logical/physical workspace
+checkpoint digest. A remote intent has no local effect and two different cuts
+cannot both satisfy activation.
 Setup: inventory TLS, identity, database, WASM, crypto, timestamp, secret, and
 KMS needs; compare audited implementations, maintenance, licenses, features,
 unsafe/native code, replacement boundaries, and first-party risk.
@@ -473,6 +478,11 @@ Exit criteria: Phase O has one approved, replaceable crypto/key profile.
 ## `0.140.2` — Tenant And Storage Topology Decision
 
 Status: planned.
+Migration/import decision: freeze all four parent aggregate/membership rows,
+workspace parent transfer/inverse transactions, exact-cut checkpoint, bounded
+cleanup against the old stable Closed fence, settlement checkpoint and
+quarantine revocation inbox/tombstone/result. An adapter lacking any atomic
+bundle refuses the feature.
 Setup: compare dedicated/shared tenancy for SQLite, PostgreSQL forced RLS,
 MySQL database-per-tenant/composite enforcement, MongoDB partitioning, and
 SurrealDB namespace/permission profiles against the same conformance suite.
@@ -705,6 +715,14 @@ operator are separated from campaign/recovery/work roles. Only the dedicated
 command consumes Issued authority and atomically commits
 PermanentlyQuarantined+Closed, conservative encumbrance, rejected successor,
 quarantined workspace, terminal checkpoint, slot release, audit/outbox or none.
+Remote revocation is an issuer-signed intent with a target-scoped,
+non-wrapping sequence, exact authorization digest, issuer/key continuity,
+covering time window, uncertainty/profile, reason, nonce and idempotency. Only
+the separately typed destination ApplyRevocation command verifies it and
+atomically stores its inbox/tombstone/result while moving Absent to
+RevokedBeforeAdmission or Issued to RevokedUnused. Replays join; stale/lower,
+changed or terminal-target revocations conflict and one target sequence cannot
+suppress another authorization.
 Missing or contradictory evidence cannot mint a refund; retry exhaustion alone
 remains recoverable Fenced state.
 
@@ -718,7 +736,14 @@ successor aggregate by the same amount. Activation requires RecostPending zero.
 It also requires a durable physical migration-workspace reservation covering
 shadow data/index, WAL/journal amplification, verification, rollback/cleanup,
 worker/I/O and failover terminalization, plus a completed checkpoint proving
-the successor built/verified and predecessor writers fenced. Freeze Reserved,
+the successor built/verified at the same exact closed logical/physical cut and
+predecessor writers fenced. The checkpoint binds campaign/epoch, selector/
+profile digests, fixed-snapshot root, closed post-cut high-watermark/fold root,
+equal physical high-watermark, source/successor roots/counts, writer-fence
+generation, reservation/cursor/result and verification profile. Catch-up may
+run while Open but Verified requires Complete+Finalizing, a closed logical
+high-watermark and exact physical catch-up; the Finalizing admission bound
+covers both logical and physical tails. Freeze Reserved,
 Building, Catchup, Verified, ActivatedCleanupPending, AbortCleanupPending,
 Cleaned and Quarantined workspace states; copy/catch-up cursor and physical
 mutation high-watermark; exact source capacity ledger/aggregate ceiling;
@@ -727,6 +752,14 @@ exact-once release only after authenticated deletion. Reused migration staging
 must implement this exact lifecycle. Workspace state is campaign-owned and
 locked only within parent-ledger→active-slot→campaign-fence ranks; no separate
 workspace lock or mutation path exists.
+After terminal slot clearing, cleanup takes the current slot only as a bounded
+rank-serialization lock and then the old campaign's stable Closed fence. It may
+run when the slot is None or names a new campaign, cannot mutate that slot,
+selector/profile or newer campaign, and releases the shared row between hard-
+bounded quanta. Freeze
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointV1`
+to bind deletion, old terminal checkpoint, reservation/state, parent inverse
+credit, result, audit/outbox and predecessor linkage.
 
 Final activation is one atomic authority/accounting/selector transaction. It
 rechecks retirement fence, active slot, campaign/profile heads, classifier
@@ -739,11 +772,15 @@ single-campaign, bounded fold, durable workspace and exact recovery/activation
 semantics is unsupported through `1.0.0`.
 Persist co-located
 `MigrationImportRegistryHistoryRecoveryCapacityParentLedgerV1`, its exact
-active-child, campaign-RecostPending and pending-successor encumbrance sets and
-stable parent/child transfer rows. Allocation atomically debits parent and
+active-child, campaign-RecostPending, pending-successor and workspace
+encumbrance sets and stable parent/child transfer rows. Workspace reservation
+uses its own stable parent transfer to atomically debit ParentAvailable and
+create the exact workspace member; authenticated cleanup uses the inverse
+transfer and settlement checkpoint to remove that member and credit the
+identical amount. Allocation atomically debits parent and
 reserves child; release atomically releases child and credits parent under one
 identity, preserving ParentTotal = ParentAvailable + active child +
-campaign RecostPending + pending-successor encumbrances. Each campaign
+campaign RecostPending + pending-successor + workspace encumbrances. Each campaign
 application atomically moves an equal amount from campaign RecostPending to
 pending successor; inverse transfers and activation reclassification preserve
 that same total. Apply the same protocol to publication completion reserves; a
@@ -778,6 +815,12 @@ and rechecks settlement heads, parent ledger, reserve, obligation, fence,
 lineage, checkpoint and custody authority in that order; it cannot mark
 Released while any physical leg remains ReclaimPending or without the exact
 parent credit.
+Permanent-quarantine workspace and unresolved campaign capacity stays an
+entire authenticated parent encumbrance: no campaign-level proof may release
+an apparent excess, reopen the campaign, admit the rejected successor or
+change terminal disposition. Only the broader custody-safe parent release may
+atomically settle the whole member after proving no future operation depends
+on any quarantined byte.
 Persist one unique durable clearance attempt per admitted scope generation with
 lifecycle, lease/fencing token, cursor, precharged counters and result, plus the
 normative authorization/scope table. Restore consumes Issued authority and
@@ -1610,6 +1653,11 @@ requires a distributed work transaction are rejected, not relabeled supported.
 ## `0.140.3` — Identity And Session Profile Decision
 
 Status: planned.
+Migration/import decision: freeze distinct permanent-quarantine issuer,
+destination admitter, revocation applier and consuming operator identities,
+plus campaign owner/recovery authorizer, workspace worker/settler and parent
+allocator/verifier. Cleanup identity for an old campaign cannot act as the
+current selector, slot or new campaign.
 Setup: compare exact OIDC conformance profiles/providers, WebAuthn level and
 attestation/counter policy, session stores, recovery, logout, and the `0.52.1`
 machine-to-machine profiles. Review `private_key_jwt`/mTLS choice, workload
@@ -1853,6 +1901,10 @@ Exit criteria: cryptography is not claimed to enforce resource isolation.
 ## `0.140.5` — Privacy, Retention, Evidence, And Residency Decision
 
 Status: planned.
+Migration/import decision: retain workspace parent transfers, exact-cut proof,
+old Closed fence, deletion/settlement checkpoint and quarantine grant plus
+revocation tombstones. Erasure cannot drop the fourth parent member, invent
+credit/cut, revive authority or partially refund quarantine.
 Setup: classify records, metadata, evidence blobs, audit, backups, indexes,
 legal holds, erasure duties, residency, and conflicting jurisdictional rules;
 review the complete `0.51.2` tenant data-surface registry including customer
@@ -1993,6 +2045,10 @@ authority loss.
 ## `0.140.6` — Deployment, HA, And Recovery Profile Decision
 
 Status: planned.
+Migration/import decision: failover and restore resume the exact workspace
+parent member/transfer, logical+physical cut, old cleanup fence, settlement
+checkpoint and revocation sequence/inbox. They never infer a credit, cut,
+revocation or slot relationship.
 Setup: compare modular all-in-one, split services, single-node, HA, regional,
 orchestrator, package/image, authoritative-region, and recovery choices. Every
 profile must preserve the single-use dispatch-authorization gate, current

@@ -52,6 +52,11 @@ All notable Vitheim changes are documented here. The format follows
   state, campaign and mutation-fence states share one terminal checkpoint, and
   workspace cleanup/settlement plus permanent quarantine have explicit
   operational and one-shot authority lifecycles.
+- Closed workspace/campaign cut and accounting gaps: workspaces are exact
+  Recovery-parent members funded/released by stable transfers; verification
+  binds one closed logical/physical cut; terminal cleanup safely serializes
+  after slot clearing; and permanent-quarantine revocation now requires
+  destination apply while quarantined capacity remains wholly encumbered.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

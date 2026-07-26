@@ -4003,8 +4003,14 @@ checkpoint sequence and unique slot-release identity. Contradictory, missing
 or unauthenticated accounting evidence cannot authorize a refund or activation:
 it permits only separately authorized PermanentlyQuarantined and conservatively
 retains the exact known encumbrance plus maximum unresolved reserved amount
-until separately proved. Retry or worker exhaustion alone is not evidence loss
-and cannot select quarantine.
+as a permanent parent encumbrance. No campaign-level reconciliation, workspace
+settlement or later evidence may release only the apparent excess, reopen the
+campaign, admit the rejected successor or change its terminal disposition.
+Capacity can return only through the broader custody-safe parent-release
+protocol after that protocol proves that no future operation can depend on any
+quarantined campaign or workspace byte and atomically settles the entire
+parent member. Retry or worker exhaustion alone is not evidence loss and cannot
+select quarantine.
 
 A bounded
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorV1`
@@ -4145,16 +4151,45 @@ upper bound, workspace disposition, successor rejection and predecessor
 preservation, retention/classification/legal-hold epochs, issued-at/not-before/
 expiry/uncertainty/trusted-time continuity, requestor/approvers/operator,
 quorum/SoD, reason, nonce and idempotency. Admission, pre-admission revocation,
-Issued revocation and Issued-only expiry are explicit local commands and exact
-retry returns their stored result:
+Issued revocation and Issued-only expiry are explicit destination-local state
+transitions, but revocation reaches them only through the Apply command below.
+Admission and Issued-only expiry are performed by
 `AdmitMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`,
-`RevokeMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`
 and
 `ExpireMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`
-return
+and exact retry returns
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationResultV1`
 or
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationConflict`.
+Remote revocation is not a destination mutation.
+`RevokeMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`
+is issuer-side only and creates signed
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationIntentV1`
+plus a target-scoped, non-wrapping
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationSequenceV1`;
+exact retry returns the same signed intent and changed material returns the
+authorization conflict without minting a second sequence. It never changes
+destination state. The intent binds the exact authorization
+identity and digest, campaign/slot/epoch/action, issuer, signing key and
+continuity, issued-at/not-before/target-covering expiry/not-after, maximum
+uncertainty and trusted-time profile, reason, nonce, idempotency and sequence.
+Only
+`ApplyMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocation`
+may commit the destination effect through
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationInboxV1`
+and a durable
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationTombstoneV1`.
+It returns
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationResultV1`
+or
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationConflict`.
+The destination verifies target, digest, signature/key continuity, time window
+and fresh sequence before it atomically records Absent→RevokedBeforeAdmission
+or Issued→RevokedUnused with inbox, tombstone, result, audit and outbox, or
+does none. Exact replay returns the stored result. A lower/stale sequence,
+changed duplicate or terminal Consumed/ExpiredUnused target conflicts. A
+sequence is scoped to one exact authorization target/action and can never
+suppress an unrelated grant.
 
 Only
 `PermanentlyQuarantineMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`
@@ -4202,6 +4237,22 @@ enforce, per dimension:
 workspace_building_occupied + workspace_cleanup_pending +
 workspace_quarantined`.
 
+That per-workspace total is funded, not independently reusable. The workspace
+total equals its exact authenticated parent workspace encumbrance in every
+dimension:
+
+`workspace_total = workspace_parent_encumbrance`.
+
+Workspace reservation atomically decreases ParentAvailable and increases the exact
+workspace-encumbrance membership and aggregate by the same checked amount,
+creates Reserved state and records
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentTransferV1`
+with its result/checkpoint/audit/outbox, or does none. Cleanup settlement
+atomically decreases that exact workspace encumbrance and increases
+ParentAvailable by the identical amount through
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentInverseTransferV1`;
+it cannot credit an independently calculated or partial amount.
+
 `BuildMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
 `SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
 `VerifyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
@@ -4221,20 +4272,46 @@ under the campaign's authorized terminal disposition.
 Settlement releases each reservation leg exactly once only after authenticated
 deletion through
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementV1`
-and a predecessor-linked settlement checkpoint; response loss joins the same
-settlement and Quarantined remains encumbered.
+and
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointV1`.
+The checkpoint binds authenticated deletion, the old campaign terminal
+checkpoint, every reservation leg and workspace state, the parent inverse
+transfer/credit, result, audit/outbox and predecessor checkpoint. Response loss
+joins the same settlement. Quarantined remains permanently encumbered until
+the broader custody-safe parent release described above settles the entire
+member; campaign cleanup cannot partially settle it.
 
 Workspace rows are campaign-owned, co-located and never independently locked.
 Their source capacity ledger is a co-located dimension/member of
 `MigrationImportRegistryHistoryRecoveryCapacityParentLedgerV1` and is acquired
 as part of that one rank; all workspace rows/cursors/high-watermarks/results
-are acquired inside the existing active-campaign-slot→campaign-fence rank. No
-workspace-specific rank, adapter lock or callable out-of-campaign mutation path
-exists.
+are normally acquired inside the existing active-campaign-slot→campaign-fence
+rank. After a terminal checkpoint has cleared the old active slot, cleanup
+locks the parent ledger, acquires the current parent/selector slot row only to
+preserve rank serialization, then acquires the old campaign's stable Closed
+fence by campaign identity. It does not require that the slot still names that
+campaign and may proceed when the slot is None or names a newer campaign. It
+cannot alter the current selector/profile, current slot, newer campaign or its
+fence. Every cleanup transaction has platform-hard entry, byte, work and time
+limits, releases the shared slot row between quanta, and therefore cannot
+indefinitely block new campaign work. The old Closed fence remains addressable
+until the workspace settlement checkpoint commits. No workspace-specific
+rank, adapter lock or callable out-of-campaign mutation path exists.
 The completed
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1`
-proves that successor data/schema/index is built and verified and all
-predecessor writers are fenced. Failure retains cleanup capacity until
+binds campaign identity/epoch, predecessor and successor selector/profile
+digests, fixed-snapshot root, the exact closed post-cut high-watermark and fold
+root, physical mutation high-watermark, source/successor roots and counts,
+writer-fence generation, reservation, cursor, result and verification-profile
+digests. It proves one exact shared logical/physical cut rather than two
+independently current checkpoints. Catch-up may advance while Open, but the
+workspace remains Catchup. Verify may produce Verified only after campaign
+Complete pairs with mutation-fence Finalizing, the logical high-watermark is
+closed, every old writer is fenced and the physical high-watermark equals that
+exact logical cut. Open→Finalizing is admitted only when both the remaining
+logical fold tail and physical catch-up tail fit platform-hard entry, byte and
+work maxima. A workspace verification opened against a moving cut is
+invalidated rather than accepted. Failure retains cleanup capacity until
 authenticated cleanup or permanent quarantine; runtime guards cannot replace
 this durable physical reservation.
 
@@ -4259,6 +4336,11 @@ child, unlogged mutation, nonzero
 RecostPending, failed delta or workspace admission, stale authority/epoch/
 parent/head/slot, incomplete checkpoint, unverified successor or unfenced old
 writer refuses activation.
+The transaction additionally requires exact campaign/workspace checkpoint
+identity and root equality for the campaign, epoch, selector/profile digests,
+fixed snapshot, closed post-cut high-watermark/fold root and writer-fence
+generation. Rechecking two independently valid but differently cut
+checkpoints is insufficient.
 Destination migration/import recomputes every charge from canonical artifacts
 under the destination profile and never copies source `bytes_stored` counters.
 Runtime free-disk/WAL/page/temporary-space guards may fence or reject earlier
@@ -4275,16 +4357,19 @@ Co-located
 `MigrationImportRegistryHistoryRecoveryCapacityParentLedgerV1` is the sole
 owner of protected Recovery physical capacity. Per kind/dimension it stores
 immutable ParentTotal, current ParentAvailable and the exact active child
-encumbrance, campaign RecostPending and pending-successor encumbrance sets and
+encumbrance, campaign RecostPending, pending-successor and workspace
+encumbrance sets and
 enforces:
 
 `parent_total = parent_available + sum(active_child_encumbrances) +
-sum(campaign_recost_pending) + sum(pending_successor_encumbrances)`.
+sum(campaign_recost_pending) + sum(pending_successor_encumbrances) +
+sum(workspace_encumbrances)`.
 
 The parent never recomputes that sum in an unbounded startup transaction.
 Per kind/dimension,
 `MigrationImportRegistryHistoryRecoveryCapacityParentAggregateV1` stores the
-checked aggregate active, campaign RecostPending and pending-successor
+checked aggregate active, campaign RecostPending, pending-successor and
+workspace
 encumbrances beside exact membership row sets and authenticated
 `MigrationImportRegistryHistoryRecoveryCapacityParentMembershipCommitmentV1`.
 Every parent/child transfer transaction updates ParentAvailable, the aggregate,
@@ -4293,9 +4378,10 @@ the exact membership row/commitment and a predecessor-linked
 The constant-time admission equation is therefore
 `parent_total = parent_available + aggregate_active_child_encumbrance +
 aggregate_campaign_recost_pending +
-aggregate_pending_successor_encumbrance`; the
+aggregate_pending_successor_encumbrance +
+aggregate_workspace_encumbrance`; the
 streaming membership proof independently establishes that the aggregate equals
-the exact active, campaign-pending and pending-successor sets.
+the exact active, campaign-pending, pending-successor and workspace sets.
 
 Canonical
 `MigrationImportRegistryHistoryRecoveryCapacityParentVerificationV1` has

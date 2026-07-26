@@ -736,7 +736,9 @@ Re-cost uses one parent/selector active slot, a total campaign/recovery state
 table, parent epoch/fence, fixed pre-cut snapshot, bounded post-cut fold and
 hard final tail. Complete-delta preflight reserves campaign RecostPending;
 stable transfers atomically move equal amounts into pending-successor charges
-while preserving the active + campaign-pending + pending-successor equation.
+while preserving the active + campaign-pending + pending-successor + workspace
+equation. Workspace reservation and cleanup settlement are exact parent
+transfer/inverse operations.
 Before that reservation, pre-cut release settles active charge only and
 tombstones the child into the folded reservation cut; later cases settle the
 stored campaign or child bucket. The closed campaign+mutation-fence product
@@ -744,9 +746,14 @@ returns recovery to its bounded prior state. Activation, owner-authorized abort
 and separately one-shot-authorized quarantine share one terminal CAS/checkpoint;
 Closed never reopens and that checkpoint alone clears the slot. Activation
 consumes current authority and binds a Verified campaign-owned workspace with
-copy/catch-up cursor, physical mutation high-watermark, exact source ledger/
-aggregate and deletion-proved exact-once cleanup settlement. The campaign fence
-follows the parent-ledger rank. A co-located Recovery parent ledger
+copy/catch-up cursor, physical mutation high-watermark equal to the exact
+closed logical cut, exact source ledger/aggregate and deletion-proved exact-
+once cleanup settlement checkpoint/inverse credit. Cleanup after slot release
+uses the current slot only for bounded rank serialization and the old stable
+Closed fence. Permanent-quarantine revocation requires destination apply of
+issuer intent, and quarantined capacity remains the entire parent member until
+broader custody-safe release. The campaign fence follows the parent-ledger
+rank. A co-located Recovery parent ledger
 atomically pairs every child allocation/release with parent debit/credit under
 one deterministic transfer ID and equation, including completion reserves;
 restore verifies both sides from one snapshot without guessed repair. Kind-
@@ -916,8 +923,11 @@ pending/pending-successor confusion, forged terminal checkpoint/slot release,
 unproved refund, forged inverse transfer, recovery escalation, unauthorized
 permanent quarantine or worker-authorized abort, activation after authority
 expiry/revocation, split authority/selector/accounting commit, missing workspace
-state/cursor/physical high-watermark/source ledger/aggregate, premature or
-duplicate workspace deletion settlement, or activation before successor
+state/cursor/physical high-watermark/source ledger/aggregate/parent member,
+workspace double reservation, forged inverse credit, mismatched logical/
+physical verification cut, stale-slot cleanup mutation or starvation, remote-
+effect/cross-target quarantine revocation, partial quarantine refund, premature
+or duplicate workspace deletion settlement, or activation before successor
 verification/old-writer fence,
 split child/parent debit or credit, duplicate transfer minted after timeout,
 one-sided repair or guessed compensation, unbounded startup scan, forged

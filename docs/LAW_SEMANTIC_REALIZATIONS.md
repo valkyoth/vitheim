@@ -364,6 +364,8 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCapacityLedgerV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceAggregateV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentTransferV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentInverseTransferV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1`,
   `BuildMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
   `SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
@@ -372,6 +374,7 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `QuarantineMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
   `SettleMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationConflict`,
   `StartMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
@@ -396,6 +399,13 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationStateV1`,
   `AdmitMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`,
   `RevokeMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationIntentV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationSequenceV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationInboxV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationTombstoneV1`,
+  `ApplyMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocation`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationConflict`,
   `ExpireMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationResultV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationConflict`,
@@ -409,18 +419,22 @@ Their realization is required at `0.29.0`, is preserved by `0.30.0`, and uses
 the existing VIT-LST-009-g01 P/N/M/F contracts. Negative and model cases cover
 retirement admission/revocation/expiry/consumption, first-rank fence rechecks
 and transaction-atomic reserve; three-outcome classifier validity; unique
-campaign-slot cardinality; campaign epoch/log live-mutation races; three-bucket
-parent conservation and the pre-reservation release matrix; bounded post-cut
+campaign-slot cardinality; campaign epoch/log live-mutation races; four-class
+parent conservation including workspace membership and the pre-reservation
+release matrix; bounded post-cut
 folding; campaign/mutation-fence product transitions and terminal checkpoint;
-atomic authority-consuming activation; physical migration-workspace lifecycle/
-settlement; active/pending separation and complete forward/inverse abort;
+atomic authority-consuming same-cut activation; physical migration-workspace
+lifecycle/parent transfer/terminal cleanup/settlement; active/pending
+separation and complete forward/inverse abort;
 prior-state bounded fenced recovery; one-shot authorized conservative
-quarantine; bounded symbolic equivalence; and complete checkpoint-verification
-reservation.
+quarantine with issuer-intent/destination-apply revocation and permanent whole-
+member retention; bounded symbolic equivalence; and complete checkpoint-
+verification reservation.
 Recovery cases resume the same tombstones, fence/reserve, active slot, campaign
 epoch/snapshot/log/fold/buckets/pending/cursor/prior-state/intent/transfer,
-terminal checkpoint, quarantine authorization/tombstone and workspace state/
-cursor/physical high-watermark/capacity/settlement plus verification
+terminal checkpoint, quarantine authorization/revocation sequence/inbox/
+tombstone and workspace state/cursor/physical high-watermark/exact cut/
+capacity/parent transfers/settlement checkpoint plus verification
 reservation without inference, reset, invented refund, duplicate release/
 transfer/settlement or authority extension.
 

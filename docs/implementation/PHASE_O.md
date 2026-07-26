@@ -136,17 +136,23 @@ authorizable; invalid, unknown, overflowed, malformed or over-budget input is
 terminal no-write. Re-cost fixes a pre-cut snapshot under a parent campaign
 epoch/fence and one parent/selector active slot, logs and incrementally folds
 bounded post-cut allocation/release, reserves the whole aggregate delta and
-persists stable transfers across active, campaign-RecostPending and pending-
-successor aggregates. Pre-reservation release tombstones without successor
-credit and the reservation binds the folded-log cut; later releases settle
-their stored bucket. The closed campaign+mutation-fence product preserves prior
-state so recovery stays bounded, while activation/abort/one-shot-authorized
-quarantine share one terminal checkpoint/CAS and Closed never reopens.
+persists stable transfers across active, campaign-RecostPending, pending-
+successor and workspace aggregates. Workspace capacity is funded and released
+only through exact parent transfer/inverse rows. Pre-reservation release
+tombstones without successor credit and the reservation binds the folded-log
+cut; later releases settle their stored bucket. The closed campaign+mutation-
+fence product preserves prior state so recovery stays bounded, while
+activation/abort/one-shot-authorized quarantine share one terminal checkpoint/
+CAS and Closed never reopens.
 Finalization admits only a hard-bounded tail. Atomic activation consumes current
 authority and requires a Verified campaign-owned workspace with bounded copy/
-catch-up cursor, physical high-watermark, exact source capacity and deletion-
-proved settlement. The active slot and campaign fence follow the parent ledger
-in the shared rank. Restore verifies both ledger sides
+catch-up cursor, physical high-watermark equal to the exact closed logical cut,
+exact source capacity and deletion-proved settlement checkpoint/inverse
+credit. Post-slot cleanup takes the current slot only for bounded rank
+serialization and the old Closed fence. Permanent-quarantine revocation is
+issuer-intent/destination-apply, and quarantine keeps the whole parent member
+until broader custody-safe release. The active slot and campaign fence follow
+the parent ledger in the shared rank. Restore verifies both ledger sides
 from one snapshot and never repairs
 by choosing one side or guessing compensation. Kind-specific
 exact-once transfers cannot double charge or cross ledgers, and only verified
@@ -835,7 +841,11 @@ without exactly one current `VIT-INV-060` owner, one independent
 reached. Run pentest for this exact commit.`
 
 ## `0.142.0` — Split Service Deployments
-Status: planned. Setup: API/worker/ingest/index and
+Status: planned. Migration/import focus: RPC preserves exact workspace parent
+member/transfer, same-cut checkpoint, old Closed cleanup fence, settlement and
+quarantine-revocation identifiers/results as state only. No remote service may
+apply revocation, settle/credit workspace capacity or authorize activation.
+Setup: API/worker/ingest/index and
 `TransmissionExecutor` identities, mTLS/authz, network policy, discovery,
 version compatibility, and the immutable authenticated
 `TransmissionInstruction`/status protocol. Allocate one canonical catalog
@@ -1029,7 +1039,12 @@ signals and has an explicit telemetry-loss policy. `v0.142.1 implementation stop
 reached. Run pentest for this exact commit.`
 
 ## `0.143.0` — HA Leases, Failover, And Partitions
-Status: planned. Setup: quorum/authority, fencing, health, failover, partition
+Status: planned. Migration/import focus: model parent/workspace reservation and
+inverse races, logical/physical cut closure, terminal-slot clearing against
+new-campaign/old-cleanup interleavings and revocation/apply/consume CAS winners.
+Exit requires four-class conservation, one terminal winner, no stale mutation,
+no mismatched cut, no cross-target revocation and no partial settlement.
+Setup: quorum/authority, fencing, health, failover, partition
 policy, reconciliation, every `0.18.2` atomic work variant, delayed-effect
 authorization freshness/bindings, typed execution-authority redemption, bounded
 multi-kind quota claim settlement/exact-set linearization, one-owner grant
@@ -1369,7 +1384,11 @@ incomplete surface mapping fail closed.
 `v0.144.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.0` — Backup, Restore, And Disaster Recovery
-Status: planned. Setup: RPO/RTO profiles and consistent DB/blob/key/config/
+Status: planned. Migration/import focus: restore the fourth aggregate and
+membership, parent transfers, exact cut, old stable fence, settlement
+checkpoint and revocation sequence/inbox without inferred credit, cut or local
+revocation. Affected capacity stays unavailable until complete proof.
+Setup: RPO/RTO profiles and consistent DB/blob/key/config/
 retention-hold set, envelope encryption, immutability, rotation/revocation,
 crypto-erasure consequences, external checkpoint anchors and drills. Bind each
 backup/checkpoint to the `VIT-INV-057` global lineage/revocation/emergency-
@@ -1633,7 +1652,11 @@ transaction commit.
 `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification
-Status: planned. Setup: representative workloads, SLOs, durable `0.18.1` quota
+Status: planned. Migration/import focus: fuzz transfer/checkpoint/revocation
+codecs, bounds, every crash boundary and changed retry. Malformed, overflowed
+or stale material must fail closed inside hard entry/byte/work/time ceilings
+without splitting parent/workspace state.
+Setup: representative workloads, SLOs, durable `0.18.1` quota
 profiles, separate Vitheim-telemetry and customer-measurement capacity models,
 paging/status provider limits, bounded claim-set sizes, every `QuotaKind` and
 settlement boundary, per-kind hold/refund/release/settle/write-off semantics,
@@ -1858,7 +1881,11 @@ non-co-located activation is refused before staging.
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.147.0` — Final Security And Supply-Chain Hardening
-Status: planned. Setup: complete threat model, dependency/tool/action inventory,
+Status: planned. Migration/import focus: independently audit issuer/applier,
+worker/settler, allocator/verifier and old/new-campaign separation, cleanup
+fairness, and the permanent whole-member quarantine/custody-safe-release trail.
+Every retained or refunded unit must be attributable.
+Setup: complete threat model, dependency/tool/action inventory,
 semantic SBOM, reproducibility, full key generation/storage/use/rotation/revocation/
 recovery/destruction lifecycle, `0.28.3` in-process memory assurance, crash/
 core-dump/swap profile, sealed transmission-permit construction/consumption/drop
@@ -1960,7 +1987,11 @@ state authoritative.
 Exit criteria: every trusted input is pinned/accounted. `v0.147.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.148.0` — Compatibility Freeze
-Status: planned. Setup: freeze API/event/workflow/policy/plugin/pack/export/agent
+Status: planned. Migration/import focus: reject every legacy encoding that
+lacks workspace parent membership/transfer, exact-cut fields, stable old-fence
+cleanup identity, settlement checkpoint or revocation sequence/inbox/result.
+No default, inferred field or downgrade is compatible.
+Setup: freeze API/event/workflow/policy/plugin/pack/export/agent
 versions and support windows, immutable event-schema registry, complete pure
 upcaster chains, original-byte hash authority, unknown-event quarantine, and the
 platform-floor profile compatibility/admission matrix including full
@@ -2056,7 +2087,13 @@ broaden executor credential/network authority.
 `v0.148.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.149.0` — External Pentest Remediation Candidate
-Status: planned. Setup: freeze scope/artifacts/environment and engage independent
+Status: planned. Migration/import focus: attack workspace double spending,
+forged inverse/deletion credit, mismatched-cut activation, stale-slot cleanup
+mutation/starvation, quarantine revocation theft/replay/cross-target
+suppression and partial quarantine refund. Exit requires zero unresolved
+critical/high findings and no waived authority, conservation, bounded-work,
+locking, settlement or revocation issue.
+Setup: freeze scope/artifacts/environment and engage independent
 testers across all trust boundaries, including provider-profile governance,
 serialized remote credential rotation/takeover/orphan cleanup/count quotas,
 provider permission evaluator governance/reevaluation, evidence-backed whole-

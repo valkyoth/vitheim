@@ -310,17 +310,23 @@ audit decision.
   Backend/schema activation uses one parent/selector active campaign slot, a
   total state/recovery-intent table, parent epoch/fence, fixed pre-cut snapshot
   and bounded post-cut fold with a hard final tail. Parent conservation covers
-  active, campaign RecostPending and pending-successor aggregates; each forward
-  transfer moves equal amounts between the latter two. Before reservation,
+  active, campaign RecostPending, pending-successor and workspace aggregates;
+  each forward transfer moves equal amounts between the middle two, while
+  workspace reservation/settlement uses exact parent transfer/inverse rows.
+  Before reservation,
   pre-cut release settles active charge only and tombstones the child into the
   folded reservation cut; later releases settle RecostPending or pending
   successor. The campaign fence follows its parent-ledger rank. Prior-state
   Fenced recovery stays bounded and preserves Open/Finalizing. Abort/quarantine
   close; Closed never reopens; activation/abort/quarantine share one terminal
   CAS/checkpoint. Permanent quarantine consumes a distinct six-state one-shot
-  grant under SoD. Final activation consumes current authority and binds a
-  Verified campaign-owned workspace lifecycle with physical high-watermark,
-  source ledger/ceiling and deletion-proved exact settlement. A co-located
+  grant under SoD; remote revocation is only a signed issuer intent until the
+  destination sequence/inbox/apply transaction commits it. Quarantined
+  capacity remains the whole parent member until broader custody-safe release.
+  Final activation consumes current authority and binds a Verified campaign-
+  owned workspace at the exact same closed logical/physical cut, with physical
+  high-watermark, source ledger/ceiling, bounded old-fence cleanup and a
+  deletion-proved settlement checkpoint plus inverse parent credit. A co-located
   Recovery parent ledger atomically pairs child allocation/release with parent
   debit/credit under one deterministic transfer ID/equation, including
   completion reserves; restore verifies both sides from one snapshot and never
