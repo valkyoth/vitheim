@@ -224,7 +224,7 @@ audit decision.
   late intent after Consumed returns the activation result without reversal;
 - through `1.0.0` every affected owner guard is co-located with the job/barrier,
   and one local transaction uses
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox,
+  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
   then rechecks current budget/fence/authorization/
   manifest/receipts/owner versions, consumes authorization, then activates all
   owner generations plus Pending/zero-counter-lineage or
@@ -254,31 +254,43 @@ audit decision.
   rejects fork, gap, reorder, raw-generation selection and lazy initialization.
   A governed publication-profile lineage binds exact witnesses/sources, quorum,
   crypto/time rules and identity/generation/digest into every artifact; callers
-  cannot select the mode. Proposal and active high-watermarks are separate,
+  cannot select the mode. A non-recursive trust anchor, explicit bootstrap/
+  rotation/checkpoint/high-watermark lifecycle, compatibility decision and
+  monotonic distrust ratchet govern succession. Profile transition, distrust
+  and activation serialize on one governance-root external CAS activation
+  fence, so response loss cannot produce two winners. Proposal and active high-watermarks are separate,
   stable request identities reconcile unknown publication, and local CAS is
   followed by an external activation receipt or authenticated abort/unresolved
   disposition. Restore/import trusts only externally Activated lifecycle under
   the bound profile; an older self-consistent local snapshot,
-  unavailable lifecycle/witness/key proof or local head below the active watermark is
+  unavailable lifecycle/witness/key proof or operational-active head below the active watermark is
   typed `ManifestHistoryUnavailableOrRolledBack` and unready. Activation binds
   that witnessed head; a greater unresolved proposal cannot poison the last
   proved Active predecessor and blocks only itself, descendants and cleanup.
+  Separate operational-active and transition-candidate heads enforce that rule.
+  Finalization rechecks current compatibility/distrust and terminalizes rather
+  than activates an old profile when required. Every publication attempt
+  reserves complete non-borrowable completion capacity before its first send.
   PermanentlyUnresolved requires an authenticated external terminal seal;
   timeout, retry exhaustion or witness absence retains fenced reconciliation.
   Activation creates registry generation zero and a non-borrowable Recovery
   control reservation for fence/scope/terminal/result/audit/outbox state under
   a trusted capacity profile and immutable platform maximum. It also creates an
   obligation-wide control lineage holding the original reservation. Each
-  dimension conserves Available, EpisodeReserved, TerminalizationReserved,
-  nondecreasing Consumed and Settled. Episode creation and proof execution are
-  exact-once typed transfers—not two charges—and scope/lineage update
-  atomically. Every re-fence uses the same ledger; clearance cannot reset it,
+  lifetime-work budget conserves available/reserved/nondecreasing spent proof,
+  retry, hash, signature, bytes-processed and time. Its separate physical-
+  capacity ledger conserves reserved-unoccupied/occupied/reclaim-pending/
+  released rows, bytes-stored, audit and outbox; only verified archive plus
+  exact deletion releases it. Kind-specific exact-once transfers update scope/
+  lineage atomically. Every re-fence uses both ledgers; clearance cannot reset them,
   and exhaustion or loss of
   minimum future capacity permanently quarantines. Rebuild and custody-safe,
   no-future-operation Release are explicit terminals; release checkpoints
   before settling each original reserve leg exactly once through authenticated
   local settlement-journal and verified archive-replay heads. Every history
-  path follows one fence-before-budget lock order. Append,
+  path follows the shared typed fence-before-lineage lock order; adapter traces
+  prove it and Release includes obligation, fence, lineage, checkpoint and
+  custody authority. Append,
   recovery and cleanup stop until a separately issued/admitted/revocable/
   expiring single-use clearance authorization and a destination-ratcheted
   mandatory-class/quorum anchor registry with authenticated collection receipt

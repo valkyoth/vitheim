@@ -9,18 +9,23 @@ All notable Vitheim changes are documented here. The format follows
 ### Added
 
 - Split external manifest proposal publication from active-manifest authority
-  with a governed publication-profile lineage, durable per-witness
-  reconciliation, explicit Activated/Aborted/PermanentlyUnresolved journal
-  dispositions and separate proposal/active high-watermarks.
-- Replaced ambiguous corruption-episode “precharge” accounting with typed
-  Available, EpisodeReserved, TerminalizationReserved, Consumed and Settled
-  buckets, stable transfers and a per-dimension conservation invariant.
-- Bound the publication-profile identity, generation, digest, exact witness
-  set and quorum into every transition artifact, with typed non-weakening
-  succession and destructive authorization for weakening.
-- Routed corruption-control reserve release through separate authenticated
-  local settlement-journal and verified archive-replay heads so restore cannot
-  resurrect capacity or settle an original leg twice.
+  with explicit operational-active and transition-candidate local heads,
+  durable per-witness reconciliation, protected attempt-completion capacity
+  and separate proposal/active external high-watermarks.
+- Split corruption-control accounting into an irreversible lifetime-work budget
+  and reclaimable physical-capacity ledger, with distinct bytes-processed and
+  bytes-stored dimensions, kind-specific transfers and conservation equations.
+- Added a non-recursive publication-profile trust anchor, explicit bootstrap/
+  rotation/checkpoint/high-watermark operations, successor compatibility
+  decisions and a monotonic emergency-distrust ratchet rechecked at final
+  activation, with one governance-root external CAS fence serializing profile
+  change, distrust and manifest activation.
+- Froze one shared fence-before-lineage lock-rank type with adapter acquisition-
+  trace tests and complete settlement participation by obligation, fence,
+  lineage, checkpoint and custody authority.
+- Routed physical-capacity release through ReleasePending, authenticated local
+  settlement journal, verified archive membership and exact deletion so
+  occupied capacity cannot be released or resurrected prematurely.
 - Added externally published and verified source-manifest checkpoints so a
   locally consistent older snapshot cannot roll back the authoritative current
   head without failing the external high-watermark check.
@@ -31,9 +36,9 @@ All notable Vitheim changes are documented here. The format follows
   continuity, trusted-time, target-lifetime, reason, nonce and idempotency
   preimage fields with omission/substitution tests.
 - Added an independently authorized source-manifest lineage bootstrap with one
-  genesis, CAS-protected current head, authenticated committed activation
-  records, external rollback resistance and fork/gap/reorder-safe
-  restore/import selection.
+  genesis, distinct CAS-protected operational-active and transition-candidate
+  heads, authenticated committed activation records, external rollback
+  resistance and fork/gap/reorder-safe restore/import selection.
 - Made anchor-registry advancement atomically rebind an Open clearance scope,
   including charge-preserving AnchorSetStale terminalization of any live grant
   and attempt, so a valid scope cannot remain stranded on an old registry.

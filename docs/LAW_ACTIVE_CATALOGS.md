@@ -73,10 +73,13 @@ has a custody record.
 The same law requires externally checkpointed
 Prepared→ProposalPublishedVerified→LocalActivationCommitted→Active
 source-manifest transitions with external Aborted/PermanentlyUnresolved
-dispositions, governed publication-profile lineage and separate proposal/
-active high-watermarks. It also requires one obligation-wide conservation-
-preserving fence-episode/control-reserve transfer ledger, rollback-safe
-settlement journal/archive heads and complete canonical
+dispositions, non-recursively anchored publication-profile lifecycle/
+compatibility/distrust with one external activation fence, protected
+attempt-completion reserve, separate
+operational/candidate local heads and proposal/active external high-watermarks.
+It also requires separate obligation-wide lifetime-work and physical-capacity
+ledgers, one typed fence-before-lineage lock rank, rollback-safe reclaim
+settlement journal/archive/deletion evidence and complete canonical
 destructive-revocation preimages. A local database cannot assert the latest
 source manifest, a proposal cannot assert activation, clearance cannot reset or
 double-charge cross-episode capacity, and reserve release is custody-safe,

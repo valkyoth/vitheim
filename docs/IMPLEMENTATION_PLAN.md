@@ -225,7 +225,7 @@ has no effect, and late revocation after Consumed returns the activation result
 without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 uses the canonical
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox
 order, rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all domain-owner versions, consumes and
 tombstones authorization, then activates every domain owner plus barrier/job result/
@@ -272,32 +272,45 @@ Healthy generation zero, absence fails closed and all history paths use one
 fence-before-budget order. A separately authorized manifest-lineage bootstrap
 creates exactly one generation zero before activation. Governed publication-
 profile lineage fixes the exact witness/source set, quorum, authentication and
-time policy; its identity/generation/digest is bound into authorization,
-checkpoint, requests/receipts, activation record and head. Every transition
+time policy; a non-recursive provisioned/compiled trust anchor, explicit
+bootstrap/rotation/checkpoint/high-watermark operations, compatibility
+decision and monotonic distrust ratchet govern succession. Profile transition,
+distrust and manifest activation serialize through a governance-root external
+CAS activation fence, producing one durable winner across response loss. Its identity/
+generation/digest is bound into authorization, checkpoint, requests/receipts,
+activation record and heads. Every transition
 moves through Prepared, ProposalPublishedVerified, LocalActivationCommitted and
 Active, with Aborted/PermanentlyUnresolved terminals. Proposal and active-
 manifest high-watermarks are distinct: proposal publication never claims
 activation, the local head CAS precedes an externally witnessed activation
 receipt, and timeouts reconcile stable per-witness request identities. Restore
 derives latest only from the greatest externally Activated journal entry under
-the profile that governed it. A locally consistent older snapshot, missing
-external lifecycle proof or local head below the active watermark returns typed
+the profile that governed it. Finalization rechecks the current profile head,
+MayActivateExisting/TerminalizationOnly/EmergencyDistrust decision and ratchet;
+the latter two win the activation fence and force authenticated abort without
+changing operational state; an activation that already won that fence is
+immutable and later distrust applies only as a successor decision.
+Every attempt reserves non-borrowable witness/reconciliation/terminal-result/
+audit/outbox/checkpoint capacity before first publication. A locally consistent older snapshot, missing
+external lifecycle proof or operational-active head below the active watermark returns typed
 `ManifestHistoryUnavailableOrRolledBack` and leaves the deployment unready.
 An unresolved greater proposal blocks its own activation, descendants and
 cleanup but cannot displace or poison the last proved Active predecessor.
+Separate operational-active and transition-candidate heads make that rule
+structural: only the operational head equals externally Activated evidence.
 PermanentlyUnresolved requires an authenticated external terminal seal;
 timeout, retry exhaustion or witness absence only retains reconciliation state.
 Activation binds that witnessed head, creates registry generation zero and
 reserves non-borrowable Recovery capacity for fence/scope/terminal/result/
 audit/outbox state from a trusted profile/platform bound. Activation also
 creates one obligation-wide corruption-control lineage over that original
-reserve. Every dimension separately tracks Available, EpisodeReserved,
-TerminalizationReserved, Consumed and Settled under an invariant equaling the
-original reservation. Episode creation transfers Available to EpisodeReserved;
-proof work transfers that allocation to nondecreasing Consumed atomically with
-scope state, so work is never double charged. Stable transfer identities,
-explicit unused-capacity return rules and dimension isolation survive every
-clearance and re-fence. Exhaustion or failure to
+reserve. One typed lifetime-work budget conserves available, episode-reserved,
+terminalization-reserved and nondecreasing spent proof/retry/hash/signature/
+bytes-processed/time. A separate physical-capacity ledger conserves reserved-
+unoccupied, occupied, reclaim-pending and released rows/bytes-stored/audit/
+outbox capacity; verified archive plus exact deletion alone releases it.
+Stable kind-specific transfer identities, explicit unused-capacity rules and
+dimension/ledger isolation survive every clearance and re-fence. Exhaustion or failure to
 retain minimum future-control capacity permanently quarantines the lineage and
 keeps the obligation fenced. Rebuild terminalizes the predecessor as Rebuilt;
 Release requires a custody-safe checkpoint proving that no future operation is
@@ -319,6 +332,10 @@ revocations have no effect. Restoration uses field-specific typed state algebra.
 unprovable, one rebuild parent permits bounded proposals, independently
 authorized permanent rejection and one successor while the old evidence stays
 fenced.
+Every history operation uses the shared
+`MigrationImportRegistryHistoryLockRankV1` fence-before-lineage order; adapter
+trace tests and release rechecks include obligation, fence, lineage, checkpoint
+and custody authority.
 Candidate, barrier and activation authorization bind the exact Pending/
 NoHistory/NotRequested tag, variant evidence and custody epochs, so changed
 history treatment requires fresh activation authority.

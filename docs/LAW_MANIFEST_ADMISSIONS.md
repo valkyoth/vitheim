@@ -55,11 +55,17 @@ NoHistory proves zero eligibility and NotRequested carries a commit-time
 custody/approval record. Missing lineage
 commits an obligation-scoped corruption fence. Every obligation has an
 activation-created Healthy generation-zero fence; absence denies and every
-history operation locks fence before lineage/budget. Before activation, an
-independently authorized manifest lineage creates one genesis/current head over
-authenticated committed activation records. Activation binds that head,
-creates registry generation zero and reserves non-borrowable control-state
-capacity under trusted profile/platform bounds. Clearance requires its
+history operation follows the shared typed fence-before-lineage rank. Before
+activation, an independently authorized manifest lineage creates one genesis
+with separate operational-active and transition-candidate heads over
+authenticated committed activation records. Its non-recursively anchored
+publication profile, compatibility/distrust ratchet, external activation fence
+and protected attempt-completion reserve govern external transition
+terminalization. Activation
+binds the operational head, creates registry generation zero and reserves non-
+borrowable control-state capacity under trusted profile/platform bounds.
+Corruption control splits irreversible lifetime work from reclaimable physical
+capacity; archive plus exact deletion precedes physical release. Clearance requires its
 own admitted/revocable/expiring single-use authorization, destination-ratcheted
 mandatory-class/quorum anchor registry and authenticated collection receipt.
 A fence-wide scope admits one live authorization/attempt and retains lifetime

@@ -36,7 +36,7 @@ after any terminal commit without partial domain-owner visibility.
 All Phase O evidence also preserves the non-wrapping active coordinator
 generation/fence, which every VIT-INV-062 mutation locks and rechecks first.
 Activation uses exactly
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox.
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
 Bootstrap evidence covers stable identity/idempotency, its closed lifecycle,
 independently admitted, pre-admission-revocable begin, fresh handoff and
 cancellation authorizations with separation of duties, bounded work/
@@ -65,14 +65,23 @@ generation zero for every obligation, and absence denies. Initial append co-char
 budgets. Missing nonterminal lineage installs a durable exact-obligation
 `MigrationImportRegistryHistoryCorruptionFenceV1` that blocks append, recovery
 and cleanup. Activation also binds the independently governed expected anchor-
-source-manifest current head after a destination-local, independently
+source-manifest operational-active head after a destination-local, independently
 authorized single genesis and
 Prepared→ProposalPublishedVerified→LocalActivationCommitted→Active chain with
 Aborted/PermanentlyUnresolved terminals. Governed publication-profile lineage
 fixes exact witnesses/quorum and binds identity/generation/digest into every
-artifact. Durable per-witness requests/status queries reconcile unknown
+artifact. Its non-recursive trust root, explicit bootstrap/rotation/checkpoint/
+high-watermark lifecycle, compatibility decision and revocation ratchet govern
+succession. A governance-root external CAS activation fence serializes profile
+transition, distrust and manifest activation, and its sequence survives
+restore/failover. Durable per-witness requests/status queries reconcile unknown
 proposal publication; the local CAS is followed by external activation receipt
 or authenticated abort, under separate proposal and active high-watermarks.
+Every attempt reserves its complete non-borrowable completion capacity before
+the first send. Finalization rechecks current compatibility/distrust;
+TerminalizationOnly or EmergencyDistrust aborts LocalActivationCommitted
+without changing operational Active when it wins the activation fence; a prior
+activation winner remains immutable and later distrust is successor policy.
 PermanentlyUnresolved requires an authenticated external terminal seal, never
 timeout, retry exhaustion or witness absence.
 Restore derives latest only from externally Activated journal membership; local
@@ -81,23 +90,29 @@ witness/key continuity is typed
 `ManifestHistoryUnavailableOrRolledBack` and unready. Fork/gap/reorder,
 raw-generation selection, local-only latest claims, absence or lazy genesis
 deny. An unresolved greater proposal blocks itself, descendants and cleanup,
-not the last proved Active predecessor.
+not the last proved Active predecessor. Restore requires separate operational-
+active and transition-candidate heads, not equality with one generic head.
 Activation creates registry generation zero and a non-borrowable Recovery
 control reservation, derived by trusted code under an authenticated active
 capacity profile and immutable platform maximum, for fence/scope/
 terminalization/result/audit/outbox state across every disposition and ordinary
 capacity saturation. It also creates one obligation-wide control lineage over
-the original reserve. Each dimension conserves Available, EpisodeReserved,
-TerminalizationReserved, nondecreasing Consumed and Settled. Stable exact-once
-transfers reserve each episode and move proof work to consumption atomically
-with scope state; no double charge or cross-dimension movement is permitted.
+the original reserve. Its lifetime-work budget conserves available/reserved/
+nondecreasing spent proof, retry, hash, signature, bytes-processed and time.
+Its physical-capacity ledger separately conserves reserved-unoccupied/occupied/
+reclaim-pending/released rows, bytes-stored, audit and outbox. Kind-specific
+exact-once transfers cannot double charge or cross ledgers, and only verified
+archive plus exact deletion releases physical encumbrance.
 Insufficient future capacity permanently quarantines, rebuild is
 terminal for the predecessor, and custody-safe Release checkpoints before
 settling each original reserve leg exactly once through separate authenticated
-local settlement-journal and verified archive-replay heads. Only independently authorized complete atomic restoration of the
+local settlement-journal and verified archive-replay heads. The shared typed
+lock rank and adapter acquisition traces require obligation→fence→lineage→
+checkpoint; Release includes every settlement head/reserve and later custody
+authority. Only independently authorized complete atomic restoration of the
 activation bundle and all post-activation charges/results/head/checkpoints may
 clear it. Every path follows
-active-coordinator-generation→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering. Clearance
 consumes an independently issued/admitted/revocable/expiring single-use
 authorization, stays inside its proof budget and proves coverage through
@@ -1014,9 +1029,11 @@ result/distinct NoHistory proof and NotRequested custody record/Fenced outcome/
 three-variant changed-material conflict envelope and terminal-race state/
 activation-bound disposition evidence/Healthy-Fenced-ClearedAfterRestore
 generation/universal lock order/clearance authorization, source-manifest
-lineage/genesis/current head/activation records/full destructive-grant
+lineage/genesis/operational-active-transition-candidate heads/activation
+records/profile trust-compatibility-ratchet-activation-fence/completion reserve/full destructive-grant
 lifecycles, activation-created registry genesis/ratcheted registry/atomic scope-
-rebinding result, protected control reserve/profile/platform bound/collection
+rebinding result, protected control reserve/profile/platform bound/split work-
+physical ledgers/typed transfers/lock rank/reclaim settlement/collection
 receipt, fence-wide scope authorization generation/lifetime counters/tombstone, proof
 budget, durable attempt/cursor/precharges/result, typed state join,
 restoration/clearance and rebuild parent/proposals/permanent rejection/unique
@@ -1356,9 +1373,11 @@ sole-tag derived indexes/Issued-only expiry/closed outcomes/retry-exhaustion res
 receipts/distinct NoHistory/NotRequested custody evidence/Fenced outcome/
 three-variant conflict and CAS terminal-race state/activation disposition
 commitments/exact-obligation Healthy-Fenced-ClearedAfterRestore lineage/
-universal lock order/clearance authority, source-manifest lineage/current head/
-activation records/destructive-grant tombstones, registry genesis/ratchet/
+universal lock order/clearance authority, source-manifest lineage/operational-
+active-transition-candidate heads/activation records/profile trust-
+compatibility-ratchet-activation-fence/completion reserve/destructive-grant tombstones, registry genesis/ratchet/
 scope-rebinding receipt, protected control reserve/profile/platform bound,
+split work-physical ledgers/typed transfers/lock rank/reclaim settlement/
 clearance scope/lifetime counters/tombstone, proof budget/
 attempt lease-fence-cursor-counters-result/typed join/restoration/clearance/
 rebuild parent-proposals-rejection-unique-successor mapping/checkpoint, activation barrier sequence/
@@ -1930,9 +1949,12 @@ activation-created-lineage/no-executable-proof/dual-charge/successor-budget/
 platform-hard-maximum/no-amendment rule/distinct NoHistory/NotRequested
 evidence/Fenced-outcome/three-variant-conflict/race-state/activation-disposition-
 commitment/fence-generation/universal-lock/clearance-authority-budget/source-
-manifest-lineage-genesis-current-head-activation-record/destructive-grant/
+manifest-lineage-genesis-operational-active-transition-candidate-heads/
+activation-record/profile-trust-compatibility-ratchet-activation-fence/completion-reserve/
+destructive-grant/
 registry-genesis-rebinding-receipt/control-reserve-profile-platform-bound/
-scope-generation-lifetime-tombstone/
+split-lifetime-work-physical-capacity-ledgers/typed-transfers/lock-rank/
+release-pending-settlement-archive-deletion/scope-generation-lifetime-tombstone/
 attempt-cursor-precharges-result/typed-state-join/restoration-clearance/rebuild-
 parent-proposals-rejection-unique-successor/
 recovery-result/terminal-evidence,
@@ -2121,8 +2143,13 @@ verification, publish a proposal then expire/revoke authority or lose the local
 CAS, treat proposal high-watermark as active, lose activation/abort response,
 skip status-query reconciliation, clean an unresolved orphan, substitute/
 weaken the governed publication profile/source set/quorum or omit its identity/
-generation/digest, make a worker select witness mode, substitute/unavailable a
-witness or rotate/revoke its key,
+generation/digest, self-bootstrap/rotate its trust root, omit compatibility/
+revocation-ratchet recheck, fork/rollback the activation-fence sequence or
+claim simultaneous activation/distrust winners, accept old-profile activation after
+TerminalizationOnly/EmergencyDistrust, conflate operational-active and
+transition-candidate heads, publish without the full completion reserve, make a
+worker select witness mode, substitute/unavailable a witness or rotate/revoke
+its key,
 remotely issue/revoke or bypass the complete manifest-weakening/rebuild-
 rejection authorization table, replace
 NoHistory proof with absence, forge a custody-free NotRequested or substitute
@@ -2141,11 +2168,14 @@ maximum, admit competing scope grants, reset
 fence-lifetime proof charges, clear and repeatedly re-fence to reset episode/
 reserve capacity, omit/recreate the obligation-wide control lineage, exhaust
 minimum future capacity without permanent quarantine, duplicate custody-safe
-release settlement, double-charge EpisodeReserved and Consumed, decrease
-Consumed, move capacity dimensions, violate conservation, replay/change a
-transfer identity, return unused reservation without terminal checkpoint,
-settle outside the local journal or delete hot settlement before verified
-archive membership, fork/roll back either settlement head and resurrect
+release settlement, double-charge EpisodeWorkReserved and WorkSpent, decrease
+WorkSpent, alias lifetime-work and physical-capacity or bytes-processed/stored,
+move dimensions, violate either conservation equation, replay/change a typed
+transfer identity, move Occupied directly to Released, omit obligation/fence/
+checkpoint/custody from settlement or invert the shared lock rank, return
+unused reservation without terminal checkpoint, settle outside the local
+journal or delete before verified archive membership, fork/roll back either
+settlement head and resurrect
 capacity, replace EvidenceWait, race attempt takeover, loop
 temporary evidence, field-wise merge ceilings/remaining/balances or forked
 heads, let invalid proposals consume the rebuild parent, infer permanent
@@ -2226,9 +2256,12 @@ Issued-only expiry/closed outcomes including Fenced and three-variant conflicts/
 CAS terminal-race state/activation disposition commitments/universal lock order/
 distinct NoHistory proof and NotRequested custody record/policy-hold receipts/
 exact-obligation fence generations/evidence/clearance authority/proof budget/
-source-manifest-lineage/genesis/current-head/activation-record/destructive-
-authority-tombstones/anchor-registry-genesis-rebinding receipt/control-reserve-
-profile-platform-bound/clearance scope-generation-lifetime-tombstone/attempt
+source-manifest-lineage/genesis/operational-active-transition-candidate-heads/
+activation-record/profile-trust-compatibility-ratchet-activation-fence/completion-reserve/
+destructive-authority-tombstones/anchor-registry-genesis-rebinding receipt/
+control-reserve-profile-platform-bound/split-work-physical-ledgers/typed-
+transfers/lock-rank/release-pending-archive-deletion settlement/clearance scope-
+generation-lifetime-tombstone/attempt
 cursor-precharges-result/typed state join/restoration/clearance/result/rebuild
 parent-proposals/complete-rejection-authority/successor/
 checkpoint.

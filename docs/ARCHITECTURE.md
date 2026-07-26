@@ -557,7 +557,7 @@ restore, failover, and release evidence.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
    live coordinator job/barrier and every selected domain-owner guard to share one destination-local
    transaction. Its canonical order is
-   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox:
+   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox:
    after locking, trusted manifest rederivation and
    current-state rechecks, authorization consumption and all owner activations
    commit with barrier/job result, exactly one Pending plus zero-counter
@@ -595,33 +595,47 @@ restore, failover, and release evidence.
    LocalActivationCommitted and Active, with Aborted/PermanentlyUnresolved
    terminals. A governed publication-profile lineage—not a worker—selects exact
    witnesses/sources, quorum, authentication and time policy and binds its
-   identity/generation/digest into every transition artifact. Proposal and
+   identity/generation/digest into every transition artifact. A non-recursive
+   trust anchor, explicit bootstrap/rotation/checkpoint/high-watermark
+   operations, per-successor compatibility decision and monotonic distrust
+   ratchet govern it. One governance-root external CAS activation fence
+   serializes profile transition, distrust and manifest activation so exactly
+   one outcome wins even across response loss. Proposal and
    active-manifest high-watermarks are distinct; proposal publication is never
    active authority, the local head CAS precedes a separately witnessed
    activation receipt, and stable per-witness identities reconcile response
    loss. Restore/import derives latest from the externally Activated lifecycle
    under its bound profile. A self-consistent older local database, unavailable lifecycle/
-   witness/key proof or local head below the active watermark returns typed
+   witness/key proof or operational-active head below the active watermark returns typed
    `ManifestHistoryUnavailableOrRolledBack` and remains unready. Forks, gaps,
    raw-generation selection and lazy initialization deny. An unresolved
    greater proposal blocks itself, descendants and cleanup, not the last proved
-   Active predecessor. PermanentlyUnresolved requires an authenticated external
+   Active predecessor. Separate operational-active and transition-candidate
+   heads enforce that distinction. Finalization rechecks current profile
+   compatibility/distrust; TerminalizationOnly or EmergencyDistrust aborts the
+   candidate, while a completed activation-fence CAS cannot be retroactively
+   rewritten by a later distrust successor. Each attempt reserves its complete non-borrowable completion
+   capacity before first publication. PermanentlyUnresolved requires an authenticated external
    terminal seal, never timeout, retry exhaustion or witness absence.
-   Activation binds that externally witnessed current head,
+   Activation binds that externally witnessed operational-active head,
    creates obligation-scoped registry generation zero and reserves
    non-borrowable Recovery rows/bytes/audit/outbox capacity for fencing, scope,
    terminalization and results under a trusted capacity profile/platform
    maximum. One obligation-wide control lineage owns that original reserve.
-   Per dimension it conserves Available, EpisodeReserved,
-   TerminalizationReserved, Consumed and Settled: episode creation is a
-   transfer into reservation and proof execution atomically moves reservation
-   to nondecreasing consumption rather than charging twice. Stable transfer IDs
-   and explicit unused-reservation return rules span clearance/re-fencing.
+   A lifetime-work budget separately conserves available/reserved/
+   nondecreasing spent proof, retry, hash, signature, bytes-processed and time.
+   A physical-capacity ledger conserves reserved-unoccupied/occupied/reclaim-
+   pending/released rows, bytes-stored, audit and outbox; only authenticated
+   archive plus exact deletion releases encumbrance. Stable kind-specific
+   transfer IDs and explicit unused-reservation rules span clearance/re-fencing.
    Insufficient remaining or minimum future capacity permanently
    quarantines the lineage. Rebuild is terminal for the predecessor; Release
    requires a custody-safe no-future-operation checkpoint and exact-once
    settlement of every original reserve leg through separate authenticated
-   local journal and verified archive-replay heads. Clearance uses an independent
+   local journal and verified archive-replay heads. All adapters use one shared
+   typed fence-before-lineage lock rank and acquisition-trace conformance tests;
+   Release includes obligation, fence, lineage, checkpoint and custody
+   authority. Clearance uses an independent
    admitted/revocable/expiring single-use authorization, bounded proof work and
    a destination-ratcheted anchor registry whose mandatory classes/quorums and
    independently authenticated collection receipt define greatest-known state.
