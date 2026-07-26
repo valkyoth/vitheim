@@ -16,7 +16,7 @@ for phrase in \
     'Absent, RevokedBeforeAdmission, Issued, Consumed,' \
     'absence is corruption and never means Operational' \
     'external-send start and local' \
-    'insufficient complete' \
+    'Insufficient complete' \
     'permits a later old-custody import only' \
     'does not block independently provisioned empty bootstrap' \
     'RetireDeploymentIdentity operation kind' \
@@ -25,14 +25,27 @@ for phrase in \
     'no accepted history contains two terminal meanings' \
     'journal is a read projection of the governance-fence sequence' \
     'cost profile is governed state, not a freely replaceable signed document' \
-    'analytically over the complete declared artifact-kind and canonical-' \
+    'analytically over the complete declared' \
+    'artifact-kind and canonical-size domain' \
     'never enumerates every possible ceiling/allocation breakpoint' \
-    'UnknownOrOverBudget' \
-    'sampled or golden-vector comparison alone is insufficient' \
+    'ValidNonWeakening, ValidWeakening or InvalidOrUnverifiable' \
+    'InvalidOrUnverifiable and terminal no-write rejection' \
+    'No policy-transition' \
+    'authority may override semantic invalidity' \
+    'sampled or golden-vector comparison alone is' \
     'WeakenBackendStorageCostProfile' \
     'campaign-owned RecostPending bucket' \
-    'release only the still-unapplied RecostPending aggregate' \
-    'zero unapplied RecostPending balance' \
+    'campaign epoch cuts the parent ledger' \
+    'Every parent allocation and release transaction locks and rechecks' \
+    'separate pending' \
+    'stable campaign-derived inverse' \
+    'Retry exhaustion' \
+    'closed post-cut log high-watermark and zero unapplied' \
+    'RecostPending balance' \
+    'zero pending successor charges' \
+    'deployment-retirement fence is the first rank' \
+    'campaign fence follows its parent ledger' \
+    'or none of them' \
     'never recomputes that sum in an unbounded startup transaction' \
     'VerificationPending, Ready or Fenced' \
     'unavailable for allocation, release, cost-profile activation' \
@@ -78,7 +91,19 @@ for symbol in \
     MigrationImportRegistryHistoryBackendStorageCostProfileClassifierWorkBudgetV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStateV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignEpochV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignWorkBudgetV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFixedSnapshotCheckpointV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutLogV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutHighWatermarkV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfilePendingSuccessorChargeV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignChildDeltaTransferV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveV1 \
+    AbortMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignAbortResultV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignConflict \
     BootstrapMigrationImportRegistryHistoryBackendStorageCostProfile \
     PrepareMigrationImportRegistryHistoryBackendStorageCostProfileTransition \
     ActivateMigrationImportRegistryHistoryBackendStorageCostProfileTransition \
@@ -116,8 +141,17 @@ for row in \
     MigrationImportRegistryHistoryBackendStorageCostProfileHighWatermarkRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileClassifierWorkBudgetRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignEpochRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignWorkBudgetRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFixedSnapshotCheckpointRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutLogRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutHighWatermarkRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfilePendingSuccessorChargeRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignTransferRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignInverseTransferRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignAbortResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveRow \
     MigrationImportRegistryHistoryRecoveryCapacityParentAggregateRow \
     MigrationImportRegistryHistoryRecoveryCapacityParentMembershipCommitmentRow \

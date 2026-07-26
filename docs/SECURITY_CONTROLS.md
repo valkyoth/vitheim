@@ -224,7 +224,7 @@ audit decision.
   late intent after Consumed returns the activation result without reversal;
 - through `1.0.0` every affected owner guard is co-located with the job/barrier,
   and one local transaction uses
-  active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+  deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
   then rechecks current budget/fence/authorization/
   manifest/receipts/owner versions, consumes authorization, then activates all
   owner generations plus Pending/zero-counter-lineage or
@@ -272,7 +272,8 @@ audit decision.
   consumes an independently admitted six-state single-use grant in the same
   transaction that advances a genesis-created Operational/RetirementPending/
   Retired fence; every authority and execution boundary rechecks that fence,
-  and a complete terminalization reserve survives response loss. Activate, Abort
+  creates Pending and reserves complete terminalization capacity or none.
+  That fence is the first universal lock rank. Activate, Abort
   and PermanentlyUnresolved share the governance sequence and one immutable
   per-transition terminal CAS; journal/high-watermarks are receipt projections.
   Proposal and active high-watermarks are separate,
@@ -304,10 +305,14 @@ audit decision.
   independently rooted cost-profile lineage/head/high-watermark and analytical
   complete-domain classifier require destructive authorization for any
   possible lower charge. The rounded-affine symbolic classifier has explicit
-  input/proof/work maxima and UnknownOrOverBudget is Weakening. Backend/schema
-  activation uses a fixed child snapshot, complete-delta parent RecostPending
-  reservation, stable resumable child transfers and authenticated abort before
-  its complete checkpoint. A co-located
+  input/proof/work maxima; only ValidWeakening is authorizable, while invalid,
+  unknown, malformed, overflowed or over-budget input is terminal no-write.
+  Backend/schema activation uses a parent campaign epoch/fence, fixed pre-cut
+  snapshot, bounded post-cut allocation/release log, dual active/pending-
+  successor charges, complete-delta RecostPending reservation and stable
+  forward transfers. The campaign fence follows its parent-ledger rank.
+  Explicit owner-authorized abort reverses every pending charge through stable
+  inverse transfers before its terminal checkpoint. A co-located
   Recovery parent ledger atomically pairs child allocation/release with parent
   debit/credit under one deterministic transfer ID/equation, including
   completion reserves; restore verifies both sides from one snapshot and never

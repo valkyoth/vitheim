@@ -557,7 +557,7 @@ restore, failover, and release evidence.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
    live coordinator job/barrier and every selected domain-owner guard to share one destination-local
    transaction. Its canonical order is
-   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox:
+   deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox:
    after locking, trusted manifest rederivation and
    current-state rechecks, authorization consumption and all owner activations
    commit with barrier/job result, exactly one Pending plus zero-counter
@@ -646,12 +646,14 @@ restore, failover, and release evidence.
    destination import re-costs rather than copying counters. Cost profiles have
    an independently rooted lineage/head/high-watermark and complete-domain
    analytical weakening classifier; its rounded-affine symbolic proof and
-   input/proof/work maxima prevent breakpoint enumeration, and unknown or
-   over-budget classification is weakening. Destructive weakening and backend/
-   schema activation require authorization plus a fixed-snapshot campaign that
-   reserves the whole aggregate delta before resumable per-child transfers and
-   activates only after the complete checkpoint; authenticated abort releases
-   only unapplied or proved-pending deltas.
+   input/proof/work maxima prevent breakpoint enumeration. Only a completely
+   proved ValidWeakening result is authorizable; invalid, unknown, malformed,
+   overflowed or over-budget input is terminal no-write. Backend/schema
+   activation uses an epoch-cut campaign with fixed pre-cut snapshot, bounded
+   post-cut allocation/release log, separate active/pending-successor charges
+   and whole-delta reservation. Finalization closes the log before activation;
+   explicit owner-authorized abort reverses every pending charge through
+   stable inverse transfers.
    A co-located Recovery parent ledger atomically debits with child allocation
    and credits with child release under one transfer identity and equation;
    completion reserves use it too. One logical operation deterministically
@@ -663,7 +665,9 @@ restore, failover, and release evidence.
    restorable head until complete snapshot-verification capacity is derived
    and reserved. Deployment retirement similarly requires a separately issued
    single-use grant, a genesis-created structurally rechecked local fence and a
-   complete non-borrowable terminalization reserve. Stable kind-specific transfer IDs and
+   complete non-borrowable terminalization reserve in one transaction. Its
+   fence is the first universal lock rank; the re-cost campaign fence follows
+   its parent ledger. Stable kind-specific transfer IDs and
    explicit unused-reservation rules span clearance/re-fencing.
    Insufficient remaining or minimum future capacity permanently
    quarantines the lineage. Rebuild is terminal for the predecessor; Release

@@ -225,7 +225,7 @@ has no effect, and late revocation after Consumed returns the activation result
 without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 uses the canonical
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox
+deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox
 order, rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all domain-owner versions, consumes and
 tombstones authorization, then activates every domain owner plus barrier/job result/
@@ -327,10 +327,13 @@ arithmetic and canonical boundary/golden vectors. Their independently rooted
 lineage/head/high-watermark, complete-domain weakening classifier, destructive
 authorization and complete re-cost checkpoint govern backend/schema activation.
 The classifier is a bounded closed-form rounded-affine proof with explicit
-format/proof/work maxima; UnknownOrOverBudget is Weakening. Large child sets
-use a fixed-snapshot re-cost campaign that preflights and atomically reserves
-the whole parent delta before stable per-child transfers, with durable
-cursor/lease/budget/completion reserve and exact resumable abort.
+format/proof/work maxima. Only ValidWeakening is authorizable;
+InvalidOrUnverifiable is terminal no-write. Large child sets use an epoch-cut
+re-cost campaign: fixed pre-cut snapshot, bounded authenticated post-cut
+allocation/release log, dual active/pending-successor charges, whole-parent-
+delta reservation, durable cursor/lease/budget/completion reserve and explicit
+owner-authorized abort that reverses every pending charge by stable inverse
+transfer.
 A co-located Recovery parent
 ledger and immutable parent/child transfers atomically pair every child
 allocation/release with parent debit/credit; one logical operation maps to one
@@ -342,7 +345,9 @@ Fenced until complete proof makes them Ready. Checkpoint creation reserves the
 complete derived verification cost before the checkpoint is eligible as a
 restorable head. Deployment retirement likewise consumes a separately issued
 six-state single-use grant, advances a genesis-created fence rechecked at every
-authority/execution boundary and retains a complete terminalization reserve.
+authority/execution boundary and retains a complete terminalization reserve in
+that one transaction. The retirement fence is the first universal rank; the
+campaign fence follows its parent ledger.
 Stable kind-specific transfer identities, explicit unused-capacity rules and
 dimension/ledger isolation survive every clearance and re-fence. Exhaustion or failure to
 retain minimum future-control capacity permanently quarantines the lineage and

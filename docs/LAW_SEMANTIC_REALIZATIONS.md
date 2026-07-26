@@ -342,17 +342,32 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
 - `MigrationImportRegistryHistoryBackendStorageCostProfileClassifierWorkBudgetV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStateV1`
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignEpochV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignWorkBudgetV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFixedSnapshotCheckpointV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutLogV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutHighWatermarkV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfilePendingSuccessorChargeV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignChildDeltaTransferV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveV1`,
+  `AbortMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignAbortResultV1`
   and
-  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveV1`;
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignConflict`;
 - `MigrationImportRegistryHistoryRecoveryCapacityParentVerificationReservationV1`.
 
 Their realization is required at `0.29.0`, is preserved by `0.30.0`, and uses
 the existing VIT-LST-009-g01 P/N/M/F contracts. Negative and model cases cover
-retirement admission/revocation/expiry/consumption and fence rechecks, complete-
-delta campaign reservation/apply/abort, bounded symbolic-classifier
-equivalence and complete checkpoint-verification reservation. Recovery cases
-resume the same tombstones, fence/reserve, campaign snapshot/bucket/cursor and
-verification reservation without inference, reset or duplicate transfer.
+retirement admission/revocation/expiry/consumption, first-rank fence rechecks
+and transaction-atomic reserve; three-outcome classifier validity; campaign
+epoch/log live-mutation races, active/pending separation and complete
+forward/inverse abort; bounded symbolic equivalence; and complete checkpoint-
+verification reservation. Recovery cases resume the same tombstones, fence/
+reserve, campaign epoch/snapshot/log/bucket/pending/cursor/abort state and
+verification reservation without inference, reset, retained staging charge or
+duplicate transfer.
 
 At `0.18.3`, implement a closed Rust `LawSemanticId` enum/decoder and a
 `LawSemanticRealization` dispatch table; there is no dynamic prose interpreter,

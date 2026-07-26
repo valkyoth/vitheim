@@ -37,6 +37,11 @@ All notable Vitheim changes are documented here. The format follows
   whole-delta resumable re-cost campaign; a bounded symbolic cost classifier;
   and complete verification-capacity reservation before parent checkpoints
   become restorable.
+- Closed the next accounting/locking refinements: invalid or unverifiable cost
+  profiles are terminal no-write rather than authorizable weakening; live
+  re-costing uses an epoch-cut post-cut log and reversible pending-successor
+  charges; explicit abort owns stable inverse transfers; and the atomic
+  retirement fence/reserve bundle is first in the universal lock order.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

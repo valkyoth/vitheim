@@ -542,8 +542,9 @@ and the registry cannot forge an owner receipt. Persist the authenticated
 revocation-intent inbox, exact-authorization sequence key, target lifetime,
 exact retry/conflict result and pre/post-admission tombstone with the
 authorization row. Every VIT-INV-062 mutation first locks and rechecks the
-active coordinator generation/fence. Admission, activation, revocation and
-expiry therefore use the fixed active-coordinator-generation→job→candidate/barrier→authorization
+deployment-retirement fence, then the active coordinator generation/fence.
+Admission, activation, revocation and
+expiry therefore use the fixed deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization
 lock prefix; storage unable to atomically
 create RevokedBeforeAdmission or CAS one terminal on that row refuses the
 profile. Persist the live coordinator exclusion, typed source-history archive
@@ -580,7 +581,7 @@ ClearedAfterRestore are explicit higher-generation transitions, and absence/
 rollback/wraparound denies. All history operations use the fixed universal
 fence-before-lineage/budget order and skip only inapplicable positions without
 reordering:
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
 `FenceMigrationImportRegistryHistoryCorruption` atomically records
 the observation, evidence, reason, generation, detector identity, canonical
 `MigrationImportRegistryHistoryCorruptionResultV1`, audit and outbox. The fence
@@ -644,27 +645,42 @@ cost functions analytically over the complete artifact-kind/size domain using
 the closed-form rounded-affine algorithm. Freeze maximum profile entries,
 artifact kinds, canonical size, allocation unit, rational numerator/
 denominator, proof bytes/nodes and classifier work. It may inspect only bounded
-algebraic crossings/residue classes; possible lower charge,
-UnknownOrOverBudget, unsupported form, exceeded bound or unverifiable proof is
-Weakening and consumes the complete destructive authorization lifecycle.
+algebraic crossings/residue classes. Freeze the three outcomes
+ValidNonWeakening, ValidWeakening and InvalidOrUnverifiable. Only a semantically
+valid, completely proved lower charge is ValidWeakening and may consume the
+destructive authorization lifecycle. Unsupported/unknown artifacts or
+functions, overflow, exceeded format/proof/work bounds, malformed proof or
+classifier-budget exhaustion are InvalidOrUnverifiable terminal no-write;
+authority cannot override them.
 Golden vectors alone are insufficient, while property vectors must match
 exhaustive evaluation over small bounded domains.
 
-Every affected child is handled by one fixed-snapshot
+Every affected child is handled by one epoch-cut
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignV1`.
-Freeze complete-delta preflight, atomic parent RecostPending reservation,
-stable child transfer IDs, lease/fence/cursor/cumulative budget/retry ceiling,
-protected terminalization reserve, complete checkpoint and final atomic
-profile/backend selector activation. Authenticated abort releases only
-unapplied or explicitly proved-pending deltas; applied historical charges
-remain. A backend without whole-delta reservation and exact resumable
-apply/abort semantics is unsupported through `1.0.0`.
+Freeze its fixed pre-cut snapshot, parent-ledger campaign epoch/fence, bounded
+post-cut allocation/release log and high-watermark, dual-profile admission,
+complete-delta preflight, atomic parent RecostPending reservation, stable child
+transfer and inverse-transfer IDs, separate active-cost and
+campaign/profile-bound pending-successor charges, lease/cursor/cumulative
+budget/retry ceiling, protected terminalization reserve, complete checkpoint
+and final atomic profile/backend selector activation. Every parent allocation/
+release locks the campaign fence after the parent ledger. Finalization briefly
+blocks mutation, closes the log, verifies snapshot plus overlay and
+reclassifies pending charges as active without changing total encumbrance.
+Only the explicit campaign owner may authorize the stable-idempotency Abort
+command. Abort reverses every RecostPending and pending-successor charge with
+stable inverse transfers and parent credits; retry exhaustion fences but
+neither authorizes abort nor retains staging charges. A backend without
+epoch/log, whole-delta reservation and exact resumable apply/abort semantics is
+unsupported through `1.0.0`.
 Persist co-located
 `MigrationImportRegistryHistoryRecoveryCapacityParentLedgerV1`, its exact active-child encumbrance
-set and stable parent/child transfer rows. Allocation atomically debits parent
+and pending-successor encumbrance sets and stable parent/child transfer rows. Allocation atomically debits parent
 and reserves child; release atomically releases child and credits parent under
-one identity, preserving ParentTotal = ParentAvailable + active child
-encumbrances. Apply the same protocol to publication completion reserves; a
+one identity, preserving ParentTotal = ParentAvailable + active child +
+pending-successor encumbrances. Campaign forward/inverse transfers and
+activation reclassification preserve that same total. Apply the same protocol
+to publication completion reserves; a
 backend without parent/child transactionality refuses. One logical operation
 deterministically owns one transfer identity and immutable before/after
 versions, balances, membership and result; timeout cannot mint a replacement.
@@ -688,7 +704,9 @@ non-recreatable reservation. Insufficient or unbounded derivation leaves the
 predecessor authoritative, so every valid maximum-sized admitted checkpoint
 can finish verification. Freeze
 `MigrationImportRegistryHistoryLockRankV1` as the sole adapter
-rank mapping and persist acquisition-trace conformance evidence. Release locks
+rank mapping: the deployment-retirement fence is first, active coordinator
+generation is next, and the re-cost campaign fence follows its parent ledger.
+Persist acquisition-trace conformance evidence. Release locks
 and rechecks settlement heads, parent ledger, reserve, obligation, fence,
 lineage, checkpoint and custody authority in that order; it cannot mark
 Released while any physical leg remains ReclaimPending or without the exact
@@ -745,7 +763,7 @@ counters include a pessimistically precharged complete preparation/activation/
 result/recovery quantum, and `AdmissionPrepared` requires the atomically stored
 complete unique receipt set. Job, barrier and every
 affected domain-owner activation guard must fit one local transaction with fixed
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox
+deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox
 locking and
 expected-version CAS. Storage must prove atomic all-domain-owner activation with the
 authorization consumption/tombstone and job result, or refuse before

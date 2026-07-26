@@ -36,7 +36,7 @@ after any terminal commit without partial domain-owner visibility.
 All Phase O evidence also preserves the non-wrapping active coordinator
 generation/fence, which every VIT-INV-062 mutation locks and rechecks first.
 Activation uses exactly
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
 Bootstrap evidence covers stable identity/idempotency, its closed lifecycle,
 independently admitted, pre-admission-revocable begin, fresh handoff and
 cancellation authorizations with separation of duties, bounded work/
@@ -88,8 +88,9 @@ quarantines old custody; replacements inherit no authority/sequencing state,
 and `1.0.0` has no in-place recovery root. Retirement first admits an
 independently issued six-state single-use grant, then atomically consumes it
 with Pending, a genesis-created Operational→RetirementPending fence and the
-complete non-borrowable terminalization reserve. Every authority, readiness,
-dispatch, send-start and commit boundary rechecks that fence. ActivateManifest, AbortManifest and
+complete non-borrowable terminalization reserve, audit and outbox or commits
+none. Every authority, readiness, dispatch, send-start and commit boundary
+rechecks that first-rank fence. ActivateManifest, AbortManifest and
 SealPermanentlyUnresolved share the governance sequence with RotateProfile and
 EmergencyDistrust. RetireDeploymentIdentity is authenticated by retirement
 authority on that same sequence and permanently closes the old key; one per-
@@ -129,11 +130,15 @@ profiles use checked rational ceiling arithmetic and canonical boundary/golden
 vectors plus independently rooted lineage/head/high-watermark, complete-domain
 analytical weakening classification, destructive authorization and a complete
 atomic re-cost checkpoint before backend/schema activation. Classification is
-a bounded closed-form rounded-affine proof and UnknownOrOverBudget is
-Weakening. Re-cost fixes snapshot membership, preflights and atomically
-reserves the whole aggregate delta, persists stable per-child transfers and a
-completion reserve, and supports authenticated exact abort without refunding
-applied historical charges. Restore verifies both ledger sides from one snapshot and never repairs
+a bounded closed-form rounded-affine proof with ValidNonWeakening,
+ValidWeakening and InvalidOrUnverifiable outcomes. Only ValidWeakening is
+authorizable; invalid, unknown, overflowed, malformed or over-budget input is
+terminal no-write. Re-cost fixes a pre-cut snapshot under a parent campaign
+epoch/fence, logs bounded post-cut allocation/release with dual active/pending-
+successor charges, reserves the whole aggregate delta and persists stable
+forward transfers. Explicit owner-authorized abort reverses every pending
+amount through stable inverse transfers. The campaign fence follows the parent
+ledger in the shared rank. Restore verifies both ledger sides from one snapshot and never repairs
 by choosing one side or guessing compensation. Kind-specific
 exact-once transfers cannot double charge or cross ledgers, and only verified
 archive plus exact deletion releases physical encumbrance.
@@ -154,7 +159,7 @@ checkpoint; Release includes every settlement head/reserve and later custody
 authority and cannot complete without the exact parent credit. Only independently authorized complete atomic restoration of the
 activation bundle and all post-activation charges/results/head/checkpoints may
 clear it. Every path follows
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering. Clearance
 consumes an independently issued/admitted/revocable/expiring single-use
 authorization, stays inside its proof budget and proves coverage through
@@ -2196,7 +2201,8 @@ old custody after EvidenceUnavailable, let retirement rotate/activate/transfer,
 replay or consume retirement authority without destination admission, drop a
 pre-admission revocation, interpret an absent retirement fence as Operational,
 skip fence rechecks at readiness/dispatch/send/commit, exhaust or borrow the
-retirement completion reserve,
+retirement completion reserve, put the retirement fence after coordinator/
+parent/domain rows, split grant consumption/fence/Pending/reserve/audit/outbox,
 inherit profile/fence/slot/ratchet/high-watermark/authorization/idempotency
 state into a replacement, infer
 in-place root recovery, stale-clear an occupied slot, share a profile across
@@ -2234,9 +2240,14 @@ overflow fixed/expansion/aggregate arithmetic, omit a required backend/profile
 golden vector, replace a cost profile as a signed blob, roll back its lineage/
 high-watermark, classify only sampled sizes, bypass destructive weakening,
 enumerate attacker-sized classifier breakpoints, exceed classifier input/proof/
-work bounds without Weakening, partially reserve a campaign delta, reset its
-lease/cursor/retries, duplicate a child delta, refund an applied delta during
-abort, activate backend/schema before complete child re-cost, bypass runtime disk fencing, split
+work bounds without InvalidOrUnverifiable no-write, authorize an invalid or
+unverifiable result as weakening, omit the campaign epoch/fence or post-cut
+log, allocate/release without dual-profile accounting, overflow the protected
+log/release lane, partially reserve a campaign delta, reset its
+lease/cursor/retries, duplicate a child delta, confuse active with pending
+successor charge, retain pending charge after Aborted, forge an inverse
+transfer or let a worker/adapter authorize abort, activate backend/schema
+before complete child re-cost, bypass runtime disk fencing, split
 parent debit/credit from child allocation/release, leak or double-credit the
 Recovery parent, mint a new transfer identity after timeout, repair split state
 by choosing one side or guessing compensation, scan every child in one startup
