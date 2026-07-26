@@ -170,12 +170,19 @@ transferred or destination-deleted reconciliation. The reservation pins the
 exact evaluator generation in the governed profile lineage; succession retains
 live dependencies and drains incompatible/weakening activation, while
 weakening still needs destructive authority. Streaming is capped by the
-current charge and atomic bounded extension must precede more bytes.
+current charge and atomic bounded extension must precede more bytes. Transfer
+state is Open→SealPending→Sealed; only Open mutates, unknown seal reconciles
+without guessing and provider-fenced Sealed binds immutable object/root/size/
+ETag/version before eligibility.
 Evaluator binary/corpus digests and node readiness are required; emergency
 distrust blocks chunks, extension, eligibility and Commit until independent
-migration preserves at least the original/current charge. Permanent Unknown is
+migration preserves at least the original/current charge. Reassessment never
+clamps corrected charge; positive deficit debits protected emergency capacity
+or fences readiness until separately authorized remediation. Permanent Unknown is
 independently converted at full charge into a transfer/namespace-fenced member
-with retained legal-hold evidence and no late-evidence refund. Begin
+with retained legal-hold evidence and no late-evidence refund. Aggregate
+platform/tenant ceilings and separate confirm/delete/permanently-unresolvable
+authorization preserve quarantine and legal-hold denial. Begin
 creates plan generation 1 and Preparing. Independently authorized Replan alone
 recovers a terminally reconciled plan by fencing/superseding old attempts,
 grants and receipts and creating a new bundle/reservation set; Abandon fences
@@ -183,7 +190,9 @@ only and never refunds Begin. Every Replan repeats backend atomic-limit
 preflight and reserves replacement/future-Commit plus retained-history
 capacity. An immutable cumulative lineage budget cannot reset; authenticated
 checkpoint/archive compaction preserves exact replay/anti-reuse and exhaustion
-never refunds. It consumes every terminal
+never refunds. Every destination admission creates/joins one stable
+pessimistic original-bucket charge; retry never recharges, settlement waits
+for checkpoint/archive and Recovery capacity is protected. It consumes every terminal
 receipt, settles all legs, advances Released to OriginalTotal and commits the
 identical parent credit plus distinct CustodyReleased terminal in one
 transaction. Separate BeginRelease/ReplanCustodyRelease/
@@ -2220,7 +2229,12 @@ limit/retained-capacity omission, cumulative history-budget exhaustion/reset,
 unknown-transfer permanent blockage or quarantined-member refund/fence bypass,
 terminal-attempt Stage/Verify artifact growth, evaluator binary/corpus
 substitution, missing node readiness, emergency-distrust bypass and
-undercharging migration, Unknown conversion, credit without
+undercharging migration, delayed/stale chunks or multipart completion after
+seal, seal-response ambiguity/root-size-version rebinding, evaluator deficit
+clamped above plan maximum, emergency-reserve exhaustion or uncovered-ready
+state, cumulative budget-charge omission/double/early settlement, retained-
+unknown resolution refund/quarantine rewrite/legal-hold bypass and missing
+all-six-action result parity, Unknown conversion, credit without
 physical disposition, issuer sequence races, absent-state writes, late-
 evidence terminal rewrite and partial/double custody release beside all
 prior attacks. Exit requires zero unresolved critical/high

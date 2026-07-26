@@ -351,17 +351,24 @@ audit decision.
   governed lineage; live dependencies retain old evaluators and fence
   incompatible/weakening activation, with destructive authority required for
   weakening. A streaming charge cap and atomic bounded extension commit
-  capacity before extra bytes or finalization. Evaluator binary/corpus digests
+  capacity before extra bytes or finalization. External transfer follows
+  Open→SealPending→Sealed; only Open mutates, unknown seal is never guessed and
+  provider-fenced Sealed binds immutable object/root/size/ETag/version before
+  eligibility. Evaluator binary/corpus digests
   and authenticated node readiness are mandatory; emergency distrust denies
   chunks, extension, eligibility and Commit until independent migration
-  preserves at least the existing maximum. Commit converts the reservation
+  preserves at least the existing maximum. Reassessment never clamps corrected
+  charge: positive deficit debits protected emergency capacity or fences
+  tenant/backend readiness until separately authorized remediation. Commit converts the reservation
   into the conservative custody member before
   exact source credit. Unknown preserves predecessor and pending charge; only
   definitely-never-transferred or exact destination-deleted reconciliation
   releases it. After bounded permanent uncertainty, independent quarantine
   converts the full maximum into a permanent member, fences namespace/
   transfer, retains legal-hold evidence and never treats late evidence as
-  refund authority. Begin creates plan generation 1 and Preparing. Only independently
+  refund authority. Platform/tenant ceilings and a separately authorized
+  confirm/delete/permanently-unresolvable workflow preserve quarantine and
+  legal-hold denial. Begin creates plan generation 1 and Preparing. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
   generation/bundle/reservations; Abandon fences only and never refunds Begin.
@@ -370,6 +377,9 @@ audit decision.
   cumulative lineage budget cannot reset; only authenticated checkpoint/
   archive proof compacts exact replay/anti-reuse state, and exhaustion does not
   refund.
+  Every destination admission atomically creates/joins one pessimistic,
+  original-bucket budget charge; exact retry never recharges, settlement waits
+  for checkpoint/archive and Recovery capacity is non-borrowable.
   Commit consumes those receipts while
   settling every leg, advancing Released to OriginalTotal and committing
   CustodyReleased with the matching parent inverse. The combined rank acquires

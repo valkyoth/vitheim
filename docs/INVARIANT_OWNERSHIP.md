@@ -304,6 +304,14 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileEvaluatorArtifactRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileEvaluatorReadinessManifestRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileEvaluatorDistrustRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferSealResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferSealReceiptRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferSealReconciliationResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyEvaluatorReassessmentRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityEmergencyQuarantineReserveRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityLedgerRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationReconciliationResultRow`,
@@ -312,6 +320,9 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferMemberRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferNamespaceFenceRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferQuarantineResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferPlatformHardMaximumRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityMemberRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityTransferRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementRow`,
@@ -330,6 +341,7 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageDispositionRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetExhaustedResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageCheckpointRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetChargeRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAuthorizationFenceRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityResultRow`,
@@ -395,16 +407,27 @@ exact governed cost-profile generation/evaluator and remains evaluable after
 profile supersession; incompatible or weakening succession drains its live
 dependency, with destructive authority required for weakening. The transfer
 adapter accepts bytes only within the running reserved charge and atomically
-extends capacity before any additional chunk. Evaluator binary/corpus digests
+extends capacity before any additional chunk. External transfer is Open,
+SealPending or Sealed: only Open mutates; SealPending reconciles without
+guessing; exact provider-fenced Sealed binds immutable root/size/object/
+ETag/version and is mandatory for eligibility. Evaluator binary/corpus digests
 and node readiness are authoritative; emergency distrust blocks chunks,
 extension, eligibility and Commit until independently authorized migration
-preserves at least the original/current maximum. Commit converts it into the
+preserves at least the original/current maximum. Corrected evaluator charge is
+never clamped to the plan maximum: reassessment records any deficit and
+atomically debits a non-borrowable emergency reserve or fences tenant/backend
+readiness until independently authorized provision, verified deletion or
+sufficient-capacity migration. Commit converts it into the
 custody member under that pinned versioned cross-dimension cost profile and
 transfer identity before exact source-parent credit; source and destination
 amounts need not be numerically identical. Unknown preserves the predecessor
 and the pending reservation until independent quarantine converts its full
 maximum into a permanent unknown-transfer member, fences namespace/identity
 and retains legal-hold evidence without refund; late evidence is not authority.
+Platform/tenant hard ceilings apply. Separate resolution may confirm presence,
+verify complete fenced-namespace deletion or declare permanent unresolvability,
+but preserves original quarantine and requires legal-hold permission plus exact
+base/emergency settlement.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -430,6 +453,11 @@ grant/head/reservation transaction. One immutable cumulative lineage budget
 bounds every generation/artifact/work counter; only authenticated checkpoint/
 archive coverage compacts with exact replay and anti-reuse, and terminal
 exhaustion never refunds.
+Every destination Admit/Apply, publication, reservation/seal/reconciliation,
+evaluator/deficit, unknown-member, plan-attempt and GC command atomically
+creates or joins one stable pessimistic budget charge with original bucket,
+class, disposition and checkpoint settlement. Exact retry never double charges
+and protected Recovery capacity cannot be borrowed.
 Only the explicit Begin lineage command may enter ReleasePending and only the
 explicit Commit custody command may enter Released. Begin creates plan
 generation 1 and a Preparing attempt. After a terminal reservation
@@ -471,13 +499,19 @@ workspace credit without physical disposition, uncharged custody transfer,
 transfer-before-reservation, unknown-transfer refund, incomparable custody
 mapping, rational undercharge/overflow, current-profile substitution, premature
 evaluator deletion, streaming above reserved charge, non-atomic extension,
+post-seal append/overwrite/finalize, guessed SealPending, weak provider fence,
+root/size/ETag substitution, corrected-charge clamp, hidden/uncovered deficit,
+emergency-reserve borrowing, unauthorized deficit remediation,
 released-reservation lineage stranding, plan rollback/ID recreation/double
 release, old grant/receipt replay, authorization-loss-as-abandonment,
 commit-eligible orphan admission, receipt Commit/GC race, collected-
 receipt commit, unbudgeted orphan cleanup, inherited/incomplete Replan
 feasibility, cumulative-budget reset/overflow, unproved history compaction,
 permanent-Unknown queue/dependency blockage, unknown-member refund or namespace
-fence bypass, terminal-attempt Stage/Verify, evaluator binary/corpus
+fence bypass, missing aggregate unknown-member ceiling, resolution quarantine
+rewrite or legal-hold bypass, omitted/double cumulative admission charge,
+wrong-bucket/early settlement or Recovery borrowing, action-specific result
+omission, terminal-attempt Stage/Verify, evaluator binary/corpus
 substitution, missing node readiness, distrust bypass or undercharging
 migration, Unknown-as-released, absent-state
 write and changed-payload exact retry, unbounded classifier work and under-
@@ -494,9 +528,12 @@ results, publication receipt, release bundle maximum and custody-release legs/
 physical-disposition receipts/tombstones, custody-ledger members/transfers,
 custody cost-profile head/retained evaluators/dependencies/drain fences,
 evaluator artifacts/readiness/distrust/migrations, TransferPending
-reservations/reconciliation/extension results and unknown-transfer members/
-namespace fences, custody-release plan heads/generations, cumulative budget/
-disposition/checkpoint, attempts/dispositions/authorization fences and Replan
+reservations/reconciliation/extension results, external-transfer mutation/
+seal state/receipts, evaluator reassessments/deficits/emergency reserve/
+remediation, unknown-transfer members/namespace fences/platform maxima/
+resolution authorization/results, custody-release plan heads/generations,
+cumulative budget/disposition/checkpoint/charge settlements,
+attempts/dispositions/authorization fences and Replan
 preflights/Abandon/eligibility/AttemptClosed results,
 publication state/operation results/budget, authoritative archive head/hot-row
 coverage, checkpoint/result plus verification reservation before any affected

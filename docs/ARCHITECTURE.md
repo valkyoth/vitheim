@@ -688,22 +688,34 @@ restore, failover, and release evidence.
    fence incompatible or weakening activation, with destructive authority for
    weakening. A streaming cap prevents additional bytes or finalization above
    the reservation, and atomic bounded extension must commit before the next
-   chunk. Evaluator binary/corpus digests and node readiness are mandatory;
+   chunk. External transfer is Open→SealPending→Sealed; only Open mutates,
+   unknown seal stays pending, and provider-fenced Sealed binds immutable
+   object/root/size/ETag/version and is required for eligibility. Evaluator
+   binary/corpus digests and node readiness are mandatory;
    emergency distrust blocks chunks, extension, eligibility and Commit until
    independent migration preserves at least the original/current charge.
+   Reassessment never clamps to the plan maximum: positive deficit debits a
+   protected emergency reserve or fences readiness until separately authorized
+   provision, verified deletion or sufficient-capacity migration.
    A versioned cost profile maps unlike source/destination generations,
    units and storage overhead; Commit converts the reservation into the final
    custody member before exact source credit. Unknown preserves predecessor and
    pending charge until independent quarantine converts the full maximum into
    a permanent member, fences destination/transfer and retains legal-hold
-   evidence without refund. Begin creates plan generation 1 and a Preparing commit
+   evidence without refund. Platform/tenant ceilings apply and a separate
+   authorized workflow may confirm presence, verify complete namespace
+   deletion or declare permanent unresolvability without rewriting quarantine.
+   Begin creates plan generation 1 and a Preparing commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and
    creates a new bundle/reservation set; Abandon fences only and never refunds
    Begin. Each Replan freshly proves backend feasibility and reserves its
    replacement/future-Commit plus retained-history capacity under an immutable
    cumulative lineage budget. Only authenticated checkpoint/archive coverage
-   compacts exact replay/anti-reuse state; exhaustion is non-refunding. Full
+   compacts exact replay/anti-reuse state; exhaustion is non-refunding. Every
+   destination admission atomically creates/joins one pessimistic original-
+   bucket budget charge; exact retry does not recharge and Recovery capacity
+   is protected. Full
    predecessor rollback is unsupported. All release transactions
    share the archive-head→plan-head→commit-attempt→
    publication-state→settlement-head→sorted-custody-profiles/ledgers/

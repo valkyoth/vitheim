@@ -834,6 +834,15 @@ permanent unknown-transfer custody member without refund, fences the transfer
 identity and destination namespace, retains evidence/hold policy and removes
 its evaluator dependency at the fixed charge. Later evidence is append-only,
 not automatic refund. Replan uses entirely new capacity and identities.
+Freeze a separately authorized retained-unknown resolution family:
+RetainedUnknown may become ConfirmedPresent, DeletionVerified or
+PermanentlyUnresolvable. Confirmation first covers evaluator deficit and
+converts without reducing charge. Deletion requires authenticated absence of
+every object/version/multipart operation under the fenced namespace and exact
+base/emergency-capacity settlement; active or uncertain legal hold denies.
+Every result retains the immutable quarantine decision. Deployment/tenant hard
+count, base-charge, deficit, evidence and resolution-work ceilings supplement
+the per-lineage budget.
 
 Freeze an immutable plan-lineage cumulative budget over generations, attempts,
 grants, fences, rows/bytes, transfers, terminal reservations/members,
@@ -843,6 +852,13 @@ cannot destroy a still-possible Commit; after an already terminal attempt it
 enters non-refunding BudgetExhaustedRetained. Compact old generations only
 behind authenticated checkpoint/archive coverage that preserves exact replay,
 conflict, counters and anti-reuse evidence.
+Wire that budget into every destination authorization Admit/revocation Apply,
+Stage/Verify, extension/reconciliation/seal, evaluator reassessment/migration/
+remediation, unknown quarantine/resolution, MarkEligible/Abandon/Replan and
+orphan/GC transaction. Each stable charge binds original bucket,
+pessimistic amount, protected Recovery/ordinary class, terminal disposition
+and checkpoint/archive settlement. Exact retry joins without another charge;
+issuer-only intent creation cannot spend destination capacity.
 
 Reuse the existing governed backend-storage cost-profile lineage rather than
 creating another mutable owner. Every custody reservation pins its exact
@@ -856,6 +872,13 @@ from the current reservation. It accepts an additional bounded chunk only
 after an atomic extension reserves more capacity under the pinned profile and
 within the plan hard maximum; failed extension forbids further bytes/finalize
 and leaves the original pending charge for verified cleanup.
+Freeze Open→SealPending→Sealed external transfer state. Open alone accepts
+chunks/extensions/multipart work and every mutation advances a version that
+invalidates older final evidence. SealPending binds exact size/root/object/
+ETag/version and admits no write; unknown provider outcome reconciles without
+guessing. Sealed carries an authenticated immutable-version/stale-writer fence,
+admits no append/overwrite/finalize/extension and is required by MarkEligible.
+Providers lacking an equivalent hard fence are unsupported.
 Bindings include cryptographic evaluator binary/algorithm/ABI and conformance-
 corpus digests. Authenticated node readiness must cover every pinned evaluator
 through startup, rolling upgrade, failover and restore. Independently rooted
@@ -863,6 +886,13 @@ emergency distrust immediately blocks chunks, extension, eligibility and
 Commit. Independently authorized evaluator migration atomically fences old use,
 reserves any positive delta and never reduces the original/current maximum or
 forgets accepted bytes; uncertain external effects use permanent quarantine.
+Evaluator distrust also triggers trusted reassessment. Corrected charge is
+never clamped to the plan maximum; positive deficit atomically debits a
+non-borrowable deployment/tenant emergency reserve or records uncovered
+liability and fences readiness. Unknown reassesses before quarantine. Separate
+authorization alone may provision more capacity, verify exact deletion or
+migrate to sufficient capacity, always preserving reassessment/distrust/
+quarantine history and legal-hold denial.
 
 Freeze one durable plan-bound commit attempt with Preparing, CommitEligible,
 Superseded, Abandoned and Consumed. MarkCommitEligible alone moves Preparing
@@ -924,7 +954,9 @@ complete shared Absent/RevokedBeforeAdmission/Issued/Consumed/ExpiredUnused/
 RevokedUnused operation table: absent expiry/consumption are typed no-write
 NotAdmitted; late admission joins pre-admission revocation; first terminal
 observations return their stored action/expiry/revocation result; stale/lower
-sequence and changed material conflict.
+sequence and changed material conflict. The Issued consumption cell says
+“matching action-specific result” and conformance exhausts all six release
+actions.
 
 Final activation is one atomic authority/accounting/selector transaction. It
 rechecks retirement fence, active slot, campaign/profile heads, classifier

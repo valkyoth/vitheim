@@ -8,6 +8,18 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added immutable Open→SealPending→Sealed custody-transfer fencing so delayed
+  chunks, stale credentials, multipart retries, overwrites, and finalization
+  cannot invalidate the exact receipt required for Commit.
+- Added unclamped evaluator reassessment, explicit capacity deficits, a
+  protected emergency/quarantine reserve, readiness fencing, and separately
+  authorized provision/delete/migrate remediation.
+- Wired stable pessimistic cumulative-budget charges into every destination
+  custody admission with exact-retry joins, checkpoint settlement, and
+  non-borrowable Recovery capacity.
+- Added platform-bounded, separately authorized retained-unknown resolution
+  for confirmed presence, verified deletion, or permanent unresolvability
+  while preserving the original quarantine and legal-hold decision.
 - Made every custody Replan repeat aggregate backend feasibility and atomically
   reserve replacement, future-Commit and retained-history capacity under a
   non-resettable cumulative plan-lineage budget with authenticated compaction.

@@ -775,16 +775,24 @@ exact evaluator generation in the existing governed profile lineage; live
 dependencies retain it and drain incompatible/weakening activation, while
 weakening requires destructive authority. Streaming is capped by current
 reserved charge and atomic bounded extension precedes additional bytes.
+Transfer state is Open→SealPending→Sealed; only Open mutates, unknown seal
+reconciles without guessing and provider-fenced Sealed binds immutable object/
+root/size/ETag/version before eligibility.
 Evaluator binary/corpus digests and authenticated node readiness are required;
 emergency distrust denies chunks, extension, eligibility and Commit until
 independent migration preserves at least the original/current maximum.
+Reassessment never clamps corrected charge: positive deficit debits protected
+emergency capacity or fences readiness until separately authorized provision,
+verified deletion or sufficient-capacity migration.
 Commit converts the
 reserved maximum into the conservative archive/legal-hold custody member before
 exact source credit and returns only proved surplus. Unknown preserves
 predecessor and pending charge; typed reconciliation releases only on
 definitely-never-transferred or exact destination-deleted evidence. Permanent
 Unknown is independently converted at full charge into a transfer/namespace-
-fenced member with retained legal-hold evidence and no late-evidence refund. Begin
+fenced member with retained legal-hold evidence and no late-evidence refund.
+Platform/tenant ceilings and separate confirm/delete/permanently-unresolvable
+authorization preserve original quarantine and legal-hold denial. Begin
 creates plan generation 1 and Preparing. Independently authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
 and receipts and atomically creating a new bundle/reservation set; Abandon
@@ -793,6 +801,9 @@ unsupported. Every Replan repeats backend atomic-limit preflight and reserves
 replacement/future-Commit plus retained-history capacity. An immutable
 cumulative lineage budget cannot reset; authenticated checkpoint/archive
 compaction preserves exact replay/anti-reuse and exhaustion never refunds.
+Every destination admission creates/joins one stable pessimistic original-
+bucket charge; exact retry never recharges, settlement waits for checkpoint/
+archive and Recovery capacity is protected.
 Commit consumes every
 receipt while settling all legs, advancing Released to OriginalTotal, removing
 and crediting the identical parent member and recording distinct
@@ -1031,6 +1042,11 @@ history exhaustion/reset or unproved compaction, permanent-Unknown blockage or
 quarantined-member refund/namespace-fence bypass, terminal-attempt Stage/
 Verify artifact allocation, evaluator binary/corpus substitution, missing node
 readiness, emergency-distrust bypass and undercharging evaluator migration,
+delayed/stale chunks or multipart completion after Sealed, seal ambiguity/
+root-size-ETag-version rebinding, evaluator deficit clamped above plan maximum,
+emergency-reserve exhaustion or uncovered-ready state, cumulative admission-
+charge omission/double/early settlement, retained-unknown resolution refund/
+quarantine rewrite/legal-hold bypass and missing all-six-action result parity,
 workspace credit without deletion or reserved charged transfer, issuer sequence races,
 remote-intent effect, absent-state writes,
 split/double whole-member custody release, partial quarantine refund,
