@@ -3092,16 +3092,25 @@ cleanup quantum within the hard foreground bound, no no-op priority reset and
 no hard-maximum overflow.
 Drive AuthenticatedPresent and DeletionOutcomeUnknown from every cleanup crash
 boundary with lost credentials, lost/rotated verification keys, inconsistent
-object-store responses, failover, late evidence and exhausted reconciliation.
-Race cleanup, retention authorization admission/expiry/revocation/consumption
-and custody release. Require exact retry, unchanged activation/abort, no parent
-credit on CleanupReconciling/PermanentlyRetained, bounded removal from the
-active cleanup lane, permanent-pool conservation and no foreground deadlock.
+object-store responses, failover, late evidence and exhausted reconciliation
+for both Activated and Aborted CleanupOrigin. Return only to the origin-matched
+pending state and bind retention to the exact activation-or-abort checkpoint.
+Race cleanup, every fully typed retention and lineage-release authorization
+admission/expiry/revocation/consumption, and custody release. Require exact
+first-terminal retry, unchanged activation/abort, no evidence-as-authority, no
+parent credit on CleanupReconciling/PermanentlyRetained, bounded removal from
+the active cleanup lane, permanent-pool conservation and no foreground
+deadlock.
 For Quarantined and PermanentlyRetained workspaces, fault the broader lineage
 release between each remaining-leg tombstone, Released advance, parent-member
 removal/credit, CustodyReleased checkpoint/result/audit/outbox and final lineage
 result. Require either the complete whole-member outcome or the fully
 encumbered predecessor, never parent-released/workspace-encumbered divergence.
+Generate linked workspace/control-leg bundles at, below and above every
+CustodyReleaseBundleHardMaximum dimension. Record acquisition traces and require
+archive/journal→parent→current-slot→old-fences-in-ID-order→control/lineage/
+checkpoint→authorization/custody→outputs; over-limit bundles are no-write
+before ReleasePending and no final transaction exceeds backend limits.
 Exercise admission, expiry, revocation and consumption from every state in the
 total table, including every exact duplicate, changed-material conflict and
 race; expiry winning must return its canonical expiry result without becoming
@@ -4282,6 +4291,17 @@ PermanentlyRetained or CustodyReleased. Cleaned means ordinary authenticated
 cleanup settled the workspace; CustodyReleased means a later whole-member
 custody release settled a quarantined or permanently retained workspace. The
 two terminal meanings are never substituted.
+Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupOriginV1`
+is Activated or Aborted and binds the exact campaign terminal result/
+checkpoint that selected ActivatedCleanupPending or AbortCleanupPending.
+CleanupReconciling always persists this origin; it is not inferred from current
+selector state or a mutable campaign projection.
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupTerminalReferenceV1`
+is the closed origin-discriminated reference: Activated contains only the exact
+activation result/checkpoint identity and Aborted contains only the exact abort
+result/checkpoint identity. Mixed, absent or inapplicable fields are
+noncanonical.
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCursorV1`
 and
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkV1`
@@ -4354,13 +4374,15 @@ Verified→ActivatedCleanupPending after campaign activation,
 nonterminal→AbortCleanupPending after abort, either cleanup-pending state→
 Cleaned after verified old-copy/shadow deletion, or any nonterminal→Quarantined
 under the campaign's authorized terminal disposition. An indeterminate
-post-activation deletion observation moves ActivatedCleanupPending→
-CleanupReconciling without changing the already committed campaign activation
-result. Bounded reconciliation may return to ActivatedCleanupPending only with
-authenticated evidence that cleanup can safely resume, reach Cleaned only with
-authenticated deletion, or consume independent workspace-retention authority
-to reach PermanentlyRetained. PermanentlyRetained and Quarantined can reach
-only CustodyReleased through the whole-member custody-release protocol below.
+post-terminal deletion observation moves ActivatedCleanupPending or
+AbortCleanupPending→CleanupReconciling while persisting Activated or Aborted
+CleanupOrigin and without changing the already committed campaign terminal
+result. Bounded reconciliation may return only to the origin-matched
+ActivatedCleanupPending or AbortCleanupPending with authenticated evidence that
+cleanup can safely resume, reach Cleaned only with authenticated deletion, or
+consume independent workspace-retention authority to reach
+PermanentlyRetained. PermanentlyRetained and Quarantined can reach only
+CustodyReleased through the whole-member custody-release protocol below.
 Settlement releases each reservation leg exactly once only after authenticated
 deletion through
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementV1`
@@ -4382,7 +4404,8 @@ Unknown covers lost storage credentials, unavailable verification keys,
 inconsistent backend observations and unavailable or irrecoverable deletion
 evidence; it never means deleted. CleanupReconciling persists the exact
 observations, credential/key/evidence generations, cursor, attempts, bytes,
-work, conservative elapsed time, next action and predecessor checkpoint in
+work, conservative elapsed time, CleanupOrigin, terminal reference, next action
+and predecessor checkpoint in
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupReconciliationV1`.
 Its reservation-funded entry/byte/work/time/attempt ceilings survive crash,
 failover and retry. Exhaustion cannot manufacture deletion, reset the budget or
@@ -4390,20 +4413,52 @@ alter the committed activation/abort result.
 
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationV1`
 is independent of campaign permanent-quarantine authority and binds the exact
-workspace/campaign/activation result, all remaining legs and encumbrance,
+workspace/campaign/CleanupOrigin/activation-or-abort terminal reference, all
+remaining legs and encumbrance,
 deletion observations and reconciliation budget, retention/classification/
 legal-hold generations, custody evidence, reason, trusted-time window,
 approver quorum/SoD, nonce and stable idempotency. A retention issuer cannot be
 the workspace worker, cleanup claimant, custody releaser or sole custody/
-legal-hold approver. Admission, expiry, revocation and consumption use the same
-destination-local first-terminal-wins authorization discipline as the
-permanent-quarantine family. Only the consuming retention command may
+legal-hold approver.
+
+Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationStateV1`
+is Absent, RevokedBeforeAdmission, Issued, Consumed, ExpiredUnused or
+RevokedUnused.
+`AdmitMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorization`
+returns
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationAdmissionResultV1`
+and
+`ExpireMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorization`
+returns
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationExpiryResultV1`;
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationIntentV1`
+with target-scoped non-wrapping
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationSequenceKeyV1`,
+and
+`ApplyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocation`
+are the only admission, expiry and destination-apply revocation commands. The
+destination atomically stores
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationInboxV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationTombstoneV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationResultV1`,
+the authorization row, audit and outbox. Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationOutcomeV1`
+returns admitted, expired, revoked or the stored PermanentlyRetained result;
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationOperationConflictV1`
+wraps only changed authorization, revocation or retention material. Every CAS
+loser rereads and reapplies the same six-state first-terminal table: Consumed
+returns the stored retention result, ExpiredUnused the stored expiry and either
+revoked state the stored revocation. Exact operations join; changed target,
+terminal reference, evidence, legs, scope, sequence or idempotency conflicts.
+
+Only the consuming retention command may
 atomically move CleanupReconciling→PermanentlyRetained, move the exact remaining
 live legs from cleanup-pending to permanently-retained without changing
 WorkspaceReleased or ParentAvailable, append the terminal retention checkpoint/
 result/audit/outbox, release the workspace's active cleanup-lane claim and
 consume its precharged permanent-retention-pool slot. Exact retry joins; changed
-authority, evidence, legs, activation result or idempotency conflicts.
+authority, evidence, legs, terminal reference or idempotency conflicts.
 
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionPoolV1`
 and immutable
@@ -4420,6 +4475,13 @@ separately authorized whole-member custody release can reduce the encumbrance.
 
 Quarantined and PermanentlyRetained freeze the remaining derived encumbrance.
 Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseAuthorizationReferenceV1`
+binds the exact Issued
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationV1`
+whose action is CommitCustodyRelease, lineage/checkpoint/bundle digest and
+workspace terminal reference match. Custody approval or legal-hold evidence is
+an authenticated input to that grant and its commit-time recheck, never mutable
+command authority by itself. Canonical
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1`
 and
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointV1`
@@ -4428,8 +4490,10 @@ locking the broader lineage release and workspace at the canonical ranks, the
 one bounded precharged transaction rechecks terminal state, immutable original
 total, monotonic released amount, every remaining leg, retention/
 classification/legal-hold generations, custody approvals/evidence, terminal
-campaign and workspace checkpoints and proof that no future operation depends
-on any retained byte. It atomically settles every remaining complete leg,
+campaign and workspace checkpoints, current Issued CommitCustodyRelease
+authorization and proof that no future operation depends on any retained byte.
+The enclosing custody-release bundle consumes that authorization exactly once;
+this workspace component atomically settles every remaining complete leg,
 advances WorkspaceReleased exactly to WorkspaceOriginalTotal, removes the
 entire remaining workspace parent member, credits ParentAvailable by the
 identical checked amount, moves the workspace to CustodyReleased and writes
@@ -4870,7 +4934,7 @@ Healthy.
 Every append, detection, recovery, clearance, checkpoint and cleanup path uses
 one universal relative order encoded by the shared, non-overridable
 `MigrationImportRegistryHistoryLockRankV1`:
-deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-active-recost-campaign-slot→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-active-recost-campaign-slot→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→corruption-control-lineage-release-authorization→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold/custody→audit/result/outbox.
 An operation locks only its present/applicable rows and reservations, but it
 never acquires a later position before an earlier one. In particular no path
 holds a budget while waiting for the fence, and detection of a missing lineage
@@ -4882,6 +4946,10 @@ retirement therefore never waits while holding a later row. The active re-cost
 campaign slot follows its parent ledger, and its campaign fence follows the
 slot; both are locked/rechecked by every parent allocation, release, campaign
 start/apply/finalize/recover/abort and activation transaction.
+When one operation acquires multiple campaign-fence instances it deduplicates
+their canonical identities and locks them in ascending canonical campaign-ID
+byte order. Release uses the same slot/fence ranks before every later control,
+lineage, authorization, custody or output row.
 Conformance tests record every acquisition/recheck trace, compare it to the
 shared rank type and exercise absent-row, duplicate, release and contention
 paths. An adapter unable to prove this order refuses the profile.
@@ -5359,7 +5427,49 @@ capacity is released, canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCheckpointV1` must cover
 every episode ordinal/scope/fence/result, lifetime-work budget, physical-
 capacity ledger, audit/outbox position and the exact original/remaining
-reservation. Only
+reservation.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseActionV1` is
+BeginRelease or CommitCustodyRelease.
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationV1`
+binds exactly one action, lineage/disposition/fence/checkpoint, settlement heads,
+complete ordinary-leg and linked-workspace bundle digest, current retention/
+classification/legal-hold generations, custody evidence/quorum/SoD, trusted-
+time window, reason, nonce and stable idempotency. Its canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationStateV1`
+is Absent, RevokedBeforeAdmission, Issued, Consumed, ExpiredUnused or
+RevokedUnused.
+`AdmitMigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorization`
+returns
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationAdmissionResultV1`
+and
+`ExpireMigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorization`
+returns
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationExpiryResultV1`;
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationIntentV1`
+with target/action-scoped non-wrapping
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationSequenceKeyV1`,
+and
+`ApplyMigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocation`
+are its only admission, expiry and destination-apply revocation commands.
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationOutcomeV1`
+returns admitted, expired, revoked or the stored BeginRelease/CommitCustodyRelease
+result, while
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationOperationConflictV1`
+wraps only changed authorization, revocation or action material. Inbox,
+tombstone and result are canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationInboxV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationTombstoneV1`
+and
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationResultV1`;
+they, audit and outbox commit with the destination state. CAS
+losers reread/reapply the six-state first-terminal table; exact operations join
+and changed action/checkpoint/bundle/policy/custody/sequence/idempotency
+conflicts. Custody approval evidence cannot invoke release without this grant.
+
+Only
 `ReleaseMigrationImportRegistryHistoryCorruptionControlLineage` may move an
 eligible Active, PermanentlyQuarantined or Rebuilt lineage to custody-safe
 ReleasePending after locking and proving retention/classification/legal-hold
@@ -5369,7 +5479,10 @@ complete bounded set of linked Quarantined/PermanentlyRetained migration
 workspaces, each immutable OriginalTotal, Released value, remaining-leg root,
 parent member and custody-release reservation. An omitted, unbounded or
 unproved linked workspace makes the transition no-write. It retires the
-remaining lifetime-work ceiling without changing WorkSpent.
+remaining lifetime-work ceiling without changing WorkSpent. This begin
+transaction consumes an exact Issued BeginRelease authorization; the later
+whole-member transaction separately consumes an exact Issued
+CommitCustodyRelease authorization bound to the stored begin result.
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementV1` settles
 each physical-capacity leg exactly once; it never mutates the lifetime-work
 budget. It is a domain-separated
@@ -5379,16 +5492,37 @@ per-leg identities bind the original reservation, physical dimension, source
 bucket, exact quantity, release/checkpoint/custody trigger, archive/deletion
 evidence and result.
 
+Immutable profile-bound
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumV1`
+bounds the complete final transaction across ordinary reserve legs and every
+linked workspace: workspace/fence/leg/row count, canonical bytes, distinct
+locks, reads, writes, index effects, audit/outbox/result bytes, decode/hash/
+verification work and backend execution time. Workspace retention consumes
+lineage-scoped non-borrowable bundle units before it can enter
+PermanentlyRetained. Before ReleasePending, one checked aggregate preflight
+authenticates the complete sorted workspace/fence set and proves the bundle
+fits both this profile and the selected backend's atomic transaction limits;
+insufficient, unknown or overflowing capacity leaves the predecessor
+authoritative and consumes no release authorization. Per-workspace bounds alone
+are not accepted as proof of aggregate fit.
+
 The local, non-wrapping
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementJournalHeadV1`
 binds predecessor/sequence, the canonical ordered settlement-row set,
 transaction/result/audit identity and owner continuity; it never claims archive
 availability. The begin-release local transaction follows
 `MigrationImportRegistryHistoryLockRankV1`: archive-replay head when applicable,
-settlement-journal head, Recovery parent-capacity ledger, control reserve,
-history obligation, corruption fence, control lineage, lineage checkpoint,
-then retention/legal-hold/custody authority at its later rank. It rechecks
-terminal obligation, fence state and the parent equation. It atomically moves
+settlement-journal head, Recovery parent-capacity ledger, the current parent/
+selector active-campaign slot for serialization, every linked old campaign's
+stable Closed fence in ascending canonical campaign-ID byte order, control
+reserve, history obligation, corruption fence, control lineage, lineage
+checkpoint, release authorization, lineage disposition, retention/legal-hold/
+custody authority and terminal audit/result/outbox rows. The final release
+transaction uses this
+identical combined rank; no linked workspace is acquired after a later-ranked
+lineage/custody object, and duplicate campaign IDs acquire one fence once.
+It rechecks terminal obligation, fence state, bundle maximum and parent
+equation. It atomically consumes the BeginRelease authorization and moves
 eligible ReservedUnoccupied units to Released while removing their exact child
 encumbrance and crediting ParentAvailable under the parent/child transfer ID,
 moves Occupied units to ReclaimPending without a parent credit, appends
@@ -5396,16 +5530,19 @@ immutable transfer/per-leg settlement rows, advances the journal head, marks
 ReleasePending, and writes the canonical
 pending `MigrationImportRegistryHistoryCorruptionControlLineageReleaseResultV1`,
 audit and outbox. A split ledger transfer, settlement append, journal advance,
-parent credit, checkpoint or lineage transition is unrepresentable.
+parent credit, checkpoint, authorization consumption or lineage transition is
+unrepresentable.
 
 Authenticated sparse checkpoint/archive publication advances separate
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchiveReplayHeadV1`
 only after immutable chunks upload and verify. Its final local CAS binds the
 archive head to the journal coverage and deletes only exact captured hot rows/
-versions. In that same ranked local transaction, verified archive membership
-plus exact deletion moves matching ReclaimPending units to Released, removes
-the exact child encumbrance, credits ParentAvailable and appends the immutable
-parent/child transfer plus final settlement rows before advancing the journal,
+versions. It rechecks the identical bundle digest/hard maximum and current
+Issued CommitCustodyRelease authorization. In that same ranked local
+transaction it consumes that authorization once and uses verified archive
+membership plus exact deletion to move matching ReclaimPending units to
+Released, remove the exact child encumbrance, credit ParentAvailable and append
+the immutable parent/child transfer plus final settlement rows before advancing the journal,
 and invokes each checkpoint-bound
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1`.
 For each linked workspace this is one all-or-none whole-member transaction

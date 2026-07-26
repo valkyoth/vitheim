@@ -337,10 +337,18 @@ audit decision.
   Unknown deletion outcomes enter bounded reconciliation. Independently
   authorized permanent retention consumes a precharged pool slot, preserves
   the complete parent charge and removes the exhausted workspace from the
-  active lane without changing activation. Broader custody release can credit
+  active lane without changing activation or abort; an authenticated cleanup
+  origin returns only to its matching pending state. Retention and lineage
+  BeginRelease/CommitCustodyRelease use closed destination-applied
+  authorization state/sequence/inbox/tombstone/outcome families, so custody
+  evidence alone has no command authority. Broader custody release can credit
   only by atomically settling every remaining leg, advancing Released to
   OriginalTotal and committing CustodyReleased with the matching parent inverse
-  and terminal evidence. A co-located
+  and terminal evidence. The combined rank acquires settlement heads, parent,
+  current slot, sorted old
+  campaign fences, control/lineage/checkpoint, authorization/custody and
+  outputs; an aggregate bundle maximum proves every ordinary and workspace leg
+  fits the backend transaction before ReleasePending. A co-located
   Recovery parent ledger atomically pairs child allocation/release with parent
   debit/credit under one deterministic transfer ID/equation, including
   completion reserves; restore verifies both sides from one snapshot and never

@@ -289,10 +289,18 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupReconciliationRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationInboxRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationTombstoneRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationOperationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionPoolRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionHardMaximumRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationInboxRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationTombstoneRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationOperationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointRow`,
@@ -327,9 +335,11 @@ stable Closed fence, never mutating a newer campaign. The destination owner
 also owns the co-located cleanup admission lane, non-resettable contention
 budget, backlog and hard maxima; foreground workers cannot bypass a due cleanup
 turn or create an unreserved terminal workspace. Unknown deletion enters
-bounded reconciliation; only independent retention authority may move it into
-a precharged permanent-retention pool, without credit or alteration of the
-campaign result. Only verified deletion, an
+bounded reconciliation with an immutable Activated/Aborted origin and exact
+terminal reference; only the matching origin-pending state may resume. A fully
+typed independently issued/admitted/destination-revoked retention grant may
+move it into a precharged permanent-retention pool, without credit or
+alteration of the campaign result. Only verified deletion, an
 exact complete-leg transfer from immutable OriginalTotal into monotonic
 Released, the named settlement checkpoint and matching inverse parent transfer
 release source capacity. Quarantined workspace remains a permanent whole
@@ -337,6 +347,12 @@ parent member until broader custody-safe release. That release atomically
 settles all remaining workspace legs, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased; the
 generic lineage release cannot credit it separately.
+BeginRelease and CommitCustodyRelease consume separate action-bound grants.
+Both lineage-release transactions acquire archive/journal heads, parent,
+current slot, sorted old campaign fences, control/lineage/checkpoint,
+authorization/custody and output rows in the same rank. A checked aggregate
+bundle maximum covers every linked workspace and ordinary reserve leg before
+ReleasePending.
 The deployment-retirement fence is the first shared rank and the active slot
 and campaign fence follow their parent ledger.
 VIT-TST-062-N-F rejects absent-as-Operational, authority reuse, borrowed
@@ -349,14 +365,18 @@ split or mismatched-cut activation, stale-slot cleanup mutation/starvation,
 remote-effect revocation, cross-target sequence suppression, unproved or
 partial quarantine refund, original-total rewrite/released rollback, fractional
 leg settlement, cleanup-turn reset/backlog overflow, unknown-as-deleted,
-retention self-authorization, parent/workspace custody-release split, unbounded
-classifier work and under-reserved checkpoints. VIT-RCV-062 restores the same fence/tombstones, active campaign
+abort-origin loss, retention/custody evidence-as-authority, unsorted/late
+workspace locking, aggregate release-bundle overflow, parent/workspace custody-
+release split, unbounded classifier work and under-reserved checkpoints.
+VIT-RCV-062 restores the same fence/tombstones, active campaign
 slot, campaign epoch/snapshot/commitment/log/high-watermark/fold/buckets/
 pending charges/forward-inverse transfers/cursor/lease/budget/prior-state/
 intent/results/terminal checkpoint/quarantine authorization and workspace
 reservation/state/cursor/physical high-watermark/capacity/settlement,
 deletion observations/reconciliation budget, retention authority/pool
-reservation and custody-release legs/checkpoint/result plus verification
+reservation, authorization inbox/tombstones/results, CleanupOrigin/terminal
+reference, release bundle maximum and custody-release legs/checkpoint/result
+plus verification
 reservation before any affected work becomes ready. Exact abort
 reversal is required when evidence is complete;
 contradictory or missing transfer evidence retains conservative encumbrance in

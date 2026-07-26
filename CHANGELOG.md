@@ -63,6 +63,9 @@ All notable Vitheim changes are documented here. The format follows
 - Closed post-activation workspace custody with bounded unknown-deletion
   reconciliation, independently authorized no-credit permanent retention and
   one atomic whole-member CustodyReleased settlement across both ledgers.
+- Completed that closure for aborted cleanup, fully typed retention and
+  two-stage lineage-release authority, deterministic combined locking and an
+  aggregate backend transaction maximum.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

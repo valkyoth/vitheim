@@ -94,10 +94,25 @@ for phrase in \
     'empty yield or stale claimant cannot count' \
     'DeletionOutcomeUnknown' \
     'CleanupReconciling' \
+    'CleanupOriginV1' \
+    'CleanupTerminalReferenceV1' \
+    'origin-matched' \
     'PermanentRetentionAuthorizationV1' \
+    'PermanentRetentionAuthorizationStateV1' \
+    'PermanentRetentionAuthorizationRevocationIntentV1' \
+    'PermanentRetentionAuthorizationOutcomeV1' \
+    'PermanentRetentionAuthorizationOperationConflictV1' \
     'PermanentRetentionPoolV1' \
     'PermanentlyRetained' \
+    'CustodyReleaseAuthorizationReferenceV1' \
     'CustodyReleaseSettlementV1' \
+    'ControlLineageReleaseAuthorizationV1' \
+    'ControlLineageReleaseAuthorizationStateV1' \
+    'BeginRelease authorization' \
+    'CommitCustodyRelease authorization' \
+    'CustodyReleaseBundleHardMaximumV1' \
+    'ascending canonical campaign-ID byte order' \
+    'Per-workspace bounds alone' \
     'WorkspaceReleased exactly to WorkspaceOriginalTotal' \
     'broader lineage release does not separately credit' \
     'cannot return the workspace to cleanup' \
@@ -194,13 +209,45 @@ for symbol in \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBacklogV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBackpressure \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupOriginV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupTerminalReferenceV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceDeletionOutcomeV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupReconciliationV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationStateV1 \
+    AdmitMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorization \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationAdmissionResultV1 \
+    ExpireMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorization \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationExpiryResultV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationIntentV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationSequenceKeyV1 \
+    ApplyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocation \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationInboxV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationTombstoneV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationResultV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationOutcomeV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationOperationConflictV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionPoolV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionHardMaximumV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseAuthorizationReferenceV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseActionV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationStateV1 \
+    AdmitMigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorization \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationAdmissionResultV1 \
+    ExpireMigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorization \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationExpiryResultV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationIntentV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationSequenceKeyV1 \
+    ApplyMigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocation \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationInboxV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationTombstoneV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationResultV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationOutcomeV1 \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationOperationConflictV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1 \
     BuildMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
     SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
@@ -334,10 +381,18 @@ for row in \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupReconciliationRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationInboxRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationTombstoneRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationOperationResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionPoolRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionHardMaximumRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointRow \
+    MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumRow \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRow \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationInboxRow \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationTombstoneRow \
+    MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationOperationResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointRow \

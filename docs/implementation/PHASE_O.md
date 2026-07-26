@@ -156,11 +156,16 @@ budget and hard terminal backlog maxima force bounded progress without lock
 fairness. Permanent-quarantine revocation is issuer-intent/destination-apply
 with a first-terminal-wins outcome table, and quarantine keeps the whole parent
 member until broader custody-safe release. Unknown deletion enters bounded
-CleanupReconciling; independent retention authority can move it without credit
-to a precharged PermanentlyRetained pool so the active lane cannot deadlock.
+CleanupReconciling from activated or aborted cleanup under a closed origin/
+terminal reference; fully typed independent retention authority can move it
+without credit to a precharged PermanentlyRetained pool so the active lane
+cannot deadlock.
 Custody release settles every remaining leg, advances Released to OriginalTotal
 and commits the identical parent credit plus distinct CustodyReleased terminal
-in one transaction. The active slot and campaign fence follow
+in one transaction. Separate BeginRelease/CommitCustodyRelease grants are
+consumed under one settlement-head→parent→slot→sorted-old-fences→control/
+lineage/checkpoint→authorization/custody/output rank, after an aggregate bundle
+maximum proves every ordinary and workspace leg fits. The active slot and campaign fence follow
 the parent ledger in the shared rank. Restore verifies both ledger sides
 from one snapshot and never repairs
 by choosing one side or guessing compensation. Kind-specific
@@ -854,7 +859,9 @@ Status: planned. Migration/import focus: RPC preserves immutable OriginalTotal,
 monotonic Released, exact settled legs, cleanup lane/turn/backlog/maxima and
 first-terminal authorization outcome plus deletion observations,
 CleanupReconciling, retention authority/pool and CustodyReleased evidence
-beside prior state. No remote service may apply revocation, assert deletion,
+beside CleanupOrigin/terminal reference, complete retention/lineage-release
+authorization outcomes and aggregate bundle/rank status. No remote service may
+choose origin, mint authority, reorder fences, assert aggregate fit, apply revocation, assert deletion,
 retain/release custody, settle/credit workspace capacity, reset cleanup
 scheduling or translate a terminal result.
 Setup: API/worker/ingest/index and
@@ -1054,7 +1061,9 @@ reached. Run pentest for this exact commit.`
 Status: planned. Migration/import focus: model immutable-total/monotonic-release
 leg settlement, adversarial foreground-versus-cleanup scheduling/backlog
 thresholds, unknown-deletion reconciliation/retention races, whole-member
-custody release and revocation/expiry/consume CAS losers beside all prior races.
+custody release, both cleanup origins, complete retention/release authorization
+races and combined multi-fence acquisition at every aggregate bound beside all
+prior races.
 Exit requires four-class conservation, no fractional/double leg, cleanup
 progress within its foreground-grant bound, capped backlog and one stable
 first-terminal result; neither unsafe credit nor permanent foreground deadlock
@@ -1402,7 +1411,8 @@ incomplete surface mapping fail closed.
 Status: planned. Migration/import focus: restore original/released/settled-leg
 history, cleanup scheduler counters/claimant/backlog/maxima and stored terminal
 authorization outcomes, reconciliation budgets, retention pool/authority and
-linked custody-release checkpoint beside prior state. No deletion, total,
+linked custody-release checkpoint plus CleanupOrigin/reference, release grants,
+sorted fence set and aggregate proof beside prior state. No deletion, total,
 release, cleanup turn, pool occupancy, credit or terminal result is inferred/
 reset; affected capacity and foreground admission stay unavailable until
 complete proof.
@@ -1673,7 +1683,8 @@ transaction commit.
 Status: planned. Migration/import focus: fuzz equation/leg/scheduler/outcome
 codecs, counters, thresholds, unfair backend locks, every crash boundary and
 changed retry plus lost credentials/keys, inconsistent deletion, late evidence,
-retention authority/pool bounds and whole-member release. Rollback, duplicate/
+both cleanup origins, complete retention/release authorization families,
+canonical fence ordering, aggregate bounds and whole-member release. Rollback, duplicate/
 fractional legs, starvation, unknown-as-deleted and malformed terminal material
 fail closed inside hard entry/byte/work/time/backlog ceilings.
 Setup: representative workloads, SLOs, durable `0.18.1` quota
@@ -1905,8 +1916,9 @@ Status: planned. Migration/import focus: independently audit prior role
 separation plus cleanup admission fairness/backlog, immutable-total and
 monotonic-release custody, exact leg attribution and first-terminal result
 parity across adapters. Audit retention issuer/admitter/operator/custody-
-releaser SoD, no-credit active-lane escape and linked workspace/parent custody
-release. Every retained/refunded unit and scheduler turn must be attributable.
+releaser plus lineage-release issuer/admitter/applier/begin/finalize SoD,
+origin symmetry, no-credit active-lane escape, aggregate preflight and combined
+lock traces. Every retained/refunded unit and scheduler turn must be attributable.
 Setup: complete threat model, dependency/tool/action inventory,
 semantic SBOM, reproducibility, full key generation/storage/use/rotation/revocation/
 recovery/destruction lifecycle, `0.28.3` in-process memory assurance, crash/
@@ -2013,7 +2025,9 @@ Status: planned. Migration/import focus: reject every legacy encoding that
 uses a mutable current workspace total or lacks OriginalTotal, Released,
 settled legs, cleanup scheduler/backlog/maxima or closed first-terminal
 outcomes; also reject collapsed CleanupReconciling/PermanentlyRetained/
-CustodyReleased meanings, absent pool reservations and unlinked parent release.
+CustodyReleased meanings, absent origin/reference or full authorization
+families, missing aggregate bundle proof/combined rank, absent pool reservations
+and unlinked parent release.
 No default, inferred field or downgrade is compatible.
 Setup: freeze API/event/workflow/policy/plugin/pack/export/agent
 versions and support windows, immutable event-schema registry, complete pure
@@ -2115,8 +2129,10 @@ Status: planned. Migration/import focus: attack original/released rollback,
 fractional/double leg settlement and split parent credit; cleanup starvation,
 backlog exhaustion and priority bypass; and terminal revocation retry/conflict
 loops; plus unknown-as-deleted, credential/key loss, retention self-approval,
-pool exhaustion, late-evidence activation rewrite and partial/double custody
-release beside all prior attacks. Exit requires zero unresolved critical/high
+abort-origin substitution, pool exhaustion, evidence-as-authority, Begin/Commit
+confusion, ABBA lock ordering, aggregate transaction exhaustion,
+late-evidence terminal rewrite and partial/double custody release beside all
+prior attacks. Exit requires zero unresolved critical/high
 findings and no waived authority, conservation, bounded-backlog/fairness,
 custody, settlement, restore or compatibility issue.
 Setup: freeze scope/artifacts/environment and engage independent

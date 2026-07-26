@@ -671,12 +671,19 @@ restore, failover, and release evidence.
    cleanup progress without relying on lock fairness. Permanently indeterminate
    deletion enters bounded CleanupReconciling and can leave the active lane
    only through independent authorization into a precharged permanently
-   retained pool; no credit or activation rewrite occurs. Quarantine revocation is
+   retained pool; an immutable Activated/Aborted origin returns only to its
+   matching pending state, and no credit or terminal-result rewrite occurs.
+   Retention and BeginRelease/CommitCustodyRelease use complete destination-
+   applied first-terminal authorization families; custody evidence is not
+   command authority. Quarantine revocation is
    issuer-intent/destination-apply with a first-terminal-wins outcome table, and
    quarantined capacity remains a whole parent member until broader custody-
    safe release. That release closes both ledgers atomically by settling every
    remaining leg, advancing Released to OriginalTotal, crediting the identical
-   member and recording the distinct CustodyReleased terminal.
+   member and recording the distinct CustodyReleased terminal. Begin and final
+   transactions share the settlement-head→parent→current-slot→sorted-old-fence→
+   control/lineage/checkpoint→authorization/custody/output rank, and an aggregate
+   hard maximum covers every ordinary and workspace leg before ReleasePending.
    A co-located Recovery parent ledger atomically debits with child allocation
    and credits with child release under one transfer identity and equation;
    completion reserves use it too. One logical operation deterministically

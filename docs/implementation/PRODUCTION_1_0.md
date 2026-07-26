@@ -758,7 +758,9 @@ Closed fence. A durable protected cleanup admission lane and non-resettable
 contention budget force a cleanup quantum after bounded foreground grants;
 soft backpressure and hard count/row/byte/encumbrance/work/backlog maxima
 prevent unbounded terminal workspace accumulation without assuming fair backend
-locks. DeletionOutcomeUnknown enters bounded CleanupReconciling. Only
+locks. DeletionOutcomeUnknown enters bounded CleanupReconciling from activated
+or aborted cleanup while a closed CleanupOrigin/terminal reference permits
+resume only to the matching pending state. Only
 independent SoD retention authority can move exhausted work into a precharged,
 hard-bounded PermanentlyRetained pool; it leaves Released, ParentAvailable and
 the committed activation/abort result unchanged while removing the active-lane
@@ -766,7 +768,15 @@ deadlock. Late evidence cannot reopen or refund it. Whole-member custody release
 alone verifies current retention/legal-hold/custody/no-future-dependency proof,
 settles every remaining leg, advances Released to OriginalTotal, removes and
 credits the identical parent member and records distinct CustodyReleased plus
-tombstones/checkpoint/result/audit/outbox atomically. Permanent-quarantine revocation requires destination apply of issuer
+tombstones/checkpoint/result/audit/outbox atomically. Retention and separate
+lineage BeginRelease/CommitCustodyRelease grants have complete six-state
+admission/expiry/issuer-intent/destination-apply/tombstone/first-terminal
+families; custody evidence is never command authority. Begin and final release
+share one settlement-head→parent→current-slot→canonical-ID-sorted-old-fences→
+control/lineage/checkpoint→authorization/custody/output rank. A checked
+CustodyReleaseBundleHardMaximum proves aggregate ordinary/workspace rows, bytes,
+locks, reads, writes, indexes, outputs, work and time fit the backend before
+ReleasePending. Permanent-quarantine revocation requires destination apply of issuer
 intent and one total first-terminal-wins outcome table: later valid operations
 return the stored quarantine, expiry or revocation result. Quarantined capacity
 remains the entire parent member until broader custody-safe release. The
@@ -946,7 +956,9 @@ physical verification cut, stale-slot cleanup mutation or starvation, remote-
 effect/cross-target quarantine revocation, terminal-result conflict/retry loop,
 mutable original total, released-counter rollback, fractional/double leg,
 cleanup-turn reset/priority bypass/backlog overflow, unknown-as-deleted,
-retention self-approval/pool exhaustion, late-evidence activation rewrite,
+abort-origin substitution, retention self-approval/pool exhaustion, custody-
+evidence-as-authority, Begin/Commit action confusion, unsorted/late old-fence
+locking, aggregate bundle overflow, late-evidence terminal-result rewrite,
 split/double whole-member custody release, partial quarantine refund,
 premature or duplicate workspace deletion settlement, or activation before successor
 verification/old-writer fence,

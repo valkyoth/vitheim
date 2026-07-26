@@ -195,7 +195,7 @@ requirements.
 
 #### Custody closure and unverifiable-cleanup refinement
 
-This refinement closes the two remaining post-activation workspace paths. It is
+This refinement closes the two previously identified terminal workspace paths. It is
 additive to both tables above: ordinary Cleaned settlement, permanent campaign
 quarantine, immutable accounting and cleanup fairness remain unchanged.
 
@@ -216,6 +216,30 @@ quarantine, immutable accounting and cleanup fairness remain unchanged.
 | `0.148.0` | Reject legacy encodings lacking CleanupReconciling/PermanentlyRetained/CustodyReleased distinctions, pool reservations, retention authority or linked whole-member settlement | No state collapse to Cleaned/Quarantined, inferred deletion, default pool capacity, independent parent credit or semantic downgrade |
 | `0.149.0` | External pentest attacks unknown-as-deleted, credential/key loss, retention self-approval, lane/pool exhaustion, late-evidence activation rewrite, partial/double custody release and parent/workspace split restore beside every prior attack | Zero unresolved critical/high findings and no waived authority, availability, bounded-work, custody, accounting, atomicity, restore or compatibility issue |
 | `0.150.0` and `1.0.0` | Demonstrate exact-commit install/upgrade/failover/restore continuity for bounded unknown-deletion handling, permanent retention and atomic whole-member custody release beside the entire prior contract | No production claim until every selected adapter passes, operational escalation is proven and the final exact commit passes independent pentest |
+
+#### Abort symmetry, combined release rank and typed-authority refinement
+
+This refinement completes, rather than replaces, the custody-closure table.
+Activated and aborted cleanup now share one origin-preserving reconciliation
+protocol; the all-or-none bundle remains the selected release strategy.
+
+| Version | Required context and deliverable | Verification and exit condition |
+| --- | --- | --- |
+| `0.29.0` | Add closed CleanupOrigin/terminal-reference types so ActivatedCleanupPending and AbortCleanupPending can both enter CleanupReconciling and return only to their matching pending state. Complete the six-state retention authorization operation family. Add separate BeginRelease and CommitCustodyRelease lineage grants, one canonical archive/journal→parent→current-slot→sorted-old-fences→control/lineage/checkpoint→authorization/custody→outputs rank, and aggregate CustodyReleaseBundleHardMaximum covering ordinary legs plus every workspace | Exercise unknown deletion, retention and late evidence for activation and abort. Race every authorization operation. Reject evidence-as-authority, wrong-origin resume, unsorted/late lock acquisition, per-workspace-only sizing and any over-limit or split release before mutation |
+| `0.30.0` | Preserve CleanupOrigin/terminal reference, every retention and lineage-release authorization state/inbox/tombstone/result/sequence, sorted fence-set digest, aggregate bundle profile/preflight and acquisition trace beside all prior custody state | Missing/defaulted/forked origin, grant, sequence, fence set, bound or trace keeps the destination fenced; import cannot infer activation versus abort, authority or aggregate fit |
+| `0.140.1` | Freeze origin/terminal-reference encoding and retention plus BeginRelease/CommitCustodyRelease authorization/revocation preimages, sequence scopes, action binding and first-terminal wrappers | Review proves mixed terminal references are noncanonical, evidence never invokes a command, cross-action replay fails and CAS losers return stored winners |
+| `0.140.2` | Freeze authorization/inbox/tombstone/result rows, aggregate bundle maximum/preflight, deterministic multi-fence indexes and both ranked atomic transactions | Every adapter proves exact six-state operations, all-or-none authorization consumption/accounting and a backend-supported maximum transaction or refuses |
+| `0.140.3` | Freeze retention issuer/admitter/applier/operator and lineage-release issuer/admitter/applier/begin/finalize roles beside cleanup, custody and legal-hold approvers | No worker or evidence holder self-authorizes; no Begin grant commits custody; no Commit grant creates ReleasePending; no role bypasses ordered locks |
+| `0.140.5` | Retain cleanup origin/reference, every grant/tombstone/result, sorted bundle digest, aggregate sizing proof and acquisition trace with custody evidence | Compaction cannot collapse abort into activation, revive authority, erase a lock/order violation or turn an individually bounded set into aggregate release proof |
+| `0.140.6` | Freeze failover/takeover of reconciliation origin, authorization winners/sequences and the exact combined lock/bundle state | Crash resumes the same origin, grant winner and bundle; takeover never changes fence order, recreates authority or partially releases |
+| `0.142.0` | RPC carries origin/reference, typed authorization outcomes and aggregate bundle/rank status only | Remote services cannot choose cleanup origin, translate outcomes, mint release authority, reorder fences or assert bundle fit |
+| `0.143.0` | Model both cleanup origins, all retention/release authorization races and combined multi-fence acquisition at/over every aggregate limit | No wrong-origin transition, deadlock cycle, cross-action consumption, unbounded transaction or partial ledger terminal is reachable |
+| `0.145.0` | Restore origin/reference, authorization sequences/inboxes/tombstones/results, sorted fence set and bundle proof with both ledger sides | Any missing or inconsistent item preserves the authoritative predecessor and denies readiness without repair inference |
+| `0.146.0` | Fuzz origin/union codecs, grant operations, fence-set ordering/deduplication, aggregate arithmetic and every begin/final crash boundary | Malformed, overflowed, reordered, duplicate or changed material fails closed within row/byte/lock/write/work/time limits |
+| `0.147.0` | Audit abort/activation symmetry, complete authorization SoD, canonical lock acquisition and aggregate preflight across adapters | Zero high/critical lifecycle, authority, deadlock, transaction-bound, custody, accounting or replay gap |
+| `0.148.0` | Reject legacy encodings lacking origin/reference, complete authorization families, combined rank or aggregate bundle proof | No default Activated origin, prose authority, per-workspace-only sizing, unsorted fence set or semantic downgrade |
+| `0.149.0` | External pentest targets aborted unknown cleanup deadlock, origin substitution, revocation/apply replay, custody evidence forgery, Begin/Commit action confusion, ABBA locks and aggregate transaction exhaustion beside every prior attack | Zero unresolved critical/high findings and no waived lifecycle, authority, availability, locking, bounded-work, atomicity, restore or compatibility issue |
+| `0.150.0` and `1.0.0` | Demonstrate exact-commit continuity for origin-symmetric cleanup, fully typed release authority, combined ranked locking and aggregate-bounded all-or-none custody release | No production claim until every selected backend proves its supported maximum, all adapters pass and the final exact commit passes independent pentest |
 
 ## Phase D — Universal Work Platform
 

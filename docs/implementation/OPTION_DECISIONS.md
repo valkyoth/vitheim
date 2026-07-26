@@ -784,9 +784,14 @@ campaign start/finalization, and activation cannot add ActivatedCleanupPending
 beyond reserved count/row/byte/encumbrance/work/backlog maxima. No backend lock-
 fairness assumption is accepted.
 Freeze DeletionOutcomeUnknown as a non-release result that enters bounded,
-durably budgeted CleanupReconciling. Workspace reservation precharges a
+durably budgeted CleanupReconciling from either ActivatedCleanupPending or
+AbortCleanupPending. Freeze closed Activated/Aborted CleanupOrigin and
+origin-discriminated terminal reference; reconciliation may resume only the
+matching pending state and retention binds the exact activation/abort result.
+Workspace reservation precharges a
 non-borrowable permanent-retention escalation/terminalization slot. Only a
-separate SoD retention authorization can move exhausted reconciliation to
+complete six-state admitted/expired/destination-revoked/first-terminal SoD
+retention authorization can move exhausted reconciliation to
 PermanentlyRetained, transfer its exact live legs into a hard-bounded retention
 pool and remove it from the active cleanup lane; Released and ParentAvailable
 do not change, and activation/abort remains immutable. Late evidence cannot
@@ -796,6 +801,17 @@ proof, one transaction settles every remaining leg, advances Released to
 OriginalTotal, removes/credits the identical parent member and records
 CustodyReleased plus per-leg tombstones/result/audit/outbox. The broader lineage
 release cannot perform an independent workspace credit.
+Freeze separate six-state action-bound BeginRelease and CommitCustodyRelease
+lineage authorization grants; custody/hold evidence alone is not command
+authority. Both transactions use one archive-replay-head→settlement-journal-
+head→parent-ledger→current-slot→linked-old-fences-in-canonical-ID-order→control-
+reserve→obligation→corruption-fence→lineage→checkpoint→release-authorization→
+lineage-disposition→custody-authority→terminal-outputs rank. Freeze
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumV1`
+over the aggregate ordinary-leg plus linked-workspace row/byte/lock/read/write/
+index/output/work/time transaction. Preflight must prove the complete bundle
+fits the selected backend before ReleasePending; individual workspace limits
+are insufficient.
 
 Final activation is one atomic authority/accounting/selector transaction. It
 rechecks retirement fence, active slot, campaign/profile heads, classifier
@@ -848,10 +864,12 @@ rank mapping: the deployment-retirement fence is first, active coordinator
 generation is next, and the active re-cost slot then campaign fence follow
 their parent ledger.
 Persist acquisition-trace conformance evidence. Release locks
-and rechecks settlement heads, parent ledger, reserve, obligation, fence,
-lineage, checkpoint and custody authority in that order; it cannot mark
-Released while any physical leg remains ReclaimPending or without the exact
-parent credit.
+and rechecks archive/journal settlement heads, parent ledger, current slot,
+canonical-ID-sorted linked old campaign fences, reserve, obligation, corruption
+fence, lineage, checkpoint, action-bound release authorization, lineage
+disposition, custody authority and outputs in that order; it cannot mark Released while any physical
+leg remains ReclaimPending, the aggregate bundle is over limit or the exact
+parent credit is absent.
 Permanent-quarantine workspace and unresolved campaign capacity stays an
 entire authenticated parent encumbrance: no campaign-level proof may release
 an apparent excess, reopen the campaign, admit the rejected successor or

@@ -353,10 +353,16 @@ parent credit. A durable cleanup admission lane/contention budget forces
 bounded progress and hard terminal-workspace backlog maxima. Permanent
 deletion uncertainty enters bounded CleanupReconciling and can move into a
 precharged PermanentlyRetained pool only under independent SoD authority,
-without parent credit or activation-result mutation. Whole-member custody
+without parent credit or activation/abort-result mutation. A closed cleanup
+origin/reference makes activated and aborted work symmetric and resume only
+their matching pending state. Retention and lineage BeginRelease/
+CommitCustodyRelease have complete six-state destination-applied authorization
+families. Whole-member custody
 release later settles every remaining leg, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased in one
-atomic transaction. Permanent
+atomic transaction. Its begin/final paths share one combined lock rank and must
+preflight the complete ordinary-plus-workspace bundle against backend row/byte/
+lock/write/work/time maxima before ReleasePending. Permanent
 quarantine has issuer-intent/destination-apply revocation, a first-terminal-wins
 outcome table returning stored results, and retains the entire parent member
 until broader custody-safe release; it never permits a campaign-level partial
