@@ -808,12 +808,45 @@ reservation into the conservatively calculated custody member before exact
 source credit; the linked quantities need not be numerically identical.
 Unknown retains PermanentlyRetained or Quarantined and the pending charge.
 Typed reconciliation releases only on definitely-never-transferred or
-authenticated destination deletion. One transaction consumes all disposition receipts,
+authenticated destination deletion. A terminally released reservation does
+not return the lineage to its predecessor. Select an independently authorized
+Replan operation: every plan has a stable identity, monotonic generation/head,
+generation-bound bundle, reservation set and commit attempt. Begin creates
+generation 1. Replan requires all old external outcomes terminal, proves no
+Commit winner, atomically fences and supersedes the old attempt/grants/receipts,
+advances the plan head and creates new reservations plus a Preparing attempt.
+An independently authorized Abandon only fences an attempt and permits later
+Replan; it never refunds capacity or reverses Begin. Reject full Abort through
+`1.0.0`, because already released local control capacity and admitted external
+effects cannot be exactly rolled back without unsafe compensation.
+
+Reuse the existing governed backend-storage cost-profile lineage rather than
+creating another mutable owner. Every custody reservation pins its exact
+Active generation/digest/evaluator and creates a dependency; superseded
+evaluators remain available until all dependencies terminalize. Compatible
+nonweakening successors may activate for new work while old dependencies
+drain. Incompatible or weakening successors are fenced until zero live
+predecessor dependencies, and weakening consumes the existing destructive
+authorization. The transfer adapter enforces a streaming charge limit derived
+from the current reservation. It accepts an additional bounded chunk only
+after an atomic extension reserves more capacity under the pinned profile and
+within the plan hard maximum; failed extension forbids further bytes/finalize
+and leaves the original pending charge for verified cleanup.
+
+Freeze one durable plan-bound commit attempt with Preparing, CommitEligible,
+Superseded, Abandoned and Consumed. MarkCommitEligible alone moves Preparing
+after rechecking the exact plan, begin/version, verified publication,
+dispositions, profiles and reservations. Commit, Replan and Abandon race on
+that row; Commit consumes CommitEligible. MarkOrphan accepts only Superseded or
+Abandoned and races under the same ordered attempt/receipt locks. Missing,
+expired or revoked Commit authority never establishes permanent ineligibility.
+Missing attempt state is corruption. One transaction consumes all disposition receipts,
 settles every remaining leg, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased plus
 per-leg disposition tombstones, custody transfers, result/audit/outbox. The
 broader lineage release cannot perform an independent workspace credit.
-Freeze separate six-state action-bound BeginRelease and CommitCustodyRelease
+Freeze separate six-state action-bound BeginRelease, ReplanCustodyRelease,
+AbandonCustodyRelease and CommitCustodyRelease
 lineage authorization grants; custody/hold evidence alone is not command
 authority. Freeze explicit
 `BeginMigrationImportRegistryHistoryCorruptionControlLineageRelease` and
@@ -835,7 +868,8 @@ lifecycle/GC budgets. Commit and MarkOrphan serialize archive-head→receipt-
 state; Commit atomically consumes only Verified, orphan admission rechecks
 non-reference and collected receipts never revive. Non-consumed receipts are
 ignored by readers. The generic Release name is non-dispatchable.
-Both transactions use one archive-replay-head→publication-state→settlement-
+All release transactions use one archive-replay-head→custody-release-plan-head→
+commit-attempt-disposition→publication-state→settlement-
 journal-head→sorted-custody-cost-profile-heads→sorted-custody-capacity-ledgers/
 reservations→parent-ledger→current-slot→linked-old-fences-in-canonical-ID-order→control-
 reserve→obligation→corruption-fence→lineage→checkpoint→release-authorization→

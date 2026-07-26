@@ -770,19 +770,31 @@ then requires every remaining leg to be AuthenticatedDeleted for the exact
 storage generation/root or TransferredToCustodyLedger with a verified receipt
 and exact Begin-created TransferPending reservation. A governed versioned cost
 profile maps unlike source/destination generations, units and overhead with
-verified encoded size and checked rational ceilings. Commit converts the
+verified encoded size and checked rational ceilings. Reservations pin the
+exact evaluator generation in the existing governed profile lineage; live
+dependencies retain it and drain incompatible/weakening activation, while
+weakening requires destructive authority. Streaming is capped by current
+reserved charge and atomic bounded extension precedes additional bytes.
+Commit converts the
 reserved maximum into the conservative archive/legal-hold custody member before
 exact source credit and returns only proved surplus. Unknown preserves
 predecessor and pending charge; typed reconciliation releases only on
-definitely-never-transferred or exact destination-deleted evidence. Commit consumes every
+definitely-never-transferred or exact destination-deleted evidence. Begin
+creates plan generation 1 and Preparing. Independently authorized Replan alone
+recovers terminal reconciliation by fencing/superseding old attempts, grants
+and receipts and atomically creating a new bundle/reservation set; Abandon
+fences only and never refunds Begin. Full predecessor rollback remains
+unsupported. Commit consumes every
 receipt while settling all legs, advancing Released to OriginalTotal, removing
 and crediting the identical parent member and recording distinct
 CustodyReleased plus disposition tombstones, custody transfers, checkpoint/
 result/audit/outbox atomically. Retention and separate
-lineage BeginRelease/CommitCustodyRelease grants have complete six-state
+lineage BeginRelease/ReplanCustodyRelease/AbandonCustodyRelease/
+CommitCustodyRelease grants have complete six-state
 admission/expiry/issuer-intent/destination-apply/tombstone/first-terminal
 families; custody evidence is never command authority. Begin and final release
-share one archive-head→publication-state→settlement-head→sorted-custody-
+share one archive-head→plan-head→commit-attempt→publication-state→
+settlement-head→sorted-custody-
 profiles/ledgers/reservations→parent→current-slot→canonical-ID-sorted-old-
 fences→control/lineage/checkpoint→authorization/custody/output rank. A checked
 CustodyReleaseBundleHardMaximum proves aggregate ordinary/workspace receipts,
@@ -795,8 +807,11 @@ the stored begin result, non-authoritative verified receipt, predecessor/
 proposed heads, physical dispositions, cost profiles/reservations,
 bundle/authorization and expected
 lineage version. Stage, Verify, MarkOrphan and FinalizeGc alone own precharged
-receipt transitions. Commit and orphan admission serialize on archive-head→
-receipt-state; Commit alone moves Verified→ConsumedByCommit while installing
+receipt transitions. Commit, Replan, Abandon and orphan admission serialize on
+archive-head→plan-head→attempt→receipt-state. MarkOrphan accepts only
+Superseded/Abandoned; absent/expired/revoked Commit authority is not permanent
+ineligibility. Commit alone moves CommitEligible→Consumed and
+Verified→ConsumedByCommit while installing
 the authoritative head with exact hot-row deletion and every capacity effect.
 OrphanGcEligible/Collected receipts cannot commit; readers ignore non-head
 evidence. Both retention and
@@ -994,6 +1009,11 @@ authority, receipt Commit/GC race, collected replay, unbudgeted orphan cleanup,
 head/delete split, payload/publication-receipt rebinding, forged or stale
 physical disposition, transfer-before-reservation, unknown-outcome refund,
 custody cost-profile mapping/rounding/overflow undercharge, Unknown conversion,
+reconciled-reservation lineage stranding, plan/attempt rollback or ID reuse,
+old Commit grant/publication replay, Replan/Abandon/Commit race, profile
+dependency/drain bypass, premature evaluator deletion, streaming above the
+reservation, non-atomic extension or response-loss replay, commit-eligible
+orphan admission and authorization-loss liveness attack,
 workspace credit without deletion or reserved charged transfer, issuer sequence races,
 remote-intent effect, absent-state writes,
 split/double whole-member custody release, partial quarantine refund,

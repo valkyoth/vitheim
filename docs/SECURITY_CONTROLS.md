@@ -339,20 +339,31 @@ audit decision.
   the complete parent charge and removes the exhausted workspace from the
   active lane without changing activation or abort; an authenticated cleanup
   origin returns only to its matching pending state. Retention and lineage
-  BeginRelease/CommitCustodyRelease use closed destination-applied
+  BeginRelease/ReplanCustodyRelease/AbandonCustodyRelease/
+  CommitCustodyRelease use closed destination-applied
   authorization state/sequence/inbox/tombstone/outcome families, so custody
   evidence alone has no command authority. Broader custody release can credit
   only after every remaining leg proves AuthenticatedDeleted for its exact
   storage generation/root or TransferredToCustodyLedger against a Begin-created
   TransferPending maximum. A governed versioned profile maps unlike source/
-  destination generations, units and overhead with checked rational ceilings;
-  Commit converts the reservation into the conservative custody member before
+  destination generations, units and overhead with checked rational ceilings.
+  Each reservation pins its exact generation/evaluator in the existing
+  governed lineage; live dependencies retain old evaluators and fence
+  incompatible/weakening activation, with destructive authority required for
+  weakening. A streaming charge cap and atomic bounded extension commit
+  capacity before extra bytes or finalization. Commit converts the reservation
+  into the conservative custody member before
   exact source credit. Unknown preserves predecessor and pending charge; only
   definitely-never-transferred or exact destination-deleted reconciliation
-  releases it. Commit consumes those receipts while
+  releases it. Begin creates plan generation 1 and Preparing. Only independently
+  authorized Replan can recover a terminally reconciled plan by fencing/
+  superseding old attempts/grants/receipts and atomically creating a new
+  generation/bundle/reservations; Abandon fences only and never refunds Begin.
+  Commit consumes those receipts while
   settling every leg, advancing Released to OriginalTotal and committing
   CustodyReleased with the matching parent inverse. The combined rank acquires
-  archive head/publication state, settlement head, sorted custody profile heads/
+  archive head/plan head/commit-attempt disposition/publication state,
+  settlement head, sorted custody profile heads/
   ledgers/reservations, parent, current slot, sorted old campaign fences,
   control/lineage/checkpoint, authorization/custody and outputs; an aggregate
   bundle maximum proves every ordinary/workspace leg, disposition receipt,
@@ -362,9 +373,12 @@ audit decision.
   action-specific results; commit rebinds the begin result, verified receipt,
   predecessor/proposed heads, dispositions/profiles/reservations/bundle/grant
   and expected version. Stage, Verify, MarkOrphan and FinalizeGc alone own
-  precharged receipt transitions. Commit and orphan admission serialize on
-  archive-head→receipt-state; only Commit moves Verified→ConsumedByCommit while
-  installing the head with exact hot-row deletion and every capacity effect.
+  precharged receipt transitions. Commit, Replan, Abandon and orphan admission
+  serialize on archive-head→plan-head→attempt→receipt-state. MarkOrphan accepts
+  only Superseded/Abandoned; authorization absence/expiry/revocation is not
+  permanent ineligibility. Only Commit moves CommitEligible→Consumed and
+  Verified→ConsumedByCommit while installing the head with exact hot-row
+  deletion and every capacity effect.
   Orphan/Collected receipts cannot commit, and readers ignore non-head
   evidence. Each retention/release
   issuer Revoke command allocates one

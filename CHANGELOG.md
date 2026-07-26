@@ -8,6 +8,18 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Closed the reconciled-reservation dead end with monotonic custody-release
+  plans and independently authorized Replan/Abandon actions; replacement
+  atomically fences old attempts, grants and publication receipts and never
+  recreates or double-releases a reservation.
+- Reused the governed backend-storage cost-profile lineage for custody
+  reservations, pinning exact evaluator dependencies across succession,
+  draining incompatible/weakening transitions and enforcing streaming charge
+  caps with atomic bounded extension before additional bytes.
+- Added durable plan-bound commit eligibility so Commit, Replan and Abandon
+  race on one attempt row and orphan admission is permitted only after
+  Superseded or Abandoned—not because Commit authority is absent, expired or
+  revoked.
 - Split external manifest proposal publication from active-manifest authority
   with explicit operational-active and transition-candidate local heads,
   durable per-witness reconciliation, protected attempt-completion capacity

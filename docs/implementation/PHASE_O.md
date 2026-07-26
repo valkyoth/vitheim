@@ -166,11 +166,20 @@ conservative maximum into TransferPending before external transfer; Commit
 maps unlike dimensions through the frozen custody cost profile and converts
 the reservation into the final member before exact source credit. Unknown
 preserves predecessor and pending charge until typed definitely-never-
-transferred or destination-deleted reconciliation. It consumes every terminal
+transferred or destination-deleted reconciliation. The reservation pins the
+exact evaluator generation in the governed profile lineage; succession retains
+live dependencies and drains incompatible/weakening activation, while
+weakening still needs destructive authority. Streaming is capped by the
+current charge and atomic bounded extension must precede more bytes. Begin
+creates plan generation 1 and Preparing. Independently authorized Replan alone
+recovers a terminally reconciled plan by fencing/superseding old attempts,
+grants and receipts and creating a new bundle/reservation set; Abandon fences
+only and never refunds Begin. It consumes every terminal
 receipt, settles all legs, advances Released to OriginalTotal and commits the
 identical parent credit plus distinct CustodyReleased terminal in one
-transaction. Separate BeginRelease/CommitCustodyRelease grants are consumed
-under one archive-head→publication-state→settlement-head→sorted-custody-
+transaction. Separate BeginRelease/ReplanCustodyRelease/
+AbandonCustodyRelease/CommitCustodyRelease grants are consumed under one
+archive-head→plan-head→commit-attempt→publication-state→settlement-head→sorted-custody-
 profiles/ledgers/reservations→parent→slot→sorted-old-fences→control/lineage/
 checkpoint→authorization/custody/output rank, after an aggregate bundle maximum
 proves every ordinary/workspace leg, receipt, pending reconciliation/GC
@@ -185,8 +194,10 @@ Only explicit BeginLineageRelease and CommitLineageCustodyRelease commands
 perform the two lineage transitions; commit binds the begin result, verified
 non-authoritative receipt, predecessor/proposed heads, physical dispositions,
 cost profiles/reservations, bundle/authorization and expected version. Stage,
-Verify, MarkOrphan and FinalizeGc own receipt state. Commit and orphan admission
-serialize on archive-head→receipt-state; Commit alone moves
+Verify, MarkOrphan and FinalizeGc own receipt state. Commit, Replan, Abandon
+and orphan admission serialize on archive-head→plan-head→attempt→receipt-state.
+MarkOrphan accepts only Superseded/Abandoned; authorization loss is not
+permanent ineligibility. Commit alone moves CommitEligible→Consumed and
 Verified→ConsumedByCommit while installing the authoritative head with exact
 hot-row deletion and every capacity effect. Orphan/Collected receipts cannot
 commit and readers ignore non-head evidence.
@@ -2188,7 +2199,11 @@ generic/direct publisher or archive-head mutation, staged receipt as authority,
 Commit/MarkOrphan/GC race, collected receipt replay, head/delete split,
 payload/receipt rebinding, forged/stale deletion evidence, transfer-before-
 reserve, unknown-outcome refund, custody-profile generation/unit/compression/
-replication/rounding/overflow undercharge, Unknown conversion, credit without
+replication/rounding/overflow undercharge, reconciled-reservation stranding,
+plan-generation rollback, old grant/receipt replay, Replan/Abandon/Commit
+shared-row races, profile dependency/drain bypass, evaluator deletion,
+streaming above reservation, extension response loss, commit-eligible orphan
+admission and authorization-loss liveness attacks, Unknown conversion, credit without
 physical disposition, issuer sequence races, absent-state writes, late-
 evidence terminal rewrite and partial/double custody release beside all
 prior attacks. Exit requires zero unresolved critical/high

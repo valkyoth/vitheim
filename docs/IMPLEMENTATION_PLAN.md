@@ -356,7 +356,8 @@ precharged PermanentlyRetained pool only under independent SoD authority,
 without parent credit or activation/abort-result mutation. A closed cleanup
 origin/reference makes activated and aborted work symmetric and resume only
 their matching pending state. Retention and lineage BeginRelease/
-CommitCustodyRelease have complete six-state destination-applied authorization
+ReplanCustodyRelease/AbandonCustodyRelease/CommitCustodyRelease have complete
+six-state destination-applied authorization
 families. Whole-member custody
 release later consumes one closed disposition per remaining leg:
 AuthenticatedDeleted proves exact storage generation/root deletion,
@@ -365,10 +366,19 @@ maximum into TransferPending before external work. Commit converts it into the
 conservatively calculated archive/legal-hold custody member before exact source
 credit; unlike dimensions share a transfer identity, not numeric equality.
 Unknown preserves predecessor and pending charge until typed definitely-never-
-transferred or exact-destination-deleted reconciliation. The same transaction
+transferred or exact-destination-deleted reconciliation. Reservations pin the
+existing governed profile generation/evaluator; live dependencies retain it
+and drain incompatible/weakening successors, while weakening remains
+destructively authorized. Adapter streaming limits and atomic bounded extension
+ensure capacity commits before any extra bytes or finalization. Begin creates
+plan generation 1 and Preparing. Terminal reconciliation is recovered only by
+independently authorized monotonic Replan, which fences/supersedes old
+attempts/grants/receipts and creates new bundle/reservation identities;
+independently authorized Abandon fences only and never refunds Begin. The same transaction
 settles every leg, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased. Its
-begin/final paths share one combined lock rank and must preflight the complete
+release paths share one archive-head→plan-head→commit-attempt→receipt combined
+lock rank and must preflight the complete
 ordinary-plus-workspace receipt/profile/reservation/custody-ledger/
 reconciliation/GC bundle against backend row/byte/lock/write/work/time maxima
 before ReleasePending. Permanent
@@ -383,7 +393,10 @@ archive and journal heads, physical dispositions, cost profiles/reservations,
 bundle/authorization and expected version. Stage, Verify, MarkOrphan and
 FinalizeGc own the precharged
 receipt lifecycle. Commit and orphan admission serialize on archive-head→
-receipt-state; Commit alone moves Verified→ConsumedByCommit while installing
+plan-head→attempt→receipt-state. MarkOrphan accepts only
+Superseded/Abandoned; missing/expired/revoked Commit authority is not
+ineligibility. Commit alone moves CommitEligible→Consumed and
+Verified→ConsumedByCommit while installing
 the authoritative archive head with exact covered-hot-row deletion,
 dispositions, settlements and results. Orphan/Collected receipts cannot commit
 and readers ignore all non-head evidence. Retention and

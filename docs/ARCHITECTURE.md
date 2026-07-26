@@ -673,7 +673,8 @@ restore, failover, and release evidence.
    only through independent authorization into a precharged permanently
    retained pool; an immutable Activated/Aborted origin returns only to its
    matching pending state, and no credit or terminal-result rewrite occurs.
-   Retention and BeginRelease/CommitCustodyRelease use complete destination-
+   Retention and BeginRelease/ReplanCustodyRelease/AbandonCustodyRelease/
+   CommitCustodyRelease use complete destination-
    applied first-terminal authorization families; custody evidence is not
    command authority. Quarantine revocation is
    issuer-intent/destination-apply with a first-terminal-wins outcome table, and
@@ -681,10 +682,20 @@ restore, failover, and release evidence.
    safe release. That release accepts exactly one terminal physical disposition
    per remaining leg: authenticated deletion or verified transfer. Begin moves
    a governed conservative maximum into TransferPending before the latter can
-   start. A versioned cost profile maps unlike source/destination generations,
+   start. Each reservation pins a generation/evaluator in the existing
+   governed cost-profile lineage; live dependencies retain old evaluators and
+   fence incompatible or weakening activation, with destructive authority for
+   weakening. A streaming cap prevents additional bytes or finalization above
+   the reservation, and atomic bounded extension must commit before the next
+   chunk. A versioned cost profile maps unlike source/destination generations,
    units and storage overhead; Commit converts the reservation into the final
    custody member before exact source credit. Unknown preserves predecessor and
-   pending charge. Begin and final transactions share the archive-head→
+   pending charge. Begin creates plan generation 1 and a Preparing commit
+   attempt. Terminal reconciliation permits only independently authorized
+   monotonic Replan, which fences/supersedes the old attempt/grants/receipts and
+   creates a new bundle/reservation set; Abandon fences only and never refunds
+   Begin. Full predecessor rollback is unsupported. All release transactions
+   share the archive-head→plan-head→commit-attempt→
    publication-state→settlement-head→sorted-custody-profiles/ledgers/
    reservations→parent→current-slot→sorted-old-fence→control/lineage/checkpoint→
    authorization/custody/output rank, and an aggregate hard maximum covers
@@ -694,10 +705,13 @@ restore, failover, and release evidence.
    those transitions and return action-specific results/conflicts; commit binds
    the begin result, verified publication receipt, predecessor/proposed heads,
    dispositions/profiles/reservations/bundle/grant and expected version.
-   Stage/Verify/MarkOrphan/FinalizeGc own receipt state; Commit and orphan
-   admission serialize on archive-head→receipt-state CAS. Publisher/storage
+   Stage/Verify/MarkOrphan/FinalizeGc own receipt state. Commit, Replan,
+   Abandon and orphan admission serialize on archive-head→plan-head→attempt→
+   receipt CAS. MarkOrphan accepts only Superseded/Abandoned attempts;
+   temporary authorization loss is not ineligibility. Publisher/storage
    receipts remain non-authoritative and invisible to readers; only Commit
-   atomically moves Verified→ConsumedByCommit while installing the archive head
+   atomically moves CommitEligible→Consumed and
+   Verified→ConsumedByCommit while installing the archive head
    with exact hot-row deletion and all capacity effects. Orphan/Collected
    receipts cannot commit.
    Retention/release issuers create signed monotonic revocation intents through

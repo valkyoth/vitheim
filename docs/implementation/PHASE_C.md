@@ -4534,18 +4534,68 @@ binds source and destination storage generations, complete source-unit to
 destination-dimension mapping, compression and encryption behavior,
 replication/index/object overhead, checked rational ceiling rules, overflow
 denial, verified encoded-destination-size method and backend atomic limits.
-The profile has a stable lineage/generation/digest and a complete-domain
+It is a domain-separated artifact kind in the already selected governed
+`MigrationImportRegistryHistoryBackendStorageCostProfileLineageV1`; it reuses
+that lineage's typed CurrentHead, Transition, TransitionState,
+ActivationRecord, SuccessorClassification, bootstrap/prepare/activate/reject/
+checkpoint/restore commands and WeakenBackendStorageCostProfile destructive
+authorization rather than creating a second mutable profile owner. Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityCostProfileBindingV1`
+pins stable lineage, admitted Active generation/digest and evaluator version,
+while
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityCostProfileReservationDependencyV1`
+indexes every nonterminal reservation by that exact generation.
+
+Existing reservations never follow CurrentHead: a superseded generation and
+its evaluator remain retained and usable for only their pinned reservations
+until every dependency is ConsumedByCustodyMember,
+ReleasedDefinitelyNeverTransferred or ReleasedAfterDestinationDeletion. A
+compatible ValidNonWeakening successor may activate for new reservations while
+the predecessor remains evaluable. Any incompatible or ValidWeakening
+successor installs
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityCostProfileDrainFenceV1`;
+activation is no-write while any live predecessor dependency exists.
+ValidWeakening additionally consumes the existing complete
+WeakenBackendStorageCostProfile destructive authorization. InvalidOrUnverifiable
+never activates. Fence, dependency set, classification proof, activation
+record and head CAS commit through the existing profile-lineage transaction;
+profile expiry, ordinary supersession or current-head drift never strands a
+pinned transfer.
+
+The profile therefore has a stable lineage/generation/digest and a complete-domain
 compatibility/weakening decision; callers cannot supply ad hoc factors. Begin
 derives a conservative nonzero maximum custody charge for every planned
 transfer. Unknown, omitted, incomparable, non-monotonic, zero-rounded or
 overflowing mappings deny before any reservation or external work. Commit
 recomputes the final custody charge from the Verified transfer receipt's
-encoded size under the same current profile. It may be less than the reserved
+encoded size under the reservation's exact pinned profile generation and
+retained evaluator, irrespective of CurrentHead. It may be less than the reserved
 maximum but never greater; unused reserved capacity returns to Available in
 that same transaction. The source parent credit remains the exact source-leg
 amount. Source and destination quantities share one transfer identity and
 conservation proof but need not be numerically identical across unlike
 dimensions.
+
+Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityTransferStreamingLimitV1`
+binds the reservation/version, pinned profile, accepted encoded bytes and
+conservatively calculated running charge. Before accepting each bounded chunk,
+the transfer adapter proves the prospective running charge is at most the
+current TransferPending amount; it cannot finalize, publish or make visible a
+destination object above that amount.
+`ExtendMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservation`
+returns
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationExtensionResultV1`
+or
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationExtensionConflict`.
+It may atomically move additional Available capacity into the same
+TransferPending reservation under the pinned profile and non-wrapping
+reservation version only before the next bytes are accepted and only up to the
+plan's immutable transfer hard maximum/backend limit. Exact retry returns the
+stored extension; changed amount/profile/version/transfer/idempotency conflicts.
+If extension cannot commit, the adapter aborts before accepting the overflowing
+chunk or finalizing the object and retains the original reservation until
+verified cleanup or definitely-never-transferred reconciliation.
 
 Canonical
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationV1`
@@ -4555,7 +4605,9 @@ TransferPending, ConsumedByCustodyMember, ReleasedDefinitelyNeverTransferred
 or ReleasedAfterDestinationDeletion. Begin atomically moves the conservative
 maximum from custody Available to TransferPending, binds lineage/begin result,
 workspace/leg, source root/generation, destination ledger/generation, cost-
-profile digest, transfer identity, maximum charge, expiry-independent
+profile lineage/admitted generation/digest/evaluator, transfer identity,
+initial charge, current extended maximum, immutable plan hard maximum,
+non-wrapping version, expiry-independent
 terminalization identity and precharged reconciliation/orphan-cleanup capacity.
 The external transfer adapter accepts only that exact still-TransferPending
 reservation; it cannot create destination bytes from an unreserved request.
@@ -5553,10 +5605,12 @@ reservation.
 
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseActionV1` is
-BeginRelease or CommitCustodyRelease.
+BeginRelease, ReplanCustodyRelease, AbandonCustodyRelease or
+CommitCustodyRelease.
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationV1`
-binds exactly one action, lineage/disposition/fence/checkpoint, settlement heads,
-complete ordinary-leg and linked-workspace bundle digest, current retention/
+binds exactly one action, lineage/disposition/fence/checkpoint, release-plan
+generation/head, commit-attempt identity/version, settlement heads, complete
+ordinary-leg and linked-workspace bundle digest, current retention/
 classification/legal-hold generations, custody evidence/quorum/SoD, trusted-
 time window, reason, nonce and stable idempotency. Its canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationStateV1`
@@ -5589,8 +5643,9 @@ named above, together with
 are the only commands that may mutate the destination authorization state.
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationOutcomeV1`
-returns admitted, expired, revoked or the stored BeginRelease/CommitCustodyRelease
-result, while
+returns admitted, expired, revoked or the stored BeginRelease,
+ReplanCustodyRelease, AbandonCustodyRelease or CommitCustodyRelease result,
+while
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationOperationConflictV1`
 wraps only changed authorization, revocation or action material. Inbox,
 tombstone and result are canonical
@@ -5610,13 +5665,14 @@ are
 and
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationNotAdmitted`.
 “Consumption” means PermanentlyRetain for the first family and the exact
-BeginRelease or CommitCustodyRelease command for the second:
+BeginRelease, ReplanCustodyRelease, AbandonCustodyRelease or
+CommitCustodyRelease command for the second:
 
 | Current state | Admission | Expiry | Applied issuer revocation | Consumption | Exact replay, stale sequence or changed material |
 |---|---|---|---|---|---|
 | Absent | Valid unexpired exact grant commits Issued; authentic already-expired admission commits ExpiredUnused | No-write NotAdmitted; absent expiry creates no row, sequence or idempotency state | Valid signed intent commits RevokedBeforeAdmission with inbox/tombstone/result | No-write NotAdmitted; no target mutation | Only admission or applied revocation may create the row; exact CAS losers join and changed material conflicts |
 | RevokedBeforeAdmission | Returns stored Revoked; late admission cannot create Issued | Returns stored Revoked | Returns stored Revoked | Returns stored Revoked without action | Exact operations join the revocation; stale/lower or changed target/action/digest/scope/sequence/idempotency conflicts |
-| Issued | Returns stored Admitted | At/after exact expiry atomically commits ExpiredUnused | Atomically commits RevokedUnused | Exact action atomically commits Consumed with retention or begin/final result | Expiry, applied revocation and consumption race by one CAS; loser rereads/reapplies; changed material conflicts |
+| Issued | Returns stored Admitted | At/after exact expiry atomically commits ExpiredUnused | Atomically commits RevokedUnused | Exact action atomically commits Consumed with retention or matching begin/replan/abandon/final result | Expiry, applied revocation and consumption race by one CAS; loser rereads/reapplies; changed material conflicts |
 | Consumed | Returns stored consumed action result | Returns stored consumed action result | Returns stored consumed action result without conversion | Returns stored consumed action result; action never repeats | Exact terminal observations join; stale/lower or changed material conflicts |
 | ExpiredUnused | Returns stored Expired | Returns stored Expired | Returns stored Expired without conversion | Returns stored Expired without action | Exact observations join expiry; stale/lower or changed material conflicts |
 | RevokedUnused | Returns stored Revoked | Returns stored Revoked | Returns stored Revoked | Returns stored Revoked without action | Exact observations join revocation; stale/lower or changed material conflicts |
@@ -5628,6 +5684,85 @@ terminal exact target returns its stored terminal outcome without conversion;
 an exact issuer retry returns the stored signed intent; a stale/lower sequence
 or reused identity with different canonical material conflicts. Every adapter
 uses this table and the same outcome/conflict wrappers.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanV1`
+has stable lineage identity, monotonic non-wrapping generation, exact
+predecessor and CAS-protected
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanHeadV1`.
+Generation 1 is created by Begin and binds the begin result, lineage/checkpoint
+version, sorted workspace/fence set, per-leg Delete/Transfer choice, pinned
+custody cost-profile generations, reservation identities/initial amounts/
+transfer hard maxima, publication/bundle digest and stable plan idempotency.
+No caller-supplied “current plan” inference is accepted.
+
+Each plan owns one
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptV1`
+whose closed
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityDispositionV1`
+is Preparing, CommitEligible, Superseded, Abandoned or Consumed. The durable
+commit-eligibility disposition subset is CommitEligible, Superseded, Abandoned
+or Consumed; missing state is corruption, not abandonment. Begin/Replan creates
+Preparing. Only
+`MarkMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligible`
+may move Preparing→CommitEligible after binding and rechecking the exact
+lineage/begin result/version, current plan head/generation, bundle, Verified
+publication receipt/state/version, final disposition receipts, pinned cost
+profiles and reservation versions. It returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityConflict`.
+Missing, expired or currently revoked Commit authorization changes neither
+Preparing nor CommitEligible and never proves permanent commit ineligibility.
+
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAuthorizationFenceV1`
+binds attempt, plan generation/head, begin result, lineage version, bundle and
+non-wrapping fence sequence. Commit checks it after the attempt row. Replan or
+independently authorized Abandon atomically installs the fence and prevents
+every current or future Commit grant bound to that old attempt from consumption;
+grant expiry/revocation alone cannot install it.
+
+Only
+`ReplanMigrationImportRegistryHistoryCorruptionControlLineageCustodyRelease`
+with
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanPayloadV1`
+and an exact Issued ReplanCustodyRelease grant may advance the plan head while
+the lineage remains ReleasePending. It requires every old external transfer
+outcome terminal: each reservation is already
+ReleasedDefinitelyNeverTransferred, ReleasedAfterDestinationDeletion or
+ConsumedByCustodyMember with the latter impossible for an unconsumed attempt;
+no Unknown/Present/TransferPending outcome may pass. It also proves no old
+Commit winner. In one transaction it consumes the Replan grant, CASes an
+active old attempt Preparing/CommitEligible→Superseded or retains an already
+Abandoned terminal, installs the old-attempt authorization fence, advances the
+plan generation/head and bundle digest, creates the replacement Preparing
+attempt and all replacement TransferPending reservations, and writes
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanResultV1`,
+audit and outbox. Reused old transfer/reservation IDs and recreation or second
+release of any terminal reservation are forbidden by unique generation-bound
+identities. Exact retry returns the stored result; changed predecessor,
+lineage/begin version, old terminal evidence, new plan/profile/reservation,
+bundle or idempotency returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanConflict`.
+Every old Commit grant and publication receipt is invalid for the new plan by
+the fenced attempt/generation/bundle binding; the receipt becomes orphan-
+admissible only through the disposition protocol below.
+
+Only
+`AbandonMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttempt`
+with
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonPayloadV1`
+and an exact Issued AbandonCustodyRelease grant may move Preparing or
+CommitEligible→Abandoned. It atomically consumes the grant, installs the same
+authorization fence and stores
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonResultV1`,
+audit and outbox, or returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonConflict`.
+Abandon does not refund a transfer reservation or reverse a Begin effect; it
+only makes the attempt terminally commit-ineligible and enables later Replan
+after all old external outcomes terminalize. Full AbortLineageRelease is not
+selected because Begin may already have released control capacity or admitted
+external effects that cannot be transactionally reversed without compensation.
 
 Only
 `BeginMigrationImportRegistryHistoryCorruptionControlLineageRelease` with
@@ -5648,14 +5783,18 @@ transaction consumes an exact Issued BeginRelease authorization; the later
 whole-member transaction separately consumes an exact Issued
 CommitCustodyRelease authorization bound to the stored begin result.
 The begin payload binds that authorization, expected lineage/version/
-disposition, lineage checkpoint, current settlement heads, sorted workspace/
+disposition, lineage checkpoint, expected absent plan head, generation 1,
+current settlement heads, sorted workspace/
 fence set, every per-leg disposition plan/cost profile/custody-ledger expected
-version/maximum charge and bundle digest. In that same local transaction Begin
+version/initial maximum/transfer hard maximum and bundle digest. In that same
+local transaction Begin
 atomically creates every required CustodyCapacityReservationV1 and moves the
 conservatively calculated maxima from custody Available to TransferPending;
 none exists before the Begin result and no external transfer is authorized by
-a losing or uncommitted attempt. The stored result binds the complete sorted
-reservation set. It returns canonical
+a losing or uncommitted attempt. It also creates plan generation 1, makes it
+the plan head and creates its Preparing commit attempt. The stored result binds
+that exact plan head/generation/attempt and complete sorted reservation set. It
+returns canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginResultV1`
 or
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginConflict`.
@@ -5696,7 +5835,8 @@ binds predecessor/sequence, the canonical ordered settlement-row set,
 transaction/result/audit identity and owner continuity; it never claims archive
 availability. The begin-release local transaction follows
 `MigrationImportRegistryHistoryLockRankV1`: archive-replay head when applicable,
-archive-publication receipt state, settlement-journal head, every custody-cost-
+custody-release plan head, commit-attempt disposition, archive-publication
+receipt state, settlement-journal head, every custody-cost-
 profile head and archive/legal-hold custody-capacity ledger in ascending
 canonical ID order, their reservation rows in ascending transfer-ID order,
 Recovery parent-capacity ledger, the current parent/selector active-campaign
@@ -5726,7 +5866,8 @@ and produces immutable non-authoritative
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStateV1`
 is Staged, Verified, ConsumedByCommit, OrphanGcEligible or Collected. The
-receipt binds publication identity, immutable object/chunk roots, proposed
+receipt binds publication identity, exact lineage/begin result/version, plan
+head/generation/commit attempt, immutable object/chunk roots, proposed
 successor archive head and predecessor, covered journal head, exact captured
 hot rows/versions, deletion preconditions, bundle digest, verification key/
 profile, publisher/storage-adapter evidence and stable operation
@@ -5766,14 +5907,22 @@ retains the current state and its capacity. Each command commits state, stored
 result, audit and outbox atomically; exact retry returns the stored result,
 while changed receipt/root/head/coverage/key/budget/idempotency conflicts.
 
-Commit and MarkOrphan both lock authoritative archive head→receipt state.
-MarkOrphan rechecks that no committed head references any chunk, no exact
-Commit winner exists and retention/key policy permits collection before its
-CAS. Commit atomically CASes only Verified→ConsumedByCommit with archive-head
-installation and hot-row deletion. The CAS winner excludes the other path:
-Commit rejects Staged, OrphanGcEligible and Collected receipts, while orphan GC
-cannot touch ConsumedByCommit chunks. FinalizeGc re-locks head then receipt,
-rechecks non-reference and records Collected only after authenticated deletion;
+Commit, Abandon, Replan and MarkOrphan lock authoritative archive head→plan
+head→commit-attempt disposition→receipt state. MarkOrphan requires the
+receipt's exact attempt to be Superseded or Abandoned, rechecks that no
+committed head references any chunk and retention/key policy permits collection,
+then CASes Staged/Verified→OrphanGcEligible. Preparing or CommitEligible is
+never orphan-admissible: no absent, expired or revoked Commit grant and no
+temporary lack of an operator proves permanent ineligibility. Commit atomically
+CASes only CommitEligible→Consumed and Verified→ConsumedByCommit with
+archive-head installation and hot-row deletion. The shared attempt-row CAS
+excludes Commit from Abandon/Replan and the receipt-state CAS excludes Commit
+from MarkOrphan: Commit rejects Preparing, Superseded, Abandoned and Consumed
+attempts plus Staged, OrphanGcEligible and Collected receipts; MarkOrphan
+rejects Preparing, CommitEligible and Consumed attempts; orphan GC cannot touch
+ConsumedByCommit chunks. Missing attempt state is corruption. FinalizeGc
+re-locks head, plan head, attempt and receipt, rechecks terminal ineligibility
+and non-reference, and records Collected only after authenticated deletion;
 unknown GC keeps OrphanGcEligible. ConsumedByCommit and Collected are
 irreversible.
 
@@ -5792,17 +5941,21 @@ Only
 with
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitPayloadV1`
 may move ReleasePending→Released. The payload binds the stored begin result,
-Verified publication receipt and expected state/version, expected authoritative
+current plan head/generation, exact CommitEligible attempt identity/version,
+absence of its authorization fence, Verified publication receipt and expected
+state/version, expected authoritative
 predecessor archive head, proposed successor archive head, expected journal
 head, bundle digest and hard-maximum proof, current Issued
-CommitCustodyRelease authorization, expected lineage version/disposition, the
+CommitCustodyRelease authorization bound to that attempt/plan/bundle, expected
+lineage version/disposition, the
 complete sorted sets of per-workspace physical-disposition receipts, cost
 profiles and TransferPending reservations and stable idempotency. Under the
 identical combined rank, the command reauthenticates publication/membership/
 deletion evidence and every physical-disposition receipt/reservation/profile,
 rechecks every bound version and current retention/legal-hold/custody
-condition, and then in one local expected-version transaction CASes the publication
-Verified→ConsumedByCommit, installs the proposed authoritative archive replay
+condition, and then in one local expected-version transaction CASes the attempt
+CommitEligible→Consumed and publication Verified→ConsumedByCommit, installs
+the proposed authoritative archive replay
 head and deletes only the exact captured hot rows/versions. That same
 indivisible transaction consumes the authorization once, consumes each
 terminal disposition receipt, converts every selected TransferPending maximum
@@ -5833,7 +5986,7 @@ all terminal writes were precharged before ReleasePending. Hot settlement state
 cannot be deleted before verified publication or apart from authoritative-head
 installation; head-without-deletion and deletion-without-head are
 unrepresentable. Unknown local commit response reconciles the exact commit
-identity: either the entire head/delete/authorization/disposition/settlement/
+identity: either the entire head/delete/authorization/attempt-disposition/settlement/
 publication-state/reservation/member/credit/result bundle exists or the
 predecessor head, Verified receipt and all authoritative hot rows and source/
 TransferPending encumbrances remain. The local journal head and staged/verified
@@ -5850,7 +6003,8 @@ membership returns the original release result without another release or
 parent credit; unknown non-membership never authorizes settlement.
 
 Exact retry of the commit command returns that stored final result. Changed
-begin result, publication receipt, predecessor/successor archive or journal
+begin result, plan head/generation, attempt/disposition/fence, publication
+receipt, predecessor/successor archive or journal
 head, publication state/version, physical-disposition receipt, reservation,
 cost profile/custody-ledger version, bundle digest, authorization, expected
 lineage version, custody evidence or idempotency returns
@@ -6119,17 +6273,34 @@ Unknown. Attempt transfer before/without/against a stale reservation; crash
 after Begin reservation and at every external transfer/Commit/reconcile
 boundary; expire/revoke Commit authority; and prove unknown transfer outcome
 retains TransferPending until exact definitely-never-transferred or
-authenticated destination-deletion evidence releases it. Fault source/
+authenticated destination-deletion evidence releases it. After either release,
+prove the lineage remains safely ReleasePending and only an independently
+authorized monotonic Replan can fence the old attempt/grants/receipts, consume
+terminal evidence and create a new bundle, attempt and reservations; race
+Replan/Abandon/Commit and response loss on the shared attempt row, and prove
+old reservation IDs are never recreated, released twice or accepted by the new
+plan. Fault source/
 destination generations, cost-profile lineage/digest, unit mapping,
 compression/encryption/replication/index overhead, verified encoded size,
 rational ceiling, overflow, backend atomic maximum, terminal receipt
 idempotency and custody-ledger version/member arithmetic. Prove unlike source/
 destination dimensions conserve through one transfer ID without requiring
 numeric equality and unknown/incomparable mappings deny before external work.
+Activate compatible successors while retaining pinned evaluators; attempt
+incompatible/weakening activation with live predecessor reservations, omit
+destructive authorization, drift CurrentHead between Begin and Commit and
+restore with a superseded generation. Require the dependency drain/fence and
+exact pinned evaluation without stranded transfers. Stream at, below and one
+chunk above the reserved charge; race extension/transfer/response loss and
+prove capacity extends atomically before bytes, no destination finalizes above
+the current maximum, and failed extension retains the original pending charge.
 Race Stage/Verify/Commit/MarkOrphan/FinalizeGc with state CAS loss, exact and
 changed retry, chunk deletion response loss and exhausted lifecycle budget;
 ConsumedByCommit excludes GC, OrphanGcEligible/Collected excludes Commit and no
-reader observes a collected committed chunk. Unknown and every partial/stale/
+reader observes a collected committed chunk. Attempt MarkOrphan while Preparing
+or CommitEligible and after a Commit grant is missing, expired or revoked;
+only Superseded/Abandoned passes, and Commit/Abandon/Replan/MarkOrphan share one
+winner without a liveness loop. Unknown and every partial/stale/
 mismatched receipt retain the predecessor without credit, while exact retry
 joins one consumed receipt/tombstone, reservation/member conversion and balanced
 custody-charge/source-credit result.
