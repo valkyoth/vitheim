@@ -345,10 +345,16 @@ consumes current authority and requires a Verified campaign-owned workspace
 whose checkpoint binds the same exact closed logical/physical cut. Its state/
 cursor/physical high-watermark/source ledger covers build, catch-up, bounded
 post-slot cleanup, quarantine and deletion-proved exact-once inverse settlement.
+Immutable OriginalTotal, monotonic Released and exact complete-leg tombstones
+derive the remaining parent member; settlement moves each live leg to Released
+and credits the identical parent quantity without rewriting a current total.
 The named settlement checkpoint binds the old terminal campaign fence and
-parent credit. Permanent quarantine has issuer-intent/destination-apply
-revocation and retains the entire parent member until broader custody-safe
-release; it never permits a campaign-level partial refund.
+parent credit. A durable cleanup admission lane/contention budget forces
+bounded progress and hard terminal-workspace backlog maxima. Permanent
+quarantine has issuer-intent/destination-apply revocation, a first-terminal-wins
+outcome table returning stored results, and retains the entire parent member
+until broader custody-safe release; it never permits a campaign-level partial
+refund.
 A co-located Recovery parent
 ledger and immutable parent/child transfers atomically pair every child
 allocation/release with parent debit/credit; one logical operation maps to one

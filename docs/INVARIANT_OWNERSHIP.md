@@ -279,8 +279,14 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCapacityLedgerRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceAggregateRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOriginalTotalRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReleasedRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentTransferRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentInverseTransferRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupAdmissionLaneRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupContentionBudgetRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBacklogRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointRow`,
@@ -297,6 +303,9 @@ recovery authorizer, permanent-quarantine issuer/admitter/revocation-applier/
 operator, re-cost worker, workspace worker/settler, parent allocator and parent
 verifier remain separated. The issuer creates revocation intent only; the
 destination applier alone validates sequence and commits its inbox/tombstone.
+All authorization operations reread and apply the same first-terminal-wins
+table after CAS loss; Consumed, ExpiredUnused and revoked terminals return
+their stored typed result rather than adapter-specific conflict.
 The campaign owner alone authorizes abort and cannot approve Fenced recovery
 or permanent quarantine. The destination owner CASes one parent/
 selector active slot, applies the pre-reservation release tombstone matrix,
@@ -308,10 +317,14 @@ same transaction only when its logical and physical cuts match exactly.
 Workspace reservation is an atomic parent debit/member transfer. Workspace
 rows remain campaign-owned at the campaign-fence rank; after slot release,
 bounded cleanup takes the current slot only for rank serialization and the old
-stable Closed fence, never mutating a newer campaign. Only verified deletion,
-the named settlement checkpoint and exact inverse parent transfer release
-their source capacity. Quarantined workspace remains a permanent whole parent
-member until broader custody-safe release.
+stable Closed fence, never mutating a newer campaign. The destination owner
+also owns the co-located cleanup admission lane, non-resettable contention
+budget, backlog and hard maxima; foreground workers cannot bypass a due cleanup
+turn or create an unreserved terminal workspace. Only verified deletion, an
+exact complete-leg transfer from immutable OriginalTotal into monotonic
+Released, the named settlement checkpoint and matching inverse parent transfer
+release source capacity. Quarantined workspace remains a permanent whole
+parent member until broader custody-safe release.
 The deployment-retirement fence is the first shared rank and the active slot
 and campaign fence follow their parent ledger.
 VIT-TST-062-N-F rejects absent-as-Operational, authority reuse, borrowed
@@ -322,8 +335,9 @@ race, unbounded recovery/finalization, invalid campaign/fence product,
 unauthorized quarantine, premature workspace settlement, authority/workspace-
 split or mismatched-cut activation, stale-slot cleanup mutation/starvation,
 remote-effect revocation, cross-target sequence suppression, unproved or
-partial quarantine refund, unbounded classifier work and under-reserved
-checkpoints. VIT-RCV-062 restores the same fence/tombstones, active campaign
+partial quarantine refund, original-total rewrite/released rollback, fractional
+leg settlement, cleanup-turn reset/backlog overflow, unbounded classifier work
+and under-reserved checkpoints. VIT-RCV-062 restores the same fence/tombstones, active campaign
 slot, campaign epoch/snapshot/commitment/log/high-watermark/fold/buckets/
 pending charges/forward-inverse transfers/cursor/lease/budget/prior-state/
 intent/results/terminal checkpoint/quarantine authorization and workspace

@@ -57,6 +57,9 @@ All notable Vitheim changes are documented here. The format follows
   binds one closed logical/physical cut; terminal cleanup safely serializes
   after slot clearing; and permanent-quarantine revocation now requires
   destination apply while quarantined capacity remains wholly encumbered.
+- Hardened that contract with immutable workspace original totals, monotonic
+  per-leg release accounting, a protected bounded cleanup scheduler/backlog,
+  and first-terminal-wins quarantine authorization outcomes across every state.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

@@ -738,7 +738,11 @@ hard final tail. Complete-delta preflight reserves campaign RecostPending;
 stable transfers atomically move equal amounts into pending-successor charges
 while preserving the active + campaign-pending + pending-successor + workspace
 equation. Workspace reservation and cleanup settlement are exact parent
-transfer/inverse operations.
+transfer/inverse operations. Each workspace has immutable OriginalTotal,
+monotonic non-wrapping Released and a derived remaining parent member; exact
+complete-leg settlement atomically moves its live bucket to Released and
+credits the identical parent quantity. Fractional legs and current-total
+rewrites are impossible.
 Before that reservation, pre-cut release settles active charge only and
 tombstones the child into the folded reservation cut; later cases settle the
 stored campaign or child bucket. The closed campaign+mutation-fence product
@@ -750,10 +754,15 @@ copy/catch-up cursor, physical mutation high-watermark equal to the exact
 closed logical cut, exact source ledger/aggregate and deletion-proved exact-
 once cleanup settlement checkpoint/inverse credit. Cleanup after slot release
 uses the current slot only for bounded rank serialization and the old stable
-Closed fence. Permanent-quarantine revocation requires destination apply of
-issuer intent, and quarantined capacity remains the entire parent member until
-broader custody-safe release. The campaign fence follows the parent-ledger
-rank. A co-located Recovery parent ledger
+Closed fence. A durable protected cleanup admission lane and non-resettable
+contention budget force a cleanup quantum after bounded foreground grants;
+soft backpressure and hard count/row/byte/encumbrance/work/backlog maxima
+prevent unbounded terminal workspace accumulation without assuming fair backend
+locks. Permanent-quarantine revocation requires destination apply of issuer
+intent and one total first-terminal-wins outcome table: later valid operations
+return the stored quarantine, expiry or revocation result. Quarantined capacity
+remains the entire parent member until broader custody-safe release. The
+campaign fence follows the parent-ledger rank. A co-located Recovery parent ledger
 atomically pairs every child allocation/release with parent debit/credit under
 one deterministic transfer ID and equation, including completion reserves;
 restore verifies both sides from one snapshot without guessed repair. Kind-
@@ -926,8 +935,10 @@ expiry/revocation, split authority/selector/accounting commit, missing workspace
 state/cursor/physical high-watermark/source ledger/aggregate/parent member,
 workspace double reservation, forged inverse credit, mismatched logical/
 physical verification cut, stale-slot cleanup mutation or starvation, remote-
-effect/cross-target quarantine revocation, partial quarantine refund, premature
-or duplicate workspace deletion settlement, or activation before successor
+effect/cross-target quarantine revocation, terminal-result conflict/retry loop,
+mutable original total, released-counter rollback, fractional/double leg,
+cleanup-turn reset/priority bypass/backlog overflow, partial quarantine refund,
+premature or duplicate workspace deletion settlement, or activation before successor
 verification/old-writer fence,
 split child/parent debit or credit, duplicate transfer minted after timeout,
 one-sided repair or guessed compensation, unbounded startup scan, forged

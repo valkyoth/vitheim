@@ -3072,7 +3072,7 @@ duplicate/recreated capacity. For every allocation and release, fault between
 parent debit/credit, child transition and transfer-row/result writes; require
 one atomic parent/child outcome, exact retry and
 ParentTotal = ParentAvailable + active child + campaign RecostPending +
-pending-successor encumbrances. Exercise each forward transfer as an equal
+pending-successor + workspace encumbrances. Exercise each forward transfer as an equal
 RecostPending decrease/pending-successor increase, inverse transfers and
 activation reclassification without changing that total. Apply the same test
 to publication-attempt completion reserves. Vary backend family/version,
@@ -3080,6 +3080,16 @@ schema/index generation, artifact kind, encoded size, expansion factor,
 overhead and rounding; reject unknown/overflowing cost profiles, recompute
 destination import charges and prove runtime disk-pressure guards can only
 fence earlier.
+For every workspace dimension, generate transitions and settlements against
+immutable OriginalTotal, monotonic Released and exact leg membership. Fault
+between live-bucket decrement, Released increment, workspace-member decrement,
+ParentAvailable credit, inverse transfer, settlement/checkpoint/result/audit
+writes and require all-or-none. Reject fractional/duplicate legs,
+OriginalTotal rewrite, Released rollback/overflow and restore mismatch. Drive
+unfair foreground acquisition schedules, release bursts, stale cleanup
+claimants, response loss and activation backlog pressure; require a positive
+cleanup quantum within the hard foreground bound, no no-op priority reset and
+no hard-maximum overflow.
 Exercise admission, expiry, revocation and consumption from every state in the
 total table, including every exact duplicate, changed-material conflict and
 race; expiry winning must return its canonical expiry result without becoming
@@ -3094,6 +3104,10 @@ consumption observes it without a write while expiry/revocation may still
 terminalize existing authority without clearing the fence. Race
 different operations on the same exact target and require CAS losers to reread/
 reapply the table, never conflict merely because operation kinds differ.
+Apply the same total-table suite to permanent-quarantine authorization:
+Consumed revocation observes the stored quarantine result, ExpiredUnused
+observes expiry, revoked terminals observe revocation, exact replays join and
+only changed target/digest/scope/sequence/idempotency conflicts.
 Admission may be followed by revocation or expiry; the first of consumption,
 expiry and revocation to terminalize wins. Reused operation/idempotency identity
 with changed target bytes/identity/digest/scope conflicts. Omit or substitute each revocation signer/key-epoch/
@@ -4186,10 +4200,36 @@ or
 The destination verifies target, digest, signature/key continuity, time window
 and fresh sequence before it atomically records Absent→RevokedBeforeAdmission
 or Issued→RevokedUnused with inbox, tombstone, result, audit and outbox, or
-does none. Exact replay returns the stored result. A lower/stale sequence,
-changed duplicate or terminal Consumed/ExpiredUnused target conflicts. A
-sequence is scoped to one exact authorization target/action and can never
-suppress an unrelated grant.
+does none.
+
+Admission, expiry, revocation application and quarantine consumption expose
+their canonical inner results through closed
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationOutcomeV1`:
+Admitted or Expired contains the authorization result, Revoked contains the
+revocation result, and Consumed contains the permanent-quarantine result.
+Changed canonical material is wrapped by
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationOperationConflictV1`
+as Authorization, Revocation or Quarantine. After a CAS loss, the caller
+rereads the same row and reapplies this total table; a valid later operation
+against a terminal target observes the first terminal result rather than
+starting a retry/conflict loop:
+
+| Current state | Valid revocation application | Exact replay / changed material |
+|---|---|---|
+| Absent | Atomically commits RevokedBeforeAdmission, inbox, tombstone and Revoked outcome | Exact replay joins Revoked; changed target/digest/scope/sequence/idempotency conflicts |
+| Issued | Atomically commits RevokedUnused, inbox, tombstone and Revoked outcome | Exact replay joins Revoked; changed material conflicts |
+| Consumed | Returns the stored Consumed permanent-quarantine result without mutation | Exact terminal observation joins Consumed; changed material conflicts and cannot reverse quarantine |
+| ExpiredUnused | Returns the stored Expired result without converting expiry to revocation | Exact terminal observation joins Expired; changed material conflicts |
+| RevokedBeforeAdmission | Returns the stored Revoked result without mutation | Exact replay joins Revoked; changed material conflicts |
+| RevokedUnused | Returns the stored Revoked result without mutation | Exact replay joins Revoked; changed material conflicts |
+
+Consumption, expiry and revocation race on one row and their first terminal
+transition wins. A lower or stale changed sequence conflicts; an exact
+previously stored sequence returns its result. Operation kind alone does not
+make otherwise identical target material a conflict. The sequence is scoped to
+one exact authorization target/action and can never suppress an unrelated
+grant. Every adapter returns the same outcome wrapper and implements CAS-loser
+reread/reapply; transport retry policy is not part of the state machine.
 
 Only
 `PermanentlyQuarantineMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`
@@ -4231,27 +4271,44 @@ and checked
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceAggregateV1`
 bind capacity-profile identity, rows/bytes, shadow/index/WAL/verification/
 cleanup quantities, worker/I/O units and platform aggregate ceilings and
-enforce, per dimension:
+persist immutable
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOriginalTotalV1`
+plus monotonic, non-wrapping
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReleasedV1`.
+They enforce, per dimension:
 
-`workspace_total = workspace_available + workspace_reserved +
+`workspace_original_total = workspace_reserved_unoccupied +
 workspace_building_occupied + workspace_cleanup_pending +
-workspace_quarantined`.
+workspace_quarantined + workspace_released`.
 
-That per-workspace total is funded, not independently reusable. The workspace
-total equals its exact authenticated parent workspace encumbrance in every
-dimension:
+`workspace_parent_encumbrance =
+workspace_original_total - workspace_released`.
 
-`workspace_total = workspace_parent_encumbrance`.
+The original total equals the exact initial parent transfer and is immutable
+through state transition, settlement, restore, migration and repair.
+WorkspaceReleased starts at zero, can only increase, can never exceed the
+original total and is independently authenticated against every settled-leg
+tombstone. The remaining parent encumbrance is derived rather than rewritten.
+Any rollback/decrease of Released, change to OriginalTotal or mismatch among
+the equation, parent member and settlement history fences the affected
+partition without credit.
 
 Workspace reservation atomically decreases ParentAvailable and increases the exact
 workspace-encumbrance membership and aggregate by the same checked amount,
 creates Reserved state and records
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentTransferV1`
 with its result/checkpoint/audit/outbox, or does none. Cleanup settlement
-atomically decreases that exact workspace encumbrance and increases
-ParentAvailable by the identical amount through
+operates on one or more complete immutable reservation legs in a bounded
+transaction; a leg can never be fractionally settled. Each leg binds its
+original source bucket/quantity and exact current lifecycle bucket. The
+transaction decreases that exact live bucket, increases WorkspaceReleased,
+decreases the exact parent workspace encumbrance and increases ParentAvailable
+by the identical checked quantity through
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentInverseTransferV1`;
-it cannot credit an independently calculated or partial amount.
+it then appends settlement, inverse-transfer, checkpoint, audit and result, or
+does none. Partial workspace progress across complete legs is permitted;
+independently calculated amounts, partial legs and rewriting WorkspaceOriginalTotal
+are forbidden.
 
 `BuildMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
 `SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
@@ -4275,9 +4332,14 @@ deletion through
 and
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointV1`.
 The checkpoint binds authenticated deletion, the old campaign terminal
-checkpoint, every reservation leg and workspace state, the parent inverse
-transfer/credit, result, audit/outbox and predecessor checkpoint. Response loss
-joins the same settlement. Quarantined remains permanently encumbered until
+checkpoint, every reservation leg and workspace state, immutable original
+total, prior/new monotonic released amount, remaining parent encumbrance, each
+parent inverse transfer/credit, result, audit/outbox and predecessor
+checkpoint. Response loss joins the same settlement. Cleaned is reachable only
+when authenticated deletion is complete, every non-quarantined leg is settled,
+WorkspaceReleased equals WorkspaceOriginalTotal and the remaining workspace
+parent encumbrance is zero. Quarantined freezes the remaining derived
+encumbrance and remains permanently charged until
 the broader custody-safe parent release described above settles the entire
 member; campaign cleanup cannot partially settle it.
 
@@ -4297,6 +4359,42 @@ limits, releases the shared slot row between quanta, and therefore cannot
 indefinitely block new campaign work. The old Closed fence remains addressable
 until the workspace settlement checkpoint commits. No workspace-specific
 rank, adapter lock or callable out-of-campaign mutation path exists.
+
+Lock fairness is not an availability assumption. Per parent/selector scope,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupAdmissionLaneV1`
+owns a durable non-wrapping count of foreground slot acquisitions since the
+last terminal-cleanup quantum and one cleanup claimant/fence.
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupContentionBudgetV1`
+monotonically charges failed acquisitions, restarts, foreground grants, bytes,
+work and conservative elapsed time across retry, crash, failover and takeover.
+When cleanup is pending, at most the profile-bound foreground-acquisition
+limit may win before the lane must admit one bounded cleanup quantum. A
+separate finite protected release burst may settle already-live foreground
+encumbrance, but it cannot reset or bypass the cleanup turn. Once either bound
+is reached, new campaign start/build/apply/finalize and allocation return typed
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBackpressure`
+without mutation until the admitted cleanup quantum commits or yields; safety-
+reducing release remains bounded and cannot be used as an unlimited starvation
+stream. The scheduler decision and slot acquisition are co-located and fenced,
+so backend mutex fairness is irrelevant. A cleanup turn resets the foreground
+count only after it atomically deletes/settles at least one precharged positive
+unit or proves the workspace terminal with no remaining work. Contention,
+crash, cancellation, response loss, empty yield or stale claimant cannot count
+as progress or reset any budget; exhaustion fences/takes over the claimant
+while preserving priority.
+
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBacklogV1`
+and immutable profile-bound
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumV1`
+bound terminal workspace count, rows, bytes, remaining parent encumbrance,
+cleanup entries/work/time, oldest-work age, queued quanta and terminalization
+capacity. Workspace reservation precharges its complete terminal row/cleanup
+quantum. Campaign start and Open→Finalizing apply soft-threshold backpressure;
+activation proves that adding ActivatedCleanupPending remains within every hard
+maximum or leaves the predecessor authoritative. No successful activation can
+create an unreserved terminal workspace or make the backlog exceed a hard
+maximum. The lane, budgets, backlog and maxima are restored before foreground
+admission.
 The completed
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1`
 binds campaign identity/epoch, predecessor and successor selector/profile
@@ -4381,7 +4479,11 @@ aggregate_campaign_recost_pending +
 aggregate_pending_successor_encumbrance +
 aggregate_workspace_encumbrance`; the
 streaming membership proof independently establishes that the aggregate equals
-the exact active, campaign-pending, pending-successor and workspace sets.
+the exact active, campaign-pending, pending-successor and workspace sets. Each
+workspace member additionally proves immutable WorkspaceOriginalTotal,
+monotonic WorkspaceReleased, exact settled-leg membership and
+`member = original_total - released`; parent verification never trusts a
+rewritten current workspace total.
 
 Canonical
 `MigrationImportRegistryHistoryRecoveryCapacityParentVerificationV1` has

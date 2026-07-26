@@ -65,9 +65,12 @@ for phrase in \
     'None of those effects commits' \
     'shadow data/index bytes' \
     'every old writer is fenced' \
-    'workspace_total = workspace_available + workspace_reserved' \
-    'workspace_total = workspace_parent_encumbrance' \
-    'per-workspace total is funded, not independently reusable' \
+    'workspace_original_total = workspace_reserved_unoccupied' \
+    'workspace_parent_encumbrance =' \
+    'workspace_original_total - workspace_released' \
+    'original total equals the exact initial parent transfer and is immutable' \
+    'WorkspaceReleased starts at zero, can only increase' \
+    'leg can never be fractionally settled' \
     'reservation atomically decreases ParentAvailable' \
     'MigrationWorkspaceParentInverseTransferV1' \
     'Workspace rows are campaign-owned' \
@@ -79,6 +82,16 @@ for phrase in \
     'physical high-watermark equals that' \
     'exact campaign/workspace checkpoint' \
     'MigrationWorkspaceSettlementCheckpointV1' \
+    'CleanupAdmissionLaneV1' \
+    'CleanupContentionBudgetV1' \
+    'foreground-acquisition' \
+    'finite protected release burst' \
+    'CleanupBackpressure' \
+    'CleanupBacklogV1' \
+    'CleanupHardMaximumV1' \
+    'No successful activation can' \
+    'precharged positive' \
+    'empty yield or stale claimant cannot count' \
     'exactly once only after authenticated' \
     'Permanent quarantine is a destructive availability' \
     'Absent, RevokedBeforeAdmission, Issued, Consumed, ExpiredUnused or' \
@@ -87,6 +100,11 @@ for phrase in \
     'target-scoped, non-wrapping' \
     'may commit the destination effect through' \
     'Absent→RevokedBeforeAdmission' \
+    'PermanentQuarantineAuthorizationOutcomeV1' \
+    'first terminal result rather than' \
+    '| Consumed | Returns the stored Consumed' \
+    '| ExpiredUnused | Returns the stored Expired' \
+    'reread/reapply; transport' \
     'broader custody-safe parent-release' \
     'deployment-retirement fence is the first rank' \
     'campaign slot follows its parent ledger' \
@@ -158,8 +176,15 @@ for symbol in \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCapacityLedgerV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceAggregateV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOriginalTotalV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReleasedV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentTransferV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentInverseTransferV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupAdmissionLaneV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupContentionBudgetV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBacklogV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBackpressure \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1 \
     BuildMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
     SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
@@ -200,6 +225,8 @@ for symbol in \
     ApplyMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocation \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationResultV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationConflict \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationOutcomeV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationOperationConflictV1 \
     ExpireMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationResultV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationConflict \
@@ -278,8 +305,14 @@ for row in \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCapacityLedgerRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceAggregateRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOriginalTotalRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReleasedRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentTransferRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentInverseTransferRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupAdmissionLaneRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupContentionBudgetRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBacklogRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointRow \

@@ -364,8 +364,15 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCapacityLedgerV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceAggregateV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOriginalTotalV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReleasedV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentTransferV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceParentInverseTransferV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupAdmissionLaneV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupContentionBudgetV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBacklogV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBackpressure`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1`,
   `BuildMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
   `SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
@@ -406,6 +413,8 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `ApplyMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocation`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationResultV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRevocationConflict`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationOutcomeV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationOperationConflictV1`,
   `ExpireMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationResultV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationConflict`,
@@ -424,17 +433,20 @@ parent conservation including workspace membership and the pre-reservation
 release matrix; bounded post-cut
 folding; campaign/mutation-fence product transitions and terminal checkpoint;
 atomic authority-consuming same-cut activation; physical migration-workspace
-lifecycle/parent transfer/terminal cleanup/settlement; active/pending
-separation and complete forward/inverse abort;
+lifecycle/immutable-original/monotonic-release/parent transfer/terminal cleanup
+priority/backlog/settlement; active/pending separation and complete forward/
+inverse abort;
 prior-state bounded fenced recovery; one-shot authorized conservative
-quarantine with issuer-intent/destination-apply revocation and permanent whole-
-member retention; bounded symbolic equivalence; and complete checkpoint-
+quarantine with issuer-intent/destination-apply revocation, first-terminal
+outcome joining and permanent whole-member retention; bounded symbolic
+equivalence; and complete checkpoint-
 verification reservation.
 Recovery cases resume the same tombstones, fence/reserve, active slot, campaign
 epoch/snapshot/log/fold/buckets/pending/cursor/prior-state/intent/transfer,
 terminal checkpoint, quarantine authorization/revocation sequence/inbox/
 tombstone and workspace state/cursor/physical high-watermark/exact cut/
-capacity/parent transfers/settlement checkpoint plus verification
+capacity/original/released/settled legs/parent transfers/cleanup lane/
+contention/backlog/settlement checkpoint plus verification
 reservation without inference, reset, invented refund, duplicate release/
 transfer/settlement or authority extension.
 

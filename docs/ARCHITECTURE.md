@@ -663,10 +663,15 @@ restore, failover, and release evidence.
    capacity, and a checkpoint sharing the campaign's exact closed logical/
    physical high-watermark. Workspace reservation/deletion settlement uses an
    authenticated parent transfer/inverse and named settlement checkpoint.
+   Immutable OriginalTotal, monotonic Released and exact settled-leg tombstones
+   derive the remaining parent member and expose rollback.
    Cleanup after slot clearing uses the current slot only for bounded rank
-   serialization and the old stable Closed fence. Quarantine revocation is
-   issuer-intent/destination-apply, and quarantined capacity remains a whole
-   parent member until broader custody-safe release.
+   serialization and the old stable Closed fence. A protected admission lane,
+   durable contention budget and hard terminal-backlog maxima guarantee bounded
+   cleanup progress without relying on lock fairness. Quarantine revocation is
+   issuer-intent/destination-apply with a first-terminal-wins outcome table, and
+   quarantined capacity remains a whole parent member until broader custody-
+   safe release.
    A co-located Recovery parent ledger atomically debits with child allocation
    and credits with child release under one transfer identity and equation;
    completion reserves use it too. One logical operation deterministically

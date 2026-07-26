@@ -18,8 +18,9 @@ Status: planned.
 Migration/import decision: freeze the permanent-quarantine revocation intent
 preimage, target-scoped non-wrapping sequence, issuer/signing-key continuity,
 covering time/uncertainty fields and exact shared logical/physical workspace
-checkpoint digest. A remote intent has no local effect and two different cuts
-cannot both satisfy activation.
+checkpoint digest, plus the first-terminal-wins authorization outcome wrapper.
+A remote intent has no local effect, a valid terminal observation cannot enter
+a retry loop and two different cuts cannot both satisfy activation.
 Setup: inventory TLS, identity, database, WASM, crypto, timestamp, secret, and
 KMS needs; compare audited implementations, maintenance, licenses, features,
 unsafe/native code, replacement boundaries, and first-party risk.
@@ -481,8 +482,10 @@ Status: planned.
 Migration/import decision: freeze all four parent aggregate/membership rows,
 workspace parent transfer/inverse transactions, exact-cut checkpoint, bounded
 cleanup against the old stable Closed fence, settlement checkpoint and
-quarantine revocation inbox/tombstone/result. An adapter lacking any atomic
-bundle refuses the feature.
+quarantine revocation inbox/tombstone/result. Also freeze immutable workspace
+OriginalTotal, monotonic Released, exact per-leg settlement, cleanup admission
+lane/contention budget/backlog/hard-maximum rows and their atomic scheduler
+transactions. An adapter lacking any atomic bundle refuses the feature.
 Setup: compare dedicated/shared tenancy for SQLite, PostgreSQL forced RLS,
 MySQL database-per-tenant/composite enforcement, MongoDB partitioning, and
 SurrealDB namespace/permission profiles against the same conformance suite.
@@ -720,9 +723,13 @@ non-wrapping sequence, exact authorization digest, issuer/key continuity,
 covering time window, uncertainty/profile, reason, nonce and idempotency. Only
 the separately typed destination ApplyRevocation command verifies it and
 atomically stores its inbox/tombstone/result while moving Absent to
-RevokedBeforeAdmission or Issued to RevokedUnused. Replays join; stale/lower,
-changed or terminal-target revocations conflict and one target sequence cannot
-suppress another authorization.
+RevokedBeforeAdmission or Issued to RevokedUnused. Freeze the total terminal
+table and closed outcome wrapper: a valid revocation against Consumed returns
+the stored quarantine result; against ExpiredUnused it returns the stored
+expiry result; and either revoked state returns the stored revocation result.
+CAS losers reread and reapply the table. Exact replays join; only changed
+target/digest/scope/sequence/idempotency conflicts, and one target sequence
+cannot suppress another authorization.
 Missing or contradictory evidence cannot mint a refund; retry exhaustion alone
 remains recoverable Fenced state.
 
@@ -748,10 +755,17 @@ Building, Catchup, Verified, ActivatedCleanupPending, AbortCleanupPending,
 Cleaned and Quarantined workspace states; copy/catch-up cursor and physical
 mutation high-watermark; exact source capacity ledger/aggregate ceiling;
 bounded build/synchronize/verify/cleanup/quarantine/settle commands; and
-exact-once release only after authenticated deletion. Reused migration staging
-must implement this exact lifecycle. Workspace state is campaign-owned and
-locked only within parent-ledger→active-slot→campaign-fence ranks; no separate
-workspace lock or mutation path exists.
+exact-once per-leg release only after authenticated deletion. Freeze immutable
+WorkspaceOriginalTotal, monotonic WorkspaceReleased and the equations
+`original = reserved-unoccupied + building-occupied + cleanup-pending +
+quarantined + released` and
+`parent-member = original - released`. Settlement of each complete immutable
+leg atomically moves its exact live bucket to Released and decrements the
+parent member/credits ParentAvailable identically; partial legs and total
+rewrites are forbidden. Reused migration staging must implement this exact
+lifecycle. Workspace state is campaign-owned and locked only within parent-
+ledger→active-slot→campaign-fence ranks; no separate workspace lock or mutation
+path exists.
 After terminal slot clearing, cleanup takes the current slot only as a bounded
 rank-serialization lock and then the old campaign's stable Closed fence. It may
 run when the slot is None or names a new campaign, cannot mutate that slot,
@@ -760,6 +774,13 @@ bounded quanta. Freeze
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointV1`
 to bind deletion, old terminal checkpoint, reservation/state, parent inverse
 credit, result, audit/outbox and predecessor linkage.
+Freeze a co-located terminal-cleanup admission lane, durable non-resettable
+contention budget, backlog record and hard maximum. After a bounded number of
+foreground slot grants, one cleanup quantum must win; a finite protected
+release burst cannot reset the cleanup turn. Soft thresholds backpressure
+campaign start/finalization, and activation cannot add ActivatedCleanupPending
+beyond reserved count/row/byte/encumbrance/work/backlog maxima. No backend lock-
+fairness assumption is accepted.
 
 Final activation is one atomic authority/accounting/selector transaction. It
 rechecks retirement fence, active slot, campaign/profile heads, classifier
@@ -777,7 +798,8 @@ encumbrance sets and stable parent/child transfer rows. Workspace reservation
 uses its own stable parent transfer to atomically debit ParentAvailable and
 create the exact workspace member; authenticated cleanup uses the inverse
 transfer and settlement checkpoint to remove that member and credit the
-identical amount. Allocation atomically debits parent and
+identical per-leg amount. Its remaining parent member is always derived from
+immutable OriginalTotal minus monotonic Released. Allocation atomically debits parent and
 reserves child; release atomically releases child and credits parent under one
 identity, preserving ParentTotal = ParentAvailable + active child +
 campaign RecostPending + pending-successor + workspace encumbrances. Each campaign
@@ -1657,7 +1679,8 @@ Migration/import decision: freeze distinct permanent-quarantine issuer,
 destination admitter, revocation applier and consuming operator identities,
 plus campaign owner/recovery authorizer, workspace worker/settler and parent
 allocator/verifier. Cleanup identity for an old campaign cannot act as the
-current selector, slot or new campaign.
+current selector, slot or new campaign; foreground workers cannot bypass or
+reset a cleanup turn, contention budget or backlog threshold.
 Setup: compare exact OIDC conformance profiles/providers, WebAuthn level and
 attestation/counter policy, session stores, recovery, logout, and the `0.52.1`
 machine-to-machine profiles. Review `private_key_jwt`/mTLS choice, workload
@@ -1903,8 +1926,11 @@ Exit criteria: cryptography is not claimed to enforce resource isolation.
 Status: planned.
 Migration/import decision: retain workspace parent transfers, exact-cut proof,
 old Closed fence, deletion/settlement checkpoint and quarantine grant plus
-revocation tombstones. Erasure cannot drop the fourth parent member, invent
-credit/cut, revive authority or partially refund quarantine.
+revocation tombstones/results. Retain immutable OriginalTotal, monotonic
+Released, exact leg tombstones and cleanup lane/contention/backlog history.
+Erasure cannot drop the fourth parent member, roll back release, invent
+credit/cut, revive authority, starve terminal cleanup or partially refund
+quarantine.
 Setup: classify records, metadata, evidence blobs, audit, backups, indexes,
 legal holds, erasure duties, residency, and conflicting jurisdictional rules;
 review the complete `0.51.2` tenant data-surface registry including customer
@@ -2047,8 +2073,10 @@ authority loss.
 Status: planned.
 Migration/import decision: failover and restore resume the exact workspace
 parent member/transfer, logical+physical cut, old cleanup fence, settlement
-checkpoint and revocation sequence/inbox. They never infer a credit, cut,
-revocation or slot relationship.
+checkpoint, original/released/leg history, cleanup turn/contention/backlog and
+revocation sequence/inbox/first-terminal result. They never infer or reset a
+credit, cut, revocation, terminal outcome, release counter, cleanup turn or slot
+relationship.
 Setup: compare modular all-in-one, split services, single-node, HA, regional,
 orchestrator, package/image, authoritative-region, and recovery choices. Every
 profile must preserve the single-use dispatch-authorization gate, current

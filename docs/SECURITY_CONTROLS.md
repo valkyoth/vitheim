@@ -313,6 +313,9 @@ audit decision.
   active, campaign RecostPending, pending-successor and workspace aggregates;
   each forward transfer moves equal amounts between the middle two, while
   workspace reservation/settlement uses exact parent transfer/inverse rows.
+  Workspace OriginalTotal is immutable, Released is monotonic and the remaining
+  parent member is derived; a complete leg moves to Released atomically with
+  its inverse credit and settlement evidence.
   Before reservation,
   pre-cut release settles active charge only and tombstones the child into the
   folded reservation cut; later releases settle RecostPending or pending
@@ -323,10 +326,14 @@ audit decision.
   grant under SoD; remote revocation is only a signed issuer intent until the
   destination sequence/inbox/apply transaction commits it. Quarantined
   capacity remains the whole parent member until broader custody-safe release.
+  Revocation/expiry/consumption use one first-terminal-wins result table, so
+  CAS losers return the stored terminal outcome rather than loop/conflict.
   Final activation consumes current authority and binds a Verified campaign-
   owned workspace at the exact same closed logical/physical cut, with physical
   high-watermark, source ledger/ceiling, bounded old-fence cleanup and a
-  deletion-proved settlement checkpoint plus inverse parent credit. A co-located
+  deletion-proved settlement checkpoint plus inverse parent credit. A protected
+  cleanup lane, durable contention budget and hard terminal-backlog maxima
+  force bounded cleanup progress without a backend fairness assumption. A co-located
   Recovery parent ledger atomically pairs child allocation/release with parent
   debit/credit under one deterministic transfer ID/equation, including
   completion reserves; restore verifies both sides from one snapshot and never
