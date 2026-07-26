@@ -341,33 +341,58 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryDeploymentIdentityRetirementCompletionReserveV1`;
 - `MigrationImportRegistryHistoryBackendStorageCostProfileClassifierWorkBudgetV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignV1`,
-  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStateV1`
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStateV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileActiveRecostCampaignSlotV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignEpochV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceCheckpointV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryIntentV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignWorkBudgetV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFixedSnapshotCheckpointV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutLogV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutHighWatermarkV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutFoldCursorV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutFoldCheckpointV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfilePendingSuccessorChargeV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignChildDeltaTransferV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReservationV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1`,
+  `StartMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStartResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStartConflict`,
+  `ApplyMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignApplyResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignApplyConflict`,
+  `FinalizeMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFinalizeResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFinalizeConflict`,
+  `ActivateMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignActivationResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignActivationConflict`,
   `AbortMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
-  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignAbortResultV1`
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignAbortResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignConflict`,
+  `RecoverMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryResultV1`
   and
-  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignConflict`;
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryConflict`;
 - `MigrationImportRegistryHistoryRecoveryCapacityParentVerificationReservationV1`.
 
 Their realization is required at `0.29.0`, is preserved by `0.30.0`, and uses
 the existing VIT-LST-009-g01 P/N/M/F contracts. Negative and model cases cover
 retirement admission/revocation/expiry/consumption, first-rank fence rechecks
-and transaction-atomic reserve; three-outcome classifier validity; campaign
-epoch/log live-mutation races, active/pending separation and complete
-forward/inverse abort; bounded symbolic equivalence; and complete checkpoint-
-verification reservation. Recovery cases resume the same tombstones, fence/
-reserve, campaign epoch/snapshot/log/bucket/pending/cursor/abort state and
-verification reservation without inference, reset, retained staging charge or
-duplicate transfer.
+and transaction-atomic reserve; three-outcome classifier validity; unique
+campaign-slot cardinality; campaign epoch/log live-mutation races; three-bucket
+parent conservation; bounded post-cut folding; atomic authority-consuming
+activation; physical migration workspace; active/pending separation and
+complete forward/inverse abort; fenced recovery versus conservative quarantine;
+bounded symbolic equivalence; and complete checkpoint-verification reservation.
+Recovery cases resume the same tombstones, fence/reserve, active slot, campaign
+epoch/snapshot/log/fold/buckets/pending/cursor/intent/transfer/workspace state
+and verification reservation without inference, reset, invented refund,
+duplicate transfer or authority extension.
 
 At `0.18.3`, implement a closed Rust `LawSemanticId` enum/decoder and a
 `LawSemanticRealization` dispatch table; there is no dynamic prose interpreter,

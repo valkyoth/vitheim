@@ -2519,7 +2519,7 @@ The supported through-`1.0.0` activation profile requires the live coordinator
 generation, job, candidate, barrier, authorization row and every affected
 domain-owner activation guard to be co-located in one destination-local
 transaction domain. The canonical full order is
-`deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox`.
+`deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-active-recost-campaign-slot→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox`.
 This is `VIT-LAW-009
 AtomicMigrationImportActivation`: trusted derivation selects the exact affected
 domain-owner set while every selected domain owner retains exclusive authority.
@@ -3071,9 +3071,10 @@ WorkSpent refund, no physical release before archive/deletion proof and no
 duplicate/recreated capacity. For every allocation and release, fault between
 parent debit/credit, child transition and transfer-row/result writes; require
 one atomic parent/child outcome, exact retry and
-ParentTotal = ParentAvailable + active child + pending-successor encumbrances.
-Exercise forward/inverse campaign transfers and activation reclassification
-without changing that total. Apply the same test
+ParentTotal = ParentAvailable + active child + campaign RecostPending +
+pending-successor encumbrances. Exercise each forward transfer as an equal
+RecostPending decrease/pending-successor increase, inverse transfers and
+activation reclassification without changing that total. Apply the same test
 to publication-attempt completion reserves. Vary backend family/version,
 schema/index generation, artifact kind, encoded size, expansion factor,
 overhead and rounding; reject unknown/overflowing cost profiles, recompute
@@ -3908,7 +3909,17 @@ the nonnegative re-cost delta is transferred through canonical
 Its immutable start transaction binds the predecessor/successor profiles,
 backend/schema/index selector, a fixed child-set snapshot and exact membership
 commitment, parent/checkpoint versions, stable campaign identity and
-idempotency, and installs a durable lease,
+idempotency, and installs a durable lease. In that transaction it CASes
+`MigrationImportRegistryHistoryBackendStorageCostProfileActiveRecostCampaignSlotV1`
+from None to the exact parent/selector/campaign/epoch/predecessor/successor and
+expected version. There is at most one nonterminal campaign for one parent and
+selector scope. Exact start retry joins the slot; changed material conflicts.
+The slot remains occupied while Fenced and may be reused only after an
+authenticated terminal checkpoint proves Activated, Aborted or
+PermanentlyQuarantined. A second successor cannot create another pending
+profile, campaign fence or allocation-charge interpretation.
+
+The same transaction installs
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignEpochV1`
 and
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceV1`.
@@ -3919,7 +3930,50 @@ bounded
 Its closed
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStateV1`
 is Preflighting, RecostPending, Applying, Complete, Activated, Aborting,
-Aborted or Fenced. Its fence is Open, Finalizing or Closed. A bounded
+Aborted, Fenced or PermanentlyQuarantined. Its mutation fence is Open,
+Finalizing or Closed. Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryIntentV1`
+is ResumeTowardActivation, CompleteAbort or PermanentQuarantine and is written
+durably before recovery work. The complete legal state table is:
+
+- Preflighting may move to RecostPending, Aborting or Fenced.
+- RecostPending may move to Applying, Aborting or Fenced.
+- Applying may remain Applying or move to Complete, Aborting or Fenced.
+- Complete may move only to Activated, Aborting or Fenced.
+- Aborting may remain Aborting or move to Aborted or Fenced.
+- Fenced may move only to Applying for a proved ResumeTowardActivation intent,
+  Aborting for a proved CompleteAbort intent, or PermanentlyQuarantined.
+- Activated, Aborted and PermanentlyQuarantined are terminal.
+
+No inferred, backwards or cross-intent transition exists.
+`StartMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
+`ApplyMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
+`FinalizeMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`
+and
+`ActivateMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`
+are distinct commands with canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStartResultV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStartConflict`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignApplyResultV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignApplyConflict`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFinalizeResultV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFinalizeConflict`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignActivationResultV1`
+and
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignActivationConflict`.
+Their action tags are not interchangeable;
+exact retries return the stored result and changed state/material returns only
+the command-specific conflict without performing another command.
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceCheckpointV1`
+binds prior state, fence generation, terminal intent, exact accounting roots/
+counters, last transfer and post-cut fold checkpoint. Contradictory, missing or
+unauthenticated accounting evidence cannot authorize a refund or activation:
+it permits only PermanentlyQuarantined and conservatively retains the exact
+known encumbrance plus maximum unresolved reserved amount until separately
+proved. Retry or worker exhaustion alone is not evidence loss and cannot
+select quarantine.
+
+A bounded
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorV1`
 evaluates every snapshot child, proves the complete checked aggregate
 nonnegative delta and charges
@@ -3931,12 +3985,12 @@ campaign-owned RecostPending bucket; insufficient aggregate, post-cut-log or
 terminalization capacity makes that transition no-write, stores the typed
 preflight result and creates no pending-successor charge. The campaign remains
 Preflighting until exact retry can reserve the complete amount or its explicit
-owner-authorized abort runs.
+owner-authorized abort runs. Every parent allocation and release transaction
+locks and rechecks the active-campaign slot and campaign epoch/fence after the
+parent-ledger rank.
 
-Every parent allocation and release transaction locks and rechecks the
-campaign epoch/fence after the parent-ledger rank. While Open, a post-cut
-allocation admits the active-profile charge plus the checked nonnegative
-successor delta, stores the latter as
+While Open, a post-cut allocation admits the active-profile charge plus the
+checked nonnegative successor delta, stores the latter as
 `MigrationImportRegistryHistoryBackendStorageCostProfilePendingSuccessorChargeV1`
 bound to campaign and successor profile, and appends one stable event to the
 post-cut log. A pre-cut or post-cut release settles its active charge and any
@@ -3952,13 +4006,34 @@ allocation and release while it closes the authenticated
 No live mutation is unlogged, and ordinary churn neither silently fences nor
 resets the campaign.
 
+A pre-cut release whose snapshot delta has not yet been applied atomically
+decreases campaign RecostPending by that exact delta and credits
+ParentAvailable; an already-applied or post-cut release instead decreases its
+pending-successor charge and credits ParentAvailable. Both update the matching
+aggregate/membership commitment and stable inverse transfer. No release can
+remove the active child while leaving either form of successor encumbrance.
+
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutFoldCursorV1`
+and
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutFoldCheckpointV1`
+fold that log into cumulative membership, active-charge and pending-successor
+roots/counters in bounded transactions while Open. Open to Finalizing
+atomically fixes the high-watermark and is admitted only when the unfurled tail
+fits platform-hard entry, byte and work maxima sized for the exclusive
+interval. Finalizing folds only that bounded tail. Activation verifies
+constant-sized final roots, counters, versions and checkpoint links; it never
+scans the child set or replays the complete post-cut log.
+
 Each bounded application transaction uses a stable child/delta transfer
 identity and canonical
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignChildDeltaTransferV1`
 to move that child's exact amount from RecostPending into its separate pending
-successor charge, never its active cost charge. It advances the durable
-monotonic cursor, cumulative charges and checkpoint under the campaign
-lease/fence. Exact retry returns the original transfer; changed material,
+successor charge, never its active cost charge. The same atomic transaction
+decreases AggregateCampaignRecostPending and increases
+AggregatePendingSuccessorEncumbrance by the identical checked amount, updates
+both membership commitments and preserves ParentTotal. It advances the durable
+monotonic cursor, cumulative charges and checkpoint under the campaign lease/
+fence. Exact retry returns the original transfer; changed material,
 unlogged mutation, duplicate movement, retry-limit exhaustion or cursor
 contradiction fences. A non-borrowable
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveV1`
@@ -3979,27 +4054,73 @@ Abort advances to Aborting and reverses every unapplied RecostPending amount
 and every pending successor charge through stable campaign-derived inverse
 transfer IDs, atomically crediting ParentAvailable. Exact retry joins the
 stored forward/inverse result; changed material conflicts. Retry exhaustion
-only fences for recovery and never authorizes abort or leaves an amount
-permanently charged. Aborted commits only after the cursor/checkpoint proves
+only fences for recovery and never authorizes abort or by itself makes a
+staging amount permanent. Aborted commits only after the cursor/checkpoint proves
 zero RecostPending and zero pending successor charges. Active cost charges are
 untouched.
 
+`RecoverMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`
+is the only transition out of Fenced. Its independently authorized request
+binds campaign slot/epoch, fence and takeover generations, predecessor/
+successor, last authenticated state/checkpoints/roots, one terminal intent,
+lease owner, cumulative recovery work budget and stable idempotency. The
+campaign owner cannot self-approve recovery; workers, adapters, classifiers and
+allocators have no recovery authority. Exact retry returns
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryResultV1`;
+changed material returns
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryConflict`.
+ResumeTowardActivation requires complete forward-transfer and log evidence and
+returns to Applying; when the fence originated during Preflighting, the same
+recovery transaction must first complete the fixed checkpoint and whole-delta
+RecostPending reservation or remain Fenced. CompleteAbort requires complete
+forward/inverse evidence and enters Aborting. Missing, contradictory or unauthenticated accounting
+evidence permits only PermanentQuarantine; it retains encumbrance and emits a
+stable result, marks the proposed successor Rejected while the predecessor
+remains Active, and writes audit, outbox and custody checkpoint. Lease/fence generation
+prevents old-worker resumption after takeover. Recovery budget exhaustion
+remains Fenced with every counter intact.
+
 The complete checkpoint proves snapshot membership, aggregate delta, every
-stable transfer, the closed post-cut log high-watermark and zero unapplied
-RecostPending balance. The final local transaction first holds Finalizing so
-allocations/releases cannot cross the cut, verifies the snapshot plus post-cut
-overlay and atomically activates the cost-profile head with the backend/schema/
-index selector. It reclassifies the campaign aggregate and every immutable
-campaign-tagged pending successor charge as active successor charge by the one
-activation record without changing ParentTotal, ParentAvailable or total child
-encumbrance; later physical row compaction is non-authoritative. Missing child,
-unlogged mutation, failed delta admission, stale epoch/parent/head or
-incomplete checkpoint refuses activation.
+stable transfer, the closed post-cut high-watermark and fold checkpoint, zero
+unapplied RecostPending and zero unaccounted tail. Physical transition work is
+separately admitted through
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReservationV1`.
+It conservatively reserves shadow data/index bytes, WAL/journal amplification,
+verification and rollback/cleanup space, worker and I/O capacity, and crash/
+failover terminalization. When the existing migration staging budget supplies
+these resources, its immutable reservation ID, profile, amounts and completed
+checkpoint are embedded rather than duplicated. The completed
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1`
+proves that successor data/schema/index is built and verified and all
+predecessor writers are fenced. Failure retains cleanup capacity until
+authenticated cleanup or permanent quarantine; runtime guards cannot replace
+this durable physical reservation.
+
+The final local activation bundle first holds Finalizing so mutations cannot
+cross the cut. In one transaction it locks and rechecks the current deployment
+retirement fence, active-campaign slot, campaign fence/epoch, cost-profile
+current head, classifier result/proof digest, post-cut and complete checkpoints,
+physical workspace reservation/completed checkpoint, selector and accounting
+aggregates. For ValidWeakening it consumes the still-Issued, unexpired and
+unrevoked destructive grant; for ValidNonWeakening it consumes the current
+ordinary-owner activation result. It CASes the profile head, moves Proposed to
+Active and predecessor to Superseded, activates the backend/schema/index
+selector, reclassifies all campaign-tagged pending successor charges as active,
+moves Complete to Activated and the campaign fence to Closed, clears the active
+slot only through the authenticated terminal checkpoint, and writes one stable
+activation result, record, audit and outbox. None of those effects commits
+alone. Reclassification changes neither ParentTotal nor ParentAvailable and is
+allowed only when AggregateCampaignRecostPending is zero. Later physical row
+compaction is non-authoritative. Missing child, unlogged mutation, nonzero
+RecostPending, failed delta or workspace admission, stale authority/epoch/
+parent/head/slot, incomplete checkpoint, unverified successor or unfenced old
+writer refuses activation.
 Destination migration/import recomputes every charge from canonical artifacts
 under the destination profile and never copies source `bytes_stored` counters.
-Separate runtime free-disk/WAL/page/temporary-space guards may fence or reject
-earlier than this logical ledger but cannot reduce a charge, credit the parent
-or authorize release. Each admitted backend/profile pair supplies canonical
+Runtime free-disk/WAL/page/temporary-space guards may fence or reject earlier
+than the logical and physical reservations but cannot replace a reservation,
+reduce a charge, credit the parent or authorize release. Each admitted
+backend/profile pair supplies canonical
 boundary and golden vectors for zero/minimum/maximum artifact sizes, fractional
 expansion, allocation rounding, fixed/index overhead, aggregate accumulation
 and every overflow edge. If the profile cannot conservatively upper-bound a
@@ -4010,25 +4131,27 @@ Co-located
 `MigrationImportRegistryHistoryRecoveryCapacityParentLedgerV1` is the sole
 owner of protected Recovery physical capacity. Per kind/dimension it stores
 immutable ParentTotal, current ParentAvailable and the exact active child
-encumbrance plus pending-successor encumbrance sets and enforces:
+encumbrance, campaign RecostPending and pending-successor encumbrance sets and
+enforces:
 
 `parent_total = parent_available + sum(active_child_encumbrances) +
-sum(pending_successor_encumbrances)`.
+sum(campaign_recost_pending) + sum(pending_successor_encumbrances)`.
 
 The parent never recomputes that sum in an unbounded startup transaction.
 Per kind/dimension,
 `MigrationImportRegistryHistoryRecoveryCapacityParentAggregateV1` stores the
-checked aggregate active and pending-successor encumbrances beside exact
-membership row sets and authenticated
+checked aggregate active, campaign RecostPending and pending-successor
+encumbrances beside exact membership row sets and authenticated
 `MigrationImportRegistryHistoryRecoveryCapacityParentMembershipCommitmentV1`.
 Every parent/child transfer transaction updates ParentAvailable, the aggregate,
 the exact membership row/commitment and a predecessor-linked
 `MigrationImportRegistryHistoryRecoveryCapacityParentCheckpointV1` or none.
 The constant-time admission equation is therefore
 `parent_total = parent_available + aggregate_active_child_encumbrance +
+aggregate_campaign_recost_pending +
 aggregate_pending_successor_encumbrance`; the
 streaming membership proof independently establishes that the aggregate equals
-the exact active and pending child sets.
+the exact active, campaign-pending and pending-successor sets.
 
 Canonical
 `MigrationImportRegistryHistoryRecoveryCapacityParentVerificationV1` has
@@ -4309,7 +4432,7 @@ Healthy.
 Every append, detection, recovery, clearance, checkpoint and cleanup path uses
 one universal relative order encoded by the shared, non-overridable
 `MigrationImportRegistryHistoryLockRankV1`:
-deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-active-recost-campaign-slot→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
 An operation locks only its present/applicable rows and reservations, but it
 never acquires a later position before an earlier one. In particular no path
 holds a budget while waiting for the fence, and detection of a missing lineage
@@ -4318,8 +4441,9 @@ attempting to lock that lineage. Adapters cannot define another rank mapping.
 The deployment-retirement fence is the first rank for every deployment-local
 read or mutation, including coordinator, parent-capacity and domain-owner work;
 retirement therefore never waits while holding a later row. The active re-cost
-campaign fence follows its parent ledger and is locked/rechecked by every
-parent allocation, release, campaign apply, abort and activation transaction.
+campaign slot follows its parent ledger, and its campaign fence follows the
+slot; both are locked/rechecked by every parent allocation, release, campaign
+start/apply/finalize/recover/abort and activation transaction.
 Conformance tests record every acquisition/recheck trace, compare it to the
 shared rank type and exercise absent-row, duplicate, release and contention
 paths. An adapter unable to prove this order refuses the profile.

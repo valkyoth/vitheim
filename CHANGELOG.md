@@ -42,6 +42,11 @@ All notable Vitheim changes are documented here. The format follows
   re-costing uses an epoch-cut post-cut log and reversible pending-successor
   charges; explicit abort owns stable inverse transfers; and the atomic
   retirement fence/reserve bundle is first in the universal lock order.
+- Closed re-cost campaign conservation and terminalization gaps with an
+  explicit campaign-RecostPending parent aggregate, one parent/selector active
+  slot, a total Fenced recovery/quarantine protocol, bounded post-cut folding,
+  atomic current-authority consumption and durable physical migration-
+  workspace reservation before selector activation.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

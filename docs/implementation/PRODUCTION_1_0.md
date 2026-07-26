@@ -604,7 +604,7 @@ closure of the currently admitted destination VIT-LAW-009 tuple/manifest; no
 separate invariant catalog is implemented. The manifest types VIT-INV-062 only
 as the live non-importable destination coordinator and every other applicable
 dependency as a domain contributor. One transaction uses
-deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-active-recost-campaign-slot→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 rederives that split from
 the closure plus schema, migration plan and contributor algorithm, rechecks current budget/final counters, job
 lease/fence, terminal disposition, trusted-time/key/continuity-bound
@@ -732,12 +732,18 @@ checkpoint govern backend/schema activation. The classifier is a bounded
 closed-form rounded-affine proof with ValidNonWeakening, ValidWeakening and
 InvalidOrUnverifiable outcomes. Only ValidWeakening is authorizable; invalid,
 unknown, overflowed, malformed or over-budget input is terminal no-write.
-Re-cost uses a parent campaign epoch/fence, fixed pre-cut snapshot, bounded
-post-cut allocation/release log, dual active/pending-successor charges,
-complete-delta preflight, atomic RecostPending reservation and stable forward
-transfers. Explicit owner-authorized abort reverses every pending amount with
-stable inverse transfers, and the campaign fence follows the parent-ledger
-rank. A co-located Recovery parent ledger
+Re-cost uses one parent/selector active slot, a total campaign/recovery state
+table, parent epoch/fence, fixed pre-cut snapshot, bounded post-cut fold and
+hard final tail. Complete-delta preflight reserves campaign RecostPending;
+stable transfers atomically move equal amounts into pending-successor charges
+while preserving the active + campaign-pending + pending-successor equation.
+Explicit owner-authorized abort reverses every provable pending amount.
+Independent Fenced recovery resumes/aborts only from exact evidence or retains
+conservative encumbrance in permanent quarantine. Activation verifies constant-
+sized roots, consumes current weakening/ordinary-owner authority in the same
+transaction, and binds a completed physical migration-workspace reservation
+covering build, WAL, verification, cleanup and failover. The campaign fence
+follows the parent-ledger rank. A co-located Recovery parent ledger
 atomically pairs every child allocation/release with parent debit/credit under
 one deterministic transfer ID and equation, including completion reserves;
 restore verifies both sides from one snapshot without guessed repair. Kind-
@@ -756,7 +762,7 @@ no-future-operation checkpoint plus exact-once settlement of every original
 reserve leg through separate authenticated local settlement-journal and
 verified archive-replay heads. Append, detection, recovery, clearance, checkpoint and
 cleanup all use
-deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-active-recost-campaign-slot→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering, so no path
 holds a budget while waiting for the fence. This exact sequence is the shared
 typed lock rank; adapter trace tests enforce it, and Release includes the
@@ -897,11 +903,16 @@ signed-only cost replacement, lineage/high-watermark rollback, sampled-only
 weakening comparison, destructive-authorization bypass or partial re-cost
 activation, classifier breakpoint enumeration or proof-budget bypass,
 invalid/unverifiable classification authorized as weakening, partial whole-
-delta reservation, missing campaign epoch/fence or post-cut log, live
-allocation/release without dual-profile accounting, post-cut log/release-lane
-exhaustion, re-cost cursor/lease/retry reset, duplicate child delta,
-active/pending-successor confusion, pending charge retained after abort,
-forged inverse transfer or worker-authorized abort,
+delta reservation, RecostPending omitted from conservation, missing unique
+campaign slot/epoch/fence or post-cut log/fold, overlapping successors, live
+allocation/release without dual-profile accounting, unbounded final tail,
+post-cut log/release-lane exhaustion, re-cost cursor/lease/retry reset,
+duplicate child delta, active/campaign-pending/pending-successor confusion,
+unproved refund, forged inverse transfer, recovery escalation or worker-
+authorized abort, activation after authority expiry/revocation, split
+authority/selector/accounting commit, missing physical migration-workspace
+peak/cleanup reservation or activation before successor verification/old-
+writer fence,
 split child/parent debit or credit, duplicate transfer minted after timeout,
 one-sided repair or guessed compensation, unbounded startup scan, forged
 aggregate/membership/checkpoint, cursor recreation/free rescan, child churn or

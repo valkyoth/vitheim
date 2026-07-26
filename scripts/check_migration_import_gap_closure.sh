@@ -35,16 +35,31 @@ for phrase in \
     'sampled or golden-vector comparison alone is' \
     'WeakenBackendStorageCostProfile' \
     'campaign-owned RecostPending bucket' \
+    'sum(campaign_recost_pending)' \
+    'aggregate_campaign_recost_pending' \
+    'decreases AggregateCampaignRecostPending and increases' \
     'campaign epoch cuts the parent ledger' \
-    'Every parent allocation and release transaction locks and rechecks' \
+    'at most one nonterminal campaign' \
+    'slot remains occupied while Fenced' \
+    'complete legal state table is' \
+    'only transition out of Fenced' \
+    'cannot authorize a refund or activation' \
+    'Every parent allocation and release transaction' \
+    'locks and rechecks the active-campaign slot' \
+    'hard entry, byte and work maxima' \
+    'scans the child set or replays the complete post-cut log' \
     'separate pending' \
     'stable campaign-derived inverse' \
     'Retry exhaustion' \
-    'closed post-cut log high-watermark and zero unapplied' \
-    'RecostPending balance' \
+    'closed post-cut high-watermark and fold checkpoint' \
+    'unapplied RecostPending and zero unaccounted tail' \
     'zero pending successor charges' \
+    'still-Issued, unexpired and' \
+    'None of those effects commits' \
+    'shadow data/index bytes' \
+    'predecessor writers are fenced' \
     'deployment-retirement fence is the first rank' \
-    'campaign fence follows its parent ledger' \
+    'campaign slot follows its parent ledger' \
     'or none of them' \
     'never recomputes that sum in an unbounded startup transaction' \
     'VerificationPending, Ready or Fenced' \
@@ -91,19 +106,41 @@ for symbol in \
     MigrationImportRegistryHistoryBackendStorageCostProfileClassifierWorkBudgetV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStateV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileActiveRecostCampaignSlotV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignEpochV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceCheckpointV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryIntentV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignWorkBudgetV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFixedSnapshotCheckpointV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutLogV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutHighWatermarkV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutFoldCursorV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutFoldCheckpointV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfilePendingSuccessorChargeV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignChildDeltaTransferV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReservationV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1 \
+    StartMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStartResultV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStartConflict \
+    ApplyMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignApplyResultV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignApplyConflict \
+    FinalizeMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFinalizeResultV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFinalizeConflict \
+    ActivateMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignActivationResultV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignActivationConflict \
     AbortMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignAbortResultV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignConflict \
+    RecoverMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryResultV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryConflict \
     BootstrapMigrationImportRegistryHistoryBackendStorageCostProfile \
     PrepareMigrationImportRegistryHistoryBackendStorageCostProfileTransition \
     ActivateMigrationImportRegistryHistoryBackendStorageCostProfileTransition \
@@ -141,17 +178,29 @@ for row in \
     MigrationImportRegistryHistoryBackendStorageCostProfileHighWatermarkRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileClassifierWorkBudgetRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileActiveRecostCampaignSlotRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignEpochRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceCheckpointRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryIntentRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignWorkBudgetRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFixedSnapshotCheckpointRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutLogRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutHighWatermarkRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutFoldCursorRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutFoldCheckpointRow \
     MigrationImportRegistryHistoryBackendStorageCostProfilePendingSuccessorChargeRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignTransferRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignInverseTransferRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStartResultRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignApplyResultRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFinalizeResultRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignActivationResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignAbortResultRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryResultRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReservationRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveRow \
     MigrationImportRegistryHistoryRecoveryCapacityParentAggregateRow \
     MigrationImportRegistryHistoryRecoveryCapacityParentMembershipCommitmentRow \

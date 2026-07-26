@@ -225,7 +225,7 @@ has no effect, and late revocation after Consumed returns the activation result
 without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 uses the canonical
-deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox
+deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-active-recost-campaign-slot→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox
 order, rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all domain-owner versions, consumes and
 tombstones authorization, then activates every domain owner plus barrier/job result/
@@ -329,11 +329,17 @@ authorization and complete re-cost checkpoint govern backend/schema activation.
 The classifier is a bounded closed-form rounded-affine proof with explicit
 format/proof/work maxima. Only ValidWeakening is authorizable;
 InvalidOrUnverifiable is terminal no-write. Large child sets use an epoch-cut
-re-cost campaign: fixed pre-cut snapshot, bounded authenticated post-cut
-allocation/release log, dual active/pending-successor charges, whole-parent-
-delta reservation, durable cursor/lease/budget/completion reserve and explicit
-owner-authorized abort that reverses every pending charge by stable inverse
-transfer.
+re-cost campaign with one parent/selector active slot, a total state/recovery-
+intent table, fixed pre-cut snapshot and bounded authenticated post-cut fold/
+tail. Parent conservation includes active, campaign RecostPending and pending-
+successor aggregates; every application moves equal amounts between the latter
+two. Durable cursor/lease/fence-generation/budgets/results support explicit
+owner-authorized abort and independently authorized Fenced recovery; exact
+evidence reverses every pending charge, while contradictory evidence retains
+conservative capacity in permanent quarantine. Final activation consumes
+current weakening or ordinary-owner authority atomically with profile/selector/
+accounting state and requires a completed physical migration-workspace
+reservation covering shadow copies, WAL, verification, cleanup and failover.
 A co-located Recovery parent
 ledger and immutable parent/child transfers atomically pair every child
 allocation/release with parent debit/credit; one logical operation maps to one
@@ -347,7 +353,7 @@ restorable head. Deployment retirement likewise consumes a separately issued
 six-state single-use grant, advances a genesis-created fence rechecked at every
 authority/execution boundary and retains a complete terminalization reserve in
 that one transaction. The retirement fence is the first universal rank; the
-campaign fence follows its parent ledger.
+active campaign slot then campaign fence follow their parent ledger.
 Stable kind-specific transfer identities, explicit unused-capacity rules and
 dimension/ledger isolation survive every clearance and re-fence. Exhaustion or failure to
 retain minimum future-control capacity permanently quarantines the lineage and
