@@ -752,13 +752,15 @@ run while Open but Verified requires Complete+Finalizing, a closed logical
 high-watermark and exact physical catch-up; the Finalizing admission bound
 covers both logical and physical tails. Freeze Reserved,
 Building, Catchup, Verified, ActivatedCleanupPending, AbortCleanupPending,
-Cleaned and Quarantined workspace states; copy/catch-up cursor and physical
+CleanupReconciling, Cleaned, Quarantined, PermanentlyRetained and
+CustodyReleased workspace states; copy/catch-up cursor and physical
 mutation high-watermark; exact source capacity ledger/aggregate ceiling;
-bounded build/synchronize/verify/cleanup/quarantine/settle commands; and
+bounded build/synchronize/verify/cleanup/reconcile/quarantine/permanently-
+retain/custody-release/settle commands; and
 exact-once per-leg release only after authenticated deletion. Freeze immutable
 WorkspaceOriginalTotal, monotonic WorkspaceReleased and the equations
 `original = reserved-unoccupied + building-occupied + cleanup-pending +
-quarantined + released` and
+quarantined + permanently-retained + released` and
 `parent-member = original - released`. Settlement of each complete immutable
 leg atomically moves its exact live bucket to Released and decrements the
 parent member/credits ParentAvailable identically; partial legs and total
@@ -781,6 +783,19 @@ release burst cannot reset the cleanup turn. Soft thresholds backpressure
 campaign start/finalization, and activation cannot add ActivatedCleanupPending
 beyond reserved count/row/byte/encumbrance/work/backlog maxima. No backend lock-
 fairness assumption is accepted.
+Freeze DeletionOutcomeUnknown as a non-release result that enters bounded,
+durably budgeted CleanupReconciling. Workspace reservation precharges a
+non-borrowable permanent-retention escalation/terminalization slot. Only a
+separate SoD retention authorization can move exhausted reconciliation to
+PermanentlyRetained, transfer its exact live legs into a hard-bounded retention
+pool and remove it from the active cleanup lane; Released and ParentAvailable
+do not change, and activation/abort remains immutable. Late evidence cannot
+reopen cleanup or refund. Freeze a distinct whole-member custody-release
+settlement/checkpoint: after retention/legal-hold/custody/no-future-dependency
+proof, one transaction settles every remaining leg, advances Released to
+OriginalTotal, removes/credits the identical parent member and records
+CustodyReleased plus per-leg tombstones/result/audit/outbox. The broader lineage
+release cannot perform an independent workspace credit.
 
 Final activation is one atomic authority/accounting/selector transaction. It
 rechecks retirement fence, active slot, campaign/profile heads, classifier
@@ -842,7 +857,9 @@ entire authenticated parent encumbrance: no campaign-level proof may release
 an apparent excess, reopen the campaign, admit the rejected successor or
 change terminal disposition. Only the broader custody-safe parent release may
 atomically settle the whole member after proving no future operation depends
-on any quarantined byte.
+on any quarantined byte; for every linked workspace that same transaction must
+close its ledger through CustodyReleased, or retain the fully encumbered
+predecessor.
 Persist one unique durable clearance attempt per admitted scope generation with
 lifecycle, lease/fencing token, cursor, precharged counters and result, plus the
 normative authorization/scope table. Restore consumes Issued authority and

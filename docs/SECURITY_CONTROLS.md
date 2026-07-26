@@ -333,7 +333,14 @@ audit decision.
   high-watermark, source ledger/ceiling, bounded old-fence cleanup and a
   deletion-proved settlement checkpoint plus inverse parent credit. A protected
   cleanup lane, durable contention budget and hard terminal-backlog maxima
-  force bounded cleanup progress without a backend fairness assumption. A co-located
+  force bounded cleanup progress without a backend fairness assumption.
+  Unknown deletion outcomes enter bounded reconciliation. Independently
+  authorized permanent retention consumes a precharged pool slot, preserves
+  the complete parent charge and removes the exhausted workspace from the
+  active lane without changing activation. Broader custody release can credit
+  only by atomically settling every remaining leg, advancing Released to
+  OriginalTotal and committing CustodyReleased with the matching parent inverse
+  and terminal evidence. A co-located
   Recovery parent ledger atomically pairs child allocation/release with parent
   debit/credit under one deterministic transfer ID/equation, including
   completion reserves; restore verifies both sides from one snapshot and never

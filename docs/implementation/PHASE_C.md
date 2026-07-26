@@ -3090,6 +3090,18 @@ unfair foreground acquisition schedules, release bursts, stale cleanup
 claimants, response loss and activation backlog pressure; require a positive
 cleanup quantum within the hard foreground bound, no no-op priority reset and
 no hard-maximum overflow.
+Drive AuthenticatedPresent and DeletionOutcomeUnknown from every cleanup crash
+boundary with lost credentials, lost/rotated verification keys, inconsistent
+object-store responses, failover, late evidence and exhausted reconciliation.
+Race cleanup, retention authorization admission/expiry/revocation/consumption
+and custody release. Require exact retry, unchanged activation/abort, no parent
+credit on CleanupReconciling/PermanentlyRetained, bounded removal from the
+active cleanup lane, permanent-pool conservation and no foreground deadlock.
+For Quarantined and PermanentlyRetained workspaces, fault the broader lineage
+release between each remaining-leg tombstone, Released advance, parent-member
+removal/credit, CustodyReleased checkpoint/result/audit/outbox and final lineage
+result. Require either the complete whole-member outcome or the fully
+encumbered predecessor, never parent-released/workspace-encumbered divergence.
 Exercise admission, expiry, revocation and consumption from every state in the
 total table, including every exact duplicate, changed-material conflict and
 race; expiry winning must return its canonical expiry result without becoming
@@ -4023,7 +4035,11 @@ campaign, admit the rejected successor or change its terminal disposition.
 Capacity can return only through the broader custody-safe parent-release
 protocol after that protocol proves that no future operation can depend on any
 quarantined campaign or workspace byte and atomically settles the entire
-parent member. Retry or worker exhaustion alone is not evidence loss and cannot
+parent member. A linked workspace participates through its whole-member
+CustodyReleased transaction so parent membership, OriginalTotal/Released, every
+remaining leg and both terminal checkpoints close together; the broader
+protocol cannot credit it independently. Retry or worker exhaustion alone is
+not evidence loss and cannot
 select quarantine.
 
 A bounded
@@ -4261,7 +4277,11 @@ implement every lifecycle and settlement rule below.
 Canonical
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceStateV1`
 is Reserved, Building, Catchup, Verified, ActivatedCleanupPending,
-AbortCleanupPending, Cleaned or Quarantined.
+AbortCleanupPending, CleanupReconciling, Cleaned, Quarantined,
+PermanentlyRetained or CustodyReleased. Cleaned means ordinary authenticated
+cleanup settled the workspace; CustodyReleased means a later whole-member
+custody release settled a quarantined or permanently retained workspace. The
+two terminal meanings are never substituted.
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCursorV1`
 and
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkV1`
@@ -4279,11 +4299,16 @@ They enforce, per dimension:
 
 `workspace_original_total = workspace_reserved_unoccupied +
 workspace_building_occupied + workspace_cleanup_pending +
-workspace_quarantined + workspace_released`.
+workspace_quarantined + workspace_permanently_retained +
+workspace_released`.
 
 `workspace_parent_encumbrance =
 workspace_original_total - workspace_released`.
 
+ActivatedCleanupPending, AbortCleanupPending and CleanupReconciling all remain
+in workspace_cleanup_pending; state refinement cannot move quantity outside
+the equation. PermanentlyRetained uses only
+workspace_permanently_retained and does not alias workspace_quarantined.
 The original total equals the exact initial parent transfer and is immutable
 through state transition, settlement, restore, migration and repair.
 WorkspaceReleased starts at zero, can only increase, can never exceed the
@@ -4314,7 +4339,10 @@ are forbidden.
 `SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
 `VerifyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
 `CleanupMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
-`QuarantineMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`
+`ReconcileMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanup`,
+`QuarantineMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+`PermanentlyRetainMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+`ReleaseMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustody`
 and
 `SettleMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`
 are bounded stable-idempotency commands returning canonical
@@ -4325,7 +4353,14 @@ They alone perform Reserved→Building→Catchup→Verified,
 Verified→ActivatedCleanupPending after campaign activation,
 nonterminal→AbortCleanupPending after abort, either cleanup-pending state→
 Cleaned after verified old-copy/shadow deletion, or any nonterminal→Quarantined
-under the campaign's authorized terminal disposition.
+under the campaign's authorized terminal disposition. An indeterminate
+post-activation deletion observation moves ActivatedCleanupPending→
+CleanupReconciling without changing the already committed campaign activation
+result. Bounded reconciliation may return to ActivatedCleanupPending only with
+authenticated evidence that cleanup can safely resume, reach Cleaned only with
+authenticated deletion, or consume independent workspace-retention authority
+to reach PermanentlyRetained. PermanentlyRetained and Quarantined can reach
+only CustodyReleased through the whole-member custody-release protocol below.
 Settlement releases each reservation leg exactly once only after authenticated
 deletion through
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementV1`
@@ -4338,10 +4373,74 @@ parent inverse transfer/credit, result, audit/outbox and predecessor
 checkpoint. Response loss joins the same settlement. Cleaned is reachable only
 when authenticated deletion is complete, every non-quarantined leg is settled,
 WorkspaceReleased equals WorkspaceOriginalTotal and the remaining workspace
-parent encumbrance is zero. Quarantined freezes the remaining derived
-encumbrance and remains permanently charged until
-the broader custody-safe parent release described above settles the entire
-member; campaign cleanup cannot partially settle it.
+parent encumbrance is zero.
+
+Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceDeletionOutcomeV1`
+is AuthenticatedDeleted, AuthenticatedPresent or DeletionOutcomeUnknown.
+Unknown covers lost storage credentials, unavailable verification keys,
+inconsistent backend observations and unavailable or irrecoverable deletion
+evidence; it never means deleted. CleanupReconciling persists the exact
+observations, credential/key/evidence generations, cursor, attempts, bytes,
+work, conservative elapsed time, next action and predecessor checkpoint in
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupReconciliationV1`.
+Its reservation-funded entry/byte/work/time/attempt ceilings survive crash,
+failover and retry. Exhaustion cannot manufacture deletion, reset the budget or
+alter the committed activation/abort result.
+
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationV1`
+is independent of campaign permanent-quarantine authority and binds the exact
+workspace/campaign/activation result, all remaining legs and encumbrance,
+deletion observations and reconciliation budget, retention/classification/
+legal-hold generations, custody evidence, reason, trusted-time window,
+approver quorum/SoD, nonce and stable idempotency. A retention issuer cannot be
+the workspace worker, cleanup claimant, custody releaser or sole custody/
+legal-hold approver. Admission, expiry, revocation and consumption use the same
+destination-local first-terminal-wins authorization discipline as the
+permanent-quarantine family. Only the consuming retention command may
+atomically move CleanupReconciling→PermanentlyRetained, move the exact remaining
+live legs from cleanup-pending to permanently-retained without changing
+WorkspaceReleased or ParentAvailable, append the terminal retention checkpoint/
+result/audit/outbox, release the workspace's active cleanup-lane claim and
+consume its precharged permanent-retention-pool slot. Exact retry joins; changed
+authority, evidence, legs, activation result or idempotency conflicts.
+
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionPoolV1`
+and immutable
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionHardMaximumV1`
+bound count, rows, bytes, parent encumbrance, evidence, audit/outbox, age,
+escalation work and terminal custody-release capacity. Workspace reservation
+precharges one non-borrowable escalation/terminalization slot sized for its
+maximum remaining member; activation cannot commit without that reserve.
+Moving to PermanentlyRetained consumes the slot and removes the workspace from
+the active cleanup backlog without credit. Late deletion evidence is appended
+under bounded evidence capacity but cannot return the workspace to cleanup,
+change activation/abort, mark Cleaned or refund capacity. Only a later,
+separately authorized whole-member custody release can reduce the encumbrance.
+
+Quarantined and PermanentlyRetained freeze the remaining derived encumbrance.
+Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1`
+and
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointV1`
+close the workspace side of the broader custody-safe parent release. After
+locking the broader lineage release and workspace at the canonical ranks, the
+one bounded precharged transaction rechecks terminal state, immutable original
+total, monotonic released amount, every remaining leg, retention/
+classification/legal-hold generations, custody approvals/evidence, terminal
+campaign and workspace checkpoints and proof that no future operation depends
+on any retained byte. It atomically settles every remaining complete leg,
+advances WorkspaceReleased exactly to WorkspaceOriginalTotal, removes the
+entire remaining workspace parent member, credits ParentAvailable by the
+identical checked amount, moves the workspace to CustodyReleased and writes
+domain-separated per-leg tombstones, inverse transfer, terminal checkpoint,
+stored result, audit and outbox, or does none. The broader lineage release does not separately credit or remove that workspace member. Exact retry returns the
+stored result; any crash, missing/forked proof or mismatch retains the whole
+remaining encumbrance and restores the predecessor state. Campaign cleanup
+cannot invoke this protocol or partially settle a quarantined/retained member.
+Reservation admission caps total leg count/encoded bytes/work and precharges
+the largest whole-member transaction plus all terminal rows, so custody release
+is never implemented as a partially visible multi-transaction loop.
 
 Workspace rows are campaign-owned, co-located and never independently locked.
 Their source capacity ledger is a co-located dimension/member of
@@ -4378,10 +4477,14 @@ reducing release remains bounded and cannot be used as an unlimited starvation
 stream. The scheduler decision and slot acquisition are co-located and fenced,
 so backend mutex fairness is irrelevant. A cleanup turn resets the foreground
 count only after it atomically deletes/settles at least one precharged positive
-unit or proves the workspace terminal with no remaining work. Contention,
-crash, cancellation, response loss, empty yield or stale claimant cannot count
-as progress or reset any budget; exhaustion fences/takes over the claimant
-while preserving priority.
+unit, or consumes independent retention authority and atomically transfers one
+exhausted CleanupReconciling workspace into its precharged permanent-retention
+pool. That transfer is terminal progress for the active lane but never an
+accounting release. Contention, crash, cancellation and response loss cannot
+reset any budget. An empty yield or stale claimant cannot count as progress.
+An unknown observation cannot count as progress either; exhaustion fences/
+takes over the claimant while preserving priority and schedules bounded
+reconciliation/retention escalation.
 
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBacklogV1`
 and immutable profile-bound
@@ -4389,12 +4492,15 @@ and immutable profile-bound
 bound terminal workspace count, rows, bytes, remaining parent encumbrance,
 cleanup entries/work/time, oldest-work age, queued quanta and terminalization
 capacity. Workspace reservation precharges its complete terminal row/cleanup
-quantum. Campaign start and Open→Finalizing apply soft-threshold backpressure;
+quantum plus reconciliation and permanent-retention escalation capacity.
+Campaign start and Open→Finalizing apply soft-threshold backpressure;
 activation proves that adding ActivatedCleanupPending remains within every hard
-maximum or leaves the predecessor authoritative. No successful activation can
-create an unreserved terminal workspace or make the backlog exceed a hard
-maximum. The lane, budgets, backlog and maxima are restored before foreground
-admission.
+maximum and retains a pool slot for a worst-case permanently indeterminate
+outcome, or leaves the predecessor authoritative. No successful activation can
+create an unreserved terminal workspace, make either active-cleanup or
+permanent-retention backlog exceed a hard maximum, or strand the cleanup lane
+behind unverifiable deletion. The lane, budgets, both backlogs, pool
+reservations and maxima are restored before foreground admission.
 The completed
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1`
 binds campaign identity/epoch, predecessor and successor selector/profile
@@ -5258,8 +5364,12 @@ reservation. Only
 eligible Active, PermanentlyQuarantined or Rebuilt lineage to custody-safe
 ReleasePending after locking and proving retention/classification/legal-hold
 policy, terminal history disposition, no possible future history operation/
-corruption episode, and a complete checkpoint. It retires the remaining
-lifetime-work ceiling without changing WorkSpent.
+corruption episode, and a complete checkpoint. That checkpoint also binds the
+complete bounded set of linked Quarantined/PermanentlyRetained migration
+workspaces, each immutable OriginalTotal, Released value, remaining-leg root,
+parent member and custody-release reservation. An omitted, unbounded or
+unproved linked workspace makes the transition no-write. It retires the
+remaining lifetime-work ceiling without changing WorkSpent.
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementV1` settles
 each physical-capacity leg exactly once; it never mutates the lifetime-work
 budget. It is a domain-separated
@@ -5296,8 +5406,21 @@ versions. In that same ranked local transaction, verified archive membership
 plus exact deletion moves matching ReclaimPending units to Released, removes
 the exact child encumbrance, credits ParentAvailable and appends the immutable
 parent/child transfer plus final settlement rows before advancing the journal,
-marking the lineage Released and committing the final release
-result/audit/outbox. Hot settlement state cannot be
+and invokes each checkpoint-bound
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1`.
+For each linked workspace this is one all-or-none whole-member transaction
+component: every remaining complete leg becomes a domain-separated custody-
+release tombstone, WorkspaceReleased becomes WorkspaceOriginalTotal, the exact
+workspace parent member is removed and ParentAvailable receives the identical
+single credit, the workspace becomes CustodyReleased, and its custody-release
+checkpoint/result/audit/outbox commits. The generic lineage settlement never
+duplicates that workspace credit. The lineage becomes Released only when every
+linked workspace and ordinary control-reserve leg is settled in this same
+final ranked transaction, which then commits the final lineage release result,
+audit and outbox; otherwise all affected predecessor members remain
+encumbered and ReleasePending remains resumable. The bounded workspace set and
+all terminal writes were precharged before ReleasePending. Hot settlement state
+cannot be
 deleted before verified publication; the local journal head never implies
 external availability. Restore selects the greatest authenticated journal and
 verified archive heads, proves their coverage relationship, exact settlement

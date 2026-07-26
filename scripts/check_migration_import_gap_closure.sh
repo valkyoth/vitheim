@@ -92,6 +92,15 @@ for phrase in \
     'No successful activation can' \
     'precharged positive' \
     'empty yield or stale claimant cannot count' \
+    'DeletionOutcomeUnknown' \
+    'CleanupReconciling' \
+    'PermanentRetentionAuthorizationV1' \
+    'PermanentRetentionPoolV1' \
+    'PermanentlyRetained' \
+    'CustodyReleaseSettlementV1' \
+    'WorkspaceReleased exactly to WorkspaceOriginalTotal' \
+    'broader lineage release does not separately credit' \
+    'cannot return the workspace to cleanup' \
     'exactly once only after authenticated' \
     'Permanent quarantine is a destructive availability' \
     'Absent, RevokedBeforeAdmission, Issued, Consumed, ExpiredUnused or' \
@@ -185,12 +194,22 @@ for symbol in \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBacklogV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBackpressure \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceDeletionOutcomeV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupReconciliationV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionPoolV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionHardMaximumV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1 \
     BuildMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
     SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
     VerifyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
     CleanupMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
+    ReconcileMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanup \
     QuarantineMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
+    PermanentlyRetainMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
+    ReleaseMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustody \
     SettleMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointV1 \
@@ -313,6 +332,12 @@ for row in \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupContentionBudgetRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBacklogRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupReconciliationRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionPoolRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionHardMaximumRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointRow \

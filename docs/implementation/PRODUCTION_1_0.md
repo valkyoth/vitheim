@@ -758,7 +758,15 @@ Closed fence. A durable protected cleanup admission lane and non-resettable
 contention budget force a cleanup quantum after bounded foreground grants;
 soft backpressure and hard count/row/byte/encumbrance/work/backlog maxima
 prevent unbounded terminal workspace accumulation without assuming fair backend
-locks. Permanent-quarantine revocation requires destination apply of issuer
+locks. DeletionOutcomeUnknown enters bounded CleanupReconciling. Only
+independent SoD retention authority can move exhausted work into a precharged,
+hard-bounded PermanentlyRetained pool; it leaves Released, ParentAvailable and
+the committed activation/abort result unchanged while removing the active-lane
+deadlock. Late evidence cannot reopen or refund it. Whole-member custody release
+alone verifies current retention/legal-hold/custody/no-future-dependency proof,
+settles every remaining leg, advances Released to OriginalTotal, removes and
+credits the identical parent member and records distinct CustodyReleased plus
+tombstones/checkpoint/result/audit/outbox atomically. Permanent-quarantine revocation requires destination apply of issuer
 intent and one total first-terminal-wins outcome table: later valid operations
 return the stored quarantine, expiry or revocation result. Quarantined capacity
 remains the entire parent member until broader custody-safe release. The
@@ -937,7 +945,9 @@ workspace double reservation, forged inverse credit, mismatched logical/
 physical verification cut, stale-slot cleanup mutation or starvation, remote-
 effect/cross-target quarantine revocation, terminal-result conflict/retry loop,
 mutable original total, released-counter rollback, fractional/double leg,
-cleanup-turn reset/priority bypass/backlog overflow, partial quarantine refund,
+cleanup-turn reset/priority bypass/backlog overflow, unknown-as-deleted,
+retention self-approval/pool exhaustion, late-evidence activation rewrite,
+split/double whole-member custody release, partial quarantine refund,
 premature or duplicate workspace deletion settlement, or activation before successor
 verification/old-writer fence,
 split child/parent debit or credit, duplicate transfer minted after timeout,

@@ -668,10 +668,15 @@ restore, failover, and release evidence.
    Cleanup after slot clearing uses the current slot only for bounded rank
    serialization and the old stable Closed fence. A protected admission lane,
    durable contention budget and hard terminal-backlog maxima guarantee bounded
-   cleanup progress without relying on lock fairness. Quarantine revocation is
+   cleanup progress without relying on lock fairness. Permanently indeterminate
+   deletion enters bounded CleanupReconciling and can leave the active lane
+   only through independent authorization into a precharged permanently
+   retained pool; no credit or activation rewrite occurs. Quarantine revocation is
    issuer-intent/destination-apply with a first-terminal-wins outcome table, and
    quarantined capacity remains a whole parent member until broader custody-
-   safe release.
+   safe release. That release closes both ledgers atomically by settling every
+   remaining leg, advancing Released to OriginalTotal, crediting the identical
+   member and recording the distinct CustodyReleased terminal.
    A co-located Recovery parent ledger atomically debits with child allocation
    and credits with child release under one transfer identity and equation;
    completion reserves use it too. One logical operation deterministically

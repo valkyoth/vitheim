@@ -155,7 +155,12 @@ serialization and the old Closed fence. A protected cleanup lane/contention
 budget and hard terminal backlog maxima force bounded progress without lock
 fairness. Permanent-quarantine revocation is issuer-intent/destination-apply
 with a first-terminal-wins outcome table, and quarantine keeps the whole parent
-member until broader custody-safe release. The active slot and campaign fence follow
+member until broader custody-safe release. Unknown deletion enters bounded
+CleanupReconciling; independent retention authority can move it without credit
+to a precharged PermanentlyRetained pool so the active lane cannot deadlock.
+Custody release settles every remaining leg, advances Released to OriginalTotal
+and commits the identical parent credit plus distinct CustodyReleased terminal
+in one transaction. The active slot and campaign fence follow
 the parent ledger in the shared rank. Restore verifies both ledger sides
 from one snapshot and never repairs
 by choosing one side or guessing compensation. Kind-specific
@@ -847,9 +852,11 @@ reached. Run pentest for this exact commit.`
 ## `0.142.0` — Split Service Deployments
 Status: planned. Migration/import focus: RPC preserves immutable OriginalTotal,
 monotonic Released, exact settled legs, cleanup lane/turn/backlog/maxima and
-first-terminal authorization outcome beside prior state. No remote service may
-apply revocation, settle/credit workspace capacity, reset cleanup scheduling or
-translate a terminal result into conflict.
+first-terminal authorization outcome plus deletion observations,
+CleanupReconciling, retention authority/pool and CustodyReleased evidence
+beside prior state. No remote service may apply revocation, assert deletion,
+retain/release custody, settle/credit workspace capacity, reset cleanup
+scheduling or translate a terminal result.
 Setup: API/worker/ingest/index and
 `TransmissionExecutor` identities, mTLS/authz, network policy, discovery,
 version compatibility, and the immutable authenticated
@@ -1046,10 +1053,12 @@ reached. Run pentest for this exact commit.`
 ## `0.143.0` — HA Leases, Failover, And Partitions
 Status: planned. Migration/import focus: model immutable-total/monotonic-release
 leg settlement, adversarial foreground-versus-cleanup scheduling/backlog
-thresholds and revocation/expiry/consume CAS losers beside all prior races.
+thresholds, unknown-deletion reconciliation/retention races, whole-member
+custody release and revocation/expiry/consume CAS losers beside all prior races.
 Exit requires four-class conservation, no fractional/double leg, cleanup
 progress within its foreground-grant bound, capped backlog and one stable
-first-terminal result.
+first-terminal result; neither unsafe credit nor permanent foreground deadlock
+is reachable.
 Setup: quorum/authority, fencing, health, failover, partition
 policy, reconciliation, every `0.18.2` atomic work variant, delayed-effect
 authorization freshness/bindings, typed execution-authority redemption, bounded
@@ -1392,9 +1401,11 @@ incomplete surface mapping fail closed.
 ## `0.145.0` — Backup, Restore, And Disaster Recovery
 Status: planned. Migration/import focus: restore original/released/settled-leg
 history, cleanup scheduler counters/claimant/backlog/maxima and stored terminal
-authorization outcomes beside prior state. No total, release, cleanup turn,
-credit or terminal result is inferred/reset; affected capacity and foreground
-admission stay unavailable until complete proof.
+authorization outcomes, reconciliation budgets, retention pool/authority and
+linked custody-release checkpoint beside prior state. No deletion, total,
+release, cleanup turn, pool occupancy, credit or terminal result is inferred/
+reset; affected capacity and foreground admission stay unavailable until
+complete proof.
 Setup: RPO/RTO profiles and consistent DB/blob/key/config/
 retention-hold set, envelope encryption, immutability, rotation/revocation,
 crypto-erasure consequences, external checkpoint anchors and drills. Bind each
@@ -1661,8 +1672,10 @@ transaction commit.
 ## `0.146.0` — Performance, Load, Soak, And Chaos Certification
 Status: planned. Migration/import focus: fuzz equation/leg/scheduler/outcome
 codecs, counters, thresholds, unfair backend locks, every crash boundary and
-changed retry. Rollback, duplicate/fractional legs, starvation and malformed
-terminal material fail closed inside hard entry/byte/work/time/backlog ceilings.
+changed retry plus lost credentials/keys, inconsistent deletion, late evidence,
+retention authority/pool bounds and whole-member release. Rollback, duplicate/
+fractional legs, starvation, unknown-as-deleted and malformed terminal material
+fail closed inside hard entry/byte/work/time/backlog ceilings.
 Setup: representative workloads, SLOs, durable `0.18.1` quota
 profiles, separate Vitheim-telemetry and customer-measurement capacity models,
 paging/status provider limits, bounded claim-set sizes, every `QuotaKind` and
@@ -1891,8 +1904,9 @@ implementation stop reached. Run pentest for this exact commit.`
 Status: planned. Migration/import focus: independently audit prior role
 separation plus cleanup admission fairness/backlog, immutable-total and
 monotonic-release custody, exact leg attribution and first-terminal result
-parity across adapters. Every retained/refunded unit and scheduler turn must be
-attributable.
+parity across adapters. Audit retention issuer/admitter/operator/custody-
+releaser SoD, no-credit active-lane escape and linked workspace/parent custody
+release. Every retained/refunded unit and scheduler turn must be attributable.
 Setup: complete threat model, dependency/tool/action inventory,
 semantic SBOM, reproducibility, full key generation/storage/use/rotation/revocation/
 recovery/destruction lifecycle, `0.28.3` in-process memory assurance, crash/
@@ -1998,7 +2012,9 @@ Exit criteria: every trusted input is pinned/accounted. `v0.147.0 implementation
 Status: planned. Migration/import focus: reject every legacy encoding that
 uses a mutable current workspace total or lacks OriginalTotal, Released,
 settled legs, cleanup scheduler/backlog/maxima or closed first-terminal
-outcomes. No default, inferred field or downgrade is compatible.
+outcomes; also reject collapsed CleanupReconciling/PermanentlyRetained/
+CustodyReleased meanings, absent pool reservations and unlinked parent release.
+No default, inferred field or downgrade is compatible.
 Setup: freeze API/event/workflow/policy/plugin/pack/export/agent
 versions and support windows, immutable event-schema registry, complete pure
 upcaster chains, original-byte hash authority, unknown-event quarantine, and the
@@ -2098,9 +2114,11 @@ broaden executor credential/network authority.
 Status: planned. Migration/import focus: attack original/released rollback,
 fractional/double leg settlement and split parent credit; cleanup starvation,
 backlog exhaustion and priority bypass; and terminal revocation retry/conflict
-loops beside all prior attacks. Exit requires zero unresolved critical/high
+loops; plus unknown-as-deleted, credential/key loss, retention self-approval,
+pool exhaustion, late-evidence activation rewrite and partial/double custody
+release beside all prior attacks. Exit requires zero unresolved critical/high
 findings and no waived authority, conservation, bounded-backlog/fairness,
-settlement, restore or compatibility issue.
+custody, settlement, restore or compatibility issue.
 Setup: freeze scope/artifacts/environment and engage independent
 testers across all trust boundaries, including provider-profile governance,
 serialized remote credential rotation/takeover/orphan cleanup/count quotas,

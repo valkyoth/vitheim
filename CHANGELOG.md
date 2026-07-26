@@ -60,6 +60,9 @@ All notable Vitheim changes are documented here. The format follows
 - Hardened that contract with immutable workspace original totals, monotonic
   per-leg release accounting, a protected bounded cleanup scheduler/backlog,
   and first-terminal-wins quarantine authorization outcomes across every state.
+- Closed post-activation workspace custody with bounded unknown-deletion
+  reconciliation, independently authorized no-credit permanent retention and
+  one atomic whole-member CustodyReleased settlement across both ledgers.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

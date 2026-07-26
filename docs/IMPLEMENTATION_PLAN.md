@@ -351,6 +351,12 @@ and credits the identical parent quantity without rewriting a current total.
 The named settlement checkpoint binds the old terminal campaign fence and
 parent credit. A durable cleanup admission lane/contention budget forces
 bounded progress and hard terminal-workspace backlog maxima. Permanent
+deletion uncertainty enters bounded CleanupReconciling and can move into a
+precharged PermanentlyRetained pool only under independent SoD authority,
+without parent credit or activation-result mutation. Whole-member custody
+release later settles every remaining leg, advances Released to OriginalTotal,
+removes/credits the identical parent member and records CustodyReleased in one
+atomic transaction. Permanent
 quarantine has issuer-intent/destination-apply revocation, a first-terminal-wins
 outcome table returning stored results, and retains the entire parent member
 until broader custody-safe release; it never permits a campaign-level partial

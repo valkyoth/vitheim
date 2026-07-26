@@ -373,12 +373,22 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBacklogV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupBackpressure`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceDeletionOutcomeV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupReconciliationV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionPoolV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionHardMaximumV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1`,
   `BuildMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
   `SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
   `VerifyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
   `CleanupMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+  `ReconcileMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanup`,
   `QuarantineMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+  `PermanentlyRetainMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+  `ReleaseMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustody`,
   `SettleMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointV1`,
@@ -434,8 +444,8 @@ release matrix; bounded post-cut
 folding; campaign/mutation-fence product transitions and terminal checkpoint;
 atomic authority-consuming same-cut activation; physical migration-workspace
 lifecycle/immutable-original/monotonic-release/parent transfer/terminal cleanup
-priority/backlog/settlement; active/pending separation and complete forward/
-inverse abort;
+priority/backlog/reconciliation/permanent retention/whole-member custody
+settlement; active/pending separation and complete forward/inverse abort;
 prior-state bounded fenced recovery; one-shot authorized conservative
 quarantine with issuer-intent/destination-apply revocation, first-terminal
 outcome joining and permanent whole-member retention; bounded symbolic
@@ -446,7 +456,7 @@ epoch/snapshot/log/fold/buckets/pending/cursor/prior-state/intent/transfer,
 terminal checkpoint, quarantine authorization/revocation sequence/inbox/
 tombstone and workspace state/cursor/physical high-watermark/exact cut/
 capacity/original/released/settled legs/parent transfers/cleanup lane/
-contention/backlog/settlement checkpoint plus verification
+contention/backlog/reconciliation/retention pool/custody-release checkpoint plus verification
 reservation without inference, reset, invented refund, duplicate release/
 transfer/settlement or authority extension.
 
