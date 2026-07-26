@@ -143,7 +143,7 @@ for requirement in \
     'One linearizable compare-and-swap atomically' \
     'Independent witness signatures' \
     'Request identity is globally unique within the fence key' \
-    'permanent retirement evidence binds' \
+    'Root loss does not depend on the lost root' \
     'TerminalizationOnly or EmergencyDistrust' \
     'BootstrapMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfile' \
     'RestoreMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileLineage' \
@@ -492,4 +492,5 @@ if grep -Fq 'ManualRecoveryRequired' \
 then
     fail "terminal ManualRecoveryRequired remains in an authoritative protocol"
 fi
+scripts/check_migration_import_gap_closure.sh
 echo "migration/import policy passed"

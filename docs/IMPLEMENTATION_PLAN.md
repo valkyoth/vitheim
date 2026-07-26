@@ -282,9 +282,13 @@ fork/rollback finality; independent signatures are insufficient. CAS and
 status reads are linearizable, request IDs bind one digest, final results are
 immutable and compaction retains authenticated request-result membership.
 Profiles are tenant/deployment scoped with one exact nonterminal attempt slot.
-Root loss or full compromise has no in-place `1.0.0` recovery: immutable
-retirement fences the old identity and a separately authenticated replacement
-inherits no profile/fence/slot/ratchet/high-watermark/authority state. Its identity/
+Root loss or full compromise has no in-place `1.0.0` recovery: an independent
+retirement authority records Pending→Retired/EvidenceUnavailable without the
+lost root. EvidenceUnavailable permits empty new-identity bootstrap but
+permanently quarantines old custody; the replacement inherits no profile/
+fence/slot/ratchet/high-watermark/authority state. Activate/Abort/
+PermanentlyUnresolved terminal meanings use the same governance sequence and
+one per-transition CAS, never an independently writable journal. Its identity/
 generation/digest is bound into authorization, checkpoint, requests/receipts,
 activation record and heads. Every transition
 moves through Prepared, ProposalPublishedVerified, LocalActivationCommitted and
@@ -319,11 +323,17 @@ unoccupied, occupied, reclaim-pending and released rows/bytes-stored/audit/
 outbox capacity; verified archive plus exact deletion alone releases it.
 Signed backend storage-cost profiles conservatively charge destination
 artifacts by backend/schema/index generation using checked rational ceiling
-arithmetic and canonical boundary/golden vectors. A co-located Recovery parent
+arithmetic and canonical boundary/golden vectors. Their independently rooted
+lineage/head/high-watermark, complete-domain weakening classifier, destructive
+authorization and complete re-cost checkpoint govern backend/schema activation.
+A co-located Recovery parent
 ledger and immutable parent/child transfers atomically pair every child
 allocation/release with parent debit/credit; one logical operation maps to one
 transfer identity, restore never repairs by choosing a side, and completion
-reserves follow the same equation.
+reserves follow the same equation. Atomic parent aggregates, exact membership
+commitments and predecessor checkpoints support protected cursor-budget
+streaming after restore; affected partitions remain VerificationPending or
+Fenced until complete proof makes them Ready.
 Stable kind-specific transfer identities, explicit unused-capacity rules and
 dimension/ledger isolation survive every clearance and re-fence. Exhaustion or failure to
 retain minimum future-control capacity permanently quarantines the lineage and

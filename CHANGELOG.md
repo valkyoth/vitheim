@@ -26,6 +26,12 @@ All notable Vitheim changes are documented here. The format follows
   are immutable across compaction, lost-root replacement inherits no authority,
   storage costing uses checked rational golden vectors, and a timed-out logical
   capacity operation cannot mint a second transfer or trigger guessed repair.
+- Added an independently rooted Pending/Retired/EvidenceUnavailable deployment-
+  retirement protocol so lost-root recovery cannot deadlock: unavailable old
+  custody stays quarantined while a genuinely empty new identity may bootstrap.
+- Unified Activated, Aborted and PermanentlyUnresolved under one transition-
+  terminal governance CAS; governed storage-cost profile succession and bounded
+  parent-ledger restore verification now have explicit versioned gates.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

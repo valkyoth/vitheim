@@ -608,9 +608,13 @@ restore, failover, and release evidence.
    request identity binds one digest, final results are immutable, and
    compaction retains authenticated request-result membership. Profiles are
    tenant/deployment scoped with one exact nonterminal attempt slot. `1.0.0`
-   has no in-place root recovery: immutable retirement evidence permanently
-   fences the old identity, and a separately authenticated replacement genesis
-   inherits none of its authority or sequencing state. Proposal and
+   has no in-place root recovery: a separately rooted retirement authority owns
+   Pending→Retired/EvidenceUnavailable and never needs the lost root. The latter
+   permits empty new-identity bootstrap while permanently quarantining old
+   custody; replacements inherit no authority/sequencing state. The same
+   governance sequence atomically selects exactly one Activated, Aborted or
+   PermanentlyUnresolved meaning per transition, so the external journal is a
+   receipt projection rather than a second writer. Proposal and
    active-manifest high-watermarks are distinct; proposal publication is never
    active authority, the local head CAS precedes a separately witnessed
    activation receipt, and stable per-witness identities reconcile response
@@ -639,12 +643,18 @@ restore, failover, and release evidence.
    archive plus exact deletion releases encumbrance. Backend storage-cost
    profiles conservatively charge canonical artifacts for each backend/schema/
    index generation with checked rational ceiling arithmetic and golden vectors;
-   destination import re-costs rather than copying counters.
+   destination import re-costs rather than copying counters. Cost profiles have
+   an independently rooted lineage/head/high-watermark and complete-domain
+   analytical weakening classifier; destructive weakening and backend/schema
+   activation require authorization plus a complete atomic re-cost checkpoint.
    A co-located Recovery parent ledger atomically debits with child allocation
    and credits with child release under one transfer identity and equation;
    completion reserves use it too. One logical operation deterministically
    maps to one transfer ID, and restore verifies both sides from one snapshot
-   without guessed compensation. Stable kind-specific transfer IDs and
+   without guessed compensation. Atomic aggregate/membership commitments and
+   predecessor checkpoints make admission constant-time; restore gates each
+   partition and streams protected cursor-budget verification to Ready or
+   Fenced without an unbounded startup scan. Stable kind-specific transfer IDs and
    explicit unused-reservation rules span clearance/re-fencing.
    Insufficient remaining or minimum future capacity permanently
    quarantines the lineage. Rebuild is terminal for the predecessor; Release

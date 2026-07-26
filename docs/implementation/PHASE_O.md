@@ -81,9 +81,16 @@ fork/rollback finality; independent signatures cannot claim CAS. Request
 identity binds one digest, CAS/status reads are linearizable, final results are
 immutable and compaction retains authenticated request-result membership.
 Each tenant/deployment profile has one exact nonterminal attempt slot. Root
-loss or full compromise creates immutable retirement evidence and permanently
-fences that identity; a separately authenticated replacement inherits no
-authority/sequencing state, and `1.0.0` has no in-place recovery root. Durable per-witness requests/status queries reconcile unknown
+loss or full compromise uses a separately rooted retirement authority and
+Pending→Retired/EvidenceUnavailable protocol that never needs the lost root.
+EvidenceUnavailable permits empty new-identity bootstrap but permanently
+quarantines old custody; replacements inherit no authority/sequencing state,
+and `1.0.0` has no in-place recovery root. ActivateManifest, AbortManifest and
+SealPermanentlyUnresolved share the governance sequence with RotateProfile and
+EmergencyDistrust. RetireDeploymentIdentity is authenticated by retirement
+authority on that same sequence and permanently closes the old key; one per-
+transition CAS makes the three manifest-terminal meanings
+mutually exclusive and the external journal a receipt projection. Durable per-witness requests/status queries reconcile unknown
 proposal publication; the local CAS is followed by external activation receipt
 or authenticated abort, under separate proposal and active high-watermarks.
 Every attempt reserves its complete non-borrowable completion capacity before
@@ -115,10 +122,18 @@ backend/schema/index profile. A co-located Recovery parent ledger atomically
 pairs child allocation/release with parent debit/credit under one deterministic
 transfer ID and parent equation, including completion reserves. Backend cost
 profiles use checked rational ceiling arithmetic and canonical boundary/golden
-vectors. Restore verifies both ledger sides from one snapshot and never repairs
+vectors plus independently rooted lineage/head/high-watermark, complete-domain
+analytical weakening classification, destructive authorization and a complete
+atomic re-cost checkpoint before backend/schema activation. Restore verifies both ledger sides from one snapshot and never repairs
 by choosing one side or guessing compensation. Kind-specific
 exact-once transfers cannot double charge or cross ledgers, and only verified
 archive plus exact deletion releases physical encumbrance.
+Parent transfers atomically maintain aggregate encumbrances, exact membership
+commitments and predecessor checkpoints. Restore gates affected partitions in
+VerificationPending and streams fixed-checkpoint chunks under a persistent
+cursor, cumulative work budget and protected capacity; only complete proof is
+Ready, while mismatch/unavailable history/exhaustion is Fenced. Crash cannot
+reset work or trigger an unbounded startup scan.
 Insufficient future capacity permanently quarantines, rebuild is
 terminal for the predecessor, and custody-safe Release checkpoints before
 settling each original reserve leg exactly once through separate authenticated
@@ -2165,13 +2180,18 @@ claim simultaneous activation/distrust winners, substitute independent
 signatures for the CAS port, make status reads non-linearizable, rebind one
 request identity to changed material, mutate a final winner/loser result,
 compact request-result membership before reconciliation, lose status/finality,
-omit old-identity retirement evidence, inherit profile/fence/slot/ratchet/
-high-watermark/authorization/idempotency state into a replacement, infer
+make the lost root self-retire, leave Pending as a bootstrap deadlock, import
+old custody after EvidenceUnavailable, let retirement rotate/activate/transfer,
+inherit profile/fence/slot/ratchet/high-watermark/authorization/idempotency
+state into a replacement, infer
 in-place root recovery, stale-clear an occupied slot, share a profile across
 tenants or exceed its one attempt slot, accept old-profile activation after
 TerminalizationOnly/EmergencyDistrust, conflate operational-active and
 transition-candidate heads, publish without the full completion reserve, make a
-worker select witness mode, substitute/unavailable a witness or rotate/revoke
+worker select witness mode, produce Activated plus Aborted or
+PermanentlyUnresolved for one transition, let an independently writable journal
+override the terminal CAS, race abort before LocalActivationCommitted,
+substitute/unavailable a witness or rotate/revoke
 its key,
 remotely issue/revoke or bypass the complete manifest-weakening/rebuild-
 rejection authorization table, replace
@@ -2196,10 +2216,14 @@ WorkSpent, alias lifetime-work and physical-capacity or bytes-processed/stored,
 copy source bytes-stored instead of destination re-costing, understate
 backend/schema/index/artifact overhead, round a rational expansion downward,
 overflow fixed/expansion/aggregate arithmetic, omit a required backend/profile
-golden vector, bypass runtime disk fencing, split
+golden vector, replace a cost profile as a signed blob, roll back its lineage/
+high-watermark, classify only sampled sizes, bypass destructive weakening,
+activate backend/schema before complete child re-cost, bypass runtime disk fencing, split
 parent debit/credit from child allocation/release, leak or double-credit the
 Recovery parent, mint a new transfer identity after timeout, repair split state
-by choosing one side or guessing compensation, move dimensions, violate any
+by choosing one side or guessing compensation, scan every child in one startup
+transaction, forge aggregate/membership/checkpoint, recreate a cursor, rescan
+for free, churn children or mutate capacity before Ready, move dimensions, violate any
 child or parent conservation equation, replay/change a typed transfer identity,
 move Occupied directly to Released, omit obligation/fence/
 checkpoint/custody from settlement or invert the shared lock rank, return

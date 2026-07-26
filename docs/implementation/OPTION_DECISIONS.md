@@ -366,11 +366,18 @@ requires controlled reprovisioning under a new identity. Any future offline
 recovery quorum requires a new reviewed law generation and may not be inferred.
 An authenticated local safety-stop may force unready/fenced state and audit
 only; it cannot rotate, clear, activate or transfer authority.
-Retirement evidence binds the old identity, final profile head/high-watermark,
-fence sequence/status, root generation, incident and trusted time. A
-replacement starts a separately authenticated genesis and may reference the
-old identity only as provenance; profile/fence/slot/ratchet/high-watermark/
-authorization/idempotency state is never inherited.
+Freeze independently rooted
+`MigrationImportRegistryHistoryDeploymentIdentityRetirementV1`, its retirement-
+authority port, sole Retire command and Pending/Retired/EvidenceUnavailable
+state machine. That authority can only safety-fence and terminalize retirement;
+it cannot rotate, activate, terminalize a manifest, move custody or transfer
+authority. Retired binds final heads/high-watermarks, governance and terminal
+statuses, root, incident, custody and trusted time. EvidenceUnavailable permits
+only separately provisioned empty bootstrap under a genuinely new identity and
+permanently quarantines old custody. Missing retirement blocks old-custody
+movement, not empty bootstrap. Replacement may cite retirement as provenance
+but inherits no profile/fence/slot/ratchet/high-watermark/authorization/
+idempotency state.
 Profiles are tenant/deployment scoped and never shared across tenants. One
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileAttemptSlotV1`
 Empty-or-one slot bounds the only nonterminal attempt; a second
@@ -388,7 +395,8 @@ whether activation may commit or the candidate must terminalize, including
 after response loss. Freeze
 `MigrationImportRegistryHistoryManifestGovernanceActivationFencePortV1`: domain-
 separated tenant/deployment/profile-lineage key, expected sequence/predecessor,
-closed operation kind/digest, one atomic winner, authenticated receipt/status
+closed ActivateManifest/AbortManifest/SealPermanentlyUnresolved/RotateProfile/
+EmergencyDistrust/RetireDeploymentIdentity operation kind/digest, one atomic winner, authenticated receipt/status
 lookup, stable request identity, unknown-outcome reconciliation, non-wrapping
 finality/fork/rollback detection, quorum-intersection or consensus assumption,
 rotation verification and typed unavailable history. Independent witness
@@ -396,6 +404,16 @@ signatures are not a CAS implementation. Request identity permanently binds
 one digest; CAS and status reads are linearizable, final winner/loser results
 are immutable, sequence `n + 1` requires durably readable final `n`, and
 compaction retains authenticated request-result membership or refuses.
+Manifest-terminal requests also bind the exact transition/proposal key and
+expected ProposedPublished disposition; the same CAS installs one immutable
+Activated/Aborted/PermanentlyUnresolved terminal receipt/status. Journal and
+high-watermarks are projections of that sequence, never separate writers.
+RetireDeploymentIdentity is authenticated only by the independent retirement
+authority; local Pending/request/outbox commits before the external call, and
+the status-reconciled winner permanently closes the old deployment key without
+publication-root authority or a distributed transaction.
+Race all three terminal meanings, including abort before local activation, and
+prove no accepted history contains two.
 TerminalizationOnly and EmergencyDistrust permit status/abort/unresolved
 terminalization but force LocalActivationCommitted to Aborted without changing
 the operational head; they never accept old-profile activation evidence.
@@ -607,6 +625,16 @@ allocation unit and measurement semantics. Wide checked ceiling arithmetic and
 backend/profile boundary/golden vectors define `bytes_stored`; import
 recomputes it from canonical artifacts and never copies source counters.
 Runtime disk-pressure guards are separate and may only fence earlier.
+Freeze independently rooted cost-profile lineage/current head, Proposed/
+Active/Superseded/Rejected transition, activation record, predecessor-linked
+checkpoint and external high-watermark. Trusted classification compares exact
+cost functions analytically over the complete artifact-kind/size domain and
+all rounding breakpoints; possible lower charge or unknown comparison is
+Weakening and consumes the complete destructive authorization lifecycle.
+Golden vectors alone are insufficient. Every affected child admits its
+parent-capacity re-cost delta atomically, and only a complete authenticated
+re-cost checkpoint may activate the profile head with the backend/schema/index
+selector.
 Persist co-located
 `MigrationImportRegistryHistoryRecoveryCapacityParentLedgerV1`, its exact active-child encumbrance
 set and stable parent/child transfer rows. Allocation atomically debits parent
@@ -618,6 +646,14 @@ deterministically owns one transfer identity and immutable before/after
 versions, balances, membership and result; timeout cannot mint a replacement.
 Restore verifies both sides from one snapshot and never repairs divergence by
 choosing a side or guessing a compensating credit. Freeze
+per-kind atomic aggregate counters, exact membership/commitment and predecessor-
+linked checkpoints. Parent verification has VerificationPending/Ready/Fenced,
+stable monotonic cursor, cumulative work budget and protected capacity.
+Restore gates the affected partition and streams bounded fixed-checkpoint
+chunks; crash resumes without free rescans, child churn waits, and only complete
+membership/aggregate/transfer/equation proof becomes Ready. Unavailable
+history, mismatch, churn or exhaustion fences; unbounded startup scans are
+unsupported. Freeze
 `MigrationImportRegistryHistoryLockRankV1` as the sole adapter
 rank mapping and persist acquisition-trace conformance evidence. Release locks
 and rechecks settlement heads, parent ledger, reserve, obligation, fence,

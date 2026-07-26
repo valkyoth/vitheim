@@ -3336,15 +3336,50 @@ decision; no operator, database administrator or witness may infer it.
 An authenticated local safety-stop may only force unready/fenced service and
 emit audit/incident evidence; it cannot rotate a root, clear the fence, activate
 a profile/manifest or transfer authority to the new identity.
-The permanent retirement evidence binds the old tenant/deployment/profile
-lineage, last proved profile head and external high-watermark, activation-fence
-sequence/status, root generation, reason, incident and trusted-time evidence.
-If a replacement is later provisioned, its separately authenticated genesis
-may record the retired identity only as provenance. It cannot copy or continue
-the old profile generation, fence sequence, attempt slot, compatibility
-decision, ratchet, high-watermark, authorization or idempotency namespace.
-Missing or contradictory retirement evidence keeps both export and replacement
-admission unready; an operator-created linkage grants no authority.
+Root loss does not depend on the lost root to authenticate its own retirement.
+Canonical
+`MigrationImportRegistryHistoryDeploymentIdentityRetirementV1` is owned by an
+independently provisioned
+`MigrationImportRegistryHistoryDeploymentIdentityRetirementAuthorityPortV1`
+whose trust root and custody are separate from the publication-profile root.
+Its closed
+`MigrationImportRegistryHistoryDeploymentIdentityRetirementStateV1` is
+Pending, Retired or EvidenceUnavailable. Only
+`RetireMigrationImportRegistryHistoryDeploymentIdentity` may create Pending
+and terminalize it. Its first local transaction records Pending, a safety fence,
+stable retirement request/outbox and audit before external work. A bounded
+worker then submits independently authenticated RetireDeploymentIdentity to the
+same governance-fence sequence used below. Its linearizable winner permanently
+rejects every later profile or manifest operation for the old deployment; lost
+response is status-reconciled before Pending can terminalize. Neither stage
+needs a publication-root signature, and no distributed transaction is assumed.
+Pending means the old deployment is locally safety-fenced while the external
+retirement winner and bounded evidence collection remain in progress. Retired binds the old
+tenant/deployment/profile lineage, last proved profile and operational/
+candidate heads, external proposal/active high-watermarks, governance-fence
+sequence/status, external transition terminal statuses, root generation,
+incident, custody inventory and trusted-time evidence. EvidenceUnavailable is
+an authenticated terminal finding that one or more required old-identity or
+custody proofs cannot be recovered; it never asserts a guessed head or safe
+custody state.
+
+The retirement authority can only safety-fence, record Retired or record
+EvidenceUnavailable. It cannot rotate a root, activate or terminalize a
+manifest, clear a fence, export custody, admit an import or transfer authority.
+Exact retry returns the stored state; changed identity/evidence/incident/
+authority/idempotency conflicts. A separately authenticated fresh empty
+deployment may bootstrap under a new deployment identity after either Retired
+or EvidenceUnavailable without importing, mounting, serving or deriving
+authority from old custody. Retired permits a later old-custody import only
+through the ordinary untrusted import and complete re-admission path;
+EvidenceUnavailable permanently quarantines that custody unless a future
+reviewed law generation defines a stronger proof protocol. The replacement
+genesis may cite the retirement record only as provenance and cannot copy or
+continue the old profile generation, fence sequence, attempt slot,
+compatibility decision, ratchet, high-watermark, authorization or idempotency
+namespace. Absence of a retirement record blocks old-custody export/import but
+does not block independently provisioned empty bootstrap under a genuinely new
+identity; an operator-created linkage grants no authority.
 
 The complete profile lifecycle is implemented only by
 `BootstrapMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfile`,
@@ -3397,10 +3432,20 @@ Its domain-separated
 tenant, deployment and profile-lineage identity. Canonical
 `MigrationImportRegistryHistoryManifestGovernanceActivationFenceRequestV1`
 binds stable request/idempotency identity, expected non-wrapping sequence and
-predecessor digest, closed ActivateManifest/RotateProfile/EmergencyDistrust
-operation kind, canonical operation/profile/ratchet digest, trust generation
-and signer/quorum evidence. One linearizable compare-and-swap atomically
-installs exactly one winning value and returns authenticated
+predecessor digest, closed ActivateManifest/AbortManifest/
+SealPermanentlyUnresolved/RotateProfile/EmergencyDistrust/
+RetireDeploymentIdentity operation kind,
+canonical operation/profile/ratchet digest, trust generation and signer/quorum
+evidence. RetireDeploymentIdentity is authenticated only by the independent
+retirement authority and permanently closes the old deployment's governance
+key. The three manifest-terminal operations also bind
+`MigrationImportRegistryHistoryManifestExternalTransitionKeyV1`: tenant,
+deployment, profile lineage, manifest transition/checkpoint/proposal receipt
+identity and digest, plus expected ProposedPublished disposition. RotateProfile,
+EmergencyDistrust and RetireDeploymentIdentity encode canonical absence of a
+transition key.
+One linearizable compare-and-swap atomically installs exactly one winning value
+and returns authenticated
 `MigrationImportRegistryHistoryManifestGovernanceActivationFenceReceiptV1`;
 status lookup returns canonical
 `MigrationImportRegistryHistoryManifestGovernanceActivationFenceStatusV1`
@@ -3420,7 +3465,19 @@ losing result is immutable, status may report Pending only while the provider
 cannot yet prove a final result, and unavailable history is never interpreted
 as Empty, Pending or permission to resubmit with a new identity. Sequence
 `n + 1` cannot finalize until the final value at `n` is durably readable and
-its predecessor digest matches. Retention or compaction must preserve an
+its predecessor digest matches. For a manifest-terminal operation, that same
+CAS also installs the unique immutable Activated, Aborted or
+PermanentlyUnresolved terminal mapping and canonical
+`MigrationImportRegistryHistoryManifestExternalTransitionTerminalReceiptV1`.
+Linearizable
+`MigrationImportRegistryHistoryManifestExternalTransitionTerminalStatusV1`
+returns ProposedPublished or that one terminal receipt by transition key.
+There is no separate journal writer or later overwrite path: the external
+transition journal and its high-watermarks are authenticated projections of
+these governance-fence receipts. Thus an abort before LocalActivationCommitted
+still races activation and unresolved sealing on the same sequence and cannot
+produce a second terminal meaning.
+Retention or compaction must preserve an
 authenticated checkpoint plus request-to-final-result membership sufficient
 to reconcile every still-retained attempt; otherwise the profile is refused.
 Independent witness signatures, a quorum of unrelated append-only receipts or
@@ -3428,7 +3485,11 @@ eventual last-write-wins storage do not satisfy the CAS capability. Missing,
 forked, rolled-back or unverifiable fence history returns
 `MigrationImportRegistryHistoryManifestGovernanceActivationFenceHistoryUnavailable`
 and leaves activation/profile succession unready. Conformance races all three
-operation kinds, response loss, status lookup, rotation and rollback. An
+terminal operation kinds against each other and against RotateProfile/
+EmergencyDistrust/RetireDeploymentIdentity, response loss, status lookup,
+rotation and rollback. It
+must prove that no accepted history contains two terminal meanings for one
+transition. An
 adapter that cannot prove one linearizable winner refuses this profile.
 MayActivateExisting permits final activation only under the exact compatibility
 proof and current ratchet. TerminalizationOnly permits status lookup,
@@ -3521,6 +3582,18 @@ non-wrapping heads:
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestProposalPublicationHighWatermarkV1`
 and
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestActiveManifestHighWatermarkV1`.
+The journal is a read projection of the governance-fence sequence and
+per-transition terminal map, not an independently writable authority. Only
+the port's ActivateManifest CAS may produce Activated. Only
+`AbortMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalTransition`
+may request AbortManifest, and only
+`SealMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPermanentlyUnresolved`
+may request SealPermanentlyUnresolved; both exact-reconcile the returned
+terminal receipt/status before any local CAS. A terminal request whose key is
+already terminal exact-joins only when operation and digest match; every other
+terminal meaning returns the immutable winner without mutation. Proposal,
+terminal receipt, request identity and governance sequence are retained as one
+authenticated membership proof.
 Proposal publication advances only the proposal head and can never assert that
 the manifest is active. Once the governed quorum authenticates proposal
 publication, canonical
@@ -3549,7 +3622,8 @@ without mutation.
 
 After that local CAS, the durable publication attempt publishes and verifies
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalActivationReceiptV1`
-against the same governed profile. Only
+as the ActivateManifest terminal receipt from the same governed profile and
+transition key. Only
 `FinalizeMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalActivation`
 may then advance the external active-manifest high-watermark and CAS
 LocalActivationCommitted to Active. Before accepting the receipt it locks and
@@ -3573,15 +3647,18 @@ separate idempotent stages, and recovery reapplies the state table from durable
 attempt plus authenticated journal evidence.
 
 If authority expires/revokes, the publication profile changes or the local
-candidate-head CAS loses before LocalActivationCommitted, the attempt must publish and
-verify
+candidate-head CAS loses before LocalActivationCommitted, the attempt must
+request and verify the unique AbortManifest terminal through
+`AbortMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalTransition`;
+the attempt authenticates the resulting
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalAbortTombstoneV1`
-and CAS the transition to Aborted. An authenticated superseding Activated
+projection and only then may CAS the transition to Aborted. An authenticated superseding Activated
 journal entry may serve as the abort proof for a losing predecessor. If bounded
 reconciliation cannot prove Activated or Aborted, it retains the durable
 attempt and candidate in its current non-authoritative state with bounded,
-fenced reconciliation suspended. PermanentlyUnresolved commits only when an
-authenticated external terminal seal and matching local CAS prove that the
+fenced reconciliation suspended. PermanentlyUnresolved commits only through
+`SealMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPermanentlyUnresolved`
+when its authenticated external terminal seal receipt and matching local CAS prove that the
 same transition can never later become Activated or Aborted; local retry
 exhaustion, timeout or witness absence cannot create that disposition. That
 candidate and all descendants stay unusable and the proposal is never reused.
@@ -3717,12 +3794,63 @@ allocation-unit rounding. Wide checked arithmetic implements
 Unknown artifact/backend/schema fields, unproved profile signatures or
 arithmetic overflow deny admission. The independently governed storage-
 capacity profile owner authenticates it; an adapter cannot sign, select or
-weaken its own cost profile. Existing child charges retain their bound
+weaken its own cost profile.
+
+The cost profile is governed state, not a freely replaceable signed document.
+Stable
+`MigrationImportRegistryHistoryBackendStorageCostProfileLineageV1` has a
+non-wrapping generation, exact predecessor and CAS-protected
+`MigrationImportRegistryHistoryBackendStorageCostProfileCurrentHeadV1`.
+Its non-recursive
+`MigrationImportRegistryHistoryBackendStorageCostProfileTrustAnchorV1` is
+provisioned independently of every storage adapter. Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileTransitionV1` has
+closed
+`MigrationImportRegistryHistoryBackendStorageCostProfileTransitionStateV1`
+Proposed, Active, Superseded or Rejected, and every Active transition produces
+`MigrationImportRegistryHistoryBackendStorageCostProfileActivationRecordV1`.
+Only
+`BootstrapMigrationImportRegistryHistoryBackendStorageCostProfile`,
+`PrepareMigrationImportRegistryHistoryBackendStorageCostProfileTransition`,
+`ActivateMigrationImportRegistryHistoryBackendStorageCostProfileTransition`,
+`RejectMigrationImportRegistryHistoryBackendStorageCostProfileTransition`,
+`CheckpointMigrationImportRegistryHistoryBackendStorageCostProfileLineage` and
+`RestoreMigrationImportRegistryHistoryBackendStorageCostProfileLineage` may
+mutate the lineage, transition,
+`MigrationImportRegistryHistoryBackendStorageCostProfileCheckpointV1` or
+externally retained non-wrapping
+`MigrationImportRegistryHistoryBackendStorageCostProfileHighWatermarkV1`.
+Every operation binds expected head/predecessor, complete canonical profile,
+trust generation, authorization, stable idempotency, result, audit and outbox;
+exact retry joins and changed material conflicts. Restore never selects a raw
+local maximum.
+
+Trusted
+`MigrationImportRegistryHistoryBackendStorageCostProfileSuccessorClassificationV1`
+is NonWeakening or Weakening. It compares each predecessor/successor cost
+function analytically over the complete declared artifact-kind and canonical-
+size domain using exact arithmetic and the union of every ceiling/allocation
+breakpoint; sampled or golden-vector comparison alone is insufficient.
+Unknown comparison, a newly supported artifact without a conservative bound,
+or any size at which the successor can charge less is Weakening. NonWeakening
+requires the independent ordinary cost-profile owner. Weakening additionally
+consumes the complete destructive policy-transition authorization lifecycle
+below with action WeakenBackendStorageCostProfile, exact predecessor/successor
+profile bytes, classifier proof and current-head CAS. The storage adapter,
+schema migrator, importer and parent-ledger allocator cannot classify or
+authorize their own successor.
+
+Existing child charges retain their bound
 cost-profile identity. A backend/schema/index transition requires an admitted
 successor profile and conservative capacity re-admission before activation:
 the nonnegative re-cost delta is atomically debited from the parent and added
-to the child encumbrance, while a lower estimate never releases existing
-capacity before the original artifacts are archived and exactly deleted.
+to each child encumbrance under its stable transfer identity, while a lower
+estimate never releases existing capacity before the original artifacts are
+archived and exactly deleted. Bounded staging records and an authenticated
+complete re-cost checkpoint cover every affected child. The final local
+transaction verifies that checkpoint and atomically activates the cost-profile
+head with the backend/schema/index selector; missing child, failed delta
+admission, stale parent/head or incomplete checkpoint refuses activation.
 Destination migration/import recomputes every charge from canonical artifacts
 under the destination profile and never copies source `bytes_stored` counters.
 Separate runtime free-disk/WAL/page/temporary-space guards may fence or reject
@@ -3741,6 +3869,48 @@ immutable ParentTotal, current ParentAvailable and the exact active child
 encumbrance set and enforces:
 
 `parent_total = parent_available + sum(active_child_encumbrances)`.
+
+The parent never recomputes that sum in an unbounded startup transaction.
+Per kind/dimension,
+`MigrationImportRegistryHistoryRecoveryCapacityParentAggregateV1` stores the
+checked aggregate active encumbrance beside an exact child-membership row set
+and authenticated
+`MigrationImportRegistryHistoryRecoveryCapacityParentMembershipCommitmentV1`.
+Every parent/child transfer transaction updates ParentAvailable, the aggregate,
+the exact membership row/commitment and a predecessor-linked
+`MigrationImportRegistryHistoryRecoveryCapacityParentCheckpointV1` or none.
+The constant-time admission equation is therefore
+`parent_total = parent_available + aggregate_active_child_encumbrance`; the
+streaming membership proof independently establishes that the aggregate equals
+the exact child set.
+
+Canonical
+`MigrationImportRegistryHistoryRecoveryCapacityParentVerificationV1` has
+closed
+`MigrationImportRegistryHistoryRecoveryCapacityParentVerificationStateV1`
+VerificationPending, Ready or Fenced. It binds parent/checkpoint/commitment,
+stable non-recreatable verification identity, monotonic
+`MigrationImportRegistryHistoryRecoveryCapacityParentVerificationCursorV1`,
+cumulative counters and non-borrowable
+`MigrationImportRegistryHistoryRecoveryCapacityParentVerificationWorkBudgetV1`
+plus protected Recovery rows/bytes/audit/outbox/worker/I/O capacity. After
+restore, every affected capacity partition starts VerificationPending and is
+unavailable for allocation, release, cost-profile activation or other capacity
+mutation. Only
+`VerifyMigrationImportRegistryHistoryRecoveryCapacityParent` may stream bounded
+canonical child chunks against the fixed checkpoint snapshot, precharging each
+decode/hash/proof/byte/time quantum before work. Ready commits only after exact
+membership, aggregate, transfer adjacency, predecessor checkpoint and both
+ledger equations verify. Mismatch, unavailable history, budget exhaustion,
+cursor contradiction or snapshot churn becomes Fenced.
+
+Crash, failover and retry resume the same cursor and cumulative charges; they
+cannot recreate the verification, reset work or rescan a verified prefix for
+free. Child-set churn is serialized behind the VerificationPending/Fenced
+partition gate, then normal atomic transfers resume only after Ready. A backend
+that cannot provide bounded snapshot/cursor continuation and protected
+verification capacity refuses the parent-capacity profile; startup never scans
+the whole tenant/deployment set in one transaction.
 
 Allocation and release use stable
 `MigrationImportRegistryHistoryRecoveryCapacityParentTransferIdV1` and
@@ -3762,7 +3932,7 @@ identity; a timeout or retry cannot mint another identity for the same
 allocation or release. The immutable result binds expected and resulting
 parent/child versions, before/after balances, active-encumbrance membership and
 the shared settlement result digest. Recovery verifies transfer adjacency and
-both equations from the same consistent snapshot. It never repairs divergence
+both equations through the bounded verification state above. It never repairs divergence
 by trusting the parent, trusting the child or replaying a guessed compensating
 credit. Missing history, duplicate logical-operation mapping, one-sided state
 or an unexplained version gap permanently fences capacity until an independently
@@ -4330,11 +4500,15 @@ The source-manifest policy-transition and rebuild-rejection grants are
 destructive-authority protocols, not signed blobs. Closed
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionActionV1`
 is InitializeManifest, WeakenManifest or
-WeakenCheckpointPublicationProfile. The canonical manifest action binds stable
+WeakenCheckpointPublicationProfile or WeakenBackendStorageCostProfile. The canonical manifest action binds stable
 lineage/target, expected predecessor/current-head bytes, and exact proposed
 genesis/successor manifest bytes. Publication-profile weakening instead binds
 the stable profile lineage, expected profile head, exact predecessor/successor
-profile bytes and typed weakening-classification result. Canonical rebuild rejection binds PermanentlyReject, the exact
+profile bytes and typed weakening-classification result. Storage-cost-profile
+weakening binds its stable lineage/current head, exact predecessor/successor
+profile bytes, complete-domain analytical classifier proof, affected backend/
+schema/index selector and required re-cost checkpoint. Fields belonging to the
+other action variants are canonically absent. Canonical rebuild rejection binds PermanentlyReject, the exact
 parent/predecessor/fence/current bytes, and canonical absence of proposed
 successor bytes. Both authorization envelopes bind issued-at, not-before, exact
 expiry, maximum uncertainty, trusted-time profile/epoch, signer/key/profile/

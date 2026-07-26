@@ -264,9 +264,13 @@ audit decision.
   and status reads are linearizable, request identity binds one digest, final
   results are immutable and compaction retains authenticated request-result
   membership. Profiles are tenant/deployment scoped with one exact
-  nonterminal attempt slot. Root loss/full compromise records immutable old-
-  identity retirement; the separately authenticated replacement inherits no
-  authority/sequencing state, and `1.0.0` has no in-place recovery root.
+  nonterminal attempt slot. Root loss/full compromise uses an independently
+  rooted Pending→Retired/EvidenceUnavailable retirement protocol that never
+  needs the lost root; unavailable evidence permits empty replacement bootstrap
+  but permanently quarantines old custody. Replacement inherits no authority/
+  sequencing state, and `1.0.0` has no in-place recovery root. Activate, Abort
+  and PermanentlyUnresolved share the governance sequence and one immutable
+  per-transition terminal CAS; journal/high-watermarks are receipt projections.
   Proposal and active high-watermarks are separate,
   stable request identities reconcile unknown publication, and local CAS is
   followed by an external activation receipt or authenticated abort/unresolved
@@ -292,11 +296,19 @@ audit decision.
   released rows, bytes-stored, audit and outbox; only verified archive plus
   exact deletion releases it. Signed backend cost profiles charge canonical
   destination artifacts by backend/schema/index generation with checked
-  rational ceiling arithmetic and canonical boundary/golden vectors. A co-located
+  rational ceiling arithmetic and canonical boundary/golden vectors. An
+  independently rooted cost-profile lineage/head/high-watermark and analytical
+  complete-domain classifier require destructive authorization for any
+  possible lower charge; backend/schema activation requires a complete atomic
+  re-cost checkpoint. A co-located
   Recovery parent ledger atomically pairs child allocation/release with parent
   debit/credit under one deterministic transfer ID/equation, including
   completion reserves; restore verifies both sides from one snapshot and never
   guesses compensation.
+  Atomic parent aggregates, exact membership commitments and predecessor
+  checkpoints make admission bounded. Restore gates each affected partition
+  while protected monotonic cursor/work-budget verification streams to Ready
+  or Fenced; crash cannot reset work and no startup-wide scan is permitted.
   Kind-specific exact-once transfers update scope/lineage atomically. Every re-fence uses both ledgers; clearance cannot reset them,
   and exhaustion or loss of
   minimum future capacity permanently quarantines. Rebuild and custody-safe,
