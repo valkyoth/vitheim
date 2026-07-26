@@ -12,9 +12,16 @@ All notable Vitheim changes are documented here. The format follows
   with explicit operational-active and transition-candidate local heads,
   durable per-witness reconciliation, protected attempt-completion capacity
   and separate proposal/active external high-watermarks.
+- Specified the activation fence as a linearizable port with authenticated
+  request/receipt/status, consensus and anti-rollback requirements; bounded
+  profiles to one tenant/deployment attempt and chose fail-closed new-identity
+  reprovisioning after root loss or full compromise for `1.0.0`.
 - Split corruption-control accounting into an irreversible lifetime-work budget
   and reclaimable physical-capacity ledger, with distinct bytes-processed and
   bytes-stored dimensions, kind-specific transfers and conservation equations.
+- Added signed backend storage-cost profiles and atomic Recovery-parent/child
+  double-entry capacity transfers so destination imports are re-costed and a
+  child release cannot leak or duplicate its parent credit.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

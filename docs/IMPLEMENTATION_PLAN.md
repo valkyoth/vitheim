@@ -225,7 +225,7 @@ has no effect, and late revocation after Consumed returns the activation result
 without reversal. One `MigrationImportActivationBarrierV1`
 binds the complete receipt set and current job/owner state. Through `1.0.0`, one co-located local transaction
 uses the canonical
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox
 order, rederives the manifest, rechecks the `AdmissionPrepared` job, budget/fence,
 authorization lifecycle, receipts and all domain-owner versions, consumes and
 tombstones authorization, then activates every domain owner plus barrier/job result/
@@ -276,7 +276,12 @@ time policy; a non-recursive provisioned/compiled trust anchor, explicit
 bootstrap/rotation/checkpoint/high-watermark operations, compatibility
 decision and monotonic distrust ratchet govern succession. Profile transition,
 distrust and manifest activation serialize through a governance-root external
-CAS activation fence, producing one durable winner across response loss. Its identity/
+CAS activation-fence port, producing one durable winner across response loss
+with authenticated request/receipt/status, consensus assumptions and
+fork/rollback finality; independent signatures are insufficient. Profiles are
+tenant/deployment scoped with one nonterminal attempt slot. Root loss or full
+compromise has no in-place `1.0.0` recovery and requires permanently fenced
+new-identity reprovisioning. Its identity/
 generation/digest is bound into authorization, checkpoint, requests/receipts,
 activation record and heads. Every transition
 moves through Prepared, ProposalPublishedVerified, LocalActivationCommitted and
@@ -309,6 +314,11 @@ terminalization-reserved and nondecreasing spent proof/retry/hash/signature/
 bytes-processed/time. A separate physical-capacity ledger conserves reserved-
 unoccupied, occupied, reclaim-pending and released rows/bytes-stored/audit/
 outbox capacity; verified archive plus exact deletion alone releases it.
+Signed backend storage-cost profiles conservatively charge destination
+artifacts by backend/schema/index generation. A co-located Recovery parent
+ledger and immutable parent/child transfers atomically pair every child
+allocation/release with parent debit/credit; completion reserves follow the
+same equation.
 Stable kind-specific transfer identities, explicit unused-capacity rules and
 dimension/ledger isolation survive every clearance and re-fence. Exhaustion or failure to
 retain minimum future-control capacity permanently quarantines the lineage and

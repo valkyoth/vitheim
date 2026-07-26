@@ -74,11 +74,13 @@ The same law requires externally checkpointed
 Prepared→ProposalPublishedVerified→LocalActivationCommitted→Active
 source-manifest transitions with external Aborted/PermanentlyUnresolved
 dispositions, non-recursively anchored publication-profile lifecycle/
-compatibility/distrust with one external activation fence, protected
+compatibility/distrust with one concrete linearizable external activation-
+fence port, fail-closed root loss and one tenant/deployment attempt slot, protected
 attempt-completion reserve, separate
 operational/candidate local heads and proposal/active external high-watermarks.
 It also requires separate obligation-wide lifetime-work and physical-capacity
-ledgers, one typed fence-before-lineage lock rank, rollback-safe reclaim
+ledgers, signed backend storage-cost profiles, Recovery-parent/child
+double-entry transfers/equation, one typed fence-before-lineage lock rank, rollback-safe reclaim
 settlement journal/archive/deletion evidence and complete canonical
 destructive-revocation preimages. A local database cannot assert the latest
 source manifest, a proposal cannot assert activation, clearance cannot reset or

@@ -2519,7 +2519,7 @@ The supported through-`1.0.0` activation profile requires the live coordinator
 generation, job, candidate, barrier, authorization row and every affected
 domain-owner activation guard to be co-located in one destination-local
 transaction domain. The canonical full order is
-`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox`.
+`active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox`.
 This is `VIT-LAW-009
 AtomicMigrationImportActivation`: trusted derivation selects the exact affected
 domain-owner set while every selected domain owner retains exclusive authority.
@@ -3021,7 +3021,15 @@ completion reserve before the first send and successful bounded terminal
 recording from it. Exercise profile root bootstrap/rotation, every compatibility
 decision and emergency-distrust ratchet between local CAS and finalization;
 only MayActivateExisting can advance operational Active, while the other
-decisions authenticate LocalActivationCommitted→Aborted. Record adapter lock
+decisions authenticate LocalActivationCommitted→Aborted. Race concurrent
+ActivateManifest/RotateProfile/EmergencyDistrust requests against the concrete
+activation-fence port at every response-loss/status/rotation boundary; require
+one final CAS receipt, predecessor continuity and fork/rollback refusal.
+Independent witness signatures cannot pass the capability test. Lose or fully
+compromise the current root and prove permanent fencing plus new-identity
+reprovisioning, never in-place recovery or manifest activation. Attempt to
+share a profile across tenants/deployments or admit a second nonterminal
+attempt; require scope denial or exact join of the one bound slot. Record adapter lock
 traces and reject every deviation from obligation→fence→lineage→checkpoint,
 including settlement without the obligation/custody recheck. Exercise
 manifest initialization, weakening and rebuild-rejection admission, pre-
@@ -3060,7 +3068,15 @@ crash around checkpoint/archive/deletion/settlement and retry after response
 loss; require PermanentlyQuarantined, Rebuilt, ReleasePending or Released
 exactly as specified, no operational return without the minimum reserve, no
 WorkSpent refund, no physical release before archive/deletion proof and no
-duplicate/recreated capacity.
+duplicate/recreated capacity. For every allocation and release, fault between
+parent debit/credit, child transition and transfer-row/result writes; require
+one atomic parent/child outcome, exact retry and
+ParentTotal = ParentAvailable + active child encumbrances. Apply the same test
+to publication-attempt completion reserves. Vary backend family/version,
+schema/index generation, artifact kind, encoded size, expansion factor,
+overhead and rounding; reject unknown/overflowing cost profiles, recompute
+destination import charges and prove runtime disk-pressure guards can only
+fence earlier.
 Exercise admission, expiry, revocation and consumption from every state in the
 total table, including every exact duplicate, changed-material conflict and
 race; expiry winning must return its canonical expiry result without becoming
@@ -3309,7 +3325,17 @@ root-key set/quorum and genesis digest outside the mutable profile database.
 Genesis requires a root-authenticated bootstrap. Rotation requires canonical
 old-root authorization plus new-root possession proof and advances an
 externally retained non-wrapping profile high-watermark; no profile signs
-itself into trust.
+itself into trust. The supported through-`1.0.0` profile has no offline or
+break-glass root-recovery authority. Loss or suspected full compromise of the
+current root permanently fences and makes that tenant/deployment identity
+unready; it cannot rotate in place. Recovery requires controlled reprovisioning
+under a new deployment identity, with custody-preserving export/import treated
+as untrusted evidence and every authority re-admitted. A later in-place
+recovery quorum would require a new reviewed law generation and release
+decision; no operator, database administrator or witness may infer it.
+An authenticated local safety-stop may only force unready/fenced service and
+emit audit/incident evidence; it cannot rotate a root, clear the fence, activate
+a profile/manifest or transfer authority to the new identity.
 
 The complete profile lifecycle is implemented only by
 `BootstrapMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfile`,
@@ -3330,20 +3356,56 @@ predecessor/successor bytes, authorization/result, audit/outbox and stable
 idempotency. Restore verifies the external profile high-watermark and complete
 lineage; it never selects a raw local maximum.
 
+Publication profiles are scoped to exactly one tenant/deployment/profile
+lineage; sharing one mutable profile lineage across tenants or deployments is
+unsupported through `1.0.0`. Canonical
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileAttemptSlotV1`
+is Empty or binds exactly one predecessor/profile-bound nonterminal attempt.
+`PrepareMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransition`
+atomically CAS-fills an Empty slot, exact retry joins it, and only an
+authenticated terminal disposition plus completion checkpoint clears it.
+Profile succession therefore classifies zero or one bounded attempt rather
+than enumerating an unbounded set.
+
 Every successor records
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileCompatibilityDecisionV1`
-for each predecessor-bound nonterminal attempt: MayActivateExisting,
+for that optional predecessor-bound nonterminal attempt: MayActivateExisting,
 TerminalizationOnly or EmergencyDistrust. Independently authenticated
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileRevocationRatchetV1`
 is monotonic and binds profile/key/witness distrust plus effective trusted time.
 Profile transition/ratchet publication and manifest Activated disposition
 serialize through one governance-root external CAS key,
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileActivationFenceV1`.
-Every activation request binds its expected fence sequence and profile/ratchet
-digest. If activation wins that CAS, later distrust is a successor decision and
+The only external interface is
+`MigrationImportRegistryHistoryManifestGovernanceActivationFencePortV1`.
+Its domain-separated
+`MigrationImportRegistryHistoryManifestGovernanceActivationFenceKeyV1` binds
+tenant, deployment and profile-lineage identity. Canonical
+`MigrationImportRegistryHistoryManifestGovernanceActivationFenceRequestV1`
+binds stable request/idempotency identity, expected non-wrapping sequence and
+predecessor digest, closed ActivateManifest/RotateProfile/EmergencyDistrust
+operation kind, canonical operation/profile/ratchet digest, trust generation
+and signer/quorum evidence. One linearizable compare-and-swap atomically
+installs exactly one winning value and returns authenticated
+`MigrationImportRegistryHistoryManifestGovernanceActivationFenceReceiptV1`;
+status lookup returns canonical
+`MigrationImportRegistryHistoryManifestGovernanceActivationFenceStatusV1`
+containing the same final receipt, a still-pending unknown outcome or typed
+unavailable history by stable request identity. Every activation request binds its expected
+fence sequence and profile/ratchet digest. If activation wins that CAS, later distrust is a successor decision and
 cannot retroactively rewrite the Active record; if compatibility change or
 distrust wins first, the old-profile activation cannot commit and the candidate
 must terminalize. Response loss reconciles the one external winner.
+The port contract freezes monotonic sequence/finality, predecessor continuity,
+fork and rollback detection, authenticated status history, quorum-intersection
+or consensus assumptions and trust-root/key-rotation verification.
+Independent witness signatures, a quorum of unrelated append-only receipts or
+eventual last-write-wins storage do not satisfy the CAS capability. Missing,
+forked, rolled-back or unverifiable fence history returns
+`MigrationImportRegistryHistoryManifestGovernanceActivationFenceHistoryUnavailable`
+and leaves activation/profile succession unready. Conformance races all three
+operation kinds, response loss, status lookup, rotation and rollback. An
+adapter that cannot prove one linearizable winner refuses this profile.
 MayActivateExisting permits final activation only under the exact compatibility
 proof and current ratchet. TerminalizationOnly permits status lookup,
 authenticated abort and unresolved sealing but never activation.
@@ -3396,7 +3458,8 @@ fencing token. In the same local transaction and before the first external
 send it admits a non-borrowable
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPublicationAttemptCompletionReserveV1`
 from the protected Recovery capacity pool. Trusted code derives exact
-rows/bytes-stored/audit/outbox/checkpoint and bounded worker/I/O capacity for
+rows/backend-cost-profile bytes-stored/audit/outbox/checkpoint and bounded
+worker/I/O capacity for
 all witness requests and receipts, reconciliation cursors, external activation/
 abort/unresolved evidence, local transition/result, audit/outbox,
 checkpoint/archive publication and reservation settlement. Ordinary work,
@@ -3405,7 +3468,10 @@ Insufficient complete capacity rejects the attempt atomically before any
 externally visible publication.
 
 The attempt and reserve share one admission result and stable reservation-set
-identity. Every completion write consumes only its bound physical-capacity leg.
+identity. Reserve allocation and release use the same parent/child double-entry
+capacity protocol as the corruption-control physical ledger: parent debit,
+child reservation and the immutable parent/child transfer record commit
+together. Every completion write consumes only its bound physical-capacity leg.
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPublicationAttemptCompletionCheckpointV1`
 must authenticate the terminal external disposition, every local result and
 complete capacity ledger before
@@ -3549,8 +3615,13 @@ authorization/attempt terminalization and terminal result. A detector or
 adapter supplies none of those limits. Ordinary work cannot borrow the
 reservation; a later capacity-profile reduction preserves already admitted
 reservations until the obligation reaches a terminal custody-safe state.
-Activation fails atomically if it cannot reserve the complete control-state
-envelope.
+The reservation also binds the active backend storage-cost profile used for
+every physical dimension. Under the universal rank, activation locks the
+Recovery parent-capacity ledger before the child reserve and atomically debits
+ParentAvailable, creates the child ReservedUnoccupied balance and writes the
+unique parent/child allocation transfer. Activation fails atomically if it
+cannot reserve the complete control-state envelope or preserve the parent
+equation.
 
 That transaction also creates one obligation-wide
 `MigrationImportRegistryHistoryCorruptionControlLineageV1` with stable identity,
@@ -3607,6 +3678,54 @@ Physical transfers use stable
 `MigrationImportRegistryHistoryCorruptionControlPhysicalCapacityTransferIdV1`
 and immutable
 `MigrationImportRegistryHistoryCorruptionControlPhysicalCapacityTransferV1`.
+
+`bytes_stored` is not a backend-reported file or page count. It is a
+conservative destination charge derived by trusted code under signed,
+versioned
+`MigrationImportRegistryHistoryBackendStorageCostProfileV1`. That profile binds
+backend family and supported version range, schema/index generation, artifact
+kind, canonical encoding version, fixed per-artifact/index overhead, maximum
+expansion factor, rounding/allocation unit and measurement semantics. For each
+artifact, overflow-safe
+`charged_bytes_stored = round_up(fixed_overhead + canonical_encoded_bytes × maximum_expansion_factor, allocation_unit)`.
+Unknown artifact/backend/schema fields, unproved profile signatures or
+arithmetic overflow deny admission. The independently governed storage-
+capacity profile owner authenticates it; an adapter cannot sign, select or
+weaken its own cost profile. Existing child charges retain their bound
+cost-profile identity. A backend/schema/index transition requires an admitted
+successor profile and conservative capacity re-admission before activation:
+the nonnegative re-cost delta is atomically debited from the parent and added
+to the child encumbrance, while a lower estimate never releases existing
+capacity before the original artifacts are archived and exactly deleted.
+Destination migration/import recomputes every charge from canonical artifacts
+under the destination profile and never copies source `bytes_stored` counters.
+Separate runtime free-disk/WAL/page/temporary-space guards may fence or reject
+earlier than this logical ledger but cannot reduce a charge, credit the parent
+or authorize release.
+
+Co-located
+`MigrationImportRegistryHistoryRecoveryCapacityParentLedgerV1` is the sole
+owner of protected Recovery physical capacity. Per kind/dimension it stores
+immutable ParentTotal, current ParentAvailable and the exact active child
+encumbrance set and enforces:
+
+`parent_total = parent_available + sum(active_child_encumbrances)`.
+
+Allocation and release use stable
+`MigrationImportRegistryHistoryRecoveryCapacityParentTransferIdV1` and
+immutable
+`MigrationImportRegistryHistoryRecoveryCapacityParentTransferV1`, binding
+parent/child identities and versions, cost profile, kind, dimension, quantity,
+direction, trigger, settlement evidence and result. Allocation atomically
+debits ParentAvailable while creating child ReservedUnoccupied. Final release
+atomically moves child ReclaimPending or eligible ReservedUnoccupied to
+Released, removes the exact child encumbrance and credits ParentAvailable.
+There is no child Released transition without the matching parent credit, nor
+a parent credit without that child transition and unique transfer row. Exact
+retry returns the original transfer/result; changed material conflicts.
+Response loss, restore and failover reconcile the immutable transfer identity
+and both ledger versions. A backend unable to transact over the co-located
+parent and child rows refuses the capacity profile.
 
 Activation assigns immutable work and physical completion/final-custody
 envelopes to their typed terminalization reservations and the remainder to the
@@ -3812,7 +3931,7 @@ Healthy.
 Every append, detection, recovery, clearance, checkpoint and cleanup path uses
 one universal relative order encoded by the shared, non-overridable
 `MigrationImportRegistryHistoryLockRankV1`:
-active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
 An operation locks only its present/applicable rows and reservations, but it
 never acquires a later position before an earlier one. In particular no path
 holds a budget while waiting for the fence, and detection of a missing lineage
@@ -4313,31 +4432,39 @@ binds predecessor/sequence, the canonical ordered settlement-row set,
 transaction/result/audit identity and owner continuity; it never claims archive
 availability. The begin-release local transaction follows
 `MigrationImportRegistryHistoryLockRankV1`: archive-replay head when applicable,
-settlement-journal head, control reserve, history obligation, corruption fence,
-control lineage, lineage checkpoint, then retention/legal-hold/custody
-authority at its later rank. It rechecks terminal obligation and fence state.
-It atomically moves eligible ReservedUnoccupied units directly to Released,
-moves Occupied units to ReclaimPending, appends immutable per-leg settlement
-rows, advances the journal head, marks ReleasePending, and writes the canonical
+settlement-journal head, Recovery parent-capacity ledger, control reserve,
+history obligation, corruption fence, control lineage, lineage checkpoint,
+then retention/legal-hold/custody authority at its later rank. It rechecks
+terminal obligation, fence state and the parent equation. It atomically moves
+eligible ReservedUnoccupied units to Released while removing their exact child
+encumbrance and crediting ParentAvailable under the parent/child transfer ID,
+moves Occupied units to ReclaimPending without a parent credit, appends
+immutable transfer/per-leg settlement rows, advances the journal head, marks
+ReleasePending, and writes the canonical
 pending `MigrationImportRegistryHistoryCorruptionControlLineageReleaseResultV1`,
 audit and outbox. A split ledger transfer, settlement append, journal advance,
-checkpoint or lineage transition is unrepresentable.
+parent credit, checkpoint or lineage transition is unrepresentable.
 
 Authenticated sparse checkpoint/archive publication advances separate
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchiveReplayHeadV1`
 only after immutable chunks upload and verify. Its final local CAS binds the
 archive head to the journal coverage and deletes only exact captured hot rows/
 versions. In that same ranked local transaction, verified archive membership
-plus exact deletion moves matching ReclaimPending units to Released, appends
-the final settlement rows, advances the journal, marks the lineage Released and
-commits the final release result/audit/outbox. Hot settlement state cannot be
+plus exact deletion moves matching ReclaimPending units to Released, removes
+the exact child encumbrance, credits ParentAvailable and appends the immutable
+parent/child transfer plus final settlement rows before advancing the journal,
+marking the lineage Released and committing the final release
+result/audit/outbox. Hot settlement state cannot be
 deleted before verified publication; the local journal head never implies
 external availability. Restore selects the greatest authenticated journal and
 verified archive heads, proves their coverage relationship, exact settlement
 membership and physical-ledger conservation, and retains ReclaimPending
 encumbrance when history or deletion proof is missing, forked, rolled back or
-uncertain. Duplicate membership returns the original release result without
-another release; unknown non-membership never authorizes settlement.
+uncertain. It also proves ParentTotal = ParentAvailable + the exact restored
+active-child encumbrance set and every parent/child transfer against settlement
+membership. Duplicate membership returns the original release result without
+another release or parent credit; unknown non-membership never authorizes
+settlement.
 
 Exact retry returns that result; changed lineage/checkpoint/custody/
 settlement/idempotency returns
@@ -4455,12 +4582,15 @@ Missing/defaulted fence, scope, source-manifest head/activation/checkpoint/
 external-journal/proposal-or-active-high-watermark/publication-attempt/
 activation-or-abort receipt/publication-profile/destructive-authority state,
 completion reserve, operational/candidate head, profile trust/compatibility/
-ratchet state, control reserve/profile/lineage/episode/typed-ledger-transfer/
-conservation/lock-rank/settlement-head-archive-deletion-membership state or
+ratchet/activation-fence port receipts/status/attempt-slot state, Recovery
+parent-capacity ledger/parent-child transfers/backend storage-cost profile,
+control reserve/profile/lineage/episode/typed-ledger-transfer/
+both child and parent conservation/lock-rank/settlement-head-archive-deletion-membership state or
 registry genesis/rebinding state; an
 old bundle below a current required anchor; reset lifetime charge; field-wise
-invalid join; double debit, cross-ledger/dimension transfer, WorkSpent decrease,
-bytes_processed/bytes_stored alias, premature Released capacity, lost/
+invalid join; double debit, split parent/child debit or credit, duplicate parent
+credit, cross-ledger/dimension transfer, WorkSpent decrease,
+bytes_processed/bytes_stored alias, copied source storage charge, premature Released capacity, lost/
 recreated rebuild parent; duplicate successor; ambiguous
 archive selection; or a backend unable to atomically consume clearance
 authority refuses import and leaves the obligation fenced.
@@ -4570,15 +4700,24 @@ the publication profile/source/quorum at every prepare/publish/local-activate/
 external-activate boundary; omit/substitute the trust anchor, compatibility or
 ratchet and prove final current-profile denial plus
 LocalActivationCommitted→Aborted under TerminalizationOnly/EmergencyDistrust.
+Race ActivateManifest/RotateProfile/EmergencyDistrust through the concrete
+linearizable activation-fence port, fork/roll back its receipt history, replace
+it with independent signatures, lose the root and exceed the one scoped
+attempt slot; require one final winner, fail-closed reprovisioning and no
+unbounded enumeration.
 Restore every combination of operational-active and transition-candidate heads,
 allowing only empty/equal/reachable non-authoritative candidate. Model lifetime-
 work WorkAvailable→EpisodeWorkReserved→WorkSpent separately from physical
 ReservedUnoccupied→Occupied→ReclaimPending→Released, including distinct
-bytes_processed/bytes_stored. Prove both conservation equations, kind-specific
+bytes_processed/bytes_stored. Prove both child conservation equations, kind-specific
 exact-once transfer IDs, atomic scope/lineage state, no double charge, no
 WorkSpent decrease, no cross-ledger/dimension movement, no physical release
 before verified archive/deletion, overflow/underflow refusal and response-loss
-replay. Record adapter acquisition traces for every path and reject deviation
+replay. Recompute destination bytes_stored under the destination
+backend/schema/index/artifact cost profile, never copied source counters. Fault
+every parent debit/credit versus child allocation/release and require the
+stable parent/child transfer plus parent equation, including completion
+reserves. Record adapter acquisition traces for every path and reject deviation
 from `MigrationImportRegistryHistoryLockRankV1`. Crash reserve settlement
 before/after ReleasePending, row append, journal advance, archive verification,
 exact deletion, Released/result/outbox; fork,

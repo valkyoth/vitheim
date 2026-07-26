@@ -557,7 +557,7 @@ restore, failover, and release evidence.
    Through `1.0.0`, `VIT-LAW-009 AtomicMigrationImportActivation` requires the
    live coordinator job/barrier and every selected domain-owner guard to share one destination-local
    transaction. Its canonical order is
-   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox:
+   active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox:
    after locking, trusted manifest rederivation and
    current-state rechecks, authorization consumption and all owner activations
    commit with barrier/job result, exactly one Pending plus zero-counter
@@ -600,7 +600,14 @@ restore, failover, and release evidence.
    operations, per-successor compatibility decision and monotonic distrust
    ratchet govern it. One governance-root external CAS activation fence
    serializes profile transition, distrust and manifest activation so exactly
-   one outcome wins even across response loss. Proposal and
+   one outcome wins even across response loss. Its concrete port binds the
+   tenant/deployment/profile-lineage key, expected sequence/predecessor,
+   operation digest, authenticated receipt/status, stable request identity,
+   consensus/quorum-intersection assumptions and anti-fork/rollback finality;
+   independent signatures are not CAS. Profiles are tenant/deployment scoped
+   with one nonterminal attempt slot. `1.0.0` has no in-place root recovery:
+   loss or full compromise permanently fences that identity and requires
+   new-identity reprovisioning. Proposal and
    active-manifest high-watermarks are distinct; proposal publication is never
    active authority, the local head CAS precedes a separately witnessed
    activation receipt, and stable per-witness identities reconcile response
@@ -626,16 +633,22 @@ restore, failover, and release evidence.
    nondecreasing spent proof, retry, hash, signature, bytes-processed and time.
    A physical-capacity ledger conserves reserved-unoccupied/occupied/reclaim-
    pending/released rows, bytes-stored, audit and outbox; only authenticated
-   archive plus exact deletion releases encumbrance. Stable kind-specific
-   transfer IDs and explicit unused-reservation rules span clearance/re-fencing.
+   archive plus exact deletion releases encumbrance. Backend storage-cost
+   profiles conservatively charge canonical artifacts for each backend/schema/
+   index generation; destination import re-costs rather than copying counters.
+   A co-located Recovery parent ledger atomically debits with child allocation
+   and credits with child release under one transfer identity and equation;
+   completion reserves use it too. Stable kind-specific transfer IDs and
+   explicit unused-reservation rules span clearance/re-fencing.
    Insufficient remaining or minimum future capacity permanently
    quarantines the lineage. Rebuild is terminal for the predecessor; Release
    requires a custody-safe no-future-operation checkpoint and exact-once
    settlement of every original reserve leg through separate authenticated
    local journal and verified archive-replay heads. All adapters use one shared
    typed fence-before-lineage lock rank and acquisition-trace conformance tests;
-   Release includes obligation, fence, lineage, checkpoint and custody
-   authority. Clearance uses an independent
+   Release includes the Recovery parent ledger, obligation, fence, lineage,
+   checkpoint and custody authority and cannot commit without parent credit.
+   Clearance uses an independent
    admitted/revocable/expiring single-use authorization, bounded proof work and
    a destination-ratcheted anchor registry whose mandatory classes/quorums and
    independently authenticated collection receipt define greatest-known state.

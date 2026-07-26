@@ -1,13 +1,10 @@
 #!/bin/sh
 set -eu
-
-lock_order='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
-
+lock_order='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
 fail() {
     echo "migration/import policy: $*" >&2
     exit 1
 }
-
 for file in \
     docs/implementation/PHASE_C.md \
     docs/implementation/OPTION_DECISIONS.md \
@@ -22,84 +19,73 @@ do
     grep -Fq "$lock_order" "$file" ||
         fail "$file omits the universal migration/import lock order"
 done
-
 if grep -R -Fq \
     'job→candidate/barrier→ordered-owner→audit/result/outbox' \
     docs
 then
     fail "obsolete activation order without coordinator generation or authorization remains"
 fi
-
 if grep -R -Fq \
     'ordered-domain-owner→audit/result/outbox' \
     docs
 then
     fail "obsolete activation order without the atomic history obligation remains"
 fi
-
 if grep -R -Fq \
     'ordered-domain-owner→history-obligation→audit/result/outbox' \
     docs
 then
     fail "obsolete activation order without the atomic lineage disposition remains"
 fi
-
 if grep -R -Fq \
     'ordered-domain-owner→history-obligation/lineage-disposition→audit/result/outbox' \
     docs
 then
     fail "obsolete activation order without retention/legal-hold locking remains"
 fi
-
 if grep -R -Fq \
     'ordered-domain-owner→history-obligation/lineage-disposition→retention/legal-hold' \
     docs
 then
     fail "obsolete activation order without corruption-fence genesis remains"
 fi
-
 if grep -R -Fq \
     'ordered-domain-owner→history-obligation/corruption-fence/lineage-disposition→retention/legal-hold' \
     docs
 then
     fail "obsolete activation order without anchor source-manifest/genesis remains"
 fi
-
 if grep -R -Fq \
     'ordered-domain-owner→clearance-anchor-source-manifest→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition' \
     docs
 then
     fail "obsolete activation order without manifest head or control reserve remains"
 fi
-
 if grep -R -Fq \
     'corruption-control-reserve→history-obligation/corruption-fence/clearance-anchor-registry/lineage-disposition' \
     docs
 then
     fail "obsolete activation order without obligation-wide corruption-control lineage remains"
 fi
-
 for obsolete_order in \
     'history-obligation→corruption-fence→archive-head→history/idempotency→recovery-lineage-budget' \
     'history-obligation→lineage-disposition→recovery-lineage-budget→corruption-fence' \
     'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head' \
     'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt' \
     'active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry' \
-    'active-coordinator-generation→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition'
+    'active-coordinator-generation→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition'
 do
     if grep -R -Fq "$obsolete_order" docs
     then
         fail "obsolete history lock order remains: $obsolete_order"
     fi
 done
-
 if grep -R -Fq \
     'externally retained head commitment and/or witness' \
     docs
 then
     fail "open-ended clearance anchor and/or semantics remain"
 fi
-
 for obsolete in \
     'scope, action discriminator' \
     'descriptor and action, exact authorization identity/digest' \
@@ -110,7 +96,6 @@ do
         fail "Phase C retains duplicate action authority: $obsolete"
     fi
 done
-
 for requirement in \
     'RetryAppend authority can never create either waiver or abandonment terminal' \
     'requires a fresh Abandon authorization' \
@@ -151,6 +136,12 @@ for requirement in \
     'CheckpointPublicationProfileRevocationRatchetV1' \
     'CheckpointPublicationProfileActivationFenceV1' \
     'serialize through one governance-root external CAS key' \
+    'CheckpointPublicationProfileAttemptSlotV1' \
+    'scoped to exactly one tenant/deployment/profile' \
+    'supported through-`1.0.0` profile has no offline or' \
+    'ManifestGovernanceActivationFencePortV1' \
+    'One linearizable compare-and-swap atomically' \
+    'Independent witness signatures' \
     'TerminalizationOnly or EmergencyDistrust' \
     'BootstrapMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfile' \
     'RestoreMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileLineage' \
@@ -176,6 +167,11 @@ for requirement in \
     'WorkSpent never decreases' \
     'ControlPhysicalCapacityLedgerV1' \
     'original_physical_reservation = reserved_unoccupied + occupied + reclaim_pending + released' \
+    'BackendStorageCostProfileV1' \
+    'Destination migration/import recomputes every charge' \
+    'RecoveryCapacityParentLedgerV1' \
+    'parent_total = parent_available + sum(active_child_encumbrances)' \
+    'There is no child Released transition without the matching parent credit' \
     'bytes_processed' \
     'bytes_stored' \
     'only verified archive membership plus exact physical deletion and settlement' \
@@ -222,10 +218,8 @@ do
     grep -Fq "$requirement" docs/implementation/PHASE_C.md ||
         fail "Phase C omits recovery requirement: $requirement"
 done
-
 tmp_dir=$(mktemp -d)
 trap 'rm -rf "$tmp_dir"' EXIT HUP INT TERM
-
 for symbol in \
     MigrationImportCoordinatorGenerationV1 \
     MigrationImportActivationHistoryDispositionConflict \
@@ -338,6 +332,13 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileCompatibilityDecisionV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileRevocationRatchetV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileActivationFenceV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileAttemptSlotV1 \
+    MigrationImportRegistryHistoryManifestGovernanceActivationFencePortV1 \
+    MigrationImportRegistryHistoryManifestGovernanceActivationFenceKeyV1 \
+    MigrationImportRegistryHistoryManifestGovernanceActivationFenceRequestV1 \
+    MigrationImportRegistryHistoryManifestGovernanceActivationFenceReceiptV1 \
+    MigrationImportRegistryHistoryManifestGovernanceActivationFenceStatusV1 \
+    MigrationImportRegistryHistoryManifestGovernanceActivationFenceHistoryUnavailable \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileSuccessorClassificationV1 \
     BootstrapMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfile \
     PrepareMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileTransition \
@@ -397,6 +398,10 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionControlPhysicalCapacityLedgerV1 \
     MigrationImportRegistryHistoryCorruptionControlPhysicalCapacityTransferIdV1 \
     MigrationImportRegistryHistoryCorruptionControlPhysicalCapacityTransferV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileV1 \
+    MigrationImportRegistryHistoryRecoveryCapacityParentLedgerV1 \
+    MigrationImportRegistryHistoryRecoveryCapacityParentTransferIdV1 \
+    MigrationImportRegistryHistoryRecoveryCapacityParentTransferV1 \
     MigrationImportRegistryHistoryCorruptionControlEpisodeV1 \
     MigrationImportRegistryHistoryCorruptionControlLineageCheckpointV1 \
     MigrationImportRegistryHistoryLockRankV1 \
@@ -468,14 +473,12 @@ do
         fail "semantic gate accepts VIT-LAW-009 without $symbol"
     fi
 done
-
 if grep -Fq \
     'LineageCorrupt(MigrationImportRegistryHistoryCorruptionResultV1)' \
     docs/implementation/PHASE_C.md
 then
     fail "corruption remains misclassified as a changed-material conflict"
 fi
-
 if grep -Fq 'ManualRecoveryRequired' \
     docs/LAW_SEMANTIC_REALIZATIONS.md \
     docs/implementation/PHASE_C.md \
@@ -485,5 +488,4 @@ if grep -Fq 'ManualRecoveryRequired' \
 then
     fail "terminal ManualRecoveryRequired remains in an authoritative protocol"
 fi
-
 echo "migration/import policy passed"
