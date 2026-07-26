@@ -260,10 +260,14 @@ audit decision.
   and activation serialize on one governance-root external CAS activation
   fence port with domain-separated key, sequence/predecessor, stable request,
   operation digest, authenticated receipt/status, consensus assumptions and
-  anti-fork/rollback finality; independent signatures cannot satisfy it.
-  Profiles are tenant/deployment scoped with one nonterminal attempt slot.
-  Root loss/full compromise permanently fences that identity; `1.0.0` has no
-  in-place recovery root. Proposal and active high-watermarks are separate,
+  anti-fork/rollback finality; independent signatures cannot satisfy it. CAS
+  and status reads are linearizable, request identity binds one digest, final
+  results are immutable and compaction retains authenticated request-result
+  membership. Profiles are tenant/deployment scoped with one exact
+  nonterminal attempt slot. Root loss/full compromise records immutable old-
+  identity retirement; the separately authenticated replacement inherits no
+  authority/sequencing state, and `1.0.0` has no in-place recovery root.
+  Proposal and active high-watermarks are separate,
   stable request identities reconcile unknown publication, and local CAS is
   followed by an external activation receipt or authenticated abort/unresolved
   disposition. Restore/import trusts only externally Activated lifecycle under
@@ -287,9 +291,12 @@ audit decision.
   capacity ledger conserves reserved-unoccupied/occupied/reclaim-pending/
   released rows, bytes-stored, audit and outbox; only verified archive plus
   exact deletion releases it. Signed backend cost profiles charge canonical
-  destination artifacts by backend/schema/index generation. A co-located
+  destination artifacts by backend/schema/index generation with checked
+  rational ceiling arithmetic and canonical boundary/golden vectors. A co-located
   Recovery parent ledger atomically pairs child allocation/release with parent
-  debit/credit under one transfer ID/equation, including completion reserves.
+  debit/credit under one deterministic transfer ID/equation, including
+  completion reserves; restore verifies both sides from one snapshot and never
+  guesses compensation.
   Kind-specific exact-once transfers update scope/lineage atomically. Every re-fence uses both ledgers; clearance cannot reset them,
   and exhaustion or loss of
   minimum future capacity permanently quarantines. Rebuild and custody-safe,

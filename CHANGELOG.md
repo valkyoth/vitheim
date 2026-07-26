@@ -22,6 +22,10 @@ All notable Vitheim changes are documented here. The format follows
 - Added signed backend storage-cost profiles and atomic Recovery-parent/child
   double-entry capacity transfers so destination imports are re-costed and a
   child release cannot leak or duplicate its parent credit.
+- Closed second-order recovery semantics: fence request IDs and final status
+  are immutable across compaction, lost-root replacement inherits no authority,
+  storage costing uses checked rational golden vectors, and a timed-out logical
+  capacity operation cannot mint a second transfer or trigger guessed repair.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

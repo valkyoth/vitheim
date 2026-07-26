@@ -77,10 +77,13 @@ transition, distrust and manifest activation, and its sequence survives
 restore/failover. Its concrete port carries domain-separated key, expected
 sequence/predecessor, closed operation digest, authenticated receipt/status,
 stable request identity, consensus/quorum-intersection assumptions and anti-
-fork/rollback finality; independent signatures cannot claim CAS. Each
-tenant/deployment profile has one nonterminal attempt slot. Root loss or full
-compromise permanently fences that identity for controlled new-identity
-reprovisioning; `1.0.0` has no in-place recovery root. Durable per-witness requests/status queries reconcile unknown
+fork/rollback finality; independent signatures cannot claim CAS. Request
+identity binds one digest, CAS/status reads are linearizable, final results are
+immutable and compaction retains authenticated request-result membership.
+Each tenant/deployment profile has one exact nonterminal attempt slot. Root
+loss or full compromise creates immutable retirement evidence and permanently
+fences that identity; a separately authenticated replacement inherits no
+authority/sequencing state, and `1.0.0` has no in-place recovery root. Durable per-witness requests/status queries reconcile unknown
 proposal publication; the local CAS is followed by external activation receipt
 or authenticated abort, under separate proposal and active high-watermarks.
 Every attempt reserves its complete non-borrowable completion capacity before
@@ -109,8 +112,11 @@ Its physical-capacity ledger separately conserves reserved-unoccupied/occupied/
 reclaim-pending/released rows, backend-cost-profile-derived bytes-stored, audit
 and outbox. Destination import re-costs canonical artifacts under its own
 backend/schema/index profile. A co-located Recovery parent ledger atomically
-pairs child allocation/release with parent debit/credit under one transfer ID
-and parent equation, including completion reserves. Kind-specific
+pairs child allocation/release with parent debit/credit under one deterministic
+transfer ID and parent equation, including completion reserves. Backend cost
+profiles use checked rational ceiling arithmetic and canonical boundary/golden
+vectors. Restore verifies both ledger sides from one snapshot and never repairs
+by choosing one side or guessing compensation. Kind-specific
 exact-once transfers cannot double charge or cross ledgers, and only verified
 archive plus exact deletion releases physical encumbrance.
 Insufficient future capacity permanently quarantines, rebuild is
@@ -2156,8 +2162,13 @@ weaken the governed publication profile/source set/quorum or omit its identity/
 generation/digest, self-bootstrap/rotate its trust root, omit compatibility/
 revocation-ratchet recheck, fork/rollback the activation-fence sequence or
 claim simultaneous activation/distrust winners, substitute independent
-signatures for the CAS port, lose status/finality, infer in-place root recovery,
-share a profile across tenants or exceed its one attempt slot, accept old-profile activation after
+signatures for the CAS port, make status reads non-linearizable, rebind one
+request identity to changed material, mutate a final winner/loser result,
+compact request-result membership before reconciliation, lose status/finality,
+omit old-identity retirement evidence, inherit profile/fence/slot/ratchet/
+high-watermark/authorization/idempotency state into a replacement, infer
+in-place root recovery, stale-clear an occupied slot, share a profile across
+tenants or exceed its one attempt slot, accept old-profile activation after
 TerminalizationOnly/EmergencyDistrust, conflate operational-active and
 transition-candidate heads, publish without the full completion reserve, make a
 worker select witness mode, substitute/unavailable a witness or rotate/revoke
@@ -2183,10 +2194,14 @@ minimum future capacity without permanent quarantine, duplicate custody-safe
 release settlement, double-charge EpisodeWorkReserved and WorkSpent, decrease
 WorkSpent, alias lifetime-work and physical-capacity or bytes-processed/stored,
 copy source bytes-stored instead of destination re-costing, understate
-backend/schema/index/artifact overhead, bypass runtime disk fencing, split
+backend/schema/index/artifact overhead, round a rational expansion downward,
+overflow fixed/expansion/aggregate arithmetic, omit a required backend/profile
+golden vector, bypass runtime disk fencing, split
 parent debit/credit from child allocation/release, leak or double-credit the
-Recovery parent, move dimensions, violate any child or parent conservation equation, replay/change a typed
-transfer identity, move Occupied directly to Released, omit obligation/fence/
+Recovery parent, mint a new transfer identity after timeout, repair split state
+by choosing one side or guessing compensation, move dimensions, violate any
+child or parent conservation equation, replay/change a typed transfer identity,
+move Occupied directly to Released, omit obligation/fence/
 checkpoint/custody from settlement or invert the shared lock rank, return
 unused reservation without terminal checkpoint, settle outside the local
 journal or delete before verified archive membership, fork/roll back either

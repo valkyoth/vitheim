@@ -681,10 +681,15 @@ share one governance-root external CAS activation fence whose durable sequence
 permits only one winner. Its concrete port binds domain-separated key,
 sequence/predecessor, operation digest, stable request, authenticated
 receipt/status, consensus/quorum-intersection assumptions and anti-fork/
-rollback finality; independent signatures are not CAS. Profiles are
-tenant/deployment scoped with one nonterminal attempt slot. Root loss or full
+rollback finality; independent signatures are not CAS. Request identity binds
+one digest, CAS/status reads are linearizable, final results are immutable and
+compaction retains authenticated request-result membership. Profiles are
+tenant/deployment scoped with one exact nonterminal attempt slot. Root loss or full
 compromise permanently fences that identity and requires controlled
-new-identity reprovisioning; production has no in-place recovery root. Durable per-witness request/status identities reconcile
+new-identity reprovisioning; production has no in-place recovery root. The old
+identity has immutable retirement evidence, while the replacement has a
+separately authenticated genesis and inherits no profile/fence/slot/ratchet/
+high-watermark/authorization/idempotency state. Durable per-witness request/status identities reconcile
 proposal publication; local CAS precedes external activation receipt or
 authenticated abort under separate proposal/active high-watermarks. Every
 attempt reserves complete non-borrowable completion capacity before its first
@@ -707,9 +712,11 @@ original protected reserve. Its lifetime-work budget conserves available/
 reserved/nondecreasing spent proof, retry, hash, signature, bytes-processed and
 time. Its physical-capacity ledger separately conserves reserved-unoccupied/
 occupied/reclaim-pending/released rows, destination backend-cost-profile bytes-
-stored, audit and outbox. A co-located Recovery parent ledger atomically pairs
-every child allocation/release with parent debit/credit under one transfer ID
-and equation, including completion reserves. Kind-
+stored, audit and outbox using checked rational ceiling arithmetic and canonical
+backend/profile boundary/golden vectors. A co-located Recovery parent ledger
+atomically pairs every child allocation/release with parent debit/credit under
+one deterministic transfer ID and equation, including completion reserves;
+restore verifies both sides from one snapshot without guessed repair. Kind-
 specific exact-once transfers cannot double charge or cross ledgers; verified
 archive plus exact deletion alone releases physical capacity. Insufficient future capacity permanently quarantines,
 rebuild terminalizes the predecessor and Release requires a custody-safe
@@ -827,8 +834,11 @@ reconciliation, orphan cleanup without external terminal membership, caller/
 adapter-selected witness set or quorum, omitted profile identity/generation/
 digest, self-rooted bootstrap/rotation, omitted compatibility/distrust recheck,
 activation-fence rollback/fork or simultaneous activation/distrust winners,
-signature-only fence substitution, lost/forked status or finality, inferred
-in-place root recovery, shared cross-tenant profile or second attempt slot,
+signature-only fence substitution, non-linearizable status, request-ID
+rebinding, final-result mutation, unsafe request-result compaction, lost/forked
+status or finality, missing retirement evidence, replacement-state
+inheritance, inferred in-place root recovery, stale slot clearing, shared
+cross-tenant profile or second attempt slot,
 old-profile activation after LocalActivationCommitted, operational/candidate
 head conflation, first external send without complete terminalization reserve,
 witness/key substitution or outage, destructive-revocation
@@ -842,7 +852,9 @@ reopening, repeated clear/re-fence episode/reserve reset, missing/recreated
 obligation control lineage, minimum-future-capacity bypass, duplicated release
 settlement, double work reservation/spend, work/physical or bytes-processed/
 stored alias, copied source storage charge, backend/schema/index cost
-undercharge, split child/parent debit or credit, leaked/double parent credit,
+undercharge, rational-rounding/aggregate overflow or missing golden vector,
+split child/parent debit or credit, duplicate transfer minted after timeout,
+one-sided repair or guessed compensation, leaked/double parent credit,
 WorkSpent decrease, typed-transfer replay/change, any child or parent
 conservation/overflow/underflow failure, Occupied-to-Released shortcut, lock-
 rank inversion or omitted obligation/fence/checkpoint/custody participant,

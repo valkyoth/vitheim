@@ -366,10 +366,18 @@ requires controlled reprovisioning under a new identity. Any future offline
 recovery quorum requires a new reviewed law generation and may not be inferred.
 An authenticated local safety-stop may force unready/fenced state and audit
 only; it cannot rotate, clear, activate or transfer authority.
+Retirement evidence binds the old identity, final profile head/high-watermark,
+fence sequence/status, root generation, incident and trusted time. A
+replacement starts a separately authenticated genesis and may reference the
+old identity only as provenance; profile/fence/slot/ratchet/high-watermark/
+authorization/idempotency state is never inherited.
 Profiles are tenant/deployment scoped and never shared across tenants. One
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileAttemptSlotV1`
 Empty-or-one slot bounds the only nonterminal attempt; a second
 attempt denies or exact-joins, so succession performs no unbounded enumeration.
+Its exact tenant/deployment/profile-generation/version/attempt digest is
+CAS-cleared only by the matching authenticated terminal checkpoint; restore
+rejects an Empty slot contradicted by retained nonterminal external evidence.
 Every successor classifies that optional predecessor-bound attempt as
 MayActivateExisting, TerminalizationOnly or EmergencyDistrust and advances a
 monotonic profile/key/witness revocation ratchet. Final external activation
@@ -384,7 +392,10 @@ closed operation kind/digest, one atomic winner, authenticated receipt/status
 lookup, stable request identity, unknown-outcome reconciliation, non-wrapping
 finality/fork/rollback detection, quorum-intersection or consensus assumption,
 rotation verification and typed unavailable history. Independent witness
-signatures are not a CAS implementation.
+signatures are not a CAS implementation. Request identity permanently binds
+one digest; CAS and status reads are linearizable, final winner/loser results
+are immutable, sequence `n + 1` requires durably readable final `n`, and
+compaction retains authenticated request-result membership or refuses.
 TerminalizationOnly and EmergencyDistrust permit status/abort/unresolved
 terminalization but force LocalActivationCommitted to Aborted without changing
 the operational head; they never accept old-profile activation evidence.
@@ -591,8 +602,9 @@ IDs, both conservation equations and present parent-pool encumbrance restore
 exactly. Freeze signed/versioned
 `MigrationImportRegistryHistoryBackendStorageCostProfileV1` binding backend
 family/version, schema/index generation, artifact/encoding kind, fixed
-overhead, maximum expansion factor, rounding/allocation unit and measurement
-semantics. `bytes_stored` is its conservative destination charge; import
+overhead, canonical rational expansion numerator/denominator, rounding/
+allocation unit and measurement semantics. Wide checked ceiling arithmetic and
+backend/profile boundary/golden vectors define `bytes_stored`; import
 recomputes it from canonical artifacts and never copies source counters.
 Runtime disk-pressure guards are separate and may only fence earlier.
 Persist co-located
@@ -601,7 +613,11 @@ set and stable parent/child transfer rows. Allocation atomically debits parent
 and reserves child; release atomically releases child and credits parent under
 one identity, preserving ParentTotal = ParentAvailable + active child
 encumbrances. Apply the same protocol to publication completion reserves; a
-backend without parent/child transactionality refuses. Freeze
+backend without parent/child transactionality refuses. One logical operation
+deterministically owns one transfer identity and immutable before/after
+versions, balances, membership and result; timeout cannot mint a replacement.
+Restore verifies both sides from one snapshot and never repairs divergence by
+choosing a side or guessing a compensating credit. Freeze
 `MigrationImportRegistryHistoryLockRankV1` as the sole adapter
 rank mapping and persist acquisition-trace conformance evidence. Release locks
 and rechecks settlement heads, parent ledger, reserve, obligation, fence,

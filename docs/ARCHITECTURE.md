@@ -604,10 +604,13 @@ restore, failover, and release evidence.
    tenant/deployment/profile-lineage key, expected sequence/predecessor,
    operation digest, authenticated receipt/status, stable request identity,
    consensus/quorum-intersection assumptions and anti-fork/rollback finality;
-   independent signatures are not CAS. Profiles are tenant/deployment scoped
-   with one nonterminal attempt slot. `1.0.0` has no in-place root recovery:
-   loss or full compromise permanently fences that identity and requires
-   new-identity reprovisioning. Proposal and
+   independent signatures are not CAS. CAS and status reads are linearizable;
+   request identity binds one digest, final results are immutable, and
+   compaction retains authenticated request-result membership. Profiles are
+   tenant/deployment scoped with one exact nonterminal attempt slot. `1.0.0`
+   has no in-place root recovery: immutable retirement evidence permanently
+   fences the old identity, and a separately authenticated replacement genesis
+   inherits none of its authority or sequencing state. Proposal and
    active-manifest high-watermarks are distinct; proposal publication is never
    active authority, the local head CAS precedes a separately witnessed
    activation receipt, and stable per-witness identities reconcile response
@@ -635,10 +638,13 @@ restore, failover, and release evidence.
    pending/released rows, bytes-stored, audit and outbox; only authenticated
    archive plus exact deletion releases encumbrance. Backend storage-cost
    profiles conservatively charge canonical artifacts for each backend/schema/
-   index generation; destination import re-costs rather than copying counters.
+   index generation with checked rational ceiling arithmetic and golden vectors;
+   destination import re-costs rather than copying counters.
    A co-located Recovery parent ledger atomically debits with child allocation
    and credits with child release under one transfer identity and equation;
-   completion reserves use it too. Stable kind-specific transfer IDs and
+   completion reserves use it too. One logical operation deterministically
+   maps to one transfer ID, and restore verifies both sides from one snapshot
+   without guessed compensation. Stable kind-specific transfer IDs and
    explicit unused-reservation rules span clearance/re-fencing.
    Insufficient remaining or minimum future capacity permanently
    quarantines the lineage. Rebuild is terminal for the predecessor; Release

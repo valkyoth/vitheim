@@ -3336,6 +3336,15 @@ decision; no operator, database administrator or witness may infer it.
 An authenticated local safety-stop may only force unready/fenced service and
 emit audit/incident evidence; it cannot rotate a root, clear the fence, activate
 a profile/manifest or transfer authority to the new identity.
+The permanent retirement evidence binds the old tenant/deployment/profile
+lineage, last proved profile head and external high-watermark, activation-fence
+sequence/status, root generation, reason, incident and trusted-time evidence.
+If a replacement is later provisioned, its separately authenticated genesis
+may record the retired identity only as provenance. It cannot copy or continue
+the old profile generation, fence sequence, attempt slot, compatibility
+decision, ratchet, high-watermark, authorization or idempotency namespace.
+Missing or contradictory retirement evidence keeps both export and replacement
+admission unready; an operator-created linkage grants no authority.
 
 The complete profile lifecycle is implemented only by
 `BootstrapMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfile`,
@@ -3365,7 +3374,12 @@ is Empty or binds exactly one predecessor/profile-bound nonterminal attempt.
 atomically CAS-fills an Empty slot, exact retry joins it, and only an
 authenticated terminal disposition plus completion checkpoint clears it.
 Profile succession therefore classifies zero or one bounded attempt rather
-than enumerating an unbounded set.
+than enumerating an unbounded set. The slot key and value bind tenant,
+deployment, profile-lineage generation, expected slot version, attempt identity
+and canonical attempt digest. Clearing compares that exact tuple; a stale
+clear, second request identity, cross-tenant clone or changed attempt conflicts.
+Restore cannot accept an Empty slot while retained external journal or
+completion evidence proves a nonterminal bound attempt.
 
 Every successor records
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileCompatibilityDecisionV1`
@@ -3399,6 +3413,16 @@ must terminalize. Response loss reconciles the one external winner.
 The port contract freezes monotonic sequence/finality, predecessor continuity,
 fork and rollback detection, authenticated status history, quorum-intersection
 or consensus assumptions and trust-root/key-rotation verification.
+Request identity is globally unique within the fence key and permanently binds
+one canonical request digest; reuse with changed material conflicts. CAS and
+status reads are linearizable with respect to that key. A final winning or
+losing result is immutable, status may report Pending only while the provider
+cannot yet prove a final result, and unavailable history is never interpreted
+as Empty, Pending or permission to resubmit with a new identity. Sequence
+`n + 1` cannot finalize until the final value at `n` is durably readable and
+its predecessor digest matches. Retention or compaction must preserve an
+authenticated checkpoint plus request-to-final-result membership sufficient
+to reconcile every still-retained attempt; otherwise the profile is refused.
 Independent witness signatures, a quorum of unrelated append-only receipts or
 eventual last-write-wins storage do not satisfy the CAS capability. Missing,
 forked, rolled-back or unverifiable fence history returns
@@ -3686,8 +3710,10 @@ versioned
 backend family and supported version range, schema/index generation, artifact
 kind, canonical encoding version, fixed per-artifact/index overhead, maximum
 expansion factor, rounding/allocation unit and measurement semantics. For each
-artifact, overflow-safe
-`charged_bytes_stored = round_up(fixed_overhead + canonical_encoded_bytes × maximum_expansion_factor, allocation_unit)`.
+artifact, the expansion factor is a canonical positive rational numerator and
+nonzero denominator, evaluated with ceiling division before the outer
+allocation-unit rounding. Wide checked arithmetic implements
+`charged_bytes_stored = round_up(fixed_overhead + ceil(canonical_encoded_bytes × expansion_numerator / expansion_denominator), allocation_unit)`.
 Unknown artifact/backend/schema fields, unproved profile signatures or
 arithmetic overflow deny admission. The independently governed storage-
 capacity profile owner authenticates it; an adapter cannot sign, select or
@@ -3701,7 +3727,12 @@ Destination migration/import recomputes every charge from canonical artifacts
 under the destination profile and never copies source `bytes_stored` counters.
 Separate runtime free-disk/WAL/page/temporary-space guards may fence or reject
 earlier than this logical ledger but cannot reduce a charge, credit the parent
-or authorize release.
+or authorize release. Each admitted backend/profile pair supplies canonical
+boundary and golden vectors for zero/minimum/maximum artifact sizes, fractional
+expansion, allocation rounding, fixed/index overhead, aggregate accumulation
+and every overflow edge. If the profile cannot conservatively upper-bound a
+supported artifact for that backend/schema/index generation, that combination
+is unsupported rather than assigned an optimistic charge.
 
 Co-located
 `MigrationImportRegistryHistoryRecoveryCapacityParentLedgerV1` is the sole
@@ -3726,6 +3757,16 @@ retry returns the original transfer/result; changed material conflicts.
 Response loss, restore and failover reconcile the immutable transfer identity
 and both ledger versions. A backend unable to transact over the co-located
 parent and child rows refuses the capacity profile.
+The stable logical operation deterministically selects its one transfer
+identity; a timeout or retry cannot mint another identity for the same
+allocation or release. The immutable result binds expected and resulting
+parent/child versions, before/after balances, active-encumbrance membership and
+the shared settlement result digest. Recovery verifies transfer adjacency and
+both equations from the same consistent snapshot. It never repairs divergence
+by trusting the parent, trusting the child or replaying a guessed compensating
+credit. Missing history, duplicate logical-operation mapping, one-sided state
+or an unexplained version gap permanently fences capacity until an independently
+authorized complete atomic restore proves the original transaction.
 
 Activation assigns immutable work and physical completion/final-custody
 envelopes to their typed terminalization reservations and the remainder to the

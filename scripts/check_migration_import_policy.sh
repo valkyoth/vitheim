@@ -142,6 +142,8 @@ for requirement in \
     'ManifestGovernanceActivationFencePortV1' \
     'One linearizable compare-and-swap atomically' \
     'Independent witness signatures' \
+    'Request identity is globally unique within the fence key' \
+    'permanent retirement evidence binds' \
     'TerminalizationOnly or EmergencyDistrust' \
     'BootstrapMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfile' \
     'RestoreMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileLineage' \
@@ -168,8 +170,10 @@ for requirement in \
     'ControlPhysicalCapacityLedgerV1' \
     'original_physical_reservation = reserved_unoccupied + occupied + reclaim_pending + released' \
     'BackendStorageCostProfileV1' \
+    'canonical positive rational numerator' \
     'Destination migration/import recomputes every charge' \
     'RecoveryCapacityParentLedgerV1' \
+    'The stable logical operation deterministically selects' \
     'parent_total = parent_available + sum(active_child_encumbrances)' \
     'There is no child Released transition without the matching parent credit' \
     'bytes_processed' \
