@@ -72,6 +72,9 @@ All notable Vitheim changes are documented here. The format follows
 - Restricted custody publishers to non-authoritative staged/verified receipts,
   made final Commit atomically install the archive head with hot-row deletion,
   and required deletion or charged custody transfer before workspace credit.
+- Required Begin-time custody transfer reservations, governed cross-dimension
+  custody costing, and a typed publication lifecycle that excludes Commit from
+  orphan collection and garbage collection races.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

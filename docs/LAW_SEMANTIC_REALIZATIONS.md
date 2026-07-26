@@ -401,7 +401,13 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionReceiptV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionTombstoneV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityCostProfileV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityLedgerV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationStateV1`,
+  `ReconcileMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservation`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationReconciliationResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationReconciliationConflict`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityMemberV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityTransferV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1`,
@@ -432,6 +438,19 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginConflict`,
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStateV1`,
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationReceiptV1`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationBudgetV1`,
+  `StageMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublication`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStageResultV1`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStageConflict`,
+  `VerifyMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublication`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationVerifyResultV1`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationVerifyConflict`,
+  `MarkMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationOrphan`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationMarkOrphanResultV1`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationMarkOrphanConflict`,
+  `FinalizeMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationGc`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationGcResultV1`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationGcConflict`,
   `CommitMigrationImportRegistryHistoryCorruptionControlLineageCustodyRelease`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitPayloadV1`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitResultV1`,
@@ -505,8 +524,10 @@ settlement with activated/aborted origin symmetry, complete retention/release
 authorization including issuer intent creation and total state tables, explicit
 begin/final command boundaries, non-authoritative staged/verified publisher
 receipts, commit-atomic archive-head/hot-row replacement, closed per-leg
-physical disposition, charged archive/legal-hold custody transfers and
-aggregate-ranked bundle bounds; active/pending separation and
+physical disposition, Begin-created TransferPending custody reservations,
+governed cross-dimension custody cost profiles, reservation-to-member
+conversion, command-owned publication lifecycle/GC exclusion and aggregate-
+ranked bundle bounds; active/pending separation and
 complete forward/inverse abort;
 prior-state bounded fenced recovery; one-shot authorized conservative
 quarantine with issuer-intent/destination-apply revocation, first-terminal
@@ -521,8 +542,10 @@ capacity/original/released/settled legs/parent transfers/cleanup lane/
 contention/backlog/reconciliation/retention pool/custody-release checkpoint,
 cleanup origin/terminal reference, authorization inbox/tombstone/result,
 sorted-fence/bundle proof, publication receipt/state, authoritative archive
-head, physical-disposition receipt/tombstone, custody-ledger member/transfer
-and verification reservation without inference, reset, invented refund,
+head, publication operation results/budget, physical-disposition receipt/
+tombstone, custody cost profile, pending reservation/reconciliation result,
+custody-ledger member/transfer and verification reservation without inference,
+reset, invented refund,
 duplicate release/
 transfer/settlement or authority extension.
 

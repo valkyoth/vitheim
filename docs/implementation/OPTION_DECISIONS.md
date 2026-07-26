@@ -799,10 +799,16 @@ reopen cleanup or refund. Freeze a distinct whole-member custody-release
 settlement/checkpoint: after retention/legal-hold/custody/no-future-dependency
 proof, every remaining leg supplies one closed physical disposition.
 AuthenticatedDeleted binds exact storage generation/root and verified terminal
-deletion; TransferredToCustodyLedger binds verified transfer and atomically
-debits/installs the identical archive/legal-hold custody-capacity member before
-source-parent credit; Unknown retains PermanentlyRetained or Quarantined and
-authorizes no credit. One transaction consumes all disposition receipts,
+deletion. Every planned TransferredToCustodyLedger leg makes Begin atomically
+move a governed conservative maximum Available→TransferPending before external
+work. A versioned custody cost profile maps unlike source/destination
+generations and units with compression/encryption/replication/index overhead,
+verified encoded size and checked rational ceilings. Commit converts the exact
+reservation into the conservatively calculated custody member before exact
+source credit; the linked quantities need not be numerically identical.
+Unknown retains PermanentlyRetained or Quarantined and the pending charge.
+Typed reconciliation releases only on definitely-never-transferred or
+authenticated destination deletion. One transaction consumes all disposition receipts,
 settles every remaining leg, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased plus
 per-leg disposition tombstones, custody transfers, result/audit/outbox. The
@@ -815,25 +821,31 @@ authority. Freeze explicit
 commands with separate payload/result/conflict types. Commit binds the stored
 begin result, verified non-authoritative publication receipt, expected
 predecessor/proposed archive heads, journal head, disposition receipts,
-bundle/authorization, expected lineage version and idempotency. Archive
-publishers and storage adapters may stage/upload/verify evidence only; they
+cost profiles/reservations, bundle/authorization, expected lineage version and
+idempotency. Archive publishers and storage adapters may stage/upload/verify
+evidence only; they
 cannot advance the authoritative archive head, delete authoritative rows,
 credit capacity or mutate lineage/workspace terminals. Commit alone
 CAS-installs that head and deletes exactly the captured hot rows in the same
 local transaction as every disposition, custody-ledger transfer, settlement
-and result. Staged/Verified receipts are ignored by readers and become
-OrphanGcEligible if no committed head references them. The generic Release
-name is non-dispatchable.
-Both transactions use one archive-replay-head→settlement-journal-head→sorted-
-custody-capacity-ledgers→parent-ledger→current-slot→linked-old-fences-in-
-canonical-ID-order→control-
+and result. Freeze command-owned publication state Staged→Verified→
+ConsumedByCommit or Staged/Verified→OrphanGcEligible→Collected. Stage, Verify,
+MarkOrphan and FinalizeGc have stored result/conflict types and precharged
+lifecycle/GC budgets. Commit and MarkOrphan serialize archive-head→receipt-
+state; Commit atomically consumes only Verified, orphan admission rechecks
+non-reference and collected receipts never revive. Non-consumed receipts are
+ignored by readers. The generic Release name is non-dispatchable.
+Both transactions use one archive-replay-head→publication-state→settlement-
+journal-head→sorted-custody-cost-profile-heads→sorted-custody-capacity-ledgers/
+reservations→parent-ledger→current-slot→linked-old-fences-in-canonical-ID-order→control-
 reserve→obligation→corruption-fence→lineage→checkpoint→release-authorization→
 lineage-disposition→custody-authority→terminal-outputs rank. Freeze
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumV1`
 over the aggregate ordinary-leg plus linked-workspace receipt/custody-ledger/
-row/byte/lock/read/write/index/output/work/time transaction. Preflight must
-prove the complete bundle fits the selected backend before ReleasePending;
-individual workspace limits are insufficient.
+cost-profile/reservation/reconciliation/GC row/byte/lock/read/write/index/
+output/work/time transaction. Preflight must prove the complete bundle fits the
+selected backend before ReleasePending; individual workspace limits are
+insufficient.
 For permanent-retention and lineage-release grants, freeze issuer-side Revoke
 commands that atomically allocate a target/action-scoped monotonic sequence and
 store one signed-intent result or changed-material conflict without destination

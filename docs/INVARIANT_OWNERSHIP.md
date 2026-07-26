@@ -298,7 +298,10 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionHardMaximumRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionReceiptRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionTombstoneRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityCostProfileHeadRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityLedgerRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationReconciliationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityMemberRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityTransferRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementRow`,
@@ -313,6 +316,11 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginOperationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStateRow`,
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationReceiptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationBudgetRow`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStageResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationVerifyResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationMarkOrphanResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationGcResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitOperationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementRow`,
@@ -359,9 +367,12 @@ release source capacity. Quarantined workspace remains a permanent whole
 parent member until broader custody-safe release. That release atomically
 consumes one verified terminal physical-disposition receipt per remaining leg.
 AuthenticatedDeleted proves the exact storage generation/root absent;
-TransferredToCustodyLedger atomically debits the named archive/legal-hold
-custody ledger and installs the identical custody member before source-parent
-credit. Unknown preserves the predecessor and authorizes no credit. Only then
+TransferredToCustodyLedger requires Begin to move a governed conservative
+maximum into TransferPending before external work. Commit converts it into the
+custody member under the same versioned cross-dimension cost profile and
+transfer identity before exact source-parent credit; source and destination
+amounts need not be numerically identical. Unknown preserves the predecessor
+and the pending reservation and authorizes no credit. Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
 generic lineage release cannot credit it separately.
@@ -369,19 +380,23 @@ BeginRelease and CommitCustodyRelease consume separate action-bound grants.
 Each grant issuer owns only monotonic signed-intent creation; the destination
 applier owns inbox/tombstone/table mutation. Both families implement the same
 six-state first-terminal table, including no-write absent expiry/consumption.
-Both lineage-release transactions acquire archive/journal heads, sorted
-custody-capacity ledgers, parent, current slot, sorted old campaign fences,
-control/lineage/checkpoint, authorization/custody and output rows in the same
-rank. A checked aggregate bundle maximum covers every linked workspace,
-physical-disposition receipt, custody-ledger write and ordinary reserve leg
-before ReleasePending.
+Both lineage-release transactions acquire archive head/publication state,
+journal head, sorted custody-cost-profile heads/ledgers/reservations, parent,
+current slot, sorted old campaign fences, control/lineage/checkpoint,
+authorization/custody and output rows in the same rank. A checked aggregate
+bundle maximum covers every linked workspace, physical-disposition receipt,
+pending reservation/reconciliation/GC obligation, custody-ledger write and
+ordinary reserve leg before ReleasePending.
 Only the explicit Begin lineage command may enter ReleasePending and only the
 explicit Commit custody command may enter Released. Publishers and storage
-adapters own non-authoritative staged/verified receipts only and cannot advance
-the archive replay head or dispatch either terminal mutation. Commit alone
-atomically installs that head with exact hot-row deletion and every custody
-settlement/result. Action-specific result rows make exact retry and changed-
-payload conflict independently auditable.
+adapters own non-authoritative receipt evidence only and cannot advance the
+archive replay head or dispatch either terminal mutation. Stage, Verify,
+MarkOrphan and FinalizeGc alone own receipt-state transitions; Commit races
+MarkOrphan under archive-head→receipt-state locking and alone atomically moves
+Verified→ConsumedByCommit while installing the head with exact hot-row deletion
+and every custody settlement/result. Collected cannot revive. Action-specific
+result rows make exact retry and changed-payload conflict independently
+auditable.
 The deployment-retirement fence is the first shared rank and the active slot
 and campaign fence follow their parent ledger.
 VIT-TST-062-N-F rejects absent-as-Operational, authority reuse, borrowed
@@ -399,8 +414,11 @@ workspace locking, aggregate release-bundle overflow, parent/workspace custody-
 release split, generic/direct-publisher terminal mutation, missing issuer
 sequence, staged-receipt-as-head, head-without-delete, deletion-without-head,
 workspace credit without physical disposition, uncharged custody transfer,
-Unknown-as-released, absent-state write and changed-payload exact retry, unbounded
-classifier work and under-reserved checkpoints.
+transfer-before-reservation, unknown-transfer refund, incomparable custody
+mapping, rational undercharge/overflow, receipt Commit/GC race, collected-
+receipt commit, unbudgeted orphan cleanup, Unknown-as-released, absent-state
+write and changed-payload exact retry, unbounded classifier work and under-
+reserved checkpoints.
 VIT-RCV-062 restores the same fence/tombstones, active campaign
 slot, campaign epoch/snapshot/commitment/log/high-watermark/fold/buckets/
 pending charges/forward-inverse transfers/cursor/lease/budget/prior-state/
@@ -411,8 +429,10 @@ reservation, authorization inbox/tombstones/results, CleanupOrigin/terminal
 reference, issuer sequences/signed-intent results, action-specific begin/final
 results, publication receipt, release bundle maximum and custody-release legs/
 physical-disposition receipts/tombstones, custody-ledger members/transfers,
-authoritative archive head/hot-row coverage, checkpoint/result plus verification
-reservation before any affected work becomes ready. Exact abort
+custody cost-profile head, TransferPending reservations/reconciliation results,
+publication state/operation results/budget, authoritative archive head/hot-row
+coverage, checkpoint/result plus verification reservation before any affected
+work becomes ready. Exact abort
 reversal is required when evidence is complete;
 contradictory or missing transfer evidence retains conservative encumbrance in
 PermanentlyQuarantined rather than inventing a parent credit.

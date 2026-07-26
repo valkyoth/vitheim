@@ -360,13 +360,18 @@ CommitCustodyRelease have complete six-state destination-applied authorization
 families. Whole-member custody
 release later consumes one closed disposition per remaining leg:
 AuthenticatedDeleted proves exact storage generation/root deletion,
-TransferredToCustodyLedger atomically charges the identical archive/legal-hold
-custody member before parent credit, and Unknown preserves the predecessor. The
-same transaction settles every leg, advances Released to OriginalTotal,
+TransferredToCustodyLedger requires Begin to move a cost-profile-derived
+maximum into TransferPending before external work. Commit converts it into the
+conservatively calculated archive/legal-hold custody member before exact source
+credit; unlike dimensions share a transfer identity, not numeric equality.
+Unknown preserves predecessor and pending charge until typed definitely-never-
+transferred or exact-destination-deleted reconciliation. The same transaction
+settles every leg, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased. Its
 begin/final paths share one combined lock rank and must preflight the complete
-ordinary-plus-workspace receipt/custody-ledger bundle against backend row/byte/
-lock/write/work/time maxima before ReleasePending. Permanent
+ordinary-plus-workspace receipt/profile/reservation/custody-ledger/
+reconciliation/GC bundle against backend row/byte/lock/write/work/time maxima
+before ReleasePending. Permanent
 quarantine has issuer-intent/destination-apply revocation, a first-terminal-wins
 outcome table returning stored results, and retains the entire parent member
 until broader custody-safe release; it never permits a campaign-level partial
@@ -374,11 +379,14 @@ refund.
 The lineage release kernel has explicit Begin and Commit commands with
 action-specific payload/result/conflict types; commit binds the stored begin
 result, non-authoritative verified publication receipt, predecessor/proposed
-archive and journal heads, physical dispositions, bundle/authorization and
-expected version. Publishers/storage adapters can only stage and verify
-evidence; readers ignore it. Commit alone CAS-installs the authoritative
-archive head with exact covered-hot-row deletion, dispositions, settlements
-and results in one local transaction. Retention and
+archive and journal heads, physical dispositions, cost profiles/reservations,
+bundle/authorization and expected version. Stage, Verify, MarkOrphan and
+FinalizeGc own the precharged
+receipt lifecycle. Commit and orphan admission serialize on archive-head→
+receipt-state; Commit alone moves Verified→ConsumedByCommit while installing
+the authoritative archive head with exact covered-hot-row deletion,
+dispositions, settlements and results. Orphan/Collected receipts cannot commit
+and readers ignore all non-head evidence. Retention and
 lineage authorization issuers use explicit monotonic signed-intent Revoke
 commands, while destination Apply alone advances their exhaustive six-state
 tables, including no-write absent expiry/consumption.

@@ -343,22 +343,30 @@ audit decision.
   authorization state/sequence/inbox/tombstone/outcome families, so custody
   evidence alone has no command authority. Broader custody release can credit
   only after every remaining leg proves AuthenticatedDeleted for its exact
-  storage generation/root or TransferredToCustodyLedger with an atomic,
-  identical archive/legal-hold custody-member charge. Unknown preserves the
-  predecessor and permits no credit. Commit consumes those receipts while
+  storage generation/root or TransferredToCustodyLedger against a Begin-created
+  TransferPending maximum. A governed versioned profile maps unlike source/
+  destination generations, units and overhead with checked rational ceilings;
+  Commit converts the reservation into the conservative custody member before
+  exact source credit. Unknown preserves predecessor and pending charge; only
+  definitely-never-transferred or exact destination-deleted reconciliation
+  releases it. Commit consumes those receipts while
   settling every leg, advancing Released to OriginalTotal and committing
   CustodyReleased with the matching parent inverse. The combined rank acquires
-  archive/settlement heads, sorted custody ledgers, parent, current slot, sorted old
-  campaign fences, control/lineage/checkpoint, authorization/custody and
-  outputs; an aggregate bundle maximum proves every ordinary/workspace leg,
-  disposition receipt and custody-ledger write fits the backend transaction
-  before ReleasePending. Explicit Begin and Commit
+  archive head/publication state, settlement head, sorted custody profile heads/
+  ledgers/reservations, parent, current slot, sorted old campaign fences,
+  control/lineage/checkpoint, authorization/custody and outputs; an aggregate
+  bundle maximum proves every ordinary/workspace leg, disposition receipt,
+  reservation/reconciliation/GC obligation and custody-ledger write fits the
+  backend transaction before ReleasePending. Explicit Begin and Commit
   lineage commands alone mutate ReleasePending/Released and persist
   action-specific results; commit rebinds the begin result, verified receipt,
-  predecessor/proposed heads, dispositions/bundle/grant and expected version.
-  Publisher/storage receipts are staged/verified non-authoritative evidence
-  ignored by readers. Only Commit atomically installs the archive head with
-  exact hot-row deletion and every capacity effect. Each retention/release
+  predecessor/proposed heads, dispositions/profiles/reservations/bundle/grant
+  and expected version. Stage, Verify, MarkOrphan and FinalizeGc alone own
+  precharged receipt transitions. Commit and orphan admission serialize on
+  archive-head→receipt-state; only Commit moves Verified→ConsumedByCommit while
+  installing the head with exact hot-row deletion and every capacity effect.
+  Orphan/Collected receipts cannot commit, and readers ignore non-head
+  evidence. Each retention/release
   issuer Revoke command allocates one
   monotonic signed intent/result without destination capability; destination
   Apply alone executes the full six-state table, including absent no-write and

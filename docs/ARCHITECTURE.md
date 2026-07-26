@@ -679,22 +679,27 @@ restore, failover, and release evidence.
    issuer-intent/destination-apply with a first-terminal-wins outcome table, and
    quarantined capacity remains a whole parent member until broader custody-
    safe release. That release accepts exactly one terminal physical disposition
-   per remaining leg: authenticated deletion or verified transfer atomically
-   charged to an archive/legal-hold custody ledger; Unknown preserves the
-   predecessor. It then closes both source ledgers atomically by settling every
-   leg, advancing Released to OriginalTotal, crediting the identical member and
-   recording CustodyReleased. Begin and final transactions share the archive-
-   head→settlement-head→sorted-custody-ledgers→parent→current-slot→sorted-old-
-   fence→control/lineage/checkpoint→authorization/custody/output rank, and an
-   aggregate hard maximum covers every ordinary/workspace leg, receipt and
-   custody-ledger write before ReleasePending.
+   per remaining leg: authenticated deletion or verified transfer. Begin moves
+   a governed conservative maximum into TransferPending before the latter can
+   start. A versioned cost profile maps unlike source/destination generations,
+   units and storage overhead; Commit converts the reservation into the final
+   custody member before exact source credit. Unknown preserves predecessor and
+   pending charge. Begin and final transactions share the archive-head→
+   publication-state→settlement-head→sorted-custody-profiles/ledgers/
+   reservations→parent→current-slot→sorted-old-fence→control/lineage/checkpoint→
+   authorization/custody/output rank, and an aggregate hard maximum covers
+   every ordinary/workspace leg, receipt, reservation, reconciliation/GC
+   obligation and custody-ledger write before ReleasePending.
    Explicit BeginLineageRelease and CommitLineageCustodyRelease commands own
    those transitions and return action-specific results/conflicts; commit binds
    the begin result, verified publication receipt, predecessor/proposed heads,
-   dispositions/bundle/grant and expected version. Publisher/storage receipts
-   remain non-authoritative and invisible to readers; only Commit atomically
-   installs the archive head with exact hot-row deletion and all capacity
-   effects.
+   dispositions/profiles/reservations/bundle/grant and expected version.
+   Stage/Verify/MarkOrphan/FinalizeGc own receipt state; Commit and orphan
+   admission serialize on archive-head→receipt-state CAS. Publisher/storage
+   receipts remain non-authoritative and invisible to readers; only Commit
+   atomically moves Verified→ConsumedByCommit while installing the archive head
+   with exact hot-row deletion and all capacity effects. Orphan/Collected
+   receipts cannot commit.
    Retention/release issuers create signed monotonic revocation intents through
    explicit Revoke commands; only destination Apply advances the complete
    six-state table.

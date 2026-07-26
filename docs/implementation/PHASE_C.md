@@ -4520,11 +4520,64 @@ profile and terminal idempotency. TransferredToCustodyLedger binds those source
 fields plus verified destination object/root and transfer receipt, the exact
 archive or legal-hold
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityLedgerV1`
-identity/generation/version, canonical
+identity/generation/version, exact pending reservation, governed cost profile,
+canonical
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityMemberV1`
-and checked dimension amounts. Commit records
+and checked destination charges. Commit records
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityTransferV1`
-for that exact debit/member installation.
+for that reservation-to-member conversion and links it to the exact but
+potentially dimension-different source credit.
+
+Immutable, versioned
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityCostProfileV1`
+binds source and destination storage generations, complete source-unit to
+destination-dimension mapping, compression and encryption behavior,
+replication/index/object overhead, checked rational ceiling rules, overflow
+denial, verified encoded-destination-size method and backend atomic limits.
+The profile has a stable lineage/generation/digest and a complete-domain
+compatibility/weakening decision; callers cannot supply ad hoc factors. Begin
+derives a conservative nonzero maximum custody charge for every planned
+transfer. Unknown, omitted, incomparable, non-monotonic, zero-rounded or
+overflowing mappings deny before any reservation or external work. Commit
+recomputes the final custody charge from the Verified transfer receipt's
+encoded size under the same current profile. It may be less than the reserved
+maximum but never greater; unused reserved capacity returns to Available in
+that same transaction. The source parent credit remains the exact source-leg
+amount. Source and destination quantities share one transfer identity and
+conservation proof but need not be numerically identical across unlike
+dimensions.
+
+Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationV1`
+is created only by Begin and has closed
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationStateV1`:
+TransferPending, ConsumedByCustodyMember, ReleasedDefinitelyNeverTransferred
+or ReleasedAfterDestinationDeletion. Begin atomically moves the conservative
+maximum from custody Available to TransferPending, binds lineage/begin result,
+workspace/leg, source root/generation, destination ledger/generation, cost-
+profile digest, transfer identity, maximum charge, expiry-independent
+terminalization identity and precharged reconciliation/orphan-cleanup capacity.
+The external transfer adapter accepts only that exact still-TransferPending
+reservation; it cannot create destination bytes from an unreserved request.
+Commit atomically converts TransferPending into the final custody member,
+charges the recomputed conservative destination amount and returns only proved
+surplus.
+
+`ReconcileMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservation`
+returns
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationReconciliationResultV1`
+or
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationReconciliationConflict`.
+Unknown external transfer outcome or authenticated destination presence keeps
+TransferPending and its full charge. Release to
+ReleasedDefinitelyNeverTransferred requires backend-authenticated proof that
+the transfer could not have occurred; release to
+ReleasedAfterDestinationDeletion requires authenticated deletion of the exact
+destination generation/object/root. One local transaction consumes that
+evidence, returns the pending amount, stores the terminal result/audit/outbox
+and makes exact retry join; changed evidence, generation, root, profile,
+transfer or idempotency conflicts. Expiry, cancellation, operator assertion,
+timeout or missing credentials never releases the reservation.
 External deletion or transfer is outside the database transaction.
 Only a verified, idempotent terminal physical-disposition receipt may enter the commit payload.
 Its canonical type is
@@ -4544,11 +4597,11 @@ checkpoints, current Issued CommitCustodyRelease authorization and proof that
 no future operation depends on any retained byte.
 It authenticates exactly one closed physical-disposition receipt per complete
 remaining leg. For AuthenticatedDeleted it proves the exact physical bytes are
-terminally absent. For TransferredToCustodyLedger it first atomically decreases the matching
-custody ledger's available capacity and increases its exact custody member by
-the identical per-dimension amount; only that charged transfer permits the
-workspace parent credit. Insufficient, stale, overflowing or mismatched custody
-capacity makes the entire command no-write.
+terminally absent. For TransferredToCustodyLedger it requires the exact
+TransferPending reservation, recomputes the destination charge and atomically
+converts that reservation into the matching custody member before source
+credit. Insufficient, stale, overflowing or mismatched reservation, profile,
+encoded size or custody capacity makes the entire command no-write.
 Preflight admits a TransferredToCustodyLedger target only when its ledger can
 join the same local atomic transaction; otherwise the backend refuses before
 requesting external transfer. No distributed database transaction or
@@ -4561,17 +4614,19 @@ WorkspaceOriginalTotal, removes the entire remaining workspace parent member,
 credits ParentAvailable by the identical checked amount, moves the workspace
 to CustodyReleased and writes one domain-separated typed
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionTombstoneV1`,
-disposition tombstone per leg, custody-ledger transfers where selected, inverse
-transfer, terminal checkpoint, stored result, audit and outbox, or does none.
+disposition tombstone per leg, reservation-to-custody-member transfers where
+selected, inverse transfer, terminal checkpoint, stored result, audit and
+outbox, or does none.
 The broader lineage release does not separately credit or remove that workspace member.
 Exact retry returns the stored result; any crash, missing/forked disposition,
 physical/custody-ledger
 proof mismatch or response loss retains the whole remaining encumbrance and
 restores the predecessor state. Campaign cleanup cannot invoke this protocol
 or partially settle a quarantined/retained member. Reservation admission caps
-total leg/receipt/custody-ledger count, encoded bytes and work and precharges
-the largest whole-member transaction plus all terminal rows, so custody release
-is never implemented as a partially visible multi-transaction loop.
+total leg/receipt/profile/pending-reservation/custody-ledger count, encoded
+bytes and work and precharges reconciliation/orphan cleanup, the largest whole-
+member transaction and all terminal rows, so custody release is never
+implemented as a partially visible multi-transaction loop.
 
 Workspace rows are campaign-owned, co-located and never independently locked.
 Their source capacity ledger is a co-located dimension/member of
@@ -5584,20 +5639,29 @@ policy, terminal history disposition, no possible future history operation/
 corruption episode, and a complete checkpoint. That checkpoint also binds the
 complete bounded set of linked Quarantined/PermanentlyRetained migration
 workspaces, each immutable OriginalTotal, Released value, remaining-leg root,
-parent member and custody-release reservation. An omitted, unbounded or
-unproved linked workspace makes the transition no-write. It retires the
+parent member, closed Delete/Transfer disposition plan, selected custody cost-
+profile digest, destination ledger/version and derived maximum reservation.
+An omitted, unbounded, incomparable or unproved linked workspace/plan makes the
+transition no-write. It retires the
 remaining lifetime-work ceiling without changing WorkSpent. This begin
 transaction consumes an exact Issued BeginRelease authorization; the later
 whole-member transaction separately consumes an exact Issued
 CommitCustodyRelease authorization bound to the stored begin result.
 The begin payload binds that authorization, expected lineage/version/
 disposition, lineage checkpoint, current settlement heads, sorted workspace/
-fence set and bundle digest. It returns canonical
+fence set, every per-leg disposition plan/cost profile/custody-ledger expected
+version/maximum charge and bundle digest. In that same local transaction Begin
+atomically creates every required CustodyCapacityReservationV1 and moves the
+conservatively calculated maxima from custody Available to TransferPending;
+none exists before the Begin result and no external transfer is authorized by
+a losing or uncommitted attempt. The stored result binds the complete sorted
+reservation set. It returns canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginResultV1`
 or
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginConflict`.
-Exact retry returns the stored begin result; changed authorization, expected
-version, checkpoint, heads, bundle or idempotency conflicts without mutation.
+Exact retry returns the stored begin result and reservation set; changed
+authorization, expected version, checkpoint, heads, disposition plan, profile,
+ledger version, maximum, bundle or idempotency conflicts without mutation.
 `ReleaseMigrationImportRegistryHistoryCorruptionControlLineage` is retained
 only as a non-dispatchable command-family identifier for catalog continuity;
 no API, worker or adapter may invoke it as a generic mutation.
@@ -5614,7 +5678,8 @@ Immutable profile-bound
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumV1`
 bounds the complete final transaction across ordinary reserve legs and every
 linked workspace: workspace/fence/leg/row count, canonical bytes, distinct
-locks, physical-disposition receipts, custody-capacity ledgers and members,
+locks, disposition plans/receipts, custody cost profiles, capacity ledgers,
+pending reservations, members and reconciliation/orphan-cleanup obligations,
 reads, writes, index effects, audit/outbox/result bytes, decode/hash/
 verification work and backend execution time. Workspace retention consumes
 lineage-scoped non-borrowable bundle units before it can enter
@@ -5631,11 +5696,12 @@ binds predecessor/sequence, the canonical ordered settlement-row set,
 transaction/result/audit identity and owner continuity; it never claims archive
 availability. The begin-release local transaction follows
 `MigrationImportRegistryHistoryLockRankV1`: archive-replay head when applicable,
-settlement-journal head, every archive/legal-hold custody-capacity ledger in
-ascending canonical ledger-ID order, Recovery parent-capacity ledger, the
-current parent/selector active-campaign slot for serialization, every linked
-old campaign's stable Closed fence in ascending canonical campaign-ID byte order,
-control
+archive-publication receipt state, settlement-journal head, every custody-cost-
+profile head and archive/legal-hold custody-capacity ledger in ascending
+canonical ID order, their reservation rows in ascending transfer-ID order,
+Recovery parent-capacity ledger, the current parent/selector active-campaign
+slot for serialization, every linked old campaign's stable Closed fence in
+ascending canonical campaign-ID byte order, control
 reserve, history obligation, corruption fence, control lineage, lineage
 checkpoint, release authorization, lineage disposition, retention/legal-hold/
 custody authority and terminal audit/result/outbox rows. The final release
@@ -5654,54 +5720,104 @@ audit and outbox. A split ledger transfer, settlement append, journal advance,
 parent credit, checkpoint, authorization consumption or lineage transition is
 unrepresentable.
 
-Authenticated sparse checkpoint/archive publication uploads immutable chunks,
-verifies durable visibility and produces canonical non-authoritative
+Authenticated sparse checkpoint/archive publication uploads immutable chunks
+and produces immutable non-authoritative
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationReceiptV1`.
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStateV1`
-is Staged, Verified or OrphanGcEligible. The receipt binds
-publication identity, immutable object/chunk roots, proposed successor archive
-head and predecessor, covered journal head, exact captured hot rows/versions,
-deletion preconditions, bundle digest, verification key/profile and publisher/
-storage-adapter evidence. Readers ignore every receipt lifecycle state; no
-receipt is an authoritative
+is Staged, Verified, ConsumedByCommit, OrphanGcEligible or Collected. The
+receipt binds publication identity, immutable object/chunk roots, proposed
+successor archive head and predecessor, covered journal head, exact captured
+hot rows/versions, deletion preconditions, bundle digest, verification key/
+profile, publisher/storage-adapter evidence and stable operation
+idempotencies. Mutable lifecycle state and immutable receipt content are
+separate rows.
+
+Only the following typed commands own publication lifecycle transitions:
+
+- `StageMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublication`
+  creates Staged with
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStageResultV1`
+  or
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStageConflict`;
+- `VerifyMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublication`
+  authenticates durable chunk/root/key visibility and moves Staged→Verified
+  with
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationVerifyResultV1`
+  or
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationVerifyConflict`;
+- `MarkMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationOrphan`
+  may move only Staged→OrphanGcEligible or Verified→OrphanGcEligible with
+`MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationMarkOrphanResultV1`
+  or
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationMarkOrphanConflict`;
+- `FinalizeMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationGc`
+  may move only OrphanGcEligible→Collected after authenticated exact chunk
+  deletion with
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationGcResultV1`
+  or
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationGcConflict`.
+
+`MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationBudgetV1`
+precharges bounded receipt/chunk-reference rows and bytes, upload/verification
+work, state/result/audit/outbox writes, reconciliation attempts and orphan GC
+storage/work before Stage. Unknown upload, verification or deletion outcome
+retains the current state and its capacity. Each command commits state, stored
+result, audit and outbox atomically; exact retry returns the stored result,
+while changed receipt/root/head/coverage/key/budget/idempotency conflicts.
+
+Commit and MarkOrphan both lock authoritative archive head→receipt state.
+MarkOrphan rechecks that no committed head references any chunk, no exact
+Commit winner exists and retention/key policy permits collection before its
+CAS. Commit atomically CASes only Verified→ConsumedByCommit with archive-head
+installation and hot-row deletion. The CAS winner excludes the other path:
+Commit rejects Staged, OrphanGcEligible and Collected receipts, while orphan GC
+cannot touch ConsumedByCommit chunks. FinalizeGc re-locks head then receipt,
+rechecks non-reference and records Collected only after authenticated deletion;
+unknown GC keeps OrphanGcEligible. ConsumedByCommit and Collected are
+irreversible.
+
+Replay/admission readers ignore Staged, Verified, OrphanGcEligible and
+Collected receipts; only the authoritative
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchiveReplayHeadV1`
-or evidence that hot rows were deleted. Publishers/storage adapters are evidence-only.
-They may upload and verify receipts, but cannot advance the authoritative archive
-replay head, delete authoritative hot rows, consume
-release authority, credit capacity or mutate lineage/workspace terminal state.
-If Commit never succeeds, Staged or Verified receipts become OrphanGcEligible
-only after proving no committed head references their chunks and retention/key
-policy permits collection; orphan garbage collection is never replay
-authority.
+installed by Commit is replay authority. Publishers/storage adapters are
+evidence-only. They may invoke Stage/Verify through their constrained ports,
+but cannot write lifecycle rows directly, advance the authoritative archive
+replay head, delete authoritative hot rows, consume release authority, credit
+capacity or mutate lineage/workspace terminal state. Orphan garbage collection
+is never replay authority.
 
 Only
 `CommitMigrationImportRegistryHistoryCorruptionControlLineageCustodyRelease`
 with
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitPayloadV1`
 may move ReleasePending→Released. The payload binds the stored begin result,
-Verified publication receipt, expected authoritative predecessor archive head,
-proposed successor archive head, expected journal head, bundle digest and hard-
-maximum proof, current Issued CommitCustodyRelease authorization, expected
-lineage version/disposition, the complete sorted per-workspace physical-
-disposition receipt set and stable idempotency. Under the identical combined
-rank, the command reauthenticates publication/membership/deletion evidence and
-every physical-disposition receipt, rechecks every bound version and current
-retention/legal-hold/custody condition, and then in one local expected-version
-transaction CAS-installs the proposed authoritative archive replay head and
-deletes only the exact captured hot rows/versions. That same indivisible
-transaction consumes the authorization once, consumes each terminal
-disposition receipt, charges every selected archive/legal-hold custody ledger
-before its matching workspace parent credit, moves matching ReclaimPending
-units to Released, removes the exact child encumbrance, credits
+Verified publication receipt and expected state/version, expected authoritative
+predecessor archive head, proposed successor archive head, expected journal
+head, bundle digest and hard-maximum proof, current Issued
+CommitCustodyRelease authorization, expected lineage version/disposition, the
+complete sorted sets of per-workspace physical-disposition receipts, cost
+profiles and TransferPending reservations and stable idempotency. Under the
+identical combined rank, the command reauthenticates publication/membership/
+deletion evidence and every physical-disposition receipt/reservation/profile,
+rechecks every bound version and current retention/legal-hold/custody
+condition, and then in one local expected-version transaction CASes the publication
+Verified→ConsumedByCommit, installs the proposed authoritative archive replay
+head and deletes only the exact captured hot rows/versions. That same
+indivisible transaction consumes the authorization once, consumes each
+terminal disposition receipt, converts every selected TransferPending maximum
+into the conservatively recomputed archive/legal-hold custody member, returns
+only proved surplus before its matching source-parent credit, moves matching
+ReclaimPending units to Released, removes the exact child encumbrance, credits
 ParentAvailable, appends immutable parent/child and final settlement rows,
 advances the journal, and invokes each checkpoint-bound
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1`.
 For each linked workspace this is one all-or-none whole-member transaction
 component: every remaining complete leg becomes a domain-separated custody-
 release disposition tombstone only after AuthenticatedDeleted or a matching
-TransferredToCustodyLedger debit, WorkspaceReleased becomes
-WorkspaceOriginalTotal, the exact workspace parent member is removed and
+TransferredToCustodyLedger reservation-to-member conversion,
+WorkspaceReleased becomes WorkspaceOriginalTotal, the exact workspace parent
+member is removed and
 ParentAvailable receives the identical single credit, the workspace becomes
 CustodyReleased, and its custody-release checkpoint/result/audit/outbox
 commits. Unknown keeps the workspace PermanentlyRetained or Quarantined and
@@ -5718,14 +5834,16 @@ cannot be deleted before verified publication or apart from authoritative-head
 installation; head-without-deletion and deletion-without-head are
 unrepresentable. Unknown local commit response reconciles the exact commit
 identity: either the entire head/delete/authorization/disposition/settlement/
-credit/result bundle exists or the predecessor head and all authoritative hot
-rows and encumbrances remain. The local journal head and staged/verified
+publication-state/reservation/member/credit/result bundle exists or the
+predecessor head, Verified receipt and all authoritative hot rows and source/
+TransferPending encumbrances remain. The local journal head and staged/verified
 receipt never imply authoritative archive availability. Restore selects the
 greatest authenticated journal and committed archive heads, proves their
 coverage relationship, exact settlement membership, every consumed physical-
-disposition receipt and physical/custody-ledger conservation, and retains
-ReclaimPending encumbrance when history or deletion proof is missing, forked,
-rolled back or uncertain. It also proves ParentTotal = ParentAvailable + the
+disposition receipt, reservation/profile/member conversion and physical/
+custody-ledger conservation, and retains ReclaimPending encumbrance when
+history or deletion proof is missing, forked, rolled back or uncertain. It
+also proves ParentTotal = ParentAvailable + the
 exact restored active-child and pending-successor encumbrance sets and every
 parent/child forward/inverse transfer against settlement membership. Duplicate
 membership returns the original release result without another release or
@@ -5733,8 +5851,9 @@ parent credit; unknown non-membership never authorizes settlement.
 
 Exact retry of the commit command returns that stored final result. Changed
 begin result, publication receipt, predecessor/successor archive or journal
-head, physical-disposition receipt/custody-ledger version, bundle digest,
-authorization, expected lineage version, custody evidence or idempotency returns
+head, publication state/version, physical-disposition receipt, reservation,
+cost profile/custody-ledger version, bundle digest, authorization, expected
+lineage version, custody evidence or idempotency returns
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitConflict`
 without mutation. Missing work/physical transfer records, either conservation
 failure, WorkSpent decrease, premature physical release, reset counters,
@@ -5996,11 +6115,24 @@ head advance, lose the Commit response and interleave readers at every
 head/delete boundary; readers see either the prior head plus all captured hot
 rows or the complete committed successor, never a split. For every remaining
 workspace leg exercise AuthenticatedDeleted, TransferredToCustodyLedger and
-Unknown; fault storage generation/root, terminal receipt idempotency, custody-
-ledger capacity/version/member/dimension arithmetic and external deletion or
-transfer response loss. Prove Unknown and every partial/stale/mismatched receipt
-retain the predecessor without credit, while an exact retry joins one consumed
-receipt/tombstone and one balanced custody-debit/source-credit result.
+Unknown. Attempt transfer before/without/against a stale reservation; crash
+after Begin reservation and at every external transfer/Commit/reconcile
+boundary; expire/revoke Commit authority; and prove unknown transfer outcome
+retains TransferPending until exact definitely-never-transferred or
+authenticated destination-deletion evidence releases it. Fault source/
+destination generations, cost-profile lineage/digest, unit mapping,
+compression/encryption/replication/index overhead, verified encoded size,
+rational ceiling, overflow, backend atomic maximum, terminal receipt
+idempotency and custody-ledger version/member arithmetic. Prove unlike source/
+destination dimensions conserve through one transfer ID without requiring
+numeric equality and unknown/incomparable mappings deny before external work.
+Race Stage/Verify/Commit/MarkOrphan/FinalizeGc with state CAS loss, exact and
+changed retry, chunk deletion response loss and exhausted lifecycle budget;
+ConsumedByCommit excludes GC, OrphanGcEligible/Collected excludes Commit and no
+reader observes a collected committed chunk. Unknown and every partial/stale/
+mismatched receipt retain the predecessor without credit, while exact retry
+joins one consumed receipt/tombstone, reservation/member conversion and balanced
+custody-charge/source-credit result.
 
 Exit criteria: successful import proves complete semantic and integrity parity.
 `v0.30.0 implementation stop reached. Run pentest for this exact commit.`

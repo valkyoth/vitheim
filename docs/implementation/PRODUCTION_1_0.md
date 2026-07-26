@@ -768,8 +768,13 @@ deadlock. Late evidence cannot reopen or refund it. Whole-member custody release
 alone verifies current retention/legal-hold/custody/no-future-dependency proof,
 then requires every remaining leg to be AuthenticatedDeleted for the exact
 storage generation/root or TransferredToCustodyLedger with a verified receipt
-and atomic identical archive/legal-hold custody-member charge. Unknown
-preserves the predecessor and authorizes no credit. Commit consumes every
+and exact Begin-created TransferPending reservation. A governed versioned cost
+profile maps unlike source/destination generations, units and overhead with
+verified encoded size and checked rational ceilings. Commit converts the
+reserved maximum into the conservative archive/legal-hold custody member before
+exact source credit and returns only proved surplus. Unknown preserves
+predecessor and pending charge; typed reconciliation releases only on
+definitely-never-transferred or exact destination-deleted evidence. Commit consumes every
 receipt while settling all legs, advancing Released to OriginalTotal, removing
 and crediting the identical parent member and recording distinct
 CustodyReleased plus disposition tombstones, custody transfers, checkpoint/
@@ -777,18 +782,24 @@ result/audit/outbox atomically. Retention and separate
 lineage BeginRelease/CommitCustodyRelease grants have complete six-state
 admission/expiry/issuer-intent/destination-apply/tombstone/first-terminal
 families; custody evidence is never command authority. Begin and final release
-share one archive-head→settlement-head→sorted-custody-ledgers→parent→current-
-slot→canonical-ID-sorted-old-fences→control/lineage/checkpoint→authorization/
-custody/output rank. A checked CustodyReleaseBundleHardMaximum proves aggregate
-ordinary/workspace receipts, custody-ledger writes, rows, bytes, locks, reads,
-writes, indexes, outputs, work and time fit the backend before
+share one archive-head→publication-state→settlement-head→sorted-custody-
+profiles/ledgers/reservations→parent→current-slot→canonical-ID-sorted-old-
+fences→control/lineage/checkpoint→authorization/custody/output rank. A checked
+CustodyReleaseBundleHardMaximum proves aggregate ordinary/workspace receipts,
+profiles, pending reservation/reconciliation/GC obligations, custody-ledger
+writes, rows, bytes, locks, reads, writes, indexes, outputs, work and time fit
+the backend before
 ReleasePending. Only explicit BeginLineageRelease and
 CommitLineageCustodyRelease commands perform the two transitions. Commit binds
 the stored begin result, non-authoritative verified receipt, predecessor/
-proposed heads, physical dispositions, bundle/authorization and expected
-lineage version. Publishers/storage adapters stage and verify only; readers
-ignore their receipts. Commit alone CAS-installs the authoritative archive head
-with exact hot-row deletion and every capacity effect. Both retention and
+proposed heads, physical dispositions, cost profiles/reservations,
+bundle/authorization and expected
+lineage version. Stage, Verify, MarkOrphan and FinalizeGc alone own precharged
+receipt transitions. Commit and orphan admission serialize on archive-head→
+receipt-state; Commit alone moves Verified→ConsumedByCommit while installing
+the authoritative head with exact hot-row deletion and every capacity effect.
+OrphanGcEligible/Collected receipts cannot commit; readers ignore non-head
+evidence. Both retention and
 lineage authorization issuers have explicit Revoke
 commands with atomic monotonic signed-intent results/conflicts and no
 destination capability. Destination Apply alone advances their complete
@@ -979,9 +990,11 @@ abort-origin substitution, retention self-approval/pool exhaustion, custody-
 evidence-as-authority, Begin/Commit action confusion, unsorted/late old-fence
 locking, aggregate bundle overflow, late-evidence terminal-result rewrite,
 generic/direct-publisher terminal or archive-head mutation, staged receipt as
-authority, head/delete split, payload/publication-receipt rebinding, forged or
-stale physical disposition, custody-ledger undercharge, Unknown conversion,
-workspace credit without deletion or charged transfer, issuer sequence races,
+authority, receipt Commit/GC race, collected replay, unbudgeted orphan cleanup,
+head/delete split, payload/publication-receipt rebinding, forged or stale
+physical disposition, transfer-before-reservation, unknown-outcome refund,
+custody cost-profile mapping/rounding/overflow undercharge, Unknown conversion,
+workspace credit without deletion or reserved charged transfer, issuer sequence races,
 remote-intent effect, absent-state writes,
 split/double whole-member custody release, partial quarantine refund,
 premature or duplicate workspace deletion settlement, or activation before successor
