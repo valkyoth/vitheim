@@ -301,10 +301,17 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityCostProfileHeadRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityCostProfileReservationDependencyRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityCostProfileDrainFenceRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileEvaluatorArtifactRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileEvaluatorReadinessManifestRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileEvaluatorDistrustRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityLedgerRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationReconciliationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationExtensionResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationEvaluatorMigrationResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferMemberRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferNamespaceFenceRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferQuarantineResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityMemberRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityTransferRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementRow`,
@@ -319,10 +326,15 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginOperationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanHeadRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageDispositionRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetExhaustedResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageCheckpointRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAuthorizationFenceRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanOperationResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanPreflightRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStateRow`,
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationReceiptRow`,
@@ -383,27 +395,41 @@ exact governed cost-profile generation/evaluator and remains evaluable after
 profile supersession; incompatible or weakening succession drains its live
 dependency, with destructive authority required for weakening. The transfer
 adapter accepts bytes only within the running reserved charge and atomically
-extends capacity before any additional chunk. Commit converts it into the
+extends capacity before any additional chunk. Evaluator binary/corpus digests
+and node readiness are authoritative; emergency distrust blocks chunks,
+extension, eligibility and Commit until independently authorized migration
+preserves at least the original/current maximum. Commit converts it into the
 custody member under that pinned versioned cross-dimension cost profile and
 transfer identity before exact source-parent credit; source and destination
 amounts need not be numerically identical. Unknown preserves the predecessor
-and the pending reservation and authorizes no credit. Only then
+and the pending reservation until independent quarantine converts its full
+maximum into a permanent unknown-transfer member, fences namespace/identity
+and retains legal-hold evidence without refund; late evidence is not authority.
+Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
 generic lineage release cannot credit it separately.
-BeginRelease, ReplanCustodyRelease, AbandonCustodyRelease and
+BeginRelease, ReplanCustodyRelease, AbandonCustodyRelease,
+QuarantineUnknownTransfer, MigrateDistrustedEvaluatorReservation and
 CommitCustodyRelease consume separate action-bound grants.
 Each grant issuer owns only monotonic signed-intent creation; the destination
 applier owns inbox/tombstone/table mutation. Both families implement the same
 six-state first-terminal table, including no-write absent expiry/consumption.
 All lineage-release transactions acquire archive head, plan head,
 commit-attempt disposition, publication state,
-journal head, sorted custody-cost-profile heads/ledgers/reservations, parent,
+journal head, sorted custody-cost-profile/evaluator-distrust heads, ledgers,
+reservations/dependencies, parent,
 current slot, sorted old campaign fences, control/lineage/checkpoint,
 authorization/custody and output rows in the same rank. A checked aggregate
 bundle maximum covers every linked workspace, physical-disposition receipt,
 pending reservation/reconciliation/GC obligation, custody-ledger write and
 ordinary reserve leg before ReleasePending.
+Every Replan derives a fresh backend atomic-limit preflight and reserves its
+replacement/future-Commit plus retained-history/cleanup capacity in the same
+grant/head/reservation transaction. One immutable cumulative lineage budget
+bounds every generation/artifact/work counter; only authenticated checkpoint/
+archive coverage compacts with exact replay and anti-reuse, and terminal
+exhaustion never refunds.
 Only the explicit Begin lineage command may enter ReleasePending and only the
 explicit Commit custody command may enter Released. Begin creates plan
 generation 1 and a Preparing attempt. After a terminal reservation
@@ -413,10 +439,13 @@ bundle, attempt and reservations; Abandon fences only and never refunds Begin.
 Full rollback to the predecessor is unsupported. Publishers and storage
 adapters own non-authoritative receipt evidence only and cannot advance the
 archive replay head or dispatch either terminal mutation. Stage, Verify,
-MarkOrphan and FinalizeGc alone own receipt-state transitions. MarkOrphan
+MarkOrphan and FinalizeGc alone own receipt-state transitions. Stage/Verify
+admit only the current Preparing attempt and otherwise return no-write
+AttemptClosed before upload/verification/budget. MarkOrphan
 requires the receipt's attempt to be Superseded or Abandoned; missing, expired
-or revoked Commit authority is not ineligibility. Commit, Replan, Abandon and
-MarkOrphan race under archive-head→plan-head→attempt→receipt locking. Commit
+or revoked Commit authority is not ineligibility. Stage, Verify, MarkEligible,
+Commit, Replan, Abandon and MarkOrphan race under archive-head→plan-head→
+attempt→receipt locking. Commit
 alone atomically moves CommitEligible→Consumed and
 Verified→ConsumedByCommit while installing the head with exact hot-row deletion
 and every custody settlement/result. Collected cannot revive. Action-specific
@@ -445,7 +474,12 @@ evaluator deletion, streaming above reserved charge, non-atomic extension,
 released-reservation lineage stranding, plan rollback/ID recreation/double
 release, old grant/receipt replay, authorization-loss-as-abandonment,
 commit-eligible orphan admission, receipt Commit/GC race, collected-
-receipt commit, unbudgeted orphan cleanup, Unknown-as-released, absent-state
+receipt commit, unbudgeted orphan cleanup, inherited/incomplete Replan
+feasibility, cumulative-budget reset/overflow, unproved history compaction,
+permanent-Unknown queue/dependency blockage, unknown-member refund or namespace
+fence bypass, terminal-attempt Stage/Verify, evaluator binary/corpus
+substitution, missing node readiness, distrust bypass or undercharging
+migration, Unknown-as-released, absent-state
 write and changed-payload exact retry, unbounded classifier work and under-
 reserved checkpoints.
 VIT-RCV-062 restores the same fence/tombstones, active campaign
@@ -459,9 +493,11 @@ reference, issuer sequences/signed-intent results, action-specific begin/final
 results, publication receipt, release bundle maximum and custody-release legs/
 physical-disposition receipts/tombstones, custody-ledger members/transfers,
 custody cost-profile head/retained evaluators/dependencies/drain fences,
-TransferPending reservations/reconciliation/extension results, custody-release
-plan heads/generations, attempts/dispositions/authorization fences and
-Replan/Abandon/eligibility results,
+evaluator artifacts/readiness/distrust/migrations, TransferPending
+reservations/reconciliation/extension results and unknown-transfer members/
+namespace fences, custody-release plan heads/generations, cumulative budget/
+disposition/checkpoint, attempts/dispositions/authorization fences and Replan
+preflights/Abandon/eligibility/AttemptClosed results,
 publication state/operation results/budget, authoritative archive head/hot-row
 coverage, checkpoint/result plus verification reservation before any affected
 work becomes ready. Exact abort

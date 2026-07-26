@@ -8,6 +8,18 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Made every custody Replan repeat aggregate backend feasibility and atomically
+  reserve replacement, future-Commit and retained-history capacity under a
+  non-resettable cumulative plan-lineage budget with authenticated compaction.
+- Added independently authorized permanent Unknown-transfer quarantine:
+  convert the full pending maximum into a fenced custody member, retain legal-
+  hold evidence, require wholly new Replan capacity and never auto-refund late
+  evidence.
+- Closed publication admission with the current Preparing attempt and added
+  typed no-write AttemptClosed results before upload or verification work.
+- Bound pinned cost evaluators to binary and conformance-corpus digests, added
+  node readiness and emergency distrust, and required independently authorized
+  migration that cannot lower the existing reservation.
 - Closed the reconciled-reservation dead end with monotonic custody-release
   plans and independently authorized Replan/Abandon actions; replacement
   atomically fences old attempts, grants and publication receipts and never

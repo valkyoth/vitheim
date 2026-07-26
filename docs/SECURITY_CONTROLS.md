@@ -351,14 +351,25 @@ audit decision.
   governed lineage; live dependencies retain old evaluators and fence
   incompatible/weakening activation, with destructive authority required for
   weakening. A streaming charge cap and atomic bounded extension commit
-  capacity before extra bytes or finalization. Commit converts the reservation
+  capacity before extra bytes or finalization. Evaluator binary/corpus digests
+  and authenticated node readiness are mandatory; emergency distrust denies
+  chunks, extension, eligibility and Commit until independent migration
+  preserves at least the existing maximum. Commit converts the reservation
   into the conservative custody member before
   exact source credit. Unknown preserves predecessor and pending charge; only
   definitely-never-transferred or exact destination-deleted reconciliation
-  releases it. Begin creates plan generation 1 and Preparing. Only independently
+  releases it. After bounded permanent uncertainty, independent quarantine
+  converts the full maximum into a permanent member, fences namespace/
+  transfer, retains legal-hold evidence and never treats late evidence as
+  refund authority. Begin creates plan generation 1 and Preparing. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
   generation/bundle/reservations; Abandon fences only and never refunds Begin.
+  Every Replan repeats trusted backend-limit preflight and atomically reserves
+  replacement/future-Commit plus retained-history capacity. An immutable
+  cumulative lineage budget cannot reset; only authenticated checkpoint/
+  archive proof compacts exact replay/anti-reuse state, and exhaustion does not
+  refund.
   Commit consumes those receipts while
   settling every leg, advancing Released to OriginalTotal and committing
   CustodyReleased with the matching parent inverse. The combined rank acquires
@@ -373,8 +384,11 @@ audit decision.
   action-specific results; commit rebinds the begin result, verified receipt,
   predecessor/proposed heads, dispositions/profiles/reservations/bundle/grant
   and expected version. Stage, Verify, MarkOrphan and FinalizeGc alone own
-  precharged receipt transitions. Commit, Replan, Abandon and orphan admission
-  serialize on archive-head→plan-head→attempt→receipt-state. MarkOrphan accepts
+  precharged receipt transitions. Stage/Verify admit only the current Preparing
+  attempt and otherwise return no-write AttemptClosed before upload,
+  verification or budget. Stage, Verify, MarkEligible, Commit, Replan, Abandon
+  and orphan admission serialize on archive-head→plan-head→attempt→
+  receipt-state. MarkOrphan accepts
   only Superseded/Abandoned; authorization absence/expiry/revocation is not
   permanent ineligibility. Only Commit moves CommitEligible→Consumed and
   Verified→ConsumedByCommit while installing the head with exact hot-row

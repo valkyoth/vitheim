@@ -775,21 +775,31 @@ exact evaluator generation in the existing governed profile lineage; live
 dependencies retain it and drain incompatible/weakening activation, while
 weakening requires destructive authority. Streaming is capped by current
 reserved charge and atomic bounded extension precedes additional bytes.
+Evaluator binary/corpus digests and authenticated node readiness are required;
+emergency distrust denies chunks, extension, eligibility and Commit until
+independent migration preserves at least the original/current maximum.
 Commit converts the
 reserved maximum into the conservative archive/legal-hold custody member before
 exact source credit and returns only proved surplus. Unknown preserves
 predecessor and pending charge; typed reconciliation releases only on
-definitely-never-transferred or exact destination-deleted evidence. Begin
+definitely-never-transferred or exact destination-deleted evidence. Permanent
+Unknown is independently converted at full charge into a transfer/namespace-
+fenced member with retained legal-hold evidence and no late-evidence refund. Begin
 creates plan generation 1 and Preparing. Independently authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
 and receipts and atomically creating a new bundle/reservation set; Abandon
 fences only and never refunds Begin. Full predecessor rollback remains
-unsupported. Commit consumes every
+unsupported. Every Replan repeats backend atomic-limit preflight and reserves
+replacement/future-Commit plus retained-history capacity. An immutable
+cumulative lineage budget cannot reset; authenticated checkpoint/archive
+compaction preserves exact replay/anti-reuse and exhaustion never refunds.
+Commit consumes every
 receipt while settling all legs, advancing Released to OriginalTotal, removing
 and crediting the identical parent member and recording distinct
 CustodyReleased plus disposition tombstones, custody transfers, checkpoint/
 result/audit/outbox atomically. Retention and separate
 lineage BeginRelease/ReplanCustodyRelease/AbandonCustodyRelease/
+QuarantineUnknownTransfer/MigrateDistrustedEvaluatorReservation/
 CommitCustodyRelease grants have complete six-state
 admission/expiry/issuer-intent/destination-apply/tombstone/first-terminal
 families; custody evidence is never command authority. Begin and final release
@@ -807,7 +817,9 @@ the stored begin result, non-authoritative verified receipt, predecessor/
 proposed heads, physical dispositions, cost profiles/reservations,
 bundle/authorization and expected
 lineage version. Stage, Verify, MarkOrphan and FinalizeGc alone own precharged
-receipt transitions. Commit, Replan, Abandon and orphan admission serialize on
+receipt transitions. Stage/Verify admit only the current Preparing attempt and
+otherwise return no-write AttemptClosed before upload/verification/budget.
+Stage, Verify, MarkEligible, Commit, Replan, Abandon and orphan admission serialize on
 archive-head→plan-head→attempt→receipt-state. MarkOrphan accepts only
 Superseded/Abandoned; absent/expired/revoked Commit authority is not permanent
 ineligibility. Commit alone moves CommitEligible→Consumed and
@@ -1014,6 +1026,11 @@ old Commit grant/publication replay, Replan/Abandon/Commit race, profile
 dependency/drain bypass, premature evaluator deletion, streaming above the
 reservation, non-atomic extension or response-loss replay, commit-eligible
 orphan admission and authorization-loss liveness attack,
+Replan preflight/atomic-limit/retained-capacity omission, cumulative plan-
+history exhaustion/reset or unproved compaction, permanent-Unknown blockage or
+quarantined-member refund/namespace-fence bypass, terminal-attempt Stage/
+Verify artifact allocation, evaluator binary/corpus substitution, missing node
+readiness, emergency-distrust bypass and undercharging evaluator migration,
 workspace credit without deletion or reserved charged transfer, issuer sequence races,
 remote-intent effect, absent-state writes,
 split/double whole-member custody release, partial quarantine refund,

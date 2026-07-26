@@ -170,15 +170,25 @@ transferred or destination-deleted reconciliation. The reservation pins the
 exact evaluator generation in the governed profile lineage; succession retains
 live dependencies and drains incompatible/weakening activation, while
 weakening still needs destructive authority. Streaming is capped by the
-current charge and atomic bounded extension must precede more bytes. Begin
+current charge and atomic bounded extension must precede more bytes.
+Evaluator binary/corpus digests and node readiness are required; emergency
+distrust blocks chunks, extension, eligibility and Commit until independent
+migration preserves at least the original/current charge. Permanent Unknown is
+independently converted at full charge into a transfer/namespace-fenced member
+with retained legal-hold evidence and no late-evidence refund. Begin
 creates plan generation 1 and Preparing. Independently authorized Replan alone
 recovers a terminally reconciled plan by fencing/superseding old attempts,
 grants and receipts and creating a new bundle/reservation set; Abandon fences
-only and never refunds Begin. It consumes every terminal
+only and never refunds Begin. Every Replan repeats backend atomic-limit
+preflight and reserves replacement/future-Commit plus retained-history
+capacity. An immutable cumulative lineage budget cannot reset; authenticated
+checkpoint/archive compaction preserves exact replay/anti-reuse and exhaustion
+never refunds. It consumes every terminal
 receipt, settles all legs, advances Released to OriginalTotal and commits the
 identical parent credit plus distinct CustodyReleased terminal in one
 transaction. Separate BeginRelease/ReplanCustodyRelease/
-AbandonCustodyRelease/CommitCustodyRelease grants are consumed under one
+AbandonCustodyRelease/QuarantineUnknownTransfer/
+MigrateDistrustedEvaluatorReservation/CommitCustodyRelease grants are consumed under one
 archive-head→plan-head→commit-attempt→publication-state→settlement-head→sorted-custody-
 profiles/ledgers/reservations→parent→slot→sorted-old-fences→control/lineage/
 checkpoint→authorization/custody/output rank, after an aggregate bundle maximum
@@ -194,8 +204,10 @@ Only explicit BeginLineageRelease and CommitLineageCustodyRelease commands
 perform the two lineage transitions; commit binds the begin result, verified
 non-authoritative receipt, predecessor/proposed heads, physical dispositions,
 cost profiles/reservations, bundle/authorization and expected version. Stage,
-Verify, MarkOrphan and FinalizeGc own receipt state. Commit, Replan, Abandon
-and orphan admission serialize on archive-head→plan-head→attempt→receipt-state.
+Verify, MarkOrphan and FinalizeGc own receipt state. Stage/Verify admit only
+the current Preparing attempt and otherwise return no-write AttemptClosed
+before upload/verification/budget. Stage, Verify, MarkEligible, Commit, Replan,
+Abandon and orphan admission serialize on archive-head→plan-head→attempt→receipt-state.
 MarkOrphan accepts only Superseded/Abandoned; authorization loss is not
 permanent ineligibility. Commit alone moves CommitEligible→Consumed and
 Verified→ConsumedByCommit while installing the authoritative head with exact
@@ -2203,7 +2215,12 @@ replication/rounding/overflow undercharge, reconciled-reservation stranding,
 plan-generation rollback, old grant/receipt replay, Replan/Abandon/Commit
 shared-row races, profile dependency/drain bypass, evaluator deletion,
 streaming above reservation, extension response loss, commit-eligible orphan
-admission and authorization-loss liveness attacks, Unknown conversion, credit without
+admission and authorization-loss liveness attacks, Replan preflight/atomic-
+limit/retained-capacity omission, cumulative history-budget exhaustion/reset,
+unknown-transfer permanent blockage or quarantined-member refund/fence bypass,
+terminal-attempt Stage/Verify artifact growth, evaluator binary/corpus
+substitution, missing node readiness, emergency-distrust bypass and
+undercharging migration, Unknown conversion, credit without
 physical disposition, issuer sequence races, absent-state writes, late-
 evidence terminal rewrite and partial/double custody release beside all
 prior attacks. Exit requires zero unresolved critical/high

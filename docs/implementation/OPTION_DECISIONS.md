@@ -819,6 +819,30 @@ An independently authorized Abandon only fences an attempt and permits later
 Replan; it never refunds capacity or reverses Begin. Reject full Abort through
 `1.0.0`, because already released local control capacity and admitted external
 effects cannot be exactly rolled back without unsafe compensation.
+Every Replan must repeat, not inherit, aggregate feasibility through a trusted
+CustodyReleaseReplanPreflight. It proves both replacement and future Commit
+fit current backend atomic limits, and reserves the new bundle plus retained
+old-plan/receipt/reservation/evaluator/reconciliation/GC obligations under the
+complete combined profile/ledger/reservation lock rank. Grant consumption,
+preflight capacity, plan-head CAS and replacement reservations are one
+transaction or none becomes current.
+
+Select permanent conservative terminalization over indefinite Unknown.
+After bounded reconciliation exhaustion, independently authorized
+QuarantineUnknownTransfer converts the entire TransferPending maximum into a
+permanent unknown-transfer custody member without refund, fences the transfer
+identity and destination namespace, retains evidence/hold policy and removes
+its evaluator dependency at the fixed charge. Later evidence is append-only,
+not automatic refund. Replan uses entirely new capacity and identities.
+
+Freeze an immutable plan-lineage cumulative budget over generations, attempts,
+grants, fences, rows/bytes, transfers, terminal reservations/members,
+receipts/orphan GC, evaluator dependencies, reconciliation/verification and
+time. No policy/grant/backend/restart/restore raises or resets it. Exhaustion
+cannot destroy a still-possible Commit; after an already terminal attempt it
+enters non-refunding BudgetExhaustedRetained. Compact old generations only
+behind authenticated checkpoint/archive coverage that preserves exact replay,
+conflict, counters and anti-reuse evidence.
 
 Reuse the existing governed backend-storage cost-profile lineage rather than
 creating another mutable owner. Every custody reservation pins its exact
@@ -832,6 +856,13 @@ from the current reservation. It accepts an additional bounded chunk only
 after an atomic extension reserves more capacity under the pinned profile and
 within the plan hard maximum; failed extension forbids further bytes/finalize
 and leaves the original pending charge for verified cleanup.
+Bindings include cryptographic evaluator binary/algorithm/ABI and conformance-
+corpus digests. Authenticated node readiness must cover every pinned evaluator
+through startup, rolling upgrade, failover and restore. Independently rooted
+emergency distrust immediately blocks chunks, extension, eligibility and
+Commit. Independently authorized evaluator migration atomically fences old use,
+reserves any positive delta and never reduces the original/current maximum or
+forgets accepted bytes; uncertain external effects use permanent quarantine.
 
 Freeze one durable plan-bound commit attempt with Preparing, CommitEligible,
 Superseded, Abandoned and Consumed. MarkCommitEligible alone moves Preparing
@@ -846,7 +877,8 @@ removes/credits the identical parent member and records CustodyReleased plus
 per-leg disposition tombstones, custody transfers, result/audit/outbox. The
 broader lineage release cannot perform an independent workspace credit.
 Freeze separate six-state action-bound BeginRelease, ReplanCustodyRelease,
-AbandonCustodyRelease and CommitCustodyRelease
+AbandonCustodyRelease, QuarantineUnknownTransfer,
+MigrateDistrustedEvaluatorReservation and CommitCustodyRelease
 lineage authorization grants; custody/hold evidence alone is not command
 authority. Freeze explicit
 `BeginMigrationImportRegistryHistoryCorruptionControlLineageRelease` and
@@ -864,8 +896,12 @@ local transaction as every disposition, custody-ledger transfer, settlement
 and result. Freeze command-owned publication state Staged→Verified→
 ConsumedByCommit or Staged/Verified→OrphanGcEligible→Collected. Stage, Verify,
 MarkOrphan and FinalizeGc have stored result/conflict types and precharged
-lifecycle/GC budgets. Commit and MarkOrphan serialize archive-head→receipt-
-state; Commit atomically consumes only Verified, orphan admission rechecks
+lifecycle/GC budgets. Stage admits before upload and Verify rechecks only the
+current Preparing attempt; closed/non-current attempts return typed no-write
+AttemptClosed without upload, verification or budget allocation. Stage,
+Verify, MarkEligible, Replan, Abandon, Commit and MarkOrphan serialize after
+archive head on plan-head→attempt→receipt-state; Commit atomically consumes
+only Verified, orphan admission rechecks
 non-reference and collected receipts never revive. Non-consumed receipts are
 ignored by readers. The generic Release name is non-dispatchable.
 All release transactions use one archive-replay-head→custody-release-plan-head→

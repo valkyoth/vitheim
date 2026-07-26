@@ -674,6 +674,7 @@ restore, failover, and release evidence.
    retained pool; an immutable Activated/Aborted origin returns only to its
    matching pending state, and no credit or terminal-result rewrite occurs.
    Retention and BeginRelease/ReplanCustodyRelease/AbandonCustodyRelease/
+   QuarantineUnknownTransfer/MigrateDistrustedEvaluatorReservation/
    CommitCustodyRelease use complete destination-
    applied first-terminal authorization families; custody evidence is not
    command authority. Quarantine revocation is
@@ -687,14 +688,23 @@ restore, failover, and release evidence.
    fence incompatible or weakening activation, with destructive authority for
    weakening. A streaming cap prevents additional bytes or finalization above
    the reservation, and atomic bounded extension must commit before the next
-   chunk. A versioned cost profile maps unlike source/destination generations,
+   chunk. Evaluator binary/corpus digests and node readiness are mandatory;
+   emergency distrust blocks chunks, extension, eligibility and Commit until
+   independent migration preserves at least the original/current charge.
+   A versioned cost profile maps unlike source/destination generations,
    units and storage overhead; Commit converts the reservation into the final
    custody member before exact source credit. Unknown preserves predecessor and
-   pending charge. Begin creates plan generation 1 and a Preparing commit
+   pending charge until independent quarantine converts the full maximum into
+   a permanent member, fences destination/transfer and retains legal-hold
+   evidence without refund. Begin creates plan generation 1 and a Preparing commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and
    creates a new bundle/reservation set; Abandon fences only and never refunds
-   Begin. Full predecessor rollback is unsupported. All release transactions
+   Begin. Each Replan freshly proves backend feasibility and reserves its
+   replacement/future-Commit plus retained-history capacity under an immutable
+   cumulative lineage budget. Only authenticated checkpoint/archive coverage
+   compacts exact replay/anti-reuse state; exhaustion is non-refunding. Full
+   predecessor rollback is unsupported. All release transactions
    share the archive-head→plan-head→commit-attempt→
    publication-state→settlement-head→sorted-custody-profiles/ledgers/
    reservations→parent→current-slot→sorted-old-fence→control/lineage/checkpoint→
@@ -705,9 +715,11 @@ restore, failover, and release evidence.
    those transitions and return action-specific results/conflicts; commit binds
    the begin result, verified publication receipt, predecessor/proposed heads,
    dispositions/profiles/reservations/bundle/grant and expected version.
-   Stage/Verify/MarkOrphan/FinalizeGc own receipt state. Commit, Replan,
-   Abandon and orphan admission serialize on archive-head→plan-head→attempt→
-   receipt CAS. MarkOrphan accepts only Superseded/Abandoned attempts;
+   Stage/Verify/MarkOrphan/FinalizeGc own receipt state. Stage/Verify admit only
+   the current Preparing attempt and otherwise return no-write AttemptClosed
+   before upload/verification/budget. Stage, Verify, MarkEligible, Commit,
+   Replan, Abandon and orphan admission serialize on archive-head→plan-head→
+   attempt→receipt CAS. MarkOrphan accepts only Superseded/Abandoned attempts;
    temporary authorization loss is not ineligibility. Publisher/storage
    receipts remain non-authoritative and invisible to readers; only Commit
    atomically moves CommitEligible→Consumed and
