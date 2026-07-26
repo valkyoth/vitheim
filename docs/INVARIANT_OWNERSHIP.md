@@ -234,6 +234,36 @@ recovery without SoD. VIT-RCV-062 restores all complete atomic lineages before
 work and never converts ManualRecoveryPending, missing recovery state or a
 remote revocation message into a terminal.
 
+### Migration/Import Irreversible-Operation Ownership Refinement
+
+This refinement is normative for VIT-INV-062 and adds no new authority owner.
+The same destination-local owner persists:
+
+- `MigrationImportRegistryHistoryDeploymentIdentityRetirementAuthorizationRow`,
+  `MigrationImportRegistryHistoryDeploymentRetirementFenceRow` and
+  `MigrationImportRegistryHistoryDeploymentIdentityRetirementCompletionReserveRow`;
+- `MigrationImportRegistryHistoryBackendStorageCostProfileClassifierWorkBudgetRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignTransferRow`
+  and
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveRow`;
+- `MigrationImportRegistryHistoryRecoveryCapacityParentVerificationReservationRow`.
+
+Retirement authorization issuer, destination admitter and consuming command are
+separate capabilities; only the local owner commits admission/revocation/
+expiry/consumption, fence, reserve, retirement result, audit and outbox.
+Cost-profile owner, weakening classifier/authorizer, re-cost worker, parent
+allocator and parent verifier remain separated. The owner alone atomically
+reserves the complete campaign delta, moves stable child deltas, terminalizes
+abort/activation and encumbers full checkpoint-verification capacity.
+VIT-TST-062-N-F rejects absent-as-Operational, authority reuse, borrowed
+completion capacity, partial campaign reservation, applied-charge refund,
+unbounded classifier work and restorable under-reserved checkpoints.
+VIT-RCV-062 restores the same fence/tombstones, campaign snapshot/commitment/
+bucket/transfers/cursor/lease/budget and verification reservation before any
+affected work becomes ready.
+
 ### Topology Authorization Replay Lifecycle Refinement
 
 This refinement is normative for the VIT-INV-060 and VIT-INV-061 rows above

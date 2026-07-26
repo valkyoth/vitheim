@@ -3342,12 +3342,49 @@ Canonical
 independently provisioned
 `MigrationImportRegistryHistoryDeploymentIdentityRetirementAuthorityPortV1`
 whose trust root and custody are separate from the publication-profile root.
-Its closed
+The port may issue only canonical, single-use
+`MigrationImportRegistryHistoryDeploymentIdentityRetirementAuthorizationV1`.
+Its closed lifecycle is Absent, RevokedBeforeAdmission, Issued, Consumed,
+ExpiredUnused or RevokedUnused. The independently authenticated issuer and
+destination-local admitter are separate roles. Admission binds the exact
+tenant, deployment identity, profile-lineage root, operational and candidate
+heads, governance-fence predecessor, incident and closed reason, issued-at,
+not-before, target-covering expiry, maximum time uncertainty and trusted-time
+profile/epoch, issuer/key/continuity, quorum and separation-of-duty evidence,
+nonce, authorization digest and distinct admission/revocation/retirement
+idempotency identities. An authenticated revocation received before admission
+creates the permanent authorization-digest tombstone. Expiry or revocation can
+win only while Issued; consumption, expiry and revocation race on one
+destination-local same-row CAS, exact retry returns its stored result and
+changed material conflicts. Retirement authority possession alone is not an
+admitted grant.
+
+Genesis creates
+`MigrationImportRegistryHistoryDeploymentRetirementFenceV1` as Operational;
+absence is corruption and never means Operational. Its closed states are
+Operational, RetirementPending and Retired. Every read, mutation, export,
+worker admission, readiness decision, dispatch, external-send start and local
+commit structurally locks or reads and rechecks this fence. RetirementPending
+permits only status reconciliation, custody-evidence collection and
+retirement terminalization; Retired permits only retained evidence reads and
+the separately authorized old-custody import rule below. No cached readiness,
+lease, queued work or already-created outbox bypasses a later fence state.
+
+The retirement record's closed
 `MigrationImportRegistryHistoryDeploymentIdentityRetirementStateV1` is
 Pending, Retired or EvidenceUnavailable. Only
 `RetireMigrationImportRegistryHistoryDeploymentIdentity` may create Pending
-and terminalize it. Its first local transaction records Pending, a safety fence,
-stable retirement request/outbox and audit before external work. A bounded
+and terminalize it. Its first local transaction atomically consumes the
+admitted Issued authorization, advances Operational to RetirementPending and
+records Pending, a stable retirement request/outbox and audit before external
+work. Before that transaction, it reserves a non-borrowable
+`MigrationImportRegistryHistoryDeploymentIdentityRetirementCompletionReserveV1`
+covering maximum status reconciliation, custody-evidence collection, terminal
+result, audit, outbox, checkpoint and recovery work; insufficient complete
+reserve makes admission no-write. The reserve remains encumbered across
+unknown response, retry, failover and EvidenceUnavailable evidence collection,
+and is released only by the ordinary authenticated settlement protocol after
+a durable terminal checkpoint. A bounded
 worker then submits independently authenticated RetireDeploymentIdentity to the
 same governance-fence sequence used below. Its linearizable winner permanently
 rejects every later profile or manifest operation for the old deployment; lost
@@ -3829,8 +3866,22 @@ Trusted
 `MigrationImportRegistryHistoryBackendStorageCostProfileSuccessorClassificationV1`
 is NonWeakening or Weakening. It compares each predecessor/successor cost
 function analytically over the complete declared artifact-kind and canonical-
-size domain using exact arithmetic and the union of every ceiling/allocation
-breakpoint; sampled or golden-vector comparison alone is insufficient.
+size domain using exact arithmetic. The supported function family is rounded
+affine cost only: fixed overhead plus a positive rational expansion, followed
+by outer allocation-unit rounding. Its closed-form symbolic dominance proof
+partitions only at algebraically derived crossings and residue classes; it
+never enumerates every possible ceiling/allocation breakpoint or artifact
+size. The profile format fixes platform maxima for profile entries, artifact
+kinds, canonical size, allocation unit, rational numerator and denominator,
+encoded proof bytes and proof nodes. Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileClassifierWorkBudgetV1`
+precharges decode, normalization, checked arithmetic, comparison and proof
+verification before evaluation. UnknownOrOverBudget, an unsupported function,
+an exceeded format maximum or an unverifiable proof is Weakening, never a
+sampled fallback; sampled or golden-vector comparison alone is insufficient.
+Property and golden vectors compare the symbolic result with exhaustive
+evaluation over small bounded domains, including all rounding residues,
+crossings and maximum-value arithmetic.
 Unknown comparison, a newly supported artifact without a conservative bound,
 or any size at which the successor can charge less is Weakening. NonWeakening
 requires the independent ordinary cost-profile owner. Weakening additionally
@@ -3843,11 +3894,39 @@ authorize their own successor.
 Existing child charges retain their bound
 cost-profile identity. A backend/schema/index transition requires an admitted
 successor profile and conservative capacity re-admission before activation:
-the nonnegative re-cost delta is atomically debited from the parent and added
-to each child encumbrance under its stable transfer identity, while a lower
-estimate never releases existing capacity before the original artifacts are
-archived and exactly deleted. Bounded staging records and an authenticated
-complete re-cost checkpoint cover every affected child. The final local
+the nonnegative re-cost delta is transferred through canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignV1`.
+Its immutable start transaction binds the predecessor/successor profiles,
+backend/schema/index selector, a fixed child-set snapshot and exact membership
+commitment, parent/checkpoint versions, stable campaign identity and
+idempotency, and installs a durable lease/fence. Its closed
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStateV1`
+is Preflighting, RecostPending, Applying, Complete, Activated, Aborting,
+Aborted or Fenced. A bounded preflight cursor evaluates every snapshot child,
+proves the complete checked aggregate nonnegative delta and charges a
+cumulative work budget before work. Only the complete preflight checkpoint may
+atomically move the entire aggregate delta from ParentAvailable into one
+campaign-owned RecostPending bucket; insufficient aggregate or terminalization
+capacity makes that transaction no-write.
+
+Each bounded application transaction uses a stable child/delta transfer
+identity to move that child's exact pending delta from RecostPending into its
+encumbrance. It advances a durable monotonic cursor, cumulative charges and
+checkpoint under the campaign lease/fence. Exact retry returns the original
+transfer; changed material, duplicate movement, snapshot churn, retry-limit
+exhaustion or cursor contradiction fences. A non-borrowable
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveV1`
+covers lease takeover, exact-response-loss reconciliation, terminal result,
+abort, audit, outbox and checkpoint work at every crash boundary. Active
+historical charges are never rewritten or released. Authenticated abort may
+release only the still-unapplied RecostPending aggregate or a child delta still
+proved pending; an already applied child delta remains charged until ordinary
+artifact archival and exact deletion. Abort is resumable, idempotent and
+checkpointed, and can reach Aborted only when every campaign transfer is
+classified exactly once as applied or released.
+
+The complete checkpoint proves snapshot membership, aggregate delta, every
+stable transfer and zero unapplied RecostPending balance. The final local
 transaction verifies that checkpoint and atomically activates the cost-profile
 head with the backend/schema/index selector; missing child, failed delta
 admission, stale parent/head or incomplete checkpoint refuses activation.
@@ -3903,6 +3982,22 @@ decode/hash/proof/byte/time quantum before work. Ready commits only after exact
 membership, aggregate, transfer adjacency, predecessor checkpoint and both
 ledger equations verify. Mismatch, unavailable history, budget exhaustion,
 cursor contradiction or snapshot churn becomes Fenced.
+
+Every restorable parent checkpoint carries
+`MigrationImportRegistryHistoryRecoveryCapacityParentVerificationReservationV1`.
+Checkpoint creation derives the complete required reservation with checked,
+profile-bound maxima from authenticated child count and encoded bytes,
+membership-commitment depth and chunk count, maximum decode/hash/proof work per
+entry, adapter-specific bounded scan/continuation overhead, and terminal
+result/audit/outbox/checkpoint/recovery requirements. The reservation covers
+the complete fixed snapshot, not merely one worker quantum. It is atomically
+encumbered before that checkpoint may become a restorable head; insufficient
+capacity leaves the predecessor head authoritative and creates no candidate
+head. Restore may spend the reservation in smaller bounded quanta, but its
+cumulative budget cannot exceed or be recreated beyond the reserved amount,
+and an honest maximum-sized admitted snapshot has sufficient reserved capacity
+to finish. Profile bounds whose conservative derivation overflows, depends on
+unbounded adapter work or cannot be reserved are unsupported.
 
 Crash, failover and retry resume the same cursor and cumulative charges; they
 cannot recreate the verification, reset work or rescan a verified prefix for

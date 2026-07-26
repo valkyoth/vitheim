@@ -691,7 +691,12 @@ Separately rooted retirement owns Pending→Retired/EvidenceUnavailable without
 the lost root. EvidenceUnavailable permits empty replacement bootstrap but
 permanently quarantines old custody; the replacement inherits no profile/fence/
 slot/ratchet/high-watermark/authorization/idempotency state. Retirement submits
-RetireDeploymentIdentity to the same governance sequence, permanently closing
+RetireDeploymentIdentity only after destination admission of an independently
+issued six-state single-use grant. The Pending transaction consumes it,
+advances a genesis-created Operational/RetirementPending/Retired fence and
+retains complete non-borrowable terminalization capacity; every admission,
+readiness, dispatch, external-send start and commit rechecks that fence.
+Retirement submits the resulting request to the same governance sequence, permanently closing
 the old key without publication-root authority. Activate, Abort and
 PermanentlyUnresolved share that sequence and one immutable
 per-transition terminal CAS; external journal/high-watermarks are projections,
@@ -722,7 +727,11 @@ stored, audit and outbox using checked rational ceiling arithmetic and canonical
 backend/profile boundary/golden vectors. Independently rooted cost-profile
 lineage/head/high-watermark, complete-domain analytical weakening
 classification, destructive authorization and a complete atomic re-cost
-checkpoint govern backend/schema activation. A co-located Recovery parent ledger
+checkpoint govern backend/schema activation. The classifier is a bounded
+closed-form rounded-affine proof and UnknownOrOverBudget is Weakening. Re-cost
+uses a fixed child snapshot, complete-delta preflight and atomic RecostPending
+reservation, stable resumable child transfers and authenticated abort that
+cannot release applied historical charges. A co-located Recovery parent ledger
 atomically pairs every child allocation/release with parent debit/credit under
 one deterministic transfer ID and equation, including completion reserves;
 restore verifies both sides from one snapshot without guessed repair. Kind-
@@ -730,9 +739,11 @@ specific exact-once transfers cannot double charge or cross ledgers; verified
 archive plus exact deletion alone releases physical capacity. Parent transfers
 atomically maintain aggregate/membership commitments and
 predecessor checkpoints. Restore gates affected partitions and uses protected
-in VerificationPending and uses protected monotonic cursor-budget streaming;
+monotonic cursor-budget streaming while VerificationPending;
 only full proof is Ready, mismatch/
 unavailable history/exhaustion is Fenced, and startup never scans unboundedly.
+Each restorable checkpoint first derives and reserves capacity for complete
+verification of its fixed snapshot.
 Insufficient future capacity permanently quarantines, rebuild terminalizes the
 predecessor and Release requires a custody-safe
 no-future-operation checkpoint plus exact-once settlement of every original
@@ -856,7 +867,10 @@ journal override, unsafe request-result compaction, lost/forked
 status or finality, missing retirement evidence, replacement-state
 inheritance, lost-root self-retirement, Pending bootstrap deadlock,
 EvidenceUnavailable custody import, retirement authority rotation/activation/
-transfer, inferred in-place root recovery, stale slot clearing, shared
+transfer, grant replay or consumption without admission, pre-admission
+revocation loss, absent/genesis fence interpreted as Operational, cached
+readiness/dispatch/send/commit bypass of RetirementPending, retirement
+terminalization-reserve exhaustion, inferred in-place root recovery, stale slot clearing, shared
 cross-tenant profile or second attempt slot,
 old-profile activation after LocalActivationCommitted, operational/candidate
 head conflation, first external send without complete terminalization reserve,
@@ -874,11 +888,14 @@ stored alias, copied source storage charge, backend/schema/index cost
 undercharge, rational-rounding/aggregate overflow or missing golden vector,
 signed-only cost replacement, lineage/high-watermark rollback, sampled-only
 weakening comparison, destructive-authorization bypass or partial re-cost
-activation,
+activation, classifier breakpoint enumeration or proof-budget bypass,
+partial whole-delta reservation, re-cost cursor/lease/retry reset, duplicate
+child delta, abort refund of an applied historical charge,
 split child/parent debit or credit, duplicate transfer minted after timeout,
 one-sided repair or guessed compensation, unbounded startup scan, forged
 aggregate/membership/checkpoint, cursor recreation/free rescan, child churn or
-capacity mutation before Ready, leaked/double parent credit,
+capacity mutation before Ready, restorable checkpoint without complete derived
+verification reservation, under-reserved valid maximum snapshot, leaked/double parent credit,
 WorkSpent decrease, typed-transfer replay/change, any child or parent
 conservation/overflow/underflow failure, Occupied-to-Released shortcut, lock-
 rank inversion or omitted obligation/fence/checkpoint/custody participant,

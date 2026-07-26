@@ -268,7 +268,11 @@ audit decision.
   rooted Pending→Retired/EvidenceUnavailable retirement protocol that never
   needs the lost root; unavailable evidence permits empty replacement bootstrap
   but permanently quarantines old custody. Replacement inherits no authority/
-  sequencing state, and `1.0.0` has no in-place recovery root. Activate, Abort
+  sequencing state, and `1.0.0` has no in-place recovery root. Retirement
+  consumes an independently admitted six-state single-use grant in the same
+  transaction that advances a genesis-created Operational/RetirementPending/
+  Retired fence; every authority and execution boundary rechecks that fence,
+  and a complete terminalization reserve survives response loss. Activate, Abort
   and PermanentlyUnresolved share the governance sequence and one immutable
   per-transition terminal CAS; journal/high-watermarks are receipt projections.
   Proposal and active high-watermarks are separate,
@@ -299,8 +303,11 @@ audit decision.
   rational ceiling arithmetic and canonical boundary/golden vectors. An
   independently rooted cost-profile lineage/head/high-watermark and analytical
   complete-domain classifier require destructive authorization for any
-  possible lower charge; backend/schema activation requires a complete atomic
-  re-cost checkpoint. A co-located
+  possible lower charge. The rounded-affine symbolic classifier has explicit
+  input/proof/work maxima and UnknownOrOverBudget is Weakening. Backend/schema
+  activation uses a fixed child snapshot, complete-delta parent RecostPending
+  reservation, stable resumable child transfers and authenticated abort before
+  its complete checkpoint. A co-located
   Recovery parent ledger atomically pairs child allocation/release with parent
   debit/credit under one deterministic transfer ID/equation, including
   completion reserves; restore verifies both sides from one snapshot and never
@@ -308,7 +315,8 @@ audit decision.
   Atomic parent aggregates, exact membership commitments and predecessor
   checkpoints make admission bounded. Restore gates each affected partition
   while protected monotonic cursor/work-budget verification streams to Ready
-  or Fenced; crash cannot reset work and no startup-wide scan is permitted.
+  or Fenced; checkpoint creation reserves the complete derived snapshot cost,
+  crash cannot reset work and no startup-wide scan is permitted.
   Kind-specific exact-once transfers update scope/lineage atomically. Every re-fence uses both ledgers; clearance cannot reset them,
   and exhaustion or loss of
   minimum future capacity permanently quarantines. Rebuild and custody-safe,

@@ -645,8 +645,13 @@ restore, failover, and release evidence.
    index generation with checked rational ceiling arithmetic and golden vectors;
    destination import re-costs rather than copying counters. Cost profiles have
    an independently rooted lineage/head/high-watermark and complete-domain
-   analytical weakening classifier; destructive weakening and backend/schema
-   activation require authorization plus a complete atomic re-cost checkpoint.
+   analytical weakening classifier; its rounded-affine symbolic proof and
+   input/proof/work maxima prevent breakpoint enumeration, and unknown or
+   over-budget classification is weakening. Destructive weakening and backend/
+   schema activation require authorization plus a fixed-snapshot campaign that
+   reserves the whole aggregate delta before resumable per-child transfers and
+   activates only after the complete checkpoint; authenticated abort releases
+   only unapplied or proved-pending deltas.
    A co-located Recovery parent ledger atomically debits with child allocation
    and credits with child release under one transfer identity and equation;
    completion reserves use it too. One logical operation deterministically
@@ -654,7 +659,11 @@ restore, failover, and release evidence.
    without guessed compensation. Atomic aggregate/membership commitments and
    predecessor checkpoints make admission constant-time; restore gates each
    partition and streams protected cursor-budget verification to Ready or
-   Fenced without an unbounded startup scan. Stable kind-specific transfer IDs and
+   Fenced without an unbounded startup scan. A checkpoint cannot become a
+   restorable head until complete snapshot-verification capacity is derived
+   and reserved. Deployment retirement similarly requires a separately issued
+   single-use grant, a genesis-created structurally rechecked local fence and a
+   complete non-borrowable terminalization reserve. Stable kind-specific transfer IDs and
    explicit unused-reservation rules span clearance/re-fencing.
    Insufficient remaining or minimum future capacity permanently
    quarantines the lineage. Rebuild is terminal for the predecessor; Release

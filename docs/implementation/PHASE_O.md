@@ -85,7 +85,11 @@ loss or full compromise uses a separately rooted retirement authority and
 Pending→Retired/EvidenceUnavailable protocol that never needs the lost root.
 EvidenceUnavailable permits empty new-identity bootstrap but permanently
 quarantines old custody; replacements inherit no authority/sequencing state,
-and `1.0.0` has no in-place recovery root. ActivateManifest, AbortManifest and
+and `1.0.0` has no in-place recovery root. Retirement first admits an
+independently issued six-state single-use grant, then atomically consumes it
+with Pending, a genesis-created Operational→RetirementPending fence and the
+complete non-borrowable terminalization reserve. Every authority, readiness,
+dispatch, send-start and commit boundary rechecks that fence. ActivateManifest, AbortManifest and
 SealPermanentlyUnresolved share the governance sequence with RotateProfile and
 EmergencyDistrust. RetireDeploymentIdentity is authenticated by retirement
 authority on that same sequence and permanently closes the old key; one per-
@@ -124,7 +128,12 @@ transfer ID and parent equation, including completion reserves. Backend cost
 profiles use checked rational ceiling arithmetic and canonical boundary/golden
 vectors plus independently rooted lineage/head/high-watermark, complete-domain
 analytical weakening classification, destructive authorization and a complete
-atomic re-cost checkpoint before backend/schema activation. Restore verifies both ledger sides from one snapshot and never repairs
+atomic re-cost checkpoint before backend/schema activation. Classification is
+a bounded closed-form rounded-affine proof and UnknownOrOverBudget is
+Weakening. Re-cost fixes snapshot membership, preflights and atomically
+reserves the whole aggregate delta, persists stable per-child transfers and a
+completion reserve, and supports authenticated exact abort without refunding
+applied historical charges. Restore verifies both ledger sides from one snapshot and never repairs
 by choosing one side or guessing compensation. Kind-specific
 exact-once transfers cannot double charge or cross ledgers, and only verified
 archive plus exact deletion releases physical encumbrance.
@@ -133,7 +142,9 @@ commitments and predecessor checkpoints. Restore gates affected partitions in
 VerificationPending and streams fixed-checkpoint chunks under a persistent
 cursor, cumulative work budget and protected capacity; only complete proof is
 Ready, while mismatch/unavailable history/exhaustion is Fenced. Crash cannot
-reset work or trigger an unbounded startup scan.
+reset work or trigger an unbounded startup scan. Checkpoint creation derives
+and reserves the complete fixed-snapshot verification requirement before the
+checkpoint may become a restorable head.
 Insufficient future capacity permanently quarantines, rebuild is
 terminal for the predecessor, and custody-safe Release checkpoints before
 settling each original reserve leg exactly once through separate authenticated
@@ -2182,6 +2193,10 @@ request identity to changed material, mutate a final winner/loser result,
 compact request-result membership before reconciliation, lose status/finality,
 make the lost root self-retire, leave Pending as a bootstrap deadlock, import
 old custody after EvidenceUnavailable, let retirement rotate/activate/transfer,
+replay or consume retirement authority without destination admission, drop a
+pre-admission revocation, interpret an absent retirement fence as Operational,
+skip fence rechecks at readiness/dispatch/send/commit, exhaust or borrow the
+retirement completion reserve,
 inherit profile/fence/slot/ratchet/high-watermark/authorization/idempotency
 state into a replacement, infer
 in-place root recovery, stale-clear an occupied slot, share a profile across
@@ -2218,12 +2233,16 @@ backend/schema/index/artifact overhead, round a rational expansion downward,
 overflow fixed/expansion/aggregate arithmetic, omit a required backend/profile
 golden vector, replace a cost profile as a signed blob, roll back its lineage/
 high-watermark, classify only sampled sizes, bypass destructive weakening,
-activate backend/schema before complete child re-cost, bypass runtime disk fencing, split
+enumerate attacker-sized classifier breakpoints, exceed classifier input/proof/
+work bounds without Weakening, partially reserve a campaign delta, reset its
+lease/cursor/retries, duplicate a child delta, refund an applied delta during
+abort, activate backend/schema before complete child re-cost, bypass runtime disk fencing, split
 parent debit/credit from child allocation/release, leak or double-credit the
 Recovery parent, mint a new transfer identity after timeout, repair split state
 by choosing one side or guessing compensation, scan every child in one startup
 transaction, forge aggregate/membership/checkpoint, recreate a cursor, rescan
-for free, churn children or mutate capacity before Ready, move dimensions, violate any
+for free, admit a restorable checkpoint without full derived verification
+capacity, repeatedly exhaust a valid maximum snapshot, churn children or mutate capacity before Ready, move dimensions, violate any
 child or parent conservation equation, replay/change a typed transfer identity,
 move Occupied directly to Released, omit obligation/fence/
 checkpoint/custody from settlement or invert the shared lock rank, return

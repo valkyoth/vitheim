@@ -32,6 +32,11 @@ All notable Vitheim changes are documented here. The format follows
 - Unified Activated, Aborted and PermanentlyUnresolved under one transition-
   terminal governance CAS; governed storage-cost profile succession and bounded
   parent-ledger restore verification now have explicit versioned gates.
+- Hardened irreversible retirement and bounded capacity work with a six-state
+  single-use retirement grant, genesis fence and completion reserve; a
+  whole-delta resumable re-cost campaign; a bounded symbolic cost classifier;
+  and complete verification-capacity reservation before parent checkpoints
+  become restorable.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

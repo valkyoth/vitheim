@@ -326,6 +326,11 @@ artifacts by backend/schema/index generation using checked rational ceiling
 arithmetic and canonical boundary/golden vectors. Their independently rooted
 lineage/head/high-watermark, complete-domain weakening classifier, destructive
 authorization and complete re-cost checkpoint govern backend/schema activation.
+The classifier is a bounded closed-form rounded-affine proof with explicit
+format/proof/work maxima; UnknownOrOverBudget is Weakening. Large child sets
+use a fixed-snapshot re-cost campaign that preflights and atomically reserves
+the whole parent delta before stable per-child transfers, with durable
+cursor/lease/budget/completion reserve and exact resumable abort.
 A co-located Recovery parent
 ledger and immutable parent/child transfers atomically pair every child
 allocation/release with parent debit/credit; one logical operation maps to one
@@ -333,7 +338,11 @@ transfer identity, restore never repairs by choosing a side, and completion
 reserves follow the same equation. Atomic parent aggregates, exact membership
 commitments and predecessor checkpoints support protected cursor-budget
 streaming after restore; affected partitions remain VerificationPending or
-Fenced until complete proof makes them Ready.
+Fenced until complete proof makes them Ready. Checkpoint creation reserves the
+complete derived verification cost before the checkpoint is eligible as a
+restorable head. Deployment retirement likewise consumes a separately issued
+six-state single-use grant, advances a genesis-created fence rechecked at every
+authority/execution boundary and retains a complete terminalization reserve.
 Stable kind-specific transfer identities, explicit unused-capacity rules and
 dimension/ledger isolation survive every clearance and re-fence. Exhaustion or failure to
 retain minimum future-control capacity permanently quarantines the lineage and

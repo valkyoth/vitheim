@@ -378,6 +378,18 @@ permanently quarantines old custody. Missing retirement blocks old-custody
 movement, not empty bootstrap. Replacement may cite retirement as provenance
 but inherits no profile/fence/slot/ratchet/high-watermark/authorization/
 idempotency state.
+Freeze the additional single-use
+`MigrationImportRegistryHistoryDeploymentIdentityRetirementAuthorizationV1`
+decision before `1.0.0`: its six-state admission/revocation/expiry/consumption
+lifecycle, independent issuer versus destination-local admitter, complete
+identity/root/head/fence/incident/reason/time/quorum/SoD/nonce/idempotency
+preimage and exact retry/conflict table are mandatory. Genesis-created
+`MigrationImportRegistryHistoryDeploymentRetirementFenceV1` is Operational,
+RetirementPending or Retired; absence fails closed and every admission,
+readiness, dispatch, external-send start and commit rechecks it. The Pending
+transaction consumes the grant and admits the complete non-borrowable
+retirement completion reserve atomically. No deployment/storage profile that
+cannot provide those transactions is selected for `1.0.0`.
 Profiles are tenant/deployment scoped and never shared across tenants. One
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileAttemptSlotV1`
 Empty-or-one slot bounds the only nonterminal attempt; a second
@@ -628,13 +640,25 @@ Runtime disk-pressure guards are separate and may only fence earlier.
 Freeze independently rooted cost-profile lineage/current head, Proposed/
 Active/Superseded/Rejected transition, activation record, predecessor-linked
 checkpoint and external high-watermark. Trusted classification compares exact
-cost functions analytically over the complete artifact-kind/size domain and
-all rounding breakpoints; possible lower charge or unknown comparison is
+cost functions analytically over the complete artifact-kind/size domain using
+the closed-form rounded-affine algorithm. Freeze maximum profile entries,
+artifact kinds, canonical size, allocation unit, rational numerator/
+denominator, proof bytes/nodes and classifier work. It may inspect only bounded
+algebraic crossings/residue classes; possible lower charge,
+UnknownOrOverBudget, unsupported form, exceeded bound or unverifiable proof is
 Weakening and consumes the complete destructive authorization lifecycle.
-Golden vectors alone are insufficient. Every affected child admits its
-parent-capacity re-cost delta atomically, and only a complete authenticated
-re-cost checkpoint may activate the profile head with the backend/schema/index
-selector.
+Golden vectors alone are insufficient, while property vectors must match
+exhaustive evaluation over small bounded domains.
+
+Every affected child is handled by one fixed-snapshot
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignV1`.
+Freeze complete-delta preflight, atomic parent RecostPending reservation,
+stable child transfer IDs, lease/fence/cursor/cumulative budget/retry ceiling,
+protected terminalization reserve, complete checkpoint and final atomic
+profile/backend selector activation. Authenticated abort releases only
+unapplied or explicitly proved-pending deltas; applied historical charges
+remain. A backend without whole-delta reservation and exact resumable
+apply/abort semantics is unsupported through `1.0.0`.
 Persist co-located
 `MigrationImportRegistryHistoryRecoveryCapacityParentLedgerV1`, its exact active-child encumbrance
 set and stable parent/child transfer rows. Allocation atomically debits parent
@@ -654,6 +678,15 @@ chunks; crash resumes without free rescans, child churn waits, and only complete
 membership/aggregate/transfer/equation proof becomes Ready. Unavailable
 history, mismatch, churn or exhaustion fences; unbounded startup scans are
 unsupported. Freeze
+`MigrationImportRegistryHistoryRecoveryCapacityParentVerificationReservationV1`
+as a checkpoint-creation prerequisite. Its checked derivation covers the
+complete authenticated snapshot from child count/encoded bytes, commitment
+depth/chunks, per-entry decode/hash/proof maxima, adapter scan overhead and
+terminal result/audit/outbox/recovery. The reservation is encumbered before a
+checkpoint becomes a restorable head; smaller restore quanta spend that one
+non-recreatable reservation. Insufficient or unbounded derivation leaves the
+predecessor authoritative, so every valid maximum-sized admitted checkpoint
+can finish verification. Freeze
 `MigrationImportRegistryHistoryLockRankV1` as the sole adapter
 rank mapping and persist acquisition-trace conformance evidence. Release locks
 and rechecks settlement heads, parent ledger, reserve, obligation, fence,
