@@ -71,12 +71,16 @@ bounded obligation and its lineage disposition atomically: Pending has
 zero-counter lineage, NoHistory has a zero-eligibility proof and NotRequested
 has a custody record.
 The same law requires externally checkpointed
-Prepared→ExternallyPublishedVerified→Active source-manifest transitions,
-restore comparison with the independent high-watermark, one obligation-wide
-non-resetting fence-episode/control-reserve lineage and complete canonical
+Prepared→ProposalPublishedVerified→LocalActivationCommitted→Active
+source-manifest transitions with external Aborted/PermanentlyUnresolved
+dispositions, governed publication-profile lineage and separate proposal/
+active high-watermarks. It also requires one obligation-wide conservation-
+preserving fence-episode/control-reserve transfer ledger, rollback-safe
+settlement journal/archive heads and complete canonical
 destructive-revocation preimages. A local database cannot assert the latest
-source manifest, clearance cannot reset cross-episode capacity, and reserve
-release is custody-safe, checkpointed and exact-once.
+source manifest, a proposal cannot assert activation, clearance cannot reset or
+double-charge cross-episode capacity, and reserve release is custody-safe,
+checkpointed, journaled and exact-once.
 Authenticated append advances the archive head. Exhaustion remains ManualRecoveryPending
 until exact independent action authority acts. RetryAppend cannot waive/
 abandon. Activation creates zero-counter cumulative lineage beside Pending and

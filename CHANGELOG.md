@@ -8,6 +8,19 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Split external manifest proposal publication from active-manifest authority
+  with a governed publication-profile lineage, durable per-witness
+  reconciliation, explicit Activated/Aborted/PermanentlyUnresolved journal
+  dispositions and separate proposal/active high-watermarks.
+- Replaced ambiguous corruption-episode “precharge” accounting with typed
+  Available, EpisodeReserved, TerminalizationReserved, Consumed and Settled
+  buckets, stable transfers and a per-dimension conservation invariant.
+- Bound the publication-profile identity, generation, digest, exact witness
+  set and quorum into every transition artifact, with typed non-weakening
+  succession and destructive authorization for weakening.
+- Routed corruption-control reserve release through separate authenticated
+  local settlement-journal and verified archive-replay heads so restore cannot
+  resurrect capacity or settle an original leg twice.
 - Added externally published and verified source-manifest checkpoints so a
   locally consistent older snapshot cannot roll back the authoritative current
   head without failing the external high-watermark check.

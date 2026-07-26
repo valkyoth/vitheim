@@ -2,7 +2,7 @@
 set -eu
 
 canonical='active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→clearance-anchor-source-manifest-head→corruption-control-reserve→history-obligation/corruption-control-lineage/corruption-fence/clearance-anchor-registry/lineage-disposition→retention/legal-hold→audit/result/outbox'
-history_order='active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
+history_order='active-coordinator-generation→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox'
 
 fail() {
     echo "migration/import policy: $*" >&2
@@ -96,7 +96,7 @@ for obsolete_order in \
     'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-authorization→archive-head' \
     'history-obligation→corruption-fence→lineage-disposition→recovery-authorization→corruption-clearance-anchor-registry→corruption-clearance-authorization→corruption-clearance-attempt' \
     'active-coordinator-generation→history-obligation→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest→corruption-clearance-anchor-registry' \
-    'active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition'
+    'active-coordinator-generation→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-fence→lineage-disposition'
 do
     if grep -R -Fq "$obsolete_order" docs
     then
@@ -144,10 +144,21 @@ for requirement in \
     'remaining fence-lifetime budget' \
     'No adapter may lazily initialize it' \
     'only absent/Uninitialized-to-generation-zero path' \
-    'greatest authenticated Active activation record' \
-    'externally retained checkpoint high-' \
-    'No local manifest, activation-record or' \
-    'Prepared→ExternallyPublishedVerified→Active' \
+    'greatest authenticated Activated' \
+    'proposal-publication and active-manifest' \
+    'No proposal checkpoint, local manifest,' \
+    'Prepared, ProposalPublishedVerified, LocalActivationCommitted, Active,' \
+    'Proposal publication advances only the proposal head' \
+    'ExternalActivationReceiptV1' \
+    'ExternalAbortTombstoneV1' \
+    'PermanentlyUnresolved' \
+    'authenticated external terminal seal' \
+    'witness absence cannot create that disposition' \
+    "cannot poison that predecessor's readiness" \
+    'status-queried and reconciled' \
+    'CheckpointPublicationProfileLineageV1' \
+    'cannot select a mode, source set or quorum' \
+    'invalidates every Prepared or ProposalPublishedVerified transition' \
     'locks registry,' \
     'no stranded Open scope' \
     'destructive-authority protocols, not signed blobs' \
@@ -155,9 +166,19 @@ for requirement in \
     'MigrationImportRegistryHistoryCorruptionControlReserveV1' \
     'MigrationImportRegistryHistoryCorruptionControlLineageV1' \
     'maximum episode count' \
-    'cannot replace it, replenish it or reset its counters' \
+    'cannot replace the lineage, replenish it or reset its counters' \
+    'original_reservation = available + episode_reserved + terminalization_reserved + consumed + settled' \
+    'Available to EpisodeReserved' \
+    'EpisodeReserved to Consumed' \
+    'Consumed never decreases' \
+    'no transfer changes its capacity dimension' \
+    'never adds the same quantity independently to both' \
     'sets the lineage PermanentlyQuarantined' \
     'ReleaseMigrationImportRegistryHistoryCorruptionControlLineage' \
+    'ControlReserveSettlementJournalHeadV1' \
+    'ControlReserveSettlementArchiveReplayHeadV1' \
+    'A split decrement, settlement append, journal advance or lineage' \
+    'Hot settlement state cannot be deleted before verified publication' \
     'Ordinary work cannot borrow the' \
     'A detector or' \
     'all ordinary capacity is exhausted' \
@@ -295,9 +316,23 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointAuthorityPortV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileLineageV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileCurrentHeadV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileSuccessorClassificationV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationAttemptV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointWitnessRequestV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointWitnessReceiptV1 \
+    ReconcileMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublication \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalTransitionJournalV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalTransitionDispositionV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestProposalPublicationHighWatermarkV1 \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestActiveManifestHighWatermarkV1 \
     PublishAndVerifyMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpoint \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationReceiptV1 \
     ActivateMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransition \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalActivationReceiptV1 \
+    FinalizeMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalActivation \
+    MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalAbortTombstoneV1 \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransitionConflict \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestHistoryUnavailableOrRolledBack \
     MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestInitializationResultV1 \
@@ -325,9 +360,14 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionControlLineageDispositionV1 \
     MigrationImportRegistryHistoryCorruptionControlLineageHardMaximumV1 \
     MigrationImportRegistryHistoryCorruptionControlMinimumFutureCapacityV1 \
+    MigrationImportRegistryHistoryCorruptionControlCapacityStateV1 \
+    MigrationImportRegistryHistoryCorruptionControlCapacityTransferIdV1 \
+    MigrationImportRegistryHistoryCorruptionControlCapacityTransferV1 \
     MigrationImportRegistryHistoryCorruptionControlEpisodeV1 \
     MigrationImportRegistryHistoryCorruptionControlLineageCheckpointV1 \
     MigrationImportRegistryHistoryCorruptionControlReserveSettlementV1 \
+    MigrationImportRegistryHistoryCorruptionControlReserveSettlementJournalHeadV1 \
+    MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchiveReplayHeadV1 \
     ReleaseMigrationImportRegistryHistoryCorruptionControlLineage \
     MigrationImportRegistryHistoryCorruptionControlLineageReleaseResultV1 \
     MigrationImportRegistryHistoryCorruptionControlLineageConflict \

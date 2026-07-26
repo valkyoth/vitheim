@@ -670,20 +670,32 @@ Missing lineage for either nonterminal atomically installs an exact-obligation
 `MigrationImportRegistryHistoryCorruptionFenceV1`, never lazy repair. The fence
 has closed Healthy/Fenced/ClearedAfterRestore generations; absence, rollback or
 wraparound denies. The bound anchor-source manifest advances only through
-Prepared→ExternallyPublishedVerified→Active transitions. A selected independent
-witness, secure monotonic store or external quorum verifies the predecessor-
-linked checkpoint before current-head CAS; restore/import verifies its external
-high-watermark, and a locally consistent older snapshot or unavailable receipt/
-witness/key proof is typed `ManifestHistoryUnavailableOrRolledBack` and unready.
+Prepared→ProposalPublishedVerified→LocalActivationCommitted→Active transitions
+with Aborted/PermanentlyUnresolved terminals. Governed publication-profile
+lineage fixes exact witnesses/quorum and binds identity/generation/digest into
+every artifact. Durable per-witness request/status identities reconcile
+proposal publication; local CAS precedes external activation receipt or
+authenticated abort under separate proposal/active high-watermarks. Restore
+derives latest only from externally Activated journal membership; a locally
+older snapshot or unavailable selected-Active profile/receipt/witness/key proof
+is typed `ManifestHistoryUnavailableOrRolledBack` and unready. The transition
+current head is not the operational-head selector: a greater unresolved
+candidate blocks itself, descendants and cleanup while the last proved Active
+predecessor remains operational. PermanentlyUnresolved requires an
+authenticated external terminal seal; timeout, retry exhaustion or witness
+absence only retains the durable fenced reconciliation state.
 Activation creates one obligation-wide corruption-control lineage beside the
-original protected reserve. Every fence generation precharges its non-wrapping
-episode and cumulative proof/retry/byte/time/row/audit/outbox limits; clearance
-never resets them. Insufficient future capacity permanently quarantines,
+original protected reserve. Each dimension conserves Available,
+EpisodeReserved, TerminalizationReserved, nondecreasing Consumed and Settled.
+Stable exact-once transfers reserve episodes and atomically move proof work to
+consumption with scope state; no double charge or cross-dimension movement is
+permitted. Insufficient future capacity permanently quarantines,
 rebuild terminalizes the predecessor and Release requires a custody-safe
 no-future-operation checkpoint plus exact-once settlement of every original
-reserve leg. Append, detection, recovery, clearance, checkpoint and
+reserve leg through separate authenticated local settlement-journal and
+verified archive-replay heads. Append, detection, recovery, clearance, checkpoint and
 cleanup all use
-active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering, so no path
 holds a budget while waiting for the fence. Fenced blocks append, recovery and
 cleanup for only that obligation. It clears only when an independently issued,
@@ -783,8 +795,12 @@ nomination, missing/lazy registry genesis, unauthorized source/class/quorum/
 nonresponse/time/continuity weakening or forged collection receipt, manifest
 genesis/head fork/gap/reorder/raw-generation selection, abbreviated or remote-
 only destructive authority/revocation, locally self-consistent rollback below
-the external checkpoint high-watermark, activation before publication
-verification, witness/key substitution or outage, destructive-revocation
+the external active-manifest high-watermark, activation before publication
+verification, proposal publication followed by authority/profile/CAS loss,
+proposal-as-active inference, activation/abort response loss without status
+reconciliation, orphan cleanup without external terminal membership, caller/
+adapter-selected witness set or quorum, omitted profile identity/generation/
+digest, witness/key substitution or outage, destructive-revocation
 issuer/continuity/time/lifetime/reason/nonce/idempotency omission, registry
 advance without atomic scope
 rebind/stale terminalization, ordinary-capacity saturation blocking fence/
@@ -793,7 +809,11 @@ scope-maximum injection, competing
 valid scope grants, proof-budget escape/fence-lifetime reset, terminal-scope
 reopening, repeated clear/re-fence episode/reserve reset, missing/recreated
 obligation control lineage, minimum-future-capacity bypass, duplicated release
-settlement, EvidenceWait replacement, attempt takeover/CAS/cursor replay,
+settlement, double reservation/consumption charge, capacity-dimension movement,
+Consumed decrease, transfer replay/change, conservation/overflow/underflow
+failure, unused reservation returned without terminal checkpoint, release
+outside settlement journal, hot deletion before archive publication, settlement
+head fork/rollback or capacity resurrection, EvidenceWait replacement, attempt takeover/CAS/cursor replay,
 temporary-evidence retry amplification, authorization loss, stale/forked/
 unanchored/partial/inferred clearance, registry/high-watermark rollback,
 field-wise ceiling/remaining/balance merge, forked-head join or overflow,

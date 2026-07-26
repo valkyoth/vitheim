@@ -352,16 +352,26 @@ policy-transition profile: exact source/class identities, quorum/nonresponse,
 collection time/uncertainty, key continuity and non-wrapping manifest lineage.
 Freeze one independently authorized generation-zero initialization, stable
 tenant/deployment lineage identity and
-Prepared→ExternallyPublishedVerified→Active transition protocol. Select
-exactly one independently owned checkpoint authority profile—witness, secure
-monotonic store or external quorum—with canonical publication receipts,
-non-wrapping checkpoint sequence/predecessor, external high-watermark and
-trusted-time/key-continuity/rotation/revocation rules. The current head can move
-only after publication verification. Restore below the external high-watermark
-or without current receipt/key/witness proof is typed
+Prepared→ProposalPublishedVerified→LocalActivationCommitted→Active lifecycle
+with Aborted/PermanentlyUnresolved terminals. Freeze stable governed
+publication-profile lineage/current head: exact witnesses/sources/classes,
+minimum quorum, authentication/key continuity, codecs, time and reconciliation
+bounds. Bind its identity/generation/digest in every transition preimage.
+Select separate proposal-publication and active-manifest high-watermarks,
+durable per-witness request/receipt reconciliation, externally published
+activation receipts after local CAS and authenticated abort/supersession
+tombstones. PermanentlyUnresolved requires an authenticated external terminal
+seal; timeout, retry exhaustion and witness absence only retain fenced
+reconciliation state. A proposal never claims activation. Restore below the active
+high-watermark or without the selected Active entry's bound profile/receipt/
+key/witness proof is typed
 `ManifestHistoryUnavailableOrRolledBack` and unready; a local database alone
-cannot establish the latest head. Raw-generation, fork, gap or reorder
-selection is unsupported. Initialization and any weakening use the
+cannot establish the latest head. A greater unresolved proposal blocks only
+that candidate, descendants and cleanup while the last proved Active
+predecessor remains operational. Raw-generation, fork, gap or reorder selection
+is unsupported. NonWeakening profile successors use the independent
+profile owner; Weakening consumes the same complete destructive protocol with
+exact predecessor/successor profile bytes. Initialization and any weakening use the
 complete destination-local six-state admission/pre-admission revocation/Issued
 revocation/expiry/consumption protocol with exact bytes, time, key, quorum/SoD,
 tombstone, result, audit and outbox. Ordinary rotation can only preserve or
@@ -492,7 +502,7 @@ ClearedAfterRestore are explicit higher-generation transitions, and absence/
 rollback/wraparound denies. All history operations use the fixed universal
 fence-before-lineage/budget order and skip only inapplicable positions without
 reordering:
-active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+active-coordinator-generation→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
 `FenceMigrationImportRegistryHistoryCorruption` atomically records
 the observation, evidence, reason, generation, detector identity, canonical
 `MigrationImportRegistryHistoryCorruptionResultV1`, audit and outbox. The fence
@@ -1328,15 +1338,16 @@ members and receipts; test partial preparation, one-owner rejection, concurrent
 activation, response loss, failover after prepare and prepared-state restore.
 Atomic activation must expose every domain owner plus the barrier/result or none.
 For history control state, race manifest genesis/current-head CAS and every
-destructive-grant transition. Persist Prepared/published/Active manifest
-transitions, predecessor checkpoint chain, publication receipt and external
-high-watermark; restore only the greatest externally verified reachable Active
-record equal to the local head. Persist one obligation-wide corruption-control
-lineage beside the original reserve, including episode ordinal/max, cumulative
-proof/retry/byte/time/row/audit/outbox counters, active fence/scope, remaining
-capacity, disposition, custody-safe release checkpoint and exact-once reserve
-settlements. Reject missing, reset, recreated, duplicated or local-below-
-high-watermark state. Advance registry against no grant, a live attempt and each
+destructive-grant transition. Persist governed profile lineage/head, full
+Prepared/proposal/local-CAS/Active/abort/unresolved lifecycle, durable
+publication attempts, witness requests/receipts, journal membership and both
+high-watermarks; restore only externally Activated membership equal to the
+local head. Persist one obligation-wide control ledger with per-dimension
+Available/EpisodeReserved/TerminalizationReserved/Consumed/Settled buckets,
+stable transfer IDs and conservation proof, plus separate settlement journal/
+archive heads and exact membership. Reject missing/reset/recreated/duplicated,
+double-charged, dimension-moved, consumed-decreased, proposal-as-active,
+unresolved or rolled-back state. Advance registry against no grant, a live attempt and each
 terminal scope and require one atomic rebinding result. Saturate normal rows,
 bytes, audit and outbox for Pending, NoHistory and NotRequested, then reduce the
 capacity profile; the admitted non-borrowable reserve still permits fencing and
@@ -1413,12 +1424,15 @@ quorum. Anchor-registry issuer/admitter, collection-receipt signers and
 clearance decision quorum remain separated. Anchor-source-manifest bootstrap/
 successor owner, policy-transition issuer/admitter/revoker and weakening
 approvers are independent from those roles. Transition preparation, checkpoint
-publication, independent verification and final head activation are separate
-capabilities; no actor may self-witness its prepared head. Control-lineage
+proposal publication/status query, local head CAS, external activation and
+external abort are separate capabilities. Profile succession/weakening is
+separate from all of them; no actor may select its witness mode or self-witness
+its prepared/local head. Control-lineage
 episode admission, permanent quarantine/rebuild decision and custody-safe
-release/settlement are separate from detector, scope worker and ordinary
-capacity roles; no actor may replenish/reset counters or release its own
-reserve. Freeze
+release, local settlement-journal mutation and archive publication are separate
+from detector, scope worker and ordinary capacity roles; no actor may
+replenish/reset accounting, infer an abort, delete an unresolved proposal or
+release its own reserve. Freeze
 distinct clearance-scope admission owner, attempt worker/takeover identity,
 successor-rebuild requestor/approver/operator and permanent-rejection issuer/
 admitter/revoker roles; none may self-authorize, occupy multiple scope generations,
@@ -1673,11 +1687,13 @@ evidence and every available activation/charge/result/head/checkpoint fragment
 plus every fence generation, clearance authorization/tombstone/result, proof-
 budget charge, anchor-registry generation/predecessor/high-watermarks,
 source-manifest lineage/genesis/current head/activation records/transition-
-authority tombstones plus checkpoint chain/publication receipts/external
-high-watermark, activation-created registry genesis/rebinding result,
+authority tombstones plus governed profile lineage/head, publication attempts/
+per-witness requests-receipts, external journal/dispositions, proposal/active
+high-watermarks and proposal/activation/abort receipts, activation-created registry genesis/rebinding result,
 protected control reserve/profile/platform bound and obligation-wide control
-lineage/episode ordinals/cumulative counters/disposition/release checkpoint/
-exact-once reserve settlements, collection receipt,
+lineage/episode ordinals/per-dimension capacity buckets/transfer identities/
+conservation/nondecreasing consumed counters/disposition/release checkpoint/
+exact-once reserve settlements/local journal and archive heads/membership, collection receipt,
 clearance scope/generation/lifetime counters/
 terminal tombstone, clearance attempt/cursor/counters/result and externally
 retained anchor commitment until exact atomic restoration clears it; ordinary
@@ -1693,8 +1709,9 @@ emergency override.
 Erasure may minimize payload only under the precedence matrix and cannot turn
 either state into absent, archived, retryable under a new identity or eligible
 for cleanup before the terminal checkpoint. It cannot remove external-
-high-watermark comparison evidence, make a lower local manifest appear current,
-reset a fence episode, replenish remaining control capacity or permit a second
+profile/lifecycle/high-watermark comparison evidence, make a proposal or lower
+local manifest appear current, infer abort for cleanup, reset a fence episode,
+erase consumption, replenish remaining control capacity or permit a second
 settlement of an original reserve leg.
 Verification: hold-versus-erasure conflicts, derived copies, restored backups,
 indexes/caches/exports/external copies, authoritative measurement rollups,
@@ -2160,17 +2177,19 @@ range chunk truncation/cycle/substitution, verification-work/depth/cursor
 rollback, degraded dependencies,
 restore, capacity, and incident operations.
 For migration/import corruption control, the HA profile additionally freezes
-external checkpoint publication/verification and high-watermark recovery,
-witness/key outage behavior, transition activation ordering, obligation-wide
-episode precharge and counter continuity, permanent-quarantine/rebuild/release
-dispositions, custody-safe checkpoint-before-release and exact-once original-
-reserve settlement. Crash/failover/restore tests cover local database rollback
-below the external watermark, witness substitution/unavailability, key
-rotation/revocation, head CAS before publication, repeated clear→re-fence
-cycles, exhaustion of every episode/cumulative dimension, loss of minimum
-future capacity, settlement response loss and a backup restored between
-checkpoint, release and settlement. Every case fails closed without resetting
-capacity or duplicating release.
+governed publication-profile succession, durable per-witness publication/status
+reconciliation, proposal/local-CAS/external-activation-or-abort ordering,
+separate proposal/active high-watermarks, per-dimension control transfers and
+conservation, permanent-quarantine/rebuild/release dispositions and separate
+settlement journal/archive heads. Crash/failover/restore tests cover authority
+expiry/revocation, profile change, losing CAS and response loss after proposal
+publication; activation/abort receipt loss; witness/key outage; proposal-as-
+active poisoning; Available→EpisodeReserved→Consumed transfers; double charge,
+overflow/underflow, cross-dimension movement, unused reservation return,
+re-fencing; and backup between settlement decrement, row append, journal
+advance, Released/result/outbox and archive publication. Every case fails
+closed without guessed lifecycle, reset consumption, capacity resurrection or
+duplicate release.
 Exit criteria: every `1.0.0` deployment claim maps to a Phase O test profile;
 all ten option-decision authority reviews are resolved and no proposed
 authority candidate can enter Phase O.

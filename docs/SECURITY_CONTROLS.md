@@ -250,23 +250,34 @@ audit decision.
   lineage commits an obligation-scoped corruption fence/result. Activation
   creates a Healthy generation-zero fence for every obligation; absence denies.
   Before activation, one independently authorized source-manifest genesis and
-  Prepared→ExternallyPublishedVerified→Active transition lineage rejects fork,
-  gap, reorder, raw-generation selection and lazy initialization. An
-  independent witness, secure monotonic store or external quorum verifies each
-  predecessor-linked checkpoint before current-head CAS. Restore/import checks
-  the external high-watermark; an older self-consistent local snapshot,
-  unavailable receipt/witness/key proof or local head below that watermark is
+  Prepared→ProposalPublishedVerified→LocalActivationCommitted→Active lifecycle
+  rejects fork, gap, reorder, raw-generation selection and lazy initialization.
+  A governed publication-profile lineage binds exact witnesses/sources, quorum,
+  crypto/time rules and identity/generation/digest into every artifact; callers
+  cannot select the mode. Proposal and active high-watermarks are separate,
+  stable request identities reconcile unknown publication, and local CAS is
+  followed by an external activation receipt or authenticated abort/unresolved
+  disposition. Restore/import trusts only externally Activated lifecycle under
+  the bound profile; an older self-consistent local snapshot,
+  unavailable lifecycle/witness/key proof or local head below the active watermark is
   typed `ManifestHistoryUnavailableOrRolledBack` and unready. Activation binds
-  that witnessed head, creates registry generation zero and a non-borrowable Recovery
+  that witnessed head; a greater unresolved proposal cannot poison the last
+  proved Active predecessor and blocks only itself, descendants and cleanup.
+  PermanentlyUnresolved requires an authenticated external terminal seal;
+  timeout, retry exhaustion or witness absence retains fenced reconciliation.
+  Activation creates registry generation zero and a non-borrowable Recovery
   control reservation for fence/scope/terminal/result/audit/outbox state under
   a trusted capacity profile and immutable platform maximum. It also creates an
-  obligation-wide control lineage holding the original reservation,
-  non-wrapping episode ordinal, maximum episodes, cumulative proof/retry/byte/
-  time/row/audit/outbox charges and remaining capacity. Every re-fence
-  precharges this lineage; clearance cannot reset it, and exhaustion or loss of
+  obligation-wide control lineage holding the original reservation. Each
+  dimension conserves Available, EpisodeReserved, TerminalizationReserved,
+  nondecreasing Consumed and Settled. Episode creation and proof execution are
+  exact-once typed transfers—not two charges—and scope/lineage update
+  atomically. Every re-fence uses the same ledger; clearance cannot reset it,
+  and exhaustion or loss of
   minimum future capacity permanently quarantines. Rebuild and custody-safe,
   no-future-operation Release are explicit terminals; release checkpoints
-  before settling each original reserve leg exactly once. Every history
+  before settling each original reserve leg exactly once through authenticated
+  local settlement-journal and verified archive-replay heads. Every history
   path follows one fence-before-budget lock order. Append,
   recovery and cleanup stop until a separately issued/admitted/revocable/
   expiring single-use clearance authorization and a destination-ratcheted

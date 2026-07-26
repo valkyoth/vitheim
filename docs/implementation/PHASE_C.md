@@ -2999,14 +2999,22 @@ in the scope lifetime counters and no replacement exceeds remaining capacity.
 PermanentlyUnprovable, Cleared and RebuildActivated tombstones reject all later
 admission. Omit activation-created anchor-registry genesis, substitute its
 source manifest, present raw generation without a committed manifest activation
-record/current head and verified external checkpoint receipt/high-watermark,
+record/current head and verified external lifecycle/profile/active-high-
+watermark,
 restore a locally self-consistent older manifest/head/activation snapshot,
 fork/gap/reorder genesis, checkpoint or a successor, withhold/revoke/rotate the
 witness/key or lose checkpoint proof, weaken sources/
 classes/quorum/nonresponse/time/continuity without an admitted transition
 grant, or lazily initialize either lineage and require denial. Exercise
-Prepared→ExternallyPublishedVerified→Active transitions and prove the current
-head never advances before independent publication verification. Exercise
+Prepared→ProposalPublishedVerified→LocalActivationCommitted→Active plus
+Aborted/PermanentlyUnresolved transitions. Prove proposal publication cannot
+advance the active high-watermark, the candidate head cannot displace its
+externally Active predecessor until the activation receipt, an unresolved
+candidate cannot poison that predecessor's readiness, authority/profile/CAS
+loss produces authenticated abort, and unknown response uses status
+reconciliation. Prove timeout, retry exhaustion and witness absence cannot
+manufacture PermanentlyUnresolved; only its authenticated external terminal
+seal can prevent a later activation. Exercise
 manifest initialization, weakening and rebuild-rejection admission, pre-
 admission/Issued revocation, expiry, consumption, response loss and every CAS
 race through the complete destructive-authority table; remote issuance/
@@ -3234,7 +3242,14 @@ activation. Initialization first creates a non-authoritative Prepared
 with canonical no-predecessor manifest bytes; it does not install a current
 head. Its closed
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransitionStateV1`
-is Prepared, ExternallyPublishedVerified or Active.
+is Prepared, ProposalPublishedVerified, LocalActivationCommitted, Active,
+Aborted or PermanentlyUnresolved. Prepared and ProposalPublishedVerified are
+non-authoritative; LocalActivationCommitted has installed the destination-local
+candidate head but is not externally Active and cannot replace the last
+externally Activated operational head until final activation publication is
+verified. The transition current head orders candidates; it is never by itself
+the operational-head selector. Genesis has no operational predecessor and
+therefore remains unready.
 `PrepareMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransition`
 also prepares every successor under exact expected head/predecessor bytes.
 Exact retry joins canonical
@@ -3249,6 +3264,31 @@ Every manifest binds exact expected source identities and classes, manifest
 generation/digest and policy generation, required per-class quorum and bounded
 nonresponse policy, collection interval/expiry/maximum uncertainty/trusted-time
 profile, and source signer/key-continuity requirements.
+Checkpoint publication policy is independently governed state, not a call-site
+choice. Stable
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileLineageV1`
+has a non-wrapping generation, exact predecessor and CAS-protected
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileCurrentHeadV1`.
+Each canonical
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileV1`
+binds its identity/generation/digest, exact witness/source identities and
+classes, per-source authentication/key-continuity requirements, minimum quorum,
+request/receipt codecs, time/uncertainty rules and availability/reconciliation
+limits. Trusted code classifies each exact predecessor/successor diff with
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileSuccessorClassificationV1`
+as NonWeakening or Weakening. NonWeakening succession requires the independent
+ordinary publication-profile owner; Weakening additionally consumes the
+complete destructive policy-transition protocol below with action
+`WeakenCheckpointPublicationProfile`, exact predecessor/successor bytes and
+current-head CAS. The profile lineage has independently authenticated
+activation/high-watermark evidence under its governance root; restore never
+selects a raw local maximum. Every successor retains verification and
+terminalization capability for already published predecessor-bound attempts,
+even when ordinary new publication is no longer allowed. A caller, adapter, transition worker, clearance role or
+witness cannot select a mode, source set or quorum. Any profile-head change
+invalidates every Prepared or ProposalPublishedVerified transition bound to the
+predecessor; it must be externally aborted under that bound profile before a
+new transition is prepared.
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestAuthorityPortV1`
 is separate from clearance, detection, import and collection roles.
 `AdvanceMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifest`
@@ -3263,25 +3303,50 @@ Every Prepared transition creates
 with non-wrapping checkpoint sequence, exact predecessor checkpoint, proposed
 current-head digest, manifest/policy generation, transition authorization and
 prepared-result digests, trusted-time evidence and signer/key/profile/
-continuity. Independent
+continuity. The transition authorization, checkpoint, every request/receipt,
+activation record and current head all bind the exact checkpoint-publication
+profile identity/generation/digest that was current when preparation committed.
+Independent
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointAuthorityPortV1`
-publishes it under the selected non-empty
-`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationProfileV1`
-to a witness, secure monotonic store or externally retained checkpoint quorum.
+publishes it only under that governed profile.
 `PublishAndVerifyMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpoint`
-authenticates the external high-watermark, checkpoint continuity/key rotation/
-revocation/time and canonical
+first creates one durable
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationAttemptV1`
+with stable attempt/idempotency identity, profile binding, bounded request/
+receipt/byte/retry/time counters, cursor, owner/boot continuity, lease and
+fencing token. Every selected witness receives a stable
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointWitnessRequestV1`
+and returns an independently authenticated
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointWitnessReceiptV1`;
+response loss never creates a second logical request. Timeout or unknown
+response invokes
+`ReconcileMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublication`
+to query status by those identities before another bounded send.
+
+The external
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalTransitionJournalV1`
+has closed
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalTransitionDispositionV1`
+ProposedPublished, Activated, Aborted or PermanentlyUnresolved and two distinct
+non-wrapping heads:
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestProposalPublicationHighWatermarkV1`
+and
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestActiveManifestHighWatermarkV1`.
+Proposal publication advances only the proposal head and can never assert that
+the manifest is active. Once the governed quorum authenticates proposal
+publication, canonical
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestCheckpointPublicationReceiptV1`
-before CAS-moving only that transition to ExternallyPublishedVerified.
-Unavailable, insufficient, stale, revoked or discontinuous external evidence
-keeps it non-authoritative.
+and the local attempt CAS the transition to ProposalPublishedVerified.
+Unavailable, insufficient, stale, revoked, profile-mismatched or discontinuous
+evidence keeps it non-authoritative.
 
 Only
 `ActivateMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransition`
-may CAS an ExternallyPublishedVerified transition to Active and install the
-current head. Initialization/weakening consumes its still-Issued destructive
-grant in this same transaction; strengthening consumes the exact ordinary
-source-manifest authority result. Manifest, current head,
+may CAS a ProposalPublishedVerified transition to LocalActivationCommitted and
+install the local current head. It rechecks the bound publication-profile head
+and current manifest predecessor. Initialization/weakening consumes its
+still-Issued destructive grant in this transaction; strengthening consumes the
+exact ordinary source-manifest authority result. Manifest, local current head,
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestActivationRecordV1`,
 publication receipt,
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestInitializationResultV1`
@@ -3292,14 +3357,57 @@ head/authority material returns
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestTransitionConflict`
 without mutation.
 
-Restore/import queries or verifies the externally retained checkpoint high-
-watermark and selects the greatest authenticated Active activation record
-reachable from genesis and matching both local current head and verified
-publication receipt. Local state below that watermark, a locally complete
-rollback, or unavailable proof returns typed
+After that local CAS, the durable publication attempt publishes and verifies
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalActivationReceiptV1`
+against the same governed profile. Only
+`FinalizeMigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalActivation`
+may then advance the external active-manifest high-watermark and CAS
+LocalActivationCommitted to Active. Until this receipt is verified the
+candidate cannot serve or gain a successor. An already authenticated Active
+predecessor remains the operational head; only genesis remains deployment-
+unready. A timeout or lost response is status-queried and reconciled by stable
+request identity.
+This workflow never assumes a distributed transaction between the local
+database and witness system: external publication/status and each local CAS are
+separate idempotent stages, and recovery reapplies the state table from durable
+attempt plus authenticated journal evidence.
+
+If authority expires/revokes, the publication profile changes or the local
+head CAS loses before LocalActivationCommitted, the attempt must publish and
+verify
+`MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestExternalAbortTombstoneV1`
+and CAS the transition to Aborted. An authenticated superseding Activated
+journal entry may serve as the abort proof for a losing predecessor. If bounded
+reconciliation cannot prove Activated or Aborted, it retains the durable
+attempt and candidate in its current non-authoritative state with bounded,
+fenced reconciliation suspended. PermanentlyUnresolved commits only when an
+authenticated external terminal seal and matching local CAS prove that the
+same transition can never later become Activated or Aborted; local retry
+exhaustion, timeout or witness absence cannot create that disposition. That
+candidate and all descendants stay unusable and the proposal is never reused.
+A prior externally Activated predecessor remains operational; genesis remains
+unready.
+Orphan proposal bytes are eligible for cleanup only after authenticated
+external Aborted or supersession membership is checkpointed. Neither timeout
+nor local absence implies abort.
+
+Restore/import verifies both proposal-publication and active-manifest
+high-watermarks plus the complete external transition-journal membership. It
+derives the latest manifest only from the greatest authenticated Activated
+journal entry and matching external activation receipt, reachable local Active
+record/transition lineage and profile identity/generation/digest that governed
+that activation. The local transition current head may equal that Active entry
+or a non-authoritative descendant, but never selects the operational head. A
+greater ProposedPublished entry is not rollback and does not
+become active; it is reconciled before that candidate, any descendant or its
+orphan cleanup may proceed, while the last proved Active predecessor remains
+operational. Local Active state below the external active-manifest
+high-watermark, a locally complete rollback, missing journal/profile/receipt
+continuity for the selected Active entry or unavailable selected-head proof
+returns typed
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestHistoryUnavailableOrRolledBack`
-and keeps the deployment unready. No local manifest, activation-record or
-current-head row alone may assert latest state.
+and keeps the deployment unready. No proposal checkpoint, local manifest,
+activation-record or current-head row alone may assert latest state.
 Removing a source/class, lowering quorum, widening nonresponse, time uncertainty
 or expiry, or weakening continuity requires an independent action-bound
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionAuthorizationV1`
@@ -3332,7 +3440,7 @@ envelope.
 
 That transaction also creates one obligation-wide
 `MigrationImportRegistryHistoryCorruptionControlLineageV1` with stable identity,
-zero consumed episode/counter state, no active Fenced scope and closed
+zero episode/consumed/settled state, no active Fenced scope and closed
 `MigrationImportRegistryHistoryCorruptionControlLineageDispositionV1` Active.
 Immutable
 `MigrationImportRegistryHistoryCorruptionControlLineageHardMaximumV1` binds the
@@ -3343,8 +3451,26 @@ the smallest complete fence/scope/terminalization envelope that must remain
 reserved before an obligation may return to operational health. Both derive in
 trusted code from the reservation/profile under the immutable platform
 maximum. The lineage owns the original reservation identity and exact
-overflow-checked remaining capacity. A per-fence scope, detector, restore or
-adapter cannot replace it, replenish it or reset its counters.
+overflow-checked
+`MigrationImportRegistryHistoryCorruptionControlCapacityStateV1`. For every
+row, byte, proof, retry, time, audit and outbox dimension it stores separate
+Available, EpisodeReserved, TerminalizationReserved, Consumed and Settled
+quantities and enforces:
+
+`original_reservation = available + episode_reserved + terminalization_reserved + consumed + settled`.
+
+Activation assigns the immutable completion/final-custody envelope to
+TerminalizationReserved and the remainder to Available. No quantity is
+optional, inferred or shared between dimensions. Consumed never decreases;
+Settled never returns to another bucket; no transfer changes its capacity dimension.
+Every transfer has a stable
+`MigrationImportRegistryHistoryCorruptionControlCapacityTransferIdV1` and
+immutable
+`MigrationImportRegistryHistoryCorruptionControlCapacityTransferV1`, and the
+same exact transfer cannot apply twice after response loss. Overflow,
+underflow, conservation failure, unknown transfer history or a changed retry
+keeps the obligation fenced. A per-fence scope, detector, restore or adapter
+cannot replace the lineage, replenish it or reset its counters.
 
 `AppendMigrationImportRegistryHistory` consumes only a durable Pending
 obligation after the canonical activation result/outbox commit, under
@@ -3539,7 +3665,7 @@ Healthy.
 
 Every append, detection, recovery, clearance, checkpoint and cleanup path uses
 one universal relative order:
-active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
+active-coordinator-generation→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox.
 An operation locks only its present/applicable rows and reservations, but it
 never acquires a later position before an earlier one. In particular no path
 holds a budget while waiting for the fence, and detection of a missing lineage
@@ -3553,22 +3679,31 @@ then locks the obligation-wide control lineage and binds the obligation,
 expected Healthy/ClearedAfterRestore fence generation, observed lineage
 presence/bytes/digest, corruption reason,
 coordinator generation/fence, detector identity, bounded evidence, idempotency
-and audit/outbox positions. It first precharges one non-wrapping corruption-
-episode ordinal plus the complete worst-case episode rows/bytes/proof/retry/
-time/audit/outbox quantum against the lineage. Only remaining lineage capacity
-may fund the new immutable
+and audit/outbox positions. It first claims one non-wrapping corruption-episode
+ordinal. For each capacity dimension, episode creation atomically transfers the
+complete bounded worst-case work quantum from Available to EpisodeReserved and
+leaves the separately derived TerminalizationReserved envelope untouched. It
+does not increment Consumed. Only checked Available capacity may fund the new immutable
 `MigrationImportRegistryHistoryCorruptionControlEpisodeV1` and canonical
 `MigrationImportRegistryHistoryCorruptionClearanceScopeV1` generation zero for
 that exact obligation/Fenced generation. The transaction then increments the
 fence generation, records the active fence/scope in the control lineage and
 commits Fenced, the episode/scope, and canonical
 `MigrationImportRegistryHistoryCorruptionResultV1`. The scope maximum is copied
-only from the lineage allocation, cannot exceed its checked remaining lifetime
+only from that EpisodeReserved allocation, cannot exceed its checked remaining lifetime
 capacity and is never detector-, adapter- or new-fence-supplied. Every scope
-charge also atomically advances the obligation-wide lineage counters; clearance
-cannot refund or reset them. Fence, episode, scope, result, reservation/lineage
+proof/retry/work precharge atomically transfers the exact quantity from
+EpisodeReserved to Consumed in both scope and lineage state; it never adds the same quantity independently to both.
+Scope terminalization consumes only the
+bound TerminalizationReserved or episode terminalization allocation. An
+episode that reaches Cleared or RebuildActivated may return unused
+EpisodeReserved to Available only in its authenticated terminal-result/
+checkpoint transaction under a stable transfer identity. PermanentlyUnprovable
+or PermanentlyQuarantined keeps unused episode capacity encumbered until the
+lineage’s custody-safe Release. Clearance cannot refund Consumed or reset any
+bucket. Fence, episode, scope, result, reservation/lineage
 accounting, audit and outbox commit together even when all ordinary capacity is exhausted.
-Episode-count/counter exhaustion or inability to retain
+Episode-count, Available-capacity or cumulative Consumed exhaustion, or inability to retain
 `MigrationImportRegistryHistoryCorruptionControlMinimumFutureCapacityV1`
 sets the lineage PermanentlyQuarantined, commits the evidence/result using its
 protected terminal reserve and keeps the obligation Fenced without creating
@@ -3758,9 +3893,13 @@ joins the same live attempt; another worker may take over only after the lease
 and fencing-token CAS, and the old token cannot commit.
 
 Every proof execution transaction precharges its bounded worst-case quantum
-atomically against attempt counters, clearance-scope lifetime counters and the
-obligation-wide control-lineage counters
-before external fetch, decode, allocation, hash or signature work. Completion
+atomically against attempt counters and clearance-scope lifetime counters while
+moving the identical typed quantity from the active episode’s EpisodeReserved
+bucket to the obligation-wide lineage’s monotonic Consumed bucket before
+external fetch, decode, allocation, hash or signature work. Scope and lineage
+updates share one transaction and transfer identity; no adapter may debit
+Available, retain EpisodeReserved and increment Consumed for the same work.
+Completion
 commits the cursor/result under the same quantum identity. Exact response-loss
 retry joins a committed step; an ambiguous or crashed incomplete execution
 keeps its charge and takeover precharges a fresh retry, so crash, cancellation,
@@ -3867,9 +4006,12 @@ permanent rejection.
 The source-manifest policy-transition and rebuild-rejection grants are
 destructive-authority protocols, not signed blobs. Closed
 `MigrationImportRegistryHistoryCorruptionClearanceAnchorSourceManifestPolicyTransitionActionV1`
-is Initialize or Weaken; the canonical action binds stable lineage/target,
-expected predecessor/current-head bytes, and exact proposed genesis/successor
-manifest bytes. Canonical rebuild rejection binds PermanentlyReject, the exact
+is InitializeManifest, WeakenManifest or
+WeakenCheckpointPublicationProfile. The canonical manifest action binds stable
+lineage/target, expected predecessor/current-head bytes, and exact proposed
+genesis/successor manifest bytes. Publication-profile weakening instead binds
+the stable profile lineage, expected profile head, exact predecessor/successor
+profile bytes and typed weakening-classification result. Canonical rebuild rejection binds PermanentlyReject, the exact
 parent/predecessor/fence/current bytes, and canonical absence of proposed
 successor bytes. Both authorization envelopes bind issued-at, not-before, exact
 expiry, maximum uncertainty, trusted-time profile/epoch, signer/key/profile/
@@ -3990,15 +4132,44 @@ Released after locking and proving retention/classification/legal-hold policy,
 terminal history disposition, no possible future history operation/corruption
 episode, and a complete checkpoint.
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementV1` settles
-each original reserved row/byte/audit/outbox leg exactly once in the same
-transaction as Released,
+each eligible Available, EpisodeReserved and TerminalizationReserved original
+leg exactly once; Consumed never decreases. It is a domain-separated
+instantiation of the existing unified authenticated settlement
+journal/archive protocol, not a standalone decrement. Stable settlement and
+per-leg identities bind the original reservation, capacity dimension, source
+bucket, exact quantity, release/checkpoint/custody trigger and result.
+
+The local, non-wrapping
+`MigrationImportRegistryHistoryCorruptionControlReserveSettlementJournalHeadV1`
+binds predecessor/sequence, the canonical ordered settlement-row set,
+transaction/result/audit identity and owner continuity; it never claims archive
+availability. One local transaction locks the archive-replay head when
+applicable, settlement-journal head, control reserve, lineage and exact legs,
+then atomically moves each released quantity to Settled, appends immutable
+settlement rows, advances the journal head, marks Released, writes
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseResultV1`, audit
-and outbox. Exact retry returns that result; changed lineage/checkpoint/custody/
+and outbox. A split decrement, settlement append, journal advance or lineage
+release is unrepresentable.
+
+Authenticated sparse checkpoint/archive publication advances separate
+`MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchiveReplayHeadV1`
+only after immutable chunks upload and verify. Its final local CAS binds the
+archive head to the journal coverage and deletes only exact captured hot rows/
+versions. Hot settlement state cannot be deleted before verified publication;
+the local journal head never implies external availability. Restore selects the
+greatest authenticated journal and verified archive heads, proves their
+coverage relationship and exact settlement membership, and retains the charge
+when history is missing, forked, rolled back or uncertain. Duplicate
+membership returns the original release result without decrement; unknown
+non-membership never authorizes settlement.
+
+Exact retry returns that result; changed lineage/checkpoint/custody/
 settlement/idempotency returns
 `MigrationImportRegistryHistoryCorruptionControlLineageConflict` without
-mutation. Missing episode records, reset counters, duplicate settlement,
+mutation. Missing episode/transfer records, conservation failure, reset
+counters, duplicate or unavailable settlement, either settlement-head rollback,
 checkpoint-before-release violation or recreated capacity fails restore/import
-and keeps the destination unready.
+and keeps the destination unavailable/fenced.
 
 `ResolveMigrationImportRegistryHistoryRecovery` follows the universal history
 order.
@@ -4085,20 +4256,28 @@ authorization retain their exact disposition/evidence/policy commitments; the
 universal lock order is supported; and every clearance authorization,
 revocation/tombstone, clearance-scope authorization generation/lifetime
 counters/terminal disposition, proof budget, source-manifest lineage/genesis/
-current head/authenticated activation records/checkpoint chain/publication
-receipts/externally verified high-watermark/policy-transition authorization
-tombstones, activation-created control lineage/episode ordinals/hard maxima/
-cumulative counters/active scope/disposition/checkpoint/reserve settlement,
+current head/authenticated activation records/transition states/durable
+publication attempt/lease/fence/cursor/per-witness request-receipt identities/
+external transition journal/disposition/proposal and active high-watermarks/
+proposal-publication and activation receipts/abort tombstones/publication-
+profile lineage/current head/classification and exact activation-bound profile/
+policy-transition authorization tombstones, activation-created control lineage/
+episode ordinals/hard maxima/capacity-state buckets/conservation equation/
+transfer identities/cumulative consumed counters/active scope/disposition/
+checkpoint/reserve settlement/journal and archive replay heads/exact membership,
 anchor-registry genesis and later registry
 generation/predecessor/typed high-watermark plus atomic scope-rebinding result,
 protected control reserve/profile/platform bound, authenticated collection receipt, durable
 attempt/lease/fence/cursor/precharge/result, typed state join and parent rebuild/
 bounded proposal/rejection-authorization/successor mapping is complete.
 Missing/defaulted fence, scope, source-manifest head/activation/checkpoint/
-external-high-watermark/destructive-authority state, control reserve/profile/
-lineage/episode/settlement state or registry genesis/rebinding state; an
+external-journal/proposal-or-active-high-watermark/publication-attempt/
+activation-or-abort receipt/publication-profile/destructive-authority state,
+control reserve/profile/lineage/episode/capacity-transfer/conservation/
+settlement-head-or-membership state or registry genesis/rebinding state; an
 old bundle below a current required anchor; reset lifetime charge; field-wise
-invalid join; lost/recreated rebuild parent; duplicate successor; ambiguous
+invalid join; double debit, dimension transfer, consumed decrement, lost/
+recreated rebuild parent; duplicate successor; ambiguous
 archive selection; or a backend unable to atomically consume clearance
 authority refuses import and leaves the obligation fenced.
 It then calls the shared replay-lifecycle verifier and admits issuance only
@@ -4195,6 +4374,24 @@ crash immediately before and after activation commit, missing append-worker
 delivery, absent obligation, NoHistory/NotRequested substitution, cleanup
 racing Pending append, restore with Pending obligations and cleanup before
 terminal-obligation checkpoint,
+proposal publication followed by authority expiry/revocation, local-head CAS
+loss, crash or lost witness response; verify status-query reconciliation,
+externally witnessed Activated/Aborted/PermanentlyUnresolved terminalization,
+separate proposal/active high-watermarks, no proposal-as-active inference and
+no orphan cleanup before abort/supersession proof. Rotate, weaken or substitute
+the publication profile/source/quorum at every prepare/publish/local-activate/
+external-activate boundary; omit or substitute its identity/generation/digest
+from every preimage and prove invalidation/abort rather than worker-selected
+fallback. Model every capacity dimension across activation, episode
+Available→EpisodeReserved transfer, proof EpisodeReserved→Consumed transfer,
+terminalization reservation use, unused-return policy, clearance, re-fencing,
+permanent quarantine, rebuild and release. Prove conservation, exact-once
+transfer IDs, atomic scope/lineage state, no double charge, no Consumed
+decrease, no cross-dimension movement, overflow/underflow refusal and
+response-loss replay. Crash reserve settlement before/after decrement, row
+append, journal advance, Released/result/outbox and archive publication; fork,
+roll back or lose either settlement head and prove no capacity resurrection,
+duplicate decrement or hot-state deletion before verified membership,
 and cross-adapter conformance pass.
 
 Exit criteria: successful import proves complete semantic and integrity parity.

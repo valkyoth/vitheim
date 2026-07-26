@@ -270,29 +270,40 @@ nonterminal lineage commits an obligation-scoped corruption fence/result before
 return; append, recovery and cleanup stop. Activation creates every fence as
 Healthy generation zero, absence fails closed and all history paths use one
 fence-before-budget order. A separately authorized manifest-lineage bootstrap
-creates exactly one generation zero before activation. Every transition is
-first Prepared, then published and verified as a predecessor-linked checkpoint
-through the selected independent witness, secure monotonic store or external
-quorum, and only then made Active with the manifest/current-head/result/audit/
-outbox CAS. The checkpoint binds a non-wrapping sequence, predecessor, proposed
-head, manifest/policy generations, authorization/result and trusted time/key
-continuity. Restore/import verifies the external high-watermark and requires
-the greatest reachable Active record to equal the local head and publication
-receipt. A locally consistent older snapshot, missing external proof or local
-head below that watermark returns typed
+creates exactly one generation zero before activation. Governed publication-
+profile lineage fixes the exact witness/source set, quorum, authentication and
+time policy; its identity/generation/digest is bound into authorization,
+checkpoint, requests/receipts, activation record and head. Every transition
+moves through Prepared, ProposalPublishedVerified, LocalActivationCommitted and
+Active, with Aborted/PermanentlyUnresolved terminals. Proposal and active-
+manifest high-watermarks are distinct: proposal publication never claims
+activation, the local head CAS precedes an externally witnessed activation
+receipt, and timeouts reconcile stable per-witness request identities. Restore
+derives latest only from the greatest externally Activated journal entry under
+the profile that governed it. A locally consistent older snapshot, missing
+external lifecycle proof or local head below the active watermark returns typed
 `ManifestHistoryUnavailableOrRolledBack` and leaves the deployment unready.
+An unresolved greater proposal blocks its own activation, descendants and
+cleanup but cannot displace or poison the last proved Active predecessor.
+PermanentlyUnresolved requires an authenticated external terminal seal;
+timeout, retry exhaustion or witness absence only retains reconciliation state.
 Activation binds that witnessed head, creates registry generation zero and
 reserves non-borrowable Recovery capacity for fence/scope/terminal/result/
 audit/outbox state from a trusted profile/platform bound. Activation also
 creates one obligation-wide corruption-control lineage over that original
-reserve. Its non-wrapping episode ordinal, maximum episodes, cumulative proof/
-retry/byte/time/row/audit/outbox counters and remaining capacity survive every
-clearance and re-fence; a scope, detector, restore or adapter cannot reset or
-replenish them. Each fence precharges an episode. Exhaustion or failure to
+reserve. Every dimension separately tracks Available, EpisodeReserved,
+TerminalizationReserved, Consumed and Settled under an invariant equaling the
+original reservation. Episode creation transfers Available to EpisodeReserved;
+proof work transfers that allocation to nondecreasing Consumed atomically with
+scope state, so work is never double charged. Stable transfer identities,
+explicit unused-capacity return rules and dimension isolation survive every
+clearance and re-fence. Exhaustion or failure to
 retain minimum future-control capacity permanently quarantines the lineage and
 keeps the obligation fenced. Rebuild terminalizes the predecessor as Rebuilt;
 Release requires a custody-safe checkpoint proving that no future operation is
-possible and settles each original reserve leg exactly once. Clearance has a distinct admitted/revocable/
+possible and settles each original reserve leg exactly once through separate
+authenticated local settlement-journal and verified archive-replay heads;
+missing or rolled-back membership retains the fence. Clearance has a distinct admitted/revocable/
 expiring single-use authorization, destination-ratcheted mandatory-class/
 quorum anchor registry and authenticated collection receipt. One fence-wide
 scope admits one live authorization/attempt and retains lifetime proof charges

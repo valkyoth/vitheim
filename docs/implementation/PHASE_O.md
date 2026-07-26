@@ -67,27 +67,37 @@ budgets. Missing nonterminal lineage installs a durable exact-obligation
 and cleanup. Activation also binds the independently governed expected anchor-
 source-manifest current head after a destination-local, independently
 authorized single genesis and
-Prepared→ExternallyPublishedVerified→Active transition chain. Each transition
-publishes and verifies its predecessor-linked checkpoint against the selected
-independent witness, secure monotonic store or external quorum before the
-current-head CAS. Restore/import verifies the external high-watermark; local
-rollback below it or unavailable receipt/witness/key continuity is typed
+Prepared→ProposalPublishedVerified→LocalActivationCommitted→Active chain with
+Aborted/PermanentlyUnresolved terminals. Governed publication-profile lineage
+fixes exact witnesses/quorum and binds identity/generation/digest into every
+artifact. Durable per-witness requests/status queries reconcile unknown
+proposal publication; the local CAS is followed by external activation receipt
+or authenticated abort, under separate proposal and active high-watermarks.
+PermanentlyUnresolved requires an authenticated external terminal seal, never
+timeout, retry exhaustion or witness absence.
+Restore derives latest only from externally Activated journal membership; local
+rollback below the active head or unavailable selected-Active profile/receipt/
+witness/key continuity is typed
 `ManifestHistoryUnavailableOrRolledBack` and unready. Fork/gap/reorder,
 raw-generation selection, local-only latest claims, absence or lazy genesis
-deny.
+deny. An unresolved greater proposal blocks itself, descendants and cleanup,
+not the last proved Active predecessor.
 Activation creates registry generation zero and a non-borrowable Recovery
 control reservation, derived by trusted code under an authenticated active
 capacity profile and immutable platform maximum, for fence/scope/
 terminalization/result/audit/outbox state across every disposition and ordinary
 capacity saturation. It also creates one obligation-wide control lineage over
-the original reserve. Every fence generation precharges a non-wrapping episode
-and cumulative proof/retry/byte/time/row/audit/outbox limits; clearance never
-resets them. Insufficient future capacity permanently quarantines, rebuild is
+the original reserve. Each dimension conserves Available, EpisodeReserved,
+TerminalizationReserved, nondecreasing Consumed and Settled. Stable exact-once
+transfers reserve each episode and move proof work to consumption atomically
+with scope state; no double charge or cross-dimension movement is permitted.
+Insufficient future capacity permanently quarantines, rebuild is
 terminal for the predecessor, and custody-safe Release checkpoints before
-settling each original reserve leg exactly once. Only independently authorized complete atomic restoration of the
+settling each original reserve leg exactly once through separate authenticated
+local settlement-journal and verified archive-replay heads. Only independently authorized complete atomic restoration of the
 activation bundle and all post-activation charges/results/head/checkpoints may
 clear it. Every path follows
-active-coordinator-generation→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
+active-coordinator-generation→control-settlement-archive-head→control-settlement-journal-head→corruption-control-reserve→history-obligation→corruption-control-lineage→corruption-fence→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox,
 skipping only inapplicable positions without reordering. Clearance
 consumes an independently issued/admitted/revocable/expiring single-use
 authorization, stays inside its proof budget and proves coverage through
@@ -2107,7 +2117,12 @@ create initial lineage, split initial attempt/cumulative charging, fork/gap/
 reorder or raw-select the source-manifest genesis/current-head activation chain,
 roll back a locally self-consistent database below the external manifest
 checkpoint high-watermark, activate a Prepared head before publication
-verification, substitute/unavailable a witness or rotate/revoke its key,
+verification, publish a proposal then expire/revoke authority or lose the local
+CAS, treat proposal high-watermark as active, lose activation/abort response,
+skip status-query reconciliation, clean an unresolved orphan, substitute/
+weaken the governed publication profile/source set/quorum or omit its identity/
+generation/digest, make a worker select witness mode, substitute/unavailable a
+witness or rotate/revoke its key,
 remotely issue/revoke or bypass the complete manifest-weakening/rebuild-
 rejection authorization table, replace
 NoHistory proof with absence, forge a custody-free NotRequested or substitute
@@ -2126,7 +2141,12 @@ maximum, admit competing scope grants, reset
 fence-lifetime proof charges, clear and repeatedly re-fence to reset episode/
 reserve capacity, omit/recreate the obligation-wide control lineage, exhaust
 minimum future capacity without permanent quarantine, duplicate custody-safe
-release settlement, replace EvidenceWait, race attempt takeover, loop
+release settlement, double-charge EpisodeReserved and Consumed, decrease
+Consumed, move capacity dimensions, violate conservation, replay/change a
+transfer identity, return unused reservation without terminal checkpoint,
+settle outside the local journal or delete hot settlement before verified
+archive membership, fork/roll back either settlement head and resurrect
+capacity, replace EvidenceWait, race attempt takeover, loop
 temporary evidence, field-wise merge ceilings/remaining/balances or forked
 heads, let invalid proposals consume the rebuild parent, infer permanent
 rejection, exceed proposal bounds, create competing successors, expose both

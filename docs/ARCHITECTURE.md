@@ -591,27 +591,37 @@ restore, failover, and release evidence.
    fence for every obligation and absence fails closed; every history path
    locks fence before lineage/budget state. Before activation, an independently
    authorized source-manifest lineage performs its sole generation-zero
-   initialization and advances only through
-   Prepared→ExternallyPublishedVerified→Active transitions. An independent
-   witness, secure monotonic store or external quorum verifies a
-   predecessor-linked checkpoint binding sequence, proposed head, manifest/
-   policy generations, authorization/result and trusted time/key continuity
-   before the current-head CAS. Restore/import verifies that external
-   high-watermark; a self-consistent older local database, unavailable receipt/
-   witness/key proof or local head below it returns typed
+   initialization and advances through Prepared, ProposalPublishedVerified,
+   LocalActivationCommitted and Active, with Aborted/PermanentlyUnresolved
+   terminals. A governed publication-profile lineage—not a worker—selects exact
+   witnesses/sources, quorum, authentication and time policy and binds its
+   identity/generation/digest into every transition artifact. Proposal and
+   active-manifest high-watermarks are distinct; proposal publication is never
+   active authority, the local head CAS precedes a separately witnessed
+   activation receipt, and stable per-witness identities reconcile response
+   loss. Restore/import derives latest from the externally Activated lifecycle
+   under its bound profile. A self-consistent older local database, unavailable lifecycle/
+   witness/key proof or local head below the active watermark returns typed
    `ManifestHistoryUnavailableOrRolledBack` and remains unready. Forks, gaps,
-   raw-generation selection and lazy initialization deny. Activation binds that
-   externally witnessed current head,
+   raw-generation selection and lazy initialization deny. An unresolved
+   greater proposal blocks itself, descendants and cleanup, not the last proved
+   Active predecessor. PermanentlyUnresolved requires an authenticated external
+   terminal seal, never timeout, retry exhaustion or witness absence.
+   Activation binds that externally witnessed current head,
    creates obligation-scoped registry generation zero and reserves
    non-borrowable Recovery rows/bytes/audit/outbox capacity for fencing, scope,
    terminalization and results under a trusted capacity profile/platform
-   maximum. One obligation-wide control lineage owns that original reserve,
-   precharges each non-wrapping fence episode and accumulates immutable episode
-   plus proof/retry/byte/time/row/audit/outbox limits across clearance and
-   re-fencing. Insufficient remaining or minimum future capacity permanently
+   maximum. One obligation-wide control lineage owns that original reserve.
+   Per dimension it conserves Available, EpisodeReserved,
+   TerminalizationReserved, Consumed and Settled: episode creation is a
+   transfer into reservation and proof execution atomically moves reservation
+   to nondecreasing consumption rather than charging twice. Stable transfer IDs
+   and explicit unused-reservation return rules span clearance/re-fencing.
+   Insufficient remaining or minimum future capacity permanently
    quarantines the lineage. Rebuild is terminal for the predecessor; Release
    requires a custody-safe no-future-operation checkpoint and exact-once
-   settlement of every original reserve leg. Clearance uses an independent
+   settlement of every original reserve leg through separate authenticated
+   local journal and verified archive-replay heads. Clearance uses an independent
    admitted/revocable/expiring single-use authorization, bounded proof work and
    a destination-ratcheted anchor registry whose mandatory classes/quorums and
    independently authenticated collection receipt define greatest-known state.
