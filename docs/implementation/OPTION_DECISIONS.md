@@ -803,7 +803,15 @@ CustodyReleased plus per-leg tombstones/result/audit/outbox. The broader lineage
 release cannot perform an independent workspace credit.
 Freeze separate six-state action-bound BeginRelease and CommitCustodyRelease
 lineage authorization grants; custody/hold evidence alone is not command
-authority. Both transactions use one archive-replay-head→settlement-journal-
+authority. Freeze explicit
+`BeginMigrationImportRegistryHistoryCorruptionControlLineageRelease` and
+`CommitMigrationImportRegistryHistoryCorruptionControlLineageCustodyRelease`
+commands with separate payload/result/conflict types. Commit binds the stored
+begin result, publication receipt, exact heads/bundle/authorization, expected
+lineage version and idempotency. Archive publishers and storage adapters emit
+evidence only and cannot delete authoritative rows, credit capacity or mutate
+lineage/workspace terminals. The generic Release name is non-dispatchable.
+Both transactions use one archive-replay-head→settlement-journal-
 head→parent-ledger→current-slot→linked-old-fences-in-canonical-ID-order→control-
 reserve→obligation→corruption-fence→lineage→checkpoint→release-authorization→
 lineage-disposition→custody-authority→terminal-outputs rank. Freeze
@@ -812,6 +820,15 @@ over the aggregate ordinary-leg plus linked-workspace row/byte/lock/read/write/
 index/output/work/time transaction. Preflight must prove the complete bundle
 fits the selected backend before ReleasePending; individual workspace limits
 are insufficient.
+For permanent-retention and lineage-release grants, freeze issuer-side Revoke
+commands that atomically allocate a target/action-scoped monotonic sequence and
+store one signed-intent result or changed-material conflict without destination
+mutation. Destination Apply alone writes inbox/tombstone/state. Freeze the
+complete shared Absent/RevokedBeforeAdmission/Issued/Consumed/ExpiredUnused/
+RevokedUnused operation table: absent expiry/consumption are typed no-write
+NotAdmitted; late admission joins pre-admission revocation; first terminal
+observations return their stored action/expiry/revocation result; stale/lower
+sequence and changed material conflict.
 
 Final activation is one atomic authority/accounting/selector transaction. It
 rechecks retirement fence, active slot, campaign/profile heads, classifier

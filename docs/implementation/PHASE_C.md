@@ -3111,6 +3111,19 @@ CustodyReleaseBundleHardMaximum dimension. Record acquisition traces and require
 archive/journal→parent→current-slot→old-fences-in-ID-order→control/lineage/
 checkpoint→authorization/custody→outputs; over-limit bundles are no-write
 before ReleasePending and no final transaction exceeds backend limits.
+Fault explicit BeginLineageRelease and CommitCustodyRelease commands before/
+after payload validation, authorization consumption, expected-version CAS,
+publication receipt/head recheck, deletion, each ledger/leg write, result and
+outbox. Exact retries must return the action-specific stored result; changed
+begin/receipt/head/bundle/authorization/version/idempotency must return only the
+matching conflict. Attempt direct terminal mutation from publisher/storage
+adapter identities and require capability/dispatch denial.
+For both retention and lineage-release grants, exhaustively run admission,
+expiry, issuer Revoke intent creation, destination Apply, consumption and CAS
+loss from every six-state row. Require monotonic issuer sequences, signed-intent
+exact retry, no issuer destination write, no-write absent expiry/consumption,
+late-admission revocation, stable terminal observation and stale/changed
+conflict exactly as the shared table specifies.
 Exercise admission, expiry, revocation and consumption from every state in the
 total table, including every exact duplicate, changed-material conflict and
 race; expiry winning must return its canonical expiry result without becoming
@@ -4432,12 +4445,24 @@ and
 `ExpireMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorization`
 returns
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationExpiryResultV1`;
+issuer-side
+`RevokeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorization`
+allocates the next target-scoped non-wrapping sequence and returns signed
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationIntentResultV1`
+or
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationIntentConflict`.
+Its one issuer transaction binds the exact authorization/action/target digest,
+sequence, issuer/key continuity, time window, reason, nonce and revocation
+idempotency, stores the signed intent/result/audit/outbox, or does none. Exact
+retry returns that stored intent; changed material conflicts. It cannot write
+any destination authorization state, inbox or tombstone.
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationIntentV1`
 with target-scoped non-wrapping
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationSequenceKeyV1`,
-and
+is the only issuer-created revocation input. The Admit and Expire commands
+named above, together with
 `ApplyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocation`
-are the only admission, expiry and destination-apply revocation commands. The
+are the only commands that may mutate the destination authorization state. The
 destination atomically stores
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationInboxV1`,
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationTombstoneV1`,
@@ -5447,12 +5472,24 @@ and
 `ExpireMigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorization`
 returns
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationExpiryResultV1`;
+issuer-side
+`RevokeMigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorization`
+allocates the next target/action-scoped non-wrapping sequence and returns signed
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationIntentResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationIntentConflict`.
+The issuer transaction binds the exact authorization/action/lineage/checkpoint/
+bundle digest, sequence, issuer/key continuity, time window, reason, nonce and
+revocation idempotency, stores intent/result/audit/outbox atomically, and has no
+destination mutation capability. Exact retry returns the same signed intent;
+changed material conflicts.
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationIntentV1`
 with target/action-scoped non-wrapping
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationSequenceKeyV1`,
-and
+is the only issuer-created revocation input. The Admit and Expire commands
+named above, together with
 `ApplyMigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocation`
-are its only admission, expiry and destination-apply revocation commands.
+are the only commands that may mutate the destination authorization state.
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationOutcomeV1`
 returns admitted, expired, revoked or the stored BeginRelease/CommitCustodyRelease
@@ -5469,8 +5506,36 @@ losers reread/reapply the six-state first-terminal table; exact operations join
 and changed action/checkpoint/bundle/policy/custody/sequence/idempotency
 conflicts. Custody approval evidence cannot invoke release without this grant.
 
+Both permanent-retention and lineage-release authorization families instantiate
+this exact destination operation table. Their typed no-write absent outcomes
+are
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationNotAdmitted`
+and
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationNotAdmitted`.
+“Consumption” means PermanentlyRetain for the first family and the exact
+BeginRelease or CommitCustodyRelease command for the second:
+
+| Current state | Admission | Expiry | Applied issuer revocation | Consumption | Exact replay, stale sequence or changed material |
+|---|---|---|---|---|---|
+| Absent | Valid unexpired exact grant commits Issued; authentic already-expired admission commits ExpiredUnused | No-write NotAdmitted; absent expiry creates no row, sequence or idempotency state | Valid signed intent commits RevokedBeforeAdmission with inbox/tombstone/result | No-write NotAdmitted; no target mutation | Only admission or applied revocation may create the row; exact CAS losers join and changed material conflicts |
+| RevokedBeforeAdmission | Returns stored Revoked; late admission cannot create Issued | Returns stored Revoked | Returns stored Revoked | Returns stored Revoked without action | Exact operations join the revocation; stale/lower or changed target/action/digest/scope/sequence/idempotency conflicts |
+| Issued | Returns stored Admitted | At/after exact expiry atomically commits ExpiredUnused | Atomically commits RevokedUnused | Exact action atomically commits Consumed with retention or begin/final result | Expiry, applied revocation and consumption race by one CAS; loser rereads/reapplies; changed material conflicts |
+| Consumed | Returns stored consumed action result | Returns stored consumed action result | Returns stored consumed action result without conversion | Returns stored consumed action result; action never repeats | Exact terminal observations join; stale/lower or changed material conflicts |
+| ExpiredUnused | Returns stored Expired | Returns stored Expired | Returns stored Expired without conversion | Returns stored Expired without action | Exact observations join expiry; stale/lower or changed material conflicts |
+| RevokedUnused | Returns stored Revoked | Returns stored Revoked | Returns stored Revoked | Returns stored Revoked without action | Exact observations join revocation; stale/lower or changed material conflicts |
+
+The issuer-side Revoke command is not the table's revocation transition: it
+only allocates and signs an intent. Only destination Apply consumes that intent
+and advances the table. A fresh higher valid sequence against an already
+terminal exact target returns its stored terminal outcome without conversion;
+an exact issuer retry returns the stored signed intent; a stale/lower sequence
+or reused identity with different canonical material conflicts. Every adapter
+uses this table and the same outcome/conflict wrappers.
+
 Only
-`ReleaseMigrationImportRegistryHistoryCorruptionControlLineage` may move an
+`BeginMigrationImportRegistryHistoryCorruptionControlLineageRelease` with
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginPayloadV1`
+may move an
 eligible Active, PermanentlyQuarantined or Rebuilt lineage to custody-safe
 ReleasePending after locking and proving retention/classification/legal-hold
 policy, terminal history disposition, no possible future history operation/
@@ -5483,6 +5548,17 @@ remaining lifetime-work ceiling without changing WorkSpent. This begin
 transaction consumes an exact Issued BeginRelease authorization; the later
 whole-member transaction separately consumes an exact Issued
 CommitCustodyRelease authorization bound to the stored begin result.
+The begin payload binds that authorization, expected lineage/version/
+disposition, lineage checkpoint, current settlement heads, sorted workspace/
+fence set and bundle digest. It returns canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginConflict`.
+Exact retry returns the stored begin result; changed authorization, expected
+version, checkpoint, heads, bundle or idempotency conflicts without mutation.
+`ReleaseMigrationImportRegistryHistoryCorruptionControlLineage` is retained
+only as a non-dispatchable command-family identifier for catalog continuity;
+no API, worker or adapter may invoke it as a generic mutation.
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementV1` settles
 each physical-capacity leg exactly once; it never mutates the lifetime-work
 budget. It is a domain-separated
@@ -5518,32 +5594,47 @@ stable Closed fence in ascending canonical campaign-ID byte order, control
 reserve, history obligation, corruption fence, control lineage, lineage
 checkpoint, release authorization, lineage disposition, retention/legal-hold/
 custody authority and terminal audit/result/outbox rows. The final release
-transaction uses this
-identical combined rank; no linked workspace is acquired after a later-ranked
-lineage/custody object, and duplicate campaign IDs acquire one fence once.
-It rechecks terminal obligation, fence state, bundle maximum and parent
-equation. It atomically consumes the BeginRelease authorization and moves
+transaction uses this identical combined rank; no linked workspace is acquired
+after a later-ranked lineage/custody object, and duplicate campaign IDs acquire
+one fence once. The begin transaction rechecks terminal obligation, fence
+state, bundle maximum and parent equation. It atomically consumes the
+BeginRelease authorization and moves
 eligible ReservedUnoccupied units to Released while removing their exact child
 encumbrance and crediting ParentAvailable under the parent/child transfer ID,
 moves Occupied units to ReclaimPending without a parent credit, appends
 immutable transfer/per-leg settlement rows, advances the journal head, marks
 ReleasePending, and writes the canonical
-pending `MigrationImportRegistryHistoryCorruptionControlLineageReleaseResultV1`,
+pending `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginResultV1`,
 audit and outbox. A split ledger transfer, settlement append, journal advance,
 parent credit, checkpoint, authorization consumption or lineage transition is
 unrepresentable.
 
 Authenticated sparse checkpoint/archive publication advances separate
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchiveReplayHeadV1`
-only after immutable chunks upload and verify. Its final local CAS binds the
-archive head to the journal coverage and deletes only exact captured hot rows/
-versions. It rechecks the identical bundle digest/hard maximum and current
-Issued CommitCustodyRelease authorization. In that same ranked local
-transaction it consumes that authorization once and uses verified archive
-membership plus exact deletion to move matching ReclaimPending units to
-Released, remove the exact child encumbrance, credit ParentAvailable and append
-the immutable parent/child transfer plus final settlement rows before advancing the journal,
-and invokes each checkpoint-bound
+only after immutable chunks upload and verify, then produces canonical
+`MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationReceiptV1`
+binding publication identity, immutable object/chunk roots, verified archive
+head, covered journal head, exact captured hot rows/versions, deletion
+preconditions, bundle digest and publisher/storage-adapter evidence. Publication
+and storage adapters may create/verify evidence and advance this evidence head.
+Publishers/storage adapters are evidence-only; they cannot delete authoritative
+hot rows, consume release authority, credit capacity or mutate lineage/workspace
+terminal state.
+
+Only
+`CommitMigrationImportRegistryHistoryCorruptionControlLineageCustodyRelease`
+with
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitPayloadV1`
+may move ReleasePending→Released. The payload binds the stored begin result,
+publication receipt, expected archive/journal heads, bundle digest and hard-
+maximum proof, current Issued CommitCustodyRelease authorization, expected
+lineage version/disposition and stable idempotency. Under the identical combined
+rank, the command reauthenticates publication/membership/deletion evidence,
+rechecks every bound version and current retention/legal-hold/custody condition,
+consumes that authorization once, deletes only the exact captured hot rows/
+versions, moves matching ReclaimPending units to Released, removes the exact
+child encumbrance, credits ParentAvailable, appends immutable parent/child and
+final settlement rows, advances the journal, and invokes each checkpoint-bound
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1`.
 For each linked workspace this is one all-or-none whole-member transaction
 component: every remaining complete leg becomes a domain-separated custody-
@@ -5554,6 +5645,8 @@ checkpoint/result/audit/outbox commits. The generic lineage settlement never
 duplicates that workspace credit. The lineage becomes Released only when every
 linked workspace and ordinary control-reserve leg is settled in this same
 final ranked transaction, which then commits the final lineage release result,
+canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitResultV1`,
 audit and outbox; otherwise all affected predecessor members remain
 encumbered and ReleasePending remains resumable. The bounded workspace set and
 all terminal writes were precharged before ReleasePending. Hot settlement state
@@ -5569,10 +5662,11 @@ forward/inverse transfer against settlement membership. Duplicate membership ret
 another release or parent credit; unknown non-membership never authorizes
 settlement.
 
-Exact retry returns that result; changed lineage/checkpoint/custody/
-settlement/idempotency returns
-`MigrationImportRegistryHistoryCorruptionControlLineageConflict` without
-mutation. Missing work/physical transfer records, either conservation failure,
+Exact retry of the commit command returns that stored final result. Changed
+begin result, publication receipt, archive/journal head, bundle digest,
+authorization, expected lineage version, custody evidence or idempotency returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitConflict`
+without mutation. Missing work/physical transfer records, either conservation failure,
 WorkSpent decrease, premature physical release, reset counters, duplicate or
 unavailable settlement, either settlement-head rollback, checkpoint-before-
 release violation or recreated capacity fails restore/import and keeps the

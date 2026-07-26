@@ -66,6 +66,9 @@ All notable Vitheim changes are documented here. The format follows
 - Completed that closure for aborted cleanup, fully typed retention and
   two-stage lineage-release authority, deterministic combined locking and an
   aggregate backend transaction maximum.
+- Made lineage begin/final release explicit typed command boundaries and
+  completed issuer-side revocation plus six-state destination behavior for
+  retention and custody-release grants.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

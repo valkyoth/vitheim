@@ -776,7 +776,15 @@ share one settlement-head→parent→current-slot→canonical-ID-sorted-old-fenc
 control/lineage/checkpoint→authorization/custody/output rank. A checked
 CustodyReleaseBundleHardMaximum proves aggregate ordinary/workspace rows, bytes,
 locks, reads, writes, indexes, outputs, work and time fit the backend before
-ReleasePending. Permanent-quarantine revocation requires destination apply of issuer
+ReleasePending. Only explicit BeginLineageRelease and
+CommitLineageCustodyRelease commands perform the two transitions. Commit binds
+the stored begin result, publication receipt, exact heads/bundle/authorization
+and expected lineage version; publishers and storage adapters produce evidence
+only. Both retention and lineage authorization issuers have explicit Revoke
+commands with atomic monotonic signed-intent results/conflicts and no
+destination capability. Destination Apply alone advances their complete
+six-state table, including no-write absent expiry/consumption and stable
+first-terminal observations. Permanent-quarantine revocation requires destination apply of issuer
 intent and one total first-terminal-wins outcome table: later valid operations
 return the stored quarantine, expiry or revocation result. Quarantined capacity
 remains the entire parent member until broader custody-safe release. The
@@ -959,6 +967,8 @@ cleanup-turn reset/priority bypass/backlog overflow, unknown-as-deleted,
 abort-origin substitution, retention self-approval/pool exhaustion, custody-
 evidence-as-authority, Begin/Commit action confusion, unsorted/late old-fence
 locking, aggregate bundle overflow, late-evidence terminal-result rewrite,
+generic/direct-publisher terminal mutation, payload/publication-receipt
+rebinding, issuer sequence races, remote-intent effect, absent-state writes,
 split/double whole-member custody release, partial quarantine refund,
 premature or duplicate workspace deletion settlement, or activation before successor
 verification/old-writer fence,

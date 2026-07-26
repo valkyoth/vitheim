@@ -367,6 +367,13 @@ quarantine has issuer-intent/destination-apply revocation, a first-terminal-wins
 outcome table returning stored results, and retains the entire parent member
 until broader custody-safe release; it never permits a campaign-level partial
 refund.
+The lineage release kernel has explicit Begin and Commit commands with
+action-specific payload/result/conflict types; commit binds the stored begin
+result, publication receipt, exact heads/bundle/authorization and expected
+version. Publishers/storage adapters can only produce evidence. Retention and
+lineage authorization issuers use explicit monotonic signed-intent Revoke
+commands, while destination Apply alone advances their exhaustive six-state
+tables, including no-write absent expiry/consumption.
 A co-located Recovery parent
 ledger and immutable parent/child transfers atomically pair every child
 allocation/release with parent debit/credit; one logical operation maps to one

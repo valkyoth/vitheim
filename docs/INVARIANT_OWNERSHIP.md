@@ -289,6 +289,8 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupHardMaximumRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCleanupReconciliationRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationIssuerSequenceRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationIntentResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationInboxRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationRevocationTombstoneRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationOperationResultRow`,
@@ -298,9 +300,14 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationIssuerSequenceRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationIntentResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationInboxRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationTombstoneRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationOperationResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginOperationResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationReceiptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitOperationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementCheckpointRow`,
@@ -348,11 +355,19 @@ settles all remaining workspace legs, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased; the
 generic lineage release cannot credit it separately.
 BeginRelease and CommitCustodyRelease consume separate action-bound grants.
+Each grant issuer owns only monotonic signed-intent creation; the destination
+applier owns inbox/tombstone/table mutation. Both families implement the same
+six-state first-terminal table, including no-write absent expiry/consumption.
 Both lineage-release transactions acquire archive/journal heads, parent,
 current slot, sorted old campaign fences, control/lineage/checkpoint,
 authorization/custody and output rows in the same rank. A checked aggregate
 bundle maximum covers every linked workspace and ordinary reserve leg before
 ReleasePending.
+Only the explicit Begin lineage command may enter ReleasePending and only the
+explicit Commit custody command may enter Released. Publishers and storage
+adapters own receipts/evidence only and cannot dispatch either terminal
+mutation. Action-specific result rows make exact retry and changed-payload
+conflict independently auditable.
 The deployment-retirement fence is the first shared rank and the active slot
 and campaign fence follow their parent ledger.
 VIT-TST-062-N-F rejects absent-as-Operational, authority reuse, borrowed
@@ -367,7 +382,9 @@ partial quarantine refund, original-total rewrite/released rollback, fractional
 leg settlement, cleanup-turn reset/backlog overflow, unknown-as-deleted,
 abort-origin loss, retention/custody evidence-as-authority, unsorted/late
 workspace locking, aggregate release-bundle overflow, parent/workspace custody-
-release split, unbounded classifier work and under-reserved checkpoints.
+release split, generic/direct-publisher terminal mutation, missing issuer
+sequence, absent-state write and changed-payload exact retry, unbounded
+classifier work and under-reserved checkpoints.
 VIT-RCV-062 restores the same fence/tombstones, active campaign
 slot, campaign epoch/snapshot/commitment/log/high-watermark/fold/buckets/
 pending charges/forward-inverse transfers/cursor/lease/budget/prior-state/
@@ -375,8 +392,9 @@ intent/results/terminal checkpoint/quarantine authorization and workspace
 reservation/state/cursor/physical high-watermark/capacity/settlement,
 deletion observations/reconciliation budget, retention authority/pool
 reservation, authorization inbox/tombstones/results, CleanupOrigin/terminal
-reference, release bundle maximum and custody-release legs/checkpoint/result
-plus verification
+reference, issuer sequences/signed-intent results, action-specific begin/final
+results, publication receipt, release bundle maximum and custody-release legs/
+checkpoint/result plus verification
 reservation before any affected work becomes ready. Exact abort
 reversal is required when evidence is complete;
 contradictory or missing transfer evidence retains conservative encumbrance in

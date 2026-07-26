@@ -684,6 +684,13 @@ restore, failover, and release evidence.
    transactions share the settlement-head→parent→current-slot→sorted-old-fence→
    control/lineage/checkpoint→authorization/custody/output rank, and an aggregate
    hard maximum covers every ordinary and workspace leg before ReleasePending.
+   Explicit BeginLineageRelease and CommitLineageCustodyRelease commands own
+   those transitions and return action-specific results/conflicts; commit binds
+   the begin result, verified publication receipt, exact heads/bundle/grant and
+   expected version. Publishers and storage adapters are evidence-only.
+   Retention/release issuers create signed monotonic revocation intents through
+   explicit Revoke commands; only destination Apply advances the complete
+   six-state table.
    A co-located Recovery parent ledger atomically debits with child allocation
    and credits with child release under one transfer identity and equation;
    completion reserves use it too. One logical operation deterministically

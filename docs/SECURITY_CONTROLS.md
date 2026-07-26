@@ -348,7 +348,14 @@ audit decision.
   current slot, sorted old
   campaign fences, control/lineage/checkpoint, authorization/custody and
   outputs; an aggregate bundle maximum proves every ordinary and workspace leg
-  fits the backend transaction before ReleasePending. A co-located
+  fits the backend transaction before ReleasePending. Explicit Begin and Commit
+  lineage commands alone mutate ReleasePending/Released and persist
+  action-specific results; commit rebinds the begin result, publication receipt,
+  heads/bundle/grant and expected version. Publishers/storage adapters are
+  evidence-only. Each retention/release issuer Revoke command allocates one
+  monotonic signed intent/result without destination capability; destination
+  Apply alone executes the full six-state table, including absent no-write and
+  first-terminal observation rules. A co-located
   Recovery parent ledger atomically pairs child allocation/release with parent
   debit/credit under one deterministic transfer ID/equation, including
   completion reserves; restore verifies both sides from one snapshot and never
