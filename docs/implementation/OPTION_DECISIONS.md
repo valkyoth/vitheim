@@ -660,31 +660,53 @@ Every affected child is handled by one epoch-cut
 Freeze one parent/selector-owned
 `MigrationImportRegistryHistoryBackendStorageCostProfileActiveRecostCampaignSlotV1`
 with None-to-campaign start CAS, exact-retry join, changed-material conflict and
-terminal-checkpoint-only reuse. Fenced retains the slot. This structurally
-prevents overlapping successors, ambiguous same-rank fences and multiple
-pending profiles. Freeze the fixed pre-cut snapshot, parent-ledger campaign
-epoch/fence, bounded post-cut allocation/release log and high-watermark,
-dual-profile admission, complete-delta preflight, atomic parent RecostPending
-reservation, stable child transfer and inverse-transfer IDs, separate active-
-cost and campaign/profile-bound pending-successor charges, lease/cursor/
-cumulative budget/retry ceiling and protected terminalization reserve.
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignTerminalCheckpointV1`-
+only reuse. The checkpoint binds terminal campaign+Closed fence, accounting
+roots/balances, consumed authority/result, workspace/cleanup disposition,
+audit/outbox positions and slot-release identity; slot clearing co-commits or
+later verifies it exactly. Fenced retains the slot. This structurally prevents
+overlapping successors, ambiguous same-rank fences and multiple pending
+profiles. Freeze the fixed pre-cut snapshot, parent-ledger campaign epoch/fence,
+bounded post-cut allocation/release log and high-watermark, dual-profile
+admission, complete-delta preflight, atomic parent RecostPending reservation,
+stable child transfer and inverse-transfer IDs, separate active-cost and
+campaign/profile-bound pending-successor charges, lease/cursor/cumulative
+budget/retry ceiling and protected terminalization reserve.
 Every parent allocation/release locks the slot and campaign fence after the
 parent ledger.
 
-Freeze the complete campaign transition table: Preflighting to RecostPending/
-Aborting/Fenced; RecostPending to Applying/Aborting/Fenced; Applying to
-Complete/Aborting/Fenced; Complete to Activated/Aborting/Fenced; Aborting to
-Aborted/Fenced; and Fenced only to Applying, Aborting or
-PermanentlyQuarantined through a durable ResumeTowardActivation, CompleteAbort
-or PermanentQuarantine intent. Activated, Aborted and PermanentlyQuarantined
-are terminal. Freeze separately typed Start, Apply, Finalize, Activate, Abort
-and Recover commands/results/conflicts, stable idempotency, lease/fence
-generation and cumulative recovery budget. Recovery authority is independent
-of the campaign owner and worker. Exact evidence may resume or reverse;
-missing or contradictory accounting evidence cannot mint a refund and must
-retain conservative encumbrance in permanent quarantine. Retry exhaustion
-alone remains recoverable Fenced state and neither authorizes abort nor
-permanent retention.
+Freeze the three-case release matrix. Before whole-delta reservation a pre-cut
+release settles only active charge, appends a tombstone and is subtracted by
+the bounded preflight fold without successor credit. After reservation but
+before application it decreases RecostPending and credits the parent. After
+application, or for a post-cut child, it decreases pending successor and
+credits the parent. The reservation transaction binds a specific authenticated
+folded-log high-watermark, preventing release between aggregate calculation and
+reservation.
+
+Freeze the campaign/mutation-fence product. Preflighting/RecostPending/Applying
+pair with Open, Complete with Finalizing and terminals with Closed. Fenced
+preserves prior campaign plus Open/Finalizing; Fenced+Open denies allocations
+but permits only evidence-complete protected releases, while Fenced+Finalizing
+denies mutation. Prior Preflighting recovery returns to Preflighting, prior
+RecostPending/Applying to Applying and prior Complete to Complete after bounded
+checkpoint revalidation. It advances lease/fence generation while preserving
+cursors, work, folds and reservations; recovery never completes remaining
+preflight in one transaction. Abort folds admitted release then closes the
+fence; Closed never reopens. Activation/abort/quarantine share one terminal CAS.
+Freeze separately typed Start, Apply, Finalize, Activate, Abort and Recover
+commands/results/conflicts.
+
+Permanent quarantine requires a distinct six-state one-shot authorization
+binding exact evidence, retained-capacity upper bound, workspace disposition,
+successor rejection/predecessor preservation, current policy/hold/time/quorum/
+SoD/nonce/idempotency. Independent issuer, local admitter and consuming
+operator are separated from campaign/recovery/work roles. Only the dedicated
+command consumes Issued authority and atomically commits
+PermanentlyQuarantined+Closed, conservative encumbrance, rejected successor,
+quarantined workspace, terminal checkpoint, slot release, audit/outbox or none.
+Missing or contradictory evidence cannot mint a refund; retry exhaustion alone
+remains recoverable Fenced state.
 
 Fold the open post-cut log continuously with a durable cursor and cumulative
 authenticated checkpoint. Open to Finalizing fixes the high-watermark only
@@ -696,7 +718,15 @@ successor aggregate by the same amount. Activation requires RecostPending zero.
 It also requires a durable physical migration-workspace reservation covering
 shadow data/index, WAL/journal amplification, verification, rollback/cleanup,
 worker/I/O and failover terminalization, plus a completed checkpoint proving
-the successor built/verified and predecessor writers fenced.
+the successor built/verified and predecessor writers fenced. Freeze Reserved,
+Building, Catchup, Verified, ActivatedCleanupPending, AbortCleanupPending,
+Cleaned and Quarantined workspace states; copy/catch-up cursor and physical
+mutation high-watermark; exact source capacity ledger/aggregate ceiling;
+bounded build/synchronize/verify/cleanup/quarantine/settle commands; and
+exact-once release only after authenticated deletion. Reused migration staging
+must implement this exact lifecycle. Workspace state is campaign-owned and
+locked only within parent-ledger→active-slot→campaign-fence ranks; no separate
+workspace lock or mutation path exists.
 
 Final activation is one atomic authority/accounting/selector transaction. It
 rechecks retirement fence, active slot, campaign/profile heads, classifier

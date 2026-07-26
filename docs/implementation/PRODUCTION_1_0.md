@@ -737,12 +737,15 @@ table, parent epoch/fence, fixed pre-cut snapshot, bounded post-cut fold and
 hard final tail. Complete-delta preflight reserves campaign RecostPending;
 stable transfers atomically move equal amounts into pending-successor charges
 while preserving the active + campaign-pending + pending-successor equation.
-Explicit owner-authorized abort reverses every provable pending amount.
-Independent Fenced recovery resumes/aborts only from exact evidence or retains
-conservative encumbrance in permanent quarantine. Activation verifies constant-
-sized roots, consumes current weakening/ordinary-owner authority in the same
-transaction, and binds a completed physical migration-workspace reservation
-covering build, WAL, verification, cleanup and failover. The campaign fence
+Before that reservation, pre-cut release settles active charge only and
+tombstones the child into the folded reservation cut; later cases settle the
+stored campaign or child bucket. The closed campaign+mutation-fence product
+returns recovery to its bounded prior state. Activation, owner-authorized abort
+and separately one-shot-authorized quarantine share one terminal CAS/checkpoint;
+Closed never reopens and that checkpoint alone clears the slot. Activation
+consumes current authority and binds a Verified campaign-owned workspace with
+copy/catch-up cursor, physical mutation high-watermark, exact source ledger/
+aggregate and deletion-proved exact-once cleanup settlement. The campaign fence
 follows the parent-ledger rank. A co-located Recovery parent ledger
 atomically pairs every child allocation/release with parent debit/credit under
 one deterministic transfer ID and equation, including completion reserves;
@@ -905,14 +908,17 @@ activation, classifier breakpoint enumeration or proof-budget bypass,
 invalid/unverifiable classification authorized as weakening, partial whole-
 delta reservation, RecostPending omitted from conservation, missing unique
 campaign slot/epoch/fence or post-cut log/fold, overlapping successors, live
-allocation/release without dual-profile accounting, unbounded final tail,
-post-cut log/release-lane exhaustion, re-cost cursor/lease/retry reset,
-duplicate child delta, active/campaign-pending/pending-successor confusion,
-unproved refund, forged inverse transfer, recovery escalation or worker-
-authorized abort, activation after authority expiry/revocation, split
-authority/selector/accounting commit, missing physical migration-workspace
-peak/cleanup reservation or activation before successor verification/old-
-writer fence,
+allocation/release without dual-profile accounting, pre-reservation successor
+credit, missing release tombstone/fold cut, unbounded final tail or preflight
+recovery, post-cut log/release-lane exhaustion, lost prior/product state,
+Closed reopen, cursor/lease/retry reset, duplicate child delta, active/campaign-
+pending/pending-successor confusion, forged terminal checkpoint/slot release,
+unproved refund, forged inverse transfer, recovery escalation, unauthorized
+permanent quarantine or worker-authorized abort, activation after authority
+expiry/revocation, split authority/selector/accounting commit, missing workspace
+state/cursor/physical high-watermark/source ledger/aggregate, premature or
+duplicate workspace deletion settlement, or activation before successor
+verification/old-writer fence,
 split child/parent debit or credit, duplicate transfer minted after timeout,
 one-sided repair or guessed compensation, unbounded startup scan, forged
 aggregate/membership/checkpoint, cursor recreation/free rescan, child churn or

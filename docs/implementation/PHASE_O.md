@@ -137,14 +137,16 @@ terminal no-write. Re-cost fixes a pre-cut snapshot under a parent campaign
 epoch/fence and one parent/selector active slot, logs and incrementally folds
 bounded post-cut allocation/release, reserves the whole aggregate delta and
 persists stable transfers across active, campaign-RecostPending and pending-
-successor aggregates. Finalization admits only a hard-bounded tail and verifies
-constant-sized roots. Explicit owner-authorized abort reverses every provable
-pending amount; separately authorized Fenced recovery resumes/aborts from exact
-evidence or retains conservative encumbrance in permanent quarantine. Atomic
-activation consumes current weakening/ordinary-owner authority and requires a
-completed durable physical migration-workspace reservation proving successor
-build and old-writer fencing. The active campaign slot and then campaign fence
-follow the parent ledger in the shared rank. Restore verifies both ledger sides
+successor aggregates. Pre-reservation release tombstones without successor
+credit and the reservation binds the folded-log cut; later releases settle
+their stored bucket. The closed campaign+mutation-fence product preserves prior
+state so recovery stays bounded, while activation/abort/one-shot-authorized
+quarantine share one terminal checkpoint/CAS and Closed never reopens.
+Finalization admits only a hard-bounded tail. Atomic activation consumes current
+authority and requires a Verified campaign-owned workspace with bounded copy/
+catch-up cursor, physical high-watermark, exact source capacity and deletion-
+proved settlement. The active slot and campaign fence follow the parent ledger
+in the shared rank. Restore verifies both ledger sides
 from one snapshot and never repairs
 by choosing one side or guessing compensation. Kind-specific
 exact-once transfers cannot double charge or cross ledgers, and only verified
@@ -2251,14 +2253,18 @@ work bounds without InvalidOrUnverifiable no-write, authorize an invalid or
 unverifiable result as weakening, omit the campaign epoch/fence or post-cut
 log/fold or unique active slot, overlap successors, omit RecostPending from the
 parent equation, allocate/release without dual-profile accounting, overflow
-the protected log/release lane, admit an unbounded final tail, partially
-reserve a campaign delta, reset its lease/cursor/retries, duplicate a child
-delta, confuse active/campaign-pending/pending-successor charge, invent a
-refund, forge an inverse transfer, escalate Fenced recovery or let a worker/
-adapter authorize abort, activate after authority expiry/revocation, split
-profile/selector/accounting activation, omit physical migration-workspace peak
-or cleanup reservation, activate before verified successor build/old-writer
-fence, bypass runtime disk fencing, split
+the protected log/release lane, credit successor before RecostPending exists,
+omit the release tombstone/folded reservation cut, admit an unbounded final
+tail or preflight recovery transaction, partially reserve a campaign delta,
+reset its lease/cursor/retries, lose prior campaign/fence state, admit an
+invalid product pair or reopen Closed, duplicate a child delta, confuse active/
+campaign-pending/pending-successor charge, forge a terminal checkpoint/slot
+release, invent a refund, forge an inverse transfer, escalate Fenced recovery,
+self-authorize quarantine or let a worker/adapter authorize abort, activate
+after authority expiry/revocation, split profile/selector/accounting activation,
+omit workspace state/cursor/physical high-watermark/source ledger/aggregate,
+release workspace capacity before verified deletion or settle it twice,
+activate before verified successor build/old-writer fence, bypass runtime disk fencing, split
 parent debit/credit from child allocation/release, leak or double-credit the
 Recovery parent, mint a new transfer identity after timeout, repair split state
 by choosing one side or guessing compensation, scan every child in one startup

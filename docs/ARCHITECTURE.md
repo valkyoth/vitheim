@@ -652,12 +652,14 @@ restore, failover, and release evidence.
    activation uses one parent/selector active-slot epoch-cut campaign with fixed
    pre-cut snapshot, bounded post-cut fold/tail, separate active/campaign-
    RecostPending/pending-successor aggregates and whole-delta reservation.
-   Typed Fenced recovery resumes or aborts only from complete evidence; missing
-   accounting evidence conservatively quarantines its encumbrance. Finalization
-   verifies constant-sized roots. One activation transaction consumes current
-   weakening or ordinary-owner authority, closes profile/campaign/selector and
-   accounting state, and binds a completed physical migration-workspace
-   reservation proving successor build and predecessor-writer fencing.
+   Pre-reservation release creates no successor credit and is tombstoned into
+   the folded reservation cut; later releases settle the bucket they actually
+   occupy. The closed campaign+mutation-fence product makes recovery origin-
+   specific and bounded. Activation, abort and separately one-shot-authorized
+   quarantine share one terminal CAS/checkpoint and Closed never reopens.
+   Activation consumes current authority and binds a Verified campaign-owned
+   workspace with bounded build/catch-up/cleanup cursors, exact physical
+   capacity, high-watermark and deletion settlement.
    A co-located Recovery parent ledger atomically debits with child allocation
    and credits with child release under one transfer identity and equation;
    completion reserves use it too. One logical operation deterministically

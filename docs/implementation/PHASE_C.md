@@ -3915,9 +3915,13 @@ from None to the exact parent/selector/campaign/epoch/predecessor/successor and
 expected version. There is at most one nonterminal campaign for one parent and
 selector scope. Exact start retry joins the slot; changed material conflicts.
 The slot remains occupied while Fenced and may be reused only after an
-authenticated terminal checkpoint proves Activated, Aborted or
-PermanentlyQuarantined. A second successor cannot create another pending
-profile, campaign fence or allocation-charge interpretation.
+authenticated
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignTerminalCheckpointV1`
+proves Activated, Aborted or PermanentlyQuarantined. Slot clearing co-commits
+with that checkpoint or is a later exact transaction that locks the slot and
+verifies its checkpoint identity/version; no other evidence clears it. A second
+successor cannot create another pending profile, campaign fence or allocation-
+charge interpretation.
 
 The same transaction installs
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignEpochV1`
@@ -3934,18 +3938,41 @@ Aborted, Fenced or PermanentlyQuarantined. Its mutation fence is Open,
 Finalizing or Closed. Canonical
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryIntentV1`
 is ResumeTowardActivation, CompleteAbort or PermanentQuarantine and is written
-durably before recovery work. The complete legal state table is:
+durably before recovery work. PermanentQuarantine is written only by admission
+of the dedicated one-shot authorization below and is consumed only by its
+dedicated command. The complete legal state table is:
 
 - Preflighting may move to RecostPending, Aborting or Fenced.
 - RecostPending may move to Applying, Aborting or Fenced.
 - Applying may remain Applying or move to Complete, Aborting or Fenced.
 - Complete may move only to Activated, Aborting or Fenced.
 - Aborting may remain Aborting or move to Aborted or Fenced.
-- Fenced may move only to Applying for a proved ResumeTowardActivation intent,
-  Aborting for a proved CompleteAbort intent, or PermanentlyQuarantined.
+- Fenced records its exact prior campaign and mutation-fence states. A proved
+  ResumeTowardActivation moves prior Preflighting to Preflighting, prior
+  RecostPending or Applying to Applying, and prior Complete to Complete after
+  checkpoint revalidation. A proved CompleteAbort moves any recoverable prior
+  state to Aborting. A separately authorized PermanentQuarantine intent moves
+  only to PermanentlyQuarantined.
 - Activated, Aborted and PermanentlyQuarantined are terminal.
 
-No inferred, backwards or cross-intent transition exists.
+The campaign/mutation-fence product is also closed:
+
+- Preflighting, RecostPending and Applying pair with Open. Complete pairs with
+  Finalizing. Activated, Aborted and PermanentlyQuarantined pair with Closed.
+- Fenced preserves the exact Open or Finalizing state at which fencing won.
+  Fenced+Open denies allocations but permits an authenticated release through
+  the protected release lane only when its charge disposition and log
+  continuity are exact. Fenced+Finalizing permits no mutation.
+- Recovery preserves Open or Finalizing when resuming the prior campaign
+  state. CompleteAbort first folds any admitted release, then CASes Open or
+  Finalizing to Closed before entering Aborting. Permanent quarantine always
+  CASes the mutation fence to Closed.
+- Closed never reopens. Activation, abort and permanent quarantine race on the
+  same expected campaign state, mutation-fence generation and terminal-result
+  slot; exactly one terminal checkpoint can win.
+
+No inferred, backwards, cross-intent or invalid product-state transition
+exists.
 `StartMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
 `ApplyMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
 `FinalizeMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`
@@ -3965,13 +3992,19 @@ Their action tags are not interchangeable;
 exact retries return the stored result and changed state/material returns only
 the command-specific conflict without performing another command.
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceCheckpointV1`
-binds prior state, fence generation, terminal intent, exact accounting roots/
-counters, last transfer and post-cut fold checkpoint. Contradictory, missing or
-unauthenticated accounting evidence cannot authorize a refund or activation:
-it permits only PermanentlyQuarantined and conservatively retains the exact
-known encumbrance plus maximum unresolved reserved amount until separately
-proved. Retry or worker exhaustion alone is not evidence loss and cannot
-select quarantine.
+binds prior campaign and mutation-fence states, fence/lease generations,
+recovery intent, exact accounting roots/counters, last transfer, preflight
+cursor and post-cut fold checkpoint. Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignTerminalCheckpointV1`
+instead binds one terminal campaign+Closed pair, final active/RecostPending/
+pending-successor roots and balances, terminal authority consumption and
+result, workspace/cleanup disposition, audit/outbox positions, terminal
+checkpoint sequence and unique slot-release identity. Contradictory, missing
+or unauthenticated accounting evidence cannot authorize a refund or activation:
+it permits only separately authorized PermanentlyQuarantined and conservatively
+retains the exact known encumbrance plus maximum unresolved reserved amount
+until separately proved. Retry or worker exhaustion alone is not evidence loss
+and cannot select quarantine.
 
 A bounded
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorV1`
@@ -3981,23 +4014,39 @@ nonnegative delta and charges
 before work. Only canonical
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFixedSnapshotCheckpointV1`
 may atomically move the entire aggregate delta from ParentAvailable into one
-campaign-owned RecostPending bucket; insufficient aggregate, post-cut-log or
-terminalization capacity makes that transition no-write, stores the typed
-preflight result and creates no pending-successor charge. The campaign remains
-Preflighting until exact retry can reserve the complete amount or its explicit
-owner-authorized abort runs. Every parent allocation and release transaction
-locks and rechecks the active-campaign slot and campaign epoch/fence after the
-parent-ledger rank.
+campaign-owned RecostPending bucket. That transaction locks the post-cut log
+and fold checkpoint, binds one specific authenticated folded-log high-
+watermark, proves every earlier pre-cut release tombstone has been subtracted
+from the fixed-snapshot aggregate and proves no admitted release can fall
+between aggregate calculation and reservation. Insufficient aggregate, post-
+cut-log, fold or terminalization capacity makes the transition no-write,
+stores the typed preflight result and creates no pending-successor charge. The
+campaign remains Preflighting until bounded cursor/fold work can reserve the
+complete live amount or its explicit owner-authorized abort runs. Every parent
+allocation and release transaction locks and rechecks the active-campaign slot
+and campaign epoch/fence after the parent-ledger rank.
 
 While Open, a post-cut allocation admits the active-profile charge plus the
 checked nonnegative successor delta, stores the latter as
 `MigrationImportRegistryHistoryBackendStorageCostProfilePendingSuccessorChargeV1`
 bound to campaign and successor profile, and appends one stable event to the
-post-cut log. A pre-cut or post-cut release settles its active charge and any
-pending successor charge through stable inverse transfers and appends the
-corresponding event. The fixed snapshot remains immutable; its authenticated
-post-cut overlay determines the live set. Campaign admission reserves bounded
-log and separate release-lane capacity. Reaching the mandatory close margin
+post-cut log. Release follows one exhaustive, state-discriminated matrix:
+
+1. A pre-cut child released while Preflighting and before whole-delta
+   reservation releases only its active charge, appends an immutable release
+   tombstone, and receives no successor credit because RecostPending does not
+   yet exist. The bounded preflight fold excludes or subtracts that child.
+2. A pre-cut child released after whole-delta reservation but before its
+   application decreases campaign RecostPending by its exact snapshot delta
+   and credits ParentAvailable.
+3. An applied pre-cut child or any post-cut child decreases its exact pending-
+   successor charge and credits ParentAvailable.
+
+Every case uses a stable release/inverse identity, updates the applicable
+aggregate and membership commitment atomically, and appends or binds the
+corresponding release event/tombstone. The fixed snapshot remains immutable;
+its authenticated post-cut overlay determines the live set. Campaign admission
+reserves bounded log and separate release-lane capacity. Reaching the mandatory close margin
 denies new allocations and requests Finalizing; the protected release lane
 remains available until the finalizer acquires the exclusive fence after all
 already-admitted mutations finish. That brief exclusive interval blocks both
@@ -4005,13 +4054,8 @@ allocation and release while it closes the authenticated
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutHighWatermarkV1`.
 No live mutation is unlogged, and ordinary churn neither silently fences nor
 resets the campaign.
-
-A pre-cut release whose snapshot delta has not yet been applied atomically
-decreases campaign RecostPending by that exact delta and credits
-ParentAvailable; an already-applied or post-cut release instead decreases its
-pending-successor charge and credits ParentAvailable. Both update the matching
-aggregate/membership commitment and stable inverse transfer. No release can
-remove the active child while leaving either form of successor encumbrance.
+No release can remove the active child while leaving an existing successor
+encumbrance, and no pre-reservation tombstone can create a successor credit.
 
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPostCutFoldCursorV1`
 and
@@ -4056,7 +4100,9 @@ transfer IDs, atomically crediting ParentAvailable. Exact retry joins the
 stored forward/inverse result; changed material conflicts. Retry exhaustion
 only fences for recovery and never authorizes abort or by itself makes a
 staging amount permanent. Aborted commits only after the cursor/checkpoint proves
-zero RecostPending and zero pending successor charges. Active cost charges are
+zero RecostPending and zero pending successor charges, the mutation fence is
+Closed, and the terminal checkpoint binds workspace Cleaned or a completely
+reserved AbortCleanupPending cleanup obligation. Active cost charges are
 untouched.
 
 `RecoverMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`
@@ -4069,16 +4115,61 @@ allocators have no recovery authority. Exact retry returns
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryResultV1`;
 changed material returns
 `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryConflict`.
-ResumeTowardActivation requires complete forward-transfer and log evidence and
-returns to Applying; when the fence originated during Preflighting, the same
-recovery transaction must first complete the fixed checkpoint and whole-delta
-RecostPending reservation or remain Fenced. CompleteAbort requires complete
-forward/inverse evidence and enters Aborting. Missing, contradictory or unauthenticated accounting
-evidence permits only PermanentQuarantine; it retains encumbrance and emits a
-stable result, marks the proposed successor Rejected while the predecessor
-remains Active, and writes audit, outbox and custody checkpoint. Lease/fence generation
-prevents old-worker resumption after takeover. Recovery budget exhaustion
-remains Fenced with every counter intact.
+Recovery itself performs only constant-sized state/checkpoint revalidation and
+advances the lease/fence generation while preserving the existing preflight/
+application cursor, cumulative work, post-cut fold position, reservations and
+mutation-fence state. ResumeTowardActivation from prior Preflighting returns to
+Preflighting so later ordinary bounded work continues the fixed checkpoint;
+it never completes the remaining snapshot in the recovery transaction. Prior
+RecostPending or Applying returns to Applying after complete forward-transfer
+and log-root revalidation. Prior Complete returns to Complete only after the
+complete/fold/workspace checkpoint roots revalidate. CompleteAbort requires
+complete forward/inverse evidence and enters Aborting after the mutation fence
+closes. Missing, contradictory or unauthenticated accounting evidence cannot
+be selected by recovery as a convenient terminal: only the one-shot permanent-
+quarantine authorization and command below may retain encumbrance, reject the
+successor and preserve the predecessor. Lease/fence generation prevents old-
+worker resumption after takeover. Recovery budget exhaustion remains Fenced
+with every counter intact.
+
+Permanent quarantine is a destructive availability and capacity-retention
+decision, not a generic recovery result. Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationV1`
+has independently issued, destination-admitted
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationStateV1`
+Absent, RevokedBeforeAdmission, Issued, Consumed, ExpiredUnused or
+RevokedUnused. Its signed canonical preimage binds campaign/slot/epoch,
+predecessor/successor, prior campaign and mutation-fence states, exact
+unavailable/contradictory evidence commitment, conservative retained-capacity
+upper bound, workspace disposition, successor rejection and predecessor
+preservation, retention/classification/legal-hold epochs, issued-at/not-before/
+expiry/uncertainty/trusted-time continuity, requestor/approvers/operator,
+quorum/SoD, reason, nonce and idempotency. Admission, pre-admission revocation,
+Issued revocation and Issued-only expiry are explicit local commands and exact
+retry returns their stored result:
+`AdmitMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`,
+`RevokeMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`
+and
+`ExpireMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`
+return
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationResultV1`
+or
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationConflict`.
+
+Only
+`PermanentlyQuarantineMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`
+may consume the still-Issued authorization. One transaction CASes Fenced+
+Open/Finalizing to PermanentlyQuarantined+Closed, retains the proved
+conservative encumbrance, marks the successor Rejected and predecessor Active,
+quarantines workspace capacity, writes
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineResultV1`,
+terminal checkpoint/audit/outbox, and clears the slot as specified above, or
+does none. Changed authority/evidence/capacity/workspace/state/idempotency
+returns
+`MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineConflict`.
+The quarantine issuer, destination admitter and consuming operator are
+separated; campaign owner, recovery authorizer, worker, adapter, classifier and
+allocator cannot issue or self-consume this authority.
 
 The complete checkpoint proves snapshot membership, aggregate delta, every
 stable transfer, the closed post-cut high-watermark and fold checkpoint, zero
@@ -4089,7 +4180,58 @@ It conservatively reserves shadow data/index bytes, WAL/journal amplification,
 verification and rollback/cleanup space, worker and I/O capacity, and crash/
 failover terminalization. When the existing migration staging budget supplies
 these resources, its immutable reservation ID, profile, amounts and completed
-checkpoint are embedded rather than duplicated. The completed
+checkpoint are embedded rather than duplicated, and that staging protocol must
+implement every lifecycle and settlement rule below.
+
+Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceStateV1`
+is Reserved, Building, Catchup, Verified, ActivatedCleanupPending,
+AbortCleanupPending, Cleaned or Quarantined.
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCursorV1`
+and
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkV1`
+bound and resume initial copy plus change catch-up. The exact source
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCapacityLedgerV1`
+and checked
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceAggregateV1`
+bind capacity-profile identity, rows/bytes, shadow/index/WAL/verification/
+cleanup quantities, worker/I/O units and platform aggregate ceilings and
+enforce, per dimension:
+
+`workspace_total = workspace_available + workspace_reserved +
+workspace_building_occupied + workspace_cleanup_pending +
+workspace_quarantined`.
+
+`BuildMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+`SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+`VerifyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+`CleanupMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+`QuarantineMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`
+and
+`SettleMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`
+are bounded stable-idempotency commands returning canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultV1`
+or
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationConflict`.
+They alone perform Reserved→Building→Catchup→Verified,
+Verified→ActivatedCleanupPending after campaign activation,
+nonterminal→AbortCleanupPending after abort, either cleanup-pending state→
+Cleaned after verified old-copy/shadow deletion, or any nonterminal→Quarantined
+under the campaign's authorized terminal disposition.
+Settlement releases each reservation leg exactly once only after authenticated
+deletion through
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementV1`
+and a predecessor-linked settlement checkpoint; response loss joins the same
+settlement and Quarantined remains encumbered.
+
+Workspace rows are campaign-owned, co-located and never independently locked.
+Their source capacity ledger is a co-located dimension/member of
+`MigrationImportRegistryHistoryRecoveryCapacityParentLedgerV1` and is acquired
+as part of that one rank; all workspace rows/cursors/high-watermarks/results
+are acquired inside the existing active-campaign-slot→campaign-fence rank. No
+workspace-specific rank, adapter lock or callable out-of-campaign mutation path
+exists.
+The completed
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1`
 proves that successor data/schema/index is built and verified and all
 predecessor writers are fenced. Failure retains cleanup capacity until
@@ -4106,12 +4248,14 @@ unrevoked destructive grant; for ValidNonWeakening it consumes the current
 ordinary-owner activation result. It CASes the profile head, moves Proposed to
 Active and predecessor to Superseded, activates the backend/schema/index
 selector, reclassifies all campaign-tagged pending successor charges as active,
-moves Complete to Activated and the campaign fence to Closed, clears the active
-slot only through the authenticated terminal checkpoint, and writes one stable
-activation result, record, audit and outbox. None of those effects commits
-alone. Reclassification changes neither ParentTotal nor ParentAvailable and is
-allowed only when AggregateCampaignRecostPending is zero. Later physical row
-compaction is non-authoritative. Missing child, unlogged mutation, nonzero
+must move Verified workspace to ActivatedCleanupPending, moves Complete to
+Activated and the campaign fence to Closed, clears the active slot only through
+the authenticated terminal checkpoint, and writes one stable activation result,
+record, audit and outbox. None of those effects commits alone.
+Reclassification changes neither ParentTotal nor ParentAvailable and is allowed
+only when AggregateCampaignRecostPending is zero. Later logical row compaction
+and verified workspace cleanup are non-authoritative for activation. Missing
+child, unlogged mutation, nonzero
 RecostPending, failed delta or workspace admission, stale authority/epoch/
 parent/head/slot, incomplete checkpoint, unverified successor or unfenced old
 writer refuses activation.

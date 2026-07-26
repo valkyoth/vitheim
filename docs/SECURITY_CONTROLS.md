@@ -311,14 +311,16 @@ audit decision.
   total state/recovery-intent table, parent epoch/fence, fixed pre-cut snapshot
   and bounded post-cut fold with a hard final tail. Parent conservation covers
   active, campaign RecostPending and pending-successor aggregates; each forward
-  transfer moves equal amounts between the latter two. The campaign fence
-  follows its parent-ledger rank. Explicit owner-authorized abort reverses every
-  provable pending charge; independently authorized Fenced recovery either
-  resumes, completes reversal, or conservatively quarantines unprovable
-  accounting without inventing a refund. Final activation verifies constant-
-  sized roots, consumes current weakening/ordinary-owner authority atomically,
-  and binds a durable physical migration-workspace checkpoint covering shadow
-  copies, WAL, verification, cleanup, worker/I/O and failover capacity. A co-located
+  transfer moves equal amounts between the latter two. Before reservation,
+  pre-cut release settles active charge only and tombstones the child into the
+  folded reservation cut; later releases settle RecostPending or pending
+  successor. The campaign fence follows its parent-ledger rank. Prior-state
+  Fenced recovery stays bounded and preserves Open/Finalizing. Abort/quarantine
+  close; Closed never reopens; activation/abort/quarantine share one terminal
+  CAS/checkpoint. Permanent quarantine consumes a distinct six-state one-shot
+  grant under SoD. Final activation consumes current authority and binds a
+  Verified campaign-owned workspace lifecycle with physical high-watermark,
+  source ledger/ceiling and deletion-proved exact settlement. A co-located
   Recovery parent ledger atomically pairs child allocation/release with parent
   debit/credit under one deterministic transfer ID/equation, including
   completion reserves; restore verifies both sides from one snapshot and never

@@ -47,6 +47,11 @@ All notable Vitheim changes are documented here. The format follows
   slot, a total Fenced recovery/quarantine protocol, bounded post-cut folding,
   atomic current-authority consumption and durable physical migration-
   workspace reservation before selector activation.
+- Closed the remaining re-cost lifecycle edges: pre-reservation releases now
+  tombstone without successor credit, recovery returns to its bounded prior
+  state, campaign and mutation-fence states share one terminal checkpoint, and
+  workspace cleanup/settlement plus permanent quarantine have explicit
+  operational and one-shot authority lifecycles.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

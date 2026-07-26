@@ -333,13 +333,15 @@ re-cost campaign with one parent/selector active slot, a total state/recovery-
 intent table, fixed pre-cut snapshot and bounded authenticated post-cut fold/
 tail. Parent conservation includes active, campaign RecostPending and pending-
 successor aggregates; every application moves equal amounts between the latter
-two. Durable cursor/lease/fence-generation/budgets/results support explicit
-owner-authorized abort and independently authorized Fenced recovery; exact
-evidence reverses every pending charge, while contradictory evidence retains
-conservative capacity in permanent quarantine. Final activation consumes
-current weakening or ordinary-owner authority atomically with profile/selector/
-accounting state and requires a completed physical migration-workspace
-reservation covering shadow copies, WAL, verification, cleanup and failover.
+two. A pre-reservation release settles only active charge and tombstones the
+snapshot member; later cases settle RecostPending or pending successor, and the
+reservation binds the folded-log cut. The closed campaign+mutation-fence product
+returns preflight-origin recovery to bounded Preflighting work, never an
+unbounded transaction. Activation/abort/one-shot-authorized quarantine share
+one terminal CAS/checkpoint that alone releases the slot. Final activation
+consumes current authority and requires a Verified campaign-owned workspace
+whose state/cursor/physical high-watermark/source ledger covers build, catch-up,
+cleanup, quarantine and exact-once deletion settlement.
 A co-located Recovery parent
 ledger and immutable parent/child transfers atomically pair every child
 allocation/release with parent debit/credit; one logical operation maps to one

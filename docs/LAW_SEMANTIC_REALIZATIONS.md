@@ -346,6 +346,7 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignEpochV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceCheckpointV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignTerminalCheckpointV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryIntentV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignWorkBudgetV1`,
@@ -358,7 +359,21 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignChildDeltaTransferV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReservationV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceStateV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCursorV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCapacityLedgerV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceAggregateV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointV1`,
+  `BuildMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+  `SynchronizeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+  `VerifyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+  `CleanupMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+  `QuarantineMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+  `SettleMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspace`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationConflict`,
   `StartMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStartResultV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignStartConflict`,
@@ -375,9 +390,19 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignAbortResultV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignConflict`,
   `RecoverMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
-  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryResultV1`
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryConflict`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationStateV1`,
+  `AdmitMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`,
+  `RevokeMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`,
+  `ExpireMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorization`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationConflict`,
+  `PermanentlyQuarantineMigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaign`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineResultV1`
   and
-  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryConflict`;
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineConflict`;
 - `MigrationImportRegistryHistoryRecoveryCapacityParentVerificationReservationV1`.
 
 Their realization is required at `0.29.0`, is preserved by `0.30.0`, and uses
@@ -385,14 +410,19 @@ the existing VIT-LST-009-g01 P/N/M/F contracts. Negative and model cases cover
 retirement admission/revocation/expiry/consumption, first-rank fence rechecks
 and transaction-atomic reserve; three-outcome classifier validity; unique
 campaign-slot cardinality; campaign epoch/log live-mutation races; three-bucket
-parent conservation; bounded post-cut folding; atomic authority-consuming
-activation; physical migration workspace; active/pending separation and
-complete forward/inverse abort; fenced recovery versus conservative quarantine;
-bounded symbolic equivalence; and complete checkpoint-verification reservation.
+parent conservation and the pre-reservation release matrix; bounded post-cut
+folding; campaign/mutation-fence product transitions and terminal checkpoint;
+atomic authority-consuming activation; physical migration-workspace lifecycle/
+settlement; active/pending separation and complete forward/inverse abort;
+prior-state bounded fenced recovery; one-shot authorized conservative
+quarantine; bounded symbolic equivalence; and complete checkpoint-verification
+reservation.
 Recovery cases resume the same tombstones, fence/reserve, active slot, campaign
-epoch/snapshot/log/fold/buckets/pending/cursor/intent/transfer/workspace state
-and verification reservation without inference, reset, invented refund,
-duplicate transfer or authority extension.
+epoch/snapshot/log/fold/buckets/pending/cursor/prior-state/intent/transfer,
+terminal checkpoint, quarantine authorization/tombstone and workspace state/
+cursor/physical high-watermark/capacity/settlement plus verification
+reservation without inference, reset, invented refund, duplicate release/
+transfer/settlement or authority extension.
 
 At `0.18.3`, implement a closed Rust `LawSemanticId` enum/decoder and a
 `LawSemanticRealization` dispatch table; there is no dynamic prose interpreter,

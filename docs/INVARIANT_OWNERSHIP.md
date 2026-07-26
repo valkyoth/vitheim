@@ -248,6 +248,7 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignEpochRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignFenceCheckpointRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignTerminalCheckpointRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryIntentRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCursorRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignWorkBudgetRow`,
@@ -265,7 +266,17 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignActivationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignAbortResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignRecoveryResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineAuthorizationResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignPermanentQuarantineResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceReservationRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceStateRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCursorRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePhysicalMutationHighWatermarkRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCapacityLedgerRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceAggregateRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceSettlementRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCheckpointRow`
   and
   `MigrationImportRegistryHistoryBackendStorageCostProfileRecostCampaignCompletionReserveRow`;
@@ -275,26 +286,34 @@ Retirement authorization issuer, destination admitter and consuming command are
 separate capabilities; only the local owner commits admission/revocation/
 expiry/consumption, fence, reserve, retirement result, audit and outbox.
 Cost-profile owner, weakening classifier/authorizer, campaign owner, fenced-
-recovery authorizer, re-cost worker, parent allocator and parent verifier
-remain separated. The campaign owner alone authorizes abort and cannot approve
-Fenced recovery. The destination owner CASes one parent/selector active slot,
-atomically reserves the complete campaign delta, folds epoch-cut live mutations
-under a bounded tail, moves stable forward/inverse child deltas between exact
-RecostPending and pending-successor aggregates, and terminalizes recovery/
-abort/activation. Final activation consumes current authority and binds a
-completed physical migration-workspace checkpoint in the same transaction.
+recovery authorizer, permanent-quarantine issuer/admitter/operator, re-cost
+worker, workspace worker/settler, parent allocator and parent verifier remain
+separated. The campaign owner alone authorizes abort and cannot approve Fenced
+recovery or permanent quarantine. The destination owner CASes one parent/
+selector active slot, applies the pre-reservation release tombstone matrix,
+atomically reserves the complete folded campaign delta, moves stable forward/
+inverse child deltas between exact RecostPending and pending-successor
+aggregates, and terminalizes recovery/abort/activation. Final activation
+consumes current authority and binds a Verified workspace checkpoint in the
+same transaction. Workspace rows remain campaign-owned at the campaign-fence
+rank; only verified deletion and exact-once settlement release their source
+capacity.
 The deployment-retirement fence is the first shared rank and the active slot
 and campaign fence follow their parent ledger.
 VIT-TST-062-N-F rejects absent-as-Operational, authority reuse, borrowed
 completion capacity, partial campaign reservation, invalid-as-weakening
 authorization, overlapping campaigns, unlogged live mutation, active/pending
-charge confusion, unbounded finalization, authority/workspace-split activation,
-unproved refund, unbounded classifier work and restorable under-reserved
+charge confusion, pre-reservation successor credit, release/reservation-cut
+race, unbounded recovery/finalization, invalid campaign/fence product,
+unauthorized quarantine, premature workspace settlement, authority/workspace-
+split activation, unproved refund, unbounded classifier work and under-reserved
 checkpoints. VIT-RCV-062 restores the same fence/tombstones, active campaign
 slot, campaign epoch/snapshot/commitment/log/high-watermark/fold/buckets/
-pending charges/forward-inverse transfers/cursor/lease/budget/intent/results/
-workspace reservation and verification reservation before any affected work
-becomes ready. Exact abort reversal is required when evidence is complete;
+pending charges/forward-inverse transfers/cursor/lease/budget/prior-state/
+intent/results/terminal checkpoint/quarantine authorization and workspace
+reservation/state/cursor/physical high-watermark/capacity/settlement plus
+verification reservation before any affected work becomes ready. Exact abort
+reversal is required when evidence is complete;
 contradictory or missing transfer evidence retains conservative encumbrance in
 PermanentlyQuarantined rather than inventing a parent credit.
 
