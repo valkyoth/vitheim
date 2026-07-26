@@ -118,12 +118,20 @@ for phrase in \
     'ArchivePublicationReceiptV1' \
     'non-dispatchable command-family identifier' \
     'Publishers/storage adapters are evidence-only' \
+    'cannot advance the authoritative archive' \
+    'head-without-deletion and deletion-without-head' \
+    'Staged, Verified or OrphanGcEligible' \
+    'TransferredToCustodyLedger or Unknown' \
+    'Unknown retains PermanentlyRetained' \
+    'Only a verified, idempotent terminal' \
+    'exactly one closed physical-disposition receipt' \
+    'first atomically decreases the matching' \
     'RevokeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorization' \
     'RevokeMigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorization' \
     '| Current state | Admission | Expiry | Applied issuer revocation | Consumption |' \
     'No-write NotAdmitted' \
     'issuer-side Revoke command is not' \
-    'WorkspaceReleased exactly to WorkspaceOriginalTotal' \
+    'advances WorkspaceReleased exactly to' \
     'broader lineage release does not separately credit' \
     'cannot return the workspace to cleanup' \
     'exactly once only after authenticated' \
@@ -244,6 +252,12 @@ for symbol in \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionPoolV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionHardMaximumV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseAuthorizationReferenceV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionReceiptV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionTombstoneV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityLedgerV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityMemberV1 \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityTransferV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1 \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointV1 \
     MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumV1 \
@@ -270,6 +284,7 @@ for symbol in \
     MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginPayloadV1 \
     MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginResultV1 \
     MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginConflict \
+    MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStateV1 \
     MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationReceiptV1 \
     CommitMigrationImportRegistryHistoryCorruptionControlLineageCustodyRelease \
     MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitPayloadV1 \
@@ -415,6 +430,11 @@ for row in \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationOperationResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionPoolRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionHardMaximumRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionReceiptRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionTombstoneRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityLedgerRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityMemberRow \
+    MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityTransferRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointRow \
     MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumRow \
@@ -425,6 +445,7 @@ for row in \
     MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationRevocationTombstoneRow \
     MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationOperationResultRow \
     MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginOperationResultRow \
+    MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStateRow \
     MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationReceiptRow \
     MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitOperationResultRow \
     MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceOperationResultRow \

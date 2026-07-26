@@ -69,6 +69,9 @@ All notable Vitheim changes are documented here. The format follows
 - Made lineage begin/final release explicit typed command boundaries and
   completed issuer-side revocation plus six-state destination behavior for
   retention and custody-release grants.
+- Restricted custody publishers to non-authoritative staged/verified receipts,
+  made final Commit atomically install the archive head with hot-row deletion,
+  and required deletion or charged custody transfer before workspace credit.
 - Added a non-recursive publication-profile trust anchor, explicit bootstrap/
   rotation/checkpoint/high-watermark operations, successor compatibility
   decisions and a monotonic emergency-distrust ratchet rechecked at final

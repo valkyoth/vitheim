@@ -766,21 +766,30 @@ hard-bounded PermanentlyRetained pool; it leaves Released, ParentAvailable and
 the committed activation/abort result unchanged while removing the active-lane
 deadlock. Late evidence cannot reopen or refund it. Whole-member custody release
 alone verifies current retention/legal-hold/custody/no-future-dependency proof,
-settles every remaining leg, advances Released to OriginalTotal, removes and
-credits the identical parent member and records distinct CustodyReleased plus
-tombstones/checkpoint/result/audit/outbox atomically. Retention and separate
+then requires every remaining leg to be AuthenticatedDeleted for the exact
+storage generation/root or TransferredToCustodyLedger with a verified receipt
+and atomic identical archive/legal-hold custody-member charge. Unknown
+preserves the predecessor and authorizes no credit. Commit consumes every
+receipt while settling all legs, advancing Released to OriginalTotal, removing
+and crediting the identical parent member and recording distinct
+CustodyReleased plus disposition tombstones, custody transfers, checkpoint/
+result/audit/outbox atomically. Retention and separate
 lineage BeginRelease/CommitCustodyRelease grants have complete six-state
 admission/expiry/issuer-intent/destination-apply/tombstone/first-terminal
 families; custody evidence is never command authority. Begin and final release
-share one settlement-head→parent→current-slot→canonical-ID-sorted-old-fences→
-control/lineage/checkpoint→authorization/custody/output rank. A checked
-CustodyReleaseBundleHardMaximum proves aggregate ordinary/workspace rows, bytes,
-locks, reads, writes, indexes, outputs, work and time fit the backend before
+share one archive-head→settlement-head→sorted-custody-ledgers→parent→current-
+slot→canonical-ID-sorted-old-fences→control/lineage/checkpoint→authorization/
+custody/output rank. A checked CustodyReleaseBundleHardMaximum proves aggregate
+ordinary/workspace receipts, custody-ledger writes, rows, bytes, locks, reads,
+writes, indexes, outputs, work and time fit the backend before
 ReleasePending. Only explicit BeginLineageRelease and
 CommitLineageCustodyRelease commands perform the two transitions. Commit binds
-the stored begin result, publication receipt, exact heads/bundle/authorization
-and expected lineage version; publishers and storage adapters produce evidence
-only. Both retention and lineage authorization issuers have explicit Revoke
+the stored begin result, non-authoritative verified receipt, predecessor/
+proposed heads, physical dispositions, bundle/authorization and expected
+lineage version. Publishers/storage adapters stage and verify only; readers
+ignore their receipts. Commit alone CAS-installs the authoritative archive head
+with exact hot-row deletion and every capacity effect. Both retention and
+lineage authorization issuers have explicit Revoke
 commands with atomic monotonic signed-intent results/conflicts and no
 destination capability. Destination Apply alone advances their complete
 six-state table, including no-write absent expiry/consumption and stable
@@ -793,7 +802,9 @@ atomically pairs every child allocation/release with parent debit/credit under
 one deterministic transfer ID and equation, including completion reserves;
 restore verifies both sides from one snapshot without guessed repair. Kind-
 specific exact-once transfers cannot double charge or cross ledgers; verified
-archive plus exact deletion alone releases physical capacity. Parent transfers
+archive plus exact deletion releases ordinary control capacity, while
+workspace source credit requires that deletion or an atomically charged
+custody-ledger transfer. Parent transfers
 atomically maintain aggregate/membership commitments and
 predecessor checkpoints. Restore gates affected partitions and uses protected
 monotonic cursor-budget streaming while VerificationPending;
@@ -967,8 +978,11 @@ cleanup-turn reset/priority bypass/backlog overflow, unknown-as-deleted,
 abort-origin substitution, retention self-approval/pool exhaustion, custody-
 evidence-as-authority, Begin/Commit action confusion, unsorted/late old-fence
 locking, aggregate bundle overflow, late-evidence terminal-result rewrite,
-generic/direct-publisher terminal mutation, payload/publication-receipt
-rebinding, issuer sequence races, remote-intent effect, absent-state writes,
+generic/direct-publisher terminal or archive-head mutation, staged receipt as
+authority, head/delete split, payload/publication-receipt rebinding, forged or
+stale physical disposition, custody-ledger undercharge, Unknown conversion,
+workspace credit without deletion or charged transfer, issuer sequence races,
+remote-intent effect, absent-state writes,
 split/double whole-member custody release, partial quarantine refund,
 premature or duplicate workspace deletion settlement, or activation before successor
 verification/old-writer fence,

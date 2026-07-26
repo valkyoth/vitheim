@@ -342,17 +342,24 @@ audit decision.
   BeginRelease/CommitCustodyRelease use closed destination-applied
   authorization state/sequence/inbox/tombstone/outcome families, so custody
   evidence alone has no command authority. Broader custody release can credit
-  only by atomically settling every remaining leg, advancing Released to
-  OriginalTotal and committing CustodyReleased with the matching parent inverse
-  and terminal evidence. The combined rank acquires settlement heads, parent,
-  current slot, sorted old
+  only after every remaining leg proves AuthenticatedDeleted for its exact
+  storage generation/root or TransferredToCustodyLedger with an atomic,
+  identical archive/legal-hold custody-member charge. Unknown preserves the
+  predecessor and permits no credit. Commit consumes those receipts while
+  settling every leg, advancing Released to OriginalTotal and committing
+  CustodyReleased with the matching parent inverse. The combined rank acquires
+  archive/settlement heads, sorted custody ledgers, parent, current slot, sorted old
   campaign fences, control/lineage/checkpoint, authorization/custody and
-  outputs; an aggregate bundle maximum proves every ordinary and workspace leg
-  fits the backend transaction before ReleasePending. Explicit Begin and Commit
+  outputs; an aggregate bundle maximum proves every ordinary/workspace leg,
+  disposition receipt and custody-ledger write fits the backend transaction
+  before ReleasePending. Explicit Begin and Commit
   lineage commands alone mutate ReleasePending/Released and persist
-  action-specific results; commit rebinds the begin result, publication receipt,
-  heads/bundle/grant and expected version. Publishers/storage adapters are
-  evidence-only. Each retention/release issuer Revoke command allocates one
+  action-specific results; commit rebinds the begin result, verified receipt,
+  predecessor/proposed heads, dispositions/bundle/grant and expected version.
+  Publisher/storage receipts are staged/verified non-authoritative evidence
+  ignored by readers. Only Commit atomically installs the archive head with
+  exact hot-row deletion and every capacity effect. Each retention/release
+  issuer Revoke command allocates one
   monotonic signed intent/result without destination capability; destination
   Apply alone executes the full six-state table, including absent no-write and
   first-terminal observation rules. A co-located

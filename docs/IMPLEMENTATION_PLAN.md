@@ -358,10 +358,14 @@ origin/reference makes activated and aborted work symmetric and resume only
 their matching pending state. Retention and lineage BeginRelease/
 CommitCustodyRelease have complete six-state destination-applied authorization
 families. Whole-member custody
-release later settles every remaining leg, advances Released to OriginalTotal,
-removes/credits the identical parent member and records CustodyReleased in one
-atomic transaction. Its begin/final paths share one combined lock rank and must
-preflight the complete ordinary-plus-workspace bundle against backend row/byte/
+release later consumes one closed disposition per remaining leg:
+AuthenticatedDeleted proves exact storage generation/root deletion,
+TransferredToCustodyLedger atomically charges the identical archive/legal-hold
+custody member before parent credit, and Unknown preserves the predecessor. The
+same transaction settles every leg, advances Released to OriginalTotal,
+removes/credits the identical parent member and records CustodyReleased. Its
+begin/final paths share one combined lock rank and must preflight the complete
+ordinary-plus-workspace receipt/custody-ledger bundle against backend row/byte/
 lock/write/work/time maxima before ReleasePending. Permanent
 quarantine has issuer-intent/destination-apply revocation, a first-terminal-wins
 outcome table returning stored results, and retains the entire parent member
@@ -369,8 +373,12 @@ until broader custody-safe release; it never permits a campaign-level partial
 refund.
 The lineage release kernel has explicit Begin and Commit commands with
 action-specific payload/result/conflict types; commit binds the stored begin
-result, publication receipt, exact heads/bundle/authorization and expected
-version. Publishers/storage adapters can only produce evidence. Retention and
+result, non-authoritative verified publication receipt, predecessor/proposed
+archive and journal heads, physical dispositions, bundle/authorization and
+expected version. Publishers/storage adapters can only stage and verify
+evidence; readers ignore it. Commit alone CAS-installs the authoritative
+archive head with exact covered-hot-row deletion, dispositions, settlements
+and results in one local transaction. Retention and
 lineage authorization issuers use explicit monotonic signed-intent Revoke
 commands, while destination Apply alone advances their exhaustive six-state
 tables, including no-write absent expiry/consumption.

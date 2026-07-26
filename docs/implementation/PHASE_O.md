@@ -160,21 +160,30 @@ CleanupReconciling from activated or aborted cleanup under a closed origin/
 terminal reference; fully typed independent retention authority can move it
 without credit to a precharged PermanentlyRetained pool so the active lane
 cannot deadlock.
-Custody release settles every remaining leg, advances Released to OriginalTotal
-and commits the identical parent credit plus distinct CustodyReleased terminal
-in one transaction. Separate BeginRelease/CommitCustodyRelease grants are
-consumed under one settlement-head→parent→slot→sorted-old-fences→control/
-lineage/checkpoint→authorization/custody/output rank, after an aggregate bundle
-maximum proves every ordinary and workspace leg fits. The active slot and campaign fence follow
+Custody release requires AuthenticatedDeleted or
+TransferredToCustodyLedger for every remaining leg; the latter atomically
+charges the identical archive/legal-hold custody member before source-parent
+credit, while Unknown preserves the predecessor. It consumes every terminal
+receipt, settles all legs, advances Released to OriginalTotal and commits the
+identical parent credit plus distinct CustodyReleased terminal in one
+transaction. Separate BeginRelease/CommitCustodyRelease grants are consumed
+under one archive-head→settlement-head→sorted-custody-ledgers→parent→slot→
+sorted-old-fences→control/lineage/checkpoint→authorization/custody/output rank,
+after an aggregate bundle maximum proves every ordinary/workspace leg, receipt
+and custody-ledger write fits. The active slot and campaign fence follow
 the parent ledger in the shared rank. Restore verifies both ledger sides
 from one snapshot and never repairs
 by choosing one side or guessing compensation. Kind-specific
-exact-once transfers cannot double charge or cross ledgers, and only verified
-archive plus exact deletion releases physical encumbrance.
+exact-once transfers cannot double charge or cross ledgers. Ordinary control-
+reserve encumbrance requires verified archive plus exact deletion; a workspace
+leg requires that deletion or an atomically charged custody-ledger transfer.
 Only explicit BeginLineageRelease and CommitLineageCustodyRelease commands
-perform the two lineage transitions; commit binds the begin result,
-publication receipt, exact heads/bundle/authorization and expected version.
-Publishers/storage adapters are evidence-only. Retention and lineage grant
+perform the two lineage transitions; commit binds the begin result, verified
+non-authoritative receipt, predecessor/proposed heads, physical dispositions,
+bundle/authorization and expected version. Publishers/storage adapters may
+stage and verify only; readers ignore them. Commit alone installs the
+authoritative head with exact hot-row deletion and every capacity effect.
+Retention and lineage grant
 issuers use explicit Revoke commands to allocate signed monotonic intents with
 stored results; destination Apply alone advances the shared complete six-state
 table.
@@ -868,8 +877,11 @@ first-terminal authorization outcome plus deletion observations,
 CleanupReconciling, retention authority/pool and CustodyReleased evidence
 beside CleanupOrigin/terminal reference, complete retention/lineage-release
 authorization outcomes, explicit begin/commit payload/results, publication
-receipts, issuer intent results/sequences and aggregate bundle/rank status. No remote service may
-choose origin, mint authority, reorder fences, assert aggregate fit, apply revocation, assert deletion,
+receipt lifecycle and predecessor/proposed/committed heads, per-leg physical
+dispositions, custody-ledger members/transfers, issuer intent results/sequences
+and aggregate bundle/rank status. No remote service may choose origin, mint
+authority, reorder fences, assert aggregate fit, advance the archive head,
+apply revocation, assert deletion,
 retain/release custody, settle/credit workspace capacity, reset cleanup
 scheduling or translate a terminal result.
 Setup: API/worker/ingest/index and
@@ -1070,8 +1082,9 @@ Status: planned. Migration/import focus: model immutable-total/monotonic-release
 leg settlement, adversarial foreground-versus-cleanup scheduling/backlog
 thresholds, unknown-deletion reconciliation/retention races, whole-member
 custody release, both cleanup origins, complete retention/release authorization
-issuer/destination tables, explicit command/publication races and combined
-multi-fence acquisition at every aggregate bound beside all
+issuer/destination tables, upload/verify/authoritative-head/hot-row races,
+physical-disposition and custody-ledger/source-credit races, explicit command/
+publication races and combined multi-fence acquisition at every aggregate bound beside all
 prior races.
 Exit requires four-class conservation, no fractional/double leg, cleanup
 progress within its foreground-grant bound, capped backlog and one stable
@@ -1421,8 +1434,10 @@ Status: planned. Migration/import focus: restore original/released/settled-leg
 history, cleanup scheduler counters/claimant/backlog/maxima and stored terminal
 authorization outcomes, reconciliation budgets, retention pool/authority and
 linked custody-release checkpoint plus CleanupOrigin/reference, release grants,
-begin/final results, publication receipt, issuer sequences/intent results,
-destination tables, sorted fence set and aggregate proof beside prior state. No deletion, total,
+begin/final results, staged/verified receipt, authoritative archive head/hot-
+row coverage, physical-disposition receipts/tombstones, custody-ledger members/
+transfers, issuer sequences/intent results, destination tables, sorted fence
+set and aggregate proof beside prior state. No deletion, total,
 release, cleanup turn, pool occupancy, credit or terminal result is inferred/
 reset; affected capacity and foreground admission stay unavailable until
 complete proof.
@@ -1694,9 +1709,11 @@ Status: planned. Migration/import focus: fuzz equation/leg/scheduler/outcome
 codecs, counters, thresholds, unfair backend locks, every crash boundary and
 changed retry plus lost credentials/keys, inconsistent deletion, late evidence,
 both cleanup origins, complete retention/release authorization families,
-explicit payload/receipt boundaries, issuer sequences/total tables, canonical
-fence ordering, aggregate bounds and whole-member release. Rollback, duplicate/
-fractional legs, starvation, unknown-as-deleted and malformed terminal material
+explicit payload/receipt/head boundaries, storage/custody generations and
+roots, physical-disposition receipts, custody-ledger arithmetic, issuer
+sequences/total tables, canonical fence ordering, aggregate bounds and whole-
+member release. Rollback, duplicate/fractional legs, starvation, unknown-as-
+deleted, head/delete split, uncharged transfer and malformed terminal material
 fail closed inside hard entry/byte/work/time/backlog ceilings.
 Setup: representative workloads, SLOs, durable `0.18.1` quota
 profiles, separate Vitheim-telemetry and customer-measurement capacity models,
@@ -1930,7 +1947,9 @@ parity across adapters. Audit retention issuer/admitter/operator/custody-
 releaser plus lineage-release issuer/admitter/applier/begin/finalize SoD,
 origin symmetry, no-credit active-lane escape, aggregate preflight and combined
 lock traces. Audit typed begin/commit exclusivity, evidence-only publishers and
-issuer/applier separation. Every retained/refunded unit and scheduler turn must be attributable.
+issuer/applier separation, publisher inability to advance archive heads,
+head/delete atomicity and every deletion-or-charged-custody proof. Every
+retained/refunded unit and scheduler turn must be attributable.
 Setup: complete threat model, dependency/tool/action inventory,
 semantic SBOM, reproducibility, full key generation/storage/use/rotation/revocation/
 recovery/destruction lifecycle, `0.28.3` in-process memory assurance, crash/
@@ -2040,8 +2059,10 @@ outcomes; also reject collapsed CleanupReconciling/PermanentlyRetained/
 CustodyReleased meanings, absent origin/reference or full authorization
 families, missing aggregate bundle proof/combined rank, absent pool reservations
 and unlinked parent release; reject generic release dispatch, implicit archive
-finalization, missing issuer sequence/result or incomplete operation tables.
-No default, inferred field or downgrade is compatible.
+finalization, publisher-advanced archive heads, split head/delete, missing
+per-leg physical dispositions or custody-ledger members, missing issuer
+sequence/result or incomplete operation tables. No default, inferred field or
+downgrade is compatible.
 Setup: freeze API/event/workflow/policy/plugin/pack/export/agent
 versions and support windows, immutable event-schema registry, complete pure
 upcaster chains, original-byte hash authority, unknown-event quarantine, and the
@@ -2144,8 +2165,11 @@ backlog exhaustion and priority bypass; and terminal revocation retry/conflict
 loops; plus unknown-as-deleted, credential/key loss, retention self-approval,
 abort-origin substitution, pool exhaustion, evidence-as-authority, Begin/Commit
 confusion, ABBA lock ordering, aggregate transaction exhaustion,
-generic/direct publisher mutation, payload/receipt rebinding, issuer sequence
-races, absent-state writes, late-evidence terminal rewrite and partial/double custody release beside all
+generic/direct publisher or archive-head mutation, staged receipt as authority,
+head/delete split, payload/receipt rebinding, forged/stale deletion evidence,
+custody-ledger undercharge, Unknown conversion, credit without physical
+disposition, issuer sequence races, absent-state writes, late-evidence terminal
+rewrite and partial/double custody release beside all
 prior attacks. Exit requires zero unresolved critical/high
 findings and no waived authority, conservation, bounded-backlog/fairness,
 custody, settlement, restore or compatibility issue.

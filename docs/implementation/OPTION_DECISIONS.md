@@ -797,29 +797,43 @@ pool and remove it from the active cleanup lane; Released and ParentAvailable
 do not change, and activation/abort remains immutable. Late evidence cannot
 reopen cleanup or refund. Freeze a distinct whole-member custody-release
 settlement/checkpoint: after retention/legal-hold/custody/no-future-dependency
-proof, one transaction settles every remaining leg, advances Released to
-OriginalTotal, removes/credits the identical parent member and records
-CustodyReleased plus per-leg tombstones/result/audit/outbox. The broader lineage
-release cannot perform an independent workspace credit.
+proof, every remaining leg supplies one closed physical disposition.
+AuthenticatedDeleted binds exact storage generation/root and verified terminal
+deletion; TransferredToCustodyLedger binds verified transfer and atomically
+debits/installs the identical archive/legal-hold custody-capacity member before
+source-parent credit; Unknown retains PermanentlyRetained or Quarantined and
+authorizes no credit. One transaction consumes all disposition receipts,
+settles every remaining leg, advances Released to OriginalTotal,
+removes/credits the identical parent member and records CustodyReleased plus
+per-leg disposition tombstones, custody transfers, result/audit/outbox. The
+broader lineage release cannot perform an independent workspace credit.
 Freeze separate six-state action-bound BeginRelease and CommitCustodyRelease
 lineage authorization grants; custody/hold evidence alone is not command
 authority. Freeze explicit
 `BeginMigrationImportRegistryHistoryCorruptionControlLineageRelease` and
 `CommitMigrationImportRegistryHistoryCorruptionControlLineageCustodyRelease`
 commands with separate payload/result/conflict types. Commit binds the stored
-begin result, publication receipt, exact heads/bundle/authorization, expected
-lineage version and idempotency. Archive publishers and storage adapters emit
-evidence only and cannot delete authoritative rows, credit capacity or mutate
-lineage/workspace terminals. The generic Release name is non-dispatchable.
-Both transactions use one archive-replay-head→settlement-journal-
-head→parent-ledger→current-slot→linked-old-fences-in-canonical-ID-order→control-
+begin result, verified non-authoritative publication receipt, expected
+predecessor/proposed archive heads, journal head, disposition receipts,
+bundle/authorization, expected lineage version and idempotency. Archive
+publishers and storage adapters may stage/upload/verify evidence only; they
+cannot advance the authoritative archive head, delete authoritative rows,
+credit capacity or mutate lineage/workspace terminals. Commit alone
+CAS-installs that head and deletes exactly the captured hot rows in the same
+local transaction as every disposition, custody-ledger transfer, settlement
+and result. Staged/Verified receipts are ignored by readers and become
+OrphanGcEligible if no committed head references them. The generic Release
+name is non-dispatchable.
+Both transactions use one archive-replay-head→settlement-journal-head→sorted-
+custody-capacity-ledgers→parent-ledger→current-slot→linked-old-fences-in-
+canonical-ID-order→control-
 reserve→obligation→corruption-fence→lineage→checkpoint→release-authorization→
 lineage-disposition→custody-authority→terminal-outputs rank. Freeze
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumV1`
-over the aggregate ordinary-leg plus linked-workspace row/byte/lock/read/write/
-index/output/work/time transaction. Preflight must prove the complete bundle
-fits the selected backend before ReleasePending; individual workspace limits
-are insufficient.
+over the aggregate ordinary-leg plus linked-workspace receipt/custody-ledger/
+row/byte/lock/read/write/index/output/work/time transaction. Preflight must
+prove the complete bundle fits the selected backend before ReleasePending;
+individual workspace limits are insufficient.
 For permanent-retention and lineage-release grants, freeze issuer-side Revoke
 commands that atomically allocate a target/action-scoped monotonic sequence and
 store one signed-intent result or changed-material conflict without destination

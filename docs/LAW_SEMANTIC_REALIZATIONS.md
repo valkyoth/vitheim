@@ -398,6 +398,12 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionPoolV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionHardMaximumV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseAuthorizationReferenceV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionReceiptV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionTombstoneV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityLedgerV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityMemberV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityTransferV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointV1`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumV1`,
@@ -424,6 +430,7 @@ The `VIT-LSEM-009-g01-v1` typed-transition set additionally includes:
   `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginPayloadV1`,
   `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginResultV1`,
   `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginConflict`,
+  `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStateV1`,
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationReceiptV1`,
   `CommitMigrationImportRegistryHistoryCorruptionControlLineageCustodyRelease`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitPayloadV1`,
@@ -496,8 +503,10 @@ lifecycle/immutable-original/monotonic-release/parent transfer/terminal cleanup
 priority/backlog/reconciliation/permanent retention/whole-member custody
 settlement with activated/aborted origin symmetry, complete retention/release
 authorization including issuer intent creation and total state tables, explicit
-begin/final command boundaries, evidence-only publishers and aggregate-ranked
-bundle bounds; active/pending separation and
+begin/final command boundaries, non-authoritative staged/verified publisher
+receipts, commit-atomic archive-head/hot-row replacement, closed per-leg
+physical disposition, charged archive/legal-hold custody transfers and
+aggregate-ranked bundle bounds; active/pending separation and
 complete forward/inverse abort;
 prior-state bounded fenced recovery; one-shot authorized conservative
 quarantine with issuer-intent/destination-apply revocation, first-terminal
@@ -511,8 +520,10 @@ tombstone and workspace state/cursor/physical high-watermark/exact cut/
 capacity/original/released/settled legs/parent transfers/cleanup lane/
 contention/backlog/reconciliation/retention pool/custody-release checkpoint,
 cleanup origin/terminal reference, authorization inbox/tombstone/result,
-sorted-fence/bundle proof and verification reservation without inference,
-reset, invented refund, duplicate release/
+sorted-fence/bundle proof, publication receipt/state, authoritative archive
+head, physical-disposition receipt/tombstone, custody-ledger member/transfer
+and verification reservation without inference, reset, invented refund,
+duplicate release/
 transfer/settlement or authority extension.
 
 At `0.18.3`, implement a closed Rust `LawSemanticId` enum/decoder and a

@@ -678,16 +678,23 @@ restore, failover, and release evidence.
    command authority. Quarantine revocation is
    issuer-intent/destination-apply with a first-terminal-wins outcome table, and
    quarantined capacity remains a whole parent member until broader custody-
-   safe release. That release closes both ledgers atomically by settling every
-   remaining leg, advancing Released to OriginalTotal, crediting the identical
-   member and recording the distinct CustodyReleased terminal. Begin and final
-   transactions share the settlement-head→parent→current-slot→sorted-old-fence→
-   control/lineage/checkpoint→authorization/custody/output rank, and an aggregate
-   hard maximum covers every ordinary and workspace leg before ReleasePending.
+   safe release. That release accepts exactly one terminal physical disposition
+   per remaining leg: authenticated deletion or verified transfer atomically
+   charged to an archive/legal-hold custody ledger; Unknown preserves the
+   predecessor. It then closes both source ledgers atomically by settling every
+   leg, advancing Released to OriginalTotal, crediting the identical member and
+   recording CustodyReleased. Begin and final transactions share the archive-
+   head→settlement-head→sorted-custody-ledgers→parent→current-slot→sorted-old-
+   fence→control/lineage/checkpoint→authorization/custody/output rank, and an
+   aggregate hard maximum covers every ordinary/workspace leg, receipt and
+   custody-ledger write before ReleasePending.
    Explicit BeginLineageRelease and CommitLineageCustodyRelease commands own
    those transitions and return action-specific results/conflicts; commit binds
-   the begin result, verified publication receipt, exact heads/bundle/grant and
-   expected version. Publishers and storage adapters are evidence-only.
+   the begin result, verified publication receipt, predecessor/proposed heads,
+   dispositions/bundle/grant and expected version. Publisher/storage receipts
+   remain non-authoritative and invisible to readers; only Commit atomically
+   installs the archive head with exact hot-row deletion and all capacity
+   effects.
    Retention/release issuers create signed monotonic revocation intents through
    explicit Revoke commands; only destination Apply advances the complete
    six-state table.

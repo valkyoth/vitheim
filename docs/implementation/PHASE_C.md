@@ -4510,24 +4510,66 @@ command authority by itself. Canonical
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1`
 and
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseCheckpointV1`
-close the workspace side of the broader custody-safe parent release. After
-locking the broader lineage release and workspace at the canonical ranks, the
-one bounded precharged transaction rechecks terminal state, immutable original
-total, monotonic released amount, every remaining leg, retention/
-classification/legal-hold generations, custody approvals/evidence, terminal
-campaign and workspace checkpoints, current Issued CommitCustodyRelease
-authorization and proof that no future operation depends on any retained byte.
-The enclosing custody-release bundle consumes that authorization exactly once;
-this workspace component atomically settles every remaining complete leg,
-advances WorkspaceReleased exactly to WorkspaceOriginalTotal, removes the
-entire remaining workspace parent member, credits ParentAvailable by the
-identical checked amount, moves the workspace to CustodyReleased and writes
-domain-separated per-leg tombstones, inverse transfer, terminal checkpoint,
-stored result, audit and outbox, or does none. The broader lineage release does not separately credit or remove that workspace member. Exact retry returns the
-stored result; any crash, missing/forked proof or mismatch retains the whole
-remaining encumbrance and restores the predecessor state. Campaign cleanup
-cannot invoke this protocol or partially settle a quarantined/retained member.
-Reservation admission caps total leg count/encoded bytes/work and precharges
+close the workspace side of the broader custody-safe parent release. Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionV1`
+is the closed per-remaining-leg set AuthenticatedDeleted,
+TransferredToCustodyLedger or Unknown. AuthenticatedDeleted binds the exact
+workspace/leg and quantity dimensions, storage generation, object and root
+identity, immutable deletion-receipt identity, verification evidence/key/
+profile and terminal idempotency. TransferredToCustodyLedger binds those source
+fields plus verified destination object/root and transfer receipt, the exact
+archive or legal-hold
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityLedgerV1`
+identity/generation/version, canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityMemberV1`
+and checked dimension amounts. Commit records
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityTransferV1`
+for that exact debit/member installation.
+External deletion or transfer is outside the database transaction.
+Only a verified, idempotent terminal physical-disposition receipt may enter the commit payload.
+Its canonical type is
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionReceiptV1`.
+An external timeout, unverified observation, partial leg, changed storage
+generation/root or Unknown is never such a receipt:
+Unknown retains PermanentlyRetained, or the exact Quarantined predecessor, and
+authorizes no tombstone, Released advance, parent credit or custody-ledger
+change.
+
+After locking the broader lineage release, every referenced custody-capacity
+ledger and workspace at the canonical ranks, the one bounded precharged
+transaction rechecks terminal state, immutable original total, monotonic
+released amount, every remaining leg, retention/classification/legal-hold
+generations, custody approvals/evidence, terminal campaign and workspace
+checkpoints, current Issued CommitCustodyRelease authorization and proof that
+no future operation depends on any retained byte.
+It authenticates exactly one closed physical-disposition receipt per complete
+remaining leg. For AuthenticatedDeleted it proves the exact physical bytes are
+terminally absent. For TransferredToCustodyLedger it first atomically decreases the matching
+custody ledger's available capacity and increases its exact custody member by
+the identical per-dimension amount; only that charged transfer permits the
+workspace parent credit. Insufficient, stale, overflowing or mismatched custody
+capacity makes the entire command no-write.
+Preflight admits a TransferredToCustodyLedger target only when its ledger can
+join the same local atomic transaction; otherwise the backend refuses before
+requesting external transfer. No distributed database transaction or
+post-credit compensation is an implementation option.
+
+The enclosing custody-release bundle consumes the authorization exactly once;
+this workspace component atomically consumes every disposition receipt,
+settles every remaining complete leg, advances WorkspaceReleased exactly to
+WorkspaceOriginalTotal, removes the entire remaining workspace parent member,
+credits ParentAvailable by the identical checked amount, moves the workspace
+to CustodyReleased and writes one domain-separated typed
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleasePhysicalDispositionTombstoneV1`,
+disposition tombstone per leg, custody-ledger transfers where selected, inverse
+transfer, terminal checkpoint, stored result, audit and outbox, or does none.
+The broader lineage release does not separately credit or remove that workspace member.
+Exact retry returns the stored result; any crash, missing/forked disposition,
+physical/custody-ledger
+proof mismatch or response loss retains the whole remaining encumbrance and
+restores the predecessor state. Campaign cleanup cannot invoke this protocol
+or partially settle a quarantined/retained member. Reservation admission caps
+total leg/receipt/custody-ledger count, encoded bytes and work and precharges
 the largest whole-member transaction plus all terminal rows, so custody release
 is never implemented as a partially visible multi-transaction loop.
 
@@ -5572,7 +5614,8 @@ Immutable profile-bound
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseBundleHardMaximumV1`
 bounds the complete final transaction across ordinary reserve legs and every
 linked workspace: workspace/fence/leg/row count, canonical bytes, distinct
-locks, reads, writes, index effects, audit/outbox/result bytes, decode/hash/
+locks, physical-disposition receipts, custody-capacity ledgers and members,
+reads, writes, index effects, audit/outbox/result bytes, decode/hash/
 verification work and backend execution time. Workspace retention consumes
 lineage-scoped non-borrowable bundle units before it can enter
 PermanentlyRetained. Before ReleasePending, one checked aggregate preflight
@@ -5588,9 +5631,11 @@ binds predecessor/sequence, the canonical ordered settlement-row set,
 transaction/result/audit identity and owner continuity; it never claims archive
 availability. The begin-release local transaction follows
 `MigrationImportRegistryHistoryLockRankV1`: archive-replay head when applicable,
-settlement-journal head, Recovery parent-capacity ledger, the current parent/
-selector active-campaign slot for serialization, every linked old campaign's
-stable Closed fence in ascending canonical campaign-ID byte order, control
+settlement-journal head, every archive/legal-hold custody-capacity ledger in
+ascending canonical ledger-ID order, Recovery parent-capacity ledger, the
+current parent/selector active-campaign slot for serialization, every linked
+old campaign's stable Closed fence in ascending canonical campaign-ID byte order,
+control
 reserve, history obligation, corruption fence, control lineage, lineage
 checkpoint, release authorization, lineage disposition, retention/legal-hold/
 custody authority and terminal audit/result/outbox rows. The final release
@@ -5609,39 +5654,58 @@ audit and outbox. A split ledger transfer, settlement append, journal advance,
 parent credit, checkpoint, authorization consumption or lineage transition is
 unrepresentable.
 
-Authenticated sparse checkpoint/archive publication advances separate
+Authenticated sparse checkpoint/archive publication uploads immutable chunks,
+verifies durable visibility and produces canonical non-authoritative
+`MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationReceiptV1`.
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStateV1`
+is Staged, Verified or OrphanGcEligible. The receipt binds
+publication identity, immutable object/chunk roots, proposed successor archive
+head and predecessor, covered journal head, exact captured hot rows/versions,
+deletion preconditions, bundle digest, verification key/profile and publisher/
+storage-adapter evidence. Readers ignore every receipt lifecycle state; no
+receipt is an authoritative
 `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchiveReplayHeadV1`
-only after immutable chunks upload and verify, then produces canonical
-`MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationReceiptV1`
-binding publication identity, immutable object/chunk roots, verified archive
-head, covered journal head, exact captured hot rows/versions, deletion
-preconditions, bundle digest and publisher/storage-adapter evidence. Publication
-and storage adapters may create/verify evidence and advance this evidence head.
-Publishers/storage adapters are evidence-only; they cannot delete authoritative
-hot rows, consume release authority, credit capacity or mutate lineage/workspace
-terminal state.
+or evidence that hot rows were deleted. Publishers/storage adapters are evidence-only.
+They may upload and verify receipts, but cannot advance the authoritative archive
+replay head, delete authoritative hot rows, consume
+release authority, credit capacity or mutate lineage/workspace terminal state.
+If Commit never succeeds, Staged or Verified receipts become OrphanGcEligible
+only after proving no committed head references their chunks and retention/key
+policy permits collection; orphan garbage collection is never replay
+authority.
 
 Only
 `CommitMigrationImportRegistryHistoryCorruptionControlLineageCustodyRelease`
 with
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitPayloadV1`
 may move ReleasePending→Released. The payload binds the stored begin result,
-publication receipt, expected archive/journal heads, bundle digest and hard-
+Verified publication receipt, expected authoritative predecessor archive head,
+proposed successor archive head, expected journal head, bundle digest and hard-
 maximum proof, current Issued CommitCustodyRelease authorization, expected
-lineage version/disposition and stable idempotency. Under the identical combined
-rank, the command reauthenticates publication/membership/deletion evidence,
-rechecks every bound version and current retention/legal-hold/custody condition,
-consumes that authorization once, deletes only the exact captured hot rows/
-versions, moves matching ReclaimPending units to Released, removes the exact
-child encumbrance, credits ParentAvailable, appends immutable parent/child and
-final settlement rows, advances the journal, and invokes each checkpoint-bound
+lineage version/disposition, the complete sorted per-workspace physical-
+disposition receipt set and stable idempotency. Under the identical combined
+rank, the command reauthenticates publication/membership/deletion evidence and
+every physical-disposition receipt, rechecks every bound version and current
+retention/legal-hold/custody condition, and then in one local expected-version
+transaction CAS-installs the proposed authoritative archive replay head and
+deletes only the exact captured hot rows/versions. That same indivisible
+transaction consumes the authorization once, consumes each terminal
+disposition receipt, charges every selected archive/legal-hold custody ledger
+before its matching workspace parent credit, moves matching ReclaimPending
+units to Released, removes the exact child encumbrance, credits
+ParentAvailable, appends immutable parent/child and final settlement rows,
+advances the journal, and invokes each checkpoint-bound
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyReleaseSettlementV1`.
 For each linked workspace this is one all-or-none whole-member transaction
 component: every remaining complete leg becomes a domain-separated custody-
-release tombstone, WorkspaceReleased becomes WorkspaceOriginalTotal, the exact
-workspace parent member is removed and ParentAvailable receives the identical
-single credit, the workspace becomes CustodyReleased, and its custody-release
-checkpoint/result/audit/outbox commits. The generic lineage settlement never
+release disposition tombstone only after AuthenticatedDeleted or a matching
+TransferredToCustodyLedger debit, WorkspaceReleased becomes
+WorkspaceOriginalTotal, the exact workspace parent member is removed and
+ParentAvailable receives the identical single credit, the workspace becomes
+CustodyReleased, and its custody-release checkpoint/result/audit/outbox
+commits. Unknown keeps the workspace PermanentlyRetained or Quarantined and
+makes the whole commit no-write. The generic lineage settlement never
 duplicates that workspace credit. The lineage becomes Released only when every
 linked workspace and ordinary control-reserve leg is settled in this same
 final ranked transaction, which then commits the final lineage release result,
@@ -5650,27 +5714,33 @@ canonical
 audit and outbox; otherwise all affected predecessor members remain
 encumbered and ReleasePending remains resumable. The bounded workspace set and
 all terminal writes were precharged before ReleasePending. Hot settlement state
-cannot be
-deleted before verified publication; the local journal head never implies
-external availability. Restore selects the greatest authenticated journal and
-verified archive heads, proves their coverage relationship, exact settlement
-membership and physical-ledger conservation, and retains ReclaimPending
-encumbrance when history or deletion proof is missing, forked, rolled back or
-uncertain. It also proves ParentTotal = ParentAvailable + the exact restored
-active-child and pending-successor encumbrance sets and every parent/child
-forward/inverse transfer against settlement membership. Duplicate membership returns the original release result without
-another release or parent credit; unknown non-membership never authorizes
-settlement.
+cannot be deleted before verified publication or apart from authoritative-head
+installation; head-without-deletion and deletion-without-head are
+unrepresentable. Unknown local commit response reconciles the exact commit
+identity: either the entire head/delete/authorization/disposition/settlement/
+credit/result bundle exists or the predecessor head and all authoritative hot
+rows and encumbrances remain. The local journal head and staged/verified
+receipt never imply authoritative archive availability. Restore selects the
+greatest authenticated journal and committed archive heads, proves their
+coverage relationship, exact settlement membership, every consumed physical-
+disposition receipt and physical/custody-ledger conservation, and retains
+ReclaimPending encumbrance when history or deletion proof is missing, forked,
+rolled back or uncertain. It also proves ParentTotal = ParentAvailable + the
+exact restored active-child and pending-successor encumbrance sets and every
+parent/child forward/inverse transfer against settlement membership. Duplicate
+membership returns the original release result without another release or
+parent credit; unknown non-membership never authorizes settlement.
 
 Exact retry of the commit command returns that stored final result. Changed
-begin result, publication receipt, archive/journal head, bundle digest,
+begin result, publication receipt, predecessor/successor archive or journal
+head, physical-disposition receipt/custody-ledger version, bundle digest,
 authorization, expected lineage version, custody evidence or idempotency returns
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitConflict`
-without mutation. Missing work/physical transfer records, either conservation failure,
-WorkSpent decrease, premature physical release, reset counters, duplicate or
-unavailable settlement, either settlement-head rollback, checkpoint-before-
-release violation or recreated capacity fails restore/import and keeps the
-destination unavailable/fenced.
+without mutation. Missing work/physical transfer records, either conservation
+failure, WorkSpent decrease, premature physical release, reset counters,
+duplicate or unavailable settlement, either settlement-head rollback,
+checkpoint-before-release violation or recreated capacity fails restore/import
+and keeps the destination unavailable/fenced.
 
 `ResolveMigrationImportRegistryHistoryRecovery` follows the universal history
 order.
@@ -5920,7 +5990,17 @@ before/after ReleasePending, row append, journal advance, archive verification,
 exact deletion, Released/result/outbox; fork,
 roll back or lose either settlement head and prove no capacity resurrection,
 duplicate decrement or hot-state deletion before verified membership,
-and cross-adapter conformance pass.
+and cross-adapter conformance pass. Specifically crash after archive upload
+before Commit, forge or rebind a Verified receipt, attempt publisher/adapter
+head advance, lose the Commit response and interleave readers at every
+head/delete boundary; readers see either the prior head plus all captured hot
+rows or the complete committed successor, never a split. For every remaining
+workspace leg exercise AuthenticatedDeleted, TransferredToCustodyLedger and
+Unknown; fault storage generation/root, terminal receipt idempotency, custody-
+ledger capacity/version/member/dimension arithmetic and external deletion or
+transfer response loss. Prove Unknown and every partial/stale/mismatched receipt
+retain the predecessor without credit, while an exact retry joins one consumed
+receipt/tombstone and one balanced custody-debit/source-credit result.
 
 Exit criteria: successful import proves complete semantic and integrity parity.
 `v0.30.0 implementation stop reached. Run pentest for this exact commit.`
