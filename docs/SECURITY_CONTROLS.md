@@ -456,13 +456,18 @@ audit decision.
   fresh sequencing/permit namespaces and conservative consumed/reserved
   carry-forward that cannot increase remaining capacity. A unique fence-keyed
   NoReplacement→Staged→Activated head and current pointer prevent split-brain
-  replacements; different material is permanently rejected. Retirement is
-  local and atomically terminal. A parent Recovery escrow funds the separate
+  replacements; different material is permanently rejected. Retirement is one
+  local AuthorityRetirement writer/class/charge, atomically terminal with one
+  recovery-head advance. A parent Recovery escrow funds the separate
   recovery writer head. Frozen-source outbox/destination-inbox transfer,
   one-to-one-or-quarantined reservation disposition and an independent
   predecessor-linked high-watermark make one-sided rollback detectable; the
   destination remains non-operational until exact import/conformance and
-  pointer activation. Identities never cross generations. A charged local fence
+  pointer activation. Dedicated exact-set recovery checkpoint/publication/
+  replay/restore state and an independent greatest-current-pointer chain
+  prevent compaction loss or older-authority revival across sequential
+  equivocations; historical unavailability stays unready and never falls back
+  to the old archive. Identities never cross generations. A charged local fence
   precedes external traffic. BeginAbortDrain returns no seal permit unless its
   typed transaction reserves the complete non-releasable sealed-abort/
   WitnessWon-Commit/seal-query/output/drain/exhaustion/equivocation envelope.

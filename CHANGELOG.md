@@ -120,6 +120,10 @@ All notable Vitheim changes are documented here. The format follows
   pointer, funded its closed post-fence writer matrix from parent Recovery and
   defined rollback-detectable source-outbox/destination-inbox capacity transfer
   with explicit reservation mapping or permanent quarantine.
+- Added a dedicated exact-set recovery checkpoint/publication/replay/restore
+  lifecycle and monotonic external current-pointer chain, collapsed retirement
+  to one writer/charge/head advance, and moved the full replacement test corpus
+  into the implementing Phase C milestone.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.

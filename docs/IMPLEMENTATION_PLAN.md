@@ -496,13 +496,21 @@ lineage with fresh sequence/permit namespaces, conservative capacity
 carry-forward and no refund; the old lineage never reopens. A unique
 old-fence-keyed replacement head admits exactly one Staged successor and later
 one Activated current pointer; changed candidates are terminally rejected.
-Retirement is one local atomic transition. Pre-reserved parent Recovery funds
+Retirement is one local AuthorityRetirement class/charge and one recovery-head
+advance. Pre-reserved parent Recovery funds
 the separate closed recovery writer matrix. An explicit frozen-source outbox,
 non-operational destination inbox, reservation mapping/quarantine proof and
 independent predecessor-linked transfer commitment reconcile response loss
 without a distributed transaction. Activation requires exact inbox
 consumption, source reconciliation and current conformance; inherited consumed
-is a genesis baseline, never new head-charge credit. BeginAbortDrain first commits a typed result and non-releasable
+is a genesis baseline, never new head-charge credit. A dedicated exact-set
+recovery checkpoint, bounded staged publication, replay head and restore cursor
+preserve every recovery charge/result/transfer/pointer artifact. Restore first
+obtains the independent predecessor-linked greatest current pointer, replays
+the recovery hot suffix and exact-completes witnessed activation or stays
+unready; the old archive is never a fallback. The Phase C milestone runs the
+full replacement adversarial/cross-backend suite; `0.140.11` repeats and
+freezes it. BeginAbortDrain first commits a typed result and non-releasable
 completion reservation covering sealed abort, WitnessWon Commit continuity,
 bounded seal-status queries, outputs/drain, exhaustion and equivocation;
 missing capacity is no-write/no-permit. Lost response/failover/restore enters

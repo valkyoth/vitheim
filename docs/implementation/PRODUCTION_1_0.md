@@ -875,13 +875,19 @@ identity plus lineage with fresh sequence/permit namespaces and conservative
 consumed/reserved carry-forward that cannot increase remaining capacity. A
 unique old-fence-keyed replacement head is the only
 NoReplacement→Staged→Activated linearization point and current pointer;
-different candidates are permanently rejected. Retirement is local/atomic and
+different candidates are permanently rejected. Retirement is one local atomic
+AuthorityRetirement writer/class/charge with one recovery-head advance, and
 a pre-reserved parent Recovery budget funds the separate closed recovery
 writer head. Frozen source outbox, non-operational destination inbox, exact
 reservation mapping-or-quarantine, inherited baseline and independent
 predecessor-linked transfer witness must reconcile before activation; source
 absence and timeout never complete a leg and no backend assumes a distributed
-transaction. Replay
+transaction. Its own exact-set recovery checkpoint/publication/replay/restore
+lifecycle preserves every result and pointer generation; restore compares the
+independent greatest-current-pointer chain, exact-completes witnessed
+activation or stays unready, never reading authority from the old archive.
+Production evidence repeats the Phase C core recovery corpus at the frozen
+profile. Replay
 install/delete cannot split from rollover. BeginAbortDrain is no-write/no-
 permit unless its typed transaction commits the complete non-releasable
 sealed-abort/WitnessWon-Commit/seal-query/output/drain/exhaustion/equivocation

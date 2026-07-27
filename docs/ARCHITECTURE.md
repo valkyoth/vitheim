@@ -835,14 +835,20 @@ restore, failover, and release evidence.
    capacity; the old lineage remains absorbing. One fence-keyed replacement
    head linearizes NoReplacement→Staged→Activated and a unique constraint
    admits only one genesis; different material is durably rejected. Retirement
-   is one local Active→Retired transition with no external Pending state.
+   is one local AuthorityRetirement class/charge and one recovery-head advance
+   for Active→Retired, with no admission/finalization split or external Pending state.
    A pre-reserved parent Recovery budget funds a closed recovery-writer head.
    Portable source-outbox/destination-inbox transfer freezes the old
    four-member state, maps each reservation one-to-one or quarantines it as
    inherited consumed, independently witnesses both sides, and updates the
    sole current-authority/current-lineage pointer only after exact import and
    conformance. Before activation neither lineage can spend; after activation
-   only the destination can. BeginAbortDrain is itself no-write/no-permit unless one
+   only the destination can. The separate recovery head is compacted only by
+   its own exact-set checkpoint, staged/verified publication and replay head;
+   a predecessor-linked external greatest-current-pointer high-watermark
+   dominates restore across sequential equivocations. Missing recovery history
+   returns typed unavailable and restore exact-completes the witnessed pointer
+   or remains unready—never falling back to the frozen old archive. BeginAbortDrain is itself no-write/no-permit unless one
    non-releasable completion reservation covers sealed-abort disposition,
    WitnessWon Commit continuity, bounded seal-status queries, outputs/work,
    existing-query drain, exhaustion and equivocation. Lost seal response,

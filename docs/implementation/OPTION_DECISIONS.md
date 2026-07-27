@@ -3165,15 +3165,19 @@ four-member capacity state, active reservation/settlement history, authority
 retirement quorum, fence-keyed replacement head/candidate/current-pointer
 history, parent Recovery budget and recovery writer head, both capacity-
 transfer sides, mappings/equations and independent transfer high-watermark
-from `0.29.0–0.30.0`.
+plus the dedicated exact-set recovery checkpoint/publication/replay/restore
+lifecycle and independently witnessed current-pointer predecessor chain from
+`0.29.0–0.30.0`. Review the already passing Phase C replacement adversarial
+corpus; this decision repeats/freezes it and is not its first execution.
 Compare only fail-closed operational procedures; the architecture has already
 rejected generic ClearFence, selecting a convenient receipt, continuing the
 old lineage and reusing its sequencing/claim/permit/idempotency namespaces.
 Goal: freeze the production runbook for retiring an equivocating witness
 authority and re-anchoring service through a new authority identity and new
 lineage while the old lineage remains permanently absorbing.
-Deliverables: authority/key-epoch retirement scope and explicit local atomic
-Active→RetiredForEquivocation semantics with external revocation evidence
+Deliverables: authority/key-epoch retirement scope and exactly one local atomic
+AuthorityRetirement writer/class/charge/head advance for
+Active→RetiredForEquivocation, with external revocation evidence
 non-authoritative; independent quorum and separation-of-duties matrix;
 evidence-custody and retention policy; service quiescence and incident
 declaration; fresh identity/key/lineage/namespace generation; unique
@@ -3186,8 +3190,11 @@ inbox reconciliation; explicit one-to-one or permanent-quarantine disposition
 for every old reservation; inherited-consumed baseline/head equation,
 withheld-member and cross-lineage conservation equations; independent
 predecessor-linked transfer witness; candidate artifact custody; rollback
-prohibition; operator/API status and audit language; and explicit unsupported
-recovery conditions.
+prohibition; dedicated recovery checkpoint/publication/replay/restore formats,
+exact archived retry/conflict lookup, typed historical unavailability,
+independently witnessed monotonic current-pointer generations and sequential-
+equivocation recovery; operator/API status and audit language; preserved Phase
+C test-manifest/corpus identity; and explicit unsupported recovery conditions.
 Verification: exercise forged/missing quorum, receipt suppression, receipt
 preference, old key/identity/sequence/permit/idempotency reuse, concurrent old
 Commit/rollover, simultaneous different bootstrap IDs, stale head versions,
@@ -3200,7 +3207,11 @@ architecture, security, legal/forensic and operational review must agree that
 the old lineage never becomes writable and the new lineage cannot be less
 conservatively charged. A backend profile may use one local transaction only
 with proof over all logical transfer records; no supported profile may assume a
-distributed transaction.
+distributed transaction. Repeat every Phase C competing-bootstrap, pointer,
+outbox/inbox, witness/activation, duplicate reconciliation, Recovery-exhaustion,
+mapping/quarantine, missing-history, sequential-equivocation and cross-backend
+case against the frozen profile; earlier failures cannot be waived and
+profile-specific tests are additions rather than substitutes.
 Exit criteria: unresolved evidence custody, authority retirement, safe
 capacity transfer or replacement bootstrap keeps witness archival unavailable
 for production. The selected profile requires an external pentest with zero

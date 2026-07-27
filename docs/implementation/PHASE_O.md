@@ -260,13 +260,18 @@ absorbing. Both receipts remain retained; no ClearFence, receipt selection or
 old namespace reuse exists. Independent quorum/SoD must retire the authority
 and re-anchor conservatively into a fresh identity, lineage, key, sequence and
 permit namespace without increasing remaining capacity. Operational evidence
-must show one fence-keyed NoReplacement→Staged→Activated head, local atomic
+must show one fence-keyed NoReplacement→Staged→Activated head, one local
+AuthorityRetirement charge/head advance,
 retirement, pre-reserved parent Recovery funding and the complete recovery
 writer trace. It must also reconcile frozen source outbox, non-operational
 destination inbox, exact reservation mappings/quarantine, inherited-consumed
 baseline and independent transfer high-watermark before the sole current
 pointer activates; neither side may assume a distributed transaction or infer
-completion from absence. Replay install/delete cannot
+completion from absence. It must also load the independent greatest pointer,
+dedicated exact-set recovery checkpoint/publication/replay head and hot suffix,
+then exact-complete witnessed activation or stay unready without old-archive
+fallback. Phase O reruns the Phase C replacement corpus for the frozen profile;
+it does not introduce first-time recovery tests. Replay install/delete cannot
 split from Commit rollover. BeginAbortDrain first commits one typed result and
 complete non-releasable sealed-abort/WitnessWon-Commit/seal-query/output/drain/
 exhaustion/equivocation reservation or is no-write/no-permit. Lost seal

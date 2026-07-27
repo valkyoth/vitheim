@@ -6816,9 +6816,10 @@ Begin/Replan pre-reserves a non-borrowable parent Recovery envelope named
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityEquivocationRecoveryBudgetV1`.
 The equivocation-fence transaction transfers that exact envelope to the
 fence-keyed replacement coordinator before the old lineage becomes absorbing.
-It funds bounded retirement admission/finalization, replacement staging,
+It funds one bounded atomic AuthorityRetirement writer, replacement staging,
 source/destination transfer reconciliation and query work, activation,
-candidate rejection, typed exhaustion and every result/audit/outbox. Ordinary
+candidate rejection, dedicated recovery checkpoint/archive/restore work, typed
+exhaustion and every result/audit/outbox. Ordinary
 lineage capacity cannot fund or borrow it. Missing/corrupt escrow never blocks
 installation of the safety fence, but makes retirement/replacement unavailable
 without external traffic or an invented refund. Every recovery writer consumes
@@ -6917,6 +6918,90 @@ Every result binds its Recovery writer charge, expected versions, exact material
 and stored retry payload. Exhaustion writes typed
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityEquivocationRecoveryBudgetExhausted`
 and leaves the old lineage absorbing and the destination non-operational.
+
+The replacement attempt-set head has its own history lifecycle; the absorbing
+old lineage capacity archive is forbidden from owning or compacting it.
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCheckpointV1`
+is predecessor-linked and commits the exact covered Recovery budget state,
+writer charges and reservations; replacement-attempt-set head; every candidate
+rejection; retirement result; replacement head; source/destination transfer
+artifact and receipt; reservation mapping; withheld member; inherited baseline;
+transfer/current-pointer high-watermark; activation result; current pointer;
+and exact result/audit/outbox lookup. It binds exact captured hot-row IDs and
+versions, integrity/encoding epochs, bounded chunks and a domain-separated
+exact-set root. A range, dense watermark or old-lineage checkpoint is not
+coverage.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchiveReplayHeadV1`
+is a checked non-wrapping predecessor-linked pointer to the greatest verified
+recovery checkpoint. The authoritative recovery lookup is that greatest head
+plus its uncovered hot suffix. Identical archived retry returns the stored
+typed result; changed command/material returns its operation-specific conflict;
+exact nonmembership requires the locked unchanged greatest head and hot-row
+absence. Missing publication/chunk/key/result evidence returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryHistoricalStateUnavailable`
+without a writer charge, candidate, pointer change or authority.
+
+Recovery publication owns immutable
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchivePublicationManifestV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchivePublicationStateV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchivePublicationReceiptV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchivePublicationProofBudgetV1`
+and
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchivePublicationVerificationCursorV1`.
+Its closed receipt states are Staged→Verified→ConsumedByCommit or
+Staged/Verified→OrphanGcEligible→Collected. Typed Stage, Verify, Commit,
+MarkOrphan and FinalizeGc results/conflicts are exact-retry records. Commit
+atomically installs the recovery archive-replay head and deletes only the exact
+captured hot set; its own recovery-history writer charge/result stays hot.
+The only publication commands/results are
+`StageMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryArchivePublication`
+with
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchivePublicationStageResultV1`,
+`VerifyMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryArchivePublication`
+with
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchivePublicationVerifyResultV1`,
+`CommitMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryArchivePublication`
+with
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchivePublicationCommitResultV1`,
+`MarkOrphanMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryArchivePublication`
+with
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchivePublicationMarkOrphanResultV1`,
+and
+`FinalizeGcMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryArchivePublication`
+with
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchivePublicationGcResultV1`;
+each has an operation-specific changed-material conflict.
+Proof, cleanup and
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreCursorV1`
+work are bounded by the fence-keyed non-borrowable Recovery budget.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkV1`
+is published by an authority independent of every retired witness and binds a
+non-wrapping current-pointer generation/version/digest, immutable predecessor,
+activated replacement head/genesis/transfer/receipt and recovery replay head.
+Every later equivocation starts from that exact pointer generation; it cannot
+fork, reuse or skip a predecessor. The Recovery capacity proof bounds every
+writer, reservation, checkpoint/replay advance, pointer generation and
+response-loss/restore attempt before the fence-keyed budget is installed.
+Insufficient headroom leaves recovery unavailable, never wrapping a pointer or
+borrowing old-lineage capacity.
+
+Restore first enters
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreStateV1::Unready`
+and independently obtains the greatest
+transfer and current-pointer high-watermarks through the same bounded
+status-query/Reconcile machinery. It then selects the greatest recovery
+archive-replay head, verifies checkpoint ancestry and exact pointer
+generation/version/digest, replays the hot suffix with its durable restore
+cursor and either exact-completes the already witnessed deterministic
+activation/current-pointer CAS or remains unready. A locally consistent older
+pointer, missing recovery archive, one-sided transfer, unavailable historical
+result or unverified successor can never revive an earlier authority, including
+after a second or later equivocation.
 Restore queries the authority for both positive and seal evidence
 only by first entering
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealReconciliationRecoveryStateV1::Unready`
@@ -7105,11 +7190,11 @@ mutate a field covered by the attempt-set commitment:
 | Seal-status query admission | admit one stable authority seal-status attempt | Only in AbortDrainPending, consume one bounded seal-budget admission leg, create PermitIssued plus immutable terminalization/concurrency reservation and typed admission result before one process-local permit; retry is status-only |
 | Seal-status query terminalization | import SealWon/WitnessWon/Unknown/TransportFailure/DeadlineExceeded/ContradictoryEvidence | Consume the exact reservation and commit ResponseImported, typed result and exact-once settlement; SealWon/WitnessWon/ContradictoryEvidence may co-commit their route disposition/fence, while other outcomes do not |
 | Witness abort finalization | reconcile terminal seal route | Final abort requires authority rejection tombstone, every ordinary/seal query terminal with reservations consumed/concurrency settled and no positive receipt; WitnessWon preserves ArchiveFinalize capacity, contradiction fences, and exhaustion remains AbortDrainPending/unready |
-| Authority-retirement admission | validate independent quorum/SoD and admit the local retirement | Consume the bounded fence-keyed Recovery admission class and co-commit exact authority/fence/evidence material; it issues no external permit and cannot mutate the old lineage |
-| Authority-retirement finalization | complete the admitted local retirement in the same transaction | Co-consume the reserved finalization class and commit Active→RetiredForEquivocation, retirement/result/audit/outbox and successor replacement-attempt-set head atomically; there is no Pending or reconciliation command |
+| Authority retirement | validate independent quorum/SoD and complete the local retirement | Consume exactly one bounded fence-keyed AuthorityRetirement class/charge and commit Active→RetiredForEquivocation, retirement/result/audit/outbox and exactly one successor replacement-attempt-set head advance atomically; it issues no external permit and has no admission/finalization split, Pending state or reconciliation command |
 | Replacement-genesis staging | select the sole fence-keyed successor and freeze transfer source | CAS NoReplacement→Staged with unique old-fence→genesis, source outbox, non-operational destination, mappings, equations, candidate disposition and successor recovery head; changed material is permanently rejected |
 | Replacement capacity-transfer import/reconciliation | consume destination inbox and reconcile applied/unknown evidence | Commit the unique inbox receipt, source disposition/status, bounded external-status reservation/settlement and successor recovery head; timeout/source absence is never completion and no old permit material crosses |
 | Replacement activation/current-pointer CAS | activate only the staged, imported, conformance-passing and independently witnessed transfer | Atomically CAS Staged→Activated, install the sole current-authority/current-lineage pointer and result/audit/outbox, then reconcile the signed activation receipt to the source; no competing candidate can activate |
+| Replacement recovery history lifecycle | checkpoint, publication Stage/Verify/Commit, MarkOrphan, FinalizeGc and restore-cursor advance | Consume one declared Recovery history class per mutation; exact-set checkpoint/verified publication/replay-head install/captured-row deletion are atomic, old-lineage archives are forbidden, and missing history returns RecoveryHistoricalStateUnavailable without a head/charge |
 | Plan lifecycle | Replan and proof/capacity-state carry-forward | Commit old-plan terminalization, conservative remaining-class mapping, new plan/proof binding and successor attempt-set head together; consumption never resets |
 
 Every mutating command in the table creates immutable
@@ -7135,7 +7220,8 @@ in the displayed order; no writer may reverse the common subsequence.
 Equivocation recovery uses its separate canonical branch:
 absorbing old-fence/evidence read→parent Recovery budget→replacement attempt-set
 head→replacement head→transfer high-watermark→source outbox→destination
-inbox/genesis→current pointer→result/audit/outbox. Every acquired subset
+inbox/genesis→current pointer→recovery current-pointer high-watermark→recovery
+archive publication→recovery archive-replay head→result/audit/outbox. Every acquired subset
 preserves that order. Expected-version loss commits no recovery charge except a
 bounded changed-material candidate rejection whose own reservation was
 admitted; exact retry returns the stored typed result.
@@ -8275,6 +8361,37 @@ their respective `3 + 2q - e`, `3 + 2q + 2s - e`,
 `4 + 2q + 2s - e`, `3 + 2q + 2s - e` and
 `3 + 2q + 2s` equations, exactly `q` and `s` reservations consumed, and no
 route/result/conflict aliasing.
+At `0.29.0`, run the replacement-recovery adversarial suite rather than
+deferring its first execution to the `0.140.11` freeze. Race identical and
+different bootstrap IDs/material at every expected replacement-head version
+and prove one Staged/Activated winner plus durable bounded loser dispositions.
+Race current-pointer activation, externally witnessed pointer publication and
+rollback; restore an earlier locally consistent pointer before and after a
+second completed replacement and require exact completion of the greatest
+witnessed successor or RecoveryUnready. Crash before/after every source-outbox,
+destination-inbox, applied-receipt, source-reconciliation, transfer-witness,
+activation and source-terminal write. Duplicate/import changed material and
+prove exact retry/conflict with no absence-derived completion or double-live
+capacity.
+Exhaust the Recovery budget at the single AuthorityRetirement writer,
+candidate rejection, replacement stage, transfer import/reconciliation,
+pointer query, activation, checkpoint, publication Stage/Verify/Commit,
+orphan/GC and restore-cursor writers; each admitted mutation advances the
+recovery head exactly once and an unreservable mutation is no-write. Partition
+every active source reservation between MappedOneToOne and
+PermanentlyQuarantinedConsumed, including all-mapped/all-quarantined limits,
+and prove the cross-lineage equations, inherited baseline/head delta and old
+permit non-transfer. Delete, reorder, fork and roll back each recovery
+checkpoint, archive chunk, replay head, exact-result entry, pointer generation,
+candidate disposition, transfer side, mapping, withheld member and activation
+receipt; missing evidence returns RecoveryHistoricalStateUnavailable and never
+falls back to the old-lineage archive.
+Run the same vectors across every storage profile: a conforming single-backend
+optimization proves one local transaction over the complete logical
+outbox/inbox set, while cross-backend profiles reconcile signed receipts and
+must pass without a distributed transaction. `0.140.11` repeats this exact
+suite against the frozen production profile and may strengthen it, but cannot
+be the first implementation or test of replacement recovery.
 Make deletion unknown, forge verification, substitute chunks/epochs, and prove
 Recovery capacity cannot be borrowed. Roll back the local capacity state,
 publication registry and replay head together below the external high-
