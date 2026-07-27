@@ -397,6 +397,8 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityInvalidationRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationFenceRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationAdvanceRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationAdvanceCheckpointRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanOperationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanPreflightRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonResultRow`,
@@ -526,11 +528,16 @@ writer matrix covers authorization, effect, capability, evidence,
 reconciliation and history lifecycle. Each mutation uses the shared rank and
 atomically writes its mutation record and successor root. A covered mutation
 after CommitEligible selects authoritative PreparingRevalidationRequired with
-mandatory invalidation ID and old/new root binding. PreparingOpen alone admits
-new effect/artifact work; the revalidation fence is integrity evidence, not an
-authorization switch. Missing/corrupt evidence leaves Required unready and can
-never decode/default to Open. Full MarkEligible validation alone may restore
-eligibility, while restrictive work never waits.
+mandatory initial invalidation/result and old/new root binding. PreparingOpen
+alone admits new effect/artifact work; the revalidation fence is integrity
+evidence, not an authorization switch. Missing/corrupt evidence leaves Required
+unready and can never decode/default to Open. Every later covered mutation
+while Required CAS-advances its non-wrapping epoch/sequence, previous/current
+roots, latest mutation and cumulative commitment with an immutable advance
+record.
+MarkEligible verifies the complete chain or checkpointed prefix plus suffix
+against the locked current head before full validation may restore eligibility;
+restrictive work never waits.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -621,7 +628,10 @@ reconstruction, unrooted attempt/capability/authorization/evidence/archive
 mutation, attempt-set lock inversion, restrictive writer blocked by
 CommitEligible, stale eligibility root, ambiguous Preparing or
 PreparingRevalidationRequired defaulting to PreparingOpen after missing/
-corrupt invalidation/fence, mutable membership-root drift,
+corrupt invalidation/fence, repeated restrictive mutation retaining a stale
+required root, reordered/duplicated/omitted/forked/rolled-back revalidation
+advance or checkpoint, wrapping advance sequence or budget-based restrictive
+writer blockage, mutable membership-root drift,
 coordinated residual-state rollback below external high-watermark, aggregate
 residual child closure/budget theft or lost decrement, Commit with nonterminal
 effect/capability/reconciliation, hidden/partial attempt-set root, absent-row-

@@ -1024,15 +1024,30 @@ attempt writer or narrower Dispatch lock sequence exists.
 If any covered writer races a CommitEligible plan, let the security-relevant
 writer proceed and atomically invalidate
 CommitEligible→PreparingRevalidationRequired with mandatory
-invalidation ID, invalidated root and required successor root. Retain the
+non-wrapping revalidation epoch/sequence, original invalidation and eligibility
+result/root, previous required root, required current root, latest mutation and
+cumulative commitment. Retain the
 revalidation fence as integrity evidence, but derive authorization behavior
 from the tagged attempt state itself. PreparingOpen alone admits new
-Begin/Dispatch or Stage/Verify/artifact work. MarkEligible must repeat its full
-original validation to bind the successor root; final Commit may never accept
-the stale result. Missing evidence makes revalidation state unready and can
-never decode/default to PreparingOpen. This is preferred over blocking
-revocation/evidence/checkpoint work, an adjacent-row authorization switch or a
-partial refresh path.
+Begin/Dispatch or Stage/Verify/artifact work.
+
+Every further covered mutation while already Required must append an immutable
+CommitEligibilityRevalidationAdvance, CAS the exact prior payload and advance
+the previous/current roots, mutation ID, sequence and cumulative commitment.
+Concurrent losers reread/reapply; response-loss replay returns the stored
+advance. Checkpoints may cover only continuous authenticated prefixes and
+retain the terminal commitment/root without resetting the clock. MarkEligible
+must verify the original invalidation plus full chain, or a checkpointed prefix
+plus uncovered suffix, and repeat its full validation against the locked final
+root; final Commit may never accept a stale result. A protected rollover/
+checkpoint reserve prevents discretionary budget exhaustion from blocking
+restrictive work; checked sequence rollover advances the epoch, and absolute
+exhaustion commits the restrictive mutation while leaving the attempt denied
+and selecting BudgetExhaustedRetained. Missing, reordered, duplicated, forked
+or rolled-back evidence makes revalidation unready and can never decode/default
+to PreparingOpen. This is preferred over blocking revocation/evidence/
+checkpoint work, overwriting the original invalidation, an adjacent-row
+authorization switch or a partial refresh path.
 
 Freeze one durable plan-bound commit attempt with PreparingOpen,
 PreparingRevalidationRequired, CommitEligible, Superseded, Abandoned and

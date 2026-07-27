@@ -745,9 +745,13 @@ restore, failover, and release evidence.
    CommitEligible atomically selects typed
    PreparingRevalidationRequired with mandatory invalidation/root bindings;
    PreparingOpen alone admits new effect/artifact work. The separate fence is
-   integrity evidence, never the authorization switch. MarkEligible repeats
-   the complete validation; restrictive work is never blocked and stale
-   eligibility never commits.
+   integrity evidence, never the authorization switch. Every additional
+   covered mutation while Required atomically advances its non-wrapping
+   epoch/sequence, previous/current roots, latest mutation and cumulative
+   commitment through immutable advance records. MarkEligible verifies the
+   complete chain or authenticated checkpoint plus suffix against the locked
+   current head before repeating the complete validation; restrictive work is
+   never blocked and stale eligibility never commits.
    Begin creates plan generation 1 and a PreparingOpen commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and

@@ -6456,8 +6456,10 @@ whose closed
 is a canonical tagged union:
 
 - PreparingOpen;
-- PreparingRevalidationRequired carrying mandatory invalidation ID, invalidated
-  attempt-set root and required successor attempt-set root;
+- PreparingRevalidationRequired carrying mandatory non-wrapping revalidation
+  epoch/sequence, original invalidation and eligibility-result IDs, original
+  invalidated attempt-set root, previous required root, required current root,
+  latest attempt-set mutation ID and cumulative advance commitment;
 - CommitEligible;
 - Superseded;
 - Abandoned; or
@@ -6467,8 +6469,8 @@ The durable disposition set contains all six states; missing/unknown tag or
 missing payload is corruption, not PreparingOpen or abandonment. Begin/Replan
 creates PreparingOpen. Export, import, RPC projection and restore preserve the
 exact discriminant and mandatory payload; omission, truncation or inconsistent
-invalidation/fence cross-proof makes the attempt unready and never selects a
-fallback variant. Only
+invalidation/fence/advance-chain cross-proof makes the attempt unready and
+never selects a fallback variant. Only
 `MarkMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligible`
 may move PreparingOpen or PreparingRevalidationRequired→CommitEligible after
 binding and rechecking the exact
@@ -6494,12 +6496,45 @@ including restrictive revocation, provider evidence, reconciliation,
 checkpoint, compaction and archival work. When the plan-bound disposition is
 CommitEligible, that writer atomically changes it to
 PreparingRevalidationRequired with the exact invalidation ID, old bound root
-and required successor root in the authoritative attempt row, advances the
+and initial required successor root in the authoritative attempt row, advances the
 attempt-set head and writes immutable
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityInvalidationV1`
 binding the old eligibility result/root, successor mutation/root, reason and
 writer result plus durable
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationFenceV1`.
+This creates revalidation epoch `e`, sequence zero, binds the original
+eligibility result/root, defines the invalidated root as the previous required
+root, defines the writer's successor as the required current root and seeds the
+domain-separated cumulative commitment with that mutation.
+
+Every later covered mutation while the attempt is already
+PreparingRevalidationRequired must remain live. In the same head-advancing
+transaction it CASes the complete prior payload to a successor payload and
+appends immutable
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationAdvanceV1`.
+The record binds attempt/plan, revalidation epoch, checked non-wrapping
+successor sequence, original invalidation/eligibility result/root, previous
+required root and cumulative commitment, new attempt-set mutation ID/current
+root and successor cumulative commitment. Concurrent writers share the same
+rank: one wins, while losers reread and reapply against the new payload. Exact
+retry or response-loss reconciliation returns the stored advance and never
+advances twice. Reordered, duplicated, omitted, forked or rolled-back advances
+are corruption.
+
+Authenticated
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationAdvanceCheckpointV1`
+may compact only a continuous prefix. It binds the original invalidation,
+covered epoch/sequence interval, predecessor checkpoint, terminal required
+root/cumulative commitment and archive coverage; it never resets the
+non-wrapping clock or authorizes work. A protected precharged checkpoint/
+rollover reserve is outside discretionary plan work. Sequence exhaustion uses
+a checked successor epoch and immutable rollover advance rather than wrapping;
+if no successor epoch is representable, the restrictive mutation still
+commits, the attempt remains structurally denied and the lineage enters
+BudgetExhaustedRetained for operator-visible recovery. Budget exhaustion
+therefore cannot suppress revocation, evidence, reconciliation, checkpoint or
+archival processing.
+
 Authorization behavior is derived from the typed attempt state itself:
 PreparingOpen alone admits new Begin/Dispatch and Stage/Verify, while
 PreparingRevalidationRequired refuses them and permits exact receipt replay
@@ -6508,9 +6543,12 @@ fence remains integrity evidence, not the authorization switch. A missing,
 unjoined or corrupt invalidation/fence therefore cannot make the authoritative
 tag decode as PreparingOpen; it makes the node/attempt unready. MarkEligible is
 the only eligibility recovery: for PreparingRevalidationRequired it
-authenticates the mandatory invalidation/fence, proves the current head equals
-required_successor_root, repeats the complete original validation against that
-root and may create a new CommitEligible result/version.
+authenticates the mandatory invalidation/fence, verifies the complete ordered
+advance chain or one authenticated checkpoint plus uncovered suffix, proves
+the terminal cumulative commitment/root equals the locked attempt-set head,
+repeats the complete original validation against that root and may create a
+new CommitEligible result/version. A later independent invalidation after that
+transition allocates a strictly newer revalidation epoch.
 Final Commit and every writer serialize on the same rank; either Commit
 consumes the unchanged eligible root first, or the writer invalidates it first
 and Commit returns no-write until revalidation. Revocation and restrictive
@@ -7336,11 +7374,17 @@ ApplyRevocation/consumption, provider evidence/reconciliation, capability
 terminalization/cleanup and checkpoint/compaction/archive replacement. Each
 mutation advances one head under the canonical rank and atomically invalidates
 CommitEligible to PreparingRevalidationRequired; full MarkEligible revalidation
-may then bind the successor root. Delete/omit/corrupt the invalidation and
-fence evidence at every restore/read path and prove the authoritative tagged
-state cannot decode, default or dispatch as PreparingOpen. Prove no restrictive
-writer blocks, no mutation escapes the root, no stale eligible root commits and
-no invalidation reopens Begin/Dispatch or Stage/Verify allocation.
+may then bind the terminal current root. Run multiple sequential and concurrent
+restrictive mutations before revalidation and fault response delivery at every
+advance. Reorder, duplicate, omit, fork and roll back advance records and
+checkpoints; revalidate, invalidate again under a newer epoch, and force
+sequence/checkpoint-budget exhaustion. Prove the final commitment/root alone
+can revalidate, protected rollover or BudgetExhaustedRetained preserves
+restrictive processing, and no mutation escapes the root. Delete/omit/corrupt
+the invalidation, fence and advance evidence at every restore/read path and
+prove the authoritative tagged state cannot decode, default or dispatch as
+PreparingOpen. Prove no stale eligible root commits and no invalidation or
+advance reopens Begin/Dispatch or Stage/Verify allocation.
 Complete lineages with zero, one and the maximum residual unknown members.
 Require WithoutResidual only at zero; otherwise atomically transfer each
 member into its own obligation/budget, commit the exact sorted root/aggregate

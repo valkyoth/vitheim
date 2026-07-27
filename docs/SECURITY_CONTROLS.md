@@ -400,8 +400,11 @@ audit decision.
   mutation advance it under one order. Mutation after CommitEligible proceeds
   while atomically selecting typed PreparingRevalidationRequired with mandatory
   invalidation/root bindings; PreparingOpen alone admits new effect/artifact
-  work and the separate fence is integrity evidence, not authority. Full
-  eligibility validation must bind the successor root. Begin
+  work and the separate fence is integrity evidence, not authority. Every
+  further covered mutation while Required appends an immutable non-wrapping
+  advance, CASes previous/current root and cumulative commitment, and remains
+  denied. Full eligibility validation must verify the continuous chain or
+  authenticated checkpoint plus suffix and bind its final current root. Begin
   creates plan generation 1 and PreparingOpen. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new

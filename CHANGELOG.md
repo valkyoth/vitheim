@@ -72,6 +72,10 @@ All notable Vitheim changes are documented here. The format follows
   structurally distinct PreparingRevalidationRequired with mandatory
   invalidation/root bindings; PreparingOpen alone admits new effect or
   publication work.
+- Made every further restrictive mutation advance that required state through
+  a non-wrapping epoch/sequence, immutable advance record and cumulative
+  commitment/checkpoint, so revalidation can bind the latest root without
+  blocking security processing.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.

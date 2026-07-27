@@ -417,8 +417,11 @@ every authorization/effect/capability/evidence/reconciliation/archive writer
 advances that set atomically under one order. A later mutation places the
 authoritative attempt in typed PreparingRevalidationRequired with mandatory
 invalidation/root bindings; PreparingOpen alone admits new effect/artifact
-work, and the separate fence is evidence rather than authority. Full
-MarkEligible revalidation binds the successor root without blocking
+work, and the separate fence is evidence rather than authority. Each further
+covered mutation while Required CAS-advances a non-wrapping epoch/sequence,
+previous/current root, latest mutation and cumulative commitment with immutable
+advance evidence. Full MarkEligible revalidation verifies the chain or
+checkpointed prefix plus suffix and binds its terminal root without blocking
 restrictive work. Begin creates plan generation 1 and PreparingOpen. Terminal
 reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old

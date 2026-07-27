@@ -824,9 +824,12 @@ makes every authorization/effect/capability/evidence/reconciliation/archive
 mutation advance that set atomically under one order. Mutation after
 CommitEligible selects typed PreparingRevalidationRequired with mandatory
 invalidation/root bindings; PreparingOpen alone admits new effect/artifact
-work and the separate fence is evidence rather than authority. MarkEligible
-reruns the full validation against the successor root without blocking
-restrictive work. Begin creates plan generation 1 and PreparingOpen. Independently
+work and the separate fence is evidence rather than authority. Every later
+covered mutation while Required appends an immutable non-wrapping advance and
+CASes previous/current root plus cumulative commitment. MarkEligible verifies
+the chain or checkpointed prefix plus suffix and reruns the full validation
+against its terminal current root without blocking restrictive work. Begin
+creates plan generation 1 and PreparingOpen. Independently
 authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
 and receipts and atomically creating a new bundle/reservation set; Abandon
@@ -1093,7 +1096,9 @@ application resend after uncertain transmission, unrooted authorization/
 evidence/capability/archive writer, attempt-set lock inversion, CommitEligible
 restrictive-writer blockage, stale eligibility root,
 PreparingRevalidationRequired decoded/defaulted as PreparingOpen after missing
-evidence, durable claim/digest used as bearer or reconstructed permit,
+evidence, missing/reordered/duplicated/rolled-back revalidation advance,
+repeated mutation stranded on an older required root or blocked by exhaustion,
+durable claim/digest used as bearer or reconstructed permit,
 finalization bypass, mutable-root drift, coordinated residual state-head/high-
 watermark rollback, sibling closure/budget theft or lost aggregate decrement,
 Commit with hidden/nonterminal attempt work, absent-row-as-empty aggregate,
