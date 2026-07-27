@@ -259,7 +259,14 @@ after-seal evidence makes the old lineage and authority/key epoch permanently
 absorbing. Both receipts remain retained; no ClearFence, receipt selection or
 old namespace reuse exists. Independent quorum/SoD must retire the authority
 and re-anchor conservatively into a fresh identity, lineage, key, sequence and
-permit namespace without increasing remaining capacity. Replay install/delete cannot
+permit namespace without increasing remaining capacity. Operational evidence
+must show one fence-keyed NoReplacement→Staged→Activated head, local atomic
+retirement, pre-reserved parent Recovery funding and the complete recovery
+writer trace. It must also reconcile frozen source outbox, non-operational
+destination inbox, exact reservation mappings/quarantine, inherited-consumed
+baseline and independent transfer high-watermark before the sole current
+pointer activates; neither side may assume a distributed transaction or infer
+completion from absence. Replay install/delete cannot
 split from Commit rollover. BeginAbortDrain first commits one typed result and
 complete non-releasable sealed-abort/WitnessWon-Commit/seal-query/output/drain/
 exhaustion/equivocation reservation or is no-write/no-permit. Lost seal

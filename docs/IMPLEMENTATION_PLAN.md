@@ -493,7 +493,16 @@ old lineage/authority identity permanently absorbing. Both receipts are
 retained; there is no ClearFence or receipt selection. Independently governed
 recovery retires the authority and creates a fresh authority identity and
 lineage with fresh sequence/permit namespaces, conservative capacity
-carry-forward and no refund; the old lineage never reopens. BeginAbortDrain first commits a typed result and non-releasable
+carry-forward and no refund; the old lineage never reopens. A unique
+old-fence-keyed replacement head admits exactly one Staged successor and later
+one Activated current pointer; changed candidates are terminally rejected.
+Retirement is one local atomic transition. Pre-reserved parent Recovery funds
+the separate closed recovery writer matrix. An explicit frozen-source outbox,
+non-operational destination inbox, reservation mapping/quarantine proof and
+independent predecessor-linked transfer commitment reconcile response loss
+without a distributed transaction. Activation requires exact inbox
+consumption, source reconciliation and current conformance; inherited consumed
+is a genesis baseline, never new head-charge credit. BeginAbortDrain first commits a typed result and non-releasable
 completion reservation covering sealed abort, WitnessWon Commit continuity,
 bounded seal-status queries, outputs/drain, exhaustion and equivocation;
 missing capacity is no-write/no-permit. Lost response/failover/restore enters

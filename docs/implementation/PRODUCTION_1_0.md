@@ -872,7 +872,16 @@ authority identity/key epoch. Both receipts are retained and there is no
 ClearFence, preferred-receipt continuation or old namespace reuse. Recovery
 requires independent quorum/SoD authority retirement and a new authority
 identity plus lineage with fresh sequence/permit namespaces and conservative
-consumed/reserved carry-forward that cannot increase remaining capacity. Replay
+consumed/reserved carry-forward that cannot increase remaining capacity. A
+unique old-fence-keyed replacement head is the only
+NoReplacement→Staged→Activated linearization point and current pointer;
+different candidates are permanently rejected. Retirement is local/atomic and
+a pre-reserved parent Recovery budget funds the separate closed recovery
+writer head. Frozen source outbox, non-operational destination inbox, exact
+reservation mapping-or-quarantine, inherited baseline and independent
+predecessor-linked transfer witness must reconcile before activation; source
+absence and timeout never complete a leg and no backend assumes a distributed
+transaction. Replay
 install/delete cannot split from rollover. BeginAbortDrain is no-write/no-
 permit unless its typed transaction commits the complete non-releasable
 sealed-abort/WitnessWon-Commit/seal-query/output/drain/exhaustion/equivocation

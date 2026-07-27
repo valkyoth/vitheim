@@ -832,7 +832,17 @@ restore, failover, and release evidence.
    under independent quorum/SoD and re-anchors conservatively into a fresh
    authority identity and lineage with fresh sequencing/permit namespaces,
    exact carried consumed/reserved capacity and no increased remaining
-   capacity; the old lineage remains absorbing. BeginAbortDrain is itself no-write/no-permit unless one
+   capacity; the old lineage remains absorbing. One fence-keyed replacement
+   head linearizes NoReplacement→Staged→Activated and a unique constraint
+   admits only one genesis; different material is durably rejected. Retirement
+   is one local Active→Retired transition with no external Pending state.
+   A pre-reserved parent Recovery budget funds a closed recovery-writer head.
+   Portable source-outbox/destination-inbox transfer freezes the old
+   four-member state, maps each reservation one-to-one or quarantines it as
+   inherited consumed, independently witnesses both sides, and updates the
+   sole current-authority/current-lineage pointer only after exact import and
+   conformance. Before activation neither lineage can spend; after activation
+   only the destination can. BeginAbortDrain is itself no-write/no-permit unless one
    non-releasable completion reservation covers sealed-abort disposition,
    WitnessWon Commit continuity, bounded seal-status queries, outputs/work,
    existing-query drain, exhaustion and equivocation. Lost seal response,

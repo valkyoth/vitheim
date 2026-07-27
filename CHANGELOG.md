@@ -116,6 +116,10 @@ All notable Vitheim changes are documented here. The format follows
   lineage/identity, forbade ClearFence and receipt selection, and specified
   independent retirement plus conservative fresh-identity/fresh-lineage
   re-anchoring before production.
+- Linearized that re-anchoring through one fence-keyed replacement head/current
+  pointer, funded its closed post-fence writer matrix from parent Recovery and
+  defined rollback-detectable source-outbox/destination-inbox capacity transfer
+  with explicit reservation mapping or permanent quarantine.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.

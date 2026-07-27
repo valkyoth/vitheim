@@ -6778,35 +6778,145 @@ receipts and their proposal, signer/key/distrust epochs and discovery evidence
 remain permanently retained in
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityEquivocationEvidenceBundleV1`.
 The only operational recovery is an independently governed authority
-retirement and replacement-lineage bootstrap. A separate quorum with enforced
-separation of duties may admit
+retirement and replacement-lineage bootstrap. Retirement is a local Vitheim
+trust-registry decision, not an external effect: a separate quorum with
+enforced separation of duties invokes
 `RetireMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityAfterEquivocation`,
-which alone advances closed
+which atomically changes
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRetirementStateV1`
-from Active→RetirementPending→RetiredForEquivocation and stores only
-`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRetirementResultV1`
-or its changed-material
-`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRetirementConflict`.
-The terminal retirement commits
+from Active directly to the absorbing RetiredForEquivocation state and commits
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRetirementV1`
-before
-`BootstrapMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementLineage`
-may commit
-`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementGenesisV1`.
-The genesis uses a new authority identity, new lineage ID, new key epoch and
-fresh guard/sequence/claim/permit/idempotency namespaces; binds the absorbing
-old fence, both receipts, retirement record, last unquestionably committed
-replay head and disputed proposal; retains all candidate artifacts; carries
-consumed and reserved quantities exactly; and treats any disputed delta
-conservatively without increasing remaining capacity. It neither marks the old
-proposal Committed/Aborted nor clears or rewrites the old lineage. Missing
-independent quorum, role separation, evidence, capacity transfer or a current
-passing new-authority conformance result leaves replacement unavailable.
-Bootstrap returns only
-`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementGenesisResultV1`
-or its changed-material
+plus its typed result/audit/outbox. There is no RetirementPending, external
+retirement permit or unknown retirement outcome. External key revocation or
+provider disablement is retained evidence only and cannot delay, undo or
+authorize the local retirement. Exact retry returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRetirementResultV1`;
+changed material returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRetirementConflict`.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementHeadV1`
+is keyed uniquely by the old equivocation-fence ID and is the single
+linearization point for replacement. Its closed state is
+NoReplacement→Staged→Activated, with a checked expected version, immutable
+predecessor digest and one old-fence→replacement-genesis uniqueness
+constraint. It binds one new authority identity, new lineage ID, genesis digest,
+capacity-transfer ID and conformance profile/result. Identical retry joins the
+stored stage/activation. Different material commits a bounded
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementCandidateDispositionV1::RejectedCompetingMaterial`
+and returns
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementGenesisConflict`;
-exact retry joins and no failure reactivates the old authority.
+it can never create another Staged lineage. Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityCurrentPointerV1`
+is updated only by the Staged→Activated CAS after exact transfer import and a
+current passing new-authority conformance result. No other row, cache or
+administrator choice identifies the current authority/lineage.
+
+Begin/Replan pre-reserves a non-borrowable parent Recovery envelope named
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityEquivocationRecoveryBudgetV1`.
+The equivocation-fence transaction transfers that exact envelope to the
+fence-keyed replacement coordinator before the old lineage becomes absorbing.
+It funds bounded retirement admission/finalization, replacement staging,
+source/destination transfer reconciliation and query work, activation,
+candidate rejection, typed exhaustion and every result/audit/outbox. Ordinary
+lineage capacity cannot fund or borrow it. Missing/corrupt escrow never blocks
+installation of the safety fence, but makes retirement/replacement unavailable
+without external traffic or an invented refund. Every recovery writer consumes
+one declared class from this budget and advances
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementAttemptSetHeadV1`;
+the absorbing old attempt-set head and capacity state never mutate.
+
+`BootstrapMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementLineage`
+CASes NoReplacement→Staged and creates one immutable
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementCapacityTransferV1`.
+The transfer freezes the exact old capacity-state version/digest, four-member
+per-class counts, reservation/settlement set, checkpoint/replay root, disputed
+proposal and fence/evidence bundle. It creates a source outbox and a
+non-operational
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementGenesisV1`
+destination genesis; row absence or timeout never means
+applied. Every source reservation receives exactly one immutable
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementReservationMappingV1`.
+A mapping is either MappedOneToOne to a fresh destination reservation ID with
+identical class/quantity/terminal obligation and an independent safety proof,
+or PermanentlyQuarantinedConsumed. No old reservation, claim, permit,
+idempotency key or executor authority remains executable. Let `S` be the
+frozen source and `D` the staged destination, `Q` the sum of quarantined source
+reservations, `M` the sum of mapped source reservations and `W` a named
+non-reusable withheld member. For every class:
+
+`Q + M = S.reserved`
+
+`D.genesis_consumed = S.consumed + Q`
+
+`D.genesis_reserved = M`
+
+`S.remaining = D.genesis_remaining + W`
+
+`S.admitted = D.genesis_admitted + W`
+
+and `D.genesis_admitted = D.genesis_consumed + D.genesis_reserved +
+D.genesis_remaining`. Thus remaining never increases and no quantity is live
+in both lineages. Inherited consumed is a named genesis baseline, not a set of
+new destination writer charges: after activation,
+`D.current_consumed - D.genesis_consumed` equals the destination head-write
+delta from its genesis. Overflow, negative `W`, missing reservation mapping or
+any equation mismatch rejects staging.
+`W` is stored as
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementCapacityTransferWithheldMemberV1`;
+the inherited term is
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementInheritedConsumedBaselineV1`.
+
+Backend-portable transfer uses explicit
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementCapacityTransferSourceOutboxV1`
+and
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementCapacityTransferDestinationInboxV1`.
+The coordinator-owned
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementCapacityTransferSourceDispositionV1`
+is Staged, DestinationApplied, ReadyToActivate or
+ConsumedByActivatedReplacement and never derives a state from row absence.
+`ImportMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementTransfer`
+uniquely consumes the transfer ID in the destination inbox and returns a signed
+applied receipt without making the destination operational. The coordinator
+reconciles that exact receipt into the source disposition; exact retry joins,
+changed material conflicts, and Unknown remains Staged. Same-backend profiles
+may co-commit the logical outbox/inbox records only when capability conformance
+proves one local transaction over every row; no profile assumes a distributed
+transaction.
+
+Before activation, an authority independent of the retired witness and
+retirement quorum advances predecessor-linked
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementCapacityTransferHighWatermarkV1`
+over the replacement head, frozen source/outbox, destination inbox/genesis,
+mapping root, equations, conformance result and proposed current pointer.
+Response loss uses only a bounded Recovery-funded status-query/Reconcile lane;
+unknown or missing evidence leaves the destination non-operational.
+`ActivateMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacement`
+alone CASes Staged→Activated and atomically installs the authoritative current
+pointer with the exact witnessed transfer and destination genesis. Its signed
+activation receipt later terminalizes the source disposition as
+ConsumedByActivatedReplacement; a crash at any earlier/later boundary resumes
+from outbox/inbox/head/status evidence and never selects a second successor.
+Bootstrap/staging returns only
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementGenesisResultV1`
+or its operation-specific conflict. No failure, rejection or reconciliation
+reactivates the old authority or makes a Staged destination operational.
+Transfer import returns only
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementCapacityTransferImportResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementCapacityTransferImportConflict`;
+source/status reconciliation returns only the corresponding
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementCapacityTransferReconciliationResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementCapacityTransferReconciliationConflict`;
+activation returns only
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementActivationResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementActivationConflict`.
+Every result binds its Recovery writer charge, expected versions, exact material
+and stored retry payload. Exhaustion writes typed
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityEquivocationRecoveryBudgetExhausted`
+and leaves the old lineage absorbing and the destination non-operational.
 Restore queries the authority for both positive and seal evidence
 only by first entering
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealReconciliationRecoveryStateV1::Unready`
@@ -6995,6 +7105,11 @@ mutate a field covered by the attempt-set commitment:
 | Seal-status query admission | admit one stable authority seal-status attempt | Only in AbortDrainPending, consume one bounded seal-budget admission leg, create PermitIssued plus immutable terminalization/concurrency reservation and typed admission result before one process-local permit; retry is status-only |
 | Seal-status query terminalization | import SealWon/WitnessWon/Unknown/TransportFailure/DeadlineExceeded/ContradictoryEvidence | Consume the exact reservation and commit ResponseImported, typed result and exact-once settlement; SealWon/WitnessWon/ContradictoryEvidence may co-commit their route disposition/fence, while other outcomes do not |
 | Witness abort finalization | reconcile terminal seal route | Final abort requires authority rejection tombstone, every ordinary/seal query terminal with reservations consumed/concurrency settled and no positive receipt; WitnessWon preserves ArchiveFinalize capacity, contradiction fences, and exhaustion remains AbortDrainPending/unready |
+| Authority-retirement admission | validate independent quorum/SoD and admit the local retirement | Consume the bounded fence-keyed Recovery admission class and co-commit exact authority/fence/evidence material; it issues no external permit and cannot mutate the old lineage |
+| Authority-retirement finalization | complete the admitted local retirement in the same transaction | Co-consume the reserved finalization class and commit Active→RetiredForEquivocation, retirement/result/audit/outbox and successor replacement-attempt-set head atomically; there is no Pending or reconciliation command |
+| Replacement-genesis staging | select the sole fence-keyed successor and freeze transfer source | CAS NoReplacement→Staged with unique old-fence→genesis, source outbox, non-operational destination, mappings, equations, candidate disposition and successor recovery head; changed material is permanently rejected |
+| Replacement capacity-transfer import/reconciliation | consume destination inbox and reconcile applied/unknown evidence | Commit the unique inbox receipt, source disposition/status, bounded external-status reservation/settlement and successor recovery head; timeout/source absence is never completion and no old permit material crosses |
+| Replacement activation/current-pointer CAS | activate only the staged, imported, conformance-passing and independently witnessed transfer | Atomically CAS Staged→Activated, install the sole current-authority/current-lineage pointer and result/audit/outbox, then reconcile the signed activation receipt to the source; no competing candidate can activate |
 | Plan lifecycle | Replan and proof/capacity-state carry-forward | Commit old-plan terminalization, conservative remaining-class mapping, new plan/proof binding and successor attempt-set head together; consumption never resets |
 
 Every mutating command in the table creates immutable
@@ -7017,6 +7132,13 @@ Every ordinary head writer must lock and read the current guard after the
 attempt-set head and deny on PreparePending, AbortDrainPending or Witnessed before it may omit
 unrelated publication/replay rows. Archive writers acquire every applicable row
 in the displayed order; no writer may reverse the common subsequence.
+Equivocation recovery uses its separate canonical branch:
+absorbing old-fence/evidence read→parent Recovery budget→replacement attempt-set
+head→replacement head→transfer high-watermark→source outbox→destination
+inbox/genesis→current pointer→result/audit/outbox. Every acquired subset
+preserves that order. Expected-version loss commits no recovery charge except a
+bounded changed-material candidate rejection whose own reservation was
+admitted; exact retry returns the stored typed result.
 Attempt mutation, covered auxiliary mutation, writer charge, mutation record,
 capacity-state CAS and head advancement are one local
 transaction. It locks the capacity state, verifies its declared
@@ -7142,10 +7264,10 @@ attempt IDs and proposed successor values; they never consume or create gaps
 in canonical sequences. Arithmetic
 overflow, an unbounded class or insufficient headroom
 rejects Begin/Replan before plan installation, capacity reservation or external
-effect. Each later writer rechecks the proof, authoritative per-class consumed/
-remaining counts, current counters and unused sentinel through the capacity
-state; prose, recomputed sums or the existence of a head alone cannot supply a
-charge.
+effect. Each later writer rechecks the proof and authoritative per-class
+consumed/reserved/remaining counts, capacity-state version/digest, current counters and
+unused sentinel through the capacity state; prose, recomputed sums or the
+existence of a head alone cannot supply a charge.
 Ordinary and seal-status query admission additionally prove and atomically
 escrow their individual terminalization reservations from those already
 admitted maxima by remaining→reserved movement in the canonical capacity

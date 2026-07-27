@@ -3162,29 +3162,45 @@ Status: planned.
 Setup: review the implemented contradictory-evidence fence, permanently
 retained proposal and both signed receipts, authority/key/distrust history,
 four-member capacity state, active reservation/settlement history, authority
-retirement quorum and replacement-genesis evidence from `0.29.0–0.30.0`.
+retirement quorum, fence-keyed replacement head/candidate/current-pointer
+history, parent Recovery budget and recovery writer head, both capacity-
+transfer sides, mappings/equations and independent transfer high-watermark
+from `0.29.0–0.30.0`.
 Compare only fail-closed operational procedures; the architecture has already
 rejected generic ClearFence, selecting a convenient receipt, continuing the
 old lineage and reusing its sequencing/claim/permit/idempotency namespaces.
 Goal: freeze the production runbook for retiring an equivocating witness
 authority and re-anchoring service through a new authority identity and new
 lineage while the old lineage remains permanently absorbing.
-Deliverables: authority/key-epoch retirement scope; independent quorum and
-separation-of-duties matrix; evidence-custody and retention policy; service
-quiescence and incident declaration; fresh identity/key/lineage/namespace
-generation; replacement-genesis preimage binding the old fence, disputed
-proposal, both receipts, last unquestionably committed replay head and current
-passing replacement conformance result; conservative transfer of every
-consumed and reserved quantity with no increase to remaining; candidate
-artifact custody; rollback prohibition; operator/API status and audit
-language; and explicit unsupported recovery conditions.
+Deliverables: authority/key-epoch retirement scope and explicit local atomic
+Active→RetiredForEquivocation semantics with external revocation evidence
+non-authoritative; independent quorum and separation-of-duties matrix;
+evidence-custody and retention policy; service quiescence and incident
+declaration; fresh identity/key/lineage/namespace generation; unique
+NoReplacement→Staged→Activated replacement head and current-pointer ownership;
+bounded competing-candidate rejection; pre-reserved parent Recovery writer
+classes; replacement-genesis preimage binding the old fence, disputed proposal,
+both receipts, last unquestionably committed replay head and current passing
+replacement conformance result; portable frozen-source-outbox/destination-
+inbox reconciliation; explicit one-to-one or permanent-quarantine disposition
+for every old reservation; inherited-consumed baseline/head equation,
+withheld-member and cross-lineage conservation equations; independent
+predecessor-linked transfer witness; candidate artifact custody; rollback
+prohibition; operator/API status and audit language; and explicit unsupported
+recovery conditions.
 Verification: exercise forged/missing quorum, receipt suppression, receipt
 preference, old key/identity/sequence/permit/idempotency reuse, concurrent old
-Commit/rollover, capacity refund, reservation omission, partial genesis,
-response loss, failover, backup/restore and second equivocation. Independent
+Commit/rollover, simultaneous different bootstrap IDs, stale head versions,
+candidate suppression, Recovery exhaustion/borrowing, capacity refund,
+reservation omission/double-live mapping, fabricated inherited charge,
+partial/rolled-back outbox or inbox, timeout/source-absence inference, forged
+transfer/applied/activation receipts, pointer hijack, partial genesis, response
+loss, failover, backup/restore and second equivocation. Independent
 architecture, security, legal/forensic and operational review must agree that
 the old lineage never becomes writable and the new lineage cannot be less
-conservatively charged.
+conservatively charged. A backend profile may use one local transaction only
+with proof over all logical transfer records; no supported profile may assume a
+distributed transaction.
 Exit criteria: unresolved evidence custody, authority retirement, safe
 capacity transfer or replacement bootstrap keeps witness archival unavailable
 for production. The selected profile requires an external pentest with zero
