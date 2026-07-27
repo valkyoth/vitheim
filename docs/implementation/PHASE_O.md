@@ -229,7 +229,13 @@ as one pair only for successful capacity-archive Commit (`ArchiveFinalize`),
 never FinalizeGc, and use one atomic pair sentinel. Insufficient headroom
 denies before external work; unexpected exhaustion permanently unreadies the
 owner without fabricating an advance. A lineage-wide capacity state owns
-per-writer-class admitted/consumed/remaining counts and head/counter equations.
+per-writer-class admitted/consumed/reserved/remaining counts under
+`admitted = consumed + reserved + remaining` and head/counter equations.
+Permit admission moves the exact stable reservation remaining→reserved;
+terminal result/event/audit/outbox moves selected legs reserved→consumed and
+unused mutually exclusive legs reserved→remaining. Retry, CAS loss, timeout
+and failover move nothing. Active reservation IDs/quantities and settlement
+history survive Replan/checkpoint/archive/restore under integrity commitments.
 Every writer locks it before the attempt-set head and atomically consumes one
 immutable exact-retry charge with mutation/head/result. Every ordinary writer
 then locks/reads the high-watermark guard and denies PreparePending/AbortDrainPending/Witnessed,
@@ -249,7 +255,11 @@ AbortDrainPending, denies new queries and invokes
 installs a durable rejection tombstone and rejects late submission. Only its
 independently discoverable receipt, all ordinary and seal-status queries terminal with reservations and
 settlements consumed, and no positive receipt permit abort rollover. Positive-
-after-seal evidence fences authority equivocation. Replay install/delete cannot
+after-seal evidence makes the old lineage and authority/key epoch permanently
+absorbing. Both receipts remain retained; no ClearFence, receipt selection or
+old namespace reuse exists. Independent quorum/SoD must retire the authority
+and re-anchor conservatively into a fresh identity, lineage, key, sequence and
+permit namespace without increasing remaining capacity. Replay install/delete cannot
 split from Commit rollover. BeginAbortDrain first commits one typed result and
 complete non-releasable sealed-abort/WitnessWon-Commit/seal-query/output/drain/
 exhaustion/equivocation reservation or is no-write/no-permit. Lost seal

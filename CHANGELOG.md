@@ -83,6 +83,9 @@ All notable Vitheim changes are documented here. The format follows
 - Added a lineage-wide, class-bucketed counter-capacity state and immutable
   exact-once writer charges, coupling each admitted count to its mutation,
   head, result, audit and outbox across retry, Replan, compaction and restore.
+- Corrected counter-capacity conservation to include authoritative reserved
+  quantities, with atomic remaining→reserved admission, selected-leg
+  consumption, unused-leg release and integrity-committed settlement history.
 - Defined dedicated capacity-charge checkpoints and a predecessor-linked
   archive-replay head with exact-set replay/conflict proofs, atomic verified
   compaction, fail-closed historical unavailability and Replan/restore
@@ -109,6 +112,10 @@ All notable Vitheim changes are documented here. The format follows
 - Funded AbortDrain completion before its seal permit, added a bounded typed
   seal-status query lane for response loss/failover/restore, and split charge
   conservation plus canonical results across every abort terminal route.
+- Made witness-authority equivocation permanently absorbing for the old
+  lineage/identity, forbade ClearFence and receipt selection, and specified
+  independent retirement plus conservative fresh-identity/fresh-lineage
+  re-anchoring before production.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.

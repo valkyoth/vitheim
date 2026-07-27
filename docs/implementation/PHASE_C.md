@@ -6427,7 +6427,7 @@ Canonical lineage-wide
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityStateV1`
 is the sole authoritative owner of admitted writer counts. It binds capacity-
 proof ID/version, lineage and current plan/head; a closed writer-class enum;
-per-class admitted, consumed and remaining `u128` counts; total
+per-class admitted, consumed, reserved and remaining `u128` counts; total
 attempt-set-head writes; revalidation advances and rollovers; untouched or
 consumed per-domain terminal-sentinel reservations; current attempt-set-head
 sequence, revalidation epoch/sequence, one
@@ -6437,7 +6437,7 @@ sequences, greatest witnessed high-watermark digest; and checked non-wrapping
 `u128` state version plus predecessor digest.
 It also binds the genesis head/state tuple so
 current-head-minus-genesis equals total consumed head-write charges, every
-class satisfies admitted=consumed+remaining, and advance/rollover subsets equal
+class satisfies admitted=consumed+reserved+remaining, and advance/rollover subsets equal
 their typed charge rows. Current-state-version-minus-genesis equals total
 ordinary charges plus the terminal-sentinel transition bit. Canonical capacity-
 checkpoint sequence equals replay-head sequence and their genesis delta equals
@@ -6447,6 +6447,25 @@ successful
 charge and never FinalizeGc. Absence, saturation, a local head below the
 external high-watermark or equation mismatch is corruption, never free
 capacity.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityReservationV1`
+is the only way to move a class quantity from remaining to reserved. It binds
+one stable reservation ID, originating command and plan generation, exact
+per-class quantities, every byte/work/output/concurrency dimension, mutually
+exclusive route-leg group and the terminal results allowed to settle it.
+Admission atomically performs remaining→reserved before returning any external
+permit. Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityReservationSettlementV1`
+is terminal-route-specific: in the same transaction as the terminal result,
+event, audit and outbox it moves every selected leg reserved→consumed without a
+second decrement and every unused mutually exclusive leg reserved→remaining.
+No leg can be partially settled, selected twice, borrowed by another class or
+released before terminal route selection. Exact retry joins the settlement;
+CAS loss, timeout, cancellation, response loss, worker loss and failover move
+no quantity. Checkpoint, archive, restore, migration and Replan preserve each
+active reservation ID and exact quantity; Replan may carry it unchanged but
+cannot rename, reassign, replenish or collapse it into remaining.
 
 Every first committed head-advancing command appends immutable
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterWriterChargeV1`
@@ -6463,13 +6482,14 @@ Canonical
 is the only format allowed to replace a continuous prefix of those charge
 rows. It binds its non-wrapping checkpoint sequence and predecessor checkpoint;
 the covered capacity-state version, digest and predecessor; capacity-proof ID
-and version; every per-class admitted, consumed and remaining count; total
+and version; every per-class admitted, consumed, reserved and remaining count; total
 head writes, revalidation advances and rollovers; every sentinel reservation,
 consumption and exhaustion-fence/result identity; the current attempt-set and
 revalidation tuple; and a domain-separated cumulative exact-set root over each
 canonical charge ID, writer class, command/idempotency key, request digest,
 before/after capacity tuple, mutation/head transition and result/audit/outbox
-identity. It also commits the exact captured hot-row IDs and versions, covered
+identity plus every reservation creation, active-state transition and terminal
+settlement with its exact leg dispositions. It also commits the exact captured hot-row IDs and versions, covered
 range, bounded archive chunks, publication identity/state, integrity-key epoch,
 encoding epoch and result-lookup commitment. A range or dense watermark cannot
 stand in for exact membership.
@@ -6751,8 +6771,43 @@ submission/seal claim, operation or query identity from `g` is reusable in
 `g + 1`. A positive receipt paired with or observed after the signed seal
 tombstone is not an ordinary conflict: it atomically installs
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityEquivocationFenceV1`,
-fences the lineage and forbids rollover/Commit until independently governed
-recovery. Restore queries the authority for both positive and seal evidence
+fences the lineage and forbids rollover/Commit permanently for that lineage and
+witness-authority identity/key epoch. There is no generic ClearFence, receipt
+selection or old-namespace recovery command. Both contradictory signed
+receipts and their proposal, signer/key/distrust epochs and discovery evidence
+remain permanently retained in
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityEquivocationEvidenceBundleV1`.
+The only operational recovery is an independently governed authority
+retirement and replacement-lineage bootstrap. A separate quorum with enforced
+separation of duties may admit
+`RetireMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityAfterEquivocation`,
+which alone advances closed
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRetirementStateV1`
+from Active→RetirementPending→RetiredForEquivocation and stores only
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRetirementResultV1`
+or its changed-material
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRetirementConflict`.
+The terminal retirement commits
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRetirementV1`
+before
+`BootstrapMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementLineage`
+may commit
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementGenesisV1`.
+The genesis uses a new authority identity, new lineage ID, new key epoch and
+fresh guard/sequence/claim/permit/idempotency namespaces; binds the absorbing
+old fence, both receipts, retirement record, last unquestionably committed
+replay head and disputed proposal; retains all candidate artifacts; carries
+consumed and reserved quantities exactly; and treats any disputed delta
+conservatively without increasing remaining capacity. It neither marks the old
+proposal Committed/Aborted nor clears or rewrites the old lineage. Missing
+independent quorum, role separation, evidence, capacity transfer or a current
+passing new-authority conformance result leaves replacement unavailable.
+Bootstrap returns only
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementGenesisResultV1`
+or its changed-material
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementGenesisConflict`;
+exact retry joins and no failure reactivates the old authority.
+Restore queries the authority for both positive and seal evidence
 only by first entering
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealReconciliationRecoveryStateV1::Unready`
 and driving the same admission/permit/Reconcile protocol. Restore has no
@@ -7093,7 +7148,8 @@ state; prose, recomputed sums or the existence of a head alone cannot supply a
 charge.
 Ordinary and seal-status query admission additionally prove and atomically
 escrow their individual terminalization reservations from those already
-admitted maxima; aggregate headroom without a per-attempt reservation cannot
+admitted maxima by remaining→reserved movement in the canonical capacity
+state; aggregate headroom without a per-attempt reservation cannot
 authorize a permit. BeginAbortDrain atomically reserves the complete maximum
 mutually exclusive terminal-route envelope, including every configured
 seal-query admission/terminalization and exhaustion/fence branch, before the
@@ -7105,14 +7161,16 @@ transaction as plan generation/head, the initial attempt-set head, canonical
 archive-sequence pair and generation-zero Unprepared high-watermark guard.
 Replan
 consumes its class-specific charge and installs a proof/state successor that
-carries forward every consumed charge, immutable charge identity and retained
+carries forward every consumed charge, active reservation ID/quantity,
+reservation/settlement history, immutable charge identity and retained
 old-plan obligation; it may redistribute only the already admitted remaining
 class maxima under a conservative mapping and can never reset or increase the
 lineage total. Compaction may replace charge rows only through the dedicated
 capacity checkpoint and archive-replay head above. Restore and migration select
 the greatest authenticated archive-replay head, reject an unavailable
 historical dependency, replay the uncovered hot suffix and prove every
-capacity, class, sentinel, advance/rollover and current-head equation before
+capacity, class, reservation/settlement, sentinel, advance/rollover and
+current-head equation before
 readiness.
 
 Sequence rollover is an ordinary immutable advance to the checked successor

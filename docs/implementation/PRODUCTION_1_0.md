@@ -839,7 +839,14 @@ atomic pair sentinel.
 Insufficient headroom denies before external work;
 unexpected exhaustion permanently unreadies the owner without fabricating an
 advance. A lineage-wide capacity state owns per-writer-class admitted/
-consumed/remaining counts and head/counter equations. Every writer locks it
+consumed/reserved/remaining counts under
+`admitted = consumed + reserved + remaining` and head/counter equations.
+Permit admission moves the exact stable reservation remaining→reserved;
+terminal result/event/audit/outbox moves selected legs reserved→consumed and
+unused mutually exclusive legs reserved→remaining. Retry, CAS loss, timeout
+and failover move nothing. Active reservation IDs/quantities and settlement
+history survive Replan/checkpoint/archive/restore under integrity commitments.
+Every writer locks it
 before the attempt-set head and atomically consumes one immutable exact-retry
 charge with mutation/head/result. Every ordinary writer then locks/reads the
 high-watermark guard and denies PreparePending/AbortDrainPending/Witnessed, but may omit
@@ -860,7 +867,12 @@ AbortDrainPending, denies new query admission and invokes
 predecessor/proposal CAS durably tombstones rejection and rejects late
 submission. Rollover requires its independently discoverable receipt, all
 ordinary and seal-status queries terminal with reservations and settlements consumed, and no positive
-receipt. Positive-after-seal evidence fences authority equivocation. Replay
+receipt. Positive-after-seal evidence permanently fences the old lineage and
+authority identity/key epoch. Both receipts are retained and there is no
+ClearFence, preferred-receipt continuation or old namespace reuse. Recovery
+requires independent quorum/SoD authority retirement and a new authority
+identity plus lineage with fresh sequence/permit namespaces and conservative
+consumed/reserved carry-forward that cannot increase remaining capacity. Replay
 install/delete cannot split from rollover. BeginAbortDrain is no-write/no-
 permit unless its typed transaction commits the complete non-releasable
 sealed-abort/WitnessWon-Commit/seal-query/output/drain/exhaustion/equivocation

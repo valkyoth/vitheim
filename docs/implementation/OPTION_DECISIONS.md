@@ -1061,7 +1061,7 @@ cannot exhaust either counter.
 
 Make a lineage-wide RevalidationCounterCapacityState the sole count owner. It
 binds proof/version, plan/lineage, a closed writer-class enum, per-class
-admitted/consumed/remaining counts, total head writes, advance/rollover
+admitted/consumed/reserved/remaining counts, total head writes, advance/rollover
 subcounts, per-domain sentinel reservations, current counter tuple and
 predecessor-linked non-wrapping state version. The closed enum includes Replan,
 and head/state/subset equations bind every charge. Every head writer consumes exactly one typed
@@ -3155,3 +3155,38 @@ offboarding, restore, erasure/hold/residency conflict, and incident exercises.
 Exit criteria: federation remains disabled by default; only exact profiles with
 complete bilateral evidence may enter Phase O and `1.0.0` support claims.
 `v0.140.10 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.140.11` — Witness-Authority Equivocation Recovery Freeze Decision
+
+Status: planned.
+Setup: review the implemented contradictory-evidence fence, permanently
+retained proposal and both signed receipts, authority/key/distrust history,
+four-member capacity state, active reservation/settlement history, authority
+retirement quorum and replacement-genesis evidence from `0.29.0–0.30.0`.
+Compare only fail-closed operational procedures; the architecture has already
+rejected generic ClearFence, selecting a convenient receipt, continuing the
+old lineage and reusing its sequencing/claim/permit/idempotency namespaces.
+Goal: freeze the production runbook for retiring an equivocating witness
+authority and re-anchoring service through a new authority identity and new
+lineage while the old lineage remains permanently absorbing.
+Deliverables: authority/key-epoch retirement scope; independent quorum and
+separation-of-duties matrix; evidence-custody and retention policy; service
+quiescence and incident declaration; fresh identity/key/lineage/namespace
+generation; replacement-genesis preimage binding the old fence, disputed
+proposal, both receipts, last unquestionably committed replay head and current
+passing replacement conformance result; conservative transfer of every
+consumed and reserved quantity with no increase to remaining; candidate
+artifact custody; rollback prohibition; operator/API status and audit
+language; and explicit unsupported recovery conditions.
+Verification: exercise forged/missing quorum, receipt suppression, receipt
+preference, old key/identity/sequence/permit/idempotency reuse, concurrent old
+Commit/rollover, capacity refund, reservation omission, partial genesis,
+response loss, failover, backup/restore and second equivocation. Independent
+architecture, security, legal/forensic and operational review must agree that
+the old lineage never becomes writable and the new lineage cannot be less
+conservatively charged.
+Exit criteria: unresolved evidence custody, authority retirement, safe
+capacity transfer or replacement bootstrap keeps witness archival unavailable
+for production. The selected profile requires an external pentest with zero
+unresolved critical/high findings. `v0.140.11 implementation stop reached. Run
+pentest for this exact commit.`

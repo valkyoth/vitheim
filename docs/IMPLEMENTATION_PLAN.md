@@ -431,9 +431,15 @@ with one pair sentinel and advance together only on successful capacity-
 archive Commit (`ArchiveFinalize`), never FinalizeGc.
 Insufficient headroom denies before external work; unexpected exhaustion
 permanently unreadies the owner without inventing a mutation. A lineage-wide
-capacity state owns class-specific admitted/consumed/remaining counts, total
+capacity state owns class-specific admitted/consumed/reserved/remaining counts
+with `admitted = consumed + reserved + remaining`, total
 head writes, revalidation advances/rollovers, sentinel reservation and current
-counter tuple. Every writer locks it before the attempt-set head and atomically
+counter tuple. Admission atomically moves remaining→reserved before any
+permit. Terminal selection moves selected legs reserved→consumed and unused
+mutually exclusive legs reserved→remaining with the result/event/audit/outbox;
+retry, CAS loss, timeout and failover move nothing. Reservation IDs,
+quantities and settlements remain integrity-committed across Replan,
+checkpoint/archive and restore. Every writer locks it before the attempt-set head and atomically
 consumes one immutable exact-retry charge with mutation/head/result. Every
 ordinary writer then locks/reads the stable high-watermark guard and denies
 PreparePending/AbortDrainPending/Witnessed; it may omit unrelated later rows, while archive
@@ -482,8 +488,12 @@ serializes seal and submission by expected-predecessor/proposal CAS, durably
 tombstones rejection, rejects late submissions and exposes an independently
 discoverable receipt. Only after that receipt, every query reservation and
 settlement is consumed, and no positive receipt exists may abort open the next
-guard. Positive evidence after a seal is authority equivocation and fences the
-lineage. BeginAbortDrain first commits a typed result and non-releasable
+guard. Positive evidence after a seal is authority equivocation and makes the
+old lineage/authority identity permanently absorbing. Both receipts are
+retained; there is no ClearFence or receipt selection. Independently governed
+recovery retires the authority and creates a fresh authority identity and
+lineage with fresh sequence/permit namespaces, conservative capacity
+carry-forward and no refund; the old lineage never reopens. BeginAbortDrain first commits a typed result and non-releasable
 completion reservation covering sealed abort, WitnessWon Commit continuity,
 bounded seal-status queries, outputs/drain, exhaustion and equivocation;
 missing capacity is no-write/no-permit. Lost response/failover/restore enters

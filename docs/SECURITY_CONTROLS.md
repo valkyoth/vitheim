@@ -414,8 +414,14 @@ audit decision.
   archive Commit (`ArchiveFinalize`), never FinalizeGc. Insufficient headroom denies before
   external work; a valid sentinel permanently unreadies every effect and
   Commit path and never represents the triggering mutation. A lineage-wide
-  capacity state owns class-specific admitted/consumed/remaining counts and
-  head/counter equations. Every writer locks it before the attempt-set head and
+  capacity state owns class-specific admitted/consumed/reserved/remaining
+  counts satisfying `admitted = consumed + reserved + remaining` and
+  head/counter equations. Permit admission moves remaining→reserved; the
+  terminal result/event/audit/outbox transaction moves selected legs
+  reserved→consumed and unused exclusive legs reserved→remaining. Retry, CAS
+  loss, timeout and failover move nothing. Reservation IDs/amounts and
+  settlement history remain integrity-committed through Replan, compaction,
+  restore and migration. Every writer locks it before the attempt-set head and
   atomically consumes one immutable exact-retry charge with mutation/head/
   result. Every ordinary writer then locks/reads the high-watermark guard and
   denies PreparePending/AbortDrainPending/Witnessed and may omit only unrelated later rows;
@@ -443,7 +449,12 @@ audit decision.
   Abort opens `g + 1` only after that receipt, every query is terminal, every
   terminalization reservation and settlement is consumed and no positive
   receipt exists. Positive-after-seal evidence fences the lineage as authority
-  equivocation. Identities never cross generations. A charged local fence
+  equivocation. That fence is permanently absorbing for the lineage and old
+  authority identity/key epoch. Both receipts are retained; no ClearFence,
+  receipt preference or old namespace reuse exists. Only independent quorum
+  and SoD may retire that authority and bootstrap a new identity/lineage with
+  fresh sequencing/permit namespaces and conservative consumed/reserved
+  carry-forward that cannot increase remaining capacity. Identities never cross generations. A charged local fence
   precedes external traffic. BeginAbortDrain returns no seal permit unless its
   typed transaction reserves the complete non-releasable sealed-abort/
   WitnessWon-Commit/seal-query/output/drain/exhaustion/equivocation envelope.

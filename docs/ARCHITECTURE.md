@@ -762,7 +762,14 @@ restore, failover, and release evidence.
    external work; unexpected/corrupt terminal state becomes permanently
    unready and never fabricates a successor mutation. A lineage-wide,
    predecessor-linked capacity state owns per-writer-class admitted/consumed/
-   remaining counts and the head/counter conservation equations. Every writer
+   reserved/remaining counts under
+   `admitted = consumed + reserved + remaining` and the head/counter
+   conservation equations. Admission moves remaining→reserved before a permit;
+   terminal result/event/audit/outbox atomically moves selected legs
+   reserved→consumed and unused exclusive legs reserved→remaining. Retry, CAS
+   loss, timeout and failover move nothing. Stable reservation IDs, quantities
+   and settlements survive Replan/checkpoint/archive/restore and are covered
+   by integrity commitments. Every writer
    locks it before the attempt-set head and atomically consumes one immutable
    exact-retry charge with the covered mutation, head, result, audit and outbox.
    Every ordinary writer then locks/reads the stable high-watermark guard and
@@ -820,7 +827,12 @@ restore, failover, and release evidence.
    Only after that receipt, all ordinary and seal-status query reservations and settlements are
    consumed and no positive receipt exists may abort open `g + 1`. Positive
    evidence after the seal is authority equivocation and permanently fences
-   the lineage. BeginAbortDrain is itself no-write/no-permit unless one
+   that lineage and authority identity. Both receipts remain evidence; no
+   ClearFence or preferred-receipt path exists. Recovery retires the authority
+   under independent quorum/SoD and re-anchors conservatively into a fresh
+   authority identity and lineage with fresh sequencing/permit namespaces,
+   exact carried consumed/reserved capacity and no increased remaining
+   capacity; the old lineage remains absorbing. BeginAbortDrain is itself no-write/no-permit unless one
    non-releasable completion reservation covers sealed-abort disposition,
    WitnessWon Commit continuity, bounded seal-status queries, outputs/work,
    existing-query drain, exhaustion and equivocation. Lost seal response,
