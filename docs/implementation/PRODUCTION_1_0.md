@@ -795,9 +795,14 @@ fenced member with retained legal-hold evidence and no late-evidence refund.
 Platform/tenant ceilings and separate confirm/delete/permanently-unresolvable
 authorization preserve original quarantine and legal-hold denial. Deficit
 remediation and unknown resolution use complete destination-applied authorization/
-revocation state machines. BeginRelease Admit charges a bounded pre-Begin pool;
+revocation state machines. Remediation has a total action/continuation matrix;
+failure retains predecessor/charge and only explicit retention creates the
+named permanently fenced member. BeginRelease Admit charges a bounded pre-Begin pool;
 winning Begin transfers that exact charge into the new lineage budget and
-non-winner cleanup requires no-Begin proof. Begin creates plan generation 1
+non-winner cleanup is candidate-scoped under a durable winner mapping. Final
+Commit selects With/WithoutResidualCustody and transfers surviving terminal
+unknown members plus protected budget/authority/deficit/fence provenance into
+independently restorable residual obligations. Begin creates plan generation 1
 and Preparing. Independently authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
 and receipts and atomically creating a new bundle/reservation set; Abandon
@@ -1053,7 +1058,10 @@ emergency-reserve exhaustion or uncovered-ready state, cumulative admission-
 charge omission/double/early settlement, covered-deficit omission/stranding/
 double count at Commit, reusable/incomplete remediation/resolution authority,
 pre-Begin bootstrap bypass/double activation/early cleanup, late provider
-completion after seal reopen, retained-unknown resolution refund/
+completion after seal reopen, remediation action/result substitution or
+failure→retention fall-through, unnamed permanently fenced capacity,
+completed-lineage residual budget bypass/reset or lost restore provenance,
+global losing-candidate cleanup/winner release, retained-unknown resolution refund/
 quarantine rewrite/legal-hold bypass and missing all-six-action result parity,
 workspace credit without deletion or reserved charged transfer, issuer sequence races,
 remote-intent effect, absent-state writes,

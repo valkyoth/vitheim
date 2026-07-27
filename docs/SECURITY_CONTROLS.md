@@ -371,9 +371,14 @@ audit decision.
   refund authority. Platform/tenant ceilings and a separately authorized
   confirm/delete/permanently-unresolvable workflow preserve quarantine and
   legal-hold denial. Both destructive workflows have full destination-applied
-  six-state authorization/revocation families. BeginRelease Admit charges a
+  six-state authorization/revocation families. Remediation actions have a total
+  continuation matrix; only explicit retention creates the named full-charge
+  permanently fenced member. BeginRelease Admit charges a
   bounded pre-Begin pool; winning Begin transfers it into the lineage budget,
-  and cleanup requires no-Begin proof. Begin creates plan generation 1 and Preparing. Only independently
+  and cleanup is exact-candidate scoped under a winner mapping. Final Commit
+  selects completed with/without residual custody and transfers every surviving
+  terminal unknown member plus protected work/provenance to an independent
+  residual obligation. Begin creates plan generation 1 and Preparing. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
   generation/bundle/reservations; Abandon fences only and never refunds Begin.

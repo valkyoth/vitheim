@@ -700,7 +700,9 @@ restore, failover, and release evidence.
    provision, verified deletion or sufficient-capacity migration. EffectiveCharge
    combines the base and covered deficit; Commit settles both into one member.
    Remediation and unknown resolution use complete destination-applied
-   authorization/revocation state machines.
+   authorization/revocation state machines. Remediation has a total action/
+   result matrix; failure retains predecessor/charge, and only explicit
+   retention creates the named permanently fenced member.
    A versioned cost profile maps unlike source/destination generations,
    units and storage overhead; Commit converts the base plus covered deficit into the final
    custody member before exact source credit. Unknown preserves predecessor and
@@ -711,7 +713,11 @@ restore, failover, and release evidence.
    deletion or declare permanent unresolvability without rewriting quarantine.
    BeginRelease admission charges a bounded pre-Begin pool; winning Begin
    transfers that exact reservation into the new lineage budget and non-winner
-   cleanup requires no-Begin proof. Begin creates plan generation 1 and a Preparing commit
+   cleanup proves exact candidate non-reference under a durable winner mapping.
+   Final Commit selects With/WithoutResidualCustody and transfers surviving
+   terminal unknown members plus protected work/provenance into independent
+   residual obligations; completed lineage state admits proof maintenance only.
+   Begin creates plan generation 1 and a Preparing commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and
    creates a new bundle/reservation set; Abandon fences only and never refunds

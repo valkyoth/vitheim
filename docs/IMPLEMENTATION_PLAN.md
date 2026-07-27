@@ -382,14 +382,19 @@ charge to the plan maximum: a protected emergency reserve covers positive
 deficit or readiness fences until separately authorized remediation.
 EffectiveCharge joins base plus covered deficit and final Commit atomically
 settles both into one member. Remediation and unknown resolution receive full
-destination-applied authorization/revocation families. Permanent Unknown is independently
+destination-applied authorization/revocation families. Remediation actions map
+totally to one continuation; failure retains charge, and only explicit
+retention creates the named permanently fenced member. Permanent Unknown is independently
 converted at full charge into a fenced member with retained legal-hold
 evidence and no late-evidence refund. Platform/tenant ceilings and a separate
 authorization family govern confirm-present, verified complete-namespace
 deletion or permanent-unresolvable successors without quarantine rewrite.
 BeginRelease admission uses a bounded pre-Begin pool whose exact winning
 charge transfers atomically into the newly created lineage budget; cleanup
-requires terminal authorization and no-Begin proof. Begin creates
+requires terminal authorization, exact candidate non-reference and different-
+winner mapping. Final Commit selects With/WithoutResidualCustody and transfers
+surviving unknown members plus protected budget/authority/deficit/fence
+provenance into independently restorable residual obligations. Begin creates
 plan generation 1 and Preparing. Terminal reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old
 attempts/grants/receipts and creates new bundle/reservation identities;

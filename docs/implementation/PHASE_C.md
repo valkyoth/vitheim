@@ -4656,7 +4656,9 @@ Only the independently authorized closed
 may consume one
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationActionV1`:
 ProvisionAdditionalCapacity, VerifyDeletion or
-MigrateToSufficientCapacity may resolve a deficit. Each rechecks current
+MigrateToSufficientCapacity may resolve a deficit, while
+RetainPermanentlyFenced is the only action allowed to choose permanent
+retention. Each rechecks current
 retention/legal hold, sealed/unknown-transfer fence, evaluator/distrust epoch,
 physical evidence and both capacity ledgers. Provisioning atomically moves
 newly proved capacity into the deficit encumbrance; verified deletion releases
@@ -4668,6 +4670,36 @@ or
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationConflict`.
 Exact retry joins; changed evidence/action/amount conflicts. No remediation
 rewrites the original reassessment, quarantine or distrust record.
+
+The action/result mapping is total and closed:
+
+| Authorized action | Only permitted successful continuation |
+|---|---|
+| ProvisionAdditionalCapacity | ResumableCommit |
+| VerifyDeletion | VerifiedDeletionAndReplan |
+| MigrateToSufficientCapacity | MigratedPlanReadyForReplan |
+| RetainPermanentlyFenced | PermanentlyFencedRetained |
+
+No failed, retryable or Unknown provisioning/migration/deletion attempt may
+consume its grant, select another row or fall through to permanent retention.
+Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAttemptV1`
+records Prepared, ExternalOutcomeUnknown, FailedNoEffect or
+SucceededWithMappedContinuation for the exact action/evidence/fence/
+idempotency. Unknown retains the predecessor object, base reservation, covered
+deficit, readiness/namespace fences and authorization row; bounded
+reconciliation must prove the mapped success or definite no effect. Exact
+retry joins that attempt and changed material conflicts.
+
+RetainPermanentlyFenced requires its own action-bound records/security and
+independent records, legal, custody and capacity quorum/SoD. Its successful
+transaction creates
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityPermanentlyFencedMemberV1`,
+moves the entire base plus covered deficit into that named member at the exact
+EffectiveCharge, records DeficitSettlement=PermanentlyFencedRetained and
+consumes the RetainPermanentlyFenced authorization. It returns no surplus,
+keeps the object/namespace/evaluator/legal-hold fences and is the only explicit
+storage representation of that continuation.
 
 Deficit-remediation and retained-unknown-resolution grants are never reusable
 signed blobs. Each family independently implements AuthorizationStateV1 with
@@ -4914,6 +4946,10 @@ commits with authorization consumption, ledger settlement, state, original-
 quarantine link, audit/outbox and cumulative budget charge. Exact retry joins;
 changed action/evidence/policy/amount/idempotency conflicts. No outcome rewrites
 the quarantine decision or turns late evidence into implicit authority.
+While the lineage is Active/BudgetExhaustedRetained the command binds its
+lineage budget charge; after CompletedWithResidualCustody it instead binds the
+exact ResidualCustodyObligation/budget/transfer result and cannot mutate or
+charge the completed plan lineage.
 
 Every remediation result names exactly one continuation. ResumableCommit binds
 the current replacement-evaluator head, EffectiveCharge and sealed transfer
@@ -4921,8 +4957,12 @@ and permits MarkEligible/Commit even when the fully covered amount exceeds the
 historical plan maximum. VerifiedDeletionAndReplan records
 DeficitSettlement=ReleasedAfterVerifiedDeletion, proves the exact old object
 absent and requires a fresh Replan identity/reservation before any new external
-work. PermanentlyFencedRetained records the full EffectiveCharge and keeps the
-namespace, readiness and legal-hold fences. No generic success result leaves
+work. MigratedPlanReadyForReplan binds authenticated old-object deletion, exact
+new fenced destination/member capacity and a new transfer identity, but cannot
+mutate the current plan or resume its Commit; only a freshly authorized Replan
+may consume it. PermanentlyFencedRetained exists only for the explicit
+RetainPermanentlyFenced action and names the permanently fenced custody member,
+full EffectiveCharge and immutable fences. No generic success result leaves
 the caller to infer which continuation is safe.
 External deletion or transfer is outside the database transaction.
 Only a verified, idempotent terminal physical-disposition receipt may enter the commit payload.
@@ -5969,7 +6009,7 @@ and
 BeginRelease, ReplanCustodyRelease, AbandonCustodyRelease,
 QuarantineUnknownTransfer, MigrateDistrustedEvaluatorReservation, or
 CommitCustodyRelease command for the second; ProvisionAdditionalCapacity,
-VerifyDeletion or MigrateToSufficientCapacity for the third; and
+VerifyDeletion, MigrateToSufficientCapacity or RetainPermanentlyFenced for the third; and
 ConfirmPresent, VerifyDeletion or DeclarePermanentlyUnresolvable for the
 fourth:
 
@@ -6024,13 +6064,20 @@ or
 `MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionChargeReconciliationConflict`.
 Exact admission retry/CAS loss joins the same charge. Competing grants for one
 proposed lineage have distinct candidate generations and are all bounded; only
-the exact winning Issued grant can activate. Expiry or applied revocation
+the exact winning Issued grant can activate. Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionCandidateWinnerMappingV1`
+binds proposed lineage, winning candidate generation/charge/authorization,
+activated plan head/budget and activation settlement identity. Expiry or applied revocation
 moves a non-winning candidate to CleanupPending, never directly to released.
-Cleanup releases ordinary capacity only after authenticated proof that no
-Begin result, plan head, reservation or external effect exists and the
-authorization is terminal. Unknown crash/recovery outcome retains the charge
-and protected work until reconciliation proves either the exact Begin winner
-or permanent no-Begin.
+Cleanup proof is candidate-scoped: no Begin result, plan, reservation or
+external effect may reference the exact losing candidate generation and
+charge; the authoritative head is either absent or its winner mapping names a
+different candidate; and the losing authorization is terminal. Cleanup CASes
+only that candidate's CleanupPending row while rechecking the winner mapping.
+Its domain-separated cleanup settlement identity can never equal the winner's
+activation/lineage-budget settlement identity. Unknown crash/recovery outcome
+retains the charge and protected work until reconciliation proves either that
+candidate is the exact Begin winner or permanent no-Begin for that candidate.
 
 Immutable
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetV1`
@@ -6052,7 +6099,17 @@ maximum before creating durable or external work. Policy, issuer, backend,
 restart, failover, restore and a new grant cannot reset or increase the
 ceiling. Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageDispositionV1`
-is Active, BudgetExhaustedRetained or Completed. A Replan that cannot fit is
+is Active, BudgetExhaustedRetained, CompletedWithoutResidualCustody or
+CompletedWithResidualCustody. Command admission is total:
+
+| Lineage-budget disposition | Admitted command classes |
+|---|---|
+| Active | Normal release, recovery and protected terminalization commands within remaining budget |
+| BudgetExhaustedRetained | Protected reconciliation, revocation, quarantine, retained-member resolution, checkpoint and GC only |
+| CompletedWithoutResidualCustody | Exact replay and authenticated proof/checkpoint maintenance only |
+| CompletedWithResidualCustody | The lineage itself admits only replay/proof maintenance; retained-member resolution, authorization revocation, evidence append, checkpoint and GC execute solely through the transferred residual obligation |
+
+A Replan that cannot fit is
 no-write while its old attempt remains Preparing or CommitEligible so it
 cannot destroy a possible Commit. If the attempt is already Abandoned or
 Superseded, the same expected-version transaction may commit
@@ -6060,6 +6117,27 @@ BudgetExhaustedRetained, its permanent authorization fence and
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetExhaustedResultV1`
 without refund, new transfer or new publication; cleanup of already orphan-
 eligible artifacts remains bounded and permitted.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationV1`
+owns every unknown-transfer member surviving final Commit. Its closed
+`MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationStateV1`
+is Active, Resolved or PermanentlyRetained. Immutable
+`MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationBudgetV1`
+contains the exact remaining precharged resolution/revocation/evidence/
+checkpoint/GC allowance and cannot borrow from or reopen a completed lineage.
+`MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationTransferResultV1`
+binds the member/EffectiveCharge, deficit settlement, namespace fence,
+quarantine and resolution-authorization history, capacity provenance, original
+lineage/plan/budget checkpoint and residual budget.
+
+Final Commit atomically transfers every surviving terminal quarantined member
+and its remaining protected capacity into one independently restorable
+residual obligation before selecting CompletedWithResidualCustody. With no
+survivor it selects CompletedWithoutResidualCustody. After transfer, unknown-
+member resolution and its authorization revocation charge only the residual
+budget; plan-history compaction cannot delete the transfer result or any
+authorization/deficit/fence/provenance needed to restore the obligation.
 
 Every destination-local admission after Begin atomically creates or
 joins
@@ -6075,7 +6153,10 @@ Budget charge and command state share one local transaction for release-
 authorization admission and destination revocation inbox/apply; Stage and
 Verify; reservation extension and reconciliation; seal/seal reconciliation;
 evaluator reassessment/migration and deficit remediation; unknown quarantine/
-resolution; MarkEligible, Abandon and Replan; and orphan admission/GC. Issuer-
+resolution while the lineage is Active/BudgetExhaustedRetained; MarkEligible,
+Abandon and Replan; and orphan admission/GC. After
+CompletedWithResidualCustody, resolution/revocation/evidence/checkpoint/GC
+charges only the transferred residual budget. Issuer-
 only intent creation has no destination budget capability; destination Admit
 or Apply charges before creating its row. Exact retry or CAS-loser join returns
 the stored charge/result and allocates no second amount. Changed material
@@ -6162,7 +6243,7 @@ Replan uses the complete combined rank: authoritative archive head→plan head�
 commit-attempt disposition→publication receipt state→settlement journal head→
 sorted custody-profile heads/evaluator distrust state→sorted custody ledgers→
 sorted reservations/dependencies/external-transfer seal/deficit/unknown-
-resolution rows→Recovery parent ledger→current campaign
+resolution/residual-obligation rows→Recovery parent ledger→current campaign
 slot→sorted old campaign fences→control reserve→history obligation→corruption
 fence→lineage→checkpoint→release authorization→lineage disposition→retention/
 legal-hold/custody authority→budget/preflight/result/audit/outbox. In one
@@ -6226,8 +6307,9 @@ current settlement heads, sorted workspace/
 fence set, every per-leg disposition plan/cost profile/custody-ledger expected
 version/initial maximum/transfer hard maximum and bundle digest. In that same
 local transaction Begin CASes the pre-Begin charge Reserved→
-ActivatedIntoLineageBudget, creates the immutable lineage budget with the
-transferred original amount/settlement identity, charges the balance of the
+ActivatedIntoLineageBudget, CAS-creates the exact candidate winner mapping,
+creates the immutable lineage budget with the transferred original amount/
+settlement identity, charges the balance of the
 preflighted Begin allowance, and atomically creates every required
 CustodyCapacityReservationV1 and moves the
 conservatively calculated maxima from custody Available to TransferPending;
@@ -6239,7 +6321,7 @@ returns canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginResultV1`
 or
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginConflict`.
-Exact retry returns the stored begin result, budget activation and reservation
+Exact retry returns the stored begin result, winner mapping, budget activation and reservation
 set; changed authorization, pre-Begin charge/candidate/bucket, expected
 version, checkpoint, heads, disposition plan, profile, ledger version, maximum,
 bundle or idempotency conflicts without mutation. A crash cannot expose a plan
@@ -6408,8 +6490,10 @@ lineage version/disposition, the
 complete sorted sets of per-workspace physical-disposition receipts, cost
 profiles, evaluator-migration/reassessment/deficit-remediation heads,
 EffectiveCharge/DeficitSettlement heads, exact Sealed transfer receipts/fences
-and TransferPending base plus covered-deficit encumbrances and stable
-idempotency. Under the
+and TransferPending base plus covered-deficit encumbrances, the complete sorted
+terminal residual-member candidates with their remaining protected budgets/
+authority/fence/provenance and expected With/WithoutResidual disposition, and
+stable idempotency. Under the
 identical combined rank, the command reauthenticates publication/membership/
 deletion evidence and every physical-disposition receipt/reservation/profile,
 rechecks every bound version, pinned evaluator artifact/readiness/distrust
@@ -6436,13 +6520,19 @@ WorkspaceReleased becomes WorkspaceOriginalTotal, the exact workspace parent
 member is removed and
 ParentAvailable receives the identical single credit, the workspace becomes
 CustodyReleased, and its custody-release checkpoint/result/audit/outbox
-commits. Unknown keeps the workspace PermanentlyRetained or Quarantined and
-makes the whole commit no-write. The generic lineage settlement never
-duplicates that workspace credit. The lineage becomes Released only when every
-linked workspace and ordinary control-reserve leg is settled in this same
-final ranked transaction, which then commits the final lineage release result,
+commits. An unresolved TransferPending/physical Unknown keeps the workspace
+PermanentlyRetained or Quarantined and makes the whole commit no-write. A
+terminal quarantined unknown-member is different: Commit may proceed only by
+atomically transferring that member, its EffectiveCharge/DeficitSettlement,
+namespace fence, authorization history and remaining protected work into the
+ResidualCustodyObligation above; it returns no capacity. The generic lineage
+settlement never duplicates that workspace credit. The lineage becomes
+Released only when every linked workspace and ordinary control-reserve leg is
+settled or transferred into that residual obligation in this same final ranked
+transaction, which then commits the final lineage release result,
 canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitResultV1`,
+the residual transfer result when present, the exact completed disposition,
 audit and outbox; otherwise all affected predecessor members remain
 encumbered and ReleasePending remains resumable. The bounded workspace set and
 all terminal writes were precharged before ReleasePending. Hot settlement state
@@ -6461,7 +6551,12 @@ coverage relationship, exact settlement membership, every consumed physical-
 disposition receipt, reservation/profile/member conversion and physical/
 custody-ledger conservation, and retains ReclaimPending plus every unsettled
 deficit encumbrance when
-history or deletion proof is missing, forked, rolled back or uncertain. It
+history or deletion proof is missing, forked, rolled back or uncertain.
+CompletedWithResidualCustody restores only when every transfer result,
+residual obligation/budget, member, authorization history, deficit settlement,
+namespace fence and capacity provenance authenticate independently of compacted
+plan rows; otherwise the larger member/charge remains fenced and the node is
+unready. It
 also proves ParentTotal = ParentAvailable + the
 exact restored active-child and pending-successor encumbrance sets and every
 parent/child forward/inverse transfer against settlement membership. Duplicate
@@ -6827,15 +6922,31 @@ one exact Issued row. Admit BeginRelease at every deployment/tenant pre-Begin
 pool boundary; race competing grants, Begin, expiry, revocation, cleanup and
 response loss. Prove exactly one candidate activates into the lineage budget,
 the original bucket/amount transfers without gap or double charge, unknown
-outcome retains capacity, and cleanup requires authenticated no-Begin proof.
+outcome retains capacity, and cleanup requires authenticated exact-candidate
+non-reference plus an absent/different winner mapping.
 Reassess above the historical maximum and exercise ResumableCommit,
-VerifiedDeletionAndReplan and PermanentlyFencedRetained. Commit must move base
+VerifiedDeletionAndReplan, MigratedPlanReadyForReplan and
+PermanentlyFencedRetained. Commit must move base
 plus covered deficit into one EffectiveCharge member and one deficit
 settlement, including after response loss/restore; no emergency unit may be
 stranded, refunded, omitted or counted twice. During seal reconciliation,
 accept SealPending→Open only with a SealDefinitelyNeverCompletedReceipt; delay
 the old provider completion after cancellation and prove it is either
 permanently rejected or local state never reopens.
+Exhaust the four-row remediation action/result matrix. A failed, retryable or
+Unknown provision/migrate/delete attempt retains authorization, predecessor
+state and full charge and cannot select permanent retention. Only the explicit
+RetainPermanentlyFenced action may create the named permanently fenced member;
+fault every base+deficit→member/settlement write and prove conservation.
+Complete lineages with zero, one and the maximum residual unknown members.
+Require WithoutResidual only at zero; otherwise atomically transfer each
+member, remaining budget, authorization history, deficit/fence/provenance and
+select WithResidual. Resolve/revoke/append/checkpoint/GC after plan compaction
+solely through the residual obligation and reject every other completed-
+lineage command. Race many pre-Begin candidates so one Begin wins while all
+expired/revoked losers prove exact candidate non-reference and clean up; fault
+winner mapping/CAS/settlement identity and prove no loser releases or aliases
+the winning charge.
 
 Exit criteria: successful import proves complete semantic and integrity parity.
 `v0.30.0 implementation stop reached. Run pentest for this exact commit.`

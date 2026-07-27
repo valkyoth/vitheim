@@ -32,6 +32,14 @@ All notable Vitheim changes are documented here. The format follows
   and proved-no-Begin cleanup for losing candidates.
 - Required permanent provider proof that an old seal/completion can never
   succeed before SealPending may reopen under a newer fence.
+- Added a total deficit-remediation action/continuation matrix, bounded attempt
+  state, explicit permanent-retention authority and a named full-charge
+  permanently fenced custody member.
+- Split completed release lineages by residual-custody presence and added
+  independent residual obligations carrying surviving member, budget,
+  authorization, deficit, fence and capacity provenance.
+- Made losing pre-Begin cleanup exact-candidate scoped under a durable winner
+  mapping with non-aliasing activation and cleanup settlement identities.
 - Made every custody Replan repeat aggregate backend feasibility and atomically
   reserve replacement, future-Commit and retained-history capacity under a
   non-resettable cumulative plan-lineage budget with authenticated compaction.

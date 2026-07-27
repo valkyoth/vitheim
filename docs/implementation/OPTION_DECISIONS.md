@@ -924,6 +924,29 @@ amount and settlement identity into the new lineage budget. Expired/revoked
 non-winners clean up only after proof no Begin result or effect exists; unknown
 outcome retains the charge.
 
+Freeze a total deficit-remediation action/result matrix. Provisioning can only
+resume Commit; verified deletion can only require Replan; migration produces a
+distinct migrated-plan-ready-for-Replan continuation; permanent fenced
+retention requires its own authorized action. Failed, retryable or Unknown
+work retains the predecessor, charge and non-consumed grant. Only explicit
+retention creates the named permanently fenced custody member and atomically
+settles the full EffectiveCharge into it.
+
+Replace ambiguous Completed lineage-budget semantics with
+CompletedWithoutResidualCustody and CompletedWithResidualCustody. Final Commit
+transfers every surviving terminal unknown member, its remaining protected
+work, authorization history, deficit settlement, namespace fence and capacity
+provenance into a dedicated independently restorable residual obligation.
+Later resolution/revocation/evidence/checkpoint/GC charges that obligation;
+the completed lineage admits replay/proof maintenance only.
+
+Make pre-Begin cleanup candidate-scoped. A durable winner mapping binds the
+activated candidate. Losing cleanup proves no artifact references its exact
+generation/charge, rechecks an absent or different-winner head, requires
+terminal authorization and CASes only its CleanupPending row. Activation and
+cleanup settlement identities are domain-separated, so a losing candidate can
+never release the winner.
+
 Freeze one durable plan-bound commit attempt with Preparing, CommitEligible,
 Superseded, Abandoned and Consumed. MarkCommitEligible alone moves Preparing
 after rechecking the exact plan, begin/version, verified publication,

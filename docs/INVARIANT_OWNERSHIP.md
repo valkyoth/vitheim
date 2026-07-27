@@ -320,7 +320,9 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationInboxRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationTombstoneRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationOperationResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAttemptRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityPermanentlyFencedMemberRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityLedgerRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationReconciliationResultRow`,
@@ -354,11 +356,15 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionBudgetRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionChargeRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionCandidateWinnerMappingRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionChargeReconciliationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageDispositionRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetExhaustedResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageCheckpointRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetChargeRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationBudgetRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationTransferResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAuthorizationFenceRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityResultRow`,
@@ -449,10 +455,18 @@ but preserves original quarantine and requires legal-hold permission plus exact
 base/emergency settlement.
 Both deficit remediation and unknown resolution use complete destination-
 applied authorization state/sequence/inbox/tombstone/outcome families.
+Remediation has a total action/result matrix; only explicit permanent-retention
+authority creates the named permanently fenced member at full EffectiveCharge,
+while failed/Unknown work retains the predecessor and charge.
 BeginRelease admission charges a bounded pre-Begin deployment/tenant pool; the
 winning Begin transaction transfers that same reservation into the newly
 created lineage budget, while terminal non-winners require proved no-Begin
-cleanup.
+cleanup scoped to their exact candidate and winner mapping.
+Final Commit selects completed with or without residual custody. Every
+surviving terminal unknown member and its protected resolution budget/
+authorization/deficit/fence provenance atomically transfers into an
+independently restorable residual obligation; completed-lineage history never
+accepts that later mutation directly.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -529,7 +543,9 @@ late completion after SealPending reopening, root/size/ETag substitution,
 corrected-charge clamp, hidden/uncovered deficit, stranded or omitted covered
 deficit at Commit, emergency-reserve borrowing, reusable/incomplete deficit-
 remediation or unknown-resolution authority, pre-Begin budget bootstrap bypass/
-double charge,
+double charge, action/result substitution, implicit permanent retention,
+unrepresented permanently fenced capacity, completed-lineage residual-budget
+dead end/reset, global instead of candidate-scoped losing cleanup,
 released-reservation lineage stranding, plan rollback/ID recreation/double
 release, old grant/receipt replay, authorization-loss-as-abandonment,
 commit-eligible orphan admission, receipt Commit/GC race, collected-

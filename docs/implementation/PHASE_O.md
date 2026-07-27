@@ -182,13 +182,18 @@ clamps corrected charge; positive deficit debits protected emergency capacity
 or fences readiness until separately authorized remediation. EffectiveCharge
 joins base plus covered deficit and Commit atomically settles both into one
 member; remediation and unknown resolution use complete destination-applied
-authorization/revocation families. Permanent Unknown is
+authorization/revocation families. Remediation has a total action/continuation
+matrix; failure retains predecessor/charge and explicit retention creates the
+named permanently fenced member. Permanent Unknown is
 independently converted at full charge into a transfer/namespace-fenced member
 with retained legal-hold evidence and no late-evidence refund. Aggregate
 platform/tenant ceilings and separate confirm/delete/permanently-unresolvable
 authorization preserve quarantine and legal-hold denial. BeginRelease Admit
 charges a bounded pre-Begin pool whose winning charge transfers into the new
-lineage budget; non-winner cleanup requires no-Begin proof. Begin
+lineage budget; non-winner cleanup is candidate-scoped under a winner mapping.
+Final Commit selects With/WithoutResidualCustody and transfers surviving
+terminal unknown members plus protected budget/authority/deficit/fence
+provenance into independent residual obligations. Begin
 creates plan generation 1 and Preparing. Independently authorized Replan alone
 recovers a terminally reconciled plan by fencing/superseding old attempts,
 grants and receipts and creating a new bundle/reservation set; Abandon fences
@@ -2241,7 +2246,10 @@ clamped above plan maximum, emergency-reserve exhaustion or uncovered-ready
 state, omitted/stranded/double-counted covered deficit at final Commit,
 reusable/incomplete remediation or resolution authority, pre-Begin bootstrap
 gap/double activation/early cleanup, late provider completion after seal
-reopen, cumulative budget-charge omission/double/early settlement, retained-
+reopen, remediation action/result substitution or failure→retention fall-
+through, unnamed permanently fenced capacity, completed-lineage residual
+budget dead end/reset, global loser cleanup or winner release, cumulative
+budget-charge omission/double/early settlement, retained-
 unknown resolution refund/quarantine rewrite/legal-hold bypass and missing
 all-six-action result parity, Unknown conversion, credit without
 physical disposition, issuer sequence races, absent-state writes, late-
