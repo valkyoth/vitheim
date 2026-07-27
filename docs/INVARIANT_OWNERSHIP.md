@@ -417,12 +417,16 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationGcResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReceiptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkGuardGenerationRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkGenerationDispositionRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSubmissionClaimRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessProposalRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkDispositionRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessConformanceProfileRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessConformanceResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReconciliationBudgetRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAttemptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAttemptConcurrencySettlementRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAdmissionResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkPrepareResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReconciliationResultRow`,
@@ -566,7 +570,8 @@ MarkEligible verifies the complete chain or checkpointed prefix plus suffix
 against the locked current head before full validation may restore eligibility;
 restrictive work within the admitted lifetime bound never waits. Begin/Replan
 proves overflow-safe headroom across fixed `u128` attempt-set, revalidation,
-canonical capacity-checkpoint and capacity-replay-head counters and reserves
+canonical capacity-checkpoint and capacity-replay-head counters plus capacity-
+archive guard generation and reserves
 terminal values solely for an absorbing exhaustion fence. The archive counters
 form one pair, start equal, advance together only on the successful capacity-
 archive Commit charge named ArchiveFinalize (never FinalizeGc), and share one
@@ -604,18 +609,28 @@ excludes all future signature/receipt and Reconcile/Commit result digests.
 Receipt binds the signed proposal, Reconcile binds proposal+receipt and Commit
 binds proposal+receipt+Reconcile; a generated schema-reference/hash-dependency
 graph rejects cycles, signature inclusion and encoding/epoch substitution.
-Prepare first installs a charged local
-PreparePending writer fence; witness reconciliation may reopen it only with
-authenticated definitely-not-witnessed evidence, never timeout. Every
+Prepare first CASes Unprepared(`g`)→PreparePending(`g`), persists a non-bearer
+submission claim and returns the sole process-local unreconstructable
+submission permit; every retry/uncertain path is query-only. Witnessed(`g`)
+remains fenced until ArchiveFinalize atomically installs replay head, deletes
+captured rows, writes Committed(`g`) and opens Unprepared(`g + 1`).
+Authenticated negative reconciliation writes its tombstone and opens the next
+generation without identity reuse. Every
 immediate/delayed/query/replay outcome enters exclusively through Reconcile;
 one stable disposition ID owns one charge/result and changed material
 conflicts. Prepare, terminal disposition Reconcile and ArchiveFinalize Commit
 are three independently replayable hot charges/head advances. Begin/Replan
 reserves non-borrowable Recovery reconciliation capacity over calls, bytes,
-work, elapsed time and concurrency; each stable query admission consumes its
-own class charge/budget/counter before one unreconstructable process-local
-permit. Timeout/absence creates no disposition charge, and exhausted budget
-forbids traffic without inferring unwitnessed. A governed tenant/lineage witness profile freezes predecessor CAS,
+work, elapsed time and concurrency. Query IDs derive from guard generation plus
+bounded admission writer sequence, not another counter. Admission stores
+PermitIssued before one process-local permit; Reconcile stores one closed
+outcome, terminalizes the attempt and settles concurrency once. Admission and
+terminalization are separately charged, with authenticated evidence optionally
+co-committing the disposition, so conservation is `3 + 2q - e`. Unknown/
+transport/deadline remains read-only only for the disposition. Trusted-time
+profile/uncertainty/continuity/epoch binds backoff and elapsed consumption;
+rollback never replenishes it. Exhausted budget forbids traffic without
+inferring unwitnessed. A governed tenant/lineage witness profile freezes predecessor CAS,
 non-equivocation, signatures/rotation/distrust, negative evidence, durability
 and failover. The witnessed
 predecessor stays fenced: finalization exact-commits it or recovery remains
@@ -731,9 +746,14 @@ guard, replay-head-first lock inversion, direct witness callback outside
 Reconcile, immediate/query disposition mismatch, duplicate/missing disposition
 charge, proposal/signature/result dependency cycle, ambiguous encoding or
 cross-epoch substitution, missing one of the three core hot charges/head
-advances, unbounded query traffic, duplicate/reconstructed query permit,
-backoff/call/byte/work/time/concurrency bypass, budget exhaustion interpreted
-as unwitnessed, witness predecessor/receipt/profile substitution, equivocation
+advances, Witnessed left current after Commit, split replay/delete/tombstone/
+next-guard rollover, stale generation or old identity reuse, reconstructed
+submission permit or witness resubmission, unbounded query traffic, missing/
+duplicate query terminalization or concurrency settlement, outcome
+substitution, invented independent query counter, trusted-time rollback,
+duplicate/reconstructed query permit, backoff/call/byte/work/time/concurrency
+bypass, budget exhaustion interpreted as unwitnessed, witness predecessor/
+receipt/profile substitution, equivocation
 or forged negative evidence, capacity archive sequence gap/wrap/equality failure,
 one-sided pair sentinel, FinalizeGc counted as ArchiveFinalize, capacity
 exhaustion, missing/reset capacity state,

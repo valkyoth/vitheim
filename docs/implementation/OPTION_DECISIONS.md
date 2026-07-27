@@ -1111,8 +1111,11 @@ Reconcile result binds proposal+receipt, and Commit binds proposal+receipt+
 Reconcile result. A generated schema-reference/hash-dependency graph must be
 acyclic and reject signature inclusion, ambiguous encoding and cross-epoch
 substitution. Prepare first consumes its admitted charge
-and installs a local PreparePending writer fence under the canonical locks;
-only then may external traffic begin. The adapter never mutates state: every
+and advances generation `g` from Unprepared to PreparePending under the
+canonical locks. It persists a non-bearer submission claim and returns one
+process-local unreconstructable submission permit; every retry, crash,
+uncertainty and takeover is query-only and can never resubmit. Only then may
+external traffic begin. The adapter never mutates state: every
 immediate, delayed, queried or replayed outcome enters exclusively through
 Reconcile. One stable disposition ID owns one terminal disposition charge/
 state/mutation/head/result, while the subsequent archive Commit has its own
@@ -1120,9 +1123,18 @@ distinct charge. Exact retry rejoins; changed receipt/predecessor/publication/
 manifest/successor/profile material conflicts. Timeout/absence is read-only
 and stays fenced. Begin/Replan also reserves a non-borrowable Recovery
 HighWatermarkReconciliationBudget with hard call/byte/work/elapsed/concurrency
-bounds, non-wrapping stable query-attempt IDs and durable backoff. Each query
-admission consumes its own class charge/budget/head before returning one
-process-local unreconstructable permit; replay returns no permit. Exhaustion
+bounds and durable trusted-time backoff. Query IDs derive from guard generation
+plus the already bounded query-admission writer-charge sequence, so no new
+counter/sentinel exists. Each query admission consumes its own class charge/
+budget/head, records Admitted→PermitIssued and returns one process-local
+unreconstructable permit; replay returns no permit. Reconcile records
+InvocationReturned→ResponseImported with a closed WitnessedReceipt/
+DefinitelyNotWitnessedReceipt/Unknown/TransportFailure/DeadlineExceeded
+outcome, one query-terminalization charge/head and exact-once concurrency
+settlement. Only authenticated positive/negative evidence co-advances the
+witness disposition; other outcomes durably close the attempt without doing
+so. Deadline/backoff binds trusted-time profile, uncertainty, continuity and
+epoch; rollback never replenishes elapsed capacity. Exhaustion
 fences all further traffic without inferring definitely-not-witnessed. A
 witnessed candidate cannot be orphaned: crash recovery exact-
 completes the deterministic successor or stays unready. Finalization locks
@@ -1130,16 +1142,22 @@ routing→residual-state→capacity-state→attempt-set→capacity-archive-high-
 watermark→publication→capacity-archive-replay-head and atomically consumes one
 history-lifecycle charge, advances capacity/head, CASes Verified to
 ConsumedByCommit, installs the witnessed replay head, deletes exact captured
-predecessor charges and writes outputs. Its charge remains hot. Restore reads
+predecessor charges, writes immutable Committed(`g`) and installs
+Unprepared(`g + 1`) bound to the new replay head/watermark. Authenticated
+negative reconciliation likewise tombstones `g` and opens `g + 1` without
+identity reuse. Replay installation, deletion and guard rollover are one
+transaction; terminal generations remain for retry/conflict. Its charge remains hot. Restore reads
 the independent greatest watermark before local heads; a locally consistent
 older snapshot is never authoritative.
 
 The core witnessed path owns three independent hot history-lifecycle charges
 and head advances: Prepare, terminal disposition Reconcile and ArchiveFinalize
 Commit. Checkpoint coverage excludes all three and every later query-admission
-charge. With `q` admitted recovery queries the protocol contributes `3 + q`
-head advances; timeout/absence creates neither the terminal disposition charge
-nor authority to continue after query-budget exhaustion.
+and terminalization charge. Every query owns both; if its authenticated
+terminalization is the disposition Reconcile, the two meanings co-commit under
+one charge. The exact equation is `3 + 2q - e`, with `e ∈ {0, 1}`. Timeout/
+absence creates no disposition charge but must terminalize its attempt and
+settle concurrency before another query.
 
 Require a governed current passing witness conformance profile before Prepare.
 It binds tenant/lineage authority identity, expected-predecessor CAS, non-
@@ -1148,8 +1166,10 @@ definitely-not-witnessed semantics, read-after-write durability and failover.
 Unsupported/stale profiles deny before the local fence or external traffic.
 
 Use one universal routing→residual→capacity→attempt-set→high-watermark→
-publication→replay-head order. Begin creates a stable Unprepared guard. Every
-ordinary writer must lock/read it and deny PreparePending/Witnessed before
+publication→replay-head order. Begin creates Unprepared generation zero; only
+Commit or authenticated negative reconciliation terminalizes a generation and
+installs the next Unprepared guard. Every ordinary writer must lock/read the
+current generation and deny PreparePending/Witnessed before
 omitting unrelated publication/replay rows; archive writers take all applicable
 rows in order. Backend acquisition traces require the common prefix through
 the guard for ordinary writers and the complete high-watermark→publication→
@@ -1157,7 +1177,9 @@ replay-head suffix for archive writers. Any acquired subset preserves relative
 rank, and no omitted earlier-ranked row may be acquired later.
 
 Include canonical capacity-checkpoint and replay-head `u128` sequences in the
-capacity proof/state as one pair. They start equal and advance together exactly
+capacity proof/state as one pair and include the non-wrapping guard generation
+plus every admitted Commit/abort rollover. Query IDs use the bounded writer
+sequence rather than a counter. The archive sequences start equal and advance together exactly
 once only for the successful capacity-archive Commit charge named
 ArchiveFinalize; FinalizeGc never qualifies and proposed/orphan attempts use
 stable IDs without consuming a canonical value. Prove current plus every

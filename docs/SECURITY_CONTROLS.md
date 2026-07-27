@@ -407,7 +407,8 @@ audit decision.
   authenticated checkpoint plus suffix and bind its final current root.
   Begin/Replan requires an overflow-checked lifetime-capacity proof over fixed
   `u128` attempt-set/revalidation/canonical capacity-checkpoint/capacity-
-  replay-head counters and reserves each `u128::MAX` exclusively for an
+  replay-head counters plus capacity-archive guard generation and reserves each
+  `u128::MAX` exclusively for an
   absorbing exhaustion fence. The archive sequences form one pair with one
   atomic pair sentinel and advance together only on successful capacity-
   archive Commit (`ArchiveFinalize`), never FinalizeGc. Insufficient headroom denies before
@@ -426,8 +427,13 @@ audit decision.
   archive loss returns typed historical-state-unavailable without a charge or
   head advance. Publication uses a bounded manifest/cursor/budget and closed
   Staged→Verified→Consumed or Orphan→Collected receipt machine funded by
-  non-borrowable Recovery capacity. A charged local PreparePending fence
-  precedes external traffic; only definitely-not-witnessed evidence reopens it.
+  non-borrowable Recovery capacity. The guard is generationed. Prepare moves
+  Unprepared(`g`)→PreparePending(`g`) and returns the sole process-local
+  unreconstructable submission permit; retries are query-only. Witnessed(`g`)
+  can end only when Commit atomically installs replay head, deletes captured
+  rows, records Committed(`g`) and opens Unprepared(`g + 1`). Authenticated
+  negative Reconcile similarly tombstones `g` and opens `g + 1`; identities
+  never cross generations. A charged local fence precedes external traffic.
   All external outcomes enter only through Reconcile with one disposition
   ID/charge/result. The authority signs an acyclic canonical proposal that
   excludes its future receipt and Reconcile/Commit result digests; receipt,
@@ -435,14 +441,19 @@ audit decision.
   verification rejects cycles, signature inclusion and encoding/epoch
   substitution. Prepare, terminal Reconcile and ArchiveFinalize Commit remain
   three distinct hot charges/head advances. Begin/Replan reserves bounded non-
-  borrowable Recovery query capacity; each durable stable-ID admission consumes
-  one separate class charge before one process-local unreconstructable permit.
-  Timeout/absence is read-only, and exhausted calls/bytes/work/time/concurrency
+  borrowable Recovery query capacity. Stable IDs derive from guard generation
+  plus admission writer sequence, adding no counter. Each admission and
+  terminalization is separately charged; Reconcile stores one closed outcome
+  and settles concurrency exactly once. Positive/negative evidence may
+  co-commit the disposition; other outcomes remain read-only only for that
+  disposition. The exact equation is `3 + 2q - e`. Trusted-time profile,
+  uncertainty, continuity and epoch bind deadline/backoff; rollback cannot
+  replenish elapsed capacity. Exhausted calls/bytes/work/time/concurrency
   permit no traffic and never imply unwitnessed. A governed tenant/lineage witness profile freezes
   predecessor CAS, non-equivocation, signatures/rotation/distrust, negative
   evidence, durability and failover. An independent precommit high-watermark witnesses the exact successor; restore reads it first, and final witnessed
-  head installation plus exact captured deletion is atomic and leaves the
-  compaction charge hot. Begin
+  head installation, exact captured deletion, terminal tombstone and next
+  guard are atomic and leave the compaction charge hot. Begin
   creates plan generation 1 and PreparingOpen. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new

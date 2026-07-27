@@ -754,7 +754,8 @@ restore, failover, and release evidence.
    never blocked for correctly admitted work and stale eligibility never
    commits. Begin/Replan uses an overflow-checked lifetime-capacity proof over
    fixed `u128` attempt-set/revalidation/canonical capacity-checkpoint/
-   capacity-replay-head counters and reserves each `u128::MAX` only for an
+   capacity-replay-head counters plus capacity-archive guard generation and
+   reserves each `u128::MAX` only for an
    absorbing exhaustion fence. The archive sequences form one pair with one
    pair sentinel and advance together only on the successful capacity-archive
    Commit charge named ArchiveFinalize, never FinalizeGc. Insufficient headroom denies before
@@ -775,8 +776,15 @@ restore, failover, and release evidence.
    sentinel state and every conservation equation. A dedicated manifest,
    bounded proof/cursor and closed Staged→Verified→ConsumedByCommit or
    OrphanGcEligible→Collected receipt machine make verification/cleanup
-   adapter-independent and Recovery-funded. A charged local PreparePending
-   fence precedes external traffic; unknown witness state remains fenced. Every
+   adapter-independent and Recovery-funded. Guard state is generationed:
+   Unprepared(`g`)→PreparePending(`g`)→Witnessed(`g`)→Committed(`g`), or
+   definitely-unwitnessed abort; Commit/abort atomically retains the terminal
+   tombstone and opens Unprepared(`g + 1`). Replay installation, captured
+   deletion and Commit rollover cannot split, so successful archival resumes
+   ordinary writers and old identities/generations cannot replay. A charged
+   PreparePending fence precedes external traffic and returns exactly one
+   process-local non-bearer submission permit; retry/uncertainty is query-only.
+   Unknown witness state remains fenced. Every
    immediate/delayed/query/replay outcome enters only through Reconcile under
    one stable disposition ID/charge/result. A canonical acyclic witness
    proposal excludes the future signature/receipt and Reconcile/Commit result
@@ -784,18 +792,23 @@ restore, failover, and release evidence.
    and Commit binds proposal+receipt+Reconcile. Generated dependency-graph
    checks reject cycles, signature inclusion and encoding/epoch substitution.
    Prepare, terminal Reconcile and ArchiveFinalize Commit are three distinct
-   hot charges/head advances; `q` bounded query admissions make exactly
-   `3 + q`. Begin/Replan reserves a non-borrowable Recovery query budget over
-   calls/bytes/work/time/concurrency. Each stable admission precedes one
-   unreconstructable process-local permit; timeout/absence is read-only,
-   exhaustion permits no more traffic and never means unwitnessed. A governed tenant/lineage witness
+   hot charges/head advances. Begin/Replan reserves a non-borrowable Recovery
+   query budget over calls/bytes/work/time/concurrency. Query IDs derive from
+   the bounded admission charge sequence, not another counter. Each admission
+   precedes one unreconstructable permit; Reconcile durably imports a closed
+   outcome and settles concurrency exactly once. Unknown is read-only only for
+   the witness disposition. Query admission+terminalization give exact
+   `3 + 2q - e` conservation. Trusted-time profile/uncertainty/continuity/epoch
+   binds deadlines/backoff; rollback cannot replenish capacity. Exhaustion
+   permits no more traffic and never means unwitnessed. A governed tenant/lineage witness
    profile freezes CAS, non-equivocation, signatures/rotation/distrust,
    authenticated negative evidence, durability and failover. An independent
    authority witnesses the exact proposed successor before final CAS; afterward it
    must exact-commit or remain unready. Restore reads that external watermark
    before local state. Only its greatest committed replay head plus hot suffix
-   is authoritative; unavailable history fails closed, and witnessed head-CAS
-   plus captured deletion is atomic while the compaction charge remains hot.
+   is authoritative; unavailable history fails closed, and witnessed head-CAS,
+   captured deletion, Committed tombstone and next guard are atomic while the
+   compaction charge remains hot.
    Begin creates plan generation 1 and a PreparingOpen commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and

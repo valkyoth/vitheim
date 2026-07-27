@@ -95,9 +95,13 @@ All notable Vitheim changes are documented here. The format follows
   governed witness backend semantics and made archive exhaustion one atomic
   sequence-pair fence.
 - Made witness commitments an acyclic proposal→receipt→Reconcile→Commit graph,
-  exposed the exact three-plus-query charge equation, bounded unknown-state
+  exposed the exact core/query charge equation, bounded unknown-state
   queries with one-shot process-local permits and aligned trace tests with
   ordinary-row omission.
+- Made capacity-archive guards generational so Commit/abort atomically opens
+  the next archive cycle, gave Prepare the sole witness-submission permit, and
+  closed every query outcome with exact-once concurrency settlement,
+  writer-derived identity and trusted-time backoff.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.

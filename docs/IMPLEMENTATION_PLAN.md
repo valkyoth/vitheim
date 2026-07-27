@@ -424,7 +424,8 @@ advance evidence. Full MarkEligible revalidation verifies the chain or
 checkpointed prefix plus suffix and binds its terminal root without blocking
 restrictive work admitted by the proven lifetime bound. Begin/Replan proves
 overflow-safe headroom across fixed `u128` attempt-set/revalidation/canonical
-capacity-checkpoint/capacity-replay-head counters, reserving each terminal value
+capacity-checkpoint/capacity-replay-head counters plus capacity-archive guard
+generation, reserving each terminal value
 solely for an absorbing exhaustion fence. The archive sequences form one pair
 with one pair sentinel and advance together only on successful capacity-
 archive Commit (`ArchiveFinalize`), never FinalizeGc.
@@ -445,23 +446,32 @@ plus hot suffix is the only authoritative lookup. Same-material retry returns
 the historical result, changed material conflicts, and missing archive evidence
 fails closed without charging or advancing a head. A dedicated immutable
 manifest, proof budget, cursor and closed Staged/Verified/Consumed-or-Orphan/
-Collected receipt machine own publication. A charged local PreparePending
-fence precedes external traffic and unknown witness state never reopens. Every
+Collected receipt machine own publication. A generationed guard moves
+Unprepared(`g`)→PreparePending(`g`)→Witnessed(`g`)→Committed(`g`) or terminal
+negative abort. Commit/abort atomically retain the old tombstone and install
+Unprepared(`g + 1`); replay installation and captured deletion cannot split
+from Commit rollover. Prepare returns the only process-local non-bearer
+submission permit; uncertainty and retry are query-only. Unknown witness state
+never reopens. Every
 external result enters only through Reconcile under one stable disposition
 ID/charge/result. An acyclic canonical proposal excludes future signature/
 receipt and Reconcile/Commit result digests; the receipt binds the signed
 proposal, Reconcile binds proposal+receipt and Commit binds proposal+receipt+
 Reconcile. Generated dependency-graph checks reject cycles and encoding/epoch
 substitution. Prepare, terminal Reconcile and ArchiveFinalize Commit are three
-distinct hot charges/head advances. A Recovery-funded bounded query budget
-adds one separately classed charge per stable admission before one
-unreconstructable process-local permit; timeout/absence is read-only and
-exhaustion never implies unwitnessed. A governed tenant/lineage witness profile freezes predecessor
+distinct hot charges/head advances. A Recovery-funded query budget derives
+stable IDs from the bounded admission writer sequence. Admission and
+terminalization are separate charges; Reconcile imports one closed outcome and
+settles concurrency once, yielding `3 + 2q - e`. Unknown is read-only only for
+the witness disposition. Trusted-time profile/uncertainty/continuity/epoch
+binds deadline/backoff, and rollback cannot replenish capacity. Exhaustion
+never implies unwitnessed. A governed tenant/lineage witness profile freezes predecessor
 CAS, non-equivocation, signature/rotation/distrust, authenticated negative
 evidence, durability and failover. An independent high-watermark authority witnesses the exact proposed successor before final CAS; restore
 reads it before local state, and a witnessed successor exact-commits or stays
-unready. Final witnessed head installation and captured-row deletion are one
-transaction whose own history-lifecycle charge remains hot. Begin creates plan generation 1 and
+unready. Final witnessed head installation, captured-row deletion, old
+generation tombstone and next Unprepared guard are one transaction whose own
+history-lifecycle charge remains hot. Begin creates plan generation 1 and
 PreparingOpen. Terminal
 reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old

@@ -222,7 +222,8 @@ verifies the chain or checkpointed prefix plus suffix and reruns the full
 validation against its terminal current root without blocking restrictive
 work within its admitted lifetime bound. Begin/Replan proves overflow-safe
 headroom over fixed `u128` attempt-set/revalidation/canonical capacity-
-checkpoint/capacity-replay-head counters and reserves each terminal value only
+checkpoint/capacity-replay-head counters plus capacity-archive guard generation
+and reserves each terminal value only
 for an absorbing exhaustion fence. The archive sequences advance together once
 as one pair only for successful capacity-archive Commit (`ArchiveFinalize`),
 never FinalizeGc, and use one atomic pair sentinel. Insufficient headroom
@@ -241,8 +242,11 @@ publication/key/encoding epochs. The greatest verified head plus hot suffix is
 authoritative; missing history fails closed without charging/advancing.
 Publication uses an immutable manifest, bounded proof/cursor, closed Staged/
 Verified/Consumed-or-Orphan/Collected states and Recovery-funded typed
-commands. A charged local PreparePending fence precedes external traffic and
-only authenticated definitely-not-witnessed evidence may reopen it. All
+commands. A generationed guard retains terminal Committed/Aborted tombstones;
+Commit or authenticated negative Reconcile atomically opens the next
+Unprepared generation, and replay install/delete cannot split from rollover.
+Prepare persists a non-bearer claim and returns the sole process-local
+submission permit; retry/uncertainty is query-only. All
 immediate/delayed/query/replay outcomes enter exclusively through Reconcile
 under one disposition ID/charge/result. An acyclic canonical witness proposal
 excludes future signature/receipt and Reconcile/Commit result digests; receipt,
@@ -250,14 +254,18 @@ Reconcile and Commit add only forward dependencies, mechanically checked
 against cycles and encoding/epoch substitution. Prepare, terminal Reconcile
 and ArchiveFinalize Commit are three distinct hot charges/head advances. A
 non-borrowable Recovery query budget bounds calls/bytes/work/time/concurrency;
-each stable durable admission precedes one unreconstructable process-local
-permit, timeout/absence is read-only and exhaustion never means unwitnessed. A governed tenant/lineage witness
+IDs derive from guard generation plus bounded admission charge sequence.
+Admission and terminalization are separately charged; Reconcile stores the
+closed outcome and settles concurrency once, with authenticated evidence able
+to co-commit disposition. Exact conservation is `3 + 2q - e`. Trusted-time
+profile/uncertainty/continuity/epoch binds backoff; rollback never replenishes
+capacity. Exhaustion never means unwitnessed. A governed tenant/lineage witness
 profile freezes predecessor CAS, non-equivocation, signatures/rotation/
 distrust, negative evidence, durability and failover. An independent authority
 witnesses the exact proposed successor before final CAS;
 restore reads that watermark before local state, and the
-witnessed successor exact-commits or remains unready. Final head installation
-plus exact captured deletion is atomic while its own charge stays hot. Replan
+witnessed successor exact-commits or remains unready. Final head installation,
+exact captured deletion, old tombstone and next guard are atomic while its own charge stays hot. Replan
 carries archived and hot consumption.
 Begin creates plan generation 1 and
 PreparingOpen.

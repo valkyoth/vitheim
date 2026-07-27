@@ -831,7 +831,8 @@ the chain or checkpointed prefix plus suffix and reruns the full validation
 against its terminal current root without blocking restrictive work. Begin
 or Replan proves overflow-safe lifetime headroom over fixed `u128`
 attempt-set/revalidation/canonical capacity-checkpoint/capacity-replay-head
-counters and reserves each terminal value only for an absorbing exhaustion
+counters plus capacity-archive guard generation and reserves each terminal
+value only for an absorbing exhaustion
 fence. The archive sequences form one pair, advance only for successful
 capacity-archive Commit (`ArchiveFinalize`), never FinalizeGc, and use one
 atomic pair sentinel.
@@ -852,22 +853,29 @@ authoritative: exact retry returns the old result, changed material conflicts,
 and unavailable history denies without a charge or head advance. Publication
 has an immutable manifest, bounded proof/cursor, closed Staged/Verified/
 Consumed-or-Orphan/Collected states and non-borrowable Recovery-backed typed
-commands. A charged local PreparePending fence precedes external traffic and
-unknown witness status remains fenced. All immediate/delayed/query/replay
+commands. A generationed guard retains immutable Committed/Aborted tombstones;
+Commit/negative Reconcile atomically opens the next Unprepared generation, and
+replay install/delete cannot split from rollover. Prepare alone persists the
+non-bearer claim and returns one process-local submission permit; uncertainty
+is query-only. Unknown witness status remains fenced. All immediate/delayed/query/replay
 outcomes enter exclusively through Reconcile with one disposition ID/charge/
 result. An acyclic canonical proposal excludes all future signature/receipt
 and Reconcile/Commit result digests; receipt, Reconcile and Commit add only
 forward dependencies, and generated graph tests reject cycles plus encoding/
 epoch substitution. Prepare, terminal Reconcile and ArchiveFinalize Commit are
 three distinct hot charges/head advances. A non-borrowable Recovery query
-budget bounds calls/bytes/work/time/concurrency, and each stable durable
-admission precedes one unreconstructable process-local permit. Timeout/absence
-is read-only; exhaustion forbids traffic and never implies unwitnessed. A governed tenant/lineage witness profile freezes predecessor CAS,
+budget bounds calls/bytes/work/time/concurrency. IDs derive from guard
+generation plus admission charge sequence. Admission and terminalization are
+separately charged; Reconcile stores one closed outcome and settles concurrency
+once, with authenticated resolution co-committing disposition. Conservation is
+`3 + 2q - e`. Trusted-time profile/uncertainty/continuity/epoch binds backoff,
+and rollback never replenishes capacity. Exhaustion never implies unwitnessed. A governed tenant/lineage witness profile freezes predecessor CAS,
 non-equivocation, signatures/rotation/distrust, negative evidence, durability
 and failover. An independent authority witnesses the exact successor before
 final CAS; restore reads it before local state, and the witnessed successor exact-
-commits or stays unready. Witnessed head installation and captured deletion are
-one transaction whose own charge stays hot; Replan carries all consumption.
+commits or stays unready. Witnessed head installation, captured deletion,
+terminal generation and next guard are one transaction whose own charge stays
+hot; Replan carries all consumption.
 Begin creates plan generation 1 and PreparingOpen. Independently
 authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
@@ -1156,10 +1164,14 @@ rollback below the external watermark, prepared successor abandonment,
 ordinary guard omission, replay-head-first inversion, direct callback witness
 import, duplicate/missing disposition charge, immediate/query result mismatch,
 witness proposal/result/signature dependency cycle, alternate encoding or
-cross-epoch substitution, missing one of three core hot charges, `3 + q`
-conservation mismatch, unbounded query traffic, stable-attempt permit
-reconstruction, backoff or call/byte/work/time/concurrency bypass, query
-exhaustion treated as unwitnessed, witness equivocation, stale signer/rotation/
+cross-epoch substitution, missing one of three core hot charges, `3 + 2q - e`
+conservation mismatch, Witnessed left current after Commit, split replay/delete/
+tombstone/next-guard rollover, stale generation or old identity reuse,
+submission permit reconstruction or witness resubmission, missing/duplicate
+query terminalization/concurrency settlement, outcome substitution, invented
+query counter, trusted-time rollback, query permit reconstruction, backoff or
+call/byte/work/time/concurrency bypass, query exhaustion treated as
+unwitnessed, witness equivocation, stale signer/rotation/
 distrust, forged negative evidence,
 capacity archive sequence-pair wrap/gap/equality failure, one-sided pair
 sentinel or FinalizeGc counted as ArchiveFinalize,
