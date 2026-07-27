@@ -833,7 +833,8 @@ restore, failover, and release evidence.
    authority identity and lineage with fresh sequencing/permit namespaces,
    exact carried consumed/reserved capacity and no increased remaining
    capacity; the old lineage remains absorbing. One fence-keyed replacement
-   head linearizes NoReplacement→Staged→Activated and a unique constraint
+   head linearizes NoReplacement→Staged→ActivatedPendingPointerWitness→
+   Operational and a unique constraint
    admits only one genesis; different material is durably rejected. Retirement
    is one local AuthorityRetirement class/charge and one recovery-head advance
    for Active→Retired, with no admission/finalization split or external Pending state.
@@ -842,13 +843,22 @@ restore, failover, and release evidence.
    four-member state, maps each reservation one-to-one or quarantines it as
    inherited consumed, independently witnesses both sides, and updates the
    sole current-authority/current-lineage pointer only after exact import and
-   conformance. Before activation neither lineage can spend; after activation
-   only the destination can. The separate recovery head is compacted only by
+   conformance. Pending activation remains structurally unable to dispatch,
+   emit effects or claim projection/readiness authority; signed `P_n`
+   reconciliation alone enters Operational and terminalizes the source. The
+   separate recovery head is compacted only by
    its own exact-set checkpoint, staged/verified publication and replay head;
    a predecessor-linked external greatest-current-pointer high-watermark
    dominates restore across sequential equivocations. The acyclic generation
-   order is `C_n→P_(n-1), H_n→C_n, P_n→H_n`; checkpoint creation and `P_n`
-   remain hot, and generated schema/hash-DAG checks reject `C_n→P_n`.
+   order starts from signed, tenant-bound genesis `P_0` with explicit
+   CanonicalNoPredecessor, so `C_1→P_0`, then continues as
+   `C_n→P_(n-1), H_n→C_n, P_n→H_n`; checkpoint creation and `P_n` remain hot,
+   and generated schema/hash-DAG checks reject `C_n→P_n`. A canonical Healthy/
+   Fenced recovery guard is checked first by every recovery and authority-
+   claiming writer. Contradictory pointer receipts atomically install an
+   immutable evidence bundle and absorbing recovery-equivocation fence from a
+   pre-reserved terminalization leg; no clear or recursive automatic
+   replacement exists.
    Checkpoint creation, pointer publication/Reconcile/query, restore-cursor
    advance and restore completion have distinct typed bounded protocols.
    Orphan/GC requires locked authenticated non-reference across replay,

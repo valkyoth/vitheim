@@ -494,8 +494,10 @@ retained; there is no ClearFence or receipt selection. Independently governed
 recovery retires the authority and creates a fresh authority identity and
 lineage with fresh sequence/permit namespaces, conservative capacity
 carry-forward and no refund; the old lineage never reopens. A unique
-old-fence-keyed replacement head admits exactly one Staged successor and later
-one Activated current pointer; changed candidates are terminally rejected.
+old-fence-keyed replacement head admits exactly one Staged successor, one
+ActivatedPendingPointerWitness current pointer and, only after signed `P_n`
+reconciliation, one Operational lineage; changed candidates are terminally
+rejected.
 Retirement is one local AuthorityRetirement class/charge and one recovery-head
 advance. Pre-reserved parent Recovery funds
 the separate closed recovery writer matrix. An explicit frozen-source outbox,
@@ -506,7 +508,9 @@ consumption, source reconciliation and current conformance; inherited consumed
 is a genesis baseline, never new head-charge credit. A dedicated exact-set
 recovery checkpoint, bounded staged publication, replay head and restore cursor
 preserve every recovery charge/result/transfer/pointer artifact. Their hash
-graph is staggered and generated-test enforced:
+graph begins with signed tenant/deployment-bound `P_0`, explicit
+CanonicalNoPredecessor and Healthy recovery guard, then is staggered and
+generated-test enforced: `C_1→P_0`,
 `C_n→P_(n-1), H_n→C_n, P_n→H_n`; checkpoint creation and `P_n` remain hot
 until later cuts, and `C_n→P_n` is invalid. Dedicated typed checkpoint-create,
 pointer publication/Reconcile/status-query, restore-cursor and restore-
@@ -516,7 +520,11 @@ across replay/transfer/pointer/replacement/restore/activation/evidence/hold
 owners; externally referenced publications exact-commit or stay unready and
 cannot be collected. Restore obtains the independent predecessor-linked
 greatest current pointer through its dedicated query lane, replays the recovery
-hot suffix and exact-completes witnessed activation or stays unready; the old
+hot suffix and exact-completes witnessed operationalization or stays unready;
+pointer contradiction atomically Healthy→Fenced with both receipts, requests
+and discovery evidence from pre-reserved capacity. The fence is absorbing,
+fence-first for every recovery/authority writer and has no generic clear or
+recursive automatic replacement. The old
 archive is never a fallback. The Phase C milestone runs the full replacement
 adversarial/cross-backend/DAG/reference suite; `0.140.11` repeats and freezes
 it. BeginAbortDrain first commits a typed result and non-releasable

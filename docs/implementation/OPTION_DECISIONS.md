@@ -3183,7 +3183,10 @@ Active→RetiredForEquivocation, with external revocation evidence
 non-authoritative; independent quorum and separation-of-duties matrix;
 evidence-custody and retention policy; service quiescence and incident
 declaration; fresh identity/key/lineage/namespace generation; unique
-NoReplacement→Staged→Activated replacement head and current-pointer ownership;
+NoReplacement→Staged→ActivatedPendingPointerWitness→Operational replacement
+head and current-pointer ownership; signed tenant/deployment-bound `P_0` with
+explicit CanonicalNoPredecessor, initial recovery/replay heads, generation zero
+and Healthy recovery guard; signed `P_n`-only operationalization;
 bounded competing-candidate rejection; pre-reserved parent Recovery writer
 classes; replacement-genesis preimage binding the old fence, disputed proposal,
 both receipts, last unquestionably committed replay head and current passing
@@ -3194,7 +3197,9 @@ withheld-member and cross-lineage conservation equations; independent
 predecessor-linked transfer witness; candidate artifact custody; rollback
 prohibition; dedicated recovery checkpoint/publication/replay/restore formats,
 exact archived retry/conflict lookup, typed historical unavailability,
-independently witnessed monotonic current-pointer generations and sequential-
+independently witnessed monotonic current-pointer generations, absorbing
+recovery-equivocation fence with immutable two-receipt/request/discovery bundle,
+fence-first writer enforcement and sequential-
 equivocation recovery; explicit `C_n→P_(n-1), H_n→C_n, P_n→H_n` ordering with
 generated schema/hash-DAG and hot checkpoint-create/`P_n` records; typed
 checkpoint creation, pointer publication request/signed receipt/Publish/
@@ -3211,8 +3216,11 @@ candidate suppression, Recovery exhaustion/borrowing, capacity refund,
 reservation omission/double-live mapping, fabricated inherited charge,
 partial/rolled-back outbox or inbox, timeout/source-absence inference, forged
 transfer/applied/activation receipts, pointer hijack, partial genesis, response
-loss, `C_n→P_n`/future-result hash cycles, pointer query Unknown/Unavailable/
-ContradictoryEvidence/exhaustion, permit reconstruction, referenced orphan/GC,
+loss, missing/duplicate/forged/rolled-back/cross-tenant `P_0`, `C_1→absence`,
+`C_n→P_n`/future-result hash cycles, pending-pointer dispatch/effect/projection,
+pointer query Unknown/Unavailable/ContradictoryEvidence/exhaustion, atomic
+Healthy→Fenced crash cuts, fence clearing/recursive replacement, permit
+reconstruction, referenced orphan/GC,
 retention/legal-hold bypass, failover, backup/restore and second equivocation.
 Independent
 architecture, security, legal/forensic and operational review must agree that

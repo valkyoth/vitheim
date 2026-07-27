@@ -874,17 +874,24 @@ requires independent quorum/SoD authority retirement and a new authority
 identity plus lineage with fresh sequence/permit namespaces and conservative
 consumed/reserved carry-forward that cannot increase remaining capacity. A
 unique old-fence-keyed replacement head is the only
-NoReplacement→Staged→Activated linearization point and current pointer;
+NoReplacement→Staged→ActivatedPendingPointerWitness→Operational linearization
+point and current pointer;
 different candidates are permanently rejected. Retirement is one local atomic
 AuthorityRetirement writer/class/charge with one recovery-head advance, and
 a pre-reserved parent Recovery budget funds the separate closed recovery
 writer head. Frozen source outbox, non-operational destination inbox, exact
 reservation mapping-or-quarantine, inherited baseline and independent
-predecessor-linked transfer witness must reconcile before activation; source
+predecessor-linked transfer witness must reconcile before pending activation;
+signed `P_n` reconciliation alone may enter Operational and consume the source;
+every dispatch/effect/projection/readiness claim requires the Operational
+lineage, Healthy recovery guard and greatest authenticated witnessed generation.
+Source
 absence and timeout never complete a leg and no backend assumes a distributed
 transaction. Its own exact-set recovery checkpoint/publication/replay/restore
-lifecycle preserves every result and pointer generation using only
-`C_n→P_(n-1), H_n→C_n, P_n→H_n`; generated schema/hash-DAG evidence rejects
+lifecycle begins at signed tenant/deployment-bound `P_0`, explicit
+CanonicalNoPredecessor and Healthy guard, requires `C_1→P_0`, and preserves
+every result and pointer generation using only `C_n→P_(n-1), H_n→C_n,
+P_n→H_n`; generated schema/hash-DAG evidence rejects
 same-generation back-edges. Checkpoint creation, pointer Publish/Reconcile/
 query and restore-cursor/complete use their dedicated typed bounded protocols,
 and no retry/restore reconstructs a permit. MarkOrphan/FinalizeGc requires
@@ -892,8 +899,11 @@ locked authenticated non-reference across all replay, transfer/pointer,
 activation, restore, evidence, retention and legal-hold owners; external
 pointer reference permits exact Commit or Unready, never orphan. Restore
 compares the independent greatest-current-pointer chain, exact-completes
-witnessed activation or stays unready, never reading authority from the old
-archive. Production evidence repeats the Phase C core recovery DAG/reference/
+witnessed operationalization or stays unready, never reading authority from
+the old archive. Contradictory pointer evidence atomically installs the
+pre-reserved immutable evidence bundle and absorbing Healthy→Fenced recovery
+guard; all writers are fence-first and no generic clear or recursive automatic
+replacement exists. Production evidence repeats the Phase C core recovery DAG/reference/
 typed-operation corpus at the frozen profile. Replay
 install/delete cannot split from rollover. BeginAbortDrain is no-write/no-
 permit unless its typed transaction commits the complete non-releasable

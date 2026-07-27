@@ -8,6 +8,10 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Rooted replacement recovery in signed, tenant-bound `P_0` with explicit
+  CanonicalNoPredecessor; added an absorbing evidence-backed recovery-
+  equivocation fence and made signed pointer reconciliation the sole
+  ActivatedPendingPointerWitness→Operational transition.
 - Added immutable Open→SealPending→Sealed custody-transfer fencing so delayed
   chunks, stale credentials, multipart retries, overwrites, and finalization
   cannot invalidate the exact receipt required for Commit.

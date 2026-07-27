@@ -455,8 +455,10 @@ audit decision.
   and SoD may retire that authority and bootstrap a new identity/lineage with
   fresh sequencing/permit namespaces and conservative consumed/reserved
   carry-forward that cannot increase remaining capacity. A unique fence-keyed
-  NoReplacement→Staged→Activated head and current pointer prevent split-brain
-  replacements; different material is permanently rejected. Retirement is one
+  NoReplacement→Staged→ActivatedPendingPointerWitness→Operational head and
+  current pointer prevent split-brain replacements; different material is
+  permanently rejected. Signed `P_n` reconciliation alone makes the pending
+  lineage operational. Retirement is one
   local AuthorityRetirement writer/class/charge, atomically terminal with one
   recovery-head advance. A parent Recovery escrow funds the separate
   recovery writer head. Frozen-source outbox/destination-inbox transfer,
@@ -465,7 +467,9 @@ audit decision.
   destination remains non-operational until exact import/conformance and
   pointer activation. Dedicated exact-set recovery checkpoint/publication/
   replay/restore state and an independent greatest-current-pointer chain
-  use only the acyclic stagger `C_n→P_(n-1), H_n→C_n, P_n→H_n`; generated
+  begin from signed tenant-bound `P_0` plus explicit CanonicalNoPredecessor and
+  Healthy recovery guard, require `C_1→P_0`, and use only the acyclic stagger
+  `C_n→P_(n-1), H_n→C_n, P_n→H_n`; generated
   schema/hash-DAG tests reject same-generation back-edges and future signature/
   result inclusion. Dedicated typed checkpoint-create, pointer publish/
   Reconcile/query and restore advance/complete writers are bounded and return
@@ -474,7 +478,12 @@ audit decision.
   authorities; externally bound publication cannot orphan. These controls
   prevent compaction loss or older-authority revival across sequential
   equivocations; historical unavailability stays unready and never falls back
-  to the old archive. Identities never cross generations. A charged local fence
+  to the old archive. Contradictory pointer evidence atomically consumes a
+  pre-reserved terminalization leg, preserves both requests/receipts/discovery
+  evidence and CASes Healthy→Fenced. That fence is absorbing and checked first
+  by every recovery, dispatch, effect, projection and readiness writer; no
+  generic clear or recursive automatic replacement exists. Identities never
+  cross generations. A charged local fence
   precedes external traffic. BeginAbortDrain returns no seal permit unless its
   typed transaction reserves the complete non-releasable sealed-abort/
   WitnessWon-Commit/seal-query/output/drain/exhaustion/equivocation envelope.

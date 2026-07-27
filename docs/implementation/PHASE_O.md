@@ -260,17 +260,25 @@ absorbing. Both receipts remain retained; no ClearFence, receipt selection or
 old namespace reuse exists. Independent quorum/SoD must retire the authority
 and re-anchor conservatively into a fresh identity, lineage, key, sequence and
 permit namespace without increasing remaining capacity. Operational evidence
-must show one fence-keyed NoReplacement→Staged→Activated head, one local
+must show one fence-keyed
+NoReplacement→Staged→ActivatedPendingPointerWitness→Operational head, one local
 AuthorityRetirement charge/head advance,
 retirement, pre-reserved parent Recovery funding and the complete recovery
 writer trace. It must also reconcile frozen source outbox, non-operational
 destination inbox, exact reservation mappings/quarantine, inherited-consumed
 baseline and independent transfer high-watermark before the sole current
-pointer activates; neither side may assume a distributed transaction or infer
-completion from absence. It must also load the independent greatest pointer,
+pointer becomes pending; only signed `P_n` reconciliation may make it
+Operational and consume the source. Neither side may assume a distributed
+transaction or infer completion from absence. It must also authenticate signed
+tenant-bound `P_0`, explicit CanonicalNoPredecessor and Healthy recovery guard,
+require `C_1→P_0`, and load the independent greatest pointer,
 dedicated exact-set recovery checkpoint/publication/replay head and hot suffix,
 using the staggered `C_n→P_(n-1), H_n→C_n, P_n→H_n` DAG, then exact-complete
-witnessed activation or stay unready without old-archive fallback. It must
+witnessed operationalization or stay unready without old-archive fallback. It
+must atomically install and hot-retain the two-receipt recovery-equivocation
+fence on contradiction, prove every recovery/dispatch/effect/projection/
+readiness writer is fence-first, and prove no clear or recursive automatic
+replacement exists. It must
 exercise the distinct checkpoint-create, pointer Publish/Reconcile/query and
 restore-cursor/complete typed protocols without permit reconstruction. Any
 externally referenced recovery publication exact-commits or stays unready;
