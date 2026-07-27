@@ -4599,8 +4599,11 @@ idempotency. In one transaction it fences the old evaluator use, reserves any
 positive charge delta, installs the new dependency and removes the old one.
 The successor must implement the same governed cost-function generation
 byte-for-byte or a proved strictly more conservative interpretation within the
-existing transfer hard maximum; it cannot change plan disposition, storage
-namespace or profile semantics. Every plan pre-reserves one bounded evaluator-
+existing transfer hard maximum, except that the deficit-remediation path below
+may authorize an exact larger effective charge after its entire positive delta
+is already covered. That exception cannot admit another byte, change the
+sealed object/root, plan disposition, storage namespace or profile semantics.
+Every plan pre-reserves one bounded evaluator-
 migration chain slot per reservation, and the later Commit grant/payload binds
 the current migration result/head in addition to the immutable plan bundle.
 The post-migration reservation is never smaller than its original or current
@@ -4635,6 +4638,19 @@ authorized remediation completes. Unknown transfers under a distrusted
 evaluator must execute this reassessment/deficit transaction before permanent
 unknown-member conversion.
 
+Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityEffectiveChargeV1`
+is the checked sum of the still-encumbered base reservation and the exact
+covered deficit. It binds the reassessment, base reservation/version,
+emergency or additionally provisioned deficit-encumbrance provenance, sealed
+transfer and replacement evaluator. It may exceed the historical plan hard
+maximum only through the remediation-authorized, already-covered exception;
+overflow, missing provenance or an uncovered unit denies. Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitSettlementV1`
+has closed disposition PendingCommit, ConvertedIntoCustodyMember,
+ReleasedAfterVerifiedDeletion or PermanentlyFencedRetained and accounts for
+every covered unit exactly once.
+
 Only the independently authorized closed
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationV1`
 may consume one
@@ -4653,6 +4669,63 @@ or
 Exact retry joins; changed evidence/action/amount conflicts. No remediation
 rewrites the original reassessment, quarantine or distrust record.
 
+Deficit-remediation and retained-unknown-resolution grants are never reusable
+signed blobs. Each family independently implements AuthorizationStateV1 with
+Absent, RevokedBeforeAdmission, Issued, Consumed, ExpiredUnused and
+RevokedUnused; Admit/AdmissionResult; Expire/ExpiryResult; issuer-side
+Revoke intent/result/conflict and scoped monotonic sequence; destination-side
+Apply; revocation Inbox/Tombstone/Result; closed AuthorizationOutcome;
+AuthorizationOperationConflict; and AuthorizationNotAdmitted. Their canonical
+families are respectively:
+
+- `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationStateV1`,
+  `AdmitMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorization`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationAdmissionResultV1`,
+  `ExpireMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorization`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationExpiryResultV1`,
+  `RevokeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorization`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationIntentV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationIntentResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationIntentConflict`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationSequenceKeyV1`,
+  `ApplyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocation`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationInboxV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationTombstoneV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationOutcomeV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationOperationConflictV1`
+  and
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationNotAdmitted`.
+- `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationStateV1`,
+  `AdmitMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorization`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationAdmissionResultV1`,
+  `ExpireMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorization`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationExpiryResultV1`,
+  `RevokeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorization`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocationIntentV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocationIntentResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocationIntentConflict`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocationSequenceKeyV1`,
+  `ApplyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocation`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocationInboxV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocationTombstoneV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocationResultV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationOutcomeV1`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationOperationConflictV1`
+  and
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationNotAdmitted`.
+
+For each family, issuer and destination keys/roles are independent; admission,
+revocation application and destructive operation use separated quorum/SoD,
+and consumption rechecks retention/legal hold. The same complete first-
+terminal table used below applies: one CAS selects expiry, applied revocation
+or action consumption; exact duplicate/CAS loser returns the stored outcome,
+while changed target/action/digest/scope/sequence/evidence/amount/idempotency
+conflicts without action. Pre-admission revocation tombstones survive
+restore/import, and VerifyDeletion cannot execute from the signed value unless
+its exact destination row is currently Issued and consumed in the same local
+transaction as the capacity result.
+
 The profile therefore has a stable lineage/generation/digest and a complete-domain
 compatibility/weakening decision; callers cannot supply ad hoc factors. Begin
 derives a conservative nonzero maximum custody charge for every planned
@@ -4661,8 +4734,10 @@ overflowing mappings deny before any reservation or external work. Commit
 recomputes the final custody charge from the Verified transfer receipt's
 encoded size under the reservation's exact pinned profile generation and
 retained evaluator, irrespective of CurrentHead. It may be less than the reserved
-maximum but never greater; unused reserved capacity returns to Available in
-that same transaction. The source parent credit remains the exact source-leg
+base maximum but never greater unless the trusted reassessment/covered-deficit
+path above produces an exact EffectiveCharge; unused base capacity returns to
+Available in that same transaction. Covered deficit follows only its
+DeficitSettlement and is not treated as base surplus. The source parent credit remains the exact source-leg
 amount. Source and destination quantities share one transfer identity and
 conservation proof but need not be numerically identical across unlike
 dimensions.
@@ -4697,14 +4772,23 @@ not mutate it; remediation needing object mutation must use verified
 delete/migrate under a new fenced identity.
 
 `ReconcileMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferSeal`
-returns the stored seal result, proves definitely-not-sealed and CASes
+returns the stored seal result, presents permanent never-completed proof and CASes
 SealPending→Open with a fresh seal epoch, or retains SealPending when outcome
 is unknown, through
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferSealReconciliationResultV1`
 or
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferSealReconciliationConflict`.
-It never guesses from timeout, missing credentials or eventual
-visibility. Providers without conditional creation, immutable versions and an
+The only proof that permits SealPending→Open is provider-authenticated
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferSealDefinitelyNeverCompletedReceiptV1`.
+It binds the old provider operation/idempotency, seal epoch, conditional token,
+object and multipart generation, cancellation/fence generation, observation
+cut and provider guarantee that the old seal/completion request is permanently
+rejected and can never complete later. The new Open epoch uses a strictly newer
+provider fence and cannot reuse the old conditional token or multipart
+generation. Current absence, cancellation request acceptance, timeout, missing
+credentials or eventual visibility is insufficient; without permanent non-
+completion proof the state remains SealPending and admits no new operation.
+Providers without conditional creation, immutable versions and an
 equivalent hard write fence are unsupported for custody transfer. MarkEligible
 requires the exact Sealed state/receipt and rechecks it against the current
 reservation/evaluator-migration/deficit heads. SealPending admits no chunk,
@@ -4750,8 +4834,12 @@ terminalization identity and precharged reconciliation/orphan-cleanup capacity.
 The external transfer adapter accepts only that exact still-TransferPending
 reservation; it cannot create destination bytes from an unreserved request.
 Commit atomically converts TransferPending into the final custody member,
-charges the recomputed conservative destination amount and returns only proved
-surplus.
+joins its covered-deficit encumbrance, charges the exact EffectiveCharge and
+returns only proved base surplus. The same transaction moves every covered
+deficit unit out of emergency-deficit pending state into the ordinary custody-
+ledger member, records DeficitSettlement=ConvertedIntoCustodyMember and leaves
+no stranded deficit encumbrance. Emergency reserve Available is not silently
+refunded: replenishment requires separately proved capacity.
 
 `ReconcileMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservation`
 returns
@@ -4779,7 +4867,7 @@ generations, separated records/security/legal approvals, reason/change/
 incident authority and stable idempotency. One transaction consumes the exact
 QuarantineUnknownTransfer grant, CASes TransferPending→
 ConvertedToQuarantinedUnknownTransferMember, converts the full pending maximum
-without surplus return into
+plus every covered deficit without surplus return into one EffectiveCharge in
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferMemberV1`,
 installs
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferNamespaceFenceV1`,
@@ -4812,7 +4900,8 @@ is ConfirmPresent, VerifyDeletion or
 DeclarePermanentlyUnresolvable. ConfirmPresent first requires completed
 evaluator reassessment/deficit coverage, authenticates the exact fenced
 object/version/root and atomically converts the retained member into a normal
-permanent custody member without reducing its charge. VerifyDeletion requires
+permanent custody member at the same EffectiveCharge, atomically settles the
+deficit into that member and never reduces its charge. VerifyDeletion requires
 provider-authenticated absence of every object/multipart/version reachable
 under the permanently fenced namespace and independently authorized exact
 release of base plus emergency-deficit encumbrances. Active or uncertain legal
@@ -4825,6 +4914,16 @@ commits with authorization consumption, ledger settlement, state, original-
 quarantine link, audit/outbox and cumulative budget charge. Exact retry joins;
 changed action/evidence/policy/amount/idempotency conflicts. No outcome rewrites
 the quarantine decision or turns late evidence into implicit authority.
+
+Every remediation result names exactly one continuation. ResumableCommit binds
+the current replacement-evaluator head, EffectiveCharge and sealed transfer
+and permits MarkEligible/Commit even when the fully covered amount exceeds the
+historical plan maximum. VerifiedDeletionAndReplan records
+DeficitSettlement=ReleasedAfterVerifiedDeletion, proves the exact old object
+absent and requires a fresh Replan identity/reservation before any new external
+work. PermanentlyFencedRetained records the full EffectiveCharge and keeps the
+namespace, readiness and legal-hold fences. No generic success result leaves
+the caller to infer which continuation is safe.
 External deletion or transfer is outside the database transaction.
 Only a verified, idempotent terminal physical-disposition receipt may enter the commit payload.
 Its canonical type is
@@ -5858,16 +5957,21 @@ losers reread/reapply the six-state first-terminal table; exact operations join
 and changed action/checkpoint/bundle/policy/custody/sequence/idempotency
 conflicts. Custody approval evidence cannot invoke release without this grant.
 
-Both permanent-retention and lineage-release authorization families instantiate
-this exact destination operation table. Their typed no-write absent outcomes
-are
-`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationNotAdmitted`
+Permanent-retention, lineage-release, deficit-remediation and retained-
+unknown-resolution authorization families all instantiate this exact
+destination operation table. Their typed no-write absent outcomes are
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationNotAdmitted`,
+`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationNotAdmitted`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationNotAdmitted`
 and
-`MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationNotAdmitted`.
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationNotAdmitted`.
 “Consumption” means PermanentlyRetain for the first family and the exact
 BeginRelease, ReplanCustodyRelease, AbandonCustodyRelease,
 QuarantineUnknownTransfer, MigrateDistrustedEvaluatorReservation, or
-CommitCustodyRelease command for the second:
+CommitCustodyRelease command for the second; ProvisionAdditionalCapacity,
+VerifyDeletion or MigrateToSufficientCapacity for the third; and
+ConfirmPresent, VerifyDeletion or DeclarePermanentlyUnresolvable for the
+fourth:
 
 | Current state | Admission | Expiry | Applied issuer revocation | Consumption | Exact replay, stale sequence or changed material |
 |---|---|---|---|---|---|
@@ -5897,9 +6001,44 @@ custody cost-profile generations, reservation identities/initial amounts/
 transfer hard maxima, publication/bundle digest and stable plan idempotency.
 No caller-supplied “current plan” inference is accepted.
 
+BeginRelease authorization admission cannot spend a lineage budget that Begin
+has not created. It instead atomically reserves from bounded
+`MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionBudgetV1`
+through
+`MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionChargeV1`.
+The deployment and tenant pools impose non-wrapping count/row/byte/work/time
+ceilings, segregate non-borrowable terminalization/reconciliation capacity and
+have no policy/grant path that raises a committed ceiling. The stable charge
+binds proposed lineage identity, authorization/action digest, issuer/target,
+admission idempotency, original pool/bucket, pessimistic Begin row/work amount
+and a unique candidate generation.
+
+Its closed
+`MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionChargeStateV1`
+is Reserved, ActivatedIntoLineageBudget, CleanupPending,
+ReleasedAfterNoBeginProof or PermanentlyRetainedWithEvidence.
+`ReconcileMigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionCharge`
+returns
+`MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionChargeReconciliationResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionChargeReconciliationConflict`.
+Exact admission retry/CAS loss joins the same charge. Competing grants for one
+proposed lineage have distinct candidate generations and are all bounded; only
+the exact winning Issued grant can activate. Expiry or applied revocation
+moves a non-winning candidate to CleanupPending, never directly to released.
+Cleanup releases ordinary capacity only after authenticated proof that no
+Begin result, plan head, reservation or external effect exists and the
+authorization is terminal. Unknown crash/recovery outcome retains the charge
+and protected work until reconciliation proves either the exact Begin winner
+or permanent no-Begin.
+
 Immutable
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetV1`
-is created with Begin and imposes cumulative non-wrapping ceilings across the
+is created with Begin. The same local transaction moves the winning pre-Begin
+charge to ActivatedIntoLineageBudget and transfers its original bucket/amount/
+settlement identity without refund or double charge into generation 1; plan,
+budget, Begin result and activation all commit or none do. It imposes
+cumulative non-wrapping ceilings across the
 whole lineage for generations, attempts, Replan/Abandon/quarantine/evaluator-
 migration grants and operations, authorization fences, canonical/result/audit/
 outbox bytes and rows, external transfer attempts and bytes, terminal
@@ -5922,7 +6061,7 @@ BudgetExhaustedRetained, its permanent authorization fence and
 without refund, new transfer or new publication; cleanup of already orphan-
 eligible artifacts remains bounded and permitted.
 
-Every destination-local admission into this protocol atomically creates or
+Every destination-local admission after Begin atomically creates or
 joins
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetChargeV1`.
 Its stable settlement identity binds lineage/budget generation, exact command/
@@ -5947,6 +6086,9 @@ Non-borrowable Recovery charge capacity was reserved by Begin/Replan so
 ordinary admissions or tenant exhaustion cannot block seal reconciliation,
 deficit fencing, authorization revocation, quarantine, orphan cleanup,
 checkpoint or terminal result.
+BeginRelease admission is the sole exception: it charges the pre-Begin pool
+above, and Begin atomically imports that unchanged reservation into the new
+lineage budget before any plan/reservation or external work becomes visible.
 
 Old plan generations may compact only after authenticated
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageCheckpointV1`
@@ -5971,7 +6113,9 @@ lineage/begin result/version, current plan head/generation, bundle, Verified
 publication receipt/state/version, final disposition receipts, pinned cost
 profiles/evaluator artifact digests/readiness/distrust epochs and reservation
 versions, plus every exact Sealed transfer state/receipt/mutation/fence version
-and zero uncovered capacity deficit. SealPending, a mismatched root/size/
+and zero uncovered capacity deficit. A positive covered deficit additionally
+requires exact EffectiveCharge, PendingCommit DeficitSettlement and the
+ResumableCommit remediation result. SealPending, a mismatched root/size/
 ETag/version, a distrusted or unavailable evaluator or any uncovered deficit
 denies eligibility. It returns
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityResultV1`
@@ -6076,12 +6220,16 @@ transaction consumes an exact Issued BeginRelease authorization; the later
 whole-member transaction separately consumes an exact Issued
 CommitCustodyRelease authorization bound to the stored begin result.
 The begin payload binds that authorization, expected lineage/version/
-disposition, lineage checkpoint, expected absent plan head, generation 1,
+disposition, lineage checkpoint, exact Reserved pre-Begin admission charge/
+candidate generation/original bucket, expected absent plan head, generation 1,
 current settlement heads, sorted workspace/
 fence set, every per-leg disposition plan/cost profile/custody-ledger expected
 version/initial maximum/transfer hard maximum and bundle digest. In that same
-local transaction Begin
-atomically creates every required CustodyCapacityReservationV1 and moves the
+local transaction Begin CASes the pre-Begin charge Reserved→
+ActivatedIntoLineageBudget, creates the immutable lineage budget with the
+transferred original amount/settlement identity, charges the balance of the
+preflighted Begin allowance, and atomically creates every required
+CustodyCapacityReservationV1 and moves the
 conservatively calculated maxima from custody Available to TransferPending;
 none exists before the Begin result and no external transfer is authorized by
 a losing or uncommitted attempt. It also creates plan generation 1, makes it
@@ -6091,9 +6239,11 @@ returns canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginResultV1`
 or
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginConflict`.
-Exact retry returns the stored begin result and reservation set; changed
-authorization, expected version, checkpoint, heads, disposition plan, profile,
-ledger version, maximum, bundle or idempotency conflicts without mutation.
+Exact retry returns the stored begin result, budget activation and reservation
+set; changed authorization, pre-Begin charge/candidate/bucket, expected
+version, checkpoint, heads, disposition plan, profile, ledger version, maximum,
+bundle or idempotency conflicts without mutation. A crash cannot expose a plan
+without the activation or consume the pre-Begin charge without the plan/result.
 `ReleaseMigrationImportRegistryHistoryCorruptionControlLineage` is retained
 only as a non-dispatchable command-family identifier for catalog continuity;
 no API, worker or adapter may invoke it as a generic mutation.
@@ -6256,8 +6406,9 @@ head, bundle digest and hard-maximum proof, current Issued
 CommitCustodyRelease authorization bound to that attempt/plan/bundle, expected
 lineage version/disposition, the
 complete sorted sets of per-workspace physical-disposition receipts, cost
-profiles, evaluator-migration/reassessment/deficit-remediation heads, exact
-Sealed transfer receipts/fences and TransferPending reservations and stable
+profiles, evaluator-migration/reassessment/deficit-remediation heads,
+EffectiveCharge/DeficitSettlement heads, exact Sealed transfer receipts/fences
+and TransferPending base plus covered-deficit encumbrances and stable
 idempotency. Under the
 identical combined rank, the command reauthenticates publication/membership/
 deletion evidence and every physical-disposition receipt/reservation/profile,
@@ -6268,9 +6419,11 @@ CommitEligible→Consumed and publication Verified→ConsumedByCommit, installs
 the proposed authoritative archive replay
 head and deletes only the exact captured hot rows/versions. That same
 indivisible transaction consumes the authorization once, consumes each
-terminal disposition receipt, converts every selected TransferPending maximum
-into the conservatively recomputed archive/legal-hold custody member, returns
-only proved surplus before its matching source-parent credit, moves matching
+terminal disposition receipt, converts every selected TransferPending base and
+covered deficit into one conservatively recomputed EffectiveCharge archive/
+legal-hold custody member, CASes its DeficitSettlement to
+ConvertedIntoCustodyMember, returns only proved base surplus and leaves no
+emergency-deficit pending unit before its matching source-parent credit, moves matching
 ReclaimPending units to Released, removes the exact child encumbrance, credits
 ParentAvailable, appends immutable parent/child and final settlement rows,
 advances the journal, and invokes each checkpoint-bound
@@ -6297,20 +6450,33 @@ cannot be deleted before verified publication or apart from authoritative-head
 installation; head-without-deletion and deletion-without-head are
 unrepresentable. Unknown local commit response reconciles the exact commit
 identity: either the entire head/delete/authorization/attempt-disposition/settlement/
-publication-state/reservation/member/credit/result bundle exists or the
+publication-state/base-reservation/deficit-settlement/member/credit/result
+bundle exists or the
 predecessor head, Verified receipt and all authoritative hot rows and source/
-TransferPending encumbrances remain. The local journal head and staged/verified
+TransferPending base plus emergency/additional-provision deficit encumbrances
+remain. The local journal head and staged/verified
 receipt never imply authoritative archive availability. Restore selects the
 greatest authenticated journal and committed archive heads, proves their
 coverage relationship, exact settlement membership, every consumed physical-
 disposition receipt, reservation/profile/member conversion and physical/
-custody-ledger conservation, and retains ReclaimPending encumbrance when
+custody-ledger conservation, and retains ReclaimPending plus every unsettled
+deficit encumbrance when
 history or deletion proof is missing, forked, rolled back or uncertain. It
 also proves ParentTotal = ParentAvailable + the
 exact restored active-child and pending-successor encumbrance sets and every
 parent/child forward/inverse transfer against settlement membership. Duplicate
 membership returns the original release result without another release or
 parent credit; unknown non-membership never authorizes settlement.
+
+For each capacity domain restore also proves:
+`CustodyTotal = CustodyAvailable + BaseTransferPending +
+EmergencyReserveAvailable + CoveredDeficitPending + sum(EffectiveCharge of
+permanent/unknown custody members)`. A DeficitSettlement moves one covered
+unit from CoveredDeficitPending into exactly one member or, after independently
+verified deletion, back to its authenticated origin; it cannot disappear,
+remain stranded beside a committed member or be counted in both. Fork,
+rollback, missing provenance or arithmetic overflow leaves the tenant/backend
+unready with the larger encumbrance retained.
 
 Exact retry of the commit command returns that stored final result. Changed
 begin result, plan head/generation, attempt/disposition/fence, publication
@@ -6588,7 +6754,7 @@ prove the lineage remains safely ReleasePending and only an independently
 authorized monotonic Replan can fence the old attempt/grants/receipts, consume
 terminal evidence and create a new bundle, attempt and reservations. For
 permanent Unknown, exhaust bounded reconciliation and prove independently
-authorized quarantine converts the full maximum into a permanent member,
+authorized quarantine converts the full EffectiveCharge into a permanent member,
 fences namespace/transfer identity, never refunds on late evidence and permits
 Replan only with entirely new capacity. Exercise ConfirmedPresent,
 DeletionVerified and PermanentlyUnresolvable resolution under legal hold,
@@ -6653,6 +6819,23 @@ bucket settlement identity, pessimistic charge, protected Recovery allowance,
 no exact-retry double charge and no settlement before authenticated terminal
 checkpoint/archive. Exhaust the authorization table for all six release
 actions and require the matching action-specific result.
+Exhaust both deficit-remediation and retained-unknown-resolution authorization
+families across all six states, pre-admission revocation, expiry/consumption
+races, stale scoped sequences, response loss, restore and changed-material
+replay; VerifyDeletion must release capacity only in the transaction consuming
+one exact Issued row. Admit BeginRelease at every deployment/tenant pre-Begin
+pool boundary; race competing grants, Begin, expiry, revocation, cleanup and
+response loss. Prove exactly one candidate activates into the lineage budget,
+the original bucket/amount transfers without gap or double charge, unknown
+outcome retains capacity, and cleanup requires authenticated no-Begin proof.
+Reassess above the historical maximum and exercise ResumableCommit,
+VerifiedDeletionAndReplan and PermanentlyFencedRetained. Commit must move base
+plus covered deficit into one EffectiveCharge member and one deficit
+settlement, including after response loss/restore; no emergency unit may be
+stranded, refunded, omitted or counted twice. During seal reconciliation,
+accept SealPending→Open only with a SealDefinitelyNeverCompletedReceipt; delay
+the old provider completion after cancellation and prove it is either
+permanently rejected or local state never reopens.
 
 Exit criteria: successful import proves complete semantic and integrity parity.
 `v0.30.0 implementation stop reached. Run pentest for this exact commit.`

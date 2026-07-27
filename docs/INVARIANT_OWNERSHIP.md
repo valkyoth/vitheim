@@ -307,10 +307,19 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferSealResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferSealReceiptRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferSealDefinitelyNeverCompletedReceiptRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityExternalTransferSealReconciliationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyEvaluatorReassessmentRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityEmergencyQuarantineReserveRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityEffectiveChargeRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitSettlementRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationIssuerSequenceRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationIntentResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationInboxRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationRevocationTombstoneRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationOperationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityLedgerRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityReservationRow`,
@@ -322,6 +331,11 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferQuarantineResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferPlatformHardMaximumRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocationIssuerSequenceRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocationIntentResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocationInboxRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationRevocationTombstoneRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationOperationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityMemberRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityTransferRow`,
@@ -338,6 +352,9 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanHeadRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionBudgetRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionChargeRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineagePreBeginReleaseAdmissionChargeReconciliationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageDispositionRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetExhaustedResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageCheckpointRow`,
@@ -409,7 +426,8 @@ dependency, with destructive authority required for weakening. The transfer
 adapter accepts bytes only within the running reserved charge and atomically
 extends capacity before any additional chunk. External transfer is Open,
 SealPending or Sealed: only Open mutates; SealPending reconciles without
-guessing; exact provider-fenced Sealed binds immutable root/size/object/
+guessing and returns to Open only with provider proof that the old completion
+can never occur later; exact provider-fenced Sealed binds immutable root/size/object/
 ETag/version and is mandatory for eligibility. Evaluator binary/corpus digests
 and node readiness are authoritative; emergency distrust blocks chunks,
 extension, eligibility and Commit until independently authorized migration
@@ -417,8 +435,9 @@ preserves at least the original/current maximum. Corrected evaluator charge is
 never clamped to the plan maximum: reassessment records any deficit and
 atomically debits a non-borrowable emergency reserve or fences tenant/backend
 readiness until independently authorized provision, verified deletion or
-sufficient-capacity migration. Commit converts it into the
-custody member under that pinned versioned cross-dimension cost profile and
+sufficient-capacity migration. Base plus covered deficit form one
+EffectiveCharge; Commit atomically settles both into the custody member under
+that pinned versioned cross-dimension cost profile and
 transfer identity before exact source-parent credit; source and destination
 amounts need not be numerically identical. Unknown preserves the predecessor
 and the pending reservation until independent quarantine converts its full
@@ -428,6 +447,12 @@ Platform/tenant hard ceilings apply. Separate resolution may confirm presence,
 verify complete fenced-namespace deletion or declare permanent unresolvability,
 but preserves original quarantine and requires legal-hold permission plus exact
 base/emergency settlement.
+Both deficit remediation and unknown resolution use complete destination-
+applied authorization state/sequence/inbox/tombstone/outcome families.
+BeginRelease admission charges a bounded pre-Begin deployment/tenant pool; the
+winning Begin transaction transfers that same reservation into the newly
+created lineage budget, while terminal non-winners require proved no-Begin
+cleanup.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -500,8 +525,11 @@ transfer-before-reservation, unknown-transfer refund, incomparable custody
 mapping, rational undercharge/overflow, current-profile substitution, premature
 evaluator deletion, streaming above reserved charge, non-atomic extension,
 post-seal append/overwrite/finalize, guessed SealPending, weak provider fence,
-root/size/ETag substitution, corrected-charge clamp, hidden/uncovered deficit,
-emergency-reserve borrowing, unauthorized deficit remediation,
+late completion after SealPending reopening, root/size/ETag substitution,
+corrected-charge clamp, hidden/uncovered deficit, stranded or omitted covered
+deficit at Commit, emergency-reserve borrowing, reusable/incomplete deficit-
+remediation or unknown-resolution authority, pre-Begin budget bootstrap bypass/
+double charge,
 released-reservation lineage stranding, plan rollback/ID recreation/double
 release, old grant/receipt replay, authorization-loss-as-abandonment,
 commit-eligible orphan admission, receipt Commit/GC race, collected-

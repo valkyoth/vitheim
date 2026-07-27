@@ -353,22 +353,27 @@ audit decision.
   weakening. A streaming charge cap and atomic bounded extension commit
   capacity before extra bytes or finalization. External transfer follows
   Open→SealPending→Sealed; only Open mutates, unknown seal is never guessed and
+  reopening requires provider proof the old completion can never occur;
   provider-fenced Sealed binds immutable object/root/size/ETag/version before
   eligibility. Evaluator binary/corpus digests
   and authenticated node readiness are mandatory; emergency distrust denies
   chunks, extension, eligibility and Commit until independent migration
   preserves at least the existing maximum. Reassessment never clamps corrected
   charge: positive deficit debits protected emergency capacity or fences
-  tenant/backend readiness until separately authorized remediation. Commit converts the reservation
-  into the conservative custody member before
+  tenant/backend readiness until separately authorized remediation.
+  EffectiveCharge combines base plus covered deficit, and Commit atomically
+  settles both into one conservative custody member before
   exact source credit. Unknown preserves predecessor and pending charge; only
   definitely-never-transferred or exact destination-deleted reconciliation
   releases it. After bounded permanent uncertainty, independent quarantine
-  converts the full maximum into a permanent member, fences namespace/
+  converts the full EffectiveCharge into a permanent member, fences namespace/
   transfer, retains legal-hold evidence and never treats late evidence as
   refund authority. Platform/tenant ceilings and a separately authorized
   confirm/delete/permanently-unresolvable workflow preserve quarantine and
-  legal-hold denial. Begin creates plan generation 1 and Preparing. Only independently
+  legal-hold denial. Both destructive workflows have full destination-applied
+  six-state authorization/revocation families. BeginRelease Admit charges a
+  bounded pre-Begin pool; winning Begin transfers it into the lineage budget,
+  and cleanup requires no-Begin proof. Begin creates plan generation 1 and Preparing. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
   generation/bundle/reservations; Abandon fences only and never refunds Begin.
@@ -377,7 +382,7 @@ audit decision.
   cumulative lineage budget cannot reset; only authenticated checkpoint/
   archive proof compacts exact replay/anti-reuse state, and exhaustion does not
   refund.
-  Every destination admission atomically creates/joins one pessimistic,
+  Every post-Begin destination admission atomically creates/joins one pessimistic,
   original-bucket budget charge; exact retry never recharges, settlement waits
   for checkpoint/archive and Recovery capacity is non-borrowable.
   Commit consumes those receipts while

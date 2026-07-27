@@ -172,17 +172,23 @@ live dependencies and drains incompatible/weakening activation, while
 weakening still needs destructive authority. Streaming is capped by the
 current charge and atomic bounded extension must precede more bytes. Transfer
 state is Open→SealPending→Sealed; only Open mutates, unknown seal reconciles
-without guessing and provider-fenced Sealed binds immutable object/root/size/
+without guessing and reopens only with permanent never-completed provider
+proof; provider-fenced Sealed binds immutable object/root/size/
 ETag/version before eligibility.
 Evaluator binary/corpus digests and node readiness are required; emergency
 distrust blocks chunks, extension, eligibility and Commit until independent
 migration preserves at least the original/current charge. Reassessment never
 clamps corrected charge; positive deficit debits protected emergency capacity
-or fences readiness until separately authorized remediation. Permanent Unknown is
+or fences readiness until separately authorized remediation. EffectiveCharge
+joins base plus covered deficit and Commit atomically settles both into one
+member; remediation and unknown resolution use complete destination-applied
+authorization/revocation families. Permanent Unknown is
 independently converted at full charge into a transfer/namespace-fenced member
 with retained legal-hold evidence and no late-evidence refund. Aggregate
 platform/tenant ceilings and separate confirm/delete/permanently-unresolvable
-authorization preserve quarantine and legal-hold denial. Begin
+authorization preserve quarantine and legal-hold denial. BeginRelease Admit
+charges a bounded pre-Begin pool whose winning charge transfers into the new
+lineage budget; non-winner cleanup requires no-Begin proof. Begin
 creates plan generation 1 and Preparing. Independently authorized Replan alone
 recovers a terminally reconciled plan by fencing/superseding old attempts,
 grants and receipts and creating a new bundle/reservation set; Abandon fences
@@ -190,7 +196,7 @@ only and never refunds Begin. Every Replan repeats backend atomic-limit
 preflight and reserves replacement/future-Commit plus retained-history
 capacity. An immutable cumulative lineage budget cannot reset; authenticated
 checkpoint/archive compaction preserves exact replay/anti-reuse and exhaustion
-never refunds. Every destination admission creates/joins one stable
+never refunds. Every post-Begin destination admission creates/joins one stable
 pessimistic original-bucket charge; retry never recharges, settlement waits
 for checkpoint/archive and Recovery capacity is protected. It consumes every terminal
 receipt, settles all legs, advances Released to OriginalTotal and commits the
@@ -2232,7 +2238,10 @@ substitution, missing node readiness, emergency-distrust bypass and
 undercharging migration, delayed/stale chunks or multipart completion after
 seal, seal-response ambiguity/root-size-version rebinding, evaluator deficit
 clamped above plan maximum, emergency-reserve exhaustion or uncovered-ready
-state, cumulative budget-charge omission/double/early settlement, retained-
+state, omitted/stranded/double-counted covered deficit at final Commit,
+reusable/incomplete remediation or resolution authority, pre-Begin bootstrap
+gap/double activation/early cleanup, late provider completion after seal
+reopen, cumulative budget-charge omission/double/early settlement, retained-
 unknown resolution refund/quarantine rewrite/legal-hold bypass and missing
 all-six-action result parity, Unknown conversion, credit without
 physical disposition, issuer sequence races, absent-state writes, late-

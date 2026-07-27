@@ -372,17 +372,24 @@ and drain incompatible/weakening successors, while weakening remains
 destructively authorized. Adapter streaming limits and atomic bounded extension
 ensure capacity commits before any extra bytes or finalization. Transfer state
 is Open→SealPending→Sealed; only Open mutates, unknown seal reconciles without
-guessing and exact provider-fenced Sealed binds immutable object/root/size/
+guessing and reopens only with permanent never-completed provider proof; exact
+provider-fenced Sealed binds immutable object/root/size/
 ETag/version before eligibility. Evaluator
 binary/corpus digests and node readiness are required; emergency distrust
 blocks transfer/extension/eligibility/Commit until independent migration
 preserves at least the existing maximum. Reassessment never clamps corrected
 charge to the plan maximum: a protected emergency reserve covers positive
-deficit or readiness fences until separately authorized remediation. Permanent Unknown is independently
+deficit or readiness fences until separately authorized remediation.
+EffectiveCharge joins base plus covered deficit and final Commit atomically
+settles both into one member. Remediation and unknown resolution receive full
+destination-applied authorization/revocation families. Permanent Unknown is independently
 converted at full charge into a fenced member with retained legal-hold
 evidence and no late-evidence refund. Platform/tenant ceilings and a separate
 authorization family govern confirm-present, verified complete-namespace
-deletion or permanent-unresolvable successors without quarantine rewrite. Begin creates
+deletion or permanent-unresolvable successors without quarantine rewrite.
+BeginRelease admission uses a bounded pre-Begin pool whose exact winning
+charge transfers atomically into the newly created lineage budget; cleanup
+requires terminal authorization and no-Begin proof. Begin creates
 plan generation 1 and Preparing. Terminal reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old
 attempts/grants/receipts and creates new bundle/reservation identities;
@@ -391,7 +398,7 @@ Replan freshly proves backend atomic feasibility and reserves its replacement/
 future-Commit plus retained-history/cleanup allowance. One immutable
 cumulative lineage budget bounds all generations and work; checkpoint/archive
 compaction preserves exact replay/anti-reuse and exhaustion never refunds.
-Every destination admission atomically creates/joins a stable pessimistic
+Every post-Begin destination admission atomically creates/joins a stable pessimistic
 original-bucket budget charge; exact retry never recharges and Recovery
 capacity is non-borrowable. The same transaction
 settles every leg, advances Released to OriginalTotal,

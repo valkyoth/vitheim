@@ -689,23 +689,29 @@ restore, failover, and release evidence.
    weakening. A streaming cap prevents additional bytes or finalization above
    the reservation, and atomic bounded extension must commit before the next
    chunk. External transfer is Open→SealPending→Sealed; only Open mutates,
-   unknown seal stays pending, and provider-fenced Sealed binds immutable
+   unknown seal stays pending unless provider-authenticated permanent non-
+   completion proof permits a newer-fence reopen, and provider-fenced Sealed binds immutable
    object/root/size/ETag/version and is required for eligibility. Evaluator
    binary/corpus digests and node readiness are mandatory;
    emergency distrust blocks chunks, extension, eligibility and Commit until
    independent migration preserves at least the original/current charge.
    Reassessment never clamps to the plan maximum: positive deficit debits a
    protected emergency reserve or fences readiness until separately authorized
-   provision, verified deletion or sufficient-capacity migration.
+   provision, verified deletion or sufficient-capacity migration. EffectiveCharge
+   combines the base and covered deficit; Commit settles both into one member.
+   Remediation and unknown resolution use complete destination-applied
+   authorization/revocation state machines.
    A versioned cost profile maps unlike source/destination generations,
-   units and storage overhead; Commit converts the reservation into the final
+   units and storage overhead; Commit converts the base plus covered deficit into the final
    custody member before exact source credit. Unknown preserves predecessor and
-   pending charge until independent quarantine converts the full maximum into
+   pending charge until independent quarantine converts the full EffectiveCharge into
    a permanent member, fences destination/transfer and retains legal-hold
    evidence without refund. Platform/tenant ceilings apply and a separate
    authorized workflow may confirm presence, verify complete namespace
    deletion or declare permanent unresolvability without rewriting quarantine.
-   Begin creates plan generation 1 and a Preparing commit
+   BeginRelease admission charges a bounded pre-Begin pool; winning Begin
+   transfers that exact reservation into the new lineage budget and non-winner
+   cleanup requires no-Begin proof. Begin creates plan generation 1 and a Preparing commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and
    creates a new bundle/reservation set; Abandon fences only and never refunds
@@ -713,7 +719,7 @@ restore, failover, and release evidence.
    replacement/future-Commit plus retained-history capacity under an immutable
    cumulative lineage budget. Only authenticated checkpoint/archive coverage
    compacts exact replay/anti-reuse state; exhaustion is non-refunding. Every
-   destination admission atomically creates/joins one pessimistic original-
+   post-Begin destination admission atomically creates/joins one pessimistic original-
    bucket budget charge; exact retry does not recharge and Recovery capacity
    is protected. Full
    predecessor rollback is unsupported. All release transactions

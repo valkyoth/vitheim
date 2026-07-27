@@ -879,6 +879,12 @@ ETag/version and admits no write; unknown provider outcome reconciles without
 guessing. Sealed carries an authenticated immutable-version/stale-writer fence,
 admits no append/overwrite/finalize/extension and is required by MarkEligible.
 Providers lacking an equivalent hard fence are unsupported.
+Seal reconciliation may reopen only from an authenticated
+SealDefinitelyNeverCompleted receipt proving the old provider operation is
+permanently incapable of later success. Current absence, timeout or accepted
+cancellation is insufficient; without that guarantee SealPending remains
+closed. A reopened attempt uses a newer provider fence and never reuses the old
+token or multipart generation.
 Bindings include cryptographic evaluator binary/algorithm/ABI and conformance-
 corpus digests. Authenticated node readiness must cover every pinned evaluator
 through startup, rolling upgrade, failover and restore. Independently rooted
@@ -893,6 +899,30 @@ liability and fences readiness. Unknown reassesses before quarantine. Separate
 authorization alone may provision more capacity, verify exact deletion or
 migrate to sufficient capacity, always preserving reassessment/distrust/
 quarantine history and legal-hold denial.
+
+Freeze final covered-deficit conservation. EffectiveCharge is checked base
+reservation plus the exact covered deficit, even above the historical maximum.
+Commit atomically converts both components into one member and one deficit
+settlement; unknown response/restore retains both components or observes the
+whole conversion. Remediation-authorized evaluator migration may exceed the
+old maximum only when the exact delta is already covered and no external byte/
+root changes. Its result explicitly selects resumable Commit, verified
+deletion followed by Replan, or permanent fenced retention.
+
+Freeze complete non-reusable destructive authorization for deficit remediation
+and unknown-transfer resolution. Each has independent issuer/destination
+roles, six-state authorization, Admit/Expire, scoped issuer Revoke,
+destination Apply/inbox/tombstone, closed outcome/NotAdmitted/conflict and the
+first-terminal table. VerifyDeletion consumes one exact Issued destination row
+in the capacity transaction and always rechecks quorum/SoD/legal hold.
+
+Resolve Begin budget bootstrapping with a bounded pre-Begin admission pool,
+not a dormant lineage object. BeginRelease Admit reserves a stable candidate
+charge under deployment/tenant hard ceilings and protected terminalization
+capacity. The one winning Begin atomically transfers its original bucket,
+amount and settlement identity into the new lineage budget. Expired/revoked
+non-winners clean up only after proof no Begin result or effect exists; unknown
+outcome retains the charge.
 
 Freeze one durable plan-bound commit attempt with Preparing, CommitEligible,
 Superseded, Abandoned and Consumed. MarkCommitEligible alone moves Preparing

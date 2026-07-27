@@ -20,6 +20,18 @@ All notable Vitheim changes are documented here. The format follows
 - Added platform-bounded, separately authorized retained-unknown resolution
   for confirmed presence, verified deletion, or permanent unresolvability
   while preserving the original quarantine and legal-hold decision.
+- Closed final deficit conservation with checked EffectiveCharge, atomic
+  DeficitSettlement, response-loss/restore accounting and typed remediation
+  continuations beyond the historical maximum only when fully covered.
+- Completed the deficit-remediation and retained-unknown-resolution
+  authorization families with destination admission, expiry, scoped
+  revocation, inbox/tombstone, first-terminal outcomes and SoD/legal-hold
+  rechecks.
+- Added bounded pre-Begin admission charging whose exact winning reservation
+  transfers atomically into the new lineage budget, with protected recovery
+  and proved-no-Begin cleanup for losing candidates.
+- Required permanent provider proof that an old seal/completion can never
+  succeed before SealPending may reopen under a newer fence.
 - Made every custody Replan repeat aggregate backend feasibility and atomically
   reserve replacement, future-Commit and retained-history capacity under a
   non-resettable cumulative plan-lineage budget with authenticated compaction.
