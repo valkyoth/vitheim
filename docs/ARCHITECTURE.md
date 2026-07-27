@@ -846,9 +846,17 @@ restore, failover, and release evidence.
    only the destination can. The separate recovery head is compacted only by
    its own exact-set checkpoint, staged/verified publication and replay head;
    a predecessor-linked external greatest-current-pointer high-watermark
-   dominates restore across sequential equivocations. Missing recovery history
-   returns typed unavailable and restore exact-completes the witnessed pointer
-   or remains unready—never falling back to the frozen old archive. BeginAbortDrain is itself no-write/no-permit unless one
+   dominates restore across sequential equivocations. The acyclic generation
+   order is `C_n→P_(n-1), H_n→C_n, P_n→H_n`; checkpoint creation and `P_n`
+   remain hot, and generated schema/hash-DAG checks reject `C_n→P_n`.
+   Checkpoint creation, pointer publication/Reconcile/query, restore-cursor
+   advance and restore completion have distinct typed bounded protocols.
+   Orphan/GC requires locked authenticated non-reference across replay,
+   transfer/pointer, activation, restore, evidence, retention and legal-hold
+   owners; an externally referenced publication cannot orphan. Missing recovery
+   history returns typed unavailable and restore exact-completes the witnessed
+   pointer or remains unready—never falling back to the frozen old archive.
+   BeginAbortDrain is itself no-write/no-permit unless one
    non-releasable completion reservation covers sealed-abort disposition,
    WitnessWon Commit continuity, bounded seal-status queries, outputs/work,
    existing-query drain, exhaustion and equivocation. Lost seal response,

@@ -465,6 +465,13 @@ audit decision.
   destination remains non-operational until exact import/conformance and
   pointer activation. Dedicated exact-set recovery checkpoint/publication/
   replay/restore state and an independent greatest-current-pointer chain
+  use only the acyclic stagger `C_n→P_(n-1), H_n→C_n, P_n→H_n`; generated
+  schema/hash-DAG tests reject same-generation back-edges and future signature/
+  result inclusion. Dedicated typed checkpoint-create, pointer publish/
+  Reconcile/query and restore advance/complete writers are bounded and return
+  no reusable permit. Orphan/GC proves current non-reference across all replay,
+  transfer/pointer, activation, restore, evidence, retention and legal-hold
+  authorities; externally bound publication cannot orphan. These controls
   prevent compaction loss or older-authority revival across sequential
   equivocations; historical unavailability stays unready and never falls back
   to the old archive. Identities never cross generations. A charged local fence

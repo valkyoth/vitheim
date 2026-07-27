@@ -505,12 +505,21 @@ without a distributed transaction. Activation requires exact inbox
 consumption, source reconciliation and current conformance; inherited consumed
 is a genesis baseline, never new head-charge credit. A dedicated exact-set
 recovery checkpoint, bounded staged publication, replay head and restore cursor
-preserve every recovery charge/result/transfer/pointer artifact. Restore first
-obtains the independent predecessor-linked greatest current pointer, replays
-the recovery hot suffix and exact-completes witnessed activation or stays
-unready; the old archive is never a fallback. The Phase C milestone runs the
-full replacement adversarial/cross-backend suite; `0.140.11` repeats and
-freezes it. BeginAbortDrain first commits a typed result and non-releasable
+preserve every recovery charge/result/transfer/pointer artifact. Their hash
+graph is staggered and generated-test enforced:
+`C_n→P_(n-1), H_n→C_n, P_n→H_n`; checkpoint creation and `P_n` remain hot
+until later cuts, and `C_n→P_n` is invalid. Dedicated typed checkpoint-create,
+pointer publication/Reconcile/status-query, restore-cursor and restore-
+completion protocols own bounded charges, reservations, exact outcomes and
+unreconstructable process-local permits. MarkOrphan proves locked non-reference
+across replay/transfer/pointer/replacement/restore/activation/evidence/hold
+owners; externally referenced publications exact-commit or stay unready and
+cannot be collected. Restore obtains the independent predecessor-linked
+greatest current pointer through its dedicated query lane, replays the recovery
+hot suffix and exact-completes witnessed activation or stays unready; the old
+archive is never a fallback. The Phase C milestone runs the full replacement
+adversarial/cross-backend/DAG/reference suite; `0.140.11` repeats and freezes
+it. BeginAbortDrain first commits a typed result and non-releasable
 completion reservation covering sealed abort, WitnessWon Commit continuity,
 bounded seal-status queries, outputs/drain, exhaustion and equivocation;
 missing capacity is no-write/no-permit. Lost response/failover/restore enters

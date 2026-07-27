@@ -883,11 +883,18 @@ reservation mapping-or-quarantine, inherited baseline and independent
 predecessor-linked transfer witness must reconcile before activation; source
 absence and timeout never complete a leg and no backend assumes a distributed
 transaction. Its own exact-set recovery checkpoint/publication/replay/restore
-lifecycle preserves every result and pointer generation; restore compares the
-independent greatest-current-pointer chain, exact-completes witnessed
-activation or stays unready, never reading authority from the old archive.
-Production evidence repeats the Phase C core recovery corpus at the frozen
-profile. Replay
+lifecycle preserves every result and pointer generation using only
+`C_n→P_(n-1), H_n→C_n, P_n→H_n`; generated schema/hash-DAG evidence rejects
+same-generation back-edges. Checkpoint creation, pointer Publish/Reconcile/
+query and restore-cursor/complete use their dedicated typed bounded protocols,
+and no retry/restore reconstructs a permit. MarkOrphan/FinalizeGc requires
+locked authenticated non-reference across all replay, transfer/pointer,
+activation, restore, evidence, retention and legal-hold owners; external
+pointer reference permits exact Commit or Unready, never orphan. Restore
+compares the independent greatest-current-pointer chain, exact-completes
+witnessed activation or stays unready, never reading authority from the old
+archive. Production evidence repeats the Phase C core recovery DAG/reference/
+typed-operation corpus at the frozen profile. Replay
 install/delete cannot split from rollover. BeginAbortDrain is no-write/no-
 permit unless its typed transaction commits the complete non-releasable
 sealed-abort/WitnessWon-Commit/seal-query/output/drain/exhaustion/equivocation
@@ -1217,7 +1224,14 @@ rollback below the external watermark, prepared successor abandonment,
 ordinary guard omission, replay-head-first inversion, direct callback witness
 import, duplicate/missing disposition charge, immediate/query result mismatch,
 witness proposal/result/signature dependency cycle, alternate encoding or
-cross-epoch substitution, missing a route charge, any `q`/`s` route-equation
+cross-epoch substitution, recovery `C_n→P_n` or any other checkpoint/replay/
+pointer cycle, future pointer receipt/result inclusion, checkpoint-create cut
+self-capture, missing/aliased typed recovery command/result/conflict,
+publication/query permit reconstruction, query reservation/concurrency leak,
+Unknown/Unavailable used as authority, unhandled contradiction/exhaustion,
+referenced recovery publication orphan/GC, stale non-reference proof,
+evidence-custody/retention/legal-hold bypass, missing predecessor/result
+closure, missing a route charge, any `q`/`s` route-equation
 or reservation-conservation mismatch, double co-commit subtraction, Witnessed
 left current after Commit, split replay/delete/
 tombstone/next-guard rollover, stale generation or old identity reuse,

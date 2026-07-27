@@ -269,9 +269,15 @@ baseline and independent transfer high-watermark before the sole current
 pointer activates; neither side may assume a distributed transaction or infer
 completion from absence. It must also load the independent greatest pointer,
 dedicated exact-set recovery checkpoint/publication/replay head and hot suffix,
-then exact-complete witnessed activation or stay unready without old-archive
-fallback. Phase O reruns the Phase C replacement corpus for the frozen profile;
-it does not introduce first-time recovery tests. Replay install/delete cannot
+using the staggered `C_n→P_(n-1), H_n→C_n, P_n→H_n` DAG, then exact-complete
+witnessed activation or stay unready without old-archive fallback. It must
+exercise the distinct checkpoint-create, pointer Publish/Reconcile/query and
+restore-cursor/complete typed protocols without permit reconstruction. Any
+externally referenced recovery publication exact-commits or stays unready;
+MarkOrphan/FinalizeGc proves current non-reference, retention expiry, no
+evidence/legal hold and predecessor preservation. Phase O reruns the Phase C
+replacement DAG/reference/typed-operation corpus for the frozen profile; it
+does not introduce first-time recovery tests. Replay install/delete cannot
 split from Commit rollover. BeginAbortDrain first commits one typed result and
 complete non-releasable sealed-abort/WitnessWon-Commit/seal-query/output/drain/
 exhaustion/equivocation reservation or is no-write/no-permit. Lost seal

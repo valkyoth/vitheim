@@ -124,6 +124,11 @@ All notable Vitheim changes are documented here. The format follows
   lifecycle and monotonic external current-pointer chain, collapsed retirement
   to one writer/charge/head advance, and moved the full replacement test corpus
   into the implementing Phase C milestone.
+- Made that recovery graph explicitly acyclic with staggered
+  `C_n→P_(n-1), H_n→C_n, P_n→H_n` generations and a generated schema/hash-DAG;
+  added typed checkpoint, pointer publication/query and restore operations;
+  and required authenticated cross-owner non-reference before recovery orphan
+  or garbage collection.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.

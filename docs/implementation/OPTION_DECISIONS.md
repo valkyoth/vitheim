@@ -3166,7 +3166,9 @@ retirement quorum, fence-keyed replacement head/candidate/current-pointer
 history, parent Recovery budget and recovery writer head, both capacity-
 transfer sides, mappings/equations and independent transfer high-watermark
 plus the dedicated exact-set recovery checkpoint/publication/replay/restore
-lifecycle and independently witnessed current-pointer predecessor chain from
+lifecycle, staggered `C_n/H_n/P_n` dependency graph, typed checkpoint/pointer-
+query/restore commands, exact orphan-reference proof and independently
+witnessed current-pointer predecessor chain from
 `0.29.0–0.30.0`. Review the already passing Phase C replacement adversarial
 corpus; this decision repeats/freezes it and is not its first execution.
 Compare only fail-closed operational procedures; the architecture has already
@@ -3193,8 +3195,15 @@ predecessor-linked transfer witness; candidate artifact custody; rollback
 prohibition; dedicated recovery checkpoint/publication/replay/restore formats,
 exact archived retry/conflict lookup, typed historical unavailability,
 independently witnessed monotonic current-pointer generations and sequential-
-equivocation recovery; operator/API status and audit language; preserved Phase
-C test-manifest/corpus identity; and explicit unsupported recovery conditions.
+equivocation recovery; explicit `C_n→P_(n-1), H_n→C_n, P_n→H_n` ordering with
+generated schema/hash-DAG and hot checkpoint-create/`P_n` records; typed
+checkpoint creation, pointer publication request/signed receipt/Publish/
+Reconcile/query and restore-cursor/complete command/result/conflict/outcome
+surfaces with bounded reservations and unreconstructable permits; exact
+orphan/GC non-reference proof over replay, transfer/pointer, activated
+replacement, restore cursor, activation receipt, evidence custody, retention
+and legal hold; operator/API status and audit language; preserved Phase C test-
+manifest/corpus identity; and explicit unsupported recovery conditions.
 Verification: exercise forged/missing quorum, receipt suppression, receipt
 preference, old key/identity/sequence/permit/idempotency reuse, concurrent old
 Commit/rollover, simultaneous different bootstrap IDs, stale head versions,
@@ -3202,16 +3211,20 @@ candidate suppression, Recovery exhaustion/borrowing, capacity refund,
 reservation omission/double-live mapping, fabricated inherited charge,
 partial/rolled-back outbox or inbox, timeout/source-absence inference, forged
 transfer/applied/activation receipts, pointer hijack, partial genesis, response
-loss, failover, backup/restore and second equivocation. Independent
+loss, `C_n→P_n`/future-result hash cycles, pointer query Unknown/Unavailable/
+ContradictoryEvidence/exhaustion, permit reconstruction, referenced orphan/GC,
+retention/legal-hold bypass, failover, backup/restore and second equivocation.
+Independent
 architecture, security, legal/forensic and operational review must agree that
 the old lineage never becomes writable and the new lineage cannot be less
 conservatively charged. A backend profile may use one local transaction only
 with proof over all logical transfer records; no supported profile may assume a
 distributed transaction. Repeat every Phase C competing-bootstrap, pointer,
 outbox/inbox, witness/activation, duplicate reconciliation, Recovery-exhaustion,
-mapping/quarantine, missing-history, sequential-equivocation and cross-backend
-case against the frozen profile; earlier failures cannot be waived and
-profile-specific tests are additions rather than substitutes.
+mapping/quarantine, missing-history, schema-DAG, typed recovery-operation,
+orphan/reference, sequential-equivocation and cross-backend case against the
+frozen profile; earlier failures cannot be waived and profile-specific tests
+are additions rather than substitutes.
 Exit criteria: unresolved evidence custody, authority retirement, safe
 capacity transfer or replacement bootstrap keeps witness archival unavailable
 for production. The selected profile requires an external pentest with zero

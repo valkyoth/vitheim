@@ -6927,11 +6927,31 @@ is predecessor-linked and commits the exact covered Recovery budget state,
 writer charges and reservations; replacement-attempt-set head; every candidate
 rejection; retirement result; replacement head; source/destination transfer
 artifact and receipt; reservation mapping; withheld member; inherited baseline;
-transfer/current-pointer high-watermark; activation result; current pointer;
+transfer high-watermark; activation result; current pointer; only the already
+completed predecessor current-pointer high-watermark;
 and exact result/audit/outbox lookup. It binds exact captured hot-row IDs and
 versions, integrity/encoding epochs, bounded chunks and a domain-separated
 exact-set root. A range, dense watermark or old-lineage checkpoint is not
 coverage.
+Recovery history uses an explicitly staggered commitment sequence. For
+generation `n`, checkpoint `C_n` captures through an immutable hot-row cut
+`r_n` and may bind only `P_(n-1)`; replay head `H_n` commits `C_n`; only then
+may externally signed pointer high-watermark `P_n` commit the activated pointer
+and `H_n`. `P_n` remains hot until `C_(n+1)` captures it. The canonical
+dependency DAG is therefore `C_n → P_(n-1)`, `H_n → C_n`, `P_n → H_n`.
+`C_n → P_n`, any same-generation back-edge, signature-field inclusion or
+alternate encoding is invalid. A generated schema/reference/hash-dependency
+DAG test constructs every selected schema and rejects cycles before an adapter
+may pass conformance.
+Only
+`CreateMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryCheckpoint`
+creates `C_n`; it returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCheckpointCreationResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCheckpointCreationConflict`.
+The creation charge, result, audit/outbox and successor recovery-head mutation
+are after `r_n`, excluded from `C_n` and remain hot until a later checkpoint,
+exactly as recovery archive Commit remains outside its captured cut.
 
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchiveReplayHeadV1`
@@ -6956,6 +6976,20 @@ Staged/Verified→OrphanGcEligible→Collected. Typed Stage, Verify, Commit,
 MarkOrphan and FinalizeGc results/conflicts are exact-retry records. Commit
 atomically installs the recovery archive-replay head and deletes only the exact
 captured hot set; its own recovery-history writer charge/result stays hot.
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchivePublicationNonReferenceProofV1`
+is required before MarkOrphan. Under the full recovery rank, MarkOrphan locks
+and rechecks that the publication/manifest/checkpoint is referenced by neither
+the recovery replay head nor any transfer high-watermark, current-pointer
+high-watermark, activated replacement head, live restore cursor, signed
+activation receipt, evidence-custody record or active retention/legal hold.
+An externally signed `P_n` that binds `H_n` makes its publication permanently
+ineligible for orphaning: recovery must exact-commit that publication or remain
+unready. FinalizeGc accepts only a current authenticated non-reference proof,
+expired retention, no legal/evidence hold and proof that deletion preserves
+the predecessor chain and every still-referenced exact result. Absence,
+timeout, stale snapshots and local non-reference alone never authorize
+orphaning or collection.
 The only publication commands/results are
 `StageMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryArchivePublication`
 with
@@ -6989,12 +7023,63 @@ writer, reservation, checkpoint/replay advance, pointer generation and
 response-loss/restore attempt before the fence-keyed budget is installed.
 Insufficient headroom leaves recovery unavailable, never wrapping a pointer or
 borrowing old-lineage capacity.
+Pointer publication has its own authority and outcome vocabulary. Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkPublicationRequestV1`
+contains `P_n`'s semantic preimage but no future signature or result digest;
+the independent authority returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkSignedReceiptV1`.
+Only
+`PublishMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermark`
+may atomically persist the request/single-use submission claim and return one
+unreconstructable process-local publication permit, with
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkPublicationResultV1`
+or its
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkPublicationConflict`.
+Every external response, including response loss discovered later, enters only
+through
+`ReconcileMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkPublication`,
+returning
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkPublicationReconciliationResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkPublicationReconciliationConflict`.
+Retry/status never reconstructs the publication permit.
+
+Unknown pointer-publication state is resolved only by a dedicated bounded
+status lane. Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryBudgetV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryAttemptV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryAttemptStateV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryAttemptOutcomeV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryTerminalizationReservationV1`
+and
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryAttemptConcurrencySettlementV1`
+own hard call/byte/work/time/concurrency maxima, stable attempt state, future
+terminal work and exact-once settlement. Attempt state is closed to Admitted,
+PermitIssued, InvocationReturned and ResponseImported. The outcome is closed to
+SignedReceipt, Unknown, Unavailable and ContradictoryEvidence; exhaustion is
+typed
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryBudgetExhausted`.
+Only
+`AdmitMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQuery`
+may reserve every terminal leg and return one process-local non-serializable
+query permit, plus
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryAdmissionResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryAdmissionConflict`.
+Only
+`ReconcileMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQuery`
+consumes that reservation and returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryReconciliationResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryReconciliationConflict`.
+Unknown and Unavailable grant no authority;
+ContradictoryEvidence permanently fences recovery.
 
 Restore first enters
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreStateV1::Unready`
-and independently obtains the greatest
-transfer and current-pointer high-watermarks through the same bounded
-status-query/Reconcile machinery. It then selects the greatest recovery
+and independently obtains the greatest transfer high-watermark and uses only
+the dedicated current-pointer admission/permit/Reconcile lane above. It then
+selects the greatest recovery
 archive-replay head, verifies checkpoint ancestry and exact pointer
 generation/version/digest, replays the hot suffix with its durable restore
 cursor and either exact-completes the already witnessed deterministic
@@ -7002,6 +7087,24 @@ activation/current-pointer CAS or remains unready. A locally consistent older
 pointer, missing recovery archive, one-sided transfer, unavailable historical
 result or unverified successor can never revive an earlier authority, including
 after a second or later equivocation.
+Each bounded cursor step is exclusively
+`AdvanceMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryRestoreCursor`,
+returning
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreCursorAdvanceResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreCursorAdvanceConflict`.
+Final readiness is exclusively
+`CompleteMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryRestore`,
+returning
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreCompletionResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreCompletionConflict`.
+Typed
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreUnavailable`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreContradictoryEvidence`
+and
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreBudgetExhausted`
+leave restore Unready and grant no pointer/activation authority.
 Restore queries the authority for both positive and seal evidence
 only by first entering
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealReconciliationRecoveryStateV1::Unready`
@@ -7194,7 +7297,13 @@ mutate a field covered by the attempt-set commitment:
 | Replacement-genesis staging | select the sole fence-keyed successor and freeze transfer source | CAS NoReplacement→Staged with unique old-fence→genesis, source outbox, non-operational destination, mappings, equations, candidate disposition and successor recovery head; changed material is permanently rejected |
 | Replacement capacity-transfer import/reconciliation | consume destination inbox and reconcile applied/unknown evidence | Commit the unique inbox receipt, source disposition/status, bounded external-status reservation/settlement and successor recovery head; timeout/source absence is never completion and no old permit material crosses |
 | Replacement activation/current-pointer CAS | activate only the staged, imported, conformance-passing and independently witnessed transfer | Atomically CAS Staged→Activated, install the sole current-authority/current-lineage pointer and result/audit/outbox, then reconcile the signed activation receipt to the source; no competing candidate can activate |
-| Replacement recovery history lifecycle | checkpoint, publication Stage/Verify/Commit, MarkOrphan, FinalizeGc and restore-cursor advance | Consume one declared Recovery history class per mutation; exact-set checkpoint/verified publication/replay-head install/captured-row deletion are atomic, old-lineage archives are forbidden, and missing history returns RecoveryHistoricalStateUnavailable without a head/charge |
+| Replacement recovery checkpoint creation | create exact-set `C_n` through fixed cut `r_n` | Consume one checkpoint class/charge and advance the recovery head once; `C_n` may bind only `P_(n-1)`, while its own charge/result/mutation remains hot and same-generation `C_n→P_n` is rejected |
+| Replacement recovery publication lifecycle | Stage/Verify/Commit, MarkOrphan and FinalizeGc | Consume one declared publication class per mutation; Commit atomically installs `H_n`/deletes the exact captured set, while orphan/GC requires locked authenticated non-reference, retention expiry, no custody/legal hold and predecessor preservation; a publication bound by external `P_n` can never orphan |
+| Recovery current-pointer publication/reconciliation | submit `P_n` after `H_n`, then import every external outcome | Persist the semantic request and one-use claim before one process-local permit; Reconcile alone records the signed receipt/unknown/contradiction and advances the recovery head, with `P_n→H_n` and no future receipt/result digest in the request |
+| Recovery current-pointer query admission | admit a stable status attempt for unknown pointer publication | Atomically consume bounded calls/bytes/work/time/concurrency, create a terminalization reservation and return one process-local permit; failure is no-write/no-permit and retry is status-only |
+| Recovery current-pointer query terminalization | import SignedReceipt/Unknown/Unavailable/ContradictoryEvidence | Consume the exact reservation, commit closed outcome/result, settle concurrency once and advance the recovery head; contradiction fences and no negative/unknown outcome authorizes a pointer |
+| Replacement recovery restore cursor | advance one bounded hot/archive replay quantum | Consume one restore-cursor class and atomically persist cursor/result/recovery-head successor; no scan, restart, skipped predecessor or hidden work |
+| Replacement recovery restore completion | exact-complete the greatest witnessed pointer or remain Unready | Commit readiness/result/head only after `C_n→P_(n-1), H_n→C_n, P_n→H_n`, exact ancestry/hot suffix and all external evidence verify; unavailable, contradictory or exhausted routes are typed no-authority outcomes |
 | Plan lifecycle | Replan and proof/capacity-state carry-forward | Commit old-plan terminalization, conservative remaining-class mapping, new plan/proof binding and successor attempt-set head together; consumption never resets |
 
 Every mutating command in the table creates immutable
@@ -7220,8 +7329,10 @@ in the displayed order; no writer may reverse the common subsequence.
 Equivocation recovery uses its separate canonical branch:
 absorbing old-fence/evidence read→parent Recovery budget→replacement attempt-set
 head→replacement head→transfer high-watermark→source outbox→destination
-inbox/genesis→current pointer→recovery current-pointer high-watermark→recovery
-archive publication→recovery archive-replay head→result/audit/outbox. Every acquired subset
+inbox/genesis→current pointer→recovery current-pointer high-watermark→pointer
+publication/query attempt/reservation/settlement→recovery archive publication/
+non-reference proof→recovery archive-replay head→restore state/cursor→result/
+audit/outbox. Every acquired subset
 preserves that order. Expected-version loss commits no recovery charge except a
 bounded changed-material candidate rejection whose own reservation was
 admitted; exact retry returns the stored typed result.
@@ -8373,6 +8484,18 @@ destination-inbox, applied-receipt, source-reconciliation, transfer-witness,
 activation and source-terminal write. Duplicate/import changed material and
 prove exact retry/conflict with no absence-derived completion or double-live
 capacity.
+Generate the schema/reference/hash-dependency DAG for every recovery generation
+and prove exactly `C_n→P_(n-1), H_n→C_n, P_n→H_n`; inject `C_n→P_n`, future
+signature/result references, alternate encodings and every other back-edge and
+require schema admission to fail before storage execution. Crash and lose
+responses around checkpoint creation, pointer request/claim/permit/publication/
+Reconcile, each query state/reservation/settlement, each restore-cursor step and
+restore completion. Exercise SignedReceipt, Unknown, Unavailable,
+ContradictoryEvidence and exhaustion without permit reconstruction or authority.
+Race MarkOrphan/FinalizeGc against replay-head Commit, transfer/pointer witness,
+replacement activation, restore cursor, signed activation receipt, evidence
+custody, legal hold and retention expiry; every reference blocks collection,
+and externally bound publication exact-commits or keeps recovery unready.
 Exhaust the Recovery budget at the single AuthorityRetirement writer,
 candidate rejection, replacement stage, transfer import/reconciliation,
 pointer query, activation, checkpoint, publication Stage/Verify/Commit,
