@@ -409,7 +409,11 @@ audit decision.
   `u128` attempt-set/revalidation counters and reserves `u128::MAX` exclusively
   for an absorbing exhaustion fence. Insufficient headroom denies before
   external work; a valid sentinel permanently unreadies every effect and
-  Commit path and never represents the triggering mutation. Begin
+  Commit path and never represents the triggering mutation. A lineage-wide
+  capacity state owns class-specific admitted/consumed/remaining counts and
+  head/counter equations. Every writer locks it before the attempt-set head and
+  atomically consumes one immutable exact-retry charge with mutation/head/
+  result; Replan, compaction, restore and migration cannot reset it. Begin
   creates plan generation 1 and PreparingOpen. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
@@ -425,8 +429,8 @@ audit decision.
   Commit consumes those receipts while
   settling every leg, advancing Released to OriginalTotal and committing
   CustodyReleased with the matching parent inverse. The combined rank acquires
-  residual routing head/residual state head/remediation attempt-set head/
-  archive head/plan head/commit-attempt disposition/sorted remediation
+  residual routing head/residual state head/counter-capacity state/remediation
+  attempt-set head/archive head/plan head/commit-attempt disposition/sorted remediation
   attempt/capability/evidence/authorization/reconciliation/checkpoint rows/
   publication state,
   settlement head, sorted custody profile heads/

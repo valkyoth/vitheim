@@ -1016,10 +1016,13 @@ Freeze a closed attempt-set writer matrix: execution/finalization
 authorization Admit/Expire/destination-Apply/consume; Begin; Dispatch; provider
 reconciliation and Complete; capability lifecycle; provider-evidence
 admission; and attempt checkpoint/compaction/archive. Every mutation follows
-routing→residual-state→attempt-set→commit-attempt/remediation-attempt→
-capability/evidence/authorization→result order and atomically commits the
-covered mutation, immutable mutation record and successor head. No direct
-attempt writer or narrower Dispatch lock sequence exists.
+routing→residual-state→counter-capacity-state→attempt-set→commit-attempt/
+remediation-attempt→capability/evidence/authorization→result order and
+atomically consumes one class-specific immutable writer charge with capacity-
+state CAS, covered mutation, mutation record and successor head. Exact retry
+returns the charge/result, CAS losers consume nothing, and Replan/compaction/
+restore/migration preserve all consumption. No direct attempt writer or
+narrower Dispatch lock sequence exists.
 
 If any covered writer races a CommitEligible plan, let the security-relevant
 writer proceed and atomically invalidate
@@ -1051,6 +1054,20 @@ worst-case terminal ordinary values no greater than `u128::MAX - 1`, leaving
 Insufficient, unbounded or overflowed proof rejects
 before plan installation or external work. Correctly admitted work therefore
 cannot exhaust either counter.
+
+Make a lineage-wide RevalidationCounterCapacityState the sole count owner. It
+binds proof/version, plan/lineage, a closed writer-class enum, per-class
+admitted/consumed/remaining counts, total head writes, advance/rollover
+subcounts, per-domain sentinel reservations, current counter tuple and
+predecessor-linked non-wrapping state version. The closed enum includes Replan,
+and head/state/subset equations bind every charge. Every head writer consumes exactly one typed
+RevalidationCounterWriterCharge in the same transaction as capacity-state CAS,
+covered mutation, head, result, audit and outbox. Class+command/idempotency is
+unique: exact retry/response loss returns the old charge/result, changed
+material conflicts and CAS losers charge nothing. Replan carries consumption
+and retained obligations forward without increasing totals; authenticated
+compaction/restore/migration preserve charge replay and all count/head
+equations.
 
 At unexpected last-ordinary state, install the sentinel fence instead of the
 triggering mutation, permanently unready all Begin/Dispatch/Stage/Verify/

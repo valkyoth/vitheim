@@ -80,6 +80,9 @@ All notable Vitheim changes are documented here. The format follows
   headroom for every lifetime writer, the terminal value is reserved for an
   absorbing exhaustion fence, and no plan claims an unrepresentable final
   mutation.
+- Added a lineage-wide, class-bucketed counter-capacity state and immutable
+  exact-once writer charges, coupling each admitted count to its mutation,
+  head, result, audit and outbox across retry, Replan, compaction and restore.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.

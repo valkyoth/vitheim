@@ -401,6 +401,8 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationAdvanceCheckpointRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityProofRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterExhaustionFenceRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityStateRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterWriterChargeRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanOperationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanPreflightRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonResultRow`,
@@ -543,7 +545,15 @@ restrictive work within the admitted lifetime bound never waits. Begin/Replan
 proves overflow-safe headroom across fixed `u128` attempt-set/revalidation
 counters and reserves the terminal value solely for an absorbing exhaustion
 fence. Insufficient capacity denies before external work; unexpected exhaustion
-permanently unreadies the owner and never fabricates a successor mutation.
+permanently unreadies the owner and never fabricates a successor mutation. One
+lineage-wide predecessor-linked capacity state is the sole owner of
+per-writer-class admitted/consumed/remaining counts, total head writes,
+advance/rollover subsets, per-domain sentinel reservations, current counter
+tuple and capacity-state version.
+Every writer locks it before the attempt-set head and atomically consumes one
+immutable class+command charge with mutation/head/result; exact retry rejoins,
+CAS losers consume nothing and Replan/compaction/restore/migration preserve all
+consumption and equations.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -555,7 +565,7 @@ Each grant issuer owns only monotonic signed-intent creation; the destination
 applier owns inbox/tombstone/table mutation. Both families implement the same
 six-state first-terminal table, including no-write absent expiry/consumption.
 All lineage-release transactions acquire residual routing head, residual state
-head, remediation attempt-set head, archive head, plan head, commit-attempt
+head, counter-capacity state, remediation attempt-set head, archive head, plan head, commit-attempt
 disposition, sorted remediation attempt/capability/evidence/authorization/
 reconciliation/checkpoint rows, publication state,
 journal head, sorted custody-cost-profile/evaluator-distrust heads, ledgers,
@@ -639,7 +649,9 @@ required root, reordered/duplicated/omitted/forked/rolled-back revalidation
 advance or checkpoint, wrapping advance sequence or budget-based restrictive
 writer blockage, capacity-proof overflow/undercount, terminal sentinel used by
 ordinary state, forged/missing exhaustion fence, invented mutation after
-exhaustion, mutable membership-root drift,
+exhaustion, missing/reset capacity state, writer-class substitution, charge
+without head or head without charge, duplicate retry charge, Replan/
+compaction/restore consumption rollback, mutable membership-root drift,
 coordinated residual-state rollback below external high-watermark, aggregate
 residual child closure/budget theft or lost decrement, Commit with nonterminal
 effect/capability/reconciliation, hidden/partial attempt-set root, absent-row-

@@ -426,8 +426,13 @@ restrictive work admitted by the proven lifetime bound. Begin/Replan proves
 overflow-safe headroom across fixed `u128` attempt-set/revalidation counters,
 reserving the terminal value solely for an absorbing exhaustion fence.
 Insufficient headroom denies before external work; unexpected exhaustion
-permanently unreadies the owner without inventing a mutation. Begin creates
-plan generation 1 and PreparingOpen. Terminal
+permanently unreadies the owner without inventing a mutation. A lineage-wide
+capacity state owns class-specific admitted/consumed/remaining counts, total
+head writes, revalidation advances/rollovers, sentinel reservation and current
+counter tuple. Every writer locks it before the attempt-set head and atomically
+consumes one immutable exact-retry charge with mutation/head/result; Replan and
+history lifecycle preserve consumption. Begin creates plan generation 1 and
+PreparingOpen. Terminal
 reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old
 attempts/grants/receipts and creates new bundle/reservation identities;

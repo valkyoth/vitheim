@@ -756,7 +756,12 @@ restore, failover, and release evidence.
    fixed `u128` attempt-set/revalidation counters and reserves `u128::MAX` only
    for an absorbing exhaustion fence. Insufficient headroom denies before
    external work; unexpected/corrupt terminal state becomes permanently
-   unready and never fabricates a successor mutation.
+   unready and never fabricates a successor mutation. A lineage-wide,
+   predecessor-linked capacity state owns per-writer-class admitted/consumed/
+   remaining counts and the head/counter conservation equations. Every writer
+   locks it before the attempt-set head and atomically consumes one immutable
+   exact-retry charge with the covered mutation, head, result, audit and outbox;
+   Replan, compaction, restore and migration never reset consumption.
    Begin creates plan generation 1 and a PreparingOpen commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and
@@ -769,8 +774,8 @@ restore, failover, and release evidence.
    bucket budget charge; exact retry does not recharge and Recovery capacity
    is protected. Full
    predecessor rollback is unsupported. All release transactions
-   share the residual-routing-head→residual-state-head→remediation-attempt-set-
-   head→archive-head→plan-head→commit-attempt→
+   share the residual-routing-head→residual-state-head→counter-capacity-state→
+   remediation-attempt-set-head→archive-head→plan-head→commit-attempt→
    sorted-remediation-attempt/capability/evidence/authorization/
    reconciliation/checkpoint rows→publication-state→settlement-head→
    sorted-custody-profiles/ledgers/

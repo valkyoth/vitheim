@@ -224,7 +224,11 @@ work within its admitted lifetime bound. Begin/Replan proves overflow-safe
 headroom over fixed `u128` attempt-set/revalidation counters and reserves the
 terminal value only for an absorbing exhaustion fence. Insufficient headroom
 denies before external work; unexpected exhaustion permanently unreadies the
-owner without fabricating an advance. Begin creates plan generation 1 and
+owner without fabricating an advance. A lineage-wide capacity state owns
+per-writer-class admitted/consumed/remaining counts and head/counter equations.
+Every writer locks it before the attempt-set head and atomically consumes one
+immutable exact-retry charge with mutation/head/result; Replan and history
+lifecycle cannot reset consumption. Begin creates plan generation 1 and
 PreparingOpen.
 Independently authorized Replan alone
 recovers a terminally reconciled plan by fencing/superseding old attempts,
@@ -241,7 +245,8 @@ identical parent credit plus distinct CustodyReleased terminal in one
 transaction. Separate BeginRelease/ReplanCustodyRelease/
 AbandonCustodyRelease/QuarantineUnknownTransfer/
 MigrateDistrustedEvaluatorReservation/CommitCustodyRelease grants are consumed under one
-residual-routing-head→residual-state-head→remediation-attempt-set-head→archive-head→plan-head→commit-attempt→sorted-remediation-attempt/capability/evidence/authorization/reconciliation/checkpoint-rows→publication-state→settlement-head→sorted-custody-
+residual-routing-head→residual-state-head→counter-capacity-state→
+remediation-attempt-set-head→archive-head→plan-head→commit-attempt→sorted-remediation-attempt/capability/evidence/authorization/reconciliation/checkpoint-rows→publication-state→settlement-head→sorted-custody-
 profiles/ledgers/reservations→parent→slot→sorted-old-fences→control/lineage/
 checkpoint→authorization/custody/output rank, after an aggregate bundle maximum
 proves every ordinary/workspace leg, receipt, pending reconciliation/GC
@@ -2293,7 +2298,9 @@ repeated mutation stranded on an older required root or blocked despite valid
 capacity proof,
 capacity-proof overflow/undercount, ordinary use of the terminal sentinel,
 forged/missing exhaustion fence or invented post-exhaustion mutation, durable
-claim/digest used as bearer or reconstructed permit,
+claim/digest used as bearer or reconstructed permit, missing/reset capacity
+state, writer-class substitution, charge/head mismatch, duplicate retry charge
+or Replan/compaction/restore consumption rollback,
 finalization bypass, mutable-root drift, coordinated residual
 state-head/high-watermark rollback, sibling closure/budget theft or lost
 aggregate decrement, Commit with hidden/nonterminal attempt work, absent-row-

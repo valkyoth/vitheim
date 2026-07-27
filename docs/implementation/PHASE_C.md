@@ -4705,9 +4705,9 @@ authority is durably captured before external execution:
   or
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchConflict`.
   The broker transaction uses the complete attempt-set writer rank below,
-  including routing head, residual state head, attempt-set head, plan-bound
-  commit attempt and remediation attempt before capability/evidence/
-  authorization rows. It rechecks current legal hold, retention, policy,
+  including routing head, residual state head, counter-capacity state,
+  attempt-set head, plan-bound commit attempt and remediation attempt before
+  capability/evidence/authorization rows. It rechecks current legal hold, retention, policy,
   evaluator-distrust, namespace-fence, provider-credential and owner-routing
   epochs, atomically redeems
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchBrokerCapabilityV1`,
@@ -6423,6 +6423,31 @@ intent creation remains evidence-only until destination Apply imports it.
 Empty is an explicit canonical root, never absence. Missing, forked,
 rolled-back or partially enumerated attempt state is conservative nonterminal.
 
+Canonical lineage-wide
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityStateV1`
+is the sole authoritative owner of admitted writer counts. It binds capacity-
+proof ID/version, lineage and current plan/head; a closed writer-class enum;
+per-class admitted, consumed and remaining `u128` counts; total
+attempt-set-head writes; revalidation advances and rollovers; untouched or
+consumed per-domain terminal-sentinel reservations; current attempt-set-head
+sequence and revalidation epoch/sequence; and checked non-wrapping `u128` state
+version plus predecessor digest. It also binds the genesis head/state tuple so
+current-head-minus-genesis equals total consumed head-write charges, every
+class satisfies admitted=consumed+remaining, and advance/rollover subsets equal
+their typed charge rows. Current-state-version-minus-genesis equals total
+ordinary charges plus the terminal-sentinel transition bit. Absence, saturation
+or equation mismatch is corruption, never free capacity.
+
+Every first committed head-advancing command appends immutable
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterWriterChargeV1`
+with a stable lineage-unique charge ID, declared writer class, command/
+idempotency/request digest, proof/version, prior and successor capacity-state
+version/digest/counts/counter tuple, attempt-set mutation/head, optional
+revalidation advance/rollover, result, audit and outbox. A unique
+lineage+writer-class+command/idempotency constraint returns the same
+charge/result for exact retry or response loss; changed material conflicts.
+CAS losers commit no charge and reread/reapply.
+
 The following writer set is closed. No command outside these classes may
 mutate a field covered by the attempt-set commitment:
 
@@ -6434,6 +6459,7 @@ mutate a field covered by the attempt-set commitment:
 | Effect reconciliation | provider query/evidence admission and CompleteDeficitRemediation | Commit evidence, reconciliation/finalization state, terminal attempt result and successor head together |
 | Capability lifecycle | terminalization, expiry, revocation and cleanup not already owned above | Commit capability disposition, proof/result and successor head together |
 | Attempt history lifecycle | checkpoint, compaction and archival replacement | Commit authenticated coverage/replacement evidence and successor head together; deletion alone is forbidden |
+| Plan lifecycle | Replan and proof/capacity-state carry-forward | Commit old-plan terminalization, conservative remaining-class mapping, new plan/proof binding and successor attempt-set head together; consumption never resets |
 
 Every mutating command in the table creates immutable
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseRemediationAttemptSetMutationV1`
@@ -6442,13 +6468,18 @@ versions/digests, the canonically sorted changed row identities and old/new
 digests, authorization/evidence/result identities and any eligibility
 invalidation. Exact read-only replay returns the stored mutation/result and
 does not advance again. The canonical order for every writer is
-routing head→residual state head→remediation-attempt-set head→plan-bound
-commit-attempt disposition→canonical-ID-sorted remediation attempt→capability/
-provider evidence/authorization/reconciliation/checkpoint rows→result/audit/
-outbox. A writer may omit unrelated rows but may never reverse the common
-subsequence. Attempt mutation, covered auxiliary mutation, mutation record and
-attempt-set-head advancement are one local transaction. Thus the narrower
-routing-head→attempt order is never valid for Dispatch or another writer.
+routing head→residual state head→counter-capacity state→remediation-attempt-set
+head→plan-bound commit-attempt disposition→canonical-ID-sorted remediation
+attempt→capability/provider evidence/authorization/reconciliation/checkpoint
+rows→result/audit/outbox. A writer may omit unrelated rows but may never reverse
+the common subsequence. Attempt mutation, covered auxiliary mutation, writer
+charge, mutation record, capacity-state CAS and head advancement are one local
+transaction. It locks the capacity state, verifies its declared
+class and proof, consumes exactly one remaining class charge, appends the
+immutable charge, mutates covered state and advances the attempt-set/
+revalidation head with result/audit/outbox in one local transaction. Thus the
+narrower routing-head→attempt or head-before-capacity order is never valid for
+Dispatch or another writer.
 
 Each plan owns one
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptV1`
@@ -6534,19 +6565,35 @@ Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityProofV1`
 is mandatory in every Begin/Replan preflight before external work. It binds the
 fixed `u128` widths; current attempt-set-head sequence and revalidation epoch/
-sequence; the terminal sentinel value `u128::MAX`, which ordinary state may
-never use, leaving `[0, u128::MAX - 1]` as the ordinary range; and
+sequence; capacity-state version; the per-domain terminal sentinel value
+`u128::MAX`, which ordinary state may never use, leaving
+`[0, u128::MAX - 1]` as the ordinary range; and
 overflow-checked maximum lifetime counts for every
 authorization, evidence, reconciliation, checkpoint, compaction, rollover,
 response-loss replay and terminalization writer admitted by the immutable plan
 budgets. Caller-supplied counts are forbidden. With checked arithmetic, the
 proof requires current attempt-set head plus maximum head writes to be at most
 `u128::MAX - 1` and the worst-case revalidation successor/rollover tuple to be
-at most `(u128::MAX - 1, u128::MAX - 1)`, leaving the sentinel exclusively
-reserved. Arithmetic overflow, an unbounded class or insufficient headroom
+at most `(u128::MAX - 1, u128::MAX - 1)`. Current capacity-state version plus
+every ordinary charge must likewise remain at most `u128::MAX - 1`, leaving
+each sentinel exclusively reserved. Arithmetic overflow, an unbounded class or insufficient headroom
 rejects Begin/Replan before plan installation, capacity reservation or external
-effect. Each later writer rechecks the proof, charged writer count, current
-counters and unused sentinel.
+effect. Each later writer rechecks the proof, authoritative per-class consumed/
+remaining counts, current counters and unused sentinel through the capacity
+state; prose, recomputed sums or the existence of a head alone cannot supply a
+charge.
+
+Begin creates the capacity state with the proof and genesis tuple in the same
+transaction as plan generation/head and the initial attempt-set head. Replan
+consumes its class-specific charge and installs a proof/state successor that
+carries forward every consumed charge, immutable charge identity and retained
+old-plan obligation; it may redistribute only the already admitted remaining
+class maxima under a conservative mapping and can never reset or increase the
+lineage total. Compaction may replace charge rows only behind authenticated
+coverage that preserves exact replay, per-class cumulative counts, total/head
+equation, advance/rollover subsets and predecessor digest. Restore and
+migration select the greatest authenticated state/checkpoint, replay uncovered
+charges and prove every equation against the current heads before readiness.
 
 Sequence rollover is an ordinary immutable advance to the checked successor
 epoch and sequence zero, and is admitted only inside that proof.
@@ -6559,6 +6606,9 @@ atomically installs absorbing
 with exact owner/plan/attempt, proof, observed counter/head/root/payload,
 exhausted domain, sentinel identity, result, audit and outbox. It does not
 pretend the triggering covered mutation or a RevalidationAdvance committed.
+The same transaction marks the applicable sentinel reservation consumed and
+advances the capacity-state version/digest using its reserved sentinel when
+that domain is exhausted, without consuming an ordinary writer bucket.
 The owner is permanently unready; Begin, Dispatch, Stage, Verify, MarkEligible,
 Commit and Replan deny, and no ordinary writer may follow the sentinel. Exact
 fence retry/response loss returns the stored result. An imported/restored state
@@ -6720,11 +6770,12 @@ custody routing generation 1 as LineageOwned with that exact lineage/plan head/
 lineage budget, stable owner/idempotency, canonical-empty residual root,
 aggregate reference NoneCanonicalEmpty and residual-state-head generation 1
 over the empty set/None tag. It also creates remediation-attempt-set head
-generation 1 with the canonical-empty attempt commitment. No aggregate row is
+generation 1 with the canonical-empty attempt commitment and its lineage-wide
+counter-capacity state/proof/genesis tuple. No aggregate row is
 created. Absence is a creation precondition, never an implicit owner, aggregate
 or attempt-set state. The stored result binds that exact plan head/generation/
-attempt/routing/state-head/attempt-set genesis and complete sorted reservation
-set. It
+attempt/routing/state-head/counter-capacity/attempt-set genesis and complete
+sorted reservation set. It
 returns canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginResultV1`
 or
@@ -6768,8 +6819,8 @@ binds predecessor/sequence, the canonical ordered settlement-row set,
 transaction/result/audit identity and owner continuity; it never claims archive
 availability. The begin-release local transaction follows
 `MigrationImportRegistryHistoryLockRankV1`: residual-custody routing-head
-genesis key, residual-state-head genesis key, remediation-attempt-set-head
-genesis key, archive-replay head when applicable,
+genesis key, residual-state-head genesis key, counter-capacity-state genesis
+key, remediation-attempt-set-head genesis key, archive-replay head when applicable,
 custody-release plan head, commit-attempt disposition, archive-publication
 receipt state, settlement-journal head, every custody-cost-
 profile head and archive/legal-hold custody-capacity ledger in ascending
@@ -7413,7 +7464,13 @@ checkpoints; revalidate, invalidate again under a newer epoch, and force
 the last ordinary sequence, last admitted rollover and each counter-capacity
 boundary. Corrupt every lifetime maximum and overflow each proof arithmetic
 operation. Prove insufficient headroom rejects Begin/Replan before external
-work. Fault exhaustion-fence installation/response delivery, distinguish
+work. Race concurrent writers for the last class charge; substitute every
+writer class and fault exact retry/response loss before and after charge
+commit. Replan with retained old-plan obligations, compact charge history and
+restore/migrate every partial state. Prove one charge per head advance, no
+charge without its mutation/result and no mismatch among total, class,
+advance/rollover and current-head equations. Fault exhaustion-fence
+installation/response delivery, distinguish
 attempt-set-head from revalidation exhaustion, restore the terminal sentinel
 and prove no triggering mutation or successor was invented. Prove the final
 commitment/root alone can revalidate for admitted work and no mutation escapes
