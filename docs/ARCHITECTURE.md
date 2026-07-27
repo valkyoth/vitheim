@@ -751,7 +751,12 @@ restore, failover, and release evidence.
    commitment through immutable advance records. MarkEligible verifies the
    complete chain or authenticated checkpoint plus suffix against the locked
    current head before repeating the complete validation; restrictive work is
-   never blocked and stale eligibility never commits.
+   never blocked for correctly admitted work and stale eligibility never
+   commits. Begin/Replan uses an overflow-checked lifetime-capacity proof over
+   fixed `u128` attempt-set/revalidation counters and reserves `u128::MAX` only
+   for an absorbing exhaustion fence. Insufficient headroom denies before
+   external work; unexpected/corrupt terminal state becomes permanently
+   unready and never fabricates a successor mutation.
    Begin creates plan generation 1 and a PreparingOpen commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and

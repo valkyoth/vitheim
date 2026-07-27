@@ -829,7 +829,11 @@ covered mutation while Required appends an immutable non-wrapping advance and
 CASes previous/current root plus cumulative commitment. MarkEligible verifies
 the chain or checkpointed prefix plus suffix and reruns the full validation
 against its terminal current root without blocking restrictive work. Begin
-creates plan generation 1 and PreparingOpen. Independently
+or Replan proves overflow-safe lifetime headroom over fixed `u128`
+attempt-set/revalidation counters and reserves the terminal value only for an
+absorbing exhaustion fence. Insufficient headroom denies before external work;
+unexpected exhaustion permanently unreadies the owner without fabricating an
+advance. Begin creates plan generation 1 and PreparingOpen. Independently
 authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
 and receipts and atomically creating a new bundle/reservation set; Abandon
@@ -1097,8 +1101,11 @@ evidence/capability/archive writer, attempt-set lock inversion, CommitEligible
 restrictive-writer blockage, stale eligibility root,
 PreparingRevalidationRequired decoded/defaulted as PreparingOpen after missing
 evidence, missing/reordered/duplicated/rolled-back revalidation advance,
-repeated mutation stranded on an older required root or blocked by exhaustion,
-durable claim/digest used as bearer or reconstructed permit,
+repeated mutation stranded on an older required root or blocked despite valid
+capacity proof,
+capacity-proof overflow/undercount, ordinary use of the terminal sentinel,
+forged/missing exhaustion fence or invented post-exhaustion mutation, durable
+claim/digest used as bearer or reconstructed permit,
 finalization bypass, mutable-root drift, coordinated residual state-head/high-
 watermark rollback, sibling closure/budget theft or lost aggregate decrement,
 Commit with hidden/nonterminal attempt work, absent-row-as-empty aggregate,

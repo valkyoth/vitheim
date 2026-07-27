@@ -404,7 +404,12 @@ audit decision.
   further covered mutation while Required appends an immutable non-wrapping
   advance, CASes previous/current root and cumulative commitment, and remains
   denied. Full eligibility validation must verify the continuous chain or
-  authenticated checkpoint plus suffix and bind its final current root. Begin
+  authenticated checkpoint plus suffix and bind its final current root.
+  Begin/Replan requires an overflow-checked lifetime-capacity proof over fixed
+  `u128` attempt-set/revalidation counters and reserves `u128::MAX` exclusively
+  for an absorbing exhaustion fence. Insufficient headroom denies before
+  external work; a valid sentinel permanently unreadies every effect and
+  Commit path and never represents the triggering mutation. Begin
   creates plan generation 1 and PreparingOpen. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new

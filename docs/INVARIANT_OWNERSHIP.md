@@ -399,6 +399,8 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationFenceRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationAdvanceRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationAdvanceCheckpointRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityProofRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterExhaustionFenceRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanOperationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanPreflightRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonResultRow`,
@@ -537,7 +539,11 @@ roots, latest mutation and cumulative commitment with an immutable advance
 record.
 MarkEligible verifies the complete chain or checkpointed prefix plus suffix
 against the locked current head before full validation may restore eligibility;
-restrictive work never waits.
+restrictive work within the admitted lifetime bound never waits. Begin/Replan
+proves overflow-safe headroom across fixed `u128` attempt-set/revalidation
+counters and reserves the terminal value solely for an absorbing exhaustion
+fence. Insufficient capacity denies before external work; unexpected exhaustion
+permanently unreadies the owner and never fabricates a successor mutation.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -631,7 +637,9 @@ PreparingRevalidationRequired defaulting to PreparingOpen after missing/
 corrupt invalidation/fence, repeated restrictive mutation retaining a stale
 required root, reordered/duplicated/omitted/forked/rolled-back revalidation
 advance or checkpoint, wrapping advance sequence or budget-based restrictive
-writer blockage, mutable membership-root drift,
+writer blockage, capacity-proof overflow/undercount, terminal sentinel used by
+ordinary state, forged/missing exhaustion fence, invented mutation after
+exhaustion, mutable membership-root drift,
 coordinated residual-state rollback below external high-watermark, aggregate
 residual child closure/budget theft or lost decrement, Commit with nonterminal
 effect/capability/reconciliation, hidden/partial attempt-set root, absent-row-

@@ -1039,15 +1039,30 @@ advance. Checkpoints may cover only continuous authenticated prefixes and
 retain the terminal commitment/root without resetting the clock. MarkEligible
 must verify the original invalidation plus full chain, or a checkpointed prefix
 plus uncovered suffix, and repeat its full validation against the locked final
-root; final Commit may never accept a stale result. A protected rollover/
-checkpoint reserve prevents discretionary budget exhaustion from blocking
-restrictive work; checked sequence rollover advances the epoch, and absolute
-exhaustion commits the restrictive mutation while leaving the attempt denied
-and selecting BudgetExhaustedRetained. Missing, reordered, duplicated, forked
-or rolled-back evidence makes revalidation unready and can never decode/default
-to PreparingOpen. This is preferred over blocking revocation/evidence/
-checkpoint work, overwriting the original invalidation, an adjacent-row
-authorization switch or a partial refresh path.
+root; final Commit may never accept a stale result.
+
+Use fixed `u128` attempt-set-head and revalidation epoch/sequence domains.
+Begin/Replan preflight must create a RevalidationCounterCapacityProof from
+server-derived, overflow-checked maximum lifetime counts for every
+authorization, evidence, reconciliation, checkpoint, compaction, rollover,
+response-loss and terminalization writer. It must prove both domains retain
+worst-case terminal ordinary values no greater than `u128::MAX - 1`, leaving
+`u128::MAX` reserved exclusively for an absorbing CounterExhaustionFence.
+Insufficient, unbounded or overflowed proof rejects
+before plan installation or external work. Correctly admitted work therefore
+cannot exhaust either counter.
+
+At unexpected last-ordinary state, install the sentinel fence instead of the
+triggering mutation, permanently unready all Begin/Dispatch/Stage/Verify/
+MarkEligible/Commit/Replan paths and return the stored fence result on retry.
+Never invent a RevalidationAdvance, cumulative commitment or successor head.
+An imported/restored owner that already used the sentinel without its
+authenticated fence is corrupt and remains unready. Missing, reordered,
+duplicated, forked or rolled-back evidence makes revalidation unready and can
+never decode/default to PreparingOpen. This is preferred over blocking
+correctly admitted revocation/evidence/checkpoint work, overwriting the
+original invalidation, an adjacent-row authorization switch, a partial refresh
+path or an unrepresentable post-exhaustion promise.
 
 Freeze one durable plan-bound commit attempt with PreparingOpen,
 PreparingRevalidationRequired, CommitEligible, Superseded, Abandoned and

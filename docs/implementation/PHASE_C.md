@@ -6411,8 +6411,9 @@ are forbidden.
 
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseRemediationAttemptSetHeadV1`
-is the non-wrapping predecessor-linked current head for every effectful deficit-
-remediation attempt under the release lineage. Canonical
+uses a checked non-wrapping `u128` sequence and is the predecessor-linked
+current head for every effectful deficit-remediation attempt under the release
+lineage. Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseRemediationAttemptSetCommitmentV1`
 binds the exact canonically sorted complete attempt IDs and state digests,
 effect/request IDs, broker capability/redemption disposition, provider target
@@ -6456,10 +6457,11 @@ whose closed
 is a canonical tagged union:
 
 - PreparingOpen;
-- PreparingRevalidationRequired carrying mandatory non-wrapping revalidation
-  epoch/sequence, original invalidation and eligibility-result IDs, original
-  invalidated attempt-set root, previous required root, required current root,
-  latest attempt-set mutation ID and cumulative advance commitment;
+- PreparingRevalidationRequired carrying mandatory checked non-wrapping `u128`
+  revalidation epoch/sequence, original invalidation and eligibility-result
+  IDs, original invalidated attempt-set root, previous required root, required
+  current root and latest attempt-set mutation ID, plus the
+  cumulative advance commitment;
 - CommitEligible;
 - Superseded;
 - Abandoned; or
@@ -6526,14 +6528,44 @@ Authenticated
 may compact only a continuous prefix. It binds the original invalidation,
 covered epoch/sequence interval, predecessor checkpoint, terminal required
 root/cumulative commitment and archive coverage; it never resets the
-non-wrapping clock or authorizes work. A protected precharged checkpoint/
-rollover reserve is outside discretionary plan work. Sequence exhaustion uses
-a checked successor epoch and immutable rollover advance rather than wrapping;
-if no successor epoch is representable, the restrictive mutation still
-commits, the attempt remains structurally denied and the lineage enters
-BudgetExhaustedRetained for operator-visible recovery. Budget exhaustion
-therefore cannot suppress revocation, evidence, reconciliation, checkpoint or
-archival processing.
+non-wrapping clock or authorizes work.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityProofV1`
+is mandatory in every Begin/Replan preflight before external work. It binds the
+fixed `u128` widths; current attempt-set-head sequence and revalidation epoch/
+sequence; the terminal sentinel value `u128::MAX`, which ordinary state may
+never use, leaving `[0, u128::MAX - 1]` as the ordinary range; and
+overflow-checked maximum lifetime counts for every
+authorization, evidence, reconciliation, checkpoint, compaction, rollover,
+response-loss replay and terminalization writer admitted by the immutable plan
+budgets. Caller-supplied counts are forbidden. With checked arithmetic, the
+proof requires current attempt-set head plus maximum head writes to be at most
+`u128::MAX - 1` and the worst-case revalidation successor/rollover tuple to be
+at most `(u128::MAX - 1, u128::MAX - 1)`, leaving the sentinel exclusively
+reserved. Arithmetic overflow, an unbounded class or insufficient headroom
+rejects Begin/Replan before plan installation, capacity reservation or external
+effect. Each later writer rechecks the proof, charged writer count, current
+counters and unused sentinel.
+
+Sequence rollover is an ordinary immutable advance to the checked successor
+epoch and sequence zero, and is admitted only inside that proof.
+Absolute exhaustion is therefore unreachable for correctly admitted work.
+For restored or locally detected corrupt/unexpected state at the last
+ordinary identity, the owner transaction consumes the applicable reserved
+terminal value and
+atomically installs absorbing
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterExhaustionFenceV1`
+with exact owner/plan/attempt, proof, observed counter/head/root/payload,
+exhausted domain, sentinel identity, result, audit and outbox. It does not
+pretend the triggering covered mutation or a RevalidationAdvance committed.
+The owner is permanently unready; Begin, Dispatch, Stage, Verify, MarkEligible,
+Commit and Replan deny, and no ordinary writer may follow the sentinel. Exact
+fence retry/response loss returns the stored result. An imported/restored state
+that already used the sentinel without its authentic fence is corruption and
+remains unready; no successor or retroactive fence is fabricated. The design
+does not promise arbitrary durable restrictive mutation after finite identity
+or storage capacity is exhausted.
 
 Authorization behavior is derived from the typed attempt state itself:
 PreparingOpen alone admits new Begin/Dispatch and Stage/Verify, while
@@ -7378,9 +7410,14 @@ may then bind the terminal current root. Run multiple sequential and concurrent
 restrictive mutations before revalidation and fault response delivery at every
 advance. Reorder, duplicate, omit, fork and roll back advance records and
 checkpoints; revalidate, invalidate again under a newer epoch, and force
-sequence/checkpoint-budget exhaustion. Prove the final commitment/root alone
-can revalidate, protected rollover or BudgetExhaustedRetained preserves
-restrictive processing, and no mutation escapes the root. Delete/omit/corrupt
+the last ordinary sequence, last admitted rollover and each counter-capacity
+boundary. Corrupt every lifetime maximum and overflow each proof arithmetic
+operation. Prove insufficient headroom rejects Begin/Replan before external
+work. Fault exhaustion-fence installation/response delivery, distinguish
+attempt-set-head from revalidation exhaustion, restore the terminal sentinel
+and prove no triggering mutation or successor was invented. Prove the final
+commitment/root alone can revalidate for admitted work and no mutation escapes
+the root. Delete/omit/corrupt
 the invalidation, fence and advance evidence at every restore/read path and
 prove the authoritative tagged state cannot decode, default or dispatch as
 PreparingOpen. Prove no stale eligible root commits and no invalidation or

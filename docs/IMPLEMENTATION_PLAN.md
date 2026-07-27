@@ -422,7 +422,12 @@ covered mutation while Required CAS-advances a non-wrapping epoch/sequence,
 previous/current root, latest mutation and cumulative commitment with immutable
 advance evidence. Full MarkEligible revalidation verifies the chain or
 checkpointed prefix plus suffix and binds its terminal root without blocking
-restrictive work. Begin creates plan generation 1 and PreparingOpen. Terminal
+restrictive work admitted by the proven lifetime bound. Begin/Replan proves
+overflow-safe headroom across fixed `u128` attempt-set/revalidation counters,
+reserving the terminal value solely for an absorbing exhaustion fence.
+Insufficient headroom denies before external work; unexpected exhaustion
+permanently unreadies the owner without inventing a mutation. Begin creates
+plan generation 1 and PreparingOpen. Terminal
 reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old
 attempts/grants/receipts and creates new bundle/reservation identities;

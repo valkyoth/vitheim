@@ -76,6 +76,10 @@ All notable Vitheim changes are documented here. The format follows
   a non-wrapping epoch/sequence, immutable advance record and cumulative
   commitment/checkpoint, so revalidation can bind the latest root without
   blocking security processing.
+- Fixed finite-counter exhaustion semantics: Begin/Replan now proves `u128`
+  headroom for every lifetime writer, the terminal value is reserved for an
+  absorbing exhaustion fence, and no plan claims an unrepresentable final
+  mutation.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.
