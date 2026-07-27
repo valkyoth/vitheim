@@ -418,7 +418,7 @@ audit decision.
   head/counter equations. Every writer locks it before the attempt-set head and
   atomically consumes one immutable exact-retry charge with mutation/head/
   result. Every ordinary writer then locks/reads the high-watermark guard and
-  denies PreparePending/Witnessed and may omit only unrelated later rows;
+  denies PreparePending/AbortDrainPending/Witnessed and may omit only unrelated later rows;
   archive writers lock publication before replay head. Acquired subsets always
   preserve relative rank. Replan, compaction, restore and migration cannot reset it. Dedicated
   capacity checkpoints and a predecessor-linked archive-replay head commit
@@ -429,11 +429,22 @@ audit decision.
   Staged→Verified→Consumed or Orphan→Collected receipt machine funded by
   non-borrowable Recovery capacity. The guard is generationed. Prepare moves
   Unprepared(`g`)→PreparePending(`g`) and returns the sole process-local
-  unreconstructable submission permit; retries are query-only. Witnessed(`g`)
+  unreconstructable submission permit; only after that Prepare commit may the
+  permit submit, while every other state, stale generation and retry is
+  query-only. Witnessed(`g`)
   can end only when Commit atomically installs replay head, deletes captured
-  rows, records Committed(`g`) and opens Unprepared(`g + 1`). Authenticated
-  negative Reconcile similarly tombstones `g` and opens `g + 1`; identities
-  never cross generations. A charged local fence precedes external traffic.
+  rows, records Committed(`g`) and opens Unprepared(`g + 1`). Ordinary
+  negative status never rolls a guard. Abort moves through AbortDrainPending,
+  denies new queries and calls
+  `SealCapacityArchiveWitnessProposalDefinitelyUnwitnessed` with one
+  non-bearer seal claim. Expected-predecessor/proposal CAS serializes seal
+  against submission; the authority permanently tombstones rejection, rejects
+  every late submission and exposes an independently discoverable receipt.
+  Abort opens `g + 1` only after that receipt, every query is terminal, every
+  terminalization reservation and settlement is consumed and no positive
+  receipt exists. Positive-after-seal evidence fences the lineage as authority
+  equivocation. Identities never cross generations. A charged local fence
+  precedes external traffic.
   All external outcomes enter only through Reconcile with one disposition
   ID/charge/result. The authority signs an acyclic canonical proposal that
   excludes its future receipt and Reconcile/Commit result digests; receipt,
@@ -443,15 +454,22 @@ audit decision.
   three distinct hot charges/head advances. Begin/Replan reserves bounded non-
   borrowable Recovery query capacity. Stable IDs derive from guard generation
   plus admission writer sequence, adding no counter. Each admission and
-  terminalization is separately charged; Reconcile stores one closed outcome
-  and settles concurrency exactly once. Positive/negative evidence may
+  terminalization is separately charged. Admission atomically reserves the
+  future terminalization charge/head advance, result/audit/outbox bytes/work
+  and concurrency settlement or writes nothing and returns no permit.
+  Reconcile consumes that immutable reservation with one closed outcome and
+  settlement exactly once; timeout, cancellation, worker loss, Replan and
+  restore cannot release, move or borrow it. Positive/permanently sealed
+  negative evidence may
   co-commit the disposition; other outcomes remain read-only only for that
-  disposition. The exact equation is `3 + 2q - e`. Trusted-time profile,
+  disposition. Exactly `q` reservations are created and consumed and the exact
+  equation is `3 + 2q - e`. Trusted-time profile,
   uncertainty, continuity and epoch bind deadline/backoff; rollback cannot
   replenish elapsed capacity. Exhausted calls/bytes/work/time/concurrency
   permit no traffic and never imply unwitnessed. A governed tenant/lineage witness profile freezes
-  predecessor CAS, non-equivocation, signatures/rotation/distrust, negative
-  evidence, durability and failover. An independent precommit high-watermark witnesses the exact successor; restore reads it first, and final witnessed
+  predecessor CAS, non-equivocation, signatures/rotation/distrust, permanent
+  seal/tombstone discovery and positive-after-seal equivocation semantics,
+  durability and failover. An independent precommit high-watermark witnesses the exact successor; restore reads it first, and final witnessed
   head installation, exact captured deletion, terminal tombstone and next
   guard are atomic and leave the compaction charge hot. Begin
   creates plan generation 1 and PreparingOpen. Only independently

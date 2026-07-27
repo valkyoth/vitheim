@@ -766,7 +766,7 @@ restore, failover, and release evidence.
    locks it before the attempt-set head and atomically consumes one immutable
    exact-retry charge with the covered mutation, head, result, audit and outbox.
    Every ordinary writer then locks/reads the stable high-watermark guard and
-   denies PreparePending/Witnessed; its trace may omit unrelated later rows.
+   denies PreparePending/AbortDrainPending/Witnessed; its trace may omit unrelated later rows.
    Archive writers continue through publication before replay head under the
    shared rank. Every acquired subset preserves relative order and no writer
    later acquires an omitted earlier row;
@@ -778,12 +778,15 @@ restore, failover, and release evidence.
    OrphanGcEligible→Collected receipt machine make verification/cleanup
    adapter-independent and Recovery-funded. Guard state is generationed:
    Unprepared(`g`)→PreparePending(`g`)→Witnessed(`g`)→Committed(`g`), or
-   definitely-unwitnessed abort; Commit/abort atomically retains the terminal
+   PreparePending(`g`)→AbortDrainPending(`g`)→
+   AbortedDefinitelyUnwitnessed(`g`); Commit/abort atomically retains the terminal
    tombstone and opens Unprepared(`g + 1`). Replay installation, captured
    deletion and Commit rollover cannot split, so successful archival resumes
    ordinary writers and old identities/generations cannot replay. A charged
    PreparePending fence precedes external traffic and returns exactly one
-   process-local non-bearer submission permit; retry/uncertainty is query-only.
+   process-local non-bearer submission permit. Only after that exact Prepare
+   commit may its permit invoke the authority; every other state, stale
+   generation, retry and uncertainty is query-only.
    Unknown witness state remains fenced. Every
    immediate/delayed/query/replay outcome enters only through Reconcile under
    one stable disposition ID/charge/result. A canonical acyclic witness
@@ -795,14 +798,27 @@ restore, failover, and release evidence.
    hot charges/head advances. Begin/Replan reserves a non-borrowable Recovery
    query budget over calls/bytes/work/time/concurrency. Query IDs derive from
    the bounded admission charge sequence, not another counter. Each admission
-   precedes one unreconstructable permit; Reconcile durably imports a closed
-   outcome and settles concurrency exactly once. Unknown is read-only only for
-   the witness disposition. Query admission+terminalization give exact
-   `3 + 2q - e` conservation. Trusted-time profile/uncertainty/continuity/epoch
+   atomically escrows an immutable terminalization reservation covering its
+   future charge/head advance, result/audit/outbox bytes/work and concurrency
+   settlement before returning one unreconstructable permit. Reconcile
+   consumes it exactly once with the closed outcome and settlement; timeout,
+   cancellation, worker loss, Replan and restore cannot release, move or
+   borrow it. Unknown is read-only only for the witness disposition. Exactly
+   `q` reservations are created and consumed, preserving `3 + 2q - e`
+   conservation. Trusted-time profile/uncertainty/continuity/epoch
    binds deadlines/backoff; rollback cannot replenish capacity. Exhaustion
    permits no more traffic and never means unwitnessed. A governed tenant/lineage witness
    profile freezes CAS, non-equivocation, signatures/rotation/distrust,
-   authenticated negative evidence, durability and failover. An independent
+   permanent proposal-seal evidence, durability and failover. Abort first
+   enters AbortDrainPending and denies new queries. A single seal permit calls
+   `SealCapacityArchiveWitnessProposalDefinitelyUnwitnessed`; the authority
+   serializes it against submission with expected-predecessor/proposal CAS,
+   retains a durable proposal-rejection tombstone, rejects every late
+   submission and exposes an independently discoverable authenticated receipt.
+   Only after that receipt, all query reservations and settlements are
+   consumed and no positive receipt exists may abort open `g + 1`. Positive
+   evidence after the seal is authority equivocation and permanently fences
+   the lineage. An independent
    authority witnesses the exact proposed successor before final CAS; afterward it
    must exact-commit or remain unready. Restore reads that external watermark
    before local state. Only its greatest committed replay head plus hot suffix

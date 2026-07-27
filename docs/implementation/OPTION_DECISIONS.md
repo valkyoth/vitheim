@@ -1114,8 +1114,9 @@ substitution. Prepare first consumes its admitted charge
 and advances generation `g` from Unprepared to PreparePending under the
 canonical locks. It persists a non-bearer submission claim and returns one
 process-local unreconstructable submission permit; every retry, crash,
-uncertainty and takeover is query-only and can never resubmit. Only then may
-external traffic begin. The adapter never mutates state: every
+uncertainty and takeover is query-only and can never resubmit. Only after the
+Prepare transaction commits may that permit submit for the same PreparePending
+generation; no other state/generation can submit. The adapter never mutates state: every
 immediate, delayed, queried or replayed outcome enters exclusively through
 Reconcile. One stable disposition ID owns one terminal disposition charge/
 state/mutation/head/result, while the subsequent archive Commit has its own
@@ -1125,13 +1126,17 @@ and stays fenced. Begin/Replan also reserves a non-borrowable Recovery
 HighWatermarkReconciliationBudget with hard call/byte/work/elapsed/concurrency
 bounds and durable trusted-time backoff. Query IDs derive from guard generation
 plus the already bounded query-admission writer-charge sequence, so no new
-counter/sentinel exists. Each query admission consumes its own class charge/
-budget/head, records Admitted→PermitIssued and returns one process-local
+counter/sentinel exists. Each query admission is legal only in PreparePending
+and atomically consumes its own class charge/budget/head plus an immutable
+terminalization reservation covering its future writer charge/head advance,
+result/audit/outbox bytes/work and concurrency settlement. Failure to reserve
+is no-write. It records Admitted→PermitIssued and returns one process-local
 unreconstructable permit; replay returns no permit. Reconcile records
 InvocationReturned→ResponseImported with a closed WitnessedReceipt/
 DefinitelyNotWitnessedReceipt/Unknown/TransportFailure/DeadlineExceeded
-outcome, one query-terminalization charge/head and exact-once concurrency
-settlement. Only authenticated positive/negative evidence co-advances the
+outcome, consumes that attempt's non-releasable/non-reassignable
+terminalization reservation and performs exact-once concurrency settlement.
+Only authenticated positive/permanently-sealed negative evidence co-advances the
 witness disposition; other outcomes durably close the attempt without doing
 so. Deadline/backoff binds trusted-time profile, uncertainty, continuity and
 epoch; rollback never replenishes elapsed capacity. Exhaustion
@@ -1144,8 +1149,14 @@ history-lifecycle charge, advances capacity/head, CASes Verified to
 ConsumedByCommit, installs the witnessed replay head, deletes exact captured
 predecessor charges, writes immutable Committed(`g`) and installs
 Unprepared(`g + 1`) bound to the new replay head/watermark. Authenticated
-negative reconciliation likewise tombstones `g` and opens `g + 1` without
-identity reuse. Replay installation, deletion and guard rollover are one
+negative status alone cannot roll. PreparePending first enters
+AbortDrainPending with one non-bearer seal claim; the external
+SealCapacityArchiveWitnessProposalDefinitelyUnwitnessed expected-predecessor/
+proposal CAS permanently tombstones and rejects late submission. Only its
+independently discoverable receipt, all query attempts terminal, every
+reservation/concurrency settlement consumed and no positive receipt allow
+Reconcile to tombstone `g` and open `g + 1`. Positive evidence after the signed
+seal fences authority equivocation. Replay installation, deletion and guard rollover are one
 transaction; terminal generations remain for retry/conflict. Its charge remains hot. Restore reads
 the independent greatest watermark before local heads; a locally consistent
 older snapshot is never authoritative.
@@ -1157,19 +1168,25 @@ and terminalization charge. Every query owns both; if its authenticated
 terminalization is the disposition Reconcile, the two meanings co-commit under
 one charge. The exact equation is `3 + 2q - e`, with `e ∈ {0, 1}`. Timeout/
 absence creates no disposition charge but must terminalize its attempt and
-settle concurrency before another query.
+settle concurrency before another query. Exactly `q` terminalization
+reservations must be created and consumed; cancellation, worker loss, Replan
+and restore cannot release or move them.
 
 Require a governed current passing witness conformance profile before Prepare.
 It binds tenant/lineage authority identity, expected-predecessor CAS, non-
 equivocation, signature/signer/key epoch, rotation/distrust, authenticated
-definitely-not-witnessed semantics, read-after-write durability and failover.
+definitely-not-witnessed proposal-seal semantics, durable rejection of every
+late submission, independently discoverable seal receipts, read-after-write
+durability, failover and positive-after-seal equivocation fencing.
 Unsupported/stale profiles deny before the local fence or external traffic.
 
 Use one universal routing→residual→capacity→attempt-set→high-watermark→
 publication→replay-head order. Begin creates Unprepared generation zero; only
-Commit or authenticated negative reconciliation terminalizes a generation and
-installs the next Unprepared guard. Every ordinary writer must lock/read the
-current generation and deny PreparePending/Witnessed before
+Commit or a fully drained, permanently sealed, definitely-unwitnessed abort
+terminalizes a generation and installs the next Unprepared guard. An ordinary
+negative status is never rollover authority. Every ordinary writer must
+lock/read the current generation and deny PreparePending/AbortDrainPending/
+Witnessed before
 omitting unrelated publication/replay rows; archive writers take all applicable
 rows in order. Backend acquisition traces require the common prefix through
 the guard for ordinary writers and the complete high-watermark→publication→

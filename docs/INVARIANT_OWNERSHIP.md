@@ -420,12 +420,16 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkGuardGenerationRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkGenerationDispositionRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSubmissionClaimRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkAbortSealClaimRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessProposalDefinitelyUnwitnessedSealReceiptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityEquivocationFenceRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessProposalRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkDispositionRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessConformanceProfileRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessConformanceResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReconciliationBudgetRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAttemptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryTerminalizationReservationRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAttemptConcurrencySettlementRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAdmissionResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkPrepareResultRow`,
@@ -586,8 +590,8 @@ Every writer locks it before the attempt-set head and atomically consumes one
 immutable class+command charge with mutation/head/result; exact retry rejoins,
 CAS losers consume nothing and Replan/compaction/restore/migration preserve all
 consumption and equations. After the attempt-set head, every ordinary writer
-must lock/read the stable high-watermark guard and deny PreparePending or
-Witnessed, but may omit unrelated later rows. Archive writers then lock
+must lock/read the stable high-watermark guard and deny PreparePending,
+AbortDrainPending or Witnessed, but may omit unrelated later rows. Archive writers then lock
 publication before replay head. Every acquired subset preserves relative rank
 and no omitted earlier rank is acquired later. Charge
 compaction uses a dedicated predecessor-
@@ -611,28 +615,44 @@ binds proposal+receipt+Reconcile; a generated schema-reference/hash-dependency
 graph rejects cycles, signature inclusion and encoding/epoch substitution.
 Prepare first CASes Unprepared(`g`)→PreparePending(`g`), persists a non-bearer
 submission claim and returns the sole process-local unreconstructable
-submission permit; every retry/uncertain path is query-only. Witnessed(`g`)
-remains fenced until ArchiveFinalize atomically installs replay head, deletes
-captured rows, writes Committed(`g`) and opens Unprepared(`g + 1`).
-Authenticated negative reconciliation writes its tombstone and opens the next
-generation without identity reuse. Every
+submission permit. Only after that exact Prepare transaction commits may its
+permit submit; no other state or generation may produce or use one and every
+retry/uncertain path is query-only. Witnessed(`g`) remains fenced until
+ArchiveFinalize atomically installs replay head, deletes captured rows, writes
+Committed(`g`) and opens Unprepared(`g + 1`). An ordinary negative response is
+not terminal. Abort first CASes PreparePending(`g`)→AbortDrainPending(`g`),
+denies new queries and persists one non-bearer seal claim. Its single permit
+invokes `SealCapacityArchiveWitnessProposalDefinitelyUnwitnessed`; expected-
+predecessor/proposal CAS serializes seal against submission and the authority
+retains a permanent durable proposal-rejection tombstone, rejects every late
+submission and exposes an independently discoverable authenticated receipt.
+Only after that receipt, every query is ResponseImported, every terminalization
+reservation and concurrency settlement is consumed and no positive receipt
+exists may abort write its tombstone and open the next generation. Any positive
+receipt after the seal creates an authority-equivocation fence and no rollover
+or Commit. Every
 immediate/delayed/query/replay outcome enters exclusively through Reconcile;
 one stable disposition ID owns one charge/result and changed material
 conflicts. Prepare, terminal disposition Reconcile and ArchiveFinalize Commit
 are three independently replayable hot charges/head advances. Begin/Replan
 reserves non-borrowable Recovery reconciliation capacity over calls, bytes,
 work, elapsed time and concurrency. Query IDs derive from guard generation plus
-bounded admission writer sequence, not another counter. Admission stores
-PermitIssued before one process-local permit; Reconcile stores one closed
-outcome, terminalizes the attempt and settles concurrency once. Admission and
-terminalization are separately charged, with authenticated evidence optionally
-co-committing the disposition, so conservation is `3 + 2q - e`. Unknown/
+bounded admission writer sequence, not another counter. Admission atomically
+stores PermitIssued and an immutable terminalization reservation covering the
+future writer charge/head advance, result/audit/outbox bytes/work and
+concurrency settlement before one process-local permit. If any reservation
+dimension is unavailable, admission is no-write. Reconcile consumes the
+reservation with one closed outcome and settlement exactly once; timeout,
+cancellation, worker loss, Replan and restore cannot release, reassign or
+borrow it. Admission and terminalization are separately charged, with
+authenticated evidence optionally co-committing the disposition. Exactly `q`
+reservations are created and consumed, so conservation is `3 + 2q - e`. Unknown/
 transport/deadline remains read-only only for the disposition. Trusted-time
 profile/uncertainty/continuity/epoch binds backoff and elapsed consumption;
 rollback never replenishes it. Exhausted budget forbids traffic without
 inferring unwitnessed. A governed tenant/lineage witness profile freezes predecessor CAS,
-non-equivocation, signatures/rotation/distrust, negative evidence, durability
-and failover. The witnessed
+non-equivocation, signatures/rotation/distrust, permanent seal/tombstone
+discovery, positive-after-seal fencing, durability and failover. The witnessed
 predecessor stays fenced: finalization exact-commits it or recovery remains
 unready. Restore reads that
 external greatest high-watermark before local state, so coordinated local

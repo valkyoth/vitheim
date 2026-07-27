@@ -436,7 +436,7 @@ head writes, revalidation advances/rollovers, sentinel reservation and current
 counter tuple. Every writer locks it before the attempt-set head and atomically
 consumes one immutable exact-retry charge with mutation/head/result. Every
 ordinary writer then locks/reads the stable high-watermark guard and denies
-PreparePending/Witnessed; it may omit unrelated later rows, while archive
+PreparePending/AbortDrainPending/Witnessed; it may omit unrelated later rows, while archive
 writers continue through publication before replay head. Every acquired subset
 preserves relative canonical order. Replan and history lifecycle preserve
 consumption. A dedicated capacity checkpoint binds
@@ -447,11 +447,13 @@ the historical result, changed material conflicts, and missing archive evidence
 fails closed without charging or advancing a head. A dedicated immutable
 manifest, proof budget, cursor and closed Staged/Verified/Consumed-or-Orphan/
 Collected receipt machine own publication. A generationed guard moves
-Unprepared(`g`)→PreparePending(`g`)→Witnessed(`g`)→Committed(`g`) or terminal
-negative abort. Commit/abort atomically retain the old tombstone and install
+Unprepared(`g`)→PreparePending(`g`)→Witnessed(`g`)→Committed(`g`) or
+PreparePending(`g`)→AbortDrainPending(`g`)→
+AbortedDefinitelyUnwitnessed(`g`). Commit/abort atomically retain the old tombstone and install
 Unprepared(`g + 1`); replay installation and captured deletion cannot split
 from Commit rollover. Prepare returns the only process-local non-bearer
-submission permit; uncertainty and retry are query-only. Unknown witness state
+submission permit. Only after the winning Prepare commit may it submit; every
+other state, stale generation, uncertainty and retry is query-only. Unknown witness state
 never reopens. Every
 external result enters only through Reconcile under one stable disposition
 ID/charge/result. An acyclic canonical proposal excludes future signature/
@@ -461,13 +463,26 @@ Reconcile. Generated dependency-graph checks reject cycles and encoding/epoch
 substitution. Prepare, terminal Reconcile and ArchiveFinalize Commit are three
 distinct hot charges/head advances. A Recovery-funded query budget derives
 stable IDs from the bounded admission writer sequence. Admission and
-terminalization are separate charges; Reconcile imports one closed outcome and
-settles concurrency once, yielding `3 + 2q - e`. Unknown is read-only only for
+terminalization are separate charges. Admission atomically reserves immutable
+capacity for its future terminalization charge/head advance, result/audit/
+outbox bytes/work and concurrency settlement or writes nothing and returns no
+permit. Reconcile consumes the reservation exactly once with one closed
+outcome and settlement. Timeout, cancellation, worker loss, Replan and restore
+cannot release, move or borrow it; exactly `q` reservations are created and
+consumed, yielding `3 + 2q - e`. Unknown is read-only only for
 the witness disposition. Trusted-time profile/uncertainty/continuity/epoch
 binds deadline/backoff, and rollback cannot replenish capacity. Exhaustion
 never implies unwitnessed. A governed tenant/lineage witness profile freezes predecessor
-CAS, non-equivocation, signature/rotation/distrust, authenticated negative
-evidence, durability and failover. An independent high-watermark authority witnesses the exact proposed successor before final CAS; restore
+CAS, non-equivocation, signature/rotation/distrust, permanent proposal-seal
+evidence, durability and failover. Abort enters AbortDrainPending, denies new
+queries and uses one non-bearer seal claim to invoke
+`SealCapacityArchiveWitnessProposalDefinitelyUnwitnessed`. The authority
+serializes seal and submission by expected-predecessor/proposal CAS, durably
+tombstones rejection, rejects late submissions and exposes an independently
+discoverable receipt. Only after that receipt, every query reservation and
+settlement is consumed, and no positive receipt exists may abort open the next
+guard. Positive evidence after a seal is authority equivocation and fences the
+lineage. An independent high-watermark authority witnesses the exact proposed successor before final CAS; restore
 reads it before local state, and a witnessed successor exact-commits or stays
 unready. Final witnessed head installation, captured-row deletion, old
 generation tombstone and next Unprepared guard are one transaction whose own

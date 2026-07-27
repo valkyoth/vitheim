@@ -102,6 +102,10 @@ All notable Vitheim changes are documented here. The format follows
   the next archive cycle, gave Prepare the sole witness-submission permit, and
   closed every query outcome with exact-once concurrency settlement,
   writer-derived identity and trusted-time backoff.
+- Ordered witness submission strictly after the winning Prepare commit,
+  replaced status-based abort rollover with an authority-side permanent
+  proposal seal and equivocation fence, and made every query admission escrow
+  immutable capacity for its eventual terminalization and settlement.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.
