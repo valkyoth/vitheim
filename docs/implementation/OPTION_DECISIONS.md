@@ -1016,13 +1016,15 @@ Freeze a closed attempt-set writer matrix: execution/finalization
 authorization Admit/Expire/destination-Apply/consume; Begin; Dispatch; provider
 reconciliation and Complete; capability lifecycle; provider-evidence
 admission; and attempt checkpoint/compaction/archive. Every mutation follows
-routing→residual-state→counter-capacity-state→attempt-set→commit-attempt/
-remediation-attempt→capability/evidence/authorization→result order and
+routing→residual-state→counter-capacity-state→attempt-set→capacity-archive-
+replay-head→commit-attempt/remediation-attempt→capability/evidence/
+authorization→result order and
 atomically consumes one class-specific immutable writer charge with capacity-
 state CAS, covered mutation, mutation record and successor head. Exact retry
 returns the charge/result, CAS losers consume nothing, and Replan/compaction/
 restore/migration preserve all consumption. No direct attempt writer or
-narrower Dispatch lock sequence exists.
+narrower Dispatch lock sequence exists; a writer may omit an unrelated absent
+replay head but may never reverse the common subsequence.
 
 If any covered writer races a CommitEligible plan, let the security-relevant
 writer proceed and atomically invalidate
@@ -1068,6 +1070,31 @@ material conflicts and CAS losers charge nothing. Replan carries consumption
 and retained obligations forward without increasing totals; authenticated
 compaction/restore/migration preserve charge replay and all count/head
 equations.
+
+Do not let the broad plan-lineage checkpoint stand in for capacity-charge
+history. Freeze a dedicated RevalidationCounterCapacityCheckpoint whose
+predecessor chain binds capacity state/proof, every class/total/advance/
+rollover/sentinel equation, current counters, and a domain-separated exact-set
+commitment over charge ID/class/command/idempotency/request, before/after state,
+mutation/head and result identities. It also binds the exact captured hot rows,
+bounded chunks, result lookup and publication/key/encoding epochs. A dedicated
+predecessor-linked CapacityArchiveReplayHead selects the greatest verified
+published checkpoint. That head plus uncovered hot charges is the only
+authoritative lookup: identical material returns the archived result, changed
+material conflicts, and exact nonmembership under the locked head plus hot
+absence is genuinely unseen. Missing archive/key/chunk/proof/result returns
+typed historical-state-unavailable without charging or advancing; an older
+readable checkpoint is never substituted.
+
+Stage and verify chunks before publication. Finalization must lock
+routing→residual-state→capacity-state→attempt-set→capacity-archive-replay-head
+and atomically consume one history-lifecycle charge, advance capacity/head,
+CAS-install the verified replay head, delete only its exact captured predecessor
+charges and write result/audit/outbox. End checkpoint coverage before that
+command so its own charge remains hot. Replan binds the replay head and carries
+archived plus hot consumption and retained obligations. This is preferred over
+dense watermarks, probabilistic membership, split deletion, implicit unseen
+state, readable-old-head fallback or a self-covering compaction charge.
 
 At unexpected last-ordinary state, install the sentinel fence instead of the
 triggering mutation, permanently unready all Begin/Dispatch/Stage/Verify/

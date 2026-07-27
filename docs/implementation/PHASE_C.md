@@ -6448,6 +6448,53 @@ lineage+writer-class+command/idempotency constraint returns the same
 charge/result for exact retry or response loss; changed material conflicts.
 CAS losers commit no charge and reread/reapply.
 
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityCheckpointV1`
+is the only format allowed to replace a continuous prefix of those charge
+rows. It binds its non-wrapping checkpoint sequence and predecessor checkpoint;
+the covered capacity-state version, digest and predecessor; capacity-proof ID
+and version; every per-class admitted, consumed and remaining count; total
+head writes, revalidation advances and rollovers; every sentinel reservation,
+consumption and exhaustion-fence/result identity; the current attempt-set and
+revalidation tuple; and a domain-separated cumulative exact-set root over each
+canonical charge ID, writer class, command/idempotency key, request digest,
+before/after capacity tuple, mutation/head transition and result/audit/outbox
+identity. It also commits the exact captured hot-row IDs and versions, covered
+range, bounded archive chunks, publication identity/state, integrity-key epoch,
+encoding epoch and result-lookup commitment. A range or dense watermark cannot
+stand in for exact membership.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveReplayHeadV1`
+is a non-wrapping predecessor-linked pointer to the greatest verified published
+capacity checkpoint and chunk manifest. The authoritative lookup is the
+greatest committed capacity archive replay head plus the uncovered hot charge
+suffix and current capacity state. Exact membership with identical material
+returns the archived charge and historical result; reuse of the same identity
+with a changed class, digest or other material conflicts; exact nonmembership
+under the locked unchanged greatest head plus hot-row absence alone establishes
+a genuinely unseen command. An unavailable publication, chunk, key epoch,
+proof or historical result returns typed
+RevalidationCounterCapacityHistoricalStateUnavailable without a charge or head advance.
+It can never authorize a new charge, infer absence or select an older readable
+checkpoint.
+
+Capacity-charge compaction uploads and verifies bounded immutable chunks before
+the staged publication is readable. Its final local transaction follows
+routing head→residual state head→counter-capacity state→remediation-attempt-set
+head→counter-capacity-archive-replay-head, consumes one Attempt history
+lifecycle charge, advances the capacity state and attempt-set head, CAS-installs
+the verified replay head, deletes only the exact captured predecessor charge
+rows and commits result/audit/outbox. The checkpoint ends before this
+compaction command: its own charge remains in the hot suffix and cannot delete
+itself. Unknown response reconciliation observes that indivisible bundle.
+Partial deletion, deletion without the installed head, head installation
+without exact captured deletion, forked/rolled-back checkpoint ancestry or
+mixed publication epochs is corruption. Replan binds the current capacity
+archive replay head and carries archived plus hot cumulative consumption and
+retained old-plan obligations; restore/migration must do the same before
+readiness.
+
 The following writer set is closed. No command outside these classes may
 mutate a field covered by the attempt-set commitment:
 
@@ -6469,7 +6516,8 @@ digests, authorization/evidence/result identities and any eligibility
 invalidation. Exact read-only replay returns the stored mutation/result and
 does not advance again. The canonical order for every writer is
 routing head→residual state head→counter-capacity state→remediation-attempt-set
-head→plan-bound commit-attempt disposition→canonical-ID-sorted remediation
+head→counter-capacity-archive-replay-head→plan-bound commit-attempt
+disposition→canonical-ID-sorted remediation
 attempt→capability/provider evidence/authorization/reconciliation/checkpoint
 rows→result/audit/outbox. A writer may omit unrelated rows but may never reverse
 the common subsequence. Attempt mutation, covered auxiliary mutation, writer
@@ -6589,11 +6637,12 @@ consumes its class-specific charge and installs a proof/state successor that
 carries forward every consumed charge, immutable charge identity and retained
 old-plan obligation; it may redistribute only the already admitted remaining
 class maxima under a conservative mapping and can never reset or increase the
-lineage total. Compaction may replace charge rows only behind authenticated
-coverage that preserves exact replay, per-class cumulative counts, total/head
-equation, advance/rollover subsets and predecessor digest. Restore and
-migration select the greatest authenticated state/checkpoint, replay uncovered
-charges and prove every equation against the current heads before readiness.
+lineage total. Compaction may replace charge rows only through the dedicated
+capacity checkpoint and archive-replay head above. Restore and migration select
+the greatest authenticated archive-replay head, reject an unavailable
+historical dependency, replay the uncovered hot suffix and prove every
+capacity, class, sentinel, advance/rollover and current-head equation before
+readiness.
 
 Sequence rollover is an ordinary immutable advance to the checked successor
 epoch and sequence zero, and is admitted only inside that proof.
@@ -7467,12 +7516,20 @@ operation. Prove insufficient headroom rejects Begin/Replan before external
 work. Race concurrent writers for the last class charge; substitute every
 writer class and fault exact retry/response loss before and after charge
 commit. Replan with retained old-plan obligations, compact charge history and
-restore/migrate every partial state. Prove one charge per head advance, no
-charge without its mutation/result and no mismatch among total, class,
-advance/rollover and current-head equations. Fault exhaustion-fence
+restore/migrate every partial state. Retry the same charge before and after
+compaction and require the identical historical result; reuse its identity with
+changed material and require conflict. Lose an archive chunk/key/result, delete
+only part of the captured hot set, install a head without deletion, delete
+without its head, and fork or roll back checkpoint/replay-head ancestry; each
+must fail closed without a charge or head advance. Replan across archived
+charges and prove retained old obligations and cumulative consumption cannot
+reset. Prove one charge per head advance, no charge without its mutation/result
+and no mismatch among total, class, sentinel, advance/rollover and current-head
+equations. Fault exhaustion-fence
 installation/response delivery, distinguish
 attempt-set-head from revalidation exhaustion, restore the terminal sentinel
-and prove no triggering mutation or successor was invented. Prove the final
+through hot and archived charge recovery and prove no triggering mutation or
+successor was invented. Prove the final
 commitment/root alone can revalidate for admitted work and no mutation escapes
 the root. Delete/omit/corrupt
 the invalidation, fence and advance evidence at every restore/read path and

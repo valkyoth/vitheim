@@ -83,6 +83,10 @@ All notable Vitheim changes are documented here. The format follows
 - Added a lineage-wide, class-bucketed counter-capacity state and immutable
   exact-once writer charges, coupling each admitted count to its mutation,
   head, result, audit and outbox across retry, Replan, compaction and restore.
+- Defined dedicated capacity-charge checkpoints and a predecessor-linked
+  archive-replay head with exact-set replay/conflict proofs, atomic verified
+  compaction, fail-closed historical unavailability and Replan/restore
+  continuity across archived charges.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.

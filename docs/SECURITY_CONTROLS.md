@@ -413,7 +413,13 @@ audit decision.
   capacity state owns class-specific admitted/consumed/remaining counts and
   head/counter equations. Every writer locks it before the attempt-set head and
   atomically consumes one immutable exact-retry charge with mutation/head/
-  result; Replan, compaction, restore and migration cannot reset it. Begin
+  result; Replan, compaction, restore and migration cannot reset it. Dedicated
+  capacity checkpoints and a predecessor-linked archive-replay head commit
+  exact charge/result membership, capacity/sentinel equations and archive
+  epochs. Only the greatest verified head plus hot suffix is authoritative;
+  archive loss returns typed historical-state-unavailable without a charge or
+  head advance, while verified head installation and exact captured-row
+  deletion are atomic and leave the compaction charge hot. Begin
   creates plan generation 1 and PreparingOpen. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
@@ -430,7 +436,8 @@ audit decision.
   settling every leg, advancing Released to OriginalTotal and committing
   CustodyReleased with the matching parent inverse. The combined rank acquires
   residual routing head/residual state head/counter-capacity state/remediation
-  attempt-set head/archive head/plan head/commit-attempt disposition/sorted remediation
+  attempt-set head/counter-capacity archive-replay head/archive head/plan
+  head/commit-attempt disposition/sorted remediation
   attempt/capability/evidence/authorization/reconciliation/checkpoint rows/
   publication state,
   settlement head, sorted custody profile heads/

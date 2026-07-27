@@ -403,6 +403,8 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterExhaustionFenceRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityStateRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterWriterChargeRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityCheckpointRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveReplayHeadRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanOperationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanPreflightRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonResultRow`,
@@ -553,7 +555,13 @@ tuple and capacity-state version.
 Every writer locks it before the attempt-set head and atomically consumes one
 immutable class+command charge with mutation/head/result; exact retry rejoins,
 CAS losers consume nothing and Replan/compaction/restore/migration preserve all
-consumption and equations.
+consumption and equations. Charge compaction uses a dedicated predecessor-
+linked capacity checkpoint and archive-replay head that commit the exact charge
+set, result lookup, capacity/sentinel equations and archive epochs. Only the
+greatest verified head plus its hot suffix is authoritative: exact archived
+retry returns its result, changed material conflicts, and unavailable history
+returns `RevalidationCounterCapacityHistoricalStateUnavailable` without a
+charge or head advance.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -565,7 +573,8 @@ Each grant issuer owns only monotonic signed-intent creation; the destination
 applier owns inbox/tombstone/table mutation. Both families implement the same
 six-state first-terminal table, including no-write absent expiry/consumption.
 All lineage-release transactions acquire residual routing head, residual state
-head, counter-capacity state, remediation attempt-set head, archive head, plan head, commit-attempt
+head, counter-capacity state, remediation attempt-set head, counter-capacity
+archive-replay head, archive head, plan head, commit-attempt
 disposition, sorted remediation attempt/capability/evidence/authorization/
 reconciliation/checkpoint rows, publication state,
 journal head, sorted custody-cost-profile/evaluator-distrust heads, ledgers,
@@ -649,7 +658,11 @@ required root, reordered/duplicated/omitted/forked/rolled-back revalidation
 advance or checkpoint, wrapping advance sequence or budget-based restrictive
 writer blockage, capacity-proof overflow/undercount, terminal sentinel used by
 ordinary state, forged/missing exhaustion fence, invented mutation after
-exhaustion, missing/reset capacity state, writer-class substitution, charge
+sentinel, false archived membership/nonmembership, changed-material archived
+retry accepted, missing archive chunk/key/result treated as unseen, partial
+captured-row deletion, replay-head/checkpoint fork or rollback, Replan resetting
+archived consumption, capacity exhaustion, missing/reset capacity state,
+writer-class substitution, charge
 without head or head without charge, duplicate retry charge, Replan/
 compaction/restore consumption rollback, mutable membership-root drift,
 coordinated residual-state rollback below external high-watermark, aggregate

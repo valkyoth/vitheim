@@ -431,7 +431,14 @@ capacity state owns class-specific admitted/consumed/remaining counts, total
 head writes, revalidation advances/rollovers, sentinel reservation and current
 counter tuple. Every writer locks it before the attempt-set head and atomically
 consumes one immutable exact-retry charge with mutation/head/result; Replan and
-history lifecycle preserve consumption. Begin creates plan generation 1 and
+history lifecycle preserve consumption. A dedicated capacity checkpoint binds
+the exact archived charge set, result lookup, all capacity/sentinel equations
+and publication/key/encoding epochs; its predecessor-linked archive-replay head
+plus hot suffix is the only authoritative lookup. Same-material retry returns
+the historical result, changed material conflicts, and missing archive evidence
+fails closed without charging or advancing a head. Verified head installation
+and deletion of only the captured hot rows are one transaction whose own
+history-lifecycle charge remains hot. Begin creates plan generation 1 and
 PreparingOpen. Terminal
 reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old
@@ -447,7 +454,7 @@ capacity is non-borrowable. The same transaction
 settles every leg, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased. Its
 release paths share one residual-routing-head→residual-state-head→remediation-
-attempt-set-head→archive-head→plan-head→commit-attempt→sorted-remediation-
+attempt-set-head→counter-capacity-archive-replay-head→archive-head→plan-head→commit-attempt→sorted-remediation-
 attempt/capability/evidence/authorization/reconciliation/checkpoint rows→
 receipt combined
 lock rank and must preflight the complete

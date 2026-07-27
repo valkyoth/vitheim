@@ -837,7 +837,15 @@ advance. A lineage-wide capacity state owns per-writer-class admitted/
 consumed/remaining counts and head/counter equations. Every writer locks it
 before the attempt-set head and atomically consumes one immutable exact-retry
 charge with mutation/head/result; Replan and history lifecycle cannot reset
-consumption. Begin creates plan generation 1 and PreparingOpen. Independently
+consumption. Dedicated predecessor-linked capacity checkpoints and an
+archive-replay head bind exact archived charge/material/result membership,
+all capacity/sentinel equations, captured hot rows and publication/key/
+encoding epochs. Only the greatest verified head plus hot suffix is
+authoritative: exact retry returns the old result, changed material conflicts,
+and unavailable history denies without a charge or head advance. Verified
+head installation and exact captured-row deletion are one transaction whose
+own history charge remains hot; Replan carries archived plus hot consumption.
+Begin creates plan generation 1 and PreparingOpen. Independently
 authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
 and receipts and atomically creating a new bundle/reservation set; Abandon
@@ -860,7 +868,8 @@ CommitCustodyRelease grants have complete six-state
 admission/expiry/issuer-intent/destination-apply/tombstone/first-terminal
 families; custody evidence is never command authority. Begin and final release
 share one residual-routing-head→residual-state-head→counter-capacity-state→
-remediation-attempt-set-head→archive-head→plan-head→commit-attempt→sorted-remediation-attempt/capability/evidence/authorization/reconciliation/checkpoint-rows→publication-state→
+remediation-attempt-set-head→counter-capacity-archive-replay-head→archive-head→
+plan-head→commit-attempt→sorted-remediation-attempt/capability/evidence/authorization/reconciliation/checkpoint-rows→publication-state→
 settlement-head→sorted-custody-
 profiles/ledgers/reservations→parent→current-slot→canonical-ID-sorted-old-
 fences→control/lineage/checkpoint→authorization/custody/output rank. A checked
@@ -1112,7 +1121,10 @@ capacity-proof overflow/undercount, ordinary use of the terminal sentinel,
 forged/missing exhaustion fence or invented post-exhaustion mutation, durable
 claim/digest used as bearer or reconstructed permit, missing/reset capacity
 state, writer-class substitution, charge/head mismatch, duplicate retry charge
-or Replan/compaction/restore consumption rollback,
+or Replan/compaction/restore consumption rollback, false archived membership
+or nonmembership, changed-material archived retry, missing archive/key/result
+treated as unseen, partial captured-row deletion, capacity checkpoint/replay-
+head rollback/fork, self-deleted compaction charge or lost sentinel recovery,
 finalization bypass, mutable-root drift, coordinated residual state-head/high-
 watermark rollback, sibling closure/budget theft or lost aggregate decrement,
 Commit with hidden/nonterminal attempt work, absent-row-as-empty aggregate,

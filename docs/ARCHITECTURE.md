@@ -761,7 +761,13 @@ restore, failover, and release evidence.
    remaining counts and the head/counter conservation equations. Every writer
    locks it before the attempt-set head and atomically consumes one immutable
    exact-retry charge with the covered mutation, head, result, audit and outbox;
-   Replan, compaction, restore and migration never reset consumption.
+   Replan, compaction, restore and migration never reset consumption. A
+   dedicated exact-set capacity checkpoint and predecessor-linked
+   archive-replay head preserve archived charge/result membership, conflicts,
+   sentinel state and every conservation equation. Only the greatest verified
+   head plus hot suffix is authoritative; unavailable history fails closed
+   without charging or advancing, and final head-CAS plus captured-row deletion
+   is atomic while the compaction charge remains hot.
    Begin creates plan generation 1 and a PreparingOpen commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and
@@ -775,7 +781,8 @@ restore, failover, and release evidence.
    is protected. Full
    predecessor rollback is unsupported. All release transactions
    share the residual-routing-head→residual-state-head→counter-capacity-state→
-   remediation-attempt-set-head→archive-head→plan-head→commit-attempt→
+   remediation-attempt-set-head→counter-capacity-archive-replay-head→
+   archive-head→plan-head→commit-attempt→
    sorted-remediation-attempt/capability/evidence/authorization/
    reconciliation/checkpoint rows→publication-state→settlement-head→
    sorted-custody-profiles/ledgers/

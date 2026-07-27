@@ -228,7 +228,14 @@ owner without fabricating an advance. A lineage-wide capacity state owns
 per-writer-class admitted/consumed/remaining counts and head/counter equations.
 Every writer locks it before the attempt-set head and atomically consumes one
 immutable exact-retry charge with mutation/head/result; Replan and history
-lifecycle cannot reset consumption. Begin creates plan generation 1 and
+lifecycle cannot reset consumption. A dedicated predecessor-linked capacity
+checkpoint and archive-replay head bind exact archived charge/material/result
+membership, all capacity/sentinel equations, captured hot rows and
+publication/key/encoding epochs. The greatest verified head plus hot suffix is
+authoritative; missing history fails closed without charging/advancing, and
+final head installation plus exact captured-row deletion is atomic while its
+own history charge remains hot. Replan carries archived and hot consumption.
+Begin creates plan generation 1 and
 PreparingOpen.
 Independently authorized Replan alone
 recovers a terminally reconciled plan by fencing/superseding old attempts,
@@ -246,7 +253,8 @@ transaction. Separate BeginRelease/ReplanCustodyRelease/
 AbandonCustodyRelease/QuarantineUnknownTransfer/
 MigrateDistrustedEvaluatorReservation/CommitCustodyRelease grants are consumed under one
 residual-routing-head→residual-state-head→counter-capacity-state→
-remediation-attempt-set-head→archive-head→plan-head→commit-attempt→sorted-remediation-attempt/capability/evidence/authorization/reconciliation/checkpoint-rows→publication-state→settlement-head→sorted-custody-
+remediation-attempt-set-head→counter-capacity-archive-replay-head→archive-head→
+plan-head→commit-attempt→sorted-remediation-attempt/capability/evidence/authorization/reconciliation/checkpoint-rows→publication-state→settlement-head→sorted-custody-
 profiles/ledgers/reservations→parent→slot→sorted-old-fences→control/lineage/
 checkpoint→authorization/custody/output rank, after an aggregate bundle maximum
 proves every ordinary/workspace leg, receipt, pending reconciliation/GC
