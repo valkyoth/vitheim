@@ -765,8 +765,10 @@ restore, failover, and release evidence.
    locks it before the attempt-set head and atomically consumes one immutable
    exact-retry charge with the covered mutation, head, result, audit and outbox.
    Every ordinary writer then locks/reads the stable high-watermark guard and
-   denies PreparePending/Witnessed; archive writers continue through
-   publication before replay head under the shared rank;
+   denies PreparePending/Witnessed; its trace may omit unrelated later rows.
+   Archive writers continue through publication before replay head under the
+   shared rank. Every acquired subset preserves relative order and no writer
+   later acquires an omitted earlier row;
    Replan, compaction, restore and migration never reset consumption. A
    dedicated exact-set capacity checkpoint and predecessor-linked
    archive-replay head preserve archived charge/result membership, conflicts,
@@ -776,7 +778,17 @@ restore, failover, and release evidence.
    adapter-independent and Recovery-funded. A charged local PreparePending
    fence precedes external traffic; unknown witness state remains fenced. Every
    immediate/delayed/query/replay outcome enters only through Reconcile under
-   one stable disposition ID/charge/result. A governed tenant/lineage witness
+   one stable disposition ID/charge/result. A canonical acyclic witness
+   proposal excludes the future signature/receipt and Reconcile/Commit result
+   digests: the authority signs the proposal, Reconcile binds proposal+receipt,
+   and Commit binds proposal+receipt+Reconcile. Generated dependency-graph
+   checks reject cycles, signature inclusion and encoding/epoch substitution.
+   Prepare, terminal Reconcile and ArchiveFinalize Commit are three distinct
+   hot charges/head advances; `q` bounded query admissions make exactly
+   `3 + q`. Begin/Replan reserves a non-borrowable Recovery query budget over
+   calls/bytes/work/time/concurrency. Each stable admission precedes one
+   unreconstructable process-local permit; timeout/absence is read-only,
+   exhaustion permits no more traffic and never means unwitnessed. A governed tenant/lineage witness
    profile freezes CAS, non-equivocation, signatures/rotation/distrust,
    authenticated negative evidence, durability and failover. An independent
    authority witnesses the exact proposed successor before final CAS; afterward it

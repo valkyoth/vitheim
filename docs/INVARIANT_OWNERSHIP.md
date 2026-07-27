@@ -417,9 +417,13 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationGcResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReceiptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessProposalRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkDispositionRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessConformanceProfileRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessConformanceResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReconciliationBudgetRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAttemptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAdmissionResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkPrepareResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReconciliationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanOperationResultRow`,
@@ -578,7 +582,9 @@ immutable class+command charge with mutation/head/result; exact retry rejoins,
 CAS losers consume nothing and Replan/compaction/restore/migration preserve all
 consumption and equations. After the attempt-set head, every ordinary writer
 must lock/read the stable high-watermark guard and deny PreparePending or
-Witnessed; archive writers then lock publication before replay head. Charge
+Witnessed, but may omit unrelated later rows. Archive writers then lock
+publication before replay head. Every acquired subset preserves relative rank
+and no omitted earlier rank is acquired later. Charge
 compaction uses a dedicated predecessor-
 linked capacity checkpoint and archive-replay head that commit the exact charge
 set, result lookup, capacity/sentinel equations and archive epochs. Only the
@@ -593,12 +599,23 @@ Recovery slice funds verification reconciliation and orphan deletion.
 Publisher/storage evidence cannot declare Verified or mutate ownership rows.
 Before finalization, an independent authority witnesses the exact proposed
 capacity checkpoint/replay head, publication, epochs, capacity-state successor,
-history charge/result and deletion set. Prepare first installs a charged local
+history charge/result preimages and deletion set. Its canonical proposal
+excludes all future signature/receipt and Reconcile/Commit result digests.
+Receipt binds the signed proposal, Reconcile binds proposal+receipt and Commit
+binds proposal+receipt+Reconcile; a generated schema-reference/hash-dependency
+graph rejects cycles, signature inclusion and encoding/epoch substitution.
+Prepare first installs a charged local
 PreparePending writer fence; witness reconciliation may reopen it only with
 authenticated definitely-not-witnessed evidence, never timeout. Every
 immediate/delayed/query/replay outcome enters exclusively through Reconcile;
 one stable disposition ID owns one charge/result and changed material
-conflicts. A governed tenant/lineage witness profile freezes predecessor CAS,
+conflicts. Prepare, terminal disposition Reconcile and ArchiveFinalize Commit
+are three independently replayable hot charges/head advances. Begin/Replan
+reserves non-borrowable Recovery reconciliation capacity over calls, bytes,
+work, elapsed time and concurrency; each stable query admission consumes its
+own class charge/budget/counter before one unreconstructable process-local
+permit. Timeout/absence creates no disposition charge, and exhausted budget
+forbids traffic without inferring unwitnessed. A governed tenant/lineage witness profile freezes predecessor CAS,
 non-equivocation, signatures/rotation/distrust, negative evidence, durability
 and failover. The witnessed
 predecessor stays fenced: finalization exact-commits it or recovery remains
@@ -712,8 +729,12 @@ publication rollback below the independent high-watermark, witnessed successor
 abandoned instead of completed, ordinary writer skipping the high-watermark
 guard, replay-head-first lock inversion, direct witness callback outside
 Reconcile, immediate/query disposition mismatch, duplicate/missing disposition
-charge, witness predecessor/receipt/profile substitution, equivocation or
-forged negative evidence, capacity archive sequence gap/wrap/equality failure,
+charge, proposal/signature/result dependency cycle, ambiguous encoding or
+cross-epoch substitution, missing one of the three core hot charges/head
+advances, unbounded query traffic, duplicate/reconstructed query permit,
+backoff/call/byte/work/time/concurrency bypass, budget exhaustion interpreted
+as unwitnessed, witness predecessor/receipt/profile substitution, equivocation
+or forged negative evidence, capacity archive sequence gap/wrap/equality failure,
 one-sided pair sentinel, FinalizeGc counted as ArchiveFinalize, capacity
 exhaustion, missing/reset capacity state,
 writer-class substitution, charge

@@ -435,8 +435,10 @@ head writes, revalidation advances/rollovers, sentinel reservation and current
 counter tuple. Every writer locks it before the attempt-set head and atomically
 consumes one immutable exact-retry charge with mutation/head/result. Every
 ordinary writer then locks/reads the stable high-watermark guard and denies
-PreparePending/Witnessed; archive writers continue through publication before
-replay head. Replan and history lifecycle preserve consumption. A dedicated capacity checkpoint binds
+PreparePending/Witnessed; it may omit unrelated later rows, while archive
+writers continue through publication before replay head. Every acquired subset
+preserves relative canonical order. Replan and history lifecycle preserve
+consumption. A dedicated capacity checkpoint binds
 the exact archived charge set, result lookup, all capacity/sentinel equations
 and publication/key/encoding epochs; its predecessor-linked archive-replay head
 plus hot suffix is the only authoritative lookup. Same-material retry returns
@@ -446,7 +448,15 @@ manifest, proof budget, cursor and closed Staged/Verified/Consumed-or-Orphan/
 Collected receipt machine own publication. A charged local PreparePending
 fence precedes external traffic and unknown witness state never reopens. Every
 external result enters only through Reconcile under one stable disposition
-ID/charge/result. A governed tenant/lineage witness profile freezes predecessor
+ID/charge/result. An acyclic canonical proposal excludes future signature/
+receipt and Reconcile/Commit result digests; the receipt binds the signed
+proposal, Reconcile binds proposal+receipt and Commit binds proposal+receipt+
+Reconcile. Generated dependency-graph checks reject cycles and encoding/epoch
+substitution. Prepare, terminal Reconcile and ArchiveFinalize Commit are three
+distinct hot charges/head advances. A Recovery-funded bounded query budget
+adds one separately classed charge per stable admission before one
+unreconstructable process-local permit; timeout/absence is read-only and
+exhaustion never implies unwitnessed. A governed tenant/lineage witness profile freezes predecessor
 CAS, non-equivocation, signature/rotation/distrust, authenticated negative
 evidence, durability and failover. An independent high-watermark authority witnesses the exact proposed successor before final CAS; restore
 reads it before local state, and a witnessed successor exact-commits or stays

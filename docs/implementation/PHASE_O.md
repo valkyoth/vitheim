@@ -231,8 +231,9 @@ owner without fabricating an advance. A lineage-wide capacity state owns
 per-writer-class admitted/consumed/remaining counts and head/counter equations.
 Every writer locks it before the attempt-set head and atomically consumes one
 immutable exact-retry charge with mutation/head/result. Every ordinary writer
-then locks/reads the high-watermark guard and denies PreparePending/Witnessed;
-archive writers continue publication→replay-head. Replan and history
+then locks/reads the high-watermark guard and denies PreparePending/Witnessed,
+but may omit unrelated later rows; archive writers continue publication→
+replay-head. Every acquired subset preserves relative rank. Replan and history
 lifecycle cannot reset consumption. A dedicated predecessor-linked capacity
 checkpoint and archive-replay head bind exact archived charge/material/result
 membership, all capacity/sentinel equations, captured hot rows and
@@ -243,7 +244,14 @@ Verified/Consumed-or-Orphan/Collected states and Recovery-funded typed
 commands. A charged local PreparePending fence precedes external traffic and
 only authenticated definitely-not-witnessed evidence may reopen it. All
 immediate/delayed/query/replay outcomes enter exclusively through Reconcile
-under one disposition ID/charge/result. A governed tenant/lineage witness
+under one disposition ID/charge/result. An acyclic canonical witness proposal
+excludes future signature/receipt and Reconcile/Commit result digests; receipt,
+Reconcile and Commit add only forward dependencies, mechanically checked
+against cycles and encoding/epoch substitution. Prepare, terminal Reconcile
+and ArchiveFinalize Commit are three distinct hot charges/head advances. A
+non-borrowable Recovery query budget bounds calls/bytes/work/time/concurrency;
+each stable durable admission precedes one unreconstructable process-local
+permit, timeout/absence is read-only and exhaustion never means unwitnessed. A governed tenant/lineage witness
 profile freezes predecessor CAS, non-equivocation, signatures/rotation/
 distrust, negative evidence, durability and failover. An independent authority
 witnesses the exact proposed successor before final CAS;

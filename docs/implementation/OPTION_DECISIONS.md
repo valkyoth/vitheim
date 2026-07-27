@@ -1103,7 +1103,14 @@ install heads or mutate lifecycle rows.
 Before final local CAS, require an independently witnessed monotonic
 CapacityArchiveHighWatermark binding the exact proposed checkpoint/replay-head,
 publication/manifest, epochs, covered/successor capacity state, history charge,
-mutation/result and deletion set. Prepare first consumes its admitted charge
+mutation/result preimages and deletion set through an acyclic
+CapacityArchiveWitnessProposalV1. The proposal excludes the future signature/
+receipt and Reconcile/Commit result digests. The authority signs its
+domain-separated canonical digest; the receipt binds proposal+signature, the
+Reconcile result binds proposal+receipt, and Commit binds proposal+receipt+
+Reconcile result. A generated schema-reference/hash-dependency graph must be
+acyclic and reject signature inclusion, ambiguous encoding and cross-epoch
+substitution. Prepare first consumes its admitted charge
 and installs a local PreparePending writer fence under the canonical locks;
 only then may external traffic begin. The adapter never mutates state: every
 immediate, delayed, queried or replayed outcome enters exclusively through
@@ -1111,7 +1118,13 @@ Reconcile. One stable disposition ID owns one terminal disposition charge/
 state/mutation/head/result, while the subsequent archive Commit has its own
 distinct charge. Exact retry rejoins; changed receipt/predecessor/publication/
 manifest/successor/profile material conflicts. Timeout/absence is read-only
-and stays fenced. A witnessed candidate cannot be orphaned: crash recovery exact-
+and stays fenced. Begin/Replan also reserves a non-borrowable Recovery
+HighWatermarkReconciliationBudget with hard call/byte/work/elapsed/concurrency
+bounds, non-wrapping stable query-attempt IDs and durable backoff. Each query
+admission consumes its own class charge/budget/head before returning one
+process-local unreconstructable permit; replay returns no permit. Exhaustion
+fences all further traffic without inferring definitely-not-witnessed. A
+witnessed candidate cannot be orphaned: crash recovery exact-
 completes the deterministic successor or stays unready. Finalization locks
 routing→residual-state→capacity-state→attempt-set→capacity-archive-high-
 watermark→publication→capacity-archive-replay-head and atomically consumes one
@@ -1120,6 +1133,13 @@ ConsumedByCommit, installs the witnessed replay head, deletes exact captured
 predecessor charges and writes outputs. Its charge remains hot. Restore reads
 the independent greatest watermark before local heads; a locally consistent
 older snapshot is never authoritative.
+
+The core witnessed path owns three independent hot history-lifecycle charges
+and head advances: Prepare, terminal disposition Reconcile and ArchiveFinalize
+Commit. Checkpoint coverage excludes all three and every later query-admission
+charge. With `q` admitted recovery queries the protocol contributes `3 + q`
+head advances; timeout/absence creates neither the terminal disposition charge
+nor authority to continue after query-budget exhaustion.
 
 Require a governed current passing witness conformance profile before Prepare.
 It binds tenant/lineage authority identity, expected-predecessor CAS, non-
@@ -1131,7 +1151,10 @@ Use one universal routing→residual→capacity→attempt-set→high-watermark�
 publication→replay-head order. Begin creates a stable Unprepared guard. Every
 ordinary writer must lock/read it and deny PreparePending/Witnessed before
 omitting unrelated publication/replay rows; archive writers take all applicable
-rows in order. Backend acquisition traces are conformance evidence.
+rows in order. Backend acquisition traces require the common prefix through
+the guard for ordinary writers and the complete high-watermark→publication→
+replay-head suffix for archive writers. Any acquired subset preserves relative
+rank, and no omitted earlier-ranked row may be acquired later.
 
 Include canonical capacity-checkpoint and replay-head `u128` sequences in the
 capacity proof/state as one pair. They start equal and advance together exactly

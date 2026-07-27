@@ -417,8 +417,9 @@ audit decision.
   head/counter equations. Every writer locks it before the attempt-set head and
   atomically consumes one immutable exact-retry charge with mutation/head/
   result. Every ordinary writer then locks/reads the high-watermark guard and
-  denies PreparePending/Witnessed; archive writers lock publication before
-  replay head. Replan, compaction, restore and migration cannot reset it. Dedicated
+  denies PreparePending/Witnessed and may omit only unrelated later rows;
+  archive writers lock publication before replay head. Acquired subsets always
+  preserve relative rank. Replan, compaction, restore and migration cannot reset it. Dedicated
   capacity checkpoints and a predecessor-linked archive-replay head commit
   exact charge/result membership, capacity/sentinel equations and archive
   epochs. Only the greatest verified head plus hot suffix is authoritative;
@@ -428,7 +429,16 @@ audit decision.
   non-borrowable Recovery capacity. A charged local PreparePending fence
   precedes external traffic; only definitely-not-witnessed evidence reopens it.
   All external outcomes enter only through Reconcile with one disposition
-  ID/charge/result. A governed tenant/lineage witness profile freezes
+  ID/charge/result. The authority signs an acyclic canonical proposal that
+  excludes its future receipt and Reconcile/Commit result digests; receipt,
+  Reconcile and Commit add only forward references. Generated dependency-graph
+  verification rejects cycles, signature inclusion and encoding/epoch
+  substitution. Prepare, terminal Reconcile and ArchiveFinalize Commit remain
+  three distinct hot charges/head advances. Begin/Replan reserves bounded non-
+  borrowable Recovery query capacity; each durable stable-ID admission consumes
+  one separate class charge before one process-local unreconstructable permit.
+  Timeout/absence is read-only, and exhausted calls/bytes/work/time/concurrency
+  permit no traffic and never imply unwitnessed. A governed tenant/lineage witness profile freezes
   predecessor CAS, non-equivocation, signatures/rotation/distrust, negative
   evidence, durability and failover. An independent precommit high-watermark witnesses the exact successor; restore reads it first, and final witnessed
   head installation plus exact captured deletion is atomic and leaves the

@@ -94,6 +94,10 @@ All notable Vitheim changes are documented here. The format follows
   routed all witness outcomes through one exact-charge disposition importer,
   governed witness backend semantics and made archive exhaustion one atomic
   sequence-pair fence.
+- Made witness commitments an acyclic proposal→receipt→Reconcile→Commit graph,
+  exposed the exact three-plus-query charge equation, bounded unknown-state
+  queries with one-shot process-local permits and aligned trace tests with
+  ordinary-row omission.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.

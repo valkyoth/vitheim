@@ -6558,6 +6558,22 @@ Canonical
 and
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReceiptV1`
 prevent coordinated local rollback.
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessProposalV1`
+is the only signed witness semantic preimage. It binds tenant/lineage,
+authority/profile and distrust epochs, predecessor/proposed checkpoint and
+replay-head identities, publication/manifest and encoding epochs, captured
+deletion set, all three operation/charge IDs and the expected semantic
+before/after state, mutation, head and result preimages. It excludes the future
+witness signature/receipt and the Reconcile and Archive Commit result digests.
+The authority signs only the domain-separated canonical proposal digest. The
+receipt binds that digest and signature material; the terminal Reconcile result
+binds proposal and receipt digests; the Archive Commit result binds proposal,
+receipt and Reconcile-result digests. This is a strict acyclic commitment DAG:
+no preimage may reference a later node, encode its own digest or admit an
+alternate field ordering/encoding. A schema-reference/hash-dependency graph
+generator is normative verification evidence and rejects cycles, signature
+field inclusion, ambiguous encoding and cross-epoch substitution.
 After Verify, only
 `PrepareMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermark`
 first uses the canonical local locks to consume its admitted history-lifecycle
@@ -6572,7 +6588,8 @@ the typed
 command. Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkDispositionV1`
 binds one stable disposition ID, Prepare charge/result, expected predecessor,
-publication/manifest, proposed successor and request digest. The first terminal
+publication/manifest, proposed successor, proposal digest and request digest.
+The first terminal
 Reconcile imports either Witnessed or authenticated
 AbortedDefinitelyUnwitnessed and consumes exactly one witness-disposition
 writer charge with capacity state, attempt-set mutation/head and stored result;
@@ -6584,9 +6601,11 @@ conflicts. The high-watermark binds lineage, predecessor high-watermark digest,
 capacity-checkpoint sequence/digest, proposed replay-head sequence/digest,
 publication/manifest identity, integrity-key/encoding epochs, witness profile/
 authority/signer/key/distrust epochs, covered and successor capacity-state
-versions/digests, exact deterministic post-disposition charge/state/mutation/
-head/result and the distinct subsequent ArchiveFinalize charge/state/mutation/
-head/result, plus captured-deletion set. Its signed
+versions/digests, the proposal digest, expected deterministic post-disposition
+charge/state/mutation/head/result preimages and the distinct subsequent
+ArchiveFinalize charge/state/mutation/head/result preimages, plus captured-
+deletion set. It never commits a result digest that contains the witness
+receipt. Its signed
 witness is stored outside the local publication registry. Once witnessed, the
 predecessor is fenced: the candidate cannot be orphaned, and recovery must
 commit that exact deterministic successor or remain unready. This precommit
@@ -6601,6 +6620,33 @@ reconciliation returns
 or
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReconciliationConflict`.
 
+Unknown-state external queries are separately bounded. Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReconciliationBudgetV1`
+is established from non-borrowable Recovery capacity by Begin/Replan and fixes
+hard maxima for calls, request/response encoded bytes, verification work,
+elapsed time and concurrent workers, plus a non-wrapping attempt counter and
+durable backoff policy. Each
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAttemptV1`
+has a stable ID. Only
+`AdmitMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQuery`
+may atomically consume one query-admission class charge,
+budget slice and counter value while persisting its deadline and next-eligible-
+query value under the canonical common lock prefix. It returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAdmissionResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAdmissionConflict`.
+Only that winning durable
+admission returns one process-local, non-serializable and unreconstructable
+query permit; exact admission/status/response replay returns durable state and
+no permit. Timeout, absence and unknown response remain read-only with respect
+to the witness disposition and do not create its terminal charge. Exhaustion
+returns fenced
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReconciliationBudgetExhausted`,
+permits no more witness traffic
+and never infers AbortedDefinitelyUnwitnessed. Pending attempts, budget state,
+admission charges and results remain in the hot suffix and Replan/restore
+preserve them exactly.
+
 The capacity-archive Commit transaction follows
 routing head→residual state head→counter-capacity state→remediation-attempt-set
 head→counter-capacity-archive-high-watermark→publication receipt→counter-
@@ -6609,9 +6655,16 @@ one Attempt history lifecycle charge, advances the capacity state and
 attempt-set head, CASes Verified→ConsumedByCommit, installs the exact witnessed
 replay head, deletes only the captured predecessor charge rows and commits
 result/audit/outbox. Checkpoint coverage ends before high-watermark Prepare:
-both the Prepare/reconciliation disposition charge and Archive Commit charge
-remain in the hot suffix and cannot delete themselves. Unknown response
-reconciliation observes that indivisible bundle.
+the Prepare charge, terminal witness-disposition Reconcile charge and
+ArchiveFinalize Commit charge are three distinct mandatory history-lifecycle
+charges and three distinct attempt-set/capacity-state head advances. All three,
+plus any separately classed recovery query-admission charges, remain in the hot
+suffix and cannot delete themselves. Exact retry returns each charge/result
+independently. With `q` admitted recovery queries, the archive protocol
+contributes exactly `3 + q` charged head advances; without a recovery query it
+contributes exactly three. Timeout/absence never fabricates the terminal
+disposition charge. Unknown response reconciliation observes that indivisible
+bundle.
 Partial deletion, deletion without the installed head, head installation
 without exact captured deletion, forked/rolled-back checkpoint ancestry or
 mixed publication epochs is corruption. Restore/migration first read the
@@ -6632,6 +6685,7 @@ mutate a field covered by the attempt-set commitment:
 | Effect reconciliation | provider query/evidence admission and CompleteDeficitRemediation | Commit evidence, reconciliation/finalization state, terminal attempt result and successor head together |
 | Capability lifecycle | terminalization, expiry, revocation and cleanup not already owned above | Commit capability disposition, proof/result and successor head together |
 | Attempt history lifecycle | checkpoint, archive Stage/Verify/high-watermark Prepare/disposition import/Commit, MarkOrphan and FinalizeGc | Commit publication receipt/cursor, authenticated coverage/replacement, witness disposition or orphan-deletion evidence and successor head together; `ArchiveFinalize` means only the successful first Commit-capacity-archive-publication charge, advances the sequence pair and is never FinalizeGc |
+| Witness query admission | admit one stable high-watermark status-query attempt | Commit the bounded Recovery-budget debit, non-wrapping attempt counter, deadline/backoff and successor head before issuing one process-local query permit; timeout/absence is read-only and never consumes the terminal disposition charge |
 | Plan lifecycle | Replan and proof/capacity-state carry-forward | Commit old-plan terminalization, conservative remaining-class mapping, new plan/proof binding and successor attempt-set head together; consumption never resets |
 
 Every mutating command in the table creates immutable
@@ -7685,8 +7739,12 @@ MarkOrphan and FinalizeGc; inject response loss at every CAS and prove only
 Verified→ConsumedByCommit or Verified→OrphanGcEligible→Collected can win.
 Record backend acquisition traces for every ordinary writer and for Prepare,
 Reconcile, capacity-archive Commit, MarkOrphan and FinalizeGc. Require the same
-routing→residual→capacity→attempt-set→high-watermark→publication→replay-head
-subsequence, mandatory ordinary guard read and zero replay-head-first inversion.
+routing→residual→capacity→attempt-set→high-watermark common prefix and
+mandatory guard read for every ordinary writer; it may then omit unrelated
+publication/replay rows. Require archive writers to acquire the complete
+high-watermark→publication→replay-head subsequence. Every actually acquired
+subset preserves canonical relative order, and no writer may later acquire an
+omitted earlier-ranked row. Require zero replay-head-first inversion.
 Fault the witness request before, during and after external acceptance; only
 authenticated definitely-not-witnessed evidence may abort PreparePending,
 while unknown stays fenced and a late witness exact-completes once. Feed
@@ -7697,6 +7755,18 @@ conflict. Run witness adapter conformance across tenant/lineage scope,
 expected-predecessor contention, equivocation, signatures, key rotation/
 distrust, forged negative evidence, read-after-write, partitions and failover;
 unsupported profiles deny before Prepare.
+Mechanically generate the witness schema-reference/hash-dependency graph and
+reject a cycle, proposal inclusion of any future signature/receipt/result
+digest, alternate canonical encoding and cross-epoch field substitution.
+Prove the no-query witnessed path owns exactly three hot charges/head advances:
+Prepare, terminal disposition Reconcile and ArchiveFinalize Commit. Add `q`
+bounded recovery-query admissions and prove exactly `3 + q`, independent retry
+of each stored result and no query timeout/absence-created disposition charge.
+Exhaust calls, encoded bytes, verification work, elapsed-time and concurrency
+dimensions; fault before/after durable query admission and permit issue, retry
+the same attempt/response, crash/restore during backoff and prove one
+unreconstructable permit per stable ID. `ReconciliationBudgetExhausted` permits
+no traffic and never becomes definitely-not-witnessed.
 Make deletion unknown, forge verification, substitute chunks/epochs, and prove
 Recovery capacity cannot be borrowed. Roll back the local capacity state,
 publication registry and replay head together below the external high-
