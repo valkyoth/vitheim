@@ -706,7 +706,9 @@ restore, failover, and release evidence.
    attempt/charge, and destructive completion uses fresh finalization authority.
    Broker-only Dispatch is the current legal/hold/policy cut: it rechecks
    credential/distrust/fence/routing epochs and atomically redeems one-use
-   capability while moving to EffectDispatched before provider traffic.
+   capability while moving to EffectDispatched before provider traffic. A
+   governed provider-effect profile/conformance result defines idempotency,
+   send/dedup/query horizons and authenticated definitely-no-effect evidence.
    A versioned cost profile maps unlike source/destination generations,
    units and storage overhead; Commit converts the base plus covered deficit into the final
    custody member before exact source credit. Unknown preserves predecessor and
@@ -721,12 +723,17 @@ restore, failover, and release evidence.
    Final Commit selects With/WithoutResidualCustody and transfers surviving
    terminal unknown members into per-member obligations/budget slices under a
    sorted immutable descriptor/transfer root; mutable child/budget/aggregate
-   states are separately versioned and atomically settled. Winning Begin
+   states are separately versioned and atomically settled while advancing one
+   externally checkpointed cumulative residual-state anti-rollback head.
+   Winning Begin
    creates explicit LineageOwned routing generation 1—absence is never
-   ownership—and final Commit performs the only LineageOwned→ResidualOwned
+   ownership—with explicit NoneCanonicalEmpty aggregate state, and final Commit
+   performs the only LineageOwned→ResidualOwned
    CAS. That head linearizes destination authorization/resolution/checkpoint/
    GC ownership; siblings are isolated and completed lineage state admits
-   proof maintenance only.
+   proof maintenance only. MarkEligible/final Commit bind one complete
+   remediation-attempt-set root and refuse every nonterminal effect, live
+   capability or reconciliation obligation; CommitEligible fences new dispatch.
    Begin creates plan generation 1 and a Preparing commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and
@@ -739,7 +746,8 @@ restore, failover, and release evidence.
    bucket budget charge; exact retry does not recharge and Recovery capacity
    is protected. Full
    predecessor rollback is unsupported. All release transactions
-   share the residual-routing-head→archive-head→plan-head→commit-attempt→
+   share the residual-routing-head→residual-state-head→remediation-attempt-set-
+   head→archive-head→plan-head→commit-attempt→
    publication-state→settlement-head→sorted-custody-profiles/ledgers/
    reservations→parent→current-slot→sorted-old-fence→control/lineage/checkpoint→
    authorization/custody/output rank, and an aggregate hard maximum covers

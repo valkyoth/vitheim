@@ -937,6 +937,12 @@ credential epochs, atomically redeems one non-exportable capability and moves
 ExecutionAdmitted→EffectDispatched before any provider call. Workers never
 receive credentials; pre-call drift closes without traffic, while post-CAS
 uncertainty is Unknown and never reopens.
+Require a governed provider-effect conformance profile and passing result for
+destructive dispatch. It freezes effect-ID scope, idempotency and send/dedup/
+query horizons, query consistency, credential rotation/fencing, late
+duplicates, timeouts/partitions, takeover and authenticated definitely-no-
+effect evidence. After the permitted send horizon expires, reconciliation may
+query only; Unknown never permits a fresh send.
 Deletion release and permanent retention consume a separate complete
 finalization authorization. Only explicit
 retention creates the named permanently fenced custody member and atomically
@@ -956,6 +962,13 @@ Mixed child outcomes are independent. Later resolution/revocation/evidence/
 checkpoint/GC charges that child/aggregate;
 the completed lineage admits replay/proof maintenance only.
 
+Add one cumulative predecessor-linked residual-state head over the immutable
+membership root, every child state/budget-state, latest child settlement/
+checkpoint, aggregate reference/state and integrity epochs. Child settlement
+advances it atomically. Signed checkpoints publish an external high-watermark;
+restore below or discontinuous with that anchor is unready, so coordinated
+rollback of otherwise consistent child and aggregate rows cannot pass.
+
 Make pre-Begin cleanup candidate-scoped. A durable winner mapping binds the
 activated candidate. Losing cleanup proves no artifact references its exact
 generation/charge, rechecks an absent or different-winner head, requires
@@ -973,6 +986,20 @@ owners. The exact winning custody-release Begin atomically creates generation
 1 LineageOwned with the new plan head/lineage budget and canonical-empty root;
 absence is never LineageOwned. Replan preserves/version-checks the head and
 final Commit is its only owner transition.
+
+Represent aggregate state explicitly with a closed NoneCanonicalEmpty/
+SomeAggregate tag. Winning Begin creates None plus an authenticated empty
+residual-state head and no aggregate row. Zero-survivor final Commit advances
+the empty head/routing with None; a nonempty Commit uses Some with exact
+aggregate budget/state digests. Row absence never means empty.
+
+Freeze a complete remediation-attempt-set head/root covering every effect,
+capability/redemption, provider profile, reconciliation budget and execution/
+finalization history. MarkEligible and Commit refuse ExecutionAdmitted,
+EffectDispatched, ExternalOutcomeUnknown, live capability or pending
+reconciliation. CommitEligible fences later Begin/Dispatch and final Commit
+rechecks the identical complete root; effect work is never transferred through
+an implicit “remediation heads” collection.
 
 Freeze one durable plan-bound commit attempt with Preparing, CommitEligible,
 Superseded, Abandoned and Consumed. MarkCommitEligible alone moves Preparing

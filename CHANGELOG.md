@@ -56,6 +56,15 @@ All notable Vitheim changes are documented here. The format follows
   and settlement rows.
 - Defined routing generation 1 as an explicit winning-Begin transaction result;
   absence is never treated as LineageOwned and Replan cannot recreate it.
+- Added a cumulative residual-state head with signed externally anchored
+  checkpoints so coordinated child/aggregate rollback cannot restore cleanly.
+- Made MarkEligible and final Commit bind a complete remediation-attempt-set
+  root and refuse every nonterminal provider effect, capability, or
+  reconciliation obligation.
+- Defined empty residual aggregate state with an authenticated
+  NoneCanonicalEmpty tag rather than row absence.
+- Added governed provider effect-conformance profiles, results, and
+  authenticated definitely-no-effect evidence with adversarial adapter gates.
 - Made every custody Replan repeat aggregate backend feasibility and atomically
   reserve replacement, future-Commit and retained-history capacity under a
   non-resettable cumulative plan-lineage budget with authenticated compaction.

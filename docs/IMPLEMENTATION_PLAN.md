@@ -387,7 +387,9 @@ totally to one continuation; Begin consumes execution authority before
 dispatch, Complete never redispatches and fresh finalization authority owns
 later deletion release/permanent retention. Broker-only Dispatch is the
 current legal/hold/policy cut and atomically rechecks all destructive-effect
-epochs while redeeming one capability into EffectDispatched. Permanent Unknown
+epochs while redeeming one capability into EffectDispatched. A governed
+provider-effect profile/result freezes dedup/query horizons and authenticated
+definitely-no-effect semantics. Permanent Unknown
 is independently
 converted at full charge into a fenced member with retained legal-hold
 evidence and no late-evidence refund. Platform/tenant ceilings and a separate
@@ -399,10 +401,15 @@ requires terminal authorization, exact candidate non-reference and different-
 winner mapping. Final Commit selects With/WithoutResidualCustody and transfers
 each surviving unknown member into its own budgeted obligation under a sorted
 immutable descriptor/transfer root; mutable child/budget/aggregate states
-advance separately and atomically. Winning Begin explicitly creates
+advance separately and atomically with one externally checkpointed cumulative
+anti-rollback state head. Winning Begin explicitly creates
 LineageOwned routing generation 1 with the new plan/budget—absence is never an
-owner—and the generationed head linearizes authorization/resolution/checkpoint/
-GC ownership. Begin creates plan generation 1 and Preparing. Terminal
+owner—and an explicit NoneCanonicalEmpty aggregate reference; the generationed
+head linearizes authorization/resolution/checkpoint/
+GC ownership. MarkEligible/final Commit bind one complete remediation-attempt
+set and refuse every nonterminal effect/capability/reconciliation obligation;
+CommitEligible fences new dispatch. Begin creates plan generation 1 and
+Preparing. Terminal
 reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old
 attempts/grants/receipts and creates new bundle/reservation identities;
@@ -416,7 +423,8 @@ original-bucket budget charge; exact retry never recharges and Recovery
 capacity is non-borrowable. The same transaction
 settles every leg, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased. Its
-release paths share one residual-routing-head→archive-head→plan-head→commit-attempt→receipt combined
+release paths share one residual-routing-head→residual-state-head→remediation-
+attempt-set-head→archive-head→plan-head→commit-attempt→receipt combined
 lock rank and must preflight the complete
 ordinary-plus-workspace receipt/profile/reservation/custody-ledger/
 reconciliation/GC bundle against backend row/byte/lock/write/work/time maxima

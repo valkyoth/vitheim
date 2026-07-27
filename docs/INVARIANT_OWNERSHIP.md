@@ -325,6 +325,9 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchBrokerCapabilityRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchBrokerRedemptionRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectConformanceProfileRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectConformanceResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectDefinitelyNoEffectEvidenceRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationCompletionResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRevocationIssuerSequenceRow`,
@@ -373,6 +376,8 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetExhaustedResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageCheckpointRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetChargeRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseRemediationAttemptSetHeadRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseRemediationAttemptSetCommitmentRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationStateRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationBudgetRow`,
@@ -382,6 +387,8 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyMembershipCommitmentRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyAggregateBudgetRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyAggregateStateRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyStateHeadRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyStateCheckpointRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyRoutingHeadRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAuthorizationFenceRow`,
@@ -481,7 +488,9 @@ Complete reconciles the same effect only; deletion release/permanent retention
 also consumes separate complete finalization authority. Dispatch is the
 current legal/hold/policy cut: only the credential-isolating broker may recheck
 all bound epochs, redeem one-use capability and atomically persist
-EffectDispatched/redemption before provider traffic.
+EffectDispatched/redemption before provider traffic. A governed provider-effect
+profile/result fixes dedup/query horizons and authenticated no-effect evidence;
+unsupported adapters have no destructive capability.
 BeginRelease admission charges a bounded pre-Begin deployment/tenant pool; the
 winning Begin transaction transfers that same reservation into the newly
 created lineage budget, while terminal non-winners require proved no-Begin
@@ -492,11 +501,16 @@ authorization/deficit/fence provenance atomically transfers into an
 independently restorable member-scoped residual obligation. A sorted membership
 root hashes only immutable descriptor/transfer bytes; versioned child state,
 child budget state, immutable settlement and aggregate state advance atomically
-under the routing→aggregate→child→authorization rank. Winning Begin creates
+under the routing→state-head→aggregate→child→authorization rank while advancing
+one signed externally anchored cumulative anti-rollback head. Winning Begin creates
 explicit LineageOwned routing generation 1 and absence is never ownership; its
 later LineageOwned→ResidualOwned CAS prevents one child or concurrent
 authorization operation affecting another. Completed-lineage history never
 accepts that later mutation directly.
+The routing/state heads carry explicit NoneCanonicalEmpty or SomeAggregate;
+row absence is never aggregate state. MarkEligible and Commit bind the complete
+remediation-attempt-set head/root, refuse nonterminal effect/capability/
+reconciliation state, and CommitEligible fences new Begin/Dispatch.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -578,8 +592,12 @@ unrepresented permanently fenced capacity, completed-lineage residual-budget
 dead end/reset, remediation dispatch-before-authority or redispatch,
 expiry/revocation erasing admitted effect authority, completion without fresh
 finalization authority, stale-policy/hold dispatch, provider-credential escape,
-capability double redemption, mutable membership-root drift, aggregate
-residual child closure/budget theft or lost decrement, missing/inferred/
+capability double redemption, ungoverned/expired provider-effect profile,
+forged definitely-no-effect evidence, mutable membership-root drift,
+coordinated residual-state rollback below external high-watermark, aggregate
+residual child closure/budget theft or lost decrement, Commit with nonterminal
+effect/capability/reconciliation, hidden/partial attempt-set root, absent-row-
+as-empty aggregate, missing/inferred/
 duplicate routing genesis, split/duplicate lineage-vs-residual authorization
 ownership, routing-CAS omission, global instead of candidate-scoped losing
 cleanup,

@@ -376,16 +376,22 @@ audit decision.
   before dispatch, Complete never redispatches, and destructive completion
   uses fresh finalization authority. Broker-only Dispatch is the current legal/
   hold/policy cut and rechecks credential/distrust/fence/routing epochs while
-  atomically redeeming one-use capability into EffectDispatched. BeginRelease
+  atomically redeeming one-use capability into EffectDispatched. A governed
+  provider profile/result freezes effect-ID, dedup/query horizon and
+  authenticated no-effect guarantees. BeginRelease
   Admit charges a
   bounded pre-Begin pool; winning Begin transfers it into the lineage budget,
   and cleanup is exact-candidate scoped under a winner mapping. Final Commit
   selects completed with/without residual custody and transfers every surviving
   terminal unknown member to its own budgeted residual obligation under a
   sorted immutable descriptor/transfer root; versioned child/budget/aggregate
-  state settles atomically. Winning Begin creates explicit LineageOwned routing
-  generation 1, and the generationed CAS selects lineage or residual ownership
-  for all destination operations; absence never implies ownership. Begin
+  state settles atomically with one externally checkpointed cumulative anti-
+  rollback head. Winning Begin creates explicit LineageOwned routing generation
+  1 plus NoneCanonicalEmpty aggregate state, and the generationed CAS selects
+  lineage or residual ownership for all destination operations; absence never
+  implies ownership. MarkEligible and final Commit bind a complete attempt-set
+  root, refuse all nonterminal provider work and fence new dispatch at
+  CommitEligible. Begin
   creates plan generation 1 and Preparing. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
@@ -401,7 +407,8 @@ audit decision.
   Commit consumes those receipts while
   settling every leg, advancing Released to OriginalTotal and committing
   CustodyReleased with the matching parent inverse. The combined rank acquires
-  residual routing head/archive head/plan head/commit-attempt disposition/publication state,
+  residual routing head/residual state head/remediation attempt-set head/
+  archive head/plan head/commit-attempt disposition/publication state,
   settlement head, sorted custody profile heads/
   ledgers/reservations, parent, current slot, sorted old campaign fences,
   control/lineage/checkpoint, authorization/custody and outputs; an aggregate

@@ -187,7 +187,9 @@ matrix; Begin consumes authority/creates the exact effect before dispatch,
 Complete reconciles without redispatch and destructive completion uses fresh
 finalization authority. Broker-only Dispatch is the current legal/hold/policy
 cut and atomically rechecks credential/distrust/fence/routing epochs while
-redeeming one-use capability into EffectDispatched. Permanent Unknown is
+redeeming one-use capability into EffectDispatched; a governed provider-effect
+profile/result fixes dedup/query horizons and authenticated no-effect evidence.
+Permanent Unknown is
 independently converted at full charge into a transfer/namespace-fenced member
 with retained legal-hold evidence and no late-evidence refund. Aggregate
 platform/tenant ceilings and separate confirm/delete/permanently-unresolvable
@@ -197,10 +199,13 @@ lineage budget; non-winner cleanup is candidate-scoped under a winner mapping.
 Final Commit selects With/WithoutResidualCustody and transfers surviving
 terminal unknown members into per-member budgeted residual obligations under a
 sorted immutable descriptor/transfer root; child/budget/aggregate state is
-separately versioned and atomically settled. Winning Begin creates explicit
-LineageOwned routing generation 1 and absence is never ownership; the
+separately versioned and atomically settled with an externally checkpointed
+cumulative anti-rollback state head. Winning Begin creates explicit
+LineageOwned routing generation 1, NoneCanonicalEmpty aggregate state and an
+empty attempt-set root; absence is never ownership or empty state. The
 generationed CAS selects lineage or residual ownership for every destination
-operation. Begin
+operation. MarkEligible/final Commit bind the complete attempt set, refuse
+nonterminal provider work and fence new dispatch at CommitEligible. Begin
 creates plan generation 1 and Preparing. Independently authorized Replan alone
 recovers a terminally reconciled plan by fencing/superseding old attempts,
 grants and receipts and creating a new bundle/reservation set; Abandon fences
@@ -216,7 +221,7 @@ identical parent credit plus distinct CustodyReleased terminal in one
 transaction. Separate BeginRelease/ReplanCustodyRelease/
 AbandonCustodyRelease/QuarantineUnknownTransfer/
 MigrateDistrustedEvaluatorReservation/CommitCustodyRelease grants are consumed under one
-residual-routing-head→archive-head→plan-head→commit-attempt→publication-state→settlement-head→sorted-custody-
+residual-routing-head→residual-state-head→remediation-attempt-set-head→archive-head→plan-head→commit-attempt→publication-state→settlement-head→sorted-custody-
 profiles/ledgers/reservations→parent→slot→sorted-old-fences→control/lineage/
 checkpoint→authorization/custody/output rank, after an aggregate bundle maximum
 proves every ordinary/workspace leg, receipt, pending reconciliation/GC
@@ -2257,8 +2262,11 @@ reopen, remediation action/result substitution or failure→retention fall-
 through, unnamed permanently fenced capacity, completed-lineage residual
 budget dead end/reset, dispatch-before-authority/redispatch, expiry/revocation
 erasing admitted effect authority, stale-policy/hold dispatch, capability
-double redemption, finalization bypass, mutable-root drift, sibling closure/
-budget theft or lost aggregate decrement, missing/inferred/duplicate routing
+double redemption, ungoverned/expired provider-effect profile or forged no-
+effect evidence, finalization bypass, mutable-root drift, coordinated residual
+state-head/high-watermark rollback, sibling closure/budget theft or lost
+aggregate decrement, Commit with hidden/nonterminal attempt work, absent-row-
+as-empty aggregate, missing/inferred/duplicate routing
 genesis, split/duplicate routing ownership, global loser cleanup or winner
 release, cumulative
 budget-charge omission/double/early settlement, retained-
