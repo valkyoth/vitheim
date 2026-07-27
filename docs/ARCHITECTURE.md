@@ -708,7 +708,10 @@ restore, failover, and release evidence.
    credential/distrust/fence/routing epochs and atomically redeems one-use
    capability while moving to EffectDispatched before provider traffic. A
    governed provider-effect profile/conformance result defines idempotency,
-   send/dedup/query horizons and authenticated definitely-no-effect evidence.
+   dedup/query horizons and authenticated definitely-no-effect evidence.
+   Dispatch persists one application-level transmission claim; only
+   transport retransmission inside its uninterrupted invocation is permitted,
+   while return/crash/lease loss/uncertainty is query-only.
    A versioned cost profile maps unlike source/destination generations,
    units and storage overhead; Commit converts the base plus covered deficit into the final
    custody member before exact source credit. Unknown preserves predecessor and
@@ -733,7 +736,12 @@ restore, failover, and release evidence.
    GC ownership; siblings are isolated and completed lineage state admits
    proof maintenance only. MarkEligible/final Commit bind one complete
    remediation-attempt-set root and refuse every nonterminal effect, live
-   capability or reconciliation obligation; CommitEligible fences new dispatch.
+   capability or reconciliation obligation. A closed writer matrix makes every
+   authorization, effect, capability, evidence, reconciliation and archival
+   mutation advance that root under one lock order. Mutation after
+   CommitEligible atomically invalidates it to sticky-fenced Preparing, and
+   MarkEligible repeats the complete validation; restrictive work is never
+   blocked and stale eligibility never commits.
    Begin creates plan generation 1 and a Preparing commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and
@@ -748,7 +756,9 @@ restore, failover, and release evidence.
    predecessor rollback is unsupported. All release transactions
    share the residual-routing-head→residual-state-head→remediation-attempt-set-
    head→archive-head→plan-head→commit-attempt→
-   publication-state→settlement-head→sorted-custody-profiles/ledgers/
+   sorted-remediation-attempt/capability/evidence/authorization/
+   reconciliation/checkpoint rows→publication-state→settlement-head→
+   sorted-custody-profiles/ledgers/
    reservations→parent→current-slot→sorted-old-fence→control/lineage/checkpoint→
    authorization/custody/output rank, and an aggregate hard maximum covers
    every ordinary/workspace leg, receipt, reservation, reconciliation/GC
@@ -758,7 +768,8 @@ restore, failover, and release evidence.
    the begin result, verified publication receipt, predecessor/proposed heads,
    dispositions/profiles/reservations/bundle/grant and expected version.
    Stage/Verify/MarkOrphan/FinalizeGc own receipt state. Stage/Verify admit only
-   the current Preparing attempt and otherwise return no-write AttemptClosed
+   the current Preparing attempt without a revalidation fence and otherwise
+   return no-write AttemptClosed
    before upload/verification/budget. Stage, Verify, MarkEligible, Commit,
    Replan, Abandon and orphan admission serialize on archive-head→plan-head→
    attempt→receipt CAS. MarkOrphan accepts only Superseded/Abandoned attempts;

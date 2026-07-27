@@ -1410,7 +1410,8 @@ authority, or integrity commitments fail the relevant capability/conformance
 test; prove grant-owner ambiguity, approval/grant two-stream commits, delayed
 issuance after pre-issuance revocation, successor fork, noncanonical overlapping-
 set acquisition, partial claim-set reservation/restore, token/digest mismatch,
-revocation/final-attempt claim races, crash-before-provider retry, claim/receipt
+revocation/final-attempt claim races, crash-before-provider-call claim
+recovery, claim/receipt
 substitution, target drift, consumed-attempt restore, non-co-located guard,
 multi-stream redemption, cross-partition set, stale/duplicated hierarchical
 lease, lease expiry/reclamation with retained bytes/unknown liability/spent
@@ -4703,14 +4704,21 @@ authority is durably captured before external execution:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchResultV1`
   or
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchConflict`.
-  The broker transaction locks the routing head and attempt, rechecks current
-  legal hold, retention, policy, evaluator-distrust, namespace-fence, provider-
-  credential and owner-routing epochs, atomically redeems
+  The broker transaction uses the complete attempt-set writer rank below,
+  including routing head, residual state head, attempt-set head, plan-bound
+  commit attempt and remediation attempt before capability/evidence/
+  authorization rows. It rechecks current legal hold, retention, policy,
+  evaluator-distrust, namespace-fence, provider-credential and owner-routing
+  epochs, atomically redeems
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchBrokerCapabilityV1`,
   stores immutable
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchBrokerRedemptionV1`
-  and CASes ExecutionAdmitted→EffectDispatched before the broker can issue the
-  provider call. Dispatch, not Begin, is the legal/policy linearization cut;
+  and
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectTransmissionClaimV1`,
+  advances the complete attempt-set head and CASes
+  ExecutionAdmitted→EffectDispatched in one transaction before the broker can
+  issue the provider call. Dispatch, not Begin, is the legal/policy
+  linearization cut;
 - restrictive policy/hold activation or any credential, distrust, namespace-
   fence or owner-routing mismatch closes the attempt as
   FailedDefinitelyNoEffect without capability redemption or provider traffic.
@@ -4739,13 +4747,23 @@ Canonical
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectConformanceProfileV1`
 is immutable governed adapter capability, not a self-asserted provider flag. It
 binds provider/account/operation class, effect-ID scope and uniqueness,
-idempotency-key construction, maximum send/retry and deduplication horizons,
+idempotency-key construction, the one application-level transmission-claim
+deadline, permitted in-claim transport retransmission and deduplication horizons,
 linearizable or conservatively monotonic query semantics, accepted/
 definitely-no-effect evidence authentication, credential rotation and fencing,
 late-duplicate behavior, timeout/partition semantics, takeover and supported
-reconciliation method. The deduplication horizon must cover every permitted
-send retry; after it expires only authenticated query/reconciliation is
-permitted and Unknown never authorizes another send. Canonical
+reconciliation method. Canonical
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectTransmissionClaimV1`
+binds one non-wrapping claim identity, effect/request/provider/account,
+redemption, immutable transmit-before deadline, worker/executor identity and
+lease/fence generation. Exactly one application-level provider invocation may
+consume it. Only transport-layer retransmission wholly inside that uninterrupted
+invocation is permitted; return to application control, timeout with uncertain
+delivery, crash, lease loss or takeover terminalizes the claim and moves the
+attempt to ExternalOutcomeUnknown. No worker, executor or reconciler may issue a
+second application-level send, even inside the provider deduplication horizon.
+That horizon covers in-claim transport duplicates and late delivery; after
+claim terminalization reconciliation is authenticated query-only. Canonical
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectConformanceResultV1`
 binds the exact profile/provider version and adversarial suite evidence.
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectDefinitelyNoEffectEvidenceV1`
@@ -6384,26 +6402,50 @@ are forbidden.
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseRemediationAttemptSetHeadV1`
 is the non-wrapping predecessor-linked current head for every effectful deficit-
-remediation attempt under the release lineage. BeginDeficitRemediation,
-DispatchDeficitRemediation and CompleteDeficitRemediation atomically advance it
-with their attempt/capability/redemption/provider-effect/reconciliation/
-authorization state. Canonical
+remediation attempt under the release lineage. Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseRemediationAttemptSetCommitmentV1`
 binds the exact canonically sorted complete attempt IDs and state digests,
 effect/request IDs, broker capability/redemption disposition, provider target
 and conformance profile/result, reconciliation obligation/budget and execution/
-finalization authorization history. Empty is an explicit canonical root, never
-absence. Missing, forked, rolled-back or partially enumerated attempt state is
-conservative nonterminal.
+finalization destination-applied authorization history. Issuer-side revocation
+intent creation remains evidence-only until destination Apply imports it.
+Empty is an explicit canonical root, never absence. Missing, forked,
+rolled-back or partially enumerated attempt state is conservative nonterminal.
+
+The following writer set is closed. No command outside these classes may
+mutate a field covered by the attempt-set commitment:
+
+| Writer class | Covered mutation | Atomic attempt-set obligation |
+| --- | --- | --- |
+| Execution/finalization authorization | Admit, Expire, destination ApplyRevocation and action consumption | Commit destination authorization state/result and the successor attempt-set head together; issuer intent creation alone is not a destination mutation |
+| Effect admission | BeginDeficitRemediation and capability creation | Commit attempt, capability, consumed execution authority and successor head together |
+| Effect dispatch | DispatchDeficitRemediation, capability redemption and unique transmission claim | Commit redemption/claim, EffectDispatched and successor head before provider traffic |
+| Effect reconciliation | provider query/evidence admission and CompleteDeficitRemediation | Commit evidence, reconciliation/finalization state, terminal attempt result and successor head together |
+| Capability lifecycle | terminalization, expiry, revocation and cleanup not already owned above | Commit capability disposition, proof/result and successor head together |
+| Attempt history lifecycle | checkpoint, compaction and archival replacement | Commit authenticated coverage/replacement evidence and successor head together; deletion alone is forbidden |
+
+Every mutating command in the table creates immutable
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseRemediationAttemptSetMutationV1`
+binding writer class/command/idempotency, predecessor and successor head
+versions/digests, the canonically sorted changed row identities and old/new
+digests, authorization/evidence/result identities and any eligibility
+invalidation. Exact read-only replay returns the stored mutation/result and
+does not advance again. The canonical order for every writer is
+routing head→residual state head→remediation-attempt-set head→plan-bound
+commit-attempt disposition→canonical-ID-sorted remediation attempt→capability/
+provider evidence/authorization/reconciliation/checkpoint rows→result/audit/
+outbox. A writer may omit unrelated rows but may never reverse the common
+subsequence. Attempt mutation, covered auxiliary mutation, mutation record and
+attempt-set-head advancement are one local transaction. Thus the narrower
+routing-head→attempt order is never valid for Dispatch or another writer.
 
 Each plan owns one
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptV1`
 whose closed
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityDispositionV1`
 is Preparing, CommitEligible, Superseded, Abandoned or Consumed. The durable
-commit-eligibility disposition subset is CommitEligible, Superseded, Abandoned
-or Consumed; missing state is corruption, not abandonment. Begin/Replan creates
-Preparing. Only
+disposition set contains all five states; missing state is corruption, not
+Preparing or abandonment. Begin/Replan creates Preparing. Only
 `MarkMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligible`
 may move Preparing→CommitEligible after binding and rechecking the exact
 lineage/begin result/version, current plan head/generation, bundle, Verified
@@ -6420,7 +6462,30 @@ result or authenticated provider no-effect evidence, or
 CompletedMappedContinuation with complete finalization/checkpoint history may
 appear in the bound set. Preparing→CommitEligible is itself the admission fence:
 all later Begin/Dispatch commands recheck the commit-attempt disposition and
-refuse; exact terminal replay remains read-only. A positive covered deficit additionally
+refuse; exact terminal replay remains read-only.
+
+Any later covered mutation other than exact read-only replay must still run,
+including restrictive revocation, provider evidence, reconciliation,
+checkpoint, compaction and archival work. When the plan-bound disposition is
+CommitEligible, that writer atomically changes it to Preparing, advances the
+attempt-set head and writes immutable
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityInvalidationV1`
+binding the old eligibility result/root, successor mutation/root, reason and
+writer result plus durable
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationFenceV1`.
+That sticky revalidation fence remains active, so this Preparing form refuses
+new Begin/Dispatch and new Stage/Verify/artifact allocation; exact receipt
+replay remains read-only. MarkEligible is the only eligibility recovery: it
+repeats the complete original validation against the newest attempt-set root
+and may create a new CommitEligible result/version.
+Final Commit and every writer serialize on the same rank; either Commit
+consumes the unchanged eligible root first, or the writer invalidates it first
+and Commit returns no-write until revalidation. Revocation and restrictive
+policy processing are never delayed merely to preserve eligibility. Missing,
+partial or unbound invalidation is corruption and cannot be treated as
+Preparing.
+
+A positive covered deficit additionally
 requires exact EffectiveCharge, PendingCommit DeficitSettlement and the
 ResumableCommit remediation result. SealPending, a mismatched root/size/
 ETag/version, a distrusted or unavailable evaluator or any uncovered deficit
@@ -6466,8 +6531,10 @@ stale, overflowing,
 individually-only or unsupported proof is no-write.
 
 Replan/final Commit use the complete combined rank: residual-custody routing
-head→residual-custody state head→remediation-attempt-set head→authoritative archive head→plan head→
-commit-attempt disposition→publication receipt state→settlement journal head→
+head→residual-custody state head→remediation-attempt-set head→authoritative
+archive head→plan head→commit-attempt disposition→canonical-ID-sorted
+remediation attempts→capability/provider-evidence/authorization/reconciliation/
+checkpoint rows→publication receipt state→settlement journal head→
 sorted custody-profile heads/evaluator distrust state→sorted custody ledgers→
 sorted reservations/dependencies/external-transfer seal/deficit/unknown-
 resolution/residual-obligation rows→Recovery parent ledger→current campaign
@@ -6642,15 +6709,17 @@ only by the immutable Verify result; it never rewrites proposed receipt bytes.
 Only the following typed commands own publication lifecycle transitions:
 
 - `StageMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublication`
-  locks/rechecks the current plan head and its Preparing attempt before any
-  upload instruction or lifecycle-budget allocation, then creates a Staged
+  locks/rechecks the current plan head, its Preparing attempt and absence of
+  the eligibility-revalidation fence before any upload instruction or
+  lifecycle-budget allocation, then creates a Staged
   publication intent binding proposed immutable roots/chunks with
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStageResultV1`
   or
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStageConflict`;
 - `VerifyMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublication`
-  rechecks that same still-current Preparing attempt, authenticates durable
-  chunk/root/key visibility and moves Staged→Verified
+  rechecks that same still-current Preparing attempt and absent revalidation
+  fence, authenticates durable chunk/root/key visibility and moves
+  Staged→Verified
   with
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationVerifyResultV1`
   or
@@ -7203,8 +7272,11 @@ and every post-dispatch crash becomes Unknown without returning to
 ExecutionAdmitted. Lose every provider response and prove Complete reconciles
 the same effect ID only; FailedDefinitelyNoEffect requires a fresh grant.
 Run the formal provider-effect conformance suite across effect-ID scope,
-deduplication/query horizons, partitions/timeouts, credential rotation, late
-duplicates, takeover and forged/stale definitely-no-effect evidence; an
+single application-level transmission-claim creation/consumption,
+in-claim transport retransmission, deduplication/query horizons,
+partitions/timeouts, credential rotation, late duplicates, lease loss,
+takeover and forged/stale definitely-no-effect evidence. Crash or return after
+the claim may only query/reconcile and can never invoke the provider again; an
 unsupported profile must refuse before dispatch.
 Exercise both finalization actions and policy/hold drift. Only the explicit
 RetainPermanentlyFenced action may create the named permanently fenced member;
@@ -7214,6 +7286,15 @@ redemption, EffectDispatched, lost response and Complete. Both are no-write for
 every nonterminal attempt/capability/reconciliation obligation; CommitEligible
 fences later Begin/Dispatch, and only one unchanged canonical complete
 attempt-set root may Commit.
+Exhaust the closed attempt-set writer table. Race eligibility and Commit
+against execution/finalization Admit, Expire, destination
+ApplyRevocation/consumption, provider evidence/reconciliation, capability
+terminalization/cleanup and checkpoint/compaction/archive replacement. Each
+mutation advances one head under the canonical rank and atomically invalidates
+CommitEligible to sticky-fenced Preparing; full MarkEligible revalidation may
+then bind the successor root. Prove no restrictive writer blocks, no mutation
+escapes the root, no stale eligible root commits and no invalidation reopens
+Begin/Dispatch or Stage/Verify allocation.
 Complete lineages with zero, one and the maximum residual unknown members.
 Require WithoutResidual only at zero; otherwise atomically transfer each
 member into its own obligation/budget, commit the exact sorted root/aggregate

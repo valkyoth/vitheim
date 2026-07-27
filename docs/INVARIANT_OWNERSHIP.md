@@ -325,6 +325,7 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchBrokerCapabilityRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchBrokerRedemptionRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectTransmissionClaimRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectConformanceProfileRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectConformanceResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectDefinitelyNoEffectEvidenceRow`,
@@ -378,6 +379,7 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetChargeRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseRemediationAttemptSetHeadRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseRemediationAttemptSetCommitmentRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseRemediationAttemptSetMutationRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationStateRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationBudgetRow`,
@@ -393,6 +395,8 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAuthorizationFenceRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityInvalidationRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationFenceRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanOperationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanPreflightRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonResultRow`,
@@ -490,7 +494,10 @@ current legal/hold/policy cut: only the credential-isolating broker may recheck
 all bound epochs, redeem one-use capability and atomically persist
 EffectDispatched/redemption before provider traffic. A governed provider-effect
 profile/result fixes dedup/query horizons and authenticated no-effect evidence;
-unsupported adapters have no destructive capability.
+unsupported adapters have no destructive capability. Dispatch also persists
+one application-level transmission claim. Only transport retransmission inside
+its uninterrupted invocation is allowed; return, uncertainty, crash, lease
+loss or takeover is query-only and cannot mint another claim.
 BeginRelease admission charges a bounded pre-Begin deployment/tenant pool; the
 winning Begin transaction transfers that same reservation into the newly
 created lineage budget, while terminal non-winners require proved no-Begin
@@ -510,7 +517,14 @@ accepts that later mutation directly.
 The routing/state heads carry explicit NoneCanonicalEmpty or SomeAggregate;
 row absence is never aggregate state. MarkEligible and Commit bind the complete
 remediation-attempt-set head/root, refuse nonterminal effect/capability/
-reconciliation state, and CommitEligible fences new Begin/Dispatch.
+reconciliation state, and CommitEligible fences new Begin/Dispatch. The closed
+writer matrix covers authorization, effect, capability, evidence,
+reconciliation and history lifecycle. Each mutation uses the shared rank and
+atomically writes its mutation record and successor root. A covered mutation
+after CommitEligible invalidates it to Preparing with exact old/new binding
+and a sticky revalidation fence denying new effect/artifact admission; full
+MarkEligible validation alone may restore eligibility, while restrictive work
+never waits.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -521,8 +535,10 @@ CommitCustodyRelease consume separate action-bound grants.
 Each grant issuer owns only monotonic signed-intent creation; the destination
 applier owns inbox/tombstone/table mutation. Both families implement the same
 six-state first-terminal table, including no-write absent expiry/consumption.
-All lineage-release transactions acquire archive head, plan head,
-commit-attempt disposition, publication state,
+All lineage-release transactions acquire residual routing head, residual state
+head, remediation attempt-set head, archive head, plan head, commit-attempt
+disposition, sorted remediation attempt/capability/evidence/authorization/
+reconciliation/checkpoint rows, publication state,
 journal head, sorted custody-cost-profile/evaluator-distrust heads, ledgers,
 reservations/dependencies, parent,
 current slot, sorted old campaign fences, control/lineage/checkpoint,
@@ -593,7 +609,11 @@ dead end/reset, remediation dispatch-before-authority or redispatch,
 expiry/revocation erasing admitted effect authority, completion without fresh
 finalization authority, stale-policy/hold dispatch, provider-credential escape,
 capability double redemption, ungoverned/expired provider-effect profile,
-forged definitely-no-effect evidence, mutable membership-root drift,
+forged definitely-no-effect evidence, application resend after claim
+uncertainty, unrooted attempt/capability/authorization/evidence/archive
+mutation, attempt-set lock inversion, restrictive writer blocked by
+CommitEligible, stale eligibility root, missing invalidation or sticky-fence
+loss, mutable membership-root drift,
 coordinated residual-state rollback below external high-watermark, aggregate
 residual child closure/budget theft or lost decrement, Commit with nonterminal
 effect/capability/reconciliation, hidden/partial attempt-set root, absent-row-

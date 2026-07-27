@@ -389,7 +389,10 @@ later deletion release/permanent retention. Broker-only Dispatch is the
 current legal/hold/policy cut and atomically rechecks all destructive-effect
 epochs while redeeming one capability into EffectDispatched. A governed
 provider-effect profile/result freezes dedup/query horizons and authenticated
-definitely-no-effect semantics. Permanent Unknown
+definitely-no-effect semantics. Dispatch persists one application-level
+transmission claim; only transport retransmission inside that uninterrupted
+invocation is allowed, and any returned/crashed/uncertain claim becomes
+query-only. Permanent Unknown
 is independently
 converted at full charge into a fenced member with retained legal-hold
 evidence and no late-evidence refund. Platform/tenant ceilings and a separate
@@ -408,8 +411,11 @@ owner—and an explicit NoneCanonicalEmpty aggregate reference; the generationed
 head linearizes authorization/resolution/checkpoint/
 GC ownership. MarkEligible/final Commit bind one complete remediation-attempt
 set and refuse every nonterminal effect/capability/reconciliation obligation;
-CommitEligible fences new dispatch. Begin creates plan generation 1 and
-Preparing. Terminal
+every authorization/effect/capability/evidence/reconciliation/archive writer
+advances that set atomically under one order. A later mutation invalidates
+CommitEligible to sticky-fenced Preparing and full MarkEligible revalidation
+binds the successor root without blocking restrictive work. Begin creates plan
+generation 1 and Preparing. Terminal
 reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old
 attempts/grants/receipts and creates new bundle/reservation identities;
@@ -424,7 +430,9 @@ capacity is non-borrowable. The same transaction
 settles every leg, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased. Its
 release paths share one residual-routing-head→residual-state-head→remediation-
-attempt-set-head→archive-head→plan-head→commit-attempt→receipt combined
+attempt-set-head→archive-head→plan-head→commit-attempt→sorted-remediation-
+attempt/capability/evidence/authorization/reconciliation/checkpoint rows→
+receipt combined
 lock rank and must preflight the complete
 ordinary-plus-workspace receipt/profile/reservation/custody-ledger/
 reconciliation/GC bundle against backend row/byte/lock/write/work/time maxima
@@ -439,8 +447,9 @@ result, non-authoritative verified publication receipt, predecessor/proposed
 archive and journal heads, physical dispositions, cost profiles/reservations,
 bundle/authorization and expected version. Stage, Verify, MarkOrphan and
 FinalizeGc own the precharged
-receipt lifecycle. Stage/Verify admit only the current Preparing attempt and
-otherwise return no-write AttemptClosed before upload/verification/budget.
+receipt lifecycle. Stage/Verify admit only the current Preparing attempt
+without a revalidation fence and otherwise return no-write AttemptClosed
+before upload/verification/budget.
 Stage, Verify, MarkEligible, Commit, Replan, Abandon and orphan admission
 serialize on archive-head→plan-head→attempt→receipt-state. MarkOrphan accepts only
 Superseded/Abandoned; missing/expired/revoked Commit authority is not

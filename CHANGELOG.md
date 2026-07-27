@@ -65,6 +65,16 @@ All notable Vitheim changes are documented here. The format follows
   NoneCanonicalEmpty tag rather than row absence.
 - Added governed provider effect-conformance profiles, results, and
   authenticated definitely-no-effect evidence with adversarial adapter gates.
+- Closed every remediation-attempt-set writer under one canonical lock order
+  and atomic mutation/head transition, including authorization, capability,
+  evidence, reconciliation and history lifecycle.
+- Made post-eligibility security mutations invalidate CommitEligible to
+  revalidation-fenced Preparing so complete validation can bind the successor
+  root without blocking revocation, reopening artifact admission or trapping
+  final Commit.
+- Restricted provider execution to one persisted application-level
+  transmission claim; timeout, crash, lease loss or takeover is query-only and
+  provider deduplication never authorizes application resend.
 - Made every custody Replan repeat aggregate backend feasibility and atomically
   reserve replacement, future-Commit and retained-history capacity under a
   non-resettable cumulative plan-lineage budget with authenticated compaction.

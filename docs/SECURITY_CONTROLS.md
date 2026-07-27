@@ -378,7 +378,9 @@ audit decision.
   hold/policy cut and rechecks credential/distrust/fence/routing epochs while
   atomically redeeming one-use capability into EffectDispatched. A governed
   provider profile/result freezes effect-ID, dedup/query horizon and
-  authenticated no-effect guarantees. BeginRelease
+  authenticated no-effect guarantees. One persisted application-level
+  transmission claim permits only in-invocation transport retransmission;
+  return, crash, lease loss or uncertainty is query-only. BeginRelease
   Admit charges a
   bounded pre-Begin pool; winning Begin transfers it into the lineage budget,
   and cleanup is exact-candidate scoped under a winner mapping. Final Commit
@@ -390,8 +392,11 @@ audit decision.
   1 plus NoneCanonicalEmpty aggregate state, and the generationed CAS selects
   lineage or residual ownership for all destination operations; absence never
   implies ownership. MarkEligible and final Commit bind a complete attempt-set
-  root, refuse all nonterminal provider work and fence new dispatch at
-  CommitEligible. Begin
+  root and refuse all nonterminal provider work. A closed writer matrix makes
+  every authorization/effect/capability/evidence/reconciliation/archive
+  mutation advance it under one order. Mutation after CommitEligible proceeds
+  while atomically invalidating to sticky-fenced Preparing; full eligibility
+  validation must bind the successor root. Begin
   creates plan generation 1 and Preparing. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
@@ -408,7 +413,9 @@ audit decision.
   settling every leg, advancing Released to OriginalTotal and committing
   CustodyReleased with the matching parent inverse. The combined rank acquires
   residual routing head/residual state head/remediation attempt-set head/
-  archive head/plan head/commit-attempt disposition/publication state,
+  archive head/plan head/commit-attempt disposition/sorted remediation
+  attempt/capability/evidence/authorization/reconciliation/checkpoint rows/
+  publication state,
   settlement head, sorted custody profile heads/
   ledgers/reservations, parent, current slot, sorted old campaign fences,
   control/lineage/checkpoint, authorization/custody and outputs; an aggregate
@@ -420,7 +427,8 @@ audit decision.
   predecessor/proposed heads, dispositions/profiles/reservations/bundle/grant
   and expected version. Stage, Verify, MarkOrphan and FinalizeGc alone own
   precharged receipt transitions. Stage/Verify admit only the current Preparing
-  attempt and otherwise return no-write AttemptClosed before upload,
+  attempt without a revalidation fence and otherwise return no-write
+  AttemptClosed before upload,
   verification or budget. Stage, Verify, MarkEligible, Commit, Replan, Abandon
   and orphan admission serialize on archive-head→plan-head→attempt→
   receipt-state. MarkOrphan accepts

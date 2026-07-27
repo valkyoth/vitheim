@@ -931,18 +931,23 @@ retention requires its own authorized action. Failed, retryable or Unknown
 work retains the predecessor, charge and irrevocably admitted attempt without
 a reusable grant. Begin consumes execution authority before dispatch; Complete
 reconciles only that effect and definite no-effect requires a fresh grant.
-Dispatch, not Begin, is the legal/policy cut: a broker locks routing/attempt
-state, rechecks current hold/retention/policy/distrust/namespace/provider-
-credential epochs, atomically redeems one non-exportable capability and moves
+Dispatch, not Begin, is the legal/policy cut: a broker locks routing/state-
+head/attempt-set/attempt state, rechecks current hold/retention/policy/
+distrust/namespace/provider-credential epochs, atomically redeems one non-
+exportable capability and moves
 ExecutionAdmitted→EffectDispatched before any provider call. Workers never
 receive credentials; pre-call drift closes without traffic, while post-CAS
 uncertainty is Unknown and never reopens.
 Require a governed provider-effect conformance profile and passing result for
-destructive dispatch. It freezes effect-ID scope, idempotency and send/dedup/
+destructive dispatch. It freezes effect-ID scope, idempotency and claim/dedup/
 query horizons, query consistency, credential rotation/fencing, late
 duplicates, timeouts/partitions, takeover and authenticated definitely-no-
-effect evidence. After the permitted send horizon expires, reconciliation may
-query only; Unknown never permits a fresh send.
+effect evidence. Select one application-level transmission claim, not bounded
+application resends. Dispatch persists and consumes the unique claim before
+traffic; only transport retransmission inside that uninterrupted invocation is
+allowed. Return, timeout uncertainty, crash, lease loss or takeover enters
+Unknown and permits authenticated query/reconciliation only, even while the
+provider deduplication horizon remains open.
 Deletion release and permanent retention consume a separate complete
 finalization authorization. Only explicit
 retention creates the named permanently fenced custody member and atomically
@@ -1000,6 +1005,24 @@ EffectDispatched, ExternalOutcomeUnknown, live capability or pending
 reconciliation. CommitEligible fences later Begin/Dispatch and final Commit
 rechecks the identical complete root; effect work is never transferred through
 an implicit “remediation heads” collection.
+
+Freeze a closed attempt-set writer matrix: execution/finalization
+authorization Admit/Expire/destination-Apply/consume; Begin; Dispatch; provider
+reconciliation and Complete; capability lifecycle; provider-evidence
+admission; and attempt checkpoint/compaction/archive. Every mutation follows
+routing→residual-state→attempt-set→commit-attempt/remediation-attempt→
+capability/evidence/authorization→result order and atomically commits the
+covered mutation, immutable mutation record and successor head. No direct
+attempt writer or narrower Dispatch lock sequence exists.
+
+If any covered writer races a CommitEligible plan, let the security-relevant
+writer proceed and atomically invalidate CommitEligible→Preparing while
+retaining a sticky revalidation fence that denies new Begin/Dispatch and new
+Stage/Verify/artifact allocation. The invalidation binds old and new roots and
+its cause. MarkEligible must repeat its full original validation to bind the
+successor root; final Commit may never accept the stale result. This is
+preferred over blocking revocation/evidence/checkpoint work or adding a partial
+refresh path.
 
 Freeze one durable plan-bound commit attempt with Preparing, CommitEligible,
 Superseded, Abandoned and Consumed. MarkCommitEligible alone moves Preparing

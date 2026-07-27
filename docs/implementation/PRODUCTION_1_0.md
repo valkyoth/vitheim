@@ -802,6 +802,9 @@ finalization authority. Broker-only Dispatch is the current legal/hold/policy
 cut and atomically rechecks credential/distrust/fence/routing epochs while
 redeeming one-use capability into EffectDispatched; a governed provider-effect
 profile/result fixes dedup/query horizons and authenticated no-effect evidence.
+One persisted application-level transmission claim permits only transport
+retransmission inside its uninterrupted invocation; return, crash, lease loss
+or uncertainty is query-only.
 BeginRelease Admit charges a bounded pre-Begin pool; winning Begin transfers
 that exact charge into the new lineage budget and
 non-winner cleanup is candidate-scoped under a durable winner mapping. Final
@@ -814,8 +817,13 @@ generation 1, NoneCanonicalEmpty aggregate state and an empty attempt-set root;
 absence is never ownership or empty state. The generationed CAS
 selects lineage or residual ownership for every destination operation.
 MarkEligible/final Commit bind the complete attempt set, refuse nonterminal
-provider work and fence new dispatch at CommitEligible. Begin creates plan
-generation 1 and Preparing. Independently authorized Replan alone
+provider work and fence new dispatch at CommitEligible. A closed writer matrix
+makes every authorization/effect/capability/evidence/reconciliation/archive
+mutation advance that set atomically under one order. Mutation after
+CommitEligible invalidates it to sticky-fenced Preparing, and MarkEligible
+reruns the full validation against the successor root without blocking
+restrictive work. Begin creates plan generation 1 and Preparing. Independently
+authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
 and receipts and atomically creating a new bundle/reservation set; Abandon
 fences only and never refunds Begin. Full predecessor rollback remains
@@ -836,7 +844,7 @@ QuarantineUnknownTransfer/MigrateDistrustedEvaluatorReservation/
 CommitCustodyRelease grants have complete six-state
 admission/expiry/issuer-intent/destination-apply/tombstone/first-terminal
 families; custody evidence is never command authority. Begin and final release
-share one residual-routing-head→residual-state-head→remediation-attempt-set-head→archive-head→plan-head→commit-attempt→publication-state→
+share one residual-routing-head→residual-state-head→remediation-attempt-set-head→archive-head→plan-head→commit-attempt→sorted-remediation-attempt/capability/evidence/authorization/reconciliation/checkpoint-rows→publication-state→
 settlement-head→sorted-custody-
 profiles/ledgers/reservations→parent→current-slot→canonical-ID-sorted-old-
 fences→control/lineage/checkpoint→authorization/custody/output rank. A checked
@@ -850,8 +858,9 @@ the stored begin result, non-authoritative verified receipt, predecessor/
 proposed heads, physical dispositions, cost profiles/reservations,
 bundle/authorization and expected
 lineage version. Stage, Verify, MarkOrphan and FinalizeGc alone own precharged
-receipt transitions. Stage/Verify admit only the current Preparing attempt and
-otherwise return no-write AttemptClosed before upload/verification/budget.
+receipt transitions. Stage/Verify admit only the current Preparing attempt
+without a revalidation fence and otherwise return no-write AttemptClosed
+before upload/verification/budget.
 Stage, Verify, MarkEligible, Commit, Replan, Abandon and orphan admission serialize on
 archive-head→plan-head→attempt→receipt-state. MarkOrphan accepts only
 Superseded/Abandoned; absent/expired/revoked Commit authority is not permanent
@@ -1076,6 +1085,9 @@ completed-lineage residual budget bypass/reset or lost restore provenance,
 dispatch-before-authority/redispatch, expiry/revocation erasing admitted
 effect authority, stale-policy/hold dispatch, capability double redemption,
 ungoverned/expired provider-effect profile or forged no-effect evidence,
+application resend after uncertain transmission, unrooted authorization/
+evidence/capability/archive writer, attempt-set lock inversion, CommitEligible
+restrictive-writer blockage, stale eligibility root or sticky-fence loss,
 finalization bypass, mutable-root drift, coordinated residual state-head/high-
 watermark rollback, sibling closure/budget theft or lost aggregate decrement,
 Commit with hidden/nonterminal attempt work, absent-row-as-empty aggregate,
