@@ -106,6 +106,9 @@ All notable Vitheim changes are documented here. The format follows
   replaced status-based abort rollover with an authority-side permanent
   proposal seal and equivocation fence, and made every query admission escrow
   immutable capacity for its eventual terminalization and settlement.
+- Funded AbortDrain completion before its seal permit, added a bounded typed
+  seal-status query lane for response loss/failover/restore, and split charge
+  conservation plus canonical results across every abort terminal route.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.

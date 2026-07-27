@@ -449,7 +449,8 @@ manifest, proof budget, cursor and closed Staged/Verified/Consumed-or-Orphan/
 Collected receipt machine own publication. A generationed guard moves
 Unprepared(`g`)→PreparePending(`g`)→Witnessed(`g`)→Committed(`g`) or
 PreparePending(`g`)→AbortDrainPending(`g`)→
-AbortedDefinitelyUnwitnessed(`g`). Commit/abort atomically retain the old tombstone and install
+AbortedDefinitelyUnwitnessed(`g`) or AbortDrainPending(`g`)→Witnessed(`g`)→
+Committed(`g`) when the authority reports WitnessWon. Commit/abort atomically retain the old tombstone and install
 Unprepared(`g + 1`); replay installation and captured deletion cannot split
 from Commit rollover. Prepare returns the only process-local non-bearer
 submission permit. Only after the winning Prepare commit may it submit; every
@@ -469,7 +470,7 @@ outbox bytes/work and concurrency settlement or writes nothing and returns no
 permit. Reconcile consumes the reservation exactly once with one closed
 outcome and settlement. Timeout, cancellation, worker loss, Replan and restore
 cannot release, move or borrow it; exactly `q` reservations are created and
-consumed, yielding `3 + 2q - e`. Unknown is read-only only for
+consumed, yielding direct-Witnessed-route `3 + 2q - e`. Unknown is read-only only for
 the witness disposition. Trusted-time profile/uncertainty/continuity/epoch
 binds deadline/backoff, and rollback cannot replenish capacity. Exhaustion
 never implies unwitnessed. A governed tenant/lineage witness profile freezes predecessor
@@ -482,8 +483,22 @@ tombstones rejection, rejects late submissions and exposes an independently
 discoverable receipt. Only after that receipt, every query reservation and
 settlement is consumed, and no positive receipt exists may abort open the next
 guard. Positive evidence after a seal is authority equivocation and fences the
-lineage. An independent high-watermark authority witnesses the exact proposed successor before final CAS; restore
-reads it before local state, and a witnessed successor exact-commits or stays
+lineage. BeginAbortDrain first commits a typed result and non-releasable
+completion reservation covering sealed abort, WitnessWon Commit continuity,
+bounded seal-status queries, outputs/drain, exhaustion and equivocation;
+missing capacity is no-write/no-permit. Lost response/failover/restore enters
+Unready and uses only the same AbortDrainPending Recovery-funded seal-status
+admission→one process-local permit→typed Reconcile protocol, with closed
+SealWon/WitnessWon/Unknown/TransportFailure/DeadlineExceeded/
+ContradictoryEvidence outcomes, trusted-time backoff, immutable
+terminalization reservation and exact-once settlement. Seal retry is
+status-only; special unmetered restore I/O is forbidden. Letting `s` count
+seal queries, sealed abort and contradiction are `3 + 2q + 2s - e`,
+WitnessWon then Commit is `4 + 2q + 2s - e`, and exhaustion is
+`3 + 2q + 2s`; exact `q`/`s` reservations and every route artifact stay hot.
+An independent high-watermark authority witnesses the exact proposed successor before final CAS; restore
+establishes it through the applicable pre-reserved bounded ordinary/seal query
+lane before local state, and a witnessed successor exact-commits or stays
 unready. Final witnessed head installation, captured-row deletion, old
 generation tombstone and next Unprepared guard are one transaction whose own
 history-lifecycle charge remains hot. Begin creates plan generation 1 and

@@ -421,6 +421,11 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkGenerationDispositionRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSubmissionClaimRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkAbortSealClaimRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkAbortDrainCompletionReservationRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkAbortDrainCompletionReservationSettlementRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkAbortDrainAdmissionResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkAbortSealInvocationResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkAbortSealInvocationReconciliationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessProposalDefinitelyUnwitnessedSealReceiptRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityEquivocationFenceRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessProposalRow`,
@@ -430,6 +435,17 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReconciliationBudgetRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAttemptRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryTerminalizationReservationRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessSealReconciliationBudgetRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealStatusQueryAttemptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealStatusQueryTerminalizationReservationRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealStatusQueryAttemptConcurrencySettlementRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealStatusQueryAdmissionResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealStatusQueryReconciliationResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealReconciliationRecoveryStateRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealLostToWitnessResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealedAbortReconciliationResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityEquivocationResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkSealReconciliationBudgetExhaustedResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAttemptConcurrencySettlementRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkQueryAdmissionResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkPrepareResultRow`,
@@ -621,20 +637,43 @@ retry/uncertain path is query-only. Witnessed(`g`) remains fenced until
 ArchiveFinalize atomically installs replay head, deletes captured rows, writes
 Committed(`g`) and opens Unprepared(`g + 1`). An ordinary negative response is
 not terminal. Abort first CASes PreparePending(`g`)→AbortDrainPending(`g`),
-denies new queries and persists one non-bearer seal claim. Its single permit
+denies ordinary queries and atomically persists one non-bearer seal claim,
+typed admission result and non-releasable completion reservation covering
+sealed-abort disposition, WitnessWon Commit continuity, bounded seal-status
+queries, outputs/work, existing-query drain, exhaustion and equivocation.
+Insufficient capacity is no-write/no-permit. Its single permit
 invokes `SealCapacityArchiveWitnessProposalDefinitelyUnwitnessed`; expected-
 predecessor/proposal CAS serializes seal against submission and the authority
 retains a permanent durable proposal-rejection tombstone, rejects every late
 submission and exposes an independently discoverable authenticated receipt.
-Only after that receipt, every query is ResponseImported, every terminalization
-reservation and concurrency settlement is consumed and no positive receipt
+After the seal permit returns or may invoke, no actor reseals. Lost response,
+failover and restore enter an unready state and use only the separately typed,
+Recovery-funded seal-status admission/permit/Reconcile protocol in
+AbortDrainPending. Its hard calls/bytes/work/trusted-time/concurrency/backoff
+budget, stable writer-derived attempts, SealWon/WitnessWon/Unknown/
+TransportFailure/DeadlineExceeded/ContradictoryEvidence outcomes, per-attempt
+terminalization reservations and exact-once settlements forbid special
+unmetered restore I/O. WitnessWon atomically CASes
+AbortDrainPending→Witnessed with its dedicated result and preserves the
+ArchiveFinalize reservation; ContradictoryEvidence fences without terminal
+rollover. SealWon completes abort only when every drain predicate holds and
+otherwise remains AbortDrainPending with authenticated evidence. Only after
+the permanent receipt, every ordinary and
+seal-status query is ResponseImported, every terminalization reservation and
+concurrency settlement is consumed and no positive receipt
 exists may abort write its tombstone and open the next generation. Any positive
 receipt after the seal creates an authority-equivocation fence and no rollover
 or Commit. Every
 immediate/delayed/query/replay outcome enters exclusively through Reconcile;
 one stable disposition ID owns one charge/result and changed material
-conflicts. Prepare, terminal disposition Reconcile and ArchiveFinalize Commit
-are three independently replayable hot charges/head advances. Begin/Replan
+conflicts. Route-specific conservation uses `q` ordinary and `s` seal-status
+queries: direct Commit is `3 + 2q - e`; sealed abort is
+`3 + 2q + 2s - e`; seal-loses-to-witness then Commit is
+`4 + 2q + 2s - e`; contradiction fencing is
+`3 + 2q + 2s - e`; and reconciliation exhaustion while fenced is
+`3 + 2q + 2s`. Exactly one terminalization may co-commit the route
+disposition/fence when `e = 1`; exactly `q` and `s` reservations are consumed.
+All route charges/reservations/results remain hot. Begin/Replan
 reserves non-borrowable Recovery reconciliation capacity over calls, bytes,
 work, elapsed time and concurrency. Query IDs derive from guard generation plus
 bounded admission writer sequence, not another counter. Admission atomically
@@ -645,17 +684,17 @@ dimension is unavailable, admission is no-write. Reconcile consumes the
 reservation with one closed outcome and settlement exactly once; timeout,
 cancellation, worker loss, Replan and restore cannot release, reassign or
 borrow it. Admission and terminalization are separately charged, with
-authenticated evidence optionally co-committing the disposition. Exactly `q`
-reservations are created and consumed, so conservation is `3 + 2q - e`. Unknown/
+authenticated evidence optionally co-committing the disposition. Unknown/
 transport/deadline remains read-only only for the disposition. Trusted-time
 profile/uncertainty/continuity/epoch binds backoff and elapsed consumption;
 rollback never replenishes it. Exhausted budget forbids traffic without
 inferring unwitnessed. A governed tenant/lineage witness profile freezes predecessor CAS,
 non-equivocation, signatures/rotation/distrust, permanent seal/tombstone
-discovery, positive-after-seal fencing, durability and failover. The witnessed
+discovery, bounded seal-status queries, positive-after-seal fencing, durability
+and failover. The witnessed
 predecessor stays fenced: finalization exact-commits it or recovery remains
-unready. Restore reads that
-external greatest high-watermark before local state, so coordinated local
+unready. Restore establishes that external greatest high-watermark through the
+applicable pre-reserved bounded ordinary/seal query lane before local state, so coordinated local
 rollback cannot refund capacity.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,

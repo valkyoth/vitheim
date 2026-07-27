@@ -444,7 +444,18 @@ audit decision.
   terminalization reservation and settlement is consumed and no positive
   receipt exists. Positive-after-seal evidence fences the lineage as authority
   equivocation. Identities never cross generations. A charged local fence
-  precedes external traffic.
+  precedes external traffic. BeginAbortDrain returns no seal permit unless its
+  typed transaction reserves the complete non-releasable sealed-abort/
+  WitnessWon-Commit/seal-query/output/drain/exhaustion/equivocation envelope.
+  Lost response, failover and restore enter Unready and use only a separately
+  typed AbortDrainPending Recovery-funded seal-status admission→one-shot
+  process-local permit→Reconcile lane. SealWon/WitnessWon/Unknown/
+  TransportFailure/DeadlineExceeded/ContradictoryEvidence close under trusted-
+  time backoff, immutable terminalization reservation and exact-once
+  settlement; seal retry is status-only, and unmetered restore I/O/reseal is
+  forbidden. WitnessWon CASes AbortDrainPending→Witnessed and preserves
+  ArchiveFinalize; SealWon waits for full drain; contradiction fences without
+  rollover.
   All external outcomes enter only through Reconcile with one disposition
   ID/charge/result. The authority signs an acyclic canonical proposal that
   excludes its future receipt and Reconcile/Commit result digests; receipt,
@@ -462,14 +473,17 @@ audit decision.
   restore cannot release, move or borrow it. Positive/permanently sealed
   negative evidence may
   co-commit the disposition; other outcomes remain read-only only for that
-  disposition. Exactly `q` reservations are created and consumed and the exact
-  equation is `3 + 2q - e`. Trusted-time profile,
+  disposition. Direct Commit is `3 + 2q - e`. With `s` seal queries, sealed
+  abort and contradiction are `3 + 2q + 2s - e`, WitnessWon then Commit is
+  `4 + 2q + 2s - e`, and typed exhaustion while fenced is
+  `3 + 2q + 2s`. Exactly `q` and `s` reservations are consumed; completion
+  escrow and every route charge/result remain hot. Trusted-time profile,
   uncertainty, continuity and epoch bind deadline/backoff; rollback cannot
   replenish elapsed capacity. Exhausted calls/bytes/work/time/concurrency
   permit no traffic and never imply unwitnessed. A governed tenant/lineage witness profile freezes
   predecessor CAS, non-equivocation, signatures/rotation/distrust, permanent
-  seal/tombstone discovery and positive-after-seal equivocation semantics,
-  durability and failover. An independent precommit high-watermark witnesses the exact successor; restore reads it first, and final witnessed
+  seal/tombstone discovery, bounded typed seal-status reconciliation and
+  positive-after-seal equivocation semantics, durability and failover. An independent precommit high-watermark witnesses the exact successor; restore establishes it through the applicable pre-reserved bounded ordinary/seal query lane first, and final witnessed
   head installation, exact captured deletion, terminal tombstone and next
   guard are atomic and leave the compaction charge hot. Begin
   creates plan generation 1 and PreparingOpen. Only independently

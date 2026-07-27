@@ -247,10 +247,20 @@ Commit atomically opens the next Unprepared generation. Abort instead enters
 AbortDrainPending, denies new queries and invokes
 `SealCapacityArchiveWitnessProposalDefinitelyUnwitnessed`; authority CAS
 installs a durable rejection tombstone and rejects late submission. Only its
-independently discoverable receipt, all queries terminal with reservations and
+independently discoverable receipt, all ordinary and seal-status queries terminal with reservations and
 settlements consumed, and no positive receipt permit abort rollover. Positive-
 after-seal evidence fences authority equivocation. Replay install/delete cannot
-split from Commit rollover. Prepare persists a non-bearer claim and returns the
+split from Commit rollover. BeginAbortDrain first commits one typed result and
+complete non-releasable sealed-abort/WitnessWon-Commit/seal-query/output/drain/
+exhaustion/equivocation reservation or is no-write/no-permit. Lost seal
+response, failover and restore enter Unready and use only a distinct Recovery-
+funded AbortDrainPending seal-status lane: stable admission, one process-local
+permit, SealWon/WitnessWon/Unknown/TransportFailure/DeadlineExceeded/
+ContradictoryEvidence, trusted-time backoff, immutable terminalization
+reservation and exact-once settlement. Retry is status-only; reseal and
+unmetered restore I/O are forbidden. WitnessWon CASes
+AbortDrainPending→Witnessed and preserves ArchiveFinalize; SealWon waits for
+full drain and contradiction fences without rollover. Prepare persists a non-bearer claim and returns the
 sole process-local submission permit; only after its commit may the permit
 invoke, and every other state/stale generation/retry/uncertainty is query-only. All
 immediate/delayed/query/replay outcomes enter exclusively through Reconcile
@@ -266,15 +276,20 @@ escrows the future terminalization charge/head, result/audit/outbox bytes/work
 and concurrency settlement or writes nothing. Reconcile consumes the immutable
 reservation exactly once with closed outcome and settlement; timeout,
 cancellation, worker loss, Replan and restore cannot release/reassign/borrow.
-Authenticated evidence may co-commit disposition. Exactly `q` reservations are
-created/consumed and exact conservation is `3 + 2q - e`. Trusted-time
+Authenticated evidence may co-commit disposition. With `q` ordinary and `s`
+seal queries, direct Commit is `3 + 2q - e`; sealed abort and contradiction
+are `3 + 2q + 2s - e`; WitnessWon then Commit is
+`4 + 2q + 2s - e`; and exhaustion while fenced is
+`3 + 2q + 2s`. Exactly `q` and `s` reservations are consumed and all route
+charges/results stay hot. Trusted-time
 profile/uncertainty/continuity/epoch binds backoff; rollback never replenishes
 capacity. Exhaustion never means unwitnessed. A governed tenant/lineage witness
 profile freezes predecessor/proposal CAS, non-equivocation, signatures/
-rotation/distrust, permanent seal/tombstone discovery, positive-after-seal
-fencing, durability and failover. An independent authority
+rotation/distrust, permanent seal/tombstone discovery, bounded typed seal-
+status reconciliation, positive-after-seal fencing, durability and failover. An independent authority
 witnesses the exact proposed successor before final CAS;
-restore reads that watermark before local state, and the
+restore establishes that watermark through the applicable pre-reserved bounded
+ordinary/seal query lane before local state, and the
 witnessed successor exact-commits or remains unready. Final head installation,
 exact captured deletion, old tombstone and next guard are atomic while its own charge stays hot. Replan
 carries archived and hot consumption.

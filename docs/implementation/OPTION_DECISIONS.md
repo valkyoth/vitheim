@@ -1150,34 +1150,52 @@ ConsumedByCommit, installs the witnessed replay head, deletes exact captured
 predecessor charges, writes immutable Committed(`g`) and installs
 Unprepared(`g + 1`) bound to the new replay head/watermark. Authenticated
 negative status alone cannot roll. PreparePending first enters
-AbortDrainPending with one non-bearer seal claim; the external
+AbortDrainPending with one non-bearer seal claim, typed admission result and
+non-releasable completion reservation covering every mutually exclusive
+sealed-abort/WitnessWon Commit/equivocation/exhaustion route, bounded
+seal-status queries, outputs and existing-query drain. Missing any dimension
+is no-write/no-permit. The external
 SealCapacityArchiveWitnessProposalDefinitelyUnwitnessed expected-predecessor/
 proposal CAS permanently tombstones and rejects late submission. Only its
-independently discoverable receipt, all query attempts terminal, every
+independently discoverable receipt, all ordinary and seal-status query attempts terminal, every
 reservation/concurrency settlement consumed and no positive receipt allow
 Reconcile to tombstone `g` and open `g + 1`. Positive evidence after the signed
-seal fences authority equivocation. Replay installation, deletion and guard rollover are one
-transaction; terminal generations remain for retry/conflict. Its charge remains hot. Restore reads
-the independent greatest watermark before local heads; a locally consistent
+seal fences authority equivocation. Lost seal response, failover and restore
+enter Unready and use only a dedicated Recovery-funded, trusted-time-bound
+calls/bytes/work/time/concurrency/backoff seal-status admission→one process-
+local permit→typed Reconcile lane in AbortDrainPending. Its stable attempts
+close as SealWon, WitnessWon, Unknown, TransportFailure, DeadlineExceeded or
+ContradictoryEvidence with immutable terminalization reservation and exact-once
+settlement. WitnessWon CASes AbortDrainPending→Witnessed with its dedicated
+result and preserves ArchiveFinalize; SealWon completes abort only after the
+full drain; contradiction fences without rollover. Original seal retry is status-only and never reseals; exhaustion
+writes its typed terminal writer and remains fenced. Replay installation, deletion and guard rollover are one
+transaction; terminal generations remain for retry/conflict. Its charge remains hot. Restore establishes
+the independent greatest watermark through the applicable pre-reserved bounded
+ordinary/seal query lane before local heads; a locally consistent
 older snapshot is never authoritative.
 
-The core witnessed path owns three independent hot history-lifecycle charges
-and head advances: Prepare, terminal disposition Reconcile and ArchiveFinalize
-Commit. Checkpoint coverage excludes all three and every later query-admission
-and terminalization charge. Every query owns both; if its authenticated
-terminalization is the disposition Reconcile, the two meanings co-commit under
-one charge. The exact equation is `3 + 2q - e`, with `e ∈ {0, 1}`. Timeout/
-absence creates no disposition charge but must terminalize its attempt and
-settle concurrency before another query. Exactly `q` terminalization
-reservations must be created and consumed; cancellation, worker loss, Replan
-and restore cannot release or move them.
+Route conservation uses `q` ordinary queries, `s` seal-status queries and
+`e ∈ {0, 1}` only when one terminalization co-commits its route disposition/
+fence. Direct Witnessed Commit is `3 + 2q - e`; permanent sealed abort is
+`3 + 2q + 2s - e`; AbortDrain WitnessWon followed by Commit is
+`4 + 2q + 2s - e`; contradiction fencing is
+`3 + 2q + 2s - e`; and seal-reconciliation exhaustion while fenced is
+`3 + 2q + 2s`. Checkpoint coverage excludes every route charge. Timeout/
+absence creates no disposition authority but terminalizes its attempt and
+settles concurrency. Exactly `q` ordinary and `s` seal-status terminalization
+reservations are created and consumed. The abort completion reservation is
+committed before the seal permit; timeout, cancellation, worker loss, Replan
+and restore cannot release, move or borrow it, and every charge/reservation/
+settlement/result remains hot until authenticated archive coverage.
 
 Require a governed current passing witness conformance profile before Prepare.
 It binds tenant/lineage authority identity, expected-predecessor CAS, non-
 equivocation, signature/signer/key epoch, rotation/distrust, authenticated
 definitely-not-witnessed proposal-seal semantics, durable rejection of every
-late submission, independently discoverable seal receipts, read-after-write
-durability, failover and positive-after-seal equivocation fencing.
+late submission, independently discoverable seal receipts, bounded typed seal-
+status query semantics, read-after-write durability, failover and positive-
+after-seal equivocation fencing.
 Unsupported/stale profiles deny before the local fence or external traffic.
 
 Use one universal routing→residual→capacity→attempt-set→high-watermark→

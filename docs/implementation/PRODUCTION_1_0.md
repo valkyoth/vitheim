@@ -859,9 +859,19 @@ AbortDrainPending, denies new query admission and invokes
 `SealCapacityArchiveWitnessProposalDefinitelyUnwitnessed`; expected-
 predecessor/proposal CAS durably tombstones rejection and rejects late
 submission. Rollover requires its independently discoverable receipt, all
-queries terminal with reservations and settlements consumed, and no positive
+ordinary and seal-status queries terminal with reservations and settlements consumed, and no positive
 receipt. Positive-after-seal evidence fences authority equivocation. Replay
-install/delete cannot split from rollover. Prepare alone persists the
+install/delete cannot split from rollover. BeginAbortDrain is no-write/no-
+permit unless its typed transaction commits the complete non-releasable
+sealed-abort/WitnessWon-Commit/seal-query/output/drain/exhaustion/equivocation
+reservation. Lost response, failover and restore enter Unready and use only a
+distinct Recovery-funded AbortDrainPending seal-status admission→one process-
+local permit→Reconcile lane with stable IDs, SealWon/WitnessWon/Unknown/
+TransportFailure/DeadlineExceeded/ContradictoryEvidence, trusted-time backoff,
+immutable terminalization reservation and exact-once settlement. Retry is
+status-only; reseal and unmetered restore I/O are forbidden. WitnessWon CASes
+AbortDrainPending→Witnessed and preserves ArchiveFinalize; SealWon waits for
+full drain and contradiction fences without rollover. Prepare alone persists the
 non-bearer claim and returns one process-local submission permit; only after
 the Prepare commit may it invoke, while other states/stale generations/
 uncertainty are query-only. Unknown witness status remains fenced. All immediate/delayed/query/replay
@@ -878,13 +888,17 @@ charge/head, result/audit/outbox bytes/work and concurrency settlement or is
 no-write. Reconcile consumes the immutable reservation once with the closed
 outcome and settlement; timeout/cancel/loss/Replan/restore cannot release,
 reassign or borrow it. Authenticated resolution may co-commit disposition.
-Exactly `q` reservations are created/consumed and conservation is
-`3 + 2q - e`. Trusted-time profile/uncertainty/continuity/epoch binds backoff,
+With `q` ordinary and `s` seal queries, direct Commit is `3 + 2q - e`;
+sealed abort and contradiction are `3 + 2q + 2s - e`; WitnessWon then Commit
+is `4 + 2q + 2s - e`; and exhaustion while fenced is
+`3 + 2q + 2s`. Exactly `q` and `s` reservations are consumed and every route
+charge/result remains hot. Trusted-time profile/uncertainty/continuity/epoch binds backoff,
 and rollback never replenishes capacity. Exhaustion never implies unwitnessed. A governed tenant/lineage witness profile freezes predecessor CAS,
 non-equivocation, signatures/rotation/distrust, negative evidence, durability
-and failover, including permanent seal discovery and positive-after-seal
-fencing. An independent authority witnesses the exact successor before
-final CAS; restore reads it before local state, and the witnessed successor exact-
+and failover, including permanent seal discovery, bounded typed seal-status
+reconciliation and positive-after-seal fencing. An independent authority witnesses the exact successor before
+final CAS; restore establishes it through the applicable pre-reserved bounded
+ordinary/seal query lane before local state, and the witnessed successor exact-
 commits or stays unready. Witnessed head installation, captured deletion,
 terminal generation and next guard are one transaction whose own charge stays
 hot; Replan carries all consumption.
@@ -1176,8 +1190,8 @@ rollback below the external watermark, prepared successor abandonment,
 ordinary guard omission, replay-head-first inversion, direct callback witness
 import, duplicate/missing disposition charge, immediate/query result mismatch,
 witness proposal/result/signature dependency cycle, alternate encoding or
-cross-epoch substitution, missing one of three core hot charges, `3 + 2q - e`
-or exactly-`q` terminalization-reservation conservation mismatch, Witnessed
+cross-epoch substitution, missing a route charge, any `q`/`s` route-equation
+or reservation-conservation mismatch, double co-commit subtraction, Witnessed
 left current after Commit, split replay/delete/
 tombstone/next-guard rollover, stale generation or old identity reuse,
 submission before Prepare commit, wrong-state submission, submission permit
@@ -1185,7 +1199,12 @@ reconstruction or witness resubmission, status-based abort, delayed submission
 after permanent proposal seal, premature AbortDrainPending rollover, missing
 seal receipt/rejection tombstone, positive-after-seal without equivocation
 fence, missing/released/reassigned/duplicate query terminalization reservation,
-missing/duplicate query terminalization/concurrency settlement, outcome substitution, invented
+missing/underfunded/released/reassigned abort completion reservation, lost
+seal response without typed query-only reconciliation, seal retry/reseal,
+unmetered restore authority I/O, seal-query amplification/permit
+reconstruction, seal-query outcome/result/generic-conflict substitution,
+missing/duplicate seal-query terminalization/concurrency settlement, typed
+exhaustion reopening, missing/duplicate query terminalization/concurrency settlement, outcome substitution, invented
 query counter, trusted-time rollback, query permit reconstruction, backoff or
 call/byte/work/time/concurrency bypass, query exhaustion treated as
 unwitnessed, witness equivocation, stale signer/rotation/
