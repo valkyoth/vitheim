@@ -48,6 +48,14 @@ All notable Vitheim changes are documented here. The format follows
 - Added a generationed lineage/residual routing head that linearizes every
   destination authorization, resolution, evidence, checkpoint, and GC owner
   during final Commit.
+- Made broker-only Dispatch the destructive-effect legal/policy cut, with
+  current epoch checks, one-use capability redemption and irreversible
+  EffectDispatched/Unknown history before provider traffic.
+- Made residual membership roots structurally immutable by separating child
+  disposition, child budget and aggregate counters into versioned atomic state
+  and settlement rows.
+- Defined routing generation 1 as an explicit winning-Begin transaction result;
+  absence is never treated as LineageOwned and Replan cannot recreate it.
 - Made every custody Replan repeat aggregate backend feasibility and atomically
   reserve replacement, future-Commit and retained-history capacity under a
   non-resettable cumulative plan-lineage budget with authenticated compaction.

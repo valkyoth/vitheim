@@ -931,6 +931,12 @@ retention requires its own authorized action. Failed, retryable or Unknown
 work retains the predecessor, charge and irrevocably admitted attempt without
 a reusable grant. Begin consumes execution authority before dispatch; Complete
 reconciles only that effect and definite no-effect requires a fresh grant.
+Dispatch, not Begin, is the legal/policy cut: a broker locks routing/attempt
+state, rechecks current hold/retention/policy/distrust/namespace/provider-
+credential epochs, atomically redeems one non-exportable capability and moves
+ExecutionAdmitted→EffectDispatched before any provider call. Workers never
+receive credentials; pre-call drift closes without traffic, while post-CAS
+uncertainty is Unknown and never reopens.
 Deletion release and permanent retention consume a separate complete
 finalization authorization. Only explicit
 retention creates the named permanently fenced custody member and atomically
@@ -942,8 +948,12 @@ transfers every surviving terminal unknown member, its remaining protected
 work, authorization history, deficit settlement, namespace fence and capacity
 provenance into its own independently restorable residual obligation/budget
 slice under an exact sorted membership root and aggregate terminalization
-budget. Mixed child outcomes are independent. Later resolution/revocation/
-evidence/checkpoint/GC charges that child/aggregate;
+budget. The root hashes only immutable obligation descriptors and transfer
+results; mutable child disposition, remaining child budget and aggregate
+counters use separate predecessor-linked CAS rows and atomic settlement/
+checkpoint updates under routing→aggregate→child→authorization lock order.
+Mixed child outcomes are independent. Later resolution/revocation/evidence/
+checkpoint/GC charges that child/aggregate;
 the completed lineage admits replay/proof maintenance only.
 
 Make pre-Begin cleanup candidate-scoped. A durable winner mapping binds the
@@ -959,7 +969,10 @@ Apply, Resolve, evidence append, checkpoint and GC lock it before selecting
 the charge/row owner. Final Commit CASes it with child/root/budget transfer and
 completed disposition; losers reread/reroute once. Issuer intent is evidence-
 only, and restore rejects any authorization sequence/inbox/charge under both
-owners.
+owners. The exact winning custody-release Begin atomically creates generation
+1 LineageOwned with the new plan head/lineage budget and canonical-empty root;
+absence is never LineageOwned. Replan preserves/version-checks the head and
+final Commit is its only owner transition.
 
 Freeze one durable plan-bound commit attempt with Preparing, CommitEligible,
 Superseded, Abandoned and Consumed. MarkCommitEligible alone moves Preparing

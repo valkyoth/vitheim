@@ -322,6 +322,9 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationOperationResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationBeginResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAttemptRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchResultRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchBrokerCapabilityRow`,
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchBrokerRedemptionRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationCompletionResultRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRow`,
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRevocationIssuerSequenceRow`,
@@ -371,10 +374,14 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageCheckpointRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleasePlanLineageBudgetChargeRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationStateRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationBudgetRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationBudgetStateRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationSettlementRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationTransferResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyMembershipCommitmentRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyAggregateBudgetRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyAggregateStateRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyRoutingHeadRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAuthorizationFenceRow`,
@@ -471,7 +478,10 @@ authority creates the named permanently fenced member at full EffectiveCharge,
 while Begin consumes execution authority before dispatch and failed/Unknown
 work retains that admitted effect, predecessor and charge without redispatch.
 Complete reconciles the same effect only; deletion release/permanent retention
-also consumes separate complete finalization authority.
+also consumes separate complete finalization authority. Dispatch is the
+current legal/hold/policy cut: only the credential-isolating broker may recheck
+all bound epochs, redeem one-use capability and atomically persist
+EffectDispatched/redemption before provider traffic.
 BeginRelease admission charges a bounded pre-Begin deployment/tenant pool; the
 winning Begin transaction transfers that same reservation into the newly
 created lineage budget, while terminal non-winners require proved no-Begin
@@ -480,9 +490,13 @@ Final Commit selects completed with or without residual custody. Every
 surviving terminal unknown member and its protected resolution budget/
 authorization/deficit/fence provenance atomically transfers into an
 independently restorable member-scoped residual obligation. A sorted membership
-root/aggregate budget and LineageOwned→ResidualOwned routing CAS prevent one
-child or concurrent authorization operation affecting another; completed-
-lineage history never accepts that later mutation directly.
+root hashes only immutable descriptor/transfer bytes; versioned child state,
+child budget state, immutable settlement and aggregate state advance atomically
+under the routing→aggregate→child→authorization rank. Winning Begin creates
+explicit LineageOwned routing generation 1 and absence is never ownership; its
+later LineageOwned→ResidualOwned CAS prevents one child or concurrent
+authorization operation affecting another. Completed-lineage history never
+accepts that later mutation directly.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -563,9 +577,12 @@ double charge, action/result substitution, implicit permanent retention,
 unrepresented permanently fenced capacity, completed-lineage residual-budget
 dead end/reset, remediation dispatch-before-authority or redispatch,
 expiry/revocation erasing admitted effect authority, completion without fresh
-finalization authority, aggregate residual child closure/budget theft,
-split/duplicate lineage-vs-residual authorization ownership, routing-CAS
-omission, global instead of candidate-scoped losing cleanup,
+finalization authority, stale-policy/hold dispatch, provider-credential escape,
+capability double redemption, mutable membership-root drift, aggregate
+residual child closure/budget theft or lost decrement, missing/inferred/
+duplicate routing genesis, split/duplicate lineage-vs-residual authorization
+ownership, routing-CAS omission, global instead of candidate-scoped losing
+cleanup,
 released-reservation lineage stranding, plan rollback/ID recreation/double
 release, old grant/receipt replay, authorization-loss-as-abandonment,
 commit-eligible orphan admission, receipt Commit/GC race, collected-

@@ -385,7 +385,10 @@ settles both into one member. Remediation and unknown resolution receive full
 destination-applied authorization/revocation families. Remediation actions map
 totally to one continuation; Begin consumes execution authority before
 dispatch, Complete never redispatches and fresh finalization authority owns
-later deletion release/permanent retention. Permanent Unknown is independently
+later deletion release/permanent retention. Broker-only Dispatch is the
+current legal/hold/policy cut and atomically rechecks all destructive-effect
+epochs while redeeming one capability into EffectDispatched. Permanent Unknown
+is independently
 converted at full charge into a fenced member with retained legal-hold
 evidence and no late-evidence refund. Platform/tenant ceilings and a separate
 authorization family govern confirm-present, verified complete-namespace
@@ -395,9 +398,12 @@ charge transfers atomically into the newly created lineage budget; cleanup
 requires terminal authorization, exact candidate non-reference and different-
 winner mapping. Final Commit selects With/WithoutResidualCustody and transfers
 each surviving unknown member into its own budgeted obligation under a sorted
-root/aggregate budget. A generationed LineageOwned/ResidualOwned routing head
-linearizes authorization/resolution/checkpoint/GC ownership. Begin creates
-plan generation 1 and Preparing. Terminal reconciliation is recovered only by
+immutable descriptor/transfer root; mutable child/budget/aggregate states
+advance separately and atomically. Winning Begin explicitly creates
+LineageOwned routing generation 1 with the new plan/budget—absence is never an
+owner—and the generationed head linearizes authorization/resolution/checkpoint/
+GC ownership. Begin creates plan generation 1 and Preparing. Terminal
+reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old
 attempts/grants/receipts and creates new bundle/reservation identities;
 independently authorized Abandon fences only and never refunds Begin. Every

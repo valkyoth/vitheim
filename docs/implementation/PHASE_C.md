@@ -4695,22 +4695,52 @@ authority is durably captured before external execution:
   exact action/mapped continuation, capacity reservation, provider target,
   constrained non-exportable capability handle, policy/hold generations,
   fence and idempotency;
-- only that stored ExecutionAdmitted attempt/capability may dispatch exactly
-  that effect. Expiry or revocation after Begin prevents a new attempt but
-  cannot erase or reinterpret the authority captured by this attempt;
+- only the broker may redeem that stored one-use capability. Workers never
+  receive provider credentials or invoke the provider directly;
+- `DispatchMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediation`
+  returns
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchResultV1`
+  or
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchConflict`.
+  The broker transaction locks the routing head and attempt, rechecks current
+  legal hold, retention, policy, evaluator-distrust, namespace-fence, provider-
+  credential and owner-routing epochs, atomically redeems
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchBrokerCapabilityV1`,
+  stores immutable
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationDispatchBrokerRedemptionV1`
+  and CASes ExecutionAdmitted→EffectDispatched before the broker can issue the
+  provider call. Dispatch, not Begin, is the legal/policy linearization cut;
+- restrictive policy/hold activation or any credential, distrust, namespace-
+  fence or owner-routing mismatch closes the attempt as
+  FailedDefinitelyNoEffect without capability redemption or provider traffic.
+  A new attempt requires fresh execution authorization and a capability under
+  current epochs. Two workers join the same redemption/result and cannot
+  obtain two call rights;
+- EffectDispatched means the provider call may have happened. Crash, broker
+  takeover or response loss after its CAS enters ExternalOutcomeUnknown and
+  can never return to ExecutionAdmitted. The broker uses the stable effect ID
+  as provider idempotency/query identity; an adapter without durable same-
+  effect deduplication and reconciliation refuses destructive remediation;
+- expiry or revocation after Begin prevents a new attempt, while expiry,
+  revocation or policy change after EffectDispatched cannot erase or reinterpret
+  historical execution authority. Fresh finalization authority remains
+  mandatory where specified below;
 - `CompleteMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediation`
   returns
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationCompletionResultV1`
   or
   `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationCompletionConflict`
-  and may only reconcile that effect ID/request digest into its table-mapped
-  continuation. It never dispatches or allocates another provider operation.
+  and may only reconcile EffectDispatched/ExternalOutcomeUnknown for that
+  effect ID/request digest into its table-mapped continuation. It never
+  dispatches or allocates another provider operation.
 
-The attempt states are ExecutionAdmitted, ExternalOutcomeUnknown,
-FailedDefinitelyNoEffect or CompletedMappedContinuation. Response loss enters
+The attempt states are ExecutionAdmitted, EffectDispatched,
+ExternalOutcomeUnknown, FailedDefinitelyNoEffect or
+CompletedMappedContinuation. Response loss after dispatch enters
 ExternalOutcomeUnknown and retains the predecessor object, base reservation,
-covered deficit, capacity/capability evidence and fences indefinitely; exact
-retry/reconciliation joins the same attempt without redispatch.
+covered deficit, dispatch redemption, capacity/capability evidence and fences
+indefinitely; exact retry/reconciliation joins the same attempt without
+redispatch.
 FailedDefinitelyNoEffect closes the attempt without a policy outcome, and any
 new attempt requires a fresh authorization. Changed action/effect/request/
 target/capacity/evidence/idempotency conflicts.
@@ -6186,14 +6216,23 @@ eligible artifacts remains bounded and permitted.
 
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationV1`
-owns exactly one unknown-transfer member surviving final Commit. Its closed
+is an immutable descriptor for exactly one unknown-transfer member surviving
+final Commit. It binds stable child/member/lineage identity, transfer-result
+digest, initial budget-descriptor digest and immutable custody/fence provenance.
+Its mutable state is structurally separate in versioned
 `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationStateV1`
-is Active, ConfirmedPresent, DeletionVerified or PermanentlyUnresolvable.
-Each child has a non-borrowable slice of immutable
+with non-wrapping generation, predecessor digest, expected-version CAS and
+Active, ConfirmedPresent, DeletionVerified or PermanentlyUnresolvable
+disposition. Each child has a non-borrowable immutable ceiling/provenance
+descriptor
 `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationBudgetV1`
+and separately versioned
+`MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationBudgetStateV1`
 containing its exact remaining precharged resolution/revocation/evidence/
-checkpoint/GC allowance and cannot consume, close, settle or release another
-child's slice.
+checkpoint/GC allowance. Canonical immutable
+`MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationSettlementV1`
+binds the one child transition/result/checkpoint and exact budget debit. A child
+cannot consume, close, settle or release another child's slice.
 `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationTransferResultV1`
 binds the member/EffectiveCharge, deficit settlement, namespace fence,
 quarantine and resolution-authorization history, capacity provenance, original
@@ -6201,19 +6240,39 @@ lineage/plan/budget checkpoint and child budget.
 
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyMembershipCommitmentV1`
-binds the exact canonically sorted obligation IDs/row digests and Merkle root.
+binds the exact canonically sorted obligation IDs plus immutable obligation-
+descriptor and transfer-result digests and their Merkle root. Mutable state,
+remaining counters and budget-state bytes are excluded by schema and domain,
+not by an undocumented digest convention, so the membership root never changes
+when a child resolves.
 `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyAggregateBudgetV1`
-binds the checked sum of child budgets plus non-borrowable aggregate
-checkpoint/GC terminalization capacity, remaining-member counters and original
-lineage-budget provenance. Child terminalization decrements only its own
-remaining counters; aggregate capacity settles only after all children are
-terminal and checkpointed. Mixed child outcomes are ordinary and never imply
-sibling mutation.
+is the immutable checked sum of initial child budget descriptors plus non-
+borrowable aggregate checkpoint/GC terminalization capacity and original
+lineage-budget provenance. Versioned
+`MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyAggregateStateV1`
+holds remaining-member/checkpoint counters, remaining aggregate allowance,
+predecessor digest and non-wrapping generation under expected-version CAS.
+Child terminalization locks routing head→aggregate budget/state→child
+descriptor/state→child budget/state→authorization/result, then atomically
+writes the child state and settlement, debits only that child, advances the
+aggregate state/counters and records its checkpoint. Concurrent siblings
+serialize on the aggregate state and cannot lose or duplicate a decrement.
+Aggregate capacity settles only after all children are terminal and
+checkpointed. Mixed child outcomes are ordinary and never imply sibling
+mutation.
 
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyRoutingHeadV1`
 has LineageOwned or ResidualOwned, a non-wrapping generation and the exact
-residual membership root/aggregate-budget generation. Final Commit CASes
+lineage, plan-head, lineage-budget and stable owner/idempotency identity plus
+the residual membership root/aggregate-state generation. Absence is never
+LineageOwned. The exact winning
+`BeginMigrationImportRegistryHistoryCorruptionControlLineageRelease`
+transaction creates routing generation 1 as LineageOwned with its new plan
+head/lineage budget and canonical-empty residual root; missing, duplicate or
+pre-existing inconsistent genesis makes Begin no-write. Replan preserves this
+head and expected-version checks it without changing owner or resetting
+generation. Final Commit is the only command that CASes
 LineageOwned→ResidualOwned in the same transaction as every child creation,
 budget transfer, membership commitment and completed disposition. Admit,
 Expire, destination revocation Apply, Resolve, evidence append, checkpoint and
@@ -6221,7 +6280,8 @@ GC lock/read the routing head first: before the CAS they charge/mutate the
 lineage owner; afterward they charge/mutate the exact child/aggregate residual
 owner. CAS losers reread and reroute without duplicating authorization rows,
 inboxes, charges or results. Issuer-side intents remain evidence-only and never
-select an owner.
+select an owner. Missing, duplicated, rolled-back, inferred or identity-mismatched
+routing genesis refuses readiness and restore.
 
 Final Commit atomically transfers every surviving terminal quarantined member
 and its remaining protected capacity into its own independently restorable
@@ -6411,8 +6471,12 @@ CustodyCapacityReservationV1 and moves the
 conservatively calculated maxima from custody Available to TransferPending;
 none exists before the Begin result and no external transfer is authorized by
 a losing or uncommitted attempt. It also creates plan generation 1, makes it
-the plan head and creates its Preparing commit attempt. The stored result binds
-that exact plan head/generation/attempt and complete sorted reservation set. It
+the plan head, creates its Preparing commit attempt and CAS-creates residual-
+custody routing generation 1 as LineageOwned with that exact lineage/plan head/
+lineage budget, stable owner/idempotency and canonical-empty residual root.
+Absence is a creation precondition, never an implicit owner state. The stored
+result binds that exact plan head/generation/attempt/routing genesis and
+complete sorted reservation set. It
 returns canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseBeginResultV1`
 or
@@ -6455,7 +6519,8 @@ The local, non-wrapping
 binds predecessor/sequence, the canonical ordered settlement-row set,
 transaction/result/audit identity and owner continuity; it never claims archive
 availability. The begin-release local transaction follows
-`MigrationImportRegistryHistoryLockRankV1`: archive-replay head when applicable,
+`MigrationImportRegistryHistoryLockRankV1`: residual-custody routing-head
+genesis key, archive-replay head when applicable,
 custody-release plan head, commit-attempt disposition, archive-publication
 receipt state, settlement-journal head, every custody-cost-
 profile head and archive/legal-hold custody-capacity ledger in ascending
@@ -6588,8 +6653,9 @@ profiles, evaluator-migration/reassessment/deficit-remediation heads,
 EffectiveCharge/DeficitSettlement heads, exact Sealed transfer receipts/fences
 and TransferPending base plus covered-deficit encumbrances, the complete sorted
 terminal residual-member candidates with their remaining protected budgets/
-authority/fence/provenance, proposed per-member obligation IDs/row digests,
-membership root, aggregate budget and expected LineageOwned routing head/
+authority/fence/provenance, proposed per-member obligation IDs and immutable
+descriptor/transfer-result digests, membership root, aggregate
+budget/state generations and expected LineageOwned routing head/
 generation plus With/WithoutResidual disposition, and stable idempotency. Under the
 identical combined rank, the command reauthenticates publication/membership/
 deletion evidence and every physical-disposition receipt/reservation/profile,
@@ -7037,7 +7103,13 @@ Exhaust the four-row remediation action/result matrix. A failed, retryable or
 Unknown provision/migrate/delete attempt retains its irrevocably admitted
 execution authority/attempt, predecessor state and full charge and cannot
 redispatch or select permanent retention. Race BeginDeficitRemediation against
-expiry/revocation, lose every provider response and prove Complete reconciles
+expiry/revocation, then race DispatchDeficitRemediation against legal-hold/
+policy activation, credential rotation, evaluator distrust, namespace-fence
+change, routing transfer, worker takeover and broker capability redemption.
+Prove Dispatch is the current-policy cut, two workers obtain one redemption,
+pre-call drift produces FailedDefinitelyNoEffect with zero provider traffic,
+and every post-dispatch crash becomes Unknown without returning to
+ExecutionAdmitted. Lose every provider response and prove Complete reconciles
 the same effect ID only; FailedDefinitelyNoEffect requires a fresh grant.
 Exercise both finalization actions and policy/hold drift. Only the explicit
 RetainPermanentlyFenced action may create the named permanently fenced member;
@@ -7046,10 +7118,16 @@ Complete lineages with zero, one and the maximum residual unknown members.
 Require WithoutResidual only at zero; otherwise atomically transfer each
 member into its own obligation/budget, commit the exact sorted root/aggregate
 budget/routing CAS and select WithResidual. Resolve children into mixed
-outcomes; no child closes/settles/compacts/releases a sibling or its slice.
+outcomes; the immutable descriptor/transfer root never changes, while child
+state/budget and aggregate state advance atomically under the defined lock
+rank. Race sibling resolutions and prove no lost/double aggregate decrement;
+no child closes/settles/compacts/releases a sibling or its slice.
 Race final Commit against Admit, Expire, revocation Apply, Resolve, evidence,
 checkpoint, GC and compaction at the routing CAS. CAS losers reroute exactly
-once; restore rejects dual-owner rows/sequences/inboxes/charges. After plan
+once. Race competing Begin candidates and prove only the winner atomically
+creates generation-1 LineageOwned routing genesis; Replan preserves it, absence
+is never inferred, and missing/duplicate/rolled-back genesis or dual-owner
+rows/sequences/inboxes/charges fails restore/readiness. After plan
 compaction operate solely through the routed residual child/aggregate and
 reject every other completed-lineage command. Race many pre-Begin candidates so one Begin wins while all
 expired/revoked losers prove exact candidate non-reference and clean up; fault

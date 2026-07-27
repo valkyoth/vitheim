@@ -374,13 +374,19 @@ audit decision.
   six-state authorization/revocation families. Remediation actions have a total
   continuation matrix; Begin consumes authority and creates the exact effect
   before dispatch, Complete never redispatches, and destructive completion
-  uses fresh finalization authority. BeginRelease Admit charges a
+  uses fresh finalization authority. Broker-only Dispatch is the current legal/
+  hold/policy cut and rechecks credential/distrust/fence/routing epochs while
+  atomically redeeming one-use capability into EffectDispatched. BeginRelease
+  Admit charges a
   bounded pre-Begin pool; winning Begin transfers it into the lineage budget,
   and cleanup is exact-candidate scoped under a winner mapping. Final Commit
   selects completed with/without residual custody and transfers every surviving
   terminal unknown member to its own budgeted residual obligation under a
-  sorted root/aggregate budget. A generationed routing CAS selects lineage or
-  residual ownership for all destination operations. Begin creates plan generation 1 and Preparing. Only independently
+  sorted immutable descriptor/transfer root; versioned child/budget/aggregate
+  state settles atomically. Winning Begin creates explicit LineageOwned routing
+  generation 1, and the generationed CAS selects lineage or residual ownership
+  for all destination operations; absence never implies ownership. Begin
+  creates plan generation 1 and Preparing. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
   generation/bundle/reservations; Abandon fences only and never refunds Begin.

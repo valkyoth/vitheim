@@ -704,6 +704,9 @@ restore, failover, and release evidence.
    result matrix; Begin consumes execution authority before dispatch, Complete
    reconciles the same effect without redispatch, Unknown retains the admitted
    attempt/charge, and destructive completion uses fresh finalization authority.
+   Broker-only Dispatch is the current legal/hold/policy cut: it rechecks
+   credential/distrust/fence/routing epochs and atomically redeems one-use
+   capability while moving to EffectDispatched before provider traffic.
    A versioned cost profile maps unlike source/destination generations,
    units and storage overhead; Commit converts the base plus covered deficit into the final
    custody member before exact source credit. Unknown preserves predecessor and
@@ -717,9 +720,13 @@ restore, failover, and release evidence.
    cleanup proves exact candidate non-reference under a durable winner mapping.
    Final Commit selects With/WithoutResidualCustody and transfers surviving
    terminal unknown members into per-member obligations/budget slices under a
-   sorted root/aggregate budget. A LineageOwned→ResidualOwned routing CAS
-   linearizes destination authorization/resolution/checkpoint/GC ownership;
-   siblings are isolated and completed lineage state admits proof maintenance only.
+   sorted immutable descriptor/transfer root; mutable child/budget/aggregate
+   states are separately versioned and atomically settled. Winning Begin
+   creates explicit LineageOwned routing generation 1—absence is never
+   ownership—and final Commit performs the only LineageOwned→ResidualOwned
+   CAS. That head linearizes destination authorization/resolution/checkpoint/
+   GC ownership; siblings are isolated and completed lineage state admits
+   proof maintenance only.
    Begin creates plan generation 1 and a Preparing commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and

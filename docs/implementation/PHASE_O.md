@@ -185,7 +185,9 @@ member; remediation and unknown resolution use complete destination-applied
 authorization/revocation families. Remediation has a total action/continuation
 matrix; Begin consumes authority/creates the exact effect before dispatch,
 Complete reconciles without redispatch and destructive completion uses fresh
-finalization authority. Permanent Unknown is
+finalization authority. Broker-only Dispatch is the current legal/hold/policy
+cut and atomically rechecks credential/distrust/fence/routing epochs while
+redeeming one-use capability into EffectDispatched. Permanent Unknown is
 independently converted at full charge into a transfer/namespace-fenced member
 with retained legal-hold evidence and no late-evidence refund. Aggregate
 platform/tenant ceilings and separate confirm/delete/permanently-unresolvable
@@ -194,8 +196,11 @@ charges a bounded pre-Begin pool whose winning charge transfers into the new
 lineage budget; non-winner cleanup is candidate-scoped under a winner mapping.
 Final Commit selects With/WithoutResidualCustody and transfers surviving
 terminal unknown members into per-member budgeted residual obligations under a
-sorted membership root/aggregate budget. A generationed routing CAS selects
-lineage or residual ownership for every destination operation. Begin
+sorted immutable descriptor/transfer root; child/budget/aggregate state is
+separately versioned and atomically settled. Winning Begin creates explicit
+LineageOwned routing generation 1 and absence is never ownership; the
+generationed CAS selects lineage or residual ownership for every destination
+operation. Begin
 creates plan generation 1 and Preparing. Independently authorized Replan alone
 recovers a terminally reconciled plan by fencing/superseding old attempts,
 grants and receipts and creating a new bundle/reservation set; Abandon fences
@@ -2251,8 +2256,11 @@ gap/double activation/early cleanup, late provider completion after seal
 reopen, remediation action/result substitution or failure→retention fall-
 through, unnamed permanently fenced capacity, completed-lineage residual
 budget dead end/reset, dispatch-before-authority/redispatch, expiry/revocation
-erasing admitted effect authority, finalization bypass, sibling closure/budget
-theft, split/duplicate routing ownership, global loser cleanup or winner release, cumulative
+erasing admitted effect authority, stale-policy/hold dispatch, capability
+double redemption, finalization bypass, mutable-root drift, sibling closure/
+budget theft or lost aggregate decrement, missing/inferred/duplicate routing
+genesis, split/duplicate routing ownership, global loser cleanup or winner
+release, cumulative
 budget-charge omission/double/early settlement, retained-
 unknown resolution refund/quarantine rewrite/legal-hold bypass and missing
 all-six-action result parity, Unknown conversion, credit without

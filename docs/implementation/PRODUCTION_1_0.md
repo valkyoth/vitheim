@@ -798,14 +798,19 @@ remediation and unknown resolution use complete destination-applied authorizatio
 revocation state machines. Remediation has a total action/continuation matrix;
 Begin consumes authority/creates the exact effect before dispatch, Complete
 reconciles without redispatch and destructive completion uses fresh
-finalization authority. BeginRelease Admit charges a bounded pre-Begin pool;
+finalization authority. Broker-only Dispatch is the current legal/hold/policy
+cut and atomically rechecks credential/distrust/fence/routing epochs while
+redeeming one-use capability into EffectDispatched. BeginRelease Admit charges
+a bounded pre-Begin pool;
 winning Begin transfers that exact charge into the new lineage budget and
 non-winner cleanup is candidate-scoped under a durable winner mapping. Final
 Commit selects With/WithoutResidualCustody and transfers surviving terminal
 unknown members into per-member budgeted residual obligations under a sorted
-membership root/aggregate budget. A generationed routing CAS selects lineage
-or residual ownership for every destination operation. Begin creates plan generation 1
-and Preparing. Independently authorized Replan alone
+immutable descriptor/transfer root; child/budget/aggregate state is separately
+versioned and atomically settled. Winning Begin creates explicit LineageOwned
+routing generation 1 and absence is never ownership; the generationed CAS
+selects lineage or residual ownership for every destination operation. Begin
+creates plan generation 1 and Preparing. Independently authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
 and receipts and atomically creating a new bundle/reservation set; Abandon
 fences only and never refunds Begin. Full predecessor rollback remains
@@ -1064,8 +1069,11 @@ completion after seal reopen, remediation action/result substitution or
 failure→retention fall-through, unnamed permanently fenced capacity,
 completed-lineage residual budget bypass/reset or lost restore provenance,
 dispatch-before-authority/redispatch, expiry/revocation erasing admitted
-effect authority, finalization bypass, sibling closure/budget theft,
-split/duplicate routing ownership, global losing-candidate cleanup/winner release, retained-unknown resolution refund/
+effect authority, stale-policy/hold dispatch, capability double redemption,
+finalization bypass, mutable-root drift, sibling closure/budget theft or lost
+aggregate decrement, missing/inferred/duplicate routing genesis, split/
+duplicate routing ownership, global losing-candidate cleanup/winner release,
+retained-unknown resolution refund/
 quarantine rewrite/legal-hold bypass and missing all-six-action result parity,
 workspace credit without deletion or reserved charged transfer, issuer sequence races,
 remote-intent effect, absent-state writes,
