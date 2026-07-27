@@ -224,12 +224,15 @@ work within its admitted lifetime bound. Begin/Replan proves overflow-safe
 headroom over fixed `u128` attempt-set/revalidation/canonical capacity-
 checkpoint/capacity-replay-head counters and reserves each terminal value only
 for an absorbing exhaustion fence. The archive sequences advance together once
-per ArchiveFinalize charge. Insufficient headroom
+as one pair only for successful capacity-archive Commit (`ArchiveFinalize`),
+never FinalizeGc, and use one atomic pair sentinel. Insufficient headroom
 denies before external work; unexpected exhaustion permanently unreadies the
 owner without fabricating an advance. A lineage-wide capacity state owns
 per-writer-class admitted/consumed/remaining counts and head/counter equations.
 Every writer locks it before the attempt-set head and atomically consumes one
-immutable exact-retry charge with mutation/head/result; Replan and history
+immutable exact-retry charge with mutation/head/result. Every ordinary writer
+then locks/reads the high-watermark guard and denies PreparePending/Witnessed;
+archive writers continue publication→replay-head. Replan and history
 lifecycle cannot reset consumption. A dedicated predecessor-linked capacity
 checkpoint and archive-replay head bind exact archived charge/material/result
 membership, all capacity/sentinel equations, captured hot rows and
@@ -238,8 +241,12 @@ authoritative; missing history fails closed without charging/advancing.
 Publication uses an immutable manifest, bounded proof/cursor, closed Staged/
 Verified/Consumed-or-Orphan/Collected states and Recovery-funded typed
 commands. A charged local PreparePending fence precedes external traffic and
-only authenticated definitely-not-witnessed evidence may reopen it. An
-independent authority witnesses the exact proposed successor before final CAS;
+only authenticated definitely-not-witnessed evidence may reopen it. All
+immediate/delayed/query/replay outcomes enter exclusively through Reconcile
+under one disposition ID/charge/result. A governed tenant/lineage witness
+profile freezes predecessor CAS, non-equivocation, signatures/rotation/
+distrust, negative evidence, durability and failover. An independent authority
+witnesses the exact proposed successor before final CAS;
 restore reads that watermark before local state, and the
 witnessed successor exact-commits or remains unready. Final head installation
 plus exact captured deletion is atomic while its own charge stays hot. Replan

@@ -6430,16 +6430,21 @@ proof ID/version, lineage and current plan/head; a closed writer-class enum;
 per-class admitted, consumed and remaining `u128` counts; total
 attempt-set-head writes; revalidation advances and rollovers; untouched or
 consumed per-domain terminal-sentinel reservations; current attempt-set-head
-sequence, revalidation epoch/sequence, canonical capacity-checkpoint sequence,
-capacity-archive-replay-head sequence and greatest witnessed high-watermark
-digest; and checked non-wrapping `u128` state version plus predecessor digest.
+sequence, revalidation epoch/sequence, one
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveSequencePairV1`,
+holding canonical capacity-checkpoint and capacity-archive-replay-head
+sequences, greatest witnessed high-watermark digest; and checked non-wrapping
+`u128` state version plus predecessor digest.
 It also binds the genesis head/state tuple so
 current-head-minus-genesis equals total consumed head-write charges, every
 class satisfies admitted=consumed+remaining, and advance/rollover subsets equal
 their typed charge rows. Current-state-version-minus-genesis equals total
 ordinary charges plus the terminal-sentinel transition bit. Canonical capacity-
 checkpoint sequence equals replay-head sequence and their genesis delta equals
-successful ArchiveFinalize charges. Absence, saturation, a local head below the
+successful ArchiveFinalize charges, where ArchiveFinalize is only the first
+successful
+`CommitMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublication`
+charge and never FinalizeGc. Absence, saturation, a local head below the
 external high-watermark or equation mismatch is corruption, never free
 capacity.
 
@@ -6537,6 +6542,18 @@ evidence-only: they cannot mutate lifecycle rows, install a replay head, delete
 authoritative hot charges or declare verification.
 
 Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessConformanceProfileV1`
+and
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessConformanceResultV1`
+govern each witness adapter. They bind tenant/lineage-scoped authority identity,
+expected-predecessor CAS, non-equivocation across failover, signature profile,
+signer/key epoch, rotation and distrust rules, authenticated definitely-not-
+witnessed semantics, read-after-write durability and query/failover
+conformance. Prepare requires a current passing result and binds its profile,
+authority and distrust epochs before installing a fence; unsupported, stale or
+failed profiles deny without mutation or traffic.
+
+Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkV1`
 and
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReceiptV1`
@@ -6548,20 +6565,33 @@ charge and install a PreparePending fence plus immutable exact request before
 external traffic. Ordinary head writers deny on that fence. Only then may it
 ask the high-watermark authority to monotonically witness the proposed
 successor. The closed preparation states are Unprepared, PreparePending,
-Witnessed and AbortedDefinitelyUnwitnessed. Exact
+Witnessed and AbortedDefinitelyUnwitnessed. The adapter never mutates this row:
+every immediate, delayed, queried or replayed external outcome is input only to
+the typed
 `ReconcileMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermark`
-query/replay resolves response loss: a witness selects Witnessed; authenticated
-definitely-not-witnessed evidence may select AbortedDefinitelyUnwitnessed and
-reopen the predecessor; timeout or absence stays PreparePending. The
-high-watermark binds lineage, predecessor high-watermark digest,
+command. Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkDispositionV1`
+binds one stable disposition ID, Prepare charge/result, expected predecessor,
+publication/manifest, proposed successor and request digest. The first terminal
+Reconcile imports either Witnessed or authenticated
+AbortedDefinitelyUnwitnessed and consumes exactly one witness-disposition
+writer charge with capacity state, attempt-set mutation/head and stored result;
+timeout/absence is read-only and stays PreparePending. Immediate success and
+response-loss recovery therefore create the identical disposition/state/result.
+Exact retry returns it without another charge or head advance; changed receipt,
+predecessor, publication, manifest, successor, profile or authority material
+conflicts. The high-watermark binds lineage, predecessor high-watermark digest,
 capacity-checkpoint sequence/digest, proposed replay-head sequence/digest,
-publication/manifest identity, integrity-key/encoding epochs, covered and
-successor capacity-state versions/digests, exact writer charge/mutation/head/
-result and captured-deletion set. Its signed witness is stored outside the
-local publication registry. Once witnessed, the predecessor is fenced: the
-candidate cannot be orphaned, and recovery must commit that exact deterministic
-successor or remain unready. This precommit anchor means a crash before the
-local CAS cannot make an older locally consistent snapshot authoritative.
+publication/manifest identity, integrity-key/encoding epochs, witness profile/
+authority/signer/key/distrust epochs, covered and successor capacity-state
+versions/digests, exact deterministic post-disposition charge/state/mutation/
+head/result and the distinct subsequent ArchiveFinalize charge/state/mutation/
+head/result, plus captured-deletion set. Its signed
+witness is stored outside the local publication registry. Once witnessed, the
+predecessor is fenced: the candidate cannot be orphaned, and recovery must
+commit that exact deterministic successor or remain unready. This precommit
+anchor means a crash before the local CAS cannot make an older locally
+consistent snapshot authoritative.
 The preparation returns only
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkPrepareResultV1`
 or
@@ -6601,7 +6631,7 @@ mutate a field covered by the attempt-set commitment:
 | Effect dispatch | DispatchDeficitRemediation, capability redemption and unique transmission claim | Commit redemption/claim, EffectDispatched and successor head before provider traffic |
 | Effect reconciliation | provider query/evidence admission and CompleteDeficitRemediation | Commit evidence, reconciliation/finalization state, terminal attempt result and successor head together |
 | Capability lifecycle | terminalization, expiry, revocation and cleanup not already owned above | Commit capability disposition, proof/result and successor head together |
-| Attempt history lifecycle | checkpoint, archive Stage/Verify/high-watermark/finalize, MarkOrphan and FinalizeGc | Commit publication receipt/cursor, authenticated coverage/replacement or orphan-deletion evidence and successor head together; finalization also advances both canonical archive sequences, and deletion alone is forbidden |
+| Attempt history lifecycle | checkpoint, archive Stage/Verify/high-watermark Prepare/disposition import/Commit, MarkOrphan and FinalizeGc | Commit publication receipt/cursor, authenticated coverage/replacement, witness disposition or orphan-deletion evidence and successor head together; `ArchiveFinalize` means only the successful first Commit-capacity-archive-publication charge, advances the sequence pair and is never FinalizeGc |
 | Plan lifecycle | Replan and proof/capacity-state carry-forward | Commit old-plan terminalization, conservative remaining-class mapping, new plan/proof binding and successor attempt-set head together; consumption never resets |
 
 Every mutating command in the table creates immutable
@@ -6612,12 +6642,17 @@ digests, authorization/evidence/result identities and any eligibility
 invalidation. Exact read-only replay returns the stored mutation/result and
 does not advance again. The canonical order for every writer is
 routing head→residual state head→counter-capacity state→remediation-attempt-set
-head→counter-capacity-archive-replay-head→plan-bound commit-attempt
-disposition→canonical-ID-sorted remediation
+head→counter-capacity-archive-high-watermark→counter-capacity-archive-
+publication state/receipt/cursor→counter-capacity-archive-replay-head→plan-bound
+commit-attempt disposition→canonical-ID-sorted remediation
 attempt→capability/provider evidence/authorization/reconciliation/checkpoint
-rows→result/audit/outbox. A writer may omit unrelated rows but may never reverse
-the common subsequence. Attempt mutation, covered auxiliary mutation, writer
-charge, mutation record, capacity-state CAS and head advancement are one local
+rows→result/audit/outbox. Begin creates a stable Unprepared high-watermark
+guard row. Every ordinary head writer must lock and read that guard after the
+attempt-set head and deny on PreparePending or Witnessed before it may omit
+unrelated publication/replay rows. Archive writers acquire every applicable row
+in the displayed order; no writer may reverse the common subsequence.
+Attempt mutation, covered auxiliary mutation, writer charge, mutation record,
+capacity-state CAS and head advancement are one local
 transaction. It locks the capacity state, verifies its declared
 class and proof, consumes exactly one remaining class charge, appends the
 immutable charge, mutates covered state and advances the attempt-set/
@@ -6725,10 +6760,13 @@ head sequences start equal and advance together exactly once per successful
 ArchiveFinalize charge; each current sequence plus every remaining admitted
 ArchiveFinalize charge must be at most `u128::MAX - 1`. Current capacity-state
 version plus every ordinary charge must likewise remain at most
-`u128::MAX - 1`, leaving separate sentinels reserved for attempt-set,
-revalidation, capacity-state, capacity-checkpoint and capacity-replay-head
-domains. Staged/orphan candidates use stable attempt IDs and proposed successor
-values; they never consume or create gaps in canonical sequences. Arithmetic
+`u128::MAX - 1`, leaving sentinels reserved for attempt-set, revalidation and
+capacity-state domains plus one atomic
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveSequencePairSentinelV1`
+whose only value is `(u128::MAX, u128::MAX)`. There are no independently
+consumable checkpoint/replay sentinels. Staged/orphan candidates use stable
+attempt IDs and proposed successor values; they never consume or create gaps
+in canonical sequences. Arithmetic
 overflow, an unbounded class or insufficient headroom
 rejects Begin/Replan before plan installation, capacity reservation or external
 effect. Each later writer rechecks the proof, authoritative per-class consumed/
@@ -6737,7 +6775,8 @@ state; prose, recomputed sums or the existence of a head alone cannot supply a
 charge.
 
 Begin creates the capacity state with the proof and genesis tuple in the same
-transaction as plan generation/head and the initial attempt-set head. Replan
+transaction as plan generation/head, the initial attempt-set head, canonical
+archive-sequence pair and stable Unprepared high-watermark guard. Replan
 consumes its class-specific charge and installs a proof/state successor that
 carries forward every consumed charge, immutable charge identity and retained
 old-plan obligation; it may redistribute only the already admitted remaining
@@ -6761,8 +6800,17 @@ with exact owner/plan/attempt, proof, observed counter/head/root/payload,
 exhausted domain, sentinel identity, result, audit and outbox. It does not
 pretend the triggering covered mutation or a RevalidationAdvance committed.
 The closed exhausted-domain enum includes attempt-set head, revalidation,
-capacity-state version, canonical capacity-checkpoint sequence and capacity-
-archive-replay-head sequence; cross-domain sentinel substitution is corruption.
+capacity-state version and one CapacityArchiveSequencePair domain. Pair
+exhaustion atomically changes `(u128::MAX - 1, u128::MAX - 1)` to
+`(u128::MAX, u128::MAX)` under one fence instead of the ArchiveFinalize
+mutation. A single sentinel, unequal ordinary values, one-sided sentinel use or
+cross-domain substitution is corruption; restore never fabricates its mate.
+The pair fence races Prepare/Commit under the same capacity→attempt-set→high-
+watermark order and may win only before an external successor is witnessed.
+It leaves publication chunks/receipt retained and invents neither
+ConsumedByCommit nor deletion. A witnessed exact successor must Commit or
+remain unready; later asymmetric/sentinel corruption cannot replace it with a
+different fence.
 The same transaction marks the applicable sentinel reservation consumed and
 advances the capacity-state version/digest using its reserved sentinel when
 that domain is exhausted, without consuming an ordinary writer bucket.
@@ -7635,22 +7683,35 @@ reset. Exhaust every publication proof-budget dimension and fault every durable
 cursor boundary. Race Stage, Verify, high-watermark preparation, final Commit,
 MarkOrphan and FinalizeGc; inject response loss at every CAS and prove only
 Verified→ConsumedByCommit or Verified→OrphanGcEligible→Collected can win.
+Record backend acquisition traces for every ordinary writer and for Prepare,
+Reconcile, capacity-archive Commit, MarkOrphan and FinalizeGc. Require the same
+routing→residual→capacity→attempt-set→high-watermark→publication→replay-head
+subsequence, mandatory ordinary guard read and zero replay-head-first inversion.
 Fault the witness request before, during and after external acceptance; only
 authenticated definitely-not-witnessed evidence may abort PreparePending,
-while unknown stays fenced and a late witness exact-completes once.
+while unknown stays fenced and a late witness exact-completes once. Feed
+immediate, delayed, query and replay outcomes only through Reconcile; crash
+immediately before and after disposition import and prove one stable
+disposition ID/charge/result, identical success state and changed-material
+conflict. Run witness adapter conformance across tenant/lineage scope,
+expected-predecessor contention, equivocation, signatures, key rotation/
+distrust, forged negative evidence, read-after-write, partitions and failover;
+unsupported profiles deny before Prepare.
 Make deletion unknown, forge verification, substitute chunks/epochs, and prove
 Recovery capacity cannot be borrowed. Roll back the local capacity state,
 publication registry and replay head together below the external high-
 watermark; restore must exact-complete the witnessed successor or remain
-unready. Force last ordinary and rollover boundaries for both canonical
-capacity-checkpoint and replay-head sequences, corrupt their equality/
-ArchiveFinalize-charge equation, and fault response loss and restore at each
-boundary. Prove one charge per head advance, no charge without its mutation/
+unready. Force the archive sequence pair to its last ordinary value and pair
+sentinel; corrupt only one sequence to the sentinel, consume only one sentinel,
+race capacity-archive Commit against the exhaustion fence, and restore valid
+paired versus invalid asymmetric exhaustion. Corrupt pair equality/
+ArchiveFinalize-charge equation, confuse FinalizeGc with ArchiveFinalize, and
+fault rollover/response loss/restore at each boundary. Prove one charge per head advance, no charge without its mutation/
 result and no mismatch among total, class, sentinel, canonical archive,
 advance/rollover and current-head equations. Fault exhaustion-fence
-installation/response delivery, distinguish
-attempt-set-head, revalidation, capacity-checkpoint and replay-head exhaustion,
-restore every terminal sentinel through hot and archived charge recovery and
+installation/response delivery, distinguish attempt-set-head, revalidation and
+CapacityArchiveSequencePair exhaustion, restore every terminal sentinel through
+hot and archived charge recovery and
 prove no triggering mutation or successor was invented. Prove the final
 commitment/root alone can revalidate for admitted work and no mutation escapes
 the root. Delete/omit/corrupt

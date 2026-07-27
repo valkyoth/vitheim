@@ -755,14 +755,18 @@ restore, failover, and release evidence.
    commits. Begin/Replan uses an overflow-checked lifetime-capacity proof over
    fixed `u128` attempt-set/revalidation/canonical capacity-checkpoint/
    capacity-replay-head counters and reserves each `u128::MAX` only for an
-   absorbing exhaustion fence. The archive sequences advance together once per
-   ArchiveFinalize charge. Insufficient headroom denies before
+   absorbing exhaustion fence. The archive sequences form one pair with one
+   pair sentinel and advance together only on the successful capacity-archive
+   Commit charge named ArchiveFinalize, never FinalizeGc. Insufficient headroom denies before
    external work; unexpected/corrupt terminal state becomes permanently
    unready and never fabricates a successor mutation. A lineage-wide,
    predecessor-linked capacity state owns per-writer-class admitted/consumed/
    remaining counts and the head/counter conservation equations. Every writer
    locks it before the attempt-set head and atomically consumes one immutable
-   exact-retry charge with the covered mutation, head, result, audit and outbox;
+   exact-retry charge with the covered mutation, head, result, audit and outbox.
+   Every ordinary writer then locks/reads the stable high-watermark guard and
+   denies PreparePending/Witnessed; archive writers continue through
+   publication before replay head under the shared rank;
    Replan, compaction, restore and migration never reset consumption. A
    dedicated exact-set capacity checkpoint and predecessor-linked
    archive-replay head preserve archived charge/result membership, conflicts,
@@ -770,8 +774,12 @@ restore, failover, and release evidence.
    bounded proof/cursor and closed Staged→Verified→ConsumedByCommit or
    OrphanGcEligible→Collected receipt machine make verification/cleanup
    adapter-independent and Recovery-funded. A charged local PreparePending
-   fence precedes external traffic; unknown witness state remains fenced. An
-   independent authority witnesses the exact proposed successor before final CAS; afterward it
+   fence precedes external traffic; unknown witness state remains fenced. Every
+   immediate/delayed/query/replay outcome enters only through Reconcile under
+   one stable disposition ID/charge/result. A governed tenant/lineage witness
+   profile freezes CAS, non-equivocation, signatures/rotation/distrust,
+   authenticated negative evidence, durability and failover. An independent
+   authority witnesses the exact proposed successor before final CAS; afterward it
    must exact-commit or remain unready. Restore reads that external watermark
    before local state. Only its greatest committed replay head plus hot suffix
    is authoritative; unavailable history fails closed, and witnessed head-CAS

@@ -1017,14 +1017,16 @@ authorization Admit/Expire/destination-Apply/consume; Begin; Dispatch; provider
 reconciliation and Complete; capability lifecycle; provider-evidence
 admission; and attempt checkpoint/compaction/archive. Every mutation follows
 routing→residual-state→counter-capacity-state→attempt-set→capacity-archive-
-replay-head→commit-attempt/remediation-attempt→capability/evidence/
-authorization→result order and
+high-watermark→capacity-archive-publication→capacity-archive-replay-head→
+commit-attempt/remediation-attempt→capability/evidence/authorization→result
+order and
 atomically consumes one class-specific immutable writer charge with capacity-
 state CAS, covered mutation, mutation record and successor head. Exact retry
 returns the charge/result, CAS losers consume nothing, and Replan/compaction/
 restore/migration preserve all consumption. No direct attempt writer or
 narrower Dispatch lock sequence exists; a writer may omit an unrelated absent
-replay head but may never reverse the common subsequence.
+publication/replay head only after locking/reading the stable high-watermark
+guard and may never reverse the common subsequence.
 
 If any covered writer races a CommitEligible plan, let the security-relevant
 writer proceed and atomically invalidate
@@ -1089,7 +1091,7 @@ readable checkpoint is never substituted.
 Give this archive its own immutable chunk manifest, proof budget, durable
 verification cursor and five-state publication receipt: Staged, Verified,
 ConsumedByCommit, OrphanGcEligible or Collected. Only typed Stage, Verify,
-MarkOrphan and FinalizeGc commands mutate it. Proof budgets bound bytes,
+Commit, MarkOrphan and FinalizeGc commands mutate it. Proof budgets bound bytes,
 entries, chunks, depth, allocation, decoding, hashing, continuations, work and
 time; verification reconciliation and orphan cleanup use non-borrowable
 Recovery capacity. Verified may CAS only to ConsumedByCommit or, after proof
@@ -1103,9 +1105,13 @@ CapacityArchiveHighWatermark binding the exact proposed checkpoint/replay-head,
 publication/manifest, epochs, covered/successor capacity state, history charge,
 mutation/result and deletion set. Prepare first consumes its admitted charge
 and installs a local PreparePending writer fence under the canonical locks;
-only then may external traffic begin. Exact query/reconciliation selects either
-Witnessed or authenticated AbortedDefinitelyUnwitnessed; timeout/absence stays
-fenced. A witnessed candidate cannot be orphaned: crash recovery exact-
+only then may external traffic begin. The adapter never mutates state: every
+immediate, delayed, queried or replayed outcome enters exclusively through
+Reconcile. One stable disposition ID owns one terminal disposition charge/
+state/mutation/head/result, while the subsequent archive Commit has its own
+distinct charge. Exact retry rejoins; changed receipt/predecessor/publication/
+manifest/successor/profile material conflicts. Timeout/absence is read-only
+and stays fenced. A witnessed candidate cannot be orphaned: crash recovery exact-
 completes the deterministic successor or stays unready. Finalization locks
 routing→residual-state→capacity-state→attempt-set→capacity-archive-high-
 watermark→publication→capacity-archive-replay-head and atomically consumes one
@@ -1115,15 +1121,30 @@ predecessor charges and writes outputs. Its charge remains hot. Restore reads
 the independent greatest watermark before local heads; a locally consistent
 older snapshot is never authoritative.
 
+Require a governed current passing witness conformance profile before Prepare.
+It binds tenant/lineage authority identity, expected-predecessor CAS, non-
+equivocation, signature/signer/key epoch, rotation/distrust, authenticated
+definitely-not-witnessed semantics, read-after-write durability and failover.
+Unsupported/stale profiles deny before the local fence or external traffic.
+
+Use one universal routing→residual→capacity→attempt-set→high-watermark→
+publication→replay-head order. Begin creates a stable Unprepared guard. Every
+ordinary writer must lock/read it and deny PreparePending/Witnessed before
+omitting unrelated publication/replay rows; archive writers take all applicable
+rows in order. Backend acquisition traces are conformance evidence.
+
 Include canonical capacity-checkpoint and replay-head `u128` sequences in the
-capacity proof/state. They start equal and advance together exactly once per
-successful ArchiveFinalize charge; proposed/orphan attempts use stable IDs
-without consuming a canonical value. Prove current plus every remaining
-ArchiveFinalize charge is at most `u128::MAX - 1` and reserve separate terminal
-sentinels for both domains. This is preferred over adapter-defined verification,
-dense/probabilistic membership, unbounded verify work, split deletion, local-
-only rollback selection, sequence gaps, readable-old-head fallback or a self-
-covering compaction charge.
+capacity proof/state as one pair. They start equal and advance together exactly
+once only for the successful capacity-archive Commit charge named
+ArchiveFinalize; FinalizeGc never qualifies and proposed/orphan attempts use
+stable IDs without consuming a canonical value. Prove current plus every
+remaining ArchiveFinalize charge is at most `u128::MAX - 1` and reserve one
+atomic `(u128::MAX, u128::MAX)` pair sentinel. One-sided sentinel use is
+corruption and restore never synthesizes its mate. This is preferred over
+adapter-defined verification/witness semantics, callback mutation, separate
+sentinels, dense/probabilistic membership, unbounded verify work, split
+deletion, local-only rollback selection, sequence gaps, readable-old-head
+fallback or a self-covering compaction charge.
 
 At unexpected last-ordinary state, install the sentinel fence instead of the
 triggering mutation, permanently unready all Begin/Dispatch/Stage/Verify/

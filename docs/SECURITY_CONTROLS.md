@@ -408,14 +408,17 @@ audit decision.
   Begin/Replan requires an overflow-checked lifetime-capacity proof over fixed
   `u128` attempt-set/revalidation/canonical capacity-checkpoint/capacity-
   replay-head counters and reserves each `u128::MAX` exclusively for an
-  absorbing exhaustion fence. The archive sequences advance together once per
-  ArchiveFinalize charge. Insufficient headroom denies before
+  absorbing exhaustion fence. The archive sequences form one pair with one
+  atomic pair sentinel and advance together only on successful capacity-
+  archive Commit (`ArchiveFinalize`), never FinalizeGc. Insufficient headroom denies before
   external work; a valid sentinel permanently unreadies every effect and
   Commit path and never represents the triggering mutation. A lineage-wide
   capacity state owns class-specific admitted/consumed/remaining counts and
   head/counter equations. Every writer locks it before the attempt-set head and
   atomically consumes one immutable exact-retry charge with mutation/head/
-  result; Replan, compaction, restore and migration cannot reset it. Dedicated
+  result. Every ordinary writer then locks/reads the high-watermark guard and
+  denies PreparePending/Witnessed; archive writers lock publication before
+  replay head. Replan, compaction, restore and migration cannot reset it. Dedicated
   capacity checkpoints and a predecessor-linked archive-replay head commit
   exact charge/result membership, capacity/sentinel equations and archive
   epochs. Only the greatest verified head plus hot suffix is authoritative;
@@ -424,7 +427,10 @@ audit decision.
   Staged→Verified→Consumed or Orphan→Collected receipt machine funded by
   non-borrowable Recovery capacity. A charged local PreparePending fence
   precedes external traffic; only definitely-not-witnessed evidence reopens it.
-  An independent precommit high-watermark witnesses the exact successor; restore reads it first, and final witnessed
+  All external outcomes enter only through Reconcile with one disposition
+  ID/charge/result. A governed tenant/lineage witness profile freezes
+  predecessor CAS, non-equivocation, signatures/rotation/distrust, negative
+  evidence, durability and failover. An independent precommit high-watermark witnesses the exact successor; restore reads it first, and final witnessed
   head installation plus exact captured deletion is atomic and leaves the
   compaction charge hot. Begin
   creates plan generation 1 and PreparingOpen. Only independently

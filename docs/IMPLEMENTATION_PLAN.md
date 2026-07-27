@@ -425,15 +425,18 @@ checkpointed prefix plus suffix and binds its terminal root without blocking
 restrictive work admitted by the proven lifetime bound. Begin/Replan proves
 overflow-safe headroom across fixed `u128` attempt-set/revalidation/canonical
 capacity-checkpoint/capacity-replay-head counters, reserving each terminal value
-solely for an absorbing exhaustion fence. The archive sequences advance
-together once per ArchiveFinalize charge.
+solely for an absorbing exhaustion fence. The archive sequences form one pair
+with one pair sentinel and advance together only on successful capacity-
+archive Commit (`ArchiveFinalize`), never FinalizeGc.
 Insufficient headroom denies before external work; unexpected exhaustion
 permanently unreadies the owner without inventing a mutation. A lineage-wide
 capacity state owns class-specific admitted/consumed/remaining counts, total
 head writes, revalidation advances/rollovers, sentinel reservation and current
 counter tuple. Every writer locks it before the attempt-set head and atomically
-consumes one immutable exact-retry charge with mutation/head/result; Replan and
-history lifecycle preserve consumption. A dedicated capacity checkpoint binds
+consumes one immutable exact-retry charge with mutation/head/result. Every
+ordinary writer then locks/reads the stable high-watermark guard and denies
+PreparePending/Witnessed; archive writers continue through publication before
+replay head. Replan and history lifecycle preserve consumption. A dedicated capacity checkpoint binds
 the exact archived charge set, result lookup, all capacity/sentinel equations
 and publication/key/encoding epochs; its predecessor-linked archive-replay head
 plus hot suffix is the only authoritative lookup. Same-material retry returns
@@ -441,8 +444,11 @@ the historical result, changed material conflicts, and missing archive evidence
 fails closed without charging or advancing a head. A dedicated immutable
 manifest, proof budget, cursor and closed Staged/Verified/Consumed-or-Orphan/
 Collected receipt machine own publication. A charged local PreparePending
-fence precedes external traffic and unknown witness state never reopens.
-An independent high-watermark authority witnesses the exact proposed successor before final CAS; restore
+fence precedes external traffic and unknown witness state never reopens. Every
+external result enters only through Reconcile under one stable disposition
+ID/charge/result. A governed tenant/lineage witness profile freezes predecessor
+CAS, non-equivocation, signature/rotation/distrust, authenticated negative
+evidence, durability and failover. An independent high-watermark authority witnesses the exact proposed successor before final CAS; restore
 reads it before local state, and a witnessed successor exact-commits or stays
 unready. Final witnessed head installation and captured-row deletion are one
 transaction whose own history-lifecycle charge remains hot. Begin creates plan generation 1 and

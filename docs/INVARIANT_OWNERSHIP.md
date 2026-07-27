@@ -417,6 +417,9 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationGcResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReceiptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkDispositionRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessConformanceProfileRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessConformanceResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkPrepareResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReconciliationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanOperationResultRow`,
@@ -560,8 +563,10 @@ against the locked current head before full validation may restore eligibility;
 restrictive work within the admitted lifetime bound never waits. Begin/Replan
 proves overflow-safe headroom across fixed `u128` attempt-set, revalidation,
 canonical capacity-checkpoint and capacity-replay-head counters and reserves
-each terminal value solely for an absorbing exhaustion fence. The archive
-counters start equal and advance together once per ArchiveFinalize charge.
+terminal values solely for an absorbing exhaustion fence. The archive counters
+form one pair, start equal, advance together only on the successful capacity-
+archive Commit charge named ArchiveFinalize (never FinalizeGc), and share one
+atomic pair sentinel.
 Insufficient capacity denies before external work; unexpected exhaustion
 permanently unreadies the owner and never fabricates a successor mutation. One
 lineage-wide predecessor-linked capacity state is the sole owner of
@@ -571,7 +576,10 @@ tuple and capacity-state version.
 Every writer locks it before the attempt-set head and atomically consumes one
 immutable class+command charge with mutation/head/result; exact retry rejoins,
 CAS losers consume nothing and Replan/compaction/restore/migration preserve all
-consumption and equations. Charge compaction uses a dedicated predecessor-
+consumption and equations. After the attempt-set head, every ordinary writer
+must lock/read the stable high-watermark guard and deny PreparePending or
+Witnessed; archive writers then lock publication before replay head. Charge
+compaction uses a dedicated predecessor-
 linked capacity checkpoint and archive-replay head that commit the exact charge
 set, result lookup, capacity/sentinel equations and archive epochs. Only the
 greatest verified head plus its hot suffix is authoritative: exact archived
@@ -587,7 +595,12 @@ Before finalization, an independent authority witnesses the exact proposed
 capacity checkpoint/replay head, publication, epochs, capacity-state successor,
 history charge/result and deletion set. Prepare first installs a charged local
 PreparePending writer fence; witness reconciliation may reopen it only with
-authenticated definitely-not-witnessed evidence, never timeout. The witnessed
+authenticated definitely-not-witnessed evidence, never timeout. Every
+immediate/delayed/query/replay outcome enters exclusively through Reconcile;
+one stable disposition ID owns one charge/result and changed material
+conflicts. A governed tenant/lineage witness profile freezes predecessor CAS,
+non-equivocation, signatures/rotation/distrust, negative evidence, durability
+and failover. The witnessed
 predecessor stays fenced: finalization exact-commits it or recovery remains
 unready. Restore reads that
 external greatest high-watermark before local state, so coordinated local
@@ -604,7 +617,8 @@ applier owns inbox/tombstone/table mutation. Both families implement the same
 six-state first-terminal table, including no-write absent expiry/consumption.
 All lineage-release transactions acquire residual routing head, residual state
 head, counter-capacity state, remediation attempt-set head, counter-capacity
-archive-replay head, archive head, plan head, commit-attempt
+archive-high-watermark guard, capacity archive publication rows, counter-
+capacity archive-replay head, archive head, plan head, commit-attempt
 disposition, sorted remediation attempt/capability/evidence/authorization/
 reconciliation/checkpoint rows, publication state,
 journal head, sorted custody-cost-profile/evaluator-distrust heads, ledgers,
@@ -695,8 +709,13 @@ archived consumption, adapter-defined Verified, publication lifecycle bypass,
 proof-budget/cursor overflow, Recovery borrowing, Commit/orphan/GC race,
 collection of referenced or high-watermarked chunks, local replay/state/
 publication rollback below the independent high-watermark, witnessed successor
-abandoned instead of completed, capacity archive sequence gap/wrap/equality
-failure, capacity exhaustion, missing/reset capacity state,
+abandoned instead of completed, ordinary writer skipping the high-watermark
+guard, replay-head-first lock inversion, direct witness callback outside
+Reconcile, immediate/query disposition mismatch, duplicate/missing disposition
+charge, witness predecessor/receipt/profile substitution, equivocation or
+forged negative evidence, capacity archive sequence gap/wrap/equality failure,
+one-sided pair sentinel, FinalizeGc counted as ArchiveFinalize, capacity
+exhaustion, missing/reset capacity state,
 writer-class substitution, charge
 without head or head without charge, duplicate retry charge, Replan/
 compaction/restore consumption rollback, mutable membership-root drift,

@@ -832,13 +832,17 @@ against its terminal current root without blocking restrictive work. Begin
 or Replan proves overflow-safe lifetime headroom over fixed `u128`
 attempt-set/revalidation/canonical capacity-checkpoint/capacity-replay-head
 counters and reserves each terminal value only for an absorbing exhaustion
-fence. The archive sequences advance together once per ArchiveFinalize charge.
+fence. The archive sequences form one pair, advance only for successful
+capacity-archive Commit (`ArchiveFinalize`), never FinalizeGc, and use one
+atomic pair sentinel.
 Insufficient headroom denies before external work;
 unexpected exhaustion permanently unreadies the owner without fabricating an
 advance. A lineage-wide capacity state owns per-writer-class admitted/
 consumed/remaining counts and head/counter equations. Every writer locks it
 before the attempt-set head and atomically consumes one immutable exact-retry
-charge with mutation/head/result; Replan and history lifecycle cannot reset
+charge with mutation/head/result. Every ordinary writer then locks/reads the
+high-watermark guard and denies PreparePending/Witnessed; archive writers
+continue publication→replay-head. Replan and history lifecycle cannot reset
 consumption. Dedicated predecessor-linked capacity checkpoints and an
 archive-replay head bind exact archived charge/material/result membership,
 all capacity/sentinel equations, captured hot rows and publication/key/
@@ -848,8 +852,12 @@ and unavailable history denies without a charge or head advance. Publication
 has an immutable manifest, bounded proof/cursor, closed Staged/Verified/
 Consumed-or-Orphan/Collected states and non-borrowable Recovery-backed typed
 commands. A charged local PreparePending fence precedes external traffic and
-unknown witness status remains fenced. An independent authority witnesses the
-exact successor before final CAS; restore reads it before local state, and the witnessed successor exact-
+unknown witness status remains fenced. All immediate/delayed/query/replay
+outcomes enter exclusively through Reconcile with one disposition ID/charge/
+result. A governed tenant/lineage witness profile freezes predecessor CAS,
+non-equivocation, signatures/rotation/distrust, negative evidence, durability
+and failover. An independent authority witnesses the exact successor before
+final CAS; restore reads it before local state, and the witnessed successor exact-
 commits or stays unready. Witnessed head installation and captured deletion are
 one transaction whose own charge stays hot; Replan carries all consumption.
 Begin creates plan generation 1 and PreparingOpen. Independently
@@ -1137,7 +1145,11 @@ adapter-defined Verified, publication state bypass, proof-budget/cursor
 overflow, Recovery borrowing, Verify/Commit/orphan/GC race, referenced or
 witnessed archive collection, coordinated local capacity/head/publication
 rollback below the external watermark, prepared successor abandonment,
-capacity checkpoint/replay-head sequence wrap/gap/equality failure,
+ordinary guard omission, replay-head-first inversion, direct callback witness
+import, duplicate/missing disposition charge, immediate/query result mismatch,
+witness equivocation, stale signer/rotation/distrust, forged negative evidence,
+capacity archive sequence-pair wrap/gap/equality failure, one-sided pair
+sentinel or FinalizeGc counted as ArchiveFinalize,
 finalization bypass, mutable-root drift, coordinated residual state-head/high-
 watermark rollback, sibling closure/budget theft or lost aggregate decrement,
 Commit with hidden/nonterminal attempt work, absent-row-as-empty aggregate,

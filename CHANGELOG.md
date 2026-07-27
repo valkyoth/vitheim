@@ -90,6 +90,10 @@ All notable Vitheim changes are documented here. The format follows
 - Closed capacity-archive publication with typed bounded lifecycle ownership,
   independently witnessed precommit rollback protection and capacity-proved
   paired checkpoint/replay-head sequence domains.
+- Unified every capacity-archive writer under one guard-aware lock order,
+  routed all witness outcomes through one exact-charge disposition importer,
+  governed witness backend semantics and made archive exhaustion one atomic
+  sequence-pair fence.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.
