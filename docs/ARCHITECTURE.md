@@ -701,8 +701,9 @@ restore, failover, and release evidence.
    combines the base and covered deficit; Commit settles both into one member.
    Remediation and unknown resolution use complete destination-applied
    authorization/revocation state machines. Remediation has a total action/
-   result matrix; failure retains predecessor/charge, and only explicit
-   retention creates the named permanently fenced member.
+   result matrix; Begin consumes execution authority before dispatch, Complete
+   reconciles the same effect without redispatch, Unknown retains the admitted
+   attempt/charge, and destructive completion uses fresh finalization authority.
    A versioned cost profile maps unlike source/destination generations,
    units and storage overhead; Commit converts the base plus covered deficit into the final
    custody member before exact source credit. Unknown preserves predecessor and
@@ -715,8 +716,10 @@ restore, failover, and release evidence.
    transfers that exact reservation into the new lineage budget and non-winner
    cleanup proves exact candidate non-reference under a durable winner mapping.
    Final Commit selects With/WithoutResidualCustody and transfers surviving
-   terminal unknown members plus protected work/provenance into independent
-   residual obligations; completed lineage state admits proof maintenance only.
+   terminal unknown members into per-member obligations/budget slices under a
+   sorted root/aggregate budget. A LineageOwned→ResidualOwned routing CAS
+   linearizes destination authorization/resolution/checkpoint/GC ownership;
+   siblings are isolated and completed lineage state admits proof maintenance only.
    Begin creates plan generation 1 and a Preparing commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and
@@ -729,7 +732,7 @@ restore, failover, and release evidence.
    bucket budget charge; exact retry does not recharge and Recovery capacity
    is protected. Full
    predecessor rollback is unsupported. All release transactions
-   share the archive-head→plan-head→commit-attempt→
+   share the residual-routing-head→archive-head→plan-head→commit-attempt→
    publication-state→settlement-head→sorted-custody-profiles/ledgers/
    reservations→parent→current-slot→sorted-old-fence→control/lineage/checkpoint→
    authorization/custody/output rank, and an aggregate hard maximum covers

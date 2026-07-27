@@ -4681,15 +4681,76 @@ The action/result mapping is total and closed:
 | RetainPermanentlyFenced | PermanentlyFencedRetained |
 
 No failed, retryable or Unknown provisioning/migration/deletion attempt may
-consume its grant, select another row or fall through to permanent retention.
-Canonical
-`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAttemptV1`
-records Prepared, ExternalOutcomeUnknown, FailedNoEffect or
-SucceededWithMappedContinuation for the exact action/evidence/fence/
-idempotency. Unknown retains the predecessor object, base reservation, covered
-deficit, readiness/namespace fences and authorization row; bounded
-reconciliation must prove the mapped success or definite no effect. Exact
-retry joins that attempt and changed material conflicts.
+select another row or fall through to permanent retention. Asynchronous
+authority is durably captured before external execution:
+
+- `BeginMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediation`
+  consumes the exact Issued one-shot action grant and returns
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationBeginResultV1`
+  or
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationBeginConflict`;
+- in the same local transaction it creates canonical
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAttemptV1`
+  in ExecutionAdmitted with one stable effect ID, canonical request digest,
+  exact action/mapped continuation, capacity reservation, provider target,
+  constrained non-exportable capability handle, policy/hold generations,
+  fence and idempotency;
+- only that stored ExecutionAdmitted attempt/capability may dispatch exactly
+  that effect. Expiry or revocation after Begin prevents a new attempt but
+  cannot erase or reinterpret the authority captured by this attempt;
+- `CompleteMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediation`
+  returns
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationCompletionResultV1`
+  or
+  `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationCompletionConflict`
+  and may only reconcile that effect ID/request digest into its table-mapped
+  continuation. It never dispatches or allocates another provider operation.
+
+The attempt states are ExecutionAdmitted, ExternalOutcomeUnknown,
+FailedDefinitelyNoEffect or CompletedMappedContinuation. Response loss enters
+ExternalOutcomeUnknown and retains the predecessor object, base reservation,
+covered deficit, capacity/capability evidence and fences indefinitely; exact
+retry/reconciliation joins the same attempt without redispatch.
+FailedDefinitelyNoEffect closes the attempt without a policy outcome, and any
+new attempt requires a fresh authorization. Changed action/effect/request/
+target/capacity/evidence/idempotency conflicts.
+
+Completion never makes a fresh policy choice from old execution authority.
+Verified-deletion capacity release and permanently fenced retention additionally
+consume an exact Issued
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationV1`
+for respectively ReleaseAfterVerifiedDeletion or
+FinalizePermanentlyFencedRetention. This family independently instantiates the
+same complete state/admission/expiry/issuer-revoke/destination-apply/inbox/
+tombstone/outcome/NotAdmitted table below. Its canonical machinery is
+AuthorizationStateV1, Admit/AdmissionResult, Expire/ExpiryResult,
+Revoke/RevocationIntent/RevocationIntentResult/RevocationIntentConflict/
+RevocationSequenceKey, ApplyRevocation, RevocationInbox/Tombstone/Result,
+AuthorizationOutcome and AuthorizationOperationConflict, all under the
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalization`
+name stem. Policy/hold drift or absent finalization authority keeps the admitted
+attempt and full charge fenced; it cannot reuse the execution grant.
+The exact family is
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationActionV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationStateV1`,
+`AdmitMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorization`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationAdmissionResultV1`,
+`ExpireMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorization`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationExpiryResultV1`,
+`RevokeMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorization`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRevocationIntentV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRevocationIntentResultV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRevocationIntentConflict`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRevocationSequenceKeyV1`,
+`ApplyMigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRevocation`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRevocationInboxV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRevocationTombstoneV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationRevocationResultV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationOutcomeV1`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationOperationConflictV1`
+and
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationNotAdmitted`.
 
 RetainPermanentlyFenced requires its own action-bound records/security and
 independent records, legal, custody and capacity quorum/SoD. Its successful
@@ -4697,7 +4758,8 @@ transaction creates
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityPermanentlyFencedMemberV1`,
 moves the entire base plus covered deficit into that named member at the exact
 EffectiveCharge, records DeficitSettlement=PermanentlyFencedRetained and
-consumes the RetainPermanentlyFenced authorization. It returns no surplus,
+completes the admitted RetainPermanentlyFenced attempt while consuming its
+FinalizePermanentlyFencedRetention authorization. It returns no surplus,
 keeps the object/namespace/evaluator/legal-hold fences and is the only explicit
 storage representation of that continuation.
 
@@ -5997,21 +6059,25 @@ losers reread/reapply the six-state first-terminal table; exact operations join
 and changed action/checkpoint/bundle/policy/custody/sequence/idempotency
 conflicts. Custody approval evidence cannot invoke release without this grant.
 
-Permanent-retention, lineage-release, deficit-remediation and retained-
-unknown-resolution authorization families all instantiate this exact
+Permanent-retention, lineage-release, deficit-remediation execution, retained-
+unknown-resolution and deficit-remediation finalization authorization families
+all instantiate this exact
 destination operation table. Their typed no-write absent outcomes are
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspacePermanentRetentionAuthorizationNotAdmitted`,
 `MigrationImportRegistryHistoryCorruptionControlLineageReleaseAuthorizationNotAdmitted`,
-`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationNotAdmitted`
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationAuthorizationNotAdmitted`,
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationNotAdmitted`
 and
-`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityUnknownTransferResolutionAuthorizationNotAdmitted`.
+`MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationFinalizationAuthorizationNotAdmitted`.
 “Consumption” means PermanentlyRetain for the first family and the exact
 BeginRelease, ReplanCustodyRelease, AbandonCustodyRelease,
 QuarantineUnknownTransfer, MigrateDistrustedEvaluatorReservation, or
-CommitCustodyRelease command for the second; ProvisionAdditionalCapacity,
-VerifyDeletion, MigrateToSufficientCapacity or RetainPermanentlyFenced for the third; and
+CommitCustodyRelease command for the second; BeginDeficitRemediation for
+ProvisionAdditionalCapacity, VerifyDeletion, MigrateToSufficientCapacity or
+RetainPermanentlyFenced for the third;
 ConfirmPresent, VerifyDeletion or DeclarePermanentlyUnresolvable for the
-fourth:
+fourth; and ReleaseAfterVerifiedDeletion or
+FinalizePermanentlyFencedRetention for the fifth:
 
 | Current state | Admission | Expiry | Applied issuer revocation | Consumption | Exact replay, stale sequence or changed material |
 |---|---|---|---|---|---|
@@ -6120,24 +6186,53 @@ eligible artifacts remains bounded and permitted.
 
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationV1`
-owns every unknown-transfer member surviving final Commit. Its closed
+owns exactly one unknown-transfer member surviving final Commit. Its closed
 `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationStateV1`
-is Active, Resolved or PermanentlyRetained. Immutable
+is Active, ConfirmedPresent, DeletionVerified or PermanentlyUnresolvable.
+Each child has a non-borrowable slice of immutable
 `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationBudgetV1`
-contains the exact remaining precharged resolution/revocation/evidence/
-checkpoint/GC allowance and cannot borrow from or reopen a completed lineage.
+containing its exact remaining precharged resolution/revocation/evidence/
+checkpoint/GC allowance and cannot consume, close, settle or release another
+child's slice.
 `MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyObligationTransferResultV1`
 binds the member/EffectiveCharge, deficit settlement, namespace fence,
 quarantine and resolution-authorization history, capacity provenance, original
-lineage/plan/budget checkpoint and residual budget.
+lineage/plan/budget checkpoint and child budget.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyMembershipCommitmentV1`
+binds the exact canonically sorted obligation IDs/row digests and Merkle root.
+`MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyAggregateBudgetV1`
+binds the checked sum of child budgets plus non-borrowable aggregate
+checkpoint/GC terminalization capacity, remaining-member counters and original
+lineage-budget provenance. Child terminalization decrements only its own
+remaining counters; aggregate capacity settles only after all children are
+terminal and checkpointed. Mixed child outcomes are ordinary and never imply
+sibling mutation.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageResidualCustodyRoutingHeadV1`
+has LineageOwned or ResidualOwned, a non-wrapping generation and the exact
+residual membership root/aggregate-budget generation. Final Commit CASes
+LineageOwned→ResidualOwned in the same transaction as every child creation,
+budget transfer, membership commitment and completed disposition. Admit,
+Expire, destination revocation Apply, Resolve, evidence append, checkpoint and
+GC lock/read the routing head first: before the CAS they charge/mutate the
+lineage owner; afterward they charge/mutate the exact child/aggregate residual
+owner. CAS losers reread and reroute without duplicating authorization rows,
+inboxes, charges or results. Issuer-side intents remain evidence-only and never
+select an owner.
 
 Final Commit atomically transfers every surviving terminal quarantined member
-and its remaining protected capacity into one independently restorable
-residual obligation before selecting CompletedWithResidualCustody. With no
-survivor it selects CompletedWithoutResidualCustody. After transfer, unknown-
-member resolution and its authorization revocation charge only the residual
-budget; plan-history compaction cannot delete the transfer result or any
-authorization/deficit/fence/provenance needed to restore the obligation.
+and its remaining protected capacity into its own independently restorable
+residual obligation, commits the exact sorted obligation set/root and aggregate
+budget, and advances the routing head before selecting
+CompletedWithResidualCustody. With no survivor it commits an empty membership
+root and selects CompletedWithoutResidualCustody. After transfer, unknown-
+member resolution and its authorization revocation charge only that child's
+residual slice plus named aggregate work; plan-history compaction cannot delete
+the routing generation, membership/transfer results or any authorization/
+deficit/fence/provenance needed to restore each obligation.
 
 Every destination-local admission after Begin atomically creates or
 joins
@@ -6239,7 +6334,8 @@ verification and orphan-GC obligations under the lineage budget. Unknown,
 stale, overflowing,
 individually-only or unsupported proof is no-write.
 
-Replan uses the complete combined rank: authoritative archive head→plan head→
+Replan/final Commit use the complete combined rank: residual-custody routing
+head→authoritative archive head→plan head→
 commit-attempt disposition→publication receipt state→settlement journal head→
 sorted custody-profile heads/evaluator distrust state→sorted custody ledgers→
 sorted reservations/dependencies/external-transfer seal/deficit/unknown-
@@ -6492,8 +6588,9 @@ profiles, evaluator-migration/reassessment/deficit-remediation heads,
 EffectiveCharge/DeficitSettlement heads, exact Sealed transfer receipts/fences
 and TransferPending base plus covered-deficit encumbrances, the complete sorted
 terminal residual-member candidates with their remaining protected budgets/
-authority/fence/provenance and expected With/WithoutResidual disposition, and
-stable idempotency. Under the
+authority/fence/provenance, proposed per-member obligation IDs/row digests,
+membership root, aggregate budget and expected LineageOwned routing head/
+generation plus With/WithoutResidual disposition, and stable idempotency. Under the
 identical combined rank, the command reauthenticates publication/membership/
 deletion evidence and every physical-disposition receipt/reservation/profile,
 rechecks every bound version, pinned evaluator artifact/readiness/distrust
@@ -6525,15 +6622,16 @@ PermanentlyRetained or Quarantined and makes the whole commit no-write. A
 terminal quarantined unknown-member is different: Commit may proceed only by
 atomically transferring that member, its EffectiveCharge/DeficitSettlement,
 namespace fence, authorization history and remaining protected work into the
-ResidualCustodyObligation above; it returns no capacity. The generic lineage
+member-scoped ResidualCustodyObligation set above; it returns no capacity. The generic lineage
 settlement never duplicates that workspace credit. The lineage becomes
 Released only when every linked workspace and ordinary control-reserve leg is
-settled or transferred into that residual obligation in this same final ranked
+settled or transferred into that member-scoped residual-obligation set in this same final ranked
 transaction, which then commits the final lineage release result,
 canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitResultV1`,
-the residual transfer result when present, the exact completed disposition,
-audit and outbox; otherwise all affected predecessor members remain
+each residual transfer result when present, membership commitment/aggregate
+budget, the routing-head CAS, exact completed disposition, audit and outbox;
+otherwise all affected predecessor members remain
 encumbered and ReleasePending remains resumable. The bounded workspace set and
 all terminal writes were precharged before ReleasePending. Hot settlement state
 cannot be deleted before verified publication or apart from authoritative-head
@@ -6553,10 +6651,12 @@ custody-ledger conservation, and retains ReclaimPending plus every unsettled
 deficit encumbrance when
 history or deletion proof is missing, forked, rolled back or uncertain.
 CompletedWithResidualCustody restores only when every transfer result,
-residual obligation/budget, member, authorization history, deficit settlement,
-namespace fence and capacity provenance authenticate independently of compacted
-plan rows; otherwise the larger member/charge remains fenced and the node is
-unready. It
+per-member obligation/budget, membership root, aggregate budget, routing head,
+member, authorization history, deficit settlement, namespace fence and
+capacity provenance authenticate independently of compacted plan rows.
+Split LineageOwned/ResidualOwned history, a sequence/inbox/authorization row
+present under both owners, missing child or aggregate mismatch keeps the
+larger member/charge fenced and the node unready. It
 also proves ParentTotal = ParentAvailable + the
 exact restored active-child and pending-successor encumbrance sets and every
 parent/child forward/inverse transfer against settlement membership. Duplicate
@@ -6934,16 +7034,24 @@ accept SealPending→Open only with a SealDefinitelyNeverCompletedReceipt; delay
 the old provider completion after cancellation and prove it is either
 permanently rejected or local state never reopens.
 Exhaust the four-row remediation action/result matrix. A failed, retryable or
-Unknown provision/migrate/delete attempt retains authorization, predecessor
-state and full charge and cannot select permanent retention. Only the explicit
+Unknown provision/migrate/delete attempt retains its irrevocably admitted
+execution authority/attempt, predecessor state and full charge and cannot
+redispatch or select permanent retention. Race BeginDeficitRemediation against
+expiry/revocation, lose every provider response and prove Complete reconciles
+the same effect ID only; FailedDefinitelyNoEffect requires a fresh grant.
+Exercise both finalization actions and policy/hold drift. Only the explicit
 RetainPermanentlyFenced action may create the named permanently fenced member;
 fault every base+deficit→member/settlement write and prove conservation.
 Complete lineages with zero, one and the maximum residual unknown members.
 Require WithoutResidual only at zero; otherwise atomically transfer each
-member, remaining budget, authorization history, deficit/fence/provenance and
-select WithResidual. Resolve/revoke/append/checkpoint/GC after plan compaction
-solely through the residual obligation and reject every other completed-
-lineage command. Race many pre-Begin candidates so one Begin wins while all
+member into its own obligation/budget, commit the exact sorted root/aggregate
+budget/routing CAS and select WithResidual. Resolve children into mixed
+outcomes; no child closes/settles/compacts/releases a sibling or its slice.
+Race final Commit against Admit, Expire, revocation Apply, Resolve, evidence,
+checkpoint, GC and compaction at the routing CAS. CAS losers reroute exactly
+once; restore rejects dual-owner rows/sequences/inboxes/charges. After plan
+compaction operate solely through the routed residual child/aggregate and
+reject every other completed-lineage command. Race many pre-Begin candidates so one Begin wins while all
 expired/revoked losers prove exact candidate non-reference and clean up; fault
 winner mapping/CAS/settlement identity and prove no loser releases or aliases
 the winning charge.

@@ -383,8 +383,9 @@ deficit or readiness fences until separately authorized remediation.
 EffectiveCharge joins base plus covered deficit and final Commit atomically
 settles both into one member. Remediation and unknown resolution receive full
 destination-applied authorization/revocation families. Remediation actions map
-totally to one continuation; failure retains charge, and only explicit
-retention creates the named permanently fenced member. Permanent Unknown is independently
+totally to one continuation; Begin consumes execution authority before
+dispatch, Complete never redispatches and fresh finalization authority owns
+later deletion release/permanent retention. Permanent Unknown is independently
 converted at full charge into a fenced member with retained legal-hold
 evidence and no late-evidence refund. Platform/tenant ceilings and a separate
 authorization family govern confirm-present, verified complete-namespace
@@ -393,8 +394,9 @@ BeginRelease admission uses a bounded pre-Begin pool whose exact winning
 charge transfers atomically into the newly created lineage budget; cleanup
 requires terminal authorization, exact candidate non-reference and different-
 winner mapping. Final Commit selects With/WithoutResidualCustody and transfers
-surviving unknown members plus protected budget/authority/deficit/fence
-provenance into independently restorable residual obligations. Begin creates
+each surviving unknown member into its own budgeted obligation under a sorted
+root/aggregate budget. A generationed LineageOwned/ResidualOwned routing head
+linearizes authorization/resolution/checkpoint/GC ownership. Begin creates
 plan generation 1 and Preparing. Terminal reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old
 attempts/grants/receipts and creates new bundle/reservation identities;
@@ -408,7 +410,7 @@ original-bucket budget charge; exact retry never recharges and Recovery
 capacity is non-borrowable. The same transaction
 settles every leg, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased. Its
-release paths share one archive-head→plan-head→commit-attempt→receipt combined
+release paths share one residual-routing-head→archive-head→plan-head→commit-attempt→receipt combined
 lock rank and must preflight the complete
 ordinary-plus-workspace receipt/profile/reservation/custody-ledger/
 reconciliation/GC bundle against backend row/byte/lock/write/work/time maxima

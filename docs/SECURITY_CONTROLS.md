@@ -372,13 +372,15 @@ audit decision.
   confirm/delete/permanently-unresolvable workflow preserve quarantine and
   legal-hold denial. Both destructive workflows have full destination-applied
   six-state authorization/revocation families. Remediation actions have a total
-  continuation matrix; only explicit retention creates the named full-charge
-  permanently fenced member. BeginRelease Admit charges a
+  continuation matrix; Begin consumes authority and creates the exact effect
+  before dispatch, Complete never redispatches, and destructive completion
+  uses fresh finalization authority. BeginRelease Admit charges a
   bounded pre-Begin pool; winning Begin transfers it into the lineage budget,
   and cleanup is exact-candidate scoped under a winner mapping. Final Commit
   selects completed with/without residual custody and transfers every surviving
-  terminal unknown member plus protected work/provenance to an independent
-  residual obligation. Begin creates plan generation 1 and Preparing. Only independently
+  terminal unknown member to its own budgeted residual obligation under a
+  sorted root/aggregate budget. A generationed routing CAS selects lineage or
+  residual ownership for all destination operations. Begin creates plan generation 1 and Preparing. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
   generation/bundle/reservations; Abandon fences only and never refunds Begin.
@@ -393,7 +395,7 @@ audit decision.
   Commit consumes those receipts while
   settling every leg, advancing Released to OriginalTotal and committing
   CustodyReleased with the matching parent inverse. The combined rank acquires
-  archive head/plan head/commit-attempt disposition/publication state,
+  residual routing head/archive head/plan head/commit-attempt disposition/publication state,
   settlement head, sorted custody profile heads/
   ledgers/reservations, parent, current slot, sorted old campaign fences,
   control/lineage/checkpoint, authorization/custody and outputs; an aggregate

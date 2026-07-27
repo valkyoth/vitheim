@@ -928,7 +928,11 @@ Freeze a total deficit-remediation action/result matrix. Provisioning can only
 resume Commit; verified deletion can only require Replan; migration produces a
 distinct migrated-plan-ready-for-Replan continuation; permanent fenced
 retention requires its own authorized action. Failed, retryable or Unknown
-work retains the predecessor, charge and non-consumed grant. Only explicit
+work retains the predecessor, charge and irrevocably admitted attempt without
+a reusable grant. Begin consumes execution authority before dispatch; Complete
+reconciles only that effect and definite no-effect requires a fresh grant.
+Deletion release and permanent retention consume a separate complete
+finalization authorization. Only explicit
 retention creates the named permanently fenced custody member and atomically
 settles the full EffectiveCharge into it.
 
@@ -936,8 +940,10 @@ Replace ambiguous Completed lineage-budget semantics with
 CompletedWithoutResidualCustody and CompletedWithResidualCustody. Final Commit
 transfers every surviving terminal unknown member, its remaining protected
 work, authorization history, deficit settlement, namespace fence and capacity
-provenance into a dedicated independently restorable residual obligation.
-Later resolution/revocation/evidence/checkpoint/GC charges that obligation;
+provenance into its own independently restorable residual obligation/budget
+slice under an exact sorted membership root and aggregate terminalization
+budget. Mixed child outcomes are independent. Later resolution/revocation/
+evidence/checkpoint/GC charges that child/aggregate;
 the completed lineage admits replay/proof maintenance only.
 
 Make pre-Begin cleanup candidate-scoped. A durable winner mapping binds the
@@ -946,6 +952,14 @@ generation/charge, rechecks an absent or different-winner head, requires
 terminal authorization and CASes only its CleanupPending row. Activation and
 cleanup settlement identities are domain-separated, so a losing candidate can
 never release the winner.
+
+Freeze a generationed LineageOwned/ResidualOwned routing head as the final-
+Commit ownership linearization point. Destination Admit, Expire, revocation
+Apply, Resolve, evidence append, checkpoint and GC lock it before selecting
+the charge/row owner. Final Commit CASes it with child/root/budget transfer and
+completed disposition; losers reread/reroute once. Issuer intent is evidence-
+only, and restore rejects any authorization sequence/inbox/charge under both
+owners.
 
 Freeze one durable plan-bound commit attempt with Preparing, CommitEligible,
 Superseded, Abandoned and Consumed. MarkCommitEligible alone moves Preparing

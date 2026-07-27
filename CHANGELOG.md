@@ -40,6 +40,14 @@ All notable Vitheim changes are documented here. The format follows
   authorization, deficit, fence and capacity provenance.
 - Made losing pre-Begin cleanup exact-candidate scoped under a durable winner
   mapping with non-aliasing activation and cleanup settlement identities.
+- Split asynchronous deficit remediation into authority-consuming Begin and
+  same-effect Complete commands, with no redispatch and separate destructive
+  finalization authority.
+- Changed residual custody to one isolated obligation/budget slice per member
+  under an exact membership root and aggregate terminalization budget.
+- Added a generationed lineage/residual routing head that linearizes every
+  destination authorization, resolution, evidence, checkpoint, and GC owner
+  during final Commit.
 - Made every custody Replan repeat aggregate backend feasibility and atomically
   reserve replacement, future-Commit and retained-history capacity under a
   non-resettable cumulative plan-lineage budget with authenticated compaction.

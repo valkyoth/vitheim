@@ -796,13 +796,15 @@ Platform/tenant ceilings and separate confirm/delete/permanently-unresolvable
 authorization preserve original quarantine and legal-hold denial. Deficit
 remediation and unknown resolution use complete destination-applied authorization/
 revocation state machines. Remediation has a total action/continuation matrix;
-failure retains predecessor/charge and only explicit retention creates the
-named permanently fenced member. BeginRelease Admit charges a bounded pre-Begin pool;
+Begin consumes authority/creates the exact effect before dispatch, Complete
+reconciles without redispatch and destructive completion uses fresh
+finalization authority. BeginRelease Admit charges a bounded pre-Begin pool;
 winning Begin transfers that exact charge into the new lineage budget and
 non-winner cleanup is candidate-scoped under a durable winner mapping. Final
 Commit selects With/WithoutResidualCustody and transfers surviving terminal
-unknown members plus protected budget/authority/deficit/fence provenance into
-independently restorable residual obligations. Begin creates plan generation 1
+unknown members into per-member budgeted residual obligations under a sorted
+membership root/aggregate budget. A generationed routing CAS selects lineage
+or residual ownership for every destination operation. Begin creates plan generation 1
 and Preparing. Independently authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
 and receipts and atomically creating a new bundle/reservation set; Abandon
@@ -824,7 +826,7 @@ QuarantineUnknownTransfer/MigrateDistrustedEvaluatorReservation/
 CommitCustodyRelease grants have complete six-state
 admission/expiry/issuer-intent/destination-apply/tombstone/first-terminal
 families; custody evidence is never command authority. Begin and final release
-share one archive-head→plan-head→commit-attempt→publication-state→
+share one residual-routing-head→archive-head→plan-head→commit-attempt→publication-state→
 settlement-head→sorted-custody-
 profiles/ledgers/reservations→parent→current-slot→canonical-ID-sorted-old-
 fences→control/lineage/checkpoint→authorization/custody/output rank. A checked
@@ -1061,7 +1063,9 @@ pre-Begin bootstrap bypass/double activation/early cleanup, late provider
 completion after seal reopen, remediation action/result substitution or
 failure→retention fall-through, unnamed permanently fenced capacity,
 completed-lineage residual budget bypass/reset or lost restore provenance,
-global losing-candidate cleanup/winner release, retained-unknown resolution refund/
+dispatch-before-authority/redispatch, expiry/revocation erasing admitted
+effect authority, finalization bypass, sibling closure/budget theft,
+split/duplicate routing ownership, global losing-candidate cleanup/winner release, retained-unknown resolution refund/
 quarantine rewrite/legal-hold bypass and missing all-six-action result parity,
 workspace credit without deletion or reserved charged transfer, issuer sequence races,
 remote-intent effect, absent-state writes,
