@@ -158,7 +158,7 @@ for phrase in \
     'The reservation covers' \
     'the complete fixed snapshot, not merely one worker quantum' \
     'before that checkpoint may become a restorable head' \
-    'startup never scans' 'The following writer set is closed' 'sticky revalidation fence remains active' 'Exactly one application-level provider invocation may' 'Attempt mutation, covered auxiliary mutation'
+    'startup never scans' 'The following writer set is closed' 'PreparingOpen alone admits new Begin/Dispatch and Stage/Verify' 'domain realization of VIT-INV-006' 'never bearer authority' 'Exactly one application-level provider invocation may' 'Attempt mutation, covered auxiliary mutation'
 do
     grep -Fq "$phrase" "$phase_c" ||
         fail "Phase C omits required closure: $phrase"

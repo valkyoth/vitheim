@@ -379,8 +379,11 @@ audit decision.
   atomically redeeming one-use capability into EffectDispatched. A governed
   provider profile/result freezes effect-ID, dedup/query horizon and
   authenticated no-effect guarantees. One persisted application-level
-  transmission claim permits only in-invocation transport retransmission;
-  return, crash, lease loss or uncertainty is query-only. BeginRelease
+  transmission claim realizes VIT-INV-006: only the winning executor receives
+  one unreconstructable process-local permit, while the durable row/digest is
+  non-bearer status evidence and retry returns no permit. It permits only
+  in-invocation transport retransmission; return, crash, lease loss or
+  uncertainty is query-only. BeginRelease
   Admit charges a
   bounded pre-Begin pool; winning Begin transfers it into the lineage budget,
   and cleanup is exact-candidate scoped under a winner mapping. Final Commit
@@ -395,9 +398,11 @@ audit decision.
   root and refuse all nonterminal provider work. A closed writer matrix makes
   every authorization/effect/capability/evidence/reconciliation/archive
   mutation advance it under one order. Mutation after CommitEligible proceeds
-  while atomically invalidating to sticky-fenced Preparing; full eligibility
-  validation must bind the successor root. Begin
-  creates plan generation 1 and Preparing. Only independently
+  while atomically selecting typed PreparingRevalidationRequired with mandatory
+  invalidation/root bindings; PreparingOpen alone admits new effect/artifact
+  work and the separate fence is integrity evidence, not authority. Full
+  eligibility validation must bind the successor root. Begin
+  creates plan generation 1 and PreparingOpen. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
   generation/bundle/reservations; Abandon fences only and never refunds Begin.
@@ -426,8 +431,8 @@ audit decision.
   action-specific results; commit rebinds the begin result, verified receipt,
   predecessor/proposed heads, dispositions/profiles/reservations/bundle/grant
   and expected version. Stage, Verify, MarkOrphan and FinalizeGc alone own
-  precharged receipt transitions. Stage/Verify admit only the current Preparing
-  attempt without a revalidation fence and otherwise return no-write
+  precharged receipt transitions. Stage/Verify admit only the current
+  PreparingOpen attempt and otherwise return no-write
   AttemptClosed before upload,
   verification or budget. Stage, Verify, MarkEligible, Commit, Replan, Abandon
   and orphan admission serialize on archive-head→plan-head→attempt→

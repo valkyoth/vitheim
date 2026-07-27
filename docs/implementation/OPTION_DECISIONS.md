@@ -814,7 +814,8 @@ Replan operation: every plan has a stable identity, monotonic generation/head,
 generation-bound bundle, reservation set and commit attempt. Begin creates
 generation 1. Replan requires all old external outcomes terminal, proves no
 Commit winner, atomically fences and supersedes the old attempt/grants/receipts,
-advances the plan head and creates new reservations plus a Preparing attempt.
+advances the plan head and creates new reservations plus a PreparingOpen
+attempt.
 An independently authorized Abandon only fences an attempt and permits later
 Replan; it never refunds capacity or reverses Begin. Reject full Abort through
 `1.0.0`, because already released local control capacity and admitted external
@@ -947,7 +948,12 @@ application resends. Dispatch persists and consumes the unique claim before
 traffic; only transport retransmission inside that uninterrupted invocation is
 allowed. Return, timeout uncertainty, crash, lease loss or takeover enters
 Unknown and permits authenticated query/reconciliation only, even while the
-provider deduplication horizon remains open.
+provider deduplication horizon remains open. Make the specialized claim a
+domain realization of VIT-INV-006 `TransmissionStartClaimState`: only the
+winning trusted-executor transaction receives one unreconstructable process-
+local permit; exact retry returns status without another permit; post-commit
+response loss cannot reconstruct it; and durable claim/digest/status is never
+bearer authority.
 Deletion release and permanent retention consume a separate complete
 finalization authorization. Only explicit
 retention creates the named permanently fenced custody member and atomically
@@ -1016,17 +1022,22 @@ covered mutation, immutable mutation record and successor head. No direct
 attempt writer or narrower Dispatch lock sequence exists.
 
 If any covered writer races a CommitEligible plan, let the security-relevant
-writer proceed and atomically invalidate CommitEligible→Preparing while
-retaining a sticky revalidation fence that denies new Begin/Dispatch and new
-Stage/Verify/artifact allocation. The invalidation binds old and new roots and
-its cause. MarkEligible must repeat its full original validation to bind the
-successor root; final Commit may never accept the stale result. This is
-preferred over blocking revocation/evidence/checkpoint work or adding a partial
-refresh path.
+writer proceed and atomically invalidate
+CommitEligible→PreparingRevalidationRequired with mandatory
+invalidation ID, invalidated root and required successor root. Retain the
+revalidation fence as integrity evidence, but derive authorization behavior
+from the tagged attempt state itself. PreparingOpen alone admits new
+Begin/Dispatch or Stage/Verify/artifact work. MarkEligible must repeat its full
+original validation to bind the successor root; final Commit may never accept
+the stale result. Missing evidence makes revalidation state unready and can
+never decode/default to PreparingOpen. This is preferred over blocking
+revocation/evidence/checkpoint work, an adjacent-row authorization switch or a
+partial refresh path.
 
-Freeze one durable plan-bound commit attempt with Preparing, CommitEligible,
-Superseded, Abandoned and Consumed. MarkCommitEligible alone moves Preparing
-after rechecking the exact plan, begin/version, verified publication,
+Freeze one durable plan-bound commit attempt with PreparingOpen,
+PreparingRevalidationRequired, CommitEligible, Superseded, Abandoned and
+Consumed. MarkCommitEligible alone moves either preparing variant after
+rechecking the exact plan, begin/version, verified publication,
 dispositions, profiles and reservations. Commit, Replan and Abandon race on
 that row; Commit consumes CommitEligible. MarkOrphan accepts only Superseded or
 Abandoned and races under the same ordered attempt/receipt locks. Missing,
@@ -1057,7 +1068,7 @@ and result. Freeze command-owned publication state Staged→Verified→
 ConsumedByCommit or Staged/Verified→OrphanGcEligible→Collected. Stage, Verify,
 MarkOrphan and FinalizeGc have stored result/conflict types and precharged
 lifecycle/GC budgets. Stage admits before upload and Verify rechecks only the
-current Preparing attempt; closed/non-current attempts return typed no-write
+current PreparingOpen attempt; closed/non-current attempts return typed no-write
 AttemptClosed without upload, verification or budget allocation. Stage,
 Verify, MarkEligible, Replan, Abandon, Commit and MarkOrphan serialize after
 archive head on plan-head→attempt→receipt-state; Commit atomically consumes

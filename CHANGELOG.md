@@ -69,12 +69,16 @@ All notable Vitheim changes are documented here. The format follows
   and atomic mutation/head transition, including authorization, capability,
   evidence, reconciliation and history lifecycle.
 - Made post-eligibility security mutations invalidate CommitEligible to
-  revalidation-fenced Preparing so complete validation can bind the successor
-  root without blocking revocation, reopening artifact admission or trapping
-  final Commit.
+  structurally distinct PreparingRevalidationRequired with mandatory
+  invalidation/root bindings; PreparingOpen alone admits new effect or
+  publication work.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.
+- Declared the specialized provider transmission claim a VIT-INV-006
+  realization: one winning trusted executor receives unreconstructable
+  process-local permit material, while durable claim/digest/status remains
+  non-bearer evidence and retries return no permit.
 - Made every custody Replan repeat aggregate backend feasibility and atomically
   reserve replacement, future-Commit and retained-history capacity under a
   non-resettable cumulative plan-lineage budget with authenticated compaction.
@@ -82,7 +86,7 @@ All notable Vitheim changes are documented here. The format follows
   convert the full pending maximum into a fenced custody member, retain legal-
   hold evidence, require wholly new Replan capacity and never auto-refund late
   evidence.
-- Closed publication admission with the current Preparing attempt and added
+- Closed publication admission with the current PreparingOpen attempt and added
   typed no-write AttemptClosed results before upload or verification work.
 - Bound pinned cost evaluators to binary and conformance-corpus digests, added
   node readiness and emergency distrust, and required independently authorized

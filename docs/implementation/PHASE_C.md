@@ -4756,8 +4756,17 @@ reconciliation method. Canonical
 `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectTransmissionClaimV1`
 binds one non-wrapping claim identity, effect/request/provider/account,
 redemption, immutable transmit-before deadline, worker/executor identity and
-lease/fence generation. Exactly one application-level provider invocation may
-consume it. Only transport-layer retransmission wholly inside that uninterrupted
+lease/fence generation. It is the deficit-remediation
+domain realization of VIT-INV-006 `TransmissionStartClaimState` and uses the
+VIT-CAP-006 trusted-executor claim transaction. Only the winning transaction
+receives the
+unreconstructable process-local transmission permit. The durable claim row and
+permit digest are status/integrity evidence, never bearer authority; neither a
+queue message, RPC value, retry, restore nor post-commit response loss can
+derive or reconstruct the permit. Exact command retries return only persisted
+claim/status/result. Exactly one application-level provider invocation may
+consume the winning permit. Only transport-layer retransmission wholly inside
+that uninterrupted
 invocation is permitted; return to application control, timeout with uncertain
 delivery, crash, lease loss or takeover terminalizes the claim and moves the
 attempt to ExternalOutcomeUnknown. No worker, executor or reconciler may issue a
@@ -6244,7 +6253,8 @@ CompletedWithResidualCustody. Command admission is total:
 | CompletedWithResidualCustody | The lineage itself admits only replay/proof maintenance; retained-member resolution, authorization revocation, evidence append, checkpoint and GC execute solely through the transferred residual obligation |
 
 A Replan that cannot fit is
-no-write while its old attempt remains Preparing or CommitEligible so it
+no-write while its old attempt remains PreparingOpen,
+PreparingRevalidationRequired or CommitEligible so it
 cannot destroy a possible Commit. If the attempt is already Abandoned or
 Superseded, the same expected-version transaction may commit
 BudgetExhaustedRetained, its permanent authorization fence and
@@ -6443,11 +6453,25 @@ Each plan owns one
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptV1`
 whose closed
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityDispositionV1`
-is Preparing, CommitEligible, Superseded, Abandoned or Consumed. The durable
-disposition set contains all five states; missing state is corruption, not
-Preparing or abandonment. Begin/Replan creates Preparing. Only
+is a canonical tagged union:
+
+- PreparingOpen;
+- PreparingRevalidationRequired carrying mandatory invalidation ID, invalidated
+  attempt-set root and required successor attempt-set root;
+- CommitEligible;
+- Superseded;
+- Abandoned; or
+- Consumed.
+
+The durable disposition set contains all six states; missing/unknown tag or
+missing payload is corruption, not PreparingOpen or abandonment. Begin/Replan
+creates PreparingOpen. Export, import, RPC projection and restore preserve the
+exact discriminant and mandatory payload; omission, truncation or inconsistent
+invalidation/fence cross-proof makes the attempt unready and never selects a
+fallback variant. Only
 `MarkMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligible`
-may move Preparing→CommitEligible after binding and rechecking the exact
+may move PreparingOpen or PreparingRevalidationRequired→CommitEligible after
+binding and rechecking the exact
 lineage/begin result/version, current plan head/generation, bundle, Verified
 publication receipt/state/version, final disposition receipts, pinned cost
 profiles/evaluator artifact digests/readiness/distrust epochs and reservation
@@ -6460,30 +6484,39 @@ nonterminal and makes MarkEligible no-write. Only
 FailedDefinitelyNoEffect with either the atomic broker no-redemption/no-traffic
 result or authenticated provider no-effect evidence, or
 CompletedMappedContinuation with complete finalization/checkpoint history may
-appear in the bound set. Preparing→CommitEligible is itself the admission fence:
+appear in the bound set. A preparing state→CommitEligible transition is itself
+the admission fence:
 all later Begin/Dispatch commands recheck the commit-attempt disposition and
 refuse; exact terminal replay remains read-only.
 
 Any later covered mutation other than exact read-only replay must still run,
 including restrictive revocation, provider evidence, reconciliation,
 checkpoint, compaction and archival work. When the plan-bound disposition is
-CommitEligible, that writer atomically changes it to Preparing, advances the
+CommitEligible, that writer atomically changes it to
+PreparingRevalidationRequired with the exact invalidation ID, old bound root
+and required successor root in the authoritative attempt row, advances the
 attempt-set head and writes immutable
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityInvalidationV1`
 binding the old eligibility result/root, successor mutation/root, reason and
 writer result plus durable
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationFenceV1`.
-That sticky revalidation fence remains active, so this Preparing form refuses
-new Begin/Dispatch and new Stage/Verify/artifact allocation; exact receipt
-replay remains read-only. MarkEligible is the only eligibility recovery: it
-repeats the complete original validation against the newest attempt-set root
-and may create a new CommitEligible result/version.
+Authorization behavior is derived from the typed attempt state itself:
+PreparingOpen alone admits new Begin/Dispatch and Stage/Verify, while
+PreparingRevalidationRequired refuses them and permits exact receipt replay
+plus restrictive writers and full MarkEligible revalidation. The revalidation
+fence remains integrity evidence, not the authorization switch. A missing,
+unjoined or corrupt invalidation/fence therefore cannot make the authoritative
+tag decode as PreparingOpen; it makes the node/attempt unready. MarkEligible is
+the only eligibility recovery: for PreparingRevalidationRequired it
+authenticates the mandatory invalidation/fence, proves the current head equals
+required_successor_root, repeats the complete original validation against that
+root and may create a new CommitEligible result/version.
 Final Commit and every writer serialize on the same rank; either Commit
 consumes the unchanged eligible root first, or the writer invalidates it first
 and Commit returns no-write until revalidation. Revocation and restrictive
 policy processing are never delayed merely to preserve eligibility. Missing,
 partial or unbound invalidation is corruption and cannot be treated as
-Preparing.
+PreparingOpen.
 
 A positive covered deficit additionally
 requires exact EffectiveCharge, PendingCommit DeficitSettlement and the
@@ -6494,7 +6527,8 @@ denies eligibility. It returns
 or
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityConflict`.
 Missing, expired or currently revoked Commit authorization changes neither
-Preparing nor CommitEligible and never proves permanent commit ineligibility.
+preparing variant nor CommitEligible and never proves permanent commit
+ineligibility.
 
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAuthorizationFenceV1`
 binds attempt, plan generation/head, begin result, lineage version, bundle and
@@ -6543,9 +6577,10 @@ fence→lineage→checkpoint→release authorization→lineage disposition→ret
 legal-hold/custody authority→budget/preflight/result/audit/outbox. In one
 transaction it consumes the Replan grant and fresh preflight capacity
 reservation, CASes an
-active old attempt Preparing/CommitEligible→Superseded or retains an already
+active old attempt PreparingOpen/PreparingRevalidationRequired/
+CommitEligible→Superseded or retains an already
 Abandoned terminal, installs the old-attempt authorization fence, advances the
-plan generation/head and bundle digest, creates the replacement Preparing
+plan generation/head and bundle digest, creates the replacement PreparingOpen
 attempt and all replacement TransferPending reservations, and writes
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanResultV1`,
 audit and outbox. No plan head becomes current unless its complete future
@@ -6564,8 +6599,9 @@ Only
 `AbandonMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttempt`
 with
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonPayloadV1`
-and an exact Issued AbandonCustodyRelease grant may move Preparing or
-CommitEligible→Abandoned. It atomically consumes the grant, installs the same
+and an exact Issued AbandonCustodyRelease grant may move PreparingOpen,
+PreparingRevalidationRequired or CommitEligible→Abandoned. It atomically
+consumes the grant, installs the same
 authorization fence and stores
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonResultV1`,
 audit and outbox, or returns
@@ -6609,7 +6645,7 @@ CustodyCapacityReservationV1 and moves the
 conservatively calculated maxima from custody Available to TransferPending;
 none exists before the Begin result and no external transfer is authorized by
 a losing or uncommitted attempt. It also creates plan generation 1, makes it
-the plan head, creates its Preparing commit attempt and CAS-creates residual-
+the plan head, creates its PreparingOpen commit attempt and CAS-creates residual-
 custody routing generation 1 as LineageOwned with that exact lineage/plan head/
 lineage budget, stable owner/idempotency, canonical-empty residual root,
 aggregate reference NoneCanonicalEmpty and residual-state-head generation 1
@@ -6709,16 +6745,16 @@ only by the immutable Verify result; it never rewrites proposed receipt bytes.
 Only the following typed commands own publication lifecycle transitions:
 
 - `StageMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublication`
-  locks/rechecks the current plan head, its Preparing attempt and absence of
-  the eligibility-revalidation fence before any upload instruction or
-  lifecycle-budget allocation, then creates a Staged
+  locks/rechecks the current plan head and requires its authoritative attempt
+  tag to be PreparingOpen before any upload instruction or lifecycle-budget
+  allocation, then creates a Staged
   publication intent binding proposed immutable roots/chunks with
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStageResultV1`
   or
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationStageConflict`;
 - `VerifyMigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublication`
-  rechecks that same still-current Preparing attempt and absent revalidation
-  fence, authenticates durable chunk/root/key visibility and moves
+  rechecks that same still-current PreparingOpen tag, authenticates durable
+  chunk/root/key visibility and moves
   Staged→Verified
   with
   `MigrationImportRegistryHistoryCorruptionControlReserveSettlementArchivePublicationVerifyResultV1`
@@ -6756,15 +6792,18 @@ head→commit-attempt disposition→receipt state in that order before their
 state-specific CAS. MarkOrphan requires the
 receipt's exact attempt to be Superseded or Abandoned, rechecks that no
 committed head references any chunk and retention/key policy permits collection,
-then CASes Staged/Verified→OrphanGcEligible. Preparing or CommitEligible is
-never orphan-admissible: no absent, expired or revoked Commit grant and no
-temporary lack of an operator proves permanent ineligibility. Commit atomically
+then CASes Staged/Verified→OrphanGcEligible. PreparingOpen,
+PreparingRevalidationRequired or CommitEligible is never orphan-admissible:
+no absent, expired or revoked Commit grant and no temporary lack of an operator
+proves permanent ineligibility. Commit atomically
 CASes only CommitEligible→Consumed and Verified→ConsumedByCommit with
 archive-head installation and hot-row deletion. The shared attempt-row CAS
 excludes Commit from Abandon/Replan and the receipt-state CAS excludes Commit
-from MarkOrphan: Commit rejects Preparing, Superseded, Abandoned and Consumed
+from MarkOrphan: Commit rejects both preparing variants, Superseded, Abandoned
+and Consumed
 attempts plus Staged, OrphanGcEligible and Collected receipts; MarkOrphan
-rejects Preparing, CommitEligible and Consumed attempts; orphan GC cannot touch
+rejects both preparing variants, CommitEligible and Consumed attempts; orphan
+GC cannot touch
 ConsumedByCommit chunks. Missing attempt state is corruption. FinalizeGc
 re-locks head, plan head, attempt and receipt, rechecks terminal ineligibility
 and non-reference, and records Collected only after authenticated deletion;
@@ -7225,8 +7264,9 @@ ConsumedByCommit excludes GC, OrphanGcEligible/Collected excludes Commit and no
 reader observes a collected committed chunk. Race Stage and Verify against
 Replan, Abandon and Commit; terminal/non-current attempts return AttemptClosed
 before upload, verification, artifact or budget allocation while existing
-receipts remain collectable. Attempt MarkOrphan while Preparing
-or CommitEligible and after a Commit grant is missing, expired or revoked;
+receipts remain collectable. Attempt MarkOrphan while PreparingOpen,
+PreparingRevalidationRequired or CommitEligible and after a Commit grant is
+missing, expired or revoked;
 only Superseded/Abandoned passes, and Commit/Abandon/Replan/MarkOrphan share one
 winner without a liveness loop. Unknown and every partial/stale/
 mismatched receipt retain the predecessor without credit, while exact retry
@@ -7276,8 +7316,12 @@ single application-level transmission-claim creation/consumption,
 in-claim transport retransmission, deduplication/query horizons,
 partitions/timeouts, credential rotation, late duplicates, lease loss,
 takeover and forged/stale definitely-no-effect evidence. Crash or return after
-the claim may only query/reconcile and can never invoke the provider again; an
-unsupported profile must refuse before dispatch.
+the claim may only query/reconcile and can never invoke the provider again.
+Run VIT-INV-006 vectors proving only the winning trusted-executor transaction
+receives one process-local permit, exact retry/status never returns it,
+post-commit response loss cannot reconstruct it and neither durable claim nor
+digest is accepted as bearer authority; an unsupported profile must refuse
+before dispatch.
 Exercise both finalization actions and policy/hold drift. Only the explicit
 RetainPermanentlyFenced action may create the named permanently fenced member;
 fault every base+deficit→member/settlement write and prove conservation.
@@ -7291,10 +7335,12 @@ against execution/finalization Admit, Expire, destination
 ApplyRevocation/consumption, provider evidence/reconciliation, capability
 terminalization/cleanup and checkpoint/compaction/archive replacement. Each
 mutation advances one head under the canonical rank and atomically invalidates
-CommitEligible to sticky-fenced Preparing; full MarkEligible revalidation may
-then bind the successor root. Prove no restrictive writer blocks, no mutation
-escapes the root, no stale eligible root commits and no invalidation reopens
-Begin/Dispatch or Stage/Verify allocation.
+CommitEligible to PreparingRevalidationRequired; full MarkEligible revalidation
+may then bind the successor root. Delete/omit/corrupt the invalidation and
+fence evidence at every restore/read path and prove the authoritative tagged
+state cannot decode, default or dispatch as PreparingOpen. Prove no restrictive
+writer blocks, no mutation escapes the root, no stale eligible root commits and
+no invalidation reopens Begin/Dispatch or Stage/Verify allocation.
 Complete lineages with zero, one and the maximum residual unknown members.
 Require WithoutResidual only at zero; otherwise atomically transfer each
 member into its own obligation/budget, commit the exact sorted root/aggregate

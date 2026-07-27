@@ -390,9 +390,11 @@ current legal/hold/policy cut and atomically rechecks all destructive-effect
 epochs while redeeming one capability into EffectDispatched. A governed
 provider-effect profile/result freezes dedup/query horizons and authenticated
 definitely-no-effect semantics. Dispatch persists one application-level
-transmission claim; only transport retransmission inside that uninterrupted
-invocation is allowed, and any returned/crashed/uncertain claim becomes
-query-only. Permanent Unknown
+transmission claim as a VIT-INV-006 realization. Only the winning executor
+receives one unreconstructable process-local permit; durable row/digest/status
+is never bearer authority and retries cannot return a permit. Only transport
+retransmission inside that uninterrupted invocation is allowed, and any
+returned/crashed/uncertain claim becomes query-only. Permanent Unknown
 is independently
 converted at full charge into a fenced member with retained legal-hold
 evidence and no late-evidence refund. Platform/tenant ceilings and a separate
@@ -412,10 +414,12 @@ head linearizes authorization/resolution/checkpoint/
 GC ownership. MarkEligible/final Commit bind one complete remediation-attempt
 set and refuse every nonterminal effect/capability/reconciliation obligation;
 every authorization/effect/capability/evidence/reconciliation/archive writer
-advances that set atomically under one order. A later mutation invalidates
-CommitEligible to sticky-fenced Preparing and full MarkEligible revalidation
-binds the successor root without blocking restrictive work. Begin creates plan
-generation 1 and Preparing. Terminal
+advances that set atomically under one order. A later mutation places the
+authoritative attempt in typed PreparingRevalidationRequired with mandatory
+invalidation/root bindings; PreparingOpen alone admits new effect/artifact
+work, and the separate fence is evidence rather than authority. Full
+MarkEligible revalidation binds the successor root without blocking
+restrictive work. Begin creates plan generation 1 and PreparingOpen. Terminal
 reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old
 attempts/grants/receipts and creates new bundle/reservation identities;
@@ -447,8 +451,8 @@ result, non-authoritative verified publication receipt, predecessor/proposed
 archive and journal heads, physical dispositions, cost profiles/reservations,
 bundle/authorization and expected version. Stage, Verify, MarkOrphan and
 FinalizeGc own the precharged
-receipt lifecycle. Stage/Verify admit only the current Preparing attempt
-without a revalidation fence and otherwise return no-write AttemptClosed
+receipt lifecycle. Stage/Verify admit only the current PreparingOpen attempt
+and otherwise return no-write AttemptClosed
 before upload/verification/budget.
 Stage, Verify, MarkEligible, Commit, Replan, Abandon and orphan admission
 serialize on archive-head→plan-head→attempt→receipt-state. MarkOrphan accepts only

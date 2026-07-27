@@ -709,9 +709,12 @@ restore, failover, and release evidence.
    capability while moving to EffectDispatched before provider traffic. A
    governed provider-effect profile/conformance result defines idempotency,
    dedup/query horizons and authenticated definitely-no-effect evidence.
-   Dispatch persists one application-level transmission claim; only
-   transport retransmission inside its uninterrupted invocation is permitted,
-   while return/crash/lease loss/uncertainty is query-only.
+   Dispatch persists one application-level transmission claim as a VIT-INV-006
+   realization. Only its winning trusted-executor transaction receives an
+   unreconstructable process-local permit; durable claim/digest/status is not
+   bearer authority. Only transport retransmission inside its uninterrupted
+   invocation is permitted, while retry/response loss/crash/lease loss/
+   uncertainty is query-only.
    A versioned cost profile maps unlike source/destination generations,
    units and storage overhead; Commit converts the base plus covered deficit into the final
    custody member before exact source credit. Unknown preserves predecessor and
@@ -739,10 +742,13 @@ restore, failover, and release evidence.
    capability or reconciliation obligation. A closed writer matrix makes every
    authorization, effect, capability, evidence, reconciliation and archival
    mutation advance that root under one lock order. Mutation after
-   CommitEligible atomically invalidates it to sticky-fenced Preparing, and
-   MarkEligible repeats the complete validation; restrictive work is never
-   blocked and stale eligibility never commits.
-   Begin creates plan generation 1 and a Preparing commit
+   CommitEligible atomically selects typed
+   PreparingRevalidationRequired with mandatory invalidation/root bindings;
+   PreparingOpen alone admits new effect/artifact work. The separate fence is
+   integrity evidence, never the authorization switch. MarkEligible repeats
+   the complete validation; restrictive work is never blocked and stale
+   eligibility never commits.
+   Begin creates plan generation 1 and a PreparingOpen commit
    attempt. Terminal reconciliation permits only independently authorized
    monotonic Replan, which fences/supersedes the old attempt/grants/receipts and
    creates a new bundle/reservation set; Abandon fences only and never refunds
@@ -768,7 +774,7 @@ restore, failover, and release evidence.
    the begin result, verified publication receipt, predecessor/proposed heads,
    dispositions/profiles/reservations/bundle/grant and expected version.
    Stage/Verify/MarkOrphan/FinalizeGc own receipt state. Stage/Verify admit only
-   the current Preparing attempt without a revalidation fence and otherwise
+   the current PreparingOpen attempt and otherwise
    return no-write AttemptClosed
    before upload/verification/budget. Stage, Verify, MarkEligible, Commit,
    Replan, Abandon and orphan admission serialize on archive-head→plan-head→

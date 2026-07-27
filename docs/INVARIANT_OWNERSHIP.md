@@ -93,7 +93,7 @@ are mandatory wherever a row below admits that workload profile.
 | VIT-INV-003 | `ProviderCredentialCapabilityState` | `CredentialCapabilityQuarantineRow`; owner-updated: capability owner transition | `0.18.2`; registry `0.18.3` | same provider-account credential-capability partition as VIT-INV-002 | VIT-ENF-003-A: handle issue => VIT-TST-003-N-A [active]; VIT-ENF-003-B: queue claim => VIT-TST-003-N-B [active]; VIT-ENF-003-C: credential use => VIT-TST-003-N-C [active]; VIT-ENF-003-D: quarantine resolution => VIT-TST-003-N-D [active] | requires: VIT-CAP-003; atomic quarantine/epoch transition; permanent tombstones; incident linkage | VIT-TST-003 P: strong-evidence resolution creates new generation; N: partial or incident-only clear denied; M: quarantine versus first use; F: failover and restore retain quarantine and tombstones | VIT-RCV-003 restore: quarantine dominates older usable state; migration: preserve transition history, evidence, incident, and old-work tombstones |
 | VIT-INV-004 | `ProviderCredentialLineage` | `ProviderCredentialRotationGuard`; owner-updated: lineage rotation transaction | `0.18.2`; registry `0.18.3` | provider-account credential-lineage partition | VIT-ENF-004-A: rotation create => VIT-TST-004-N-A [active]; VIT-ENF-004-B: successor activation => VIT-TST-004-N-B [active]; VIT-ENF-004-C: takeover => VIT-TST-004-N-C [active]; VIT-ENF-004-D: orphan reconciliation => VIT-TST-004-N-D [active] | requires: VIT-CAP-004; single-non-terminal uniqueness; expected-version CAS; quota co-location | VIT-TST-004 P: verified successor activates; N: concurrent rotation and orphan redemption denied; M: takeover versus late callback; F: unknown response and restore retain guard | VIT-RCV-004 restore: retain non-terminal rotation, count encumbrance, and callback fences; migration: preserve IDs, digests, generations, and orphan state |
 | VIT-INV-005 | `ProviderCredentialRemediationLineage` | `ProviderCredentialRemediationAuthorityRow`; owner-updated: remediation lifecycle transaction | `0.18.2`; bootstrap `0.18.5` | independent provider remediation control-plane partition | VIT-ENF-005-A: remediation admission => VIT-TST-005-N-A [active]; VIT-ENF-005-B: rotation/takeover redemption => VIT-TST-005-N-B [active]; VIT-ENF-005-C: cleanup quota => VIT-TST-005-N-C [active]; VIT-ENF-005-D: recovery ceremony => VIT-TST-005-N-D [active] | requires: VIT-CAP-005; independent credential/KMS binding; monotonic epoch CAS; quorum receipt persistence | VIT-TST-005 P: separated quorum admits and rotates authority; N: business use, self-approval, and circular recovery denied; M: compromise versus redemption; F: simultaneous business/remediation loss and stale restore | VIT-RCV-005 restore: never restore older active authority over compromise/loss tombstone; migration: preserve ceremony, quorum, channel, epoch, and exercise evidence |
-| VIT-INV-006 | `TransmissionStartClaimState` | `TransmissionStartClaimRow`; owner-updated: trusted executor claim transaction | `0.18.2`; registry `0.18.3` | effect execution partition co-located with current authority fences | VIT-ENF-006-A: immediately before provider I/O => VIT-TST-006-N-A [active]; VIT-ENF-006-B: replay/status => VIT-TST-006-N-B [active]; VIT-ENF-006-C: failover reconciliation => VIT-TST-006-N-C [active] | requires: VIT-CAP-006; unique claim CAS; worker/lease binding; authoritative-time deadline check; selected orchestrator profile atomically consumes one current action claim/tombstone with start state | VIT-TST-006 P: exact worker and action claim commit once; N: duplicate, digest-substituted, expired, offline, stale-fence, or transported permit/claim denied; M: action-claim issuance/consumption or revocation versus start claim; F: ambiguous issuance/start response and executor failover reconcile without reissue or retransmit | VIT-RCV-006 restore: permit is unreconstructable and both start/action claim remain consumed or typed unknown at their greatest external high-watermarks; migration: preserve claim, consumption tombstone/outcome, worker, lease, digest, deadline, and state |
+| VIT-INV-006 | `TransmissionStartClaimState` | `TransmissionStartClaimRow` plus deficit-remediation domain realization `MigrationImportRegistryHistoryBackendStorageCostProfileMigrationWorkspaceCustodyCapacityDeficitRemediationProviderEffectTransmissionClaimRow`; owner-updated: trusted executor claim transaction | `0.18.2`; registry `0.18.3`; realization `0.29.0` | effect execution partition co-located with current authority fences | VIT-ENF-006-A: immediately before provider I/O => VIT-TST-006-N-A [active]; VIT-ENF-006-B: replay/status => VIT-TST-006-N-B [active]; VIT-ENF-006-C: failover reconciliation => VIT-TST-006-N-C [active] | requires: VIT-CAP-006; unique claim CAS; worker/lease binding; authoritative-time deadline check; selected orchestrator profile atomically consumes one current action claim/tombstone with start state; only the winning transaction receives unreconstructable process-local permit material | VIT-TST-006 P: exact worker and action claim commit once; N: duplicate, digest-substituted, expired, offline, stale-fence, transported permit/claim or durable-claim-as-bearer denied; exact retry returns status without a permit; M: action-claim issuance/consumption or revocation versus start claim; F: ambiguous issuance/start response and executor failover reconcile without reissue, retransmit or permit reconstruction | VIT-RCV-006 restore: permit is unreconstructable and both start/action claim remain consumed or typed unknown at their greatest external high-watermarks; migration: preserve claim, consumption tombstone/outcome, worker, lease, digest, deadline and state but never permit material |
 | VIT-INV-007 | `QuotaClaimSetState` | `QuotaClaimSetAuthorityRows`; owner-updated: quota-ledger transaction | `0.18.1`; registry `0.18.3` | one local quota partition shared with consuming work bundle | VIT-ENF-007-A: admission => VIT-TST-007-N-A [active]; VIT-ENF-007-B: dispatch => VIT-TST-007-N-B [active]; VIT-ENF-007-C: transmission => VIT-TST-007-N-C [active]; VIT-ENF-007-D: storage => VIT-TST-007-N-D [active]; VIT-ENF-007-E: settlement => VIT-TST-007-N-E [active]; VIT-ENF-007-F: reconciliation => VIT-TST-007-N-F [active] | requires: VIT-CAP-007; all-or-none multi-row transaction; canonical lock order; exact-token CAS | VIT-TST-007 P: full set reserves and settles; N: partial set, member substitution, and cross-partition set denied; M: overlapping set acquisition; F: partial crash and corrupt restore quarantine whole set | VIT-RCV-007 restore: verify and restore complete set or quarantine it; migration: preserve ordered membership, digest, token lineage, units, and settlement state |
 | VIT-INV-008 | `EvaluatorReevaluationJobState` | `EvaluatorReevaluationQueueRow`; owner-updated: scheduler transition transaction | `0.18.4` | tenant/provider/account scheduler partition with global fairness authority | VIT-ENF-008-A: evaluator replacement/revocation => VIT-TST-008-N-A [active]; VIT-ENF-008-B: dequeue => VIT-TST-008-N-B [active]; VIT-ENF-008-C: evidence fetch => VIT-TST-008-N-C [active]; VIT-ENF-008-D: evaluation => VIT-TST-008-N-D [active]; VIT-ENF-008-E: completion => VIT-TST-008-N-E [active] | requires: VIT-CAP-008; durable priority queue; stable job uniqueness; lease/fence CAS; fair-share counters | VIT-TST-008 P: privileged fresh job completes; N: queued credential cannot use old output; M: repeated replacement versus running job; F: outage, crash, and failover resume from durable cursor | VIT-RCV-008 restore: retain current evaluator/job generations, cursors, attempts, and escalation; migration: preserve partition, priority, freshness, quota, and terminal identity |
 | VIT-INV-009 | `ProviderCredentialRemediationLineage` | `RemediationRecoveryCeremonyRow`; owner-updated: separated recovery quorum transaction | `0.18.5` | offline recovery domain plus independent online remediation control plane | VIT-ENF-009-A: first bootstrap => VIT-TST-009-N-A [active]; VIT-ENF-009-B: rotation => VIT-TST-009-N-B [active]; VIT-ENF-009-C: compromise response => VIT-TST-009-N-C [active]; VIT-ENF-009-D: loss recovery => VIT-TST-009-N-D [active]; VIT-ENF-009-E: periodic exercise => VIT-TST-009-N-E [active] | requires: VIT-CAP-009; quorum receipt persistence; independent channel/KMS binding; monotonic recovery epoch | VIT-TST-009 P: independent channels recover authority; N: self-recovery and dependent-channel bootstrap denied; M: rotation versus compromise declaration; F: provider-admin loss, KMS outage, and stale restore fail closed | VIT-RCV-009 restore: compromise/loss and recovery epoch dominate backups; migration: preserve channel independence, quorum, exercises, expiry, and manual-only limitation |
@@ -495,9 +495,13 @@ all bound epochs, redeem one-use capability and atomically persist
 EffectDispatched/redemption before provider traffic. A governed provider-effect
 profile/result fixes dedup/query horizons and authenticated no-effect evidence;
 unsupported adapters have no destructive capability. Dispatch also persists
-one application-level transmission claim. Only transport retransmission inside
-its uninterrupted invocation is allowed; return, uncertainty, crash, lease
-loss or takeover is query-only and cannot mint another claim.
+one application-level transmission claim as an explicit VIT-INV-006/
+VIT-CAP-006 domain realization. Only the winning trusted-executor transaction
+receives one unreconstructable process-local permit. Exact retry returns status
+only; response loss/restore cannot reconstruct it; the durable row/digest is
+never bearer authority. Only transport retransmission inside its uninterrupted
+invocation is allowed; return, uncertainty, crash, lease loss or takeover is
+query-only and cannot mint another claim.
 BeginRelease admission charges a bounded pre-Begin deployment/tenant pool; the
 winning Begin transaction transfers that same reservation into the newly
 created lineage budget, while terminal non-winners require proved no-Begin
@@ -521,10 +525,12 @@ reconciliation state, and CommitEligible fences new Begin/Dispatch. The closed
 writer matrix covers authorization, effect, capability, evidence,
 reconciliation and history lifecycle. Each mutation uses the shared rank and
 atomically writes its mutation record and successor root. A covered mutation
-after CommitEligible invalidates it to Preparing with exact old/new binding
-and a sticky revalidation fence denying new effect/artifact admission; full
-MarkEligible validation alone may restore eligibility, while restrictive work
-never waits.
+after CommitEligible selects authoritative PreparingRevalidationRequired with
+mandatory invalidation ID and old/new root binding. PreparingOpen alone admits
+new effect/artifact work; the revalidation fence is integrity evidence, not an
+authorization switch. Missing/corrupt evidence leaves Required unready and can
+never decode/default to Open. Full MarkEligible validation alone may restore
+eligibility, while restrictive work never waits.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -559,7 +565,7 @@ class, disposition and checkpoint settlement. Exact retry never double charges
 and protected Recovery capacity cannot be borrowed.
 Only the explicit Begin lineage command may enter ReleasePending and only the
 explicit Commit custody command may enter Released. Begin creates plan
-generation 1 and a Preparing attempt. After a terminal reservation
+generation 1 and a PreparingOpen attempt. After a terminal reservation
 reconciliation, only independently authorized Replan can fence/supersede the
 old attempt/grants/receipts and atomically create a new plan generation,
 bundle, attempt and reservations; Abandon fences only and never refunds Begin.
@@ -567,7 +573,7 @@ Full rollback to the predecessor is unsupported. Publishers and storage
 adapters own non-authoritative receipt evidence only and cannot advance the
 archive replay head or dispatch either terminal mutation. Stage, Verify,
 MarkOrphan and FinalizeGc alone own receipt-state transitions. Stage/Verify
-admit only the current Preparing attempt and otherwise return no-write
+admit only the current PreparingOpen attempt and otherwise return no-write
 AttemptClosed before upload/verification/budget. MarkOrphan
 requires the receipt's attempt to be Superseded or Abandoned; missing, expired
 or revoked Commit authority is not ineligibility. Stage, Verify, MarkEligible,
@@ -610,10 +616,12 @@ expiry/revocation erasing admitted effect authority, completion without fresh
 finalization authority, stale-policy/hold dispatch, provider-credential escape,
 capability double redemption, ungoverned/expired provider-effect profile,
 forged definitely-no-effect evidence, application resend after claim
-uncertainty, unrooted attempt/capability/authorization/evidence/archive
+uncertainty, durable claim/digest transported as bearer or permit
+reconstruction, unrooted attempt/capability/authorization/evidence/archive
 mutation, attempt-set lock inversion, restrictive writer blocked by
-CommitEligible, stale eligibility root, missing invalidation or sticky-fence
-loss, mutable membership-root drift,
+CommitEligible, stale eligibility root, ambiguous Preparing or
+PreparingRevalidationRequired defaulting to PreparingOpen after missing/
+corrupt invalidation/fence, mutable membership-root drift,
 coordinated residual-state rollback below external high-watermark, aggregate
 residual child closure/budget theft or lost decrement, Commit with nonterminal
 effect/capability/reconciliation, hidden/partial attempt-set root, absent-row-

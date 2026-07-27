@@ -802,9 +802,11 @@ finalization authority. Broker-only Dispatch is the current legal/hold/policy
 cut and atomically rechecks credential/distrust/fence/routing epochs while
 redeeming one-use capability into EffectDispatched; a governed provider-effect
 profile/result fixes dedup/query horizons and authenticated no-effect evidence.
-One persisted application-level transmission claim permits only transport
-retransmission inside its uninterrupted invocation; return, crash, lease loss
-or uncertainty is query-only.
+One persisted application-level transmission claim realizes VIT-INV-006: only
+the winning executor receives an unreconstructable process-local permit,
+durable row/digest/status is non-bearer evidence and retry returns no permit.
+Only transport retransmission inside its uninterrupted invocation is allowed;
+return, crash, lease loss or uncertainty is query-only.
 BeginRelease Admit charges a bounded pre-Begin pool; winning Begin transfers
 that exact charge into the new lineage budget and
 non-winner cleanup is candidate-scoped under a durable winner mapping. Final
@@ -820,9 +822,11 @@ MarkEligible/final Commit bind the complete attempt set, refuse nonterminal
 provider work and fence new dispatch at CommitEligible. A closed writer matrix
 makes every authorization/effect/capability/evidence/reconciliation/archive
 mutation advance that set atomically under one order. Mutation after
-CommitEligible invalidates it to sticky-fenced Preparing, and MarkEligible
+CommitEligible selects typed PreparingRevalidationRequired with mandatory
+invalidation/root bindings; PreparingOpen alone admits new effect/artifact
+work and the separate fence is evidence rather than authority. MarkEligible
 reruns the full validation against the successor root without blocking
-restrictive work. Begin creates plan generation 1 and Preparing. Independently
+restrictive work. Begin creates plan generation 1 and PreparingOpen. Independently
 authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
 and receipts and atomically creating a new bundle/reservation set; Abandon
@@ -858,8 +862,8 @@ the stored begin result, non-authoritative verified receipt, predecessor/
 proposed heads, physical dispositions, cost profiles/reservations,
 bundle/authorization and expected
 lineage version. Stage, Verify, MarkOrphan and FinalizeGc alone own precharged
-receipt transitions. Stage/Verify admit only the current Preparing attempt
-without a revalidation fence and otherwise return no-write AttemptClosed
+receipt transitions. Stage/Verify admit only the current PreparingOpen attempt
+and otherwise return no-write AttemptClosed
 before upload/verification/budget.
 Stage, Verify, MarkEligible, Commit, Replan, Abandon and orphan admission serialize on
 archive-head→plan-head→attempt→receipt-state. MarkOrphan accepts only
@@ -1087,7 +1091,9 @@ effect authority, stale-policy/hold dispatch, capability double redemption,
 ungoverned/expired provider-effect profile or forged no-effect evidence,
 application resend after uncertain transmission, unrooted authorization/
 evidence/capability/archive writer, attempt-set lock inversion, CommitEligible
-restrictive-writer blockage, stale eligibility root or sticky-fence loss,
+restrictive-writer blockage, stale eligibility root,
+PreparingRevalidationRequired decoded/defaulted as PreparingOpen after missing
+evidence, durable claim/digest used as bearer or reconstructed permit,
 finalization bypass, mutable-root drift, coordinated residual state-head/high-
 watermark rollback, sibling closure/budget theft or lost aggregate decrement,
 Commit with hidden/nonterminal attempt work, absent-row-as-empty aggregate,
