@@ -406,8 +406,10 @@ audit decision.
   denied. Full eligibility validation must verify the continuous chain or
   authenticated checkpoint plus suffix and bind its final current root.
   Begin/Replan requires an overflow-checked lifetime-capacity proof over fixed
-  `u128` attempt-set/revalidation counters and reserves `u128::MAX` exclusively
-  for an absorbing exhaustion fence. Insufficient headroom denies before
+  `u128` attempt-set/revalidation/canonical capacity-checkpoint/capacity-
+  replay-head counters and reserves each `u128::MAX` exclusively for an
+  absorbing exhaustion fence. The archive sequences advance together once per
+  ArchiveFinalize charge. Insufficient headroom denies before
   external work; a valid sentinel permanently unreadies every effect and
   Commit path and never represents the triggering mutation. A lineage-wide
   capacity state owns class-specific admitted/consumed/remaining counts and
@@ -418,8 +420,13 @@ audit decision.
   exact charge/result membership, capacity/sentinel equations and archive
   epochs. Only the greatest verified head plus hot suffix is authoritative;
   archive loss returns typed historical-state-unavailable without a charge or
-  head advance, while verified head installation and exact captured-row
-  deletion are atomic and leave the compaction charge hot. Begin
+  head advance. Publication uses a bounded manifest/cursor/budget and closed
+  Staged→Verified→Consumed or Orphan→Collected receipt machine funded by
+  non-borrowable Recovery capacity. A charged local PreparePending fence
+  precedes external traffic; only definitely-not-witnessed evidence reopens it.
+  An independent precommit high-watermark witnesses the exact successor; restore reads it first, and final witnessed
+  head installation plus exact captured deletion is atomic and leaves the
+  compaction charge hot. Begin
   creates plan generation 1 and PreparingOpen. Only independently
   authorized Replan can recover a terminally reconciled plan by fencing/
   superseding old attempts/grants/receipts and atomically creating a new
@@ -436,7 +443,8 @@ audit decision.
   settling every leg, advancing Released to OriginalTotal and committing
   CustodyReleased with the matching parent inverse. The combined rank acquires
   residual routing head/residual state head/counter-capacity state/remediation
-  attempt-set head/counter-capacity archive-replay head/archive head/plan
+  attempt-set head/counter-capacity archive-high-watermark/counter-capacity
+  archive-publication/counter-capacity archive-replay head/archive head/plan
   head/commit-attempt disposition/sorted remediation
   attempt/capability/evidence/authorization/reconciliation/checkpoint rows/
   publication state,

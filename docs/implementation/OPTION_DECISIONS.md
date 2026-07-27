@@ -1086,15 +1086,44 @@ absence is genuinely unseen. Missing archive/key/chunk/proof/result returns
 typed historical-state-unavailable without charging or advancing; an older
 readable checkpoint is never substituted.
 
-Stage and verify chunks before publication. Finalization must lock
-routing→residual-state→capacity-state→attempt-set→capacity-archive-replay-head
-and atomically consume one history-lifecycle charge, advance capacity/head,
-CAS-install the verified replay head, delete only its exact captured predecessor
-charges and write result/audit/outbox. End checkpoint coverage before that
-command so its own charge remains hot. Replan binds the replay head and carries
-archived plus hot consumption and retained obligations. This is preferred over
-dense watermarks, probabilistic membership, split deletion, implicit unseen
-state, readable-old-head fallback or a self-covering compaction charge.
+Give this archive its own immutable chunk manifest, proof budget, durable
+verification cursor and five-state publication receipt: Staged, Verified,
+ConsumedByCommit, OrphanGcEligible or Collected. Only typed Stage, Verify,
+MarkOrphan and FinalizeGc commands mutate it. Proof budgets bound bytes,
+entries, chunks, depth, allocation, decoding, hashing, continuations, work and
+time; verification reconciliation and orphan cleanup use non-borrowable
+Recovery capacity. Verified may CAS only to ConsumedByCommit or, after proof
+the candidate cannot win, OrphanGcEligible. GC rechecks replay/high-watermark
+non-reference and records Collected only after authenticated exact deletion.
+Publishers/storage adapters remain evidence-only and cannot declare Verified,
+install heads or mutate lifecycle rows.
+
+Before final local CAS, require an independently witnessed monotonic
+CapacityArchiveHighWatermark binding the exact proposed checkpoint/replay-head,
+publication/manifest, epochs, covered/successor capacity state, history charge,
+mutation/result and deletion set. Prepare first consumes its admitted charge
+and installs a local PreparePending writer fence under the canonical locks;
+only then may external traffic begin. Exact query/reconciliation selects either
+Witnessed or authenticated AbortedDefinitelyUnwitnessed; timeout/absence stays
+fenced. A witnessed candidate cannot be orphaned: crash recovery exact-
+completes the deterministic successor or stays unready. Finalization locks
+routing→residual-state→capacity-state→attempt-set→capacity-archive-high-
+watermark→publication→capacity-archive-replay-head and atomically consumes one
+history-lifecycle charge, advances capacity/head, CASes Verified to
+ConsumedByCommit, installs the witnessed replay head, deletes exact captured
+predecessor charges and writes outputs. Its charge remains hot. Restore reads
+the independent greatest watermark before local heads; a locally consistent
+older snapshot is never authoritative.
+
+Include canonical capacity-checkpoint and replay-head `u128` sequences in the
+capacity proof/state. They start equal and advance together exactly once per
+successful ArchiveFinalize charge; proposed/orphan attempts use stable IDs
+without consuming a canonical value. Prove current plus every remaining
+ArchiveFinalize charge is at most `u128::MAX - 1` and reserve separate terminal
+sentinels for both domains. This is preferred over adapter-defined verification,
+dense/probabilistic membership, unbounded verify work, split deletion, local-
+only rollback selection, sequence gaps, readable-old-head fallback or a self-
+covering compaction charge.
 
 At unexpected last-ordinary state, install the sentinel fence instead of the
 triggering mutation, permanently unready all Begin/Dispatch/Stage/Verify/

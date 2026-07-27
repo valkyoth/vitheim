@@ -830,8 +830,10 @@ CASes previous/current root plus cumulative commitment. MarkEligible verifies
 the chain or checkpointed prefix plus suffix and reruns the full validation
 against its terminal current root without blocking restrictive work. Begin
 or Replan proves overflow-safe lifetime headroom over fixed `u128`
-attempt-set/revalidation counters and reserves the terminal value only for an
-absorbing exhaustion fence. Insufficient headroom denies before external work;
+attempt-set/revalidation/canonical capacity-checkpoint/capacity-replay-head
+counters and reserves each terminal value only for an absorbing exhaustion
+fence. The archive sequences advance together once per ArchiveFinalize charge.
+Insufficient headroom denies before external work;
 unexpected exhaustion permanently unreadies the owner without fabricating an
 advance. A lineage-wide capacity state owns per-writer-class admitted/
 consumed/remaining counts and head/counter equations. Every writer locks it
@@ -842,9 +844,14 @@ archive-replay head bind exact archived charge/material/result membership,
 all capacity/sentinel equations, captured hot rows and publication/key/
 encoding epochs. Only the greatest verified head plus hot suffix is
 authoritative: exact retry returns the old result, changed material conflicts,
-and unavailable history denies without a charge or head advance. Verified
-head installation and exact captured-row deletion are one transaction whose
-own history charge remains hot; Replan carries archived plus hot consumption.
+and unavailable history denies without a charge or head advance. Publication
+has an immutable manifest, bounded proof/cursor, closed Staged/Verified/
+Consumed-or-Orphan/Collected states and non-borrowable Recovery-backed typed
+commands. A charged local PreparePending fence precedes external traffic and
+unknown witness status remains fenced. An independent authority witnesses the
+exact successor before final CAS; restore reads it before local state, and the witnessed successor exact-
+commits or stays unready. Witnessed head installation and captured deletion are
+one transaction whose own charge stays hot; Replan carries all consumption.
 Begin creates plan generation 1 and PreparingOpen. Independently
 authorized Replan alone
 recovers terminal reconciliation by fencing/superseding old attempts, grants
@@ -868,7 +875,8 @@ CommitCustodyRelease grants have complete six-state
 admission/expiry/issuer-intent/destination-apply/tombstone/first-terminal
 families; custody evidence is never command authority. Begin and final release
 share one residual-routing-head→residual-state-head→counter-capacity-state→
-remediation-attempt-set-head→counter-capacity-archive-replay-head→archive-head→
+remediation-attempt-set-head→counter-capacity-archive-high-watermark→counter-
+capacity-archive-publication→counter-capacity-archive-replay-head→archive-head→
 plan-head→commit-attempt→sorted-remediation-attempt/capability/evidence/authorization/reconciliation/checkpoint-rows→publication-state→
 settlement-head→sorted-custody-
 profiles/ledgers/reservations→parent→current-slot→canonical-ID-sorted-old-
@@ -1125,6 +1133,11 @@ or Replan/compaction/restore consumption rollback, false archived membership
 or nonmembership, changed-material archived retry, missing archive/key/result
 treated as unseen, partial captured-row deletion, capacity checkpoint/replay-
 head rollback/fork, self-deleted compaction charge or lost sentinel recovery,
+adapter-defined Verified, publication state bypass, proof-budget/cursor
+overflow, Recovery borrowing, Verify/Commit/orphan/GC race, referenced or
+witnessed archive collection, coordinated local capacity/head/publication
+rollback below the external watermark, prepared successor abandonment,
+capacity checkpoint/replay-head sequence wrap/gap/equality failure,
 finalization bypass, mutable-root drift, coordinated residual state-head/high-
 watermark rollback, sibling closure/budget theft or lost aggregate decrement,
 Commit with hidden/nonterminal attempt work, absent-row-as-empty aggregate,

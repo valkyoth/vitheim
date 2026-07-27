@@ -87,6 +87,9 @@ All notable Vitheim changes are documented here. The format follows
   archive-replay head with exact-set replay/conflict proofs, atomic verified
   compaction, fail-closed historical unavailability and Replan/restore
   continuity across archived charges.
+- Closed capacity-archive publication with typed bounded lifecycle ownership,
+  independently witnessed precommit rollback protection and capacity-proved
+  paired checkpoint/replay-head sequence domains.
 - Restricted provider execution to one persisted application-level
   transmission claim; timeout, crash, lease loss or takeover is query-only and
   provider deduplication never authorizes application resend.

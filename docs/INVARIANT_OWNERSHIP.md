@@ -405,6 +405,20 @@ The same destination-local owner persists:
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterWriterChargeRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityCheckpointRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveReplayHeadRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationChunkManifestRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationStateRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationReceiptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationProofBudgetRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationVerificationCursorRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationStageResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationVerifyResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationCommitResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationMarkOrphanResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchivePublicationGcResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReceiptRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkPrepareResultRow`,
+  `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkReconciliationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanOperationResultRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseReplanPreflightRow`,
   `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitAttemptAbandonResultRow`,
@@ -544,9 +558,11 @@ record.
 MarkEligible verifies the complete chain or checkpointed prefix plus suffix
 against the locked current head before full validation may restore eligibility;
 restrictive work within the admitted lifetime bound never waits. Begin/Replan
-proves overflow-safe headroom across fixed `u128` attempt-set/revalidation
-counters and reserves the terminal value solely for an absorbing exhaustion
-fence. Insufficient capacity denies before external work; unexpected exhaustion
+proves overflow-safe headroom across fixed `u128` attempt-set, revalidation,
+canonical capacity-checkpoint and capacity-replay-head counters and reserves
+each terminal value solely for an absorbing exhaustion fence. The archive
+counters start equal and advance together once per ArchiveFinalize charge.
+Insufficient capacity denies before external work; unexpected exhaustion
 permanently unreadies the owner and never fabricates a successor mutation. One
 lineage-wide predecessor-linked capacity state is the sole owner of
 per-writer-class admitted/consumed/remaining counts, total head writes,
@@ -562,6 +578,20 @@ greatest verified head plus its hot suffix is authoritative: exact archived
 retry returns its result, changed material conflicts, and unavailable history
 returns `RevalidationCounterCapacityHistoricalStateUnavailable` without a
 charge or head advance.
+Publication has its own immutable manifest, proof budget, durable cursor and
+closed Staged→Verified→ConsumedByCommit or OrphanGcEligible→Collected receipt
+machine under typed Stage/Verify/Commit/MarkOrphan/FinalizeGc results. A non-borrowable
+Recovery slice funds verification reconciliation and orphan deletion.
+Publisher/storage evidence cannot declare Verified or mutate ownership rows.
+Before finalization, an independent authority witnesses the exact proposed
+capacity checkpoint/replay head, publication, epochs, capacity-state successor,
+history charge/result and deletion set. Prepare first installs a charged local
+PreparePending writer fence; witness reconciliation may reopen it only with
+authenticated definitely-not-witnessed evidence, never timeout. The witnessed
+predecessor stays fenced: finalization exact-commits it or recovery remains
+unready. Restore reads that
+external greatest high-watermark before local state, so coordinated local
+rollback cannot refund capacity.
 Only then
 may the same transaction settle all legs, advance Released to OriginalTotal,
 remove/credit the identical parent member and record CustodyReleased; the
@@ -661,7 +691,12 @@ ordinary state, forged/missing exhaustion fence, invented mutation after
 sentinel, false archived membership/nonmembership, changed-material archived
 retry accepted, missing archive chunk/key/result treated as unseen, partial
 captured-row deletion, replay-head/checkpoint fork or rollback, Replan resetting
-archived consumption, capacity exhaustion, missing/reset capacity state,
+archived consumption, adapter-defined Verified, publication lifecycle bypass,
+proof-budget/cursor overflow, Recovery borrowing, Commit/orphan/GC race,
+collection of referenced or high-watermarked chunks, local replay/state/
+publication rollback below the independent high-watermark, witnessed successor
+abandoned instead of completed, capacity archive sequence gap/wrap/equality
+failure, capacity exhaustion, missing/reset capacity state,
 writer-class substitution, charge
 without head or head without charge, duplicate retry charge, Replan/
 compaction/restore consumption rollback, mutable membership-root drift,

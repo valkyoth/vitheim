@@ -423,8 +423,10 @@ previous/current root, latest mutation and cumulative commitment with immutable
 advance evidence. Full MarkEligible revalidation verifies the chain or
 checkpointed prefix plus suffix and binds its terminal root without blocking
 restrictive work admitted by the proven lifetime bound. Begin/Replan proves
-overflow-safe headroom across fixed `u128` attempt-set/revalidation counters,
-reserving the terminal value solely for an absorbing exhaustion fence.
+overflow-safe headroom across fixed `u128` attempt-set/revalidation/canonical
+capacity-checkpoint/capacity-replay-head counters, reserving each terminal value
+solely for an absorbing exhaustion fence. The archive sequences advance
+together once per ArchiveFinalize charge.
 Insufficient headroom denies before external work; unexpected exhaustion
 permanently unreadies the owner without inventing a mutation. A lineage-wide
 capacity state owns class-specific admitted/consumed/remaining counts, total
@@ -436,9 +438,14 @@ the exact archived charge set, result lookup, all capacity/sentinel equations
 and publication/key/encoding epochs; its predecessor-linked archive-replay head
 plus hot suffix is the only authoritative lookup. Same-material retry returns
 the historical result, changed material conflicts, and missing archive evidence
-fails closed without charging or advancing a head. Verified head installation
-and deletion of only the captured hot rows are one transaction whose own
-history-lifecycle charge remains hot. Begin creates plan generation 1 and
+fails closed without charging or advancing a head. A dedicated immutable
+manifest, proof budget, cursor and closed Staged/Verified/Consumed-or-Orphan/
+Collected receipt machine own publication. A charged local PreparePending
+fence precedes external traffic and unknown witness state never reopens.
+An independent high-watermark authority witnesses the exact proposed successor before final CAS; restore
+reads it before local state, and a witnessed successor exact-commits or stays
+unready. Final witnessed head installation and captured-row deletion are one
+transaction whose own history-lifecycle charge remains hot. Begin creates plan generation 1 and
 PreparingOpen. Terminal
 reconciliation is recovered only by
 independently authorized monotonic Replan, which fences/supersedes old
@@ -453,8 +460,10 @@ original-bucket budget charge; exact retry never recharges and Recovery
 capacity is non-borrowable. The same transaction
 settles every leg, advances Released to OriginalTotal,
 removes/credits the identical parent member and records CustodyReleased. Its
-release paths share one residual-routing-head→residual-state-head→remediation-
-attempt-set-head→counter-capacity-archive-replay-head→archive-head→plan-head→commit-attempt→sorted-remediation-
+release paths share one residual-routing-head→residual-state-head→counter-
+capacity-state→remediation-attempt-set-head→counter-capacity-archive-high-
+watermark→counter-capacity-archive-publication→counter-capacity-archive-replay-
+head→archive-head→plan-head→commit-attempt→sorted-remediation-
 attempt/capability/evidence/authorization/reconciliation/checkpoint rows→
 receipt combined
 lock rank and must preflight the complete
