@@ -527,9 +527,16 @@ audit decision.
   signer, status, audit, log/trace/error or archive records as plaintext.
   Residency, retention, hold, ciphertext digest, keyed/domain-separated
   plaintext commitment and key custody remain bound through finalization/
-  export; raw dictionary-testable hashes are forbidden. The target binds its expected predecessor; only journal
-  identity, policy-valid recorded time and the canonically derived predecessor
-  chain are finalizer-owned, and the signed commit record covers them.
+  export; raw dictionary-testable hashes are forbidden. PayloadReferenceUseClaim
+  binds every proposal/event/shared member, transfer-unknown disposition and
+  authoritative release proof. Neither proposal terminality nor a local count
+  authorizes erasure, and `P_claim` funds every distinct reference through
+  status/terminal/release. The target binds its expected predecessor; only journal
+  identity, a commit-cut-containing interval under the non-regressing recorded-
+  time ratchet and the canonically derived predecessor chain are finalizer-
+  owned, and the signed commit record covers them. Clock rollback or missing
+  failover/restore continuity unreadies. Zero-event domain batches reject;
+  control/no-aggregate targets bind CanonicalNoDomainEventChain instead.
   Before claim acquisition, independent scoped unique constraints resolve
   command ID and idempotency ID to the same terminal or active execution;
   one-sided or cross-pair reuse conflicts even after compaction, unavailable
@@ -538,9 +545,11 @@ audit decision.
   authoritative reread or authenticated backend commit attestation. The
   explicit hosted-runtime profile names its trust boundary; caller-provided
   bytes, cache/replica reads and transaction-return success are not proof.
-  Claim admission also preselects and funds a threshold/redundant signer set or
-  root-authorized successor lineage. Recovery signs only the identical commit,
-  never rewrites events/results or resets capacity; without a valid successor,
+  Claim admission also preselects and cardinality-funds a bounded
+  threshold/redundant signer set or root-authorized successor lineage.
+  `S_claim` covers every member attempt, response-loss query, partial,
+  concurrency/terminalization route and quorum import. Recovery signs only the
+  identical commit, never rewrites events/results or resets capacity; without a valid successor,
   CommitReceiptSignerRecoveryRequired remains live and authority stays closed.
   Unknown/Unavailable and local exhaustion remain distinct fail-closed
   unresolved states; authenticated external seal alone assigns permanent

@@ -898,9 +898,15 @@ restore, failover, and release evidence.
    Inline payload is non-sensitive only; classified data remains an encrypted/
    externally erasable reference or erased tombstone governed by the Phase A
    lifecycle across proposal, registry, signer, status and archive surfaces.
-   The target binds the expected predecessor. Finalization allocates journal
-   identity and policy-compliant recorded time, then derives the canonical
-   intra-batch integrity chain and commits the complete mapping.
+   A PayloadReferenceUseClaim membership root owns proposal/event/shared use,
+   transfer-unknown state and multi-authority release proof; bounded
+   `p_claim_max` funds every distinct-reference route. The target binds the
+   expected predecessor. Domain finalization atomically advances the journal
+   recorded-time continuity ratchet, allocates a conservative interval around
+   the commit cut and derives the canonical intra-batch integrity chain.
+   Clock rollback or failover without authenticated continuity unreadies.
+   Control/no-aggregate targets use CanonicalNoDomainEventChain; a zero-event
+   domain batch rejects.
    Independently unique command and idempotency IDs must both name the same
    command-execution row; one-sided hot or archived reuse conflicts. That row
    joins retries across every nonterminal stage and
@@ -908,9 +914,11 @@ restore, failover, and release evidence.
    disposition publication and never undoes events. A remote signer trusts
    either a signer adapter's authoritative read or authenticated backend commit
    attestation; the in-process profile explicitly trusts the hosted runtime.
-   Caller bytes alone are never commitment proof. A preselected threshold/
-   redundant set or root-authorized successor may sign only the identical
-   committed record after primary loss; otherwise
+   Caller bytes alone are never commitment proof. A preselected bounded
+   threshold/redundant set or root-authorized successor may sign only the
+   identical committed record after primary loss. Cardinality-safe `S_claim`
+   funds every signer member attempt, partial, response-loss/terminal path and
+   quorum import; otherwise
    CommitReceiptSignerRecoveryRequired remains live and fail-closed.
    Admission proves live plus outcome-unknown claims remain at or below
    `c_max`, with protected drain work and command/effect/queue/projection

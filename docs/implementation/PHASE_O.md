@@ -306,10 +306,16 @@ target and ordered ProposedEventDescriptor root for every proposal-owned
 semantic field. ProposedEventPayload permits inline non-sensitive data only;
 classified payload remains an encrypted/externally erasable reference or
 erased tombstone, and plaintext canaries must remain absent from registry,
-signer, status, audit, logs and archive/export. Finalization reuses/transfers
-that reference, obtains policy-compliant authoritative recorded time and
-derives the complete EventCommitChain from the target-bound predecessor before
-persisting the descriptor-to-envelope map. Evidence must exercise separate
+signer, status, audit, logs and archive/export. PayloadReferenceUseClaim must
+bind proposal/event/shared membership, transfer unknown and authenticated
+release eligibility under signed `p_claim_max` and cardinality-safe `P_claim`;
+collection cannot erase
+a retained event/shared reference. Domain finalization atomically advances the
+journal RecordedTimeAuthorityRatchet with a conservative commit-cut interval
+and derives the complete nonempty EventCommitChain from the target-bound
+predecessor before persisting the descriptor-to-envelope map. Zero-event
+domain work rejects; control/no-aggregate binds CanonicalNoDomainEventChain.
+Evidence must exercise separate
 tenant/deployment command-ID and idempotency-ID uniqueness across all hot/
 archive combinations; both must name the same unique ClaimAcquisitionPending
 through RegistrySettlementPending execution, while one-sided reuse conflicts.
@@ -322,7 +328,9 @@ Publish/Reconcile/status and signed-receipt settlement. Caller-provided bytes,
 replica/cache reads and a transaction-success return are not commit proof;
 unsupported attestation profiles refuse. Evidence must also prove
 the preselected threshold/redundant or root-authorized successor signer path
-under non-borrowable `S_claim`: it signs only the identical record, and an
+under cardinality-safe non-borrowable `S_claim`: signed `n_signer_max/
+k_signer` funds every member attempt, response-loss query, partial,
+terminalization and quorum import. It signs only the identical record, and an
 unrecoverable signer leaves redacted CommitReceiptSignerRecoveryRequired,
 live capacity and fail-closed authority. Evidence must also prove
 executor/provider redemption immediately before effects. The external

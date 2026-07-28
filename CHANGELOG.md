@@ -8,6 +8,12 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Made recovery admission cardinality-safe: distinct payload references are
+  funded through `P_claim`, signer members/partials and quorum import through
+  `S_claim`. Added exact PayloadReferenceUseClaim ownership and release proof,
+  a rollback-resistant journal recorded-time ratchet with explicit commit-cut
+  semantics, and CanonicalNoDomainEventChain for non-domain targets while zero-
+  event domain batches reject.
 - Extended recovery proposals through the Phase A erasable-payload lifecycle:
   classified plaintext stays out of registry/signer/status/archive evidence,
   while opaque references, residency/hold policy and erasure tombstones remain

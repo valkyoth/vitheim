@@ -210,10 +210,18 @@ lifecycle descriptor and may not duplicate classified plaintext outside the
 governed encrypted/externally erasable store. Immutable auditability is
 provided by non-sensitive digests and erased-payload tombstones, not retained
 plaintext.
+The lifecycle port must also support an opaque reference-use identity,
+predecessor-linked exact membership root and authenticated non-reference proof
+across live/retained hot, checkpoint, archive, restore, retention and hold
+authorities. Later proposal/event users may add/remove only their own exact
+membership; terminal proposal state or a process-local reference count never
+authorizes transfer, release, key destruction or erasure. Transfer response
+loss remains a live use until reconciled.
 
 Verification: classification downgrade, plaintext in metadata/log/index/receipt,
 hash substitution, held-data erasure, key destruction, double erasure, missing
-payload replay, rebuild-after-erasure, descriptor incompatibility, and forbidden
+payload replay, shared proposal/event reference, transfer response loss,
+early/double release, rebuild-after-erasure, descriptor incompatibility, and forbidden
 outward Phase F dependency tests pass.
 
 Exit criteria: erasure can remove recoverable plaintext without rewriting event

@@ -3248,11 +3248,22 @@ digest, key owner/epoch, residency, retention, legal-hold,
 custody, erasure-authority/profile and external-copy bindings; governed
 immutable-reference reuse, co-located atomic custody transfer or authenticated
 precommitted external-transfer receipt consumption without a distributed
-transaction; rejected/cancelled
+transaction; canonical PayloadReferenceUseClaim membership root/state,
+proposal/event/shared use, stable transfer attempt/receipt reconciliation,
+TransferOutcomeUnknown blocking, proposal-collection/event-retention/restore/
+hold non-reference authorities, release proof and exact erased tombstone;
+production `e_claim_max`/`p_claim_max` plus per-reference `P_claim`
+Admission/Publish/Reconcile/status/concurrency/terminal/release capacity;
+rejected/cancelled
 erasure/tombstone behavior and explicit no-classified-plaintext surfaces;
 ordered descriptor-root algorithm; exact target expected-predecessor digest;
-backend-authoritative recorded-time allocation and EventCommitChain algorithm
-mapping first target predecessor and every intra-batch predecessor/digest;
+backend-authoritative RecordedTimeAuthorityRatchet source identity, boot/fence/
+profile/key continuity, nondecreasing lower bound and conservative interval
+enclosing the commit linearization cut; atomic ratchet/journal-head update,
+rollback/suspend/failover/restore/profile-rotation behavior; EventCommitChain
+algorithm mapping first target predecessor and every intra-batch predecessor/
+digest; CanonicalNoDomainEventChain encoding for empty control/no-aggregate
+targets and explicit zero-descriptor domain rejection;
 finalizer-field allowlist/mapping; local database physical
 separation between PreparedNonAuthoritative proposal store and immutable event
 journal, with no proposal allocation of stream/journal/event/outbox/projection
@@ -3280,7 +3291,10 @@ identity/continuity/boot/lease/fence and anti-replay proof, and exact production
 trust claim for hosted runtime;
 per-backend CommitReceiptSignerRecovery selection of exactly
 ThresholdRedundantSignerSet or RootAuthorizedSuccessorSigner; threshold member/
-quorum/health and failover rules or pinned-root successor authorization,
+quorum/health and failover rules or pinned-root successor authorization;
+production `n_signer_max` and `k_signer`, canonical member ordering, per-member
+attempt/Publish/Reconcile/status/partial/concurrency/terminal state, duplicate-
+partial rejection and separately reserved quorum-combination/import operation;
 failed/lost/distrusted primary disposition, original commit/attestation binding,
 successor key lineage/historical verification, CommitReceiptSignerRecoveryRequired
 status, no-event/no-result-change/no-capacity-reset rules and non-borrowable
@@ -3305,8 +3319,9 @@ RegistryFinalizationSettled→Operational or
 RestoreUnready;
 distinct FenceEvidence
 archive backend/commands/results producing `J_m` only; production values for
-`o_max/c_max/a_max/v_max/q_max/r_max/x_max/t_max`, per-class byte/work/output
-ceilings, `B_EM` and `R_first`, with no automatic replenishment; separate
+`o_max/c_max/a_max/v_max/q_max/r_max/x_max/t_max`, `e_claim_max/p_claim_max/
+n_signer_max/k_signer`, per-class byte/work/output ceilings, `P_claim`,
+`S_claim`, `B_EM` and `R_first`, with no automatic replenishment; separate
 initial-bootstrap and guard-first post-bootstrap lock orders; and sequential-
 equivocation recovery; explicit `C_n→P_(n-1), H_n→C_n, P_n→H_n` ordering with
 generated schema/hash-DAG and hot checkpoint-create/`P_n` records; typed
@@ -3347,9 +3362,16 @@ payload reuse under changed event/schema/aggregate/tenant/command/causation/
 correlation/time/classification/custody semantics; inline-classified payload,
 plaintext canaries across every proposal/registry/signer/status/log/archive
 surface, payload reference/digest/key/residency/retention/hold/custody/
-erasure/export substitution, rejected/cancelled crypto-erasure/tombstone;
+erasure/export substitution, shared proposal/event reference, duplicate/lost
+transfer receipt, early/double release, partial batch, collection/event-
+retention/restore/hold race, rejected/cancelled crypto-erasure/tombstone,
+`p_claim_max−1/p_claim_max/p_claim_max+1`;
 target predecessor mismatch, authoritative recorded-time policy/uncertainty
-failure, zero/one/max intra-batch chain derivation/reorder/substitution,
+failure, clock step/rollback/suspend/restart/failover/restore/source/profile
+rotation, lower-bound regression and false transaction-start/allocation time,
+zero-event DomainAggregateTarget rejection, CanonicalNoDomainEventChain
+control/no-aggregate cases, one/max intra-batch chain derivation/reorder/
+substitution,
 finalizer-field overreach and descriptor-envelope mapping, acquisition response loss and every
 Issued/Rejected/Unknown/Unavailable/ExpiredDefinitelyUnredeemed outcome,
 permit reconstruction, proposal/event/journal/outbox/projection aliasing,
@@ -3369,7 +3391,10 @@ substitution, unsupported attester refusal, signer response loss/key substitutio
 threshold member/quorum failure and root-authorized successor after lost/
 distrusted primary, late-primary/recovered-receipt convergence, recovery
 authorization/commit/attestation/signer-lineage substitution, ordinary-lane
-exhaustion with intact `S_claim`, no-successor CommitReceiptSignerRecoveryRequired
+exhaustion with intact cardinality-scaled `S_claim`, every
+`1 <= k_signer <= n_signer <= n_signer_max`, member/partial response loss,
+duplicate-member quorum, separately reserved quorum import and
+`n_signer_max−1/n_signer_max/n_signer_max+1`, no-successor CommitReceiptSignerRecoveryRequired
 and proof recovery cannot append/rewrite/refund/reset,
 lost or forged finalization receipts, permanent-no-commit proof, confirmation-
 without-settlement, active/terminal row-byte ceilings, Commit-status ambiguity,

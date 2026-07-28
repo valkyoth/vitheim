@@ -930,9 +930,14 @@ target plus ordered ProposedEventDescriptor root covering every proposal-owned
 semantic field; InlineNonSensitive or governed encrypted/externally erasable
 reference/erased tombstone payload variants with no classified plaintext in
 proposal/registry/signer/status/audit/archive/export; exact payload-reference
-reuse/custody transfer; target-bound expected predecessor, policy-compliant
-authoritative recorded time and complete EventCommitChain mapping in the fresh
-immutable event/result/audit/outbox append; and separate scoped command-ID and
+reuse/custody transfer plus PayloadReferenceUseClaim proposal/event/shared
+membership, transfer-unknown state and authenticated global release proof
+under signed `p_claim_max` and per-reference `P_claim`; target-bound expected predecessor, atomically
+advanced RecordedTimeAuthorityRatchet with a conservative interval enclosing
+the commit cut and complete nonempty EventCommitChain mapping in the fresh
+immutable event/result/audit/outbox append. Zero-event domain batches reject
+and control/no-aggregate binds CanonicalNoDomainEventChain. Production also
+requires separate scoped command-ID and
 idempotency-ID unique claims that must resolve to one ClaimAcquisitionPending
 through RegistrySettlementPending execution across hot/archive history.
 Exact retry joins, one-sided/cross-pair reuse conflicts, changed request
@@ -943,10 +948,13 @@ before the selected post-commit signer and signed-receipt status settlement.
 Backend continuity, transaction, target, descriptor map and result/audit/outbox
 roots are bound; caller bytes, replica/cache reads and transaction-return
 success are not proof, and unsupported profiles refuse. Production also proves
-claim admission pre-provisions and funds exactly a threshold/redundant signer
-set or root-authorized successor. Recovery binds the original commit/
+claim admission pre-provisions and cardinality-funds exactly a bounded
+threshold/redundant signer set or root-authorized successor. Signed
+`n_signer_max/k_signer` and protected `S_claim` cover every member attempt,
+response-loss query, partial, concurrency/terminal path and quorum import.
+Recovery binds the original commit/
 attestation and failed signer disposition, signs no changed meaning, creates no
-event/result/capacity reset and progresses under protected `S_claim`; without a
+event/result/capacity reset and progresses under that reserve; without a
 valid path CommitReceiptSignerRecoveryRequired remains live and fail-closed.
 Production also proves plaintext canaries across every named surface and
 executor/provider redemption at send;

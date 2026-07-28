@@ -7430,7 +7430,11 @@ OperationalAuthorityClaimTargetV1 and, for DomainAggregateTarget only, an
 ordered non-empty sequence of canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimProposedEventDescriptorV1`.
 ControlOwnerTarget and CanonicalNoAggregateTarget require an empty descriptor
-sequence and bind their canonical control/effect material digest instead.
+sequence, bind their canonical control/effect material digest and produce
+canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCanonicalNoDomainEventChainV1`
+instead of an EventCommitChainV1. A zero-descriptor DomainAggregateTarget is
+invalid; the no-domain-chain value cannot be substituted for a domain chain.
 
 Each ProposedEventDescriptorV1 contains every proposal-owned semantic
 event-envelope field: tenant/deployment; event type; schema ID/version;
@@ -7472,6 +7476,42 @@ original residency, retention, legal-hold, key-custody and external-copy
 constraints rather than treating the descriptor root as permission to move
 data.
 
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimPayloadReferenceUseClaimV1`
+owns reference use independently of immutable proposal or event evidence. It
+binds one opaque reference/digest/custody identity; the exact proposal and
+descriptor-index members; every committed event-envelope member; current
+payload-store authority/epoch; residency, retention, hold and erasure policy;
+transfer attempt/receipt identity; and predecessor-linked exact membership
+root/count. Its closed states are ProposalCustodyOnly, TransferPending,
+TransferOutcomeUnknown, SharedProposalAndEventCustody, EventCustodyOnly,
+ReleaseEvaluationPending, ReleaseEligible and ErasedTombstone. Several
+descriptors or events may share one claim; cardinality is charged by distinct
+references, while its membership root prevents a shared use from being
+mistaken for another transferable copy.
+
+Preparation atomically installs the proposal members. Exact-reference reuse
+adds committed-event members and enters SharedProposalAndEventCustody without
+duplicating bytes. A co-located transfer changes custody and installs all
+event members in the local finalization transaction. An external transfer
+uses stable Admission→one-shot Publish→Reconcile/status/terminalization state;
+lost response remains TransferOutcomeUnknown, retains the proposal use claim,
+treats both possible custodians as live and blocks finalization, collection,
+release and erasure. An exact duplicate
+receipt joins its stored disposition; changed reference, member set, custody
+or receipt conflicts. After an atomic domain batch either every intended event
+member exists or none does; there is no partial reference release on batch
+failure.
+
+Proposal collection may remove only its exact proposal members. Release
+evaluation then requires authenticated non-reference across every live
+proposal, committed event and retained hot/checkpoint/archive membership,
+transfer attempt or unknown outcome, restore cursor, retention authority and
+legal hold. Event retention or hold therefore dominates proposal terminality.
+Only the lifecycle owner may advance ReleaseEligible to policy-authorized
+erasure and ErasedTombstone; retry is exact, double release is a conflict, and
+absence or a local reference count is never sufficient evidence.
+
 Actual accepted recorded-time interval and integrity predecessor/digest chain
 are finalizer-owned commit metadata because they depend on the authoritative
 commit cut. They are not caller-selectable omissions. DomainAggregateTarget
@@ -7486,6 +7526,26 @@ stream version, journal offset, transaction position, actual recorded-time
 interval and derived integrity predecessor/digest, all governed by this closed
 algorithm. Registry confirmation signs the ordered descriptor root, exact
 target and proposal digest, not a payload-only body root.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimRecordedTimeAuthorityRatchetV1`
+is scoped to the journal authority and binds trusted-time source identity,
+continuity/boot/fence evidence, profile/key epoch, prior authenticated lower
+bound, last accepted conservative commit interval, journal head/position and
+ratchet predecessor digest. The selected backend profile must allocate an
+interval that conservatively encloses the authoritative transaction commit
+linearization cut—not request receipt, transaction start or journal
+allocation—and atomically advance the nondecreasing lower-bound ratchet with
+the journal append. Journal position remains the ordering authority and
+intervals may overlap, but a source result below the authenticated lower bound
+or without commit-cut containment fails closed.
+
+Clock step, suspend, process/database restart, leader change, restore and time-
+profile rotation cannot reset this ratchet. A new source/boot/profile may
+continue only with authenticated continuity proving a lower bound at least as
+strong as the stored one; otherwise finalization and restore are Unready.
+Backends unable to prove atomic ratchet/head advancement and commit-cut
+semantics do not support DomainAggregateTarget finalization.
 
 Preparation is evidence, never domain history; rejected or abandoned proposals
 retain only policy-permitted opaque references or erased tombstones and enter
@@ -7527,7 +7587,8 @@ rechecks the issued, unexpired and unsettled claim; exact registry
 confirmation; authorization/fencing/key/distrust epochs; the exact canonical
 target, its single expected stream/owner version and domain predecessor
 envelope digest; command/material/descriptor-root digest; payload-reference
-custody/erasure state; and accepted recorded-time policy.
+use-claim membership/custody/transfer/erasure state; and accepted recorded-time
+policy plus journal-authority time-ratchet predecessor.
 DomainAggregateTarget then atomically appends one or more new immutable events
 to that one exact stream plus the committed command-result record, audit intent
 and outbox records. ControlOwnerTarget atomically mutates only its one named
@@ -7538,8 +7599,9 @@ target-kind mixture is rejected, never split or partially applied.
 
 For DomainAggregateTarget, the journal allocates fresh event IDs, consecutive
 stream versions, journal offsets and transaction positions only in this
-transaction; obtains the policy-compliant authoritative recorded-time
-interval; and derives the complete predecessor/envelope-digest chain under
+transaction; obtains the policy-compliant conservative recorded-time interval
+that encloses its commit cut; atomically advances RecordedTimeAuthorityRatchetV1;
+and derives the complete predecessor/envelope-digest chain under
 EventCommitChainV1 from the target's expected predecessor. Every proposal-
 owned field must be byte-for-byte and semantically equal to its registry-
 confirmed ProposedEventDescriptorV1.
@@ -7549,7 +7611,8 @@ effective time, recorded-time policy/profile/uncertainty,
 sensitivity/classification/custody or payload representation while wrapping
 the confirmed descriptor. InlineNonSensitive bytes are reused exactly;
 encrypted/externally erasable references are reused or custody-transferred in
-the supported local/receipt-backed transaction without plaintext persistence.
+the supported local/receipt-backed transaction while atomically installing
+every PayloadReferenceUseClaimV1 event member without plaintext persistence.
 Actual recorded time and
 predecessor values must be exactly those produced by the closed algorithm, not
 caller, proposal-store or adapter substitutions. The committed result exists as nonterminal command-execution
@@ -7565,10 +7628,15 @@ for each descriptor index, the exact descriptor digest mapped to allocated
 event ID, stream version, journal offset and transaction position, actual
 recorded-time interval, integrity predecessor and complete accepted-envelope
 digest; the initial expected predecessor and final batch head; payload
-reference/custody-transfer or tombstone digest; result/audit/outbox digests;
-authorization/fencing/key epochs; and local backend continuity. It is
+reference-use membership root plus custody-transfer or tombstone digest;
+for domain work, RecordedTimeAuthorityRatchetV1 predecessor/successor,
+source/profile/continuity and commit-cut containment evidence; for control/no-
+aggregate work, CanonicalNoDomainEventChainV1 and an explicit no-ratchet-
+advance marker; result/audit/outbox digests; authorization/fencing/key epochs;
+and local backend continuity. It is
 immutable evidence that the local commit occurred and that only the frozen
-finalizer-owned fields were derived or allocated under EventCommitChainV1,
+finalizer-owned fields were derived or allocated under the selected
+domain-or-no-domain chain rule,
 but is not yet a registry-acceptable signed receipt.
 
 Canonical
@@ -7645,25 +7713,32 @@ Claim admission additionally requires a selected, passing canonical
 Exactly one recovery option is frozen per backend/deployment:
 
 - ThresholdRedundantSignerSet: a provisioned threshold or redundant signer set
-  has independent members, a fixed acceptance quorum, shared record semantics,
-  tested failover and enough currently healthy members before claim admission;
+  has `1 <= k_signer <= n_signer <= n_signer_max`, independent canonical
+  members, a fixed acceptance threshold, shared record semantics, tested
+  failover and enough currently healthy members before claim admission;
   or
 - RootAuthorizedSuccessorSigner: an independently governed pinned root may
   authorize one successor signer/key lineage to sign the already committed
   record after authenticated disposition of the failed/lost/distrusted
-  primary signer.
+  primary signer; its recovery-member cardinality is canonically
+  `n_signer = k_signer = 1`.
 
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitReceiptSignerRecoveryV1`
 binds the original claim, proposal/descriptor root, command execution,
-immutable commit record, EventCommitChainV1 root, commit attestation,
+immutable commit record, exact EventCommitChainV1 or
+CanonicalNoDomainEventChainV1 root, commit attestation,
 primary signer/key/attempt and authenticated failure or distrust disposition,
 recovery profile/set/quorum, root authorization if applicable, successor
 signer/key lineage, every authority/key/distrust epoch and recovery
-attempt/status/result. Every accepted primary, threshold-member or successor
-receipt signs the identical commit-record digest and registry settlement
-meaning. A late primary receipt may join that same meaning but cannot create a
-different event, result or settlement.
+attempt/status/result. Each member owns a stable attempt, response-loss lane,
+partial-signature evidence, concurrency settlement and terminalization.
+Canonical member ordering and one separately reserved quorum-combination/
+import operation verify exactly `k_signer` distinct accepted members from the
+frozen set; duplicate members or partials cannot count twice. Every accepted
+primary, threshold-member or successor receipt signs the identical commit-
+record digest and registry settlement meaning. A late primary receipt may join
+that same meaning but cannot create a different event, result or settlement.
 
 If the selected signer can no longer complete, signing reconciliation advances
 SignaturePending→CommitReceiptSignerRecoveryRequired and preserves the
@@ -8013,10 +8088,31 @@ admission can consume the matching claim slot. Each claim separately reserves:
 `Q_claim(X) = q_claim_max(1_XStatusQueryAdmission +
 1_XStatusQueryTerminalize)`.
 
+The signed claim profile fixes nonzero `e_claim_max` descriptors,
+`p_claim_max <= e_claim_max` distinct payload references, signer-set bound
+`n_signer_max` and selected `k_signer`. Admission rejects an oversized or
+unfunded batch/profile before claim issuance. Per-claim payload capacity is:
+
+`P_claim = p_claim_max(1_PayloadReferenceUseClaim +
+1_PayloadTransferAdmission + 1_PayloadTransferPublish +
+1_PayloadTransferReconcile + Q_claim(PayloadTransfer) +
+1_PayloadTransferConcurrencySettlement +
+1_PayloadTransferTerminalize + 1_PayloadReleaseEvaluation) +
+1_PayloadBatchMembershipCommit`.
+
+All terms remain reserved even when exact reuse takes the shorter mutually
+exclusive path, because later proposal collection, shared membership,
+response-loss reconciliation and release proof must still complete safely.
+Per-claim signer recovery capacity is:
+
 `S_claim = 1_SignerRecoveryReserve + 1_SignerFailureDisposition +
-1_SignerRecoveryAuthorization + 1_SignerRecoveryAdmission +
-1_SignerRecoveryPublish + 1_SignerRecoveryReconcile +
-Q_claim(SignerRecovery)`.
+1_SignerRecoveryAuthorization + 1_SignerRecoveryRequiredStateAdvance +
+1_SignerRecoveryResumeStateAdvance +
+n_signer_max(1_SignerMemberAttempt + 1_SignerMemberPublish +
+1_SignerMemberReconcile + Q_claim(SignerMember) +
+1_SignerMemberPartialSignature + 1_SignerMemberConcurrencySettlement +
+1_SignerMemberTerminalize) +
+1_SignerQuorumCombinationImport + Q_claim(SignerQuorumCombination)`.
 
 `R_claim = 1_AcquisitionAdmission + 1_AcquisitionPublish +
 1_AcquisitionReconcile + Q_claim(Acquisition) +
@@ -8025,9 +8121,10 @@ Q_claim(SignerRecovery)`.
 q_claim_max_CommandStatus + 1_CommandTerminal +
 1_PreDispositionCancelDisposition +
 1_ClaimTerminalize + 1_DrainVerify + 1_ProposalPrepare +
-1_ProposalPayloadLifecycle + 1_DescriptorRootVerify +
+P_claim + 1_DescriptorRootVerify +
 1_DispositionPublish + 1_DispositionReconcile + Q_claim(Disposition) +
-1_LocalFinalizeCommitRecord + 1_EventCommitChain + 1_CommitAttestation +
+1_LocalFinalizeCommitRecord + 1_DomainOrNoDomainChain +
+1_RecordedTimeRatchetAdvanceOrNoAdvanceProof + 1_CommitAttestation +
 1_SigningAdmission + 1_SigningPublish +
 1_SigningReconcile + Q_claim(Signing) + S_claim +
 1_FinalizationReceiptPublish +
@@ -8038,14 +8135,17 @@ q_claim_max_CommandStatus + 1_CommandTerminal +
 An effect adds ProviderRedeem and EffectTerminalReceipt. The claim-specific
 status-query maximum `q_claim_max`, active/terminal row and byte maxima,
 identity-registry map node/proof/hot-suffix/archive/backlog/verification
-limits, checkpoint/archive/orphan-GC quanta and every result/audit/outbox/
-signer byte are fixed in the same signed profile. Identity-root maintenance
+limits, payload membership nodes/transfer attempts/receipts, signer member/
+partial/quorum bytes, checkpoint/archive/orphan-GC quanta and every result/
+audit/outbox/signer byte are fixed in the same signed profile. Identity-root maintenance
 has protected compaction capacity and admission backpressures before an exact
 lookup or atomic pair insertion cannot be funded. The archive-publication orphan/GC reserve
 is separately protected from ordinary claim traffic. The pre-disposition
 cancellation unit is mutually exclusive with forward disposition but remains
 reserved until one path terminalizes; command-status calls have a signed hard
-maximum and never allocate another claim. `S_claim` is pre-reserved before the
+maximum and never allocate another claim. `P_claim` is pre-reserved before
+proposal preparation and remains encumbered through every transfer-unknown,
+shared-reference, retention/hold and release-proof state. `S_claim` is pre-reserved before the
 irreversible local commit and is non-borrowable by ordinary signing or claim
 traffic; signer loss, failover or distrust cannot require an unfunded recovery
 write/status query. Its unused mutually exclusive route remains encumbered
@@ -8449,7 +8549,7 @@ mutate a field covered by the attempt-set commitment:
 | Fence-evidence checkpoint creation | create exact-set `E_m` from the absorbing fence | Guard-first EvidenceMaintenance under Fenced captures the complete fence/bundle/result/guard and predecessor anchor, consumes its bounded class, and can never create `C_n` |
 | Fence-evidence archive lifecycle | Stage/Verify/Commit for `E_m` | Dedicated discriminator, commands, states and results only. Commit produces exactly `J_m`, keeps guard/fence/bundle/result/shared anchor hot, and exposes no MarkOrphan/FinalizeGc operation |
 | Recovery current-pointer publication/reconciliation | submit `P_n` after `H_n`, then import every external outcome | Fence-first persist the semantic request and one-use claim before one process-local permit; valid signed Reconcile alone records the receipt, CASes ActivatedPendingPointerWitness→Operational, writes operationalization/source-consumption result and advances the recovery head, with `P_n→H_n` and no future receipt/result digest in the request; all other outcomes remain non-operational |
-| Operational registry claim lifecycle | structurally order one-target authority mutations and effects before observation drain | Before acquisition, independently resolve tenant/deployment-scoped command ID and idempotency ID; both must be absent or name the same unique active/terminal execution. Admit exactly one DomainAggregateTarget, ControlOwnerTarget or CanonicalNoAggregateTarget; reject multi-target work to Phase B process manager/outbox. Proposal/registry confirmation binds the complete ordered ProposedEventDescriptor root with only non-sensitive inline bytes or opaque erasable payload references. Finalization reuses/transfers that reference, allocates journal identity/recorded time, derives the predecessor chain under EventCommitChainV1, commits the complete map and advances typed command state. The selected commit-attestation profile proves the commit to a post-commit signer; pre-reserved threshold/successor recovery handles signer loss or remains CommitReceiptSignerRecoveryRequired. Signed receipt settlement alone reaches Succeeded/releases the claim. Cancellation ends at ProposalPrepared. External send also redeems at the provider fence. ObservationDrainPending waits for the bounded live set |
+| Operational registry claim lifecycle | structurally order one-target authority mutations and effects before observation drain | Before acquisition, independently resolve tenant/deployment-scoped command ID and idempotency ID; both must be absent or name the same unique active/terminal execution. Admit exactly one DomainAggregateTarget, ControlOwnerTarget or CanonicalNoAggregateTarget; reject multi-target work to Phase B process manager/outbox. Proposal/registry confirmation binds the complete ordered ProposedEventDescriptor root with only non-sensitive inline bytes or opaque erasable payload references. PayloadReferenceUseClaimV1 tracks every proposal/event member, transfer-unknown state and authoritative release proof under cardinality-funded `P_claim`. Domain finalization atomically advances the journal RecordedTimeAuthorityRatchetV1, allocates a commit-cut interval and derives EventCommitChainV1; non-domain targets bind CanonicalNoDomainEventChainV1. The selected commit-attestation profile proves the complete map to a post-commit signer; cardinality-funded `S_claim` covers every threshold member/partial/status/terminalization and quorum import, or root-successor recovery, without changing commit meaning. Signed receipt settlement alone reaches Succeeded/releases the claim. Cancellation ends at ProposalPrepared. External send also redeems at the provider fence. ObservationDrainPending waits for the bounded live set |
 | Operational claim history lifecycle | bound registry/proposal/command storage without losing completeness, privacy or retry evidence | Enforce signed active/terminal row-byte ceilings; checkpoint exact independent command/idempotency membership, command state, target/predecessor, descriptor/payload-lifecycle root, claim, proposal, commit-chain/attestation/signature-recovery and result sets; Stage/Verify/Commit immutable archives and advance the replay head without moving classified plaintext or violating residency/holds; preserve historical one-sided-reuse conflict, retry/status and every live/redeemed/outcome-unknown/confirmed-unsettled/frontier-referenced claim. Rejected/cancelled payload references crypto-erase only when policy/hold permits and retain ErasedPayloadTombstone. Staged/Verified only may become OrphanEligible after Commit-status reconciliation, current multi-authority non-reference, retention/hold and protected GC capacity; Committed/frontier-referenced never orphan. Missing or forked history is HistoricalStateUnavailable and RestoreUnready |
 | Recovery pointer-observation registration/terminalization | make every possible pointer query externally durable | Use distinct bounded Register Publish/Reconcile/query, cancellation-seal/query, terminalization Publish/Reconcile/query and fence-anchor terminalization/query protocols. Unknown/Unavailable stays RegisteredUnresolved, exhaustion becomes LocallyExhaustedUnresolved, authenticated seal alone becomes ExternallySealedPermanentlyUnresolved, and late contradiction always strengthens toward FenceAnchored |
 | Recovery current-pointer query admission | admit a stable status attempt for unknown pointer publication | Require the exact RegisteredUnresolved receipt and escrow `R_first`, then consume bounded calls/bytes/work/time/concurrency and create a terminalization reservation before returning one process-local permit; failure is no-write/no-permit |
@@ -9769,7 +9869,15 @@ receipt consumption; external response loss/Unknown must remain
 non-authoritative and reconcile without a distributed transaction. For rejected/cancelled
 proposals, race legal hold, erasure authorization and checkpoint/export; prove
 crypto-erasure retains the immutable tombstone and never relocates restricted
-data. Seed classified plaintext canaries only in the governed erasable store,
+data. Exercise one reference shared by several descriptors/events and several
+proposals; proposal-plus-event custody, duplicate transfer receipts, early and
+double release, event-retention/proposal-collection/hold races, restore during
+TransferPending/TransferOutcomeUnknown and every partial local-batch failure.
+Require exact PayloadReferenceUseClaimV1 membership, all-or-none event members
+and authoritative non-reference before ReleaseEligible/ErasedTombstone. At
+`p_claim_max - 1`, `p_claim_max` and `p_claim_max + 1`, prove the first two
+have a fully reserved route and the last rejects before claim issuance. Seed
+classified plaintext canaries only in the governed erasable store,
 submit their opaque references and attempt to inject the canaries into proposal
 metadata, then scan every database row, registry request/receipt, signer/
 attestation request, result/status/audit record, log, trace, error, checkpoint,
@@ -9780,10 +9888,18 @@ Prove only event ID, stream version, journal offset, transaction position,
 actual recorded-time interval and integrity predecessor/digest are allocated
 or derived later. Bind the first predecessor to the exact target stream head,
 race head advancement, and reject a correct expected version with a substituted
-predecessor digest. For zero/one/maximum event batches, derive every later
-predecessor under EventCommitChainV1, validate recorded-time policy/profile/
-maximum uncertainty against backend-authoritative time and verify the signed
-commit record's descriptor-index-to-envelope map, recorded interval, initial
+predecessor digest. Reject zero descriptors for DomainAggregateTarget; require
+one and maximum-sized domain batches to derive every predecessor under
+EventCommitChainV1. Require empty descriptors only for ControlOwnerTarget and
+CanonicalNoAggregateTarget, both binding CanonicalNoDomainEventChainV1 with no
+EventCommitChainV1 row. Validate recorded-time policy/profile/maximum
+uncertainty and commit-cut containment against backend-authoritative time.
+Step the clock backward/forward across allocation and commit, suspend, restart,
+fail over, restore and rotate the time profile/source; the authenticated
+RecordedTimeAuthorityRatchetV1 lower bound never regresses, overlapping
+intervals remain journal-position ordered and unavailable continuity unreadies.
+Verify the signed commit record's descriptor-index-to-envelope map, recorded
+interval, ratchet predecessor/successor, source/boot/fence continuity, initial
 predecessor, full chain and final head. Reuse the same payload reference under
 a different event/schema ID or version, aggregate kind/ID, tenant/deployment,
 command/causation/correlation ID, valid/occurrence/effective-time or recorded-
@@ -9825,7 +9941,12 @@ receipt must cover the identical commit; late primary and recovered receipts
 may only join one settlement meaning. Prove no recovery path appends an event,
 rewrites result/payload/time/chain, reacquires a claim, refunds capacity or
 resets idempotency. Exhaust ordinary signing capacity while preserving
-`S_claim`; signer recovery/status must progress. With no valid threshold or
+`S_claim`; for every `1 <= k_signer <= n_signer <= n_signer_max`, lose or
+delay each member before/after attempt, response, partial import and
+terminalization, reject duplicate-member quorum, and prove the separately
+reserved canonical quorum-combination/import progresses. Test
+`n_signer_max - 1`, `n_signer_max` and `n_signer_max + 1`; the last profile
+rejects before claim issuance. Signer recovery/status must progress. With no valid threshold or
 successor, require redacted CommitReceiptSignerRecoveryRequired, live capacity,
 blocked observation and fail-closed authority.
 Run TrustedSignerAdapterAuthoritativeRead against every selected backend's

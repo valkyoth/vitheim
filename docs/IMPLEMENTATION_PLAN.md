@@ -559,10 +559,18 @@ whose closed payload union permits inline bytes only when non-sensitive and
 otherwise carries an encrypted/externally erasable reference or erased
 tombstone under Phase A lifecycle/residency/hold rules. Classified plaintext
 never enters proposal, registry, signer, status, audit or archive evidence.
-The target also binds the expected predecessor envelope digest. Finalization
-adds event ID, stream version, journal offset, transaction position and the
-policy-compliant recorded-time interval, then derives the intra-batch
-predecessor chain canonically and binds all of it in the commit record.
+PayloadReferenceUseClaim tracks exact proposal/event/shared members,
+transfer-pending/unknown custody and authoritative release eligibility across
+hot/archive/restore/retention/hold authorities; proposal terminality or a local
+count cannot erase a shared reference. `P_claim` reserves the bounded
+per-distinct-reference transfer/status/terminal/release routes. The target also
+binds the expected predecessor envelope digest. Domain finalization atomically
+advances a journal-authority RecordedTimeAuthorityRatchet, adds event ID,
+stream version, journal offset, transaction position and a conservative
+interval enclosing the authoritative commit cut, then derives the intra-batch
+predecessor chain canonically and binds all of it in the commit record. Time
+rollback without authenticated continuity is Unready. Zero domain events
+reject; control/no-aggregate work binds CanonicalNoDomainEventChain.
 Separate tenant/deployment unique constraints on command ID and idempotency ID
 must both resolve to one execution; one-sided reuse conflicts across hot and
 archived history. That execution progresses from
@@ -573,7 +581,9 @@ selected attestation profile: trusted signer-adapter authoritative read,
 authenticated database attestation or explicit hosted-runtime attester.
 Before admission, the selected signer profile must provision either a
 threshold/redundant set or root-authorized successor path with non-borrowable
-recovery/status capacity. Signer loss enters
+recovery/status capacity. Its signed `n_signer_max` and `k_signer` bounds fund
+every member attempt, response-loss query, partial, concurrency settlement,
+terminalization and one canonical quorum-combination/import operation. Signer loss enters
 CommitReceiptSignerRecoveryRequired and cannot change committed events/results
 or release the claim.
 Unknown acquisition, signer or finalization state remains live and blocks

@@ -976,7 +976,10 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationProposalV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimProposedEventDescriptorV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimProposedEventPayloadV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimPayloadReferenceUseClaimV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimEventCommitChainV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCanonicalNoDomainEventChainV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimRecordedTimeAuthorityRatchetV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedCommandExecutionHistoricalIdentityConflictV1`,
   claim-acquisition attempt/outcome/reservation/settlement and dedicated
   Publish/Reconcile/status semantics,
@@ -989,6 +992,8 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitAttestationV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitReceiptSignerRecoveryProfileV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitReceiptSignerRecoveryV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationSignerMemberAttemptV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationSignerQuorumImportV1`,
   post-commit signing attempt/signed local-finalization receipt/settlement and dedicated response-loss
   status, `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCheckpointV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationProposalCheckpointV1`,
@@ -1023,9 +1028,13 @@ use loss-safe Publish/Reconcile/status with no permit recreation; the selected
 target union to enforce one domain stream, one control owner or no aggregate;
 the signed ordered event-descriptor root to bind every proposal-owned semantic
 field while classified payload remains an opaque encrypted/erasable reference
-or erased tombstone under Phase A lifecycle/residency/hold constraints; the
-target to bind the exact predecessor and finalization to bind authoritative
-recorded time plus the canonical intra-batch chain; independent command-ID and
+or erased tombstone under Phase A lifecycle/residency/hold constraints;
+PayloadReferenceUseClaim to bind every proposal/event/shared member and
+authenticated release proof under per-reference `P_claim`; the target to bind
+the exact predecessor and domain finalization to atomically advance a
+rollback-resistant journal time ratchet with a conservative commit-cut
+interval plus the canonical nonempty intra-batch chain, while non-domain
+targets bind CanonicalNoDomainEventChain; independent command-ID and
 idempotency-ID uniqueness to resolve both identities to one execution across
 hot/archive history; one command-execution state to join retry/status across every active and
 terminal stage with cancellation ending at ProposalPrepared; the selected
@@ -1033,7 +1042,8 @@ commit-attestation profile to prove the local transaction through trusted
 adapter read, authenticated backend evidence or explicit hosted-runtime trust;
 the signer profile to sign only that attested post-commit record under key/
 distrust/history and response-loss rules, with a pre-funded threshold/
-redundant or root-authorized successor path and fail-closed
+redundant or root-authorized successor path, per-member/partial/terminal state
+and separate quorum import funded through cardinality-safe `S_claim`, and fail-closed
 CommitReceiptSignerRecoveryRequired state; registry settlement to await a reconciled
 signed LocalFinalizeCommitted receipt or permanent
 no-commit evidence; provider-fence redemption
@@ -1052,8 +1062,10 @@ aliasing, authority reopening from blocked/fenced state, claim admission above
 drain capacity, provisional events/proposal promotion, acquisition permit
 recreation, multi-aggregate or mixed-owner target, payload-only confirmation,
 classified plaintext in proposal/registry/signer/status/archive evidence,
-payload reference/residency/hold substitution, recorded-time/predecessor-chain
-forgery, semantic descriptor/envelope substitution, composite-only command/
+payload reference/residency/hold substitution, early/double/shared-reference
+release or transfer-unknown erasure, underfunded payload/signer cardinality,
+recorded-time rollback/commit-cut ambiguity, zero-domain/no-domain-chain
+substitution or predecessor-chain forgery, semantic descriptor/envelope substitution, composite-only command/
 idempotency uniqueness, one-sided identity reuse, second claim on active retry,
 unsafe signer failover/result rewrite/unfunded recovery,
 post-ProposalPrepared cancellation, caller bytes as commit proof, pre-commit or
