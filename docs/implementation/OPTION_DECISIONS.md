@@ -3171,6 +3171,11 @@ query/restore commands, exact orphan-reference proof and independently
 witnessed current-pointer predecessor chain from
 `0.29.0–0.30.0`. Review the already passing Phase C replacement adversarial
 corpus; this decision repeats/freezes it and is not its first execution.
+Also review the pinned recovery-genesis root/provenance lineage and offline
+signing/import ceremony; independent rollback-resistant pointer-observation
+registry, sealed completeness frontier and operational fencing epoch; disjoint
+healthy `C/H` and fenced `E/J` archive protocols; and exact `B_EM`/`R_first`
+evidence-maintenance equations and hard maxima.
 Compare only fail-closed operational procedures; the architecture has already
 rejected generic ClearFence, selecting a convenient receipt, continuing the
 old lineage and reusing its sequencing/claim/permit/idempotency namespaces.
@@ -3188,6 +3193,9 @@ head and current-pointer ownership; already signed tenant/deployment-bound
 `P_0` receipt imported locally under a separate deployment-bootstrap reserve
 with no in-transaction external signer call; explicit CanonicalNoPredecessor,
 initial recovery/replay heads, generation zero and Healthy recovery guard;
+selected canonical genesis-root source/custody/quorum, provenance input,
+rotation/distrust/retirement policy and deterministic offline signing-request/
+single-use receipt-import procedure, with TOFU rejected;
 signed `P_n`-only operationalization;
 bounded competing-candidate rejection; pre-reserved parent Recovery writer
 classes; replacement-genesis preimage binding the old fence, disputed proposal,
@@ -3204,7 +3212,13 @@ pointer/fence anchor sequence with fence dominance; absorbing recovery-
 equivocation fence with immutable two-receipt/request/discovery bundle;
 Healthy-only AuthorityChanging versus Fenced-capable preserve/strengthen-only
 EvidenceMaintenance; independent fence-high-watermark Publish/Reconcile/query,
-FencedEvidenceVerified/export and non-releasable maintenance funding; separate
+FencedEvidenceVerified/export and non-releasable maintenance funding;
+rollback-resistant observation-registry provider and finality profile; exact
+registration/terminalization states, zero-unresolved sealed frontier,
+fencing-epoch authority port and restore-token CAS; distinct FenceEvidence
+archive backend/commands/results producing `J_m` only; production values for
+`o_max/a_max/v_max/q_max/r_max/x_max/t_max`, per-class byte/work/output
+ceilings, `B_EM` and `R_first`, with no automatic replenishment; separate
 initial-bootstrap and guard-first post-bootstrap lock orders; and sequential-
 equivocation recovery; explicit `C_n→P_(n-1), H_n→C_n, P_n→H_n` ordering with
 generated schema/hash-DAG and hot checkpoint-create/`P_n` records; typed
@@ -3224,12 +3238,19 @@ partial/rolled-back outbox or inbox, timeout/source-absence inference, forged
 transfer/applied/activation receipts, pointer hijack, partial genesis, response
 loss, missing/duplicate/forged/rolled-back/cross-tenant `P_0`, signer call
 inside bootstrap, bootstrap-reserve borrowing/exhaustion/partial writes,
+TOFU/caller-root substitution, forged provenance, non-deterministic genesis
+preimage, signer/importer role collapse, receipt reuse, live-request root
+rotation/retirement and distrust rollback,
 `C_1→absence`,
 `C_n→P_n`/future-result hash cycles, pending-pointer dispatch/effect/projection,
 pointer query Unknown/Unavailable/ContradictoryEvidence/exhaustion, atomic
 Healthy→Fenced crash cuts, pre-fence backup restore, pointer-after-fence or
 incomparable anchors, fence-anchor response loss, EvidenceMaintenance class
-escape/starvation, guard-first rank inversion, fence clearing/recursive
+escape/starvation, query without external intent or full first-route escrow,
+omitted/unresolved/permanently-unresolved registry members, forged completeness
+frontier, crash after local fence but before `E/J/F`, stale restore fencing
+token, `C/H`↔`E/J` type/command/result substitution, every `B_EM` dimension
+and replenishment attempt, guard-first rank inversion, fence clearing/recursive
 replacement, permit reconstruction, referenced orphan/GC,
 retention/legal-hold bypass, failover, backup/restore and second equivocation.
 Independent

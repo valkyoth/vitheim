@@ -949,3 +949,38 @@ adds its enum variant, transition implementation, recovery implementation, and
 P/N/M/F realization before activation. `0.22.0` adapter conformance enumerates the
 full predecessor closure and invokes every listed test contract. Phase O and
 `1.0.0` require zero planned/unresolved realizations for shipped generations.
+
+### VIT-LSEM-009-g01 recovery observation and genesis refinement
+
+The VIT-LAW-009 realization additionally requires these closed semantic
+families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
+
+- pinned `WitnessAuthorityRecoveryGenesisTrustRootV1`,
+  `WitnessAuthorityRecoveryGenesisTrustRootProvenanceV1`,
+  `WitnessAuthorityRecoveryGenesisTrustRootLineageV1`,
+  `WitnessAuthorityRecoveryCurrentPointerGenesisPreimageBuilderV1`,
+  `WitnessAuthorityRecoveryCurrentPointerGenesisSigningRequestV1` and
+  `WitnessAuthorityRecoveryCurrentPointerGenesisReceiptImportClaimV1`, with
+  distinct Provision/Rotate/Distrust/Retire result/conflict meanings;
+- `WitnessAuthorityReplacementRecoveryPointerObservationRegistryV1`,
+  `WitnessAuthorityReplacementRecoveryPointerObservationIntentV1`,
+  registration signed receipt, terminal signed receipt, sealed
+  `WitnessAuthorityReplacementRecoveryPointerObservationCompletenessFrontierV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalFencingEpochV1` and
+  single-use `WitnessAuthorityReplacementRecoveryRestoreActivationFencingTokenV1`;
+- dedicated `WitnessAuthorityReplacementRecoveryFenceEvidenceCheckpointV1`,
+  FenceEvidence archive manifest/state/receipt/proof-budget/verification-cursor,
+  `WitnessAuthorityReplacementRecoveryFenceEvidenceArchiveReplayHeadV1` and
+  distinct Create/Stage/Verify/Commit result/conflict types; and
+- `WitnessAuthorityReplacementRecoveryEvidenceMaintenanceBudgetV1` with the
+  immutable `B_EM` and first-route `R_first` equations.
+
+Positive realization requires external observation registration before local
+query permit, exact registry terminalization, a zero-unresolved sealed
+frontier and unchanged fencing-epoch CAS for healthy restore. Negative
+realization rejects TOFU/caller roots, receipt reuse, omitted observations,
+current-status no-fence claims, permanently unresolved members, stale restore
+tokens, `C/H`↔`E/J` command or result substitution, underfunded first-route
+escrow, replenishment and every post-Fenced authority transition. Model and
+fault cases crash after local Fenced but before `E/J/F` and restore an older
+backup; the external intent still prevents Operational state.

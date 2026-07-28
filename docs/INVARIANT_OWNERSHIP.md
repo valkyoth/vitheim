@@ -1676,3 +1676,24 @@ Composite-law enforcement and recovery paths use their explicit
 - Phase O and `1.0.0` acceptance must report every selected production storage
   profile against every applicable invariant and composite-law ID with no
   unowned, undeclared, unresolved, or waived row.
+
+## VIT-INV-062 Recovery Observation And Genesis Adjunct Ownership
+
+These rows refine, and do not split, VIT-INV-062 ownership. The migration/import
+job-authority partition owns all local mirrors, claims, results and budgets;
+the configured linearizable observation-registry port owns its external
+registry/frontier/fencing records; deployment-root governance owns genesis
+root provenance and lifecycle. No adapter, UI or archive backend is an owner.
+
+| Owned row family | Canonical rows | Sole mutation authority |
+| --- | --- | --- |
+| Genesis trust | `WitnessAuthorityRecoveryGenesisTrustRootRow`, `WitnessAuthorityRecoveryGenesisTrustRootProvenanceRow`, `WitnessAuthorityRecoveryGenesisTrustRootLineageRow`, `WitnessAuthorityRecoveryCurrentPointerGenesisSigningRequestRow`, `WitnessAuthorityRecoveryCurrentPointerGenesisReceiptImportClaimRow` | deployment-root Provision/Rotate/Distrust/Retire transactions; deterministic request builder is pure; Bootstrap consumes only the verified single-use claim |
+| Pointer observation | `WitnessAuthorityReplacementRecoveryPointerObservationIntentRow`, `WitnessAuthorityReplacementRecoveryPointerObservationIntentRegistrationClaimRow`, `WitnessAuthorityReplacementRecoveryPointerObservationIntentRegistrationReceiptRow`, `WitnessAuthorityReplacementRecoveryPointerObservationTerminalReceiptRow`, `WitnessAuthorityReplacementRecoveryPointerObservationCompletenessFrontierRow` | external registry Register/Terminalize and local Admit/Reconcile mirrors under stable intent CAS |
+| Operational fencing | `WitnessAuthorityReplacementRecoveryOperationalFencingEpochRow`, `WitnessAuthorityReplacementRecoveryRestoreActivationFencingTokenRow` | linearizable registry epoch advance and single-use restore token acquisition/consumption |
+| Fenced archive | `WitnessAuthorityReplacementRecoveryFenceEvidenceCheckpointRow`, `WitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationManifestRow`, `WitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationStateRow`, `WitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationReceiptRow`, `WitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationProofBudgetRow`, `WitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationVerificationCursorRow`, `WitnessAuthorityReplacementRecoveryFenceEvidenceArchiveReplayHeadRow` | dedicated FenceEvidence Create/Stage/Verify/Commit writers; Commit alone installs `J_m`; no orphan/GC owner exists |
+| Evidence-maintenance capacity | `WitnessAuthorityReplacementRecoveryEvidenceMaintenanceBudgetRow` | VIT-INV-062 recovery admission and terminal writers under the immutable `B_EM`/`R_first` class ledger |
+
+Restore authenticates and merges these rows with the existing VIT-INV-062
+guard, pointer/fence anchors and hot suffix. Missing root provenance, an
+unresolved observation, stale fencing epoch, incomplete first-route escrow or
+cross-protocol archive state is typed Unready and never inferred.

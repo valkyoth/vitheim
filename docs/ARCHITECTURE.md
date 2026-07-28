@@ -871,6 +871,19 @@ restore, failover, and release evidence.
    anchors, so a pre-fence local backup becomes FencedEvidenceVerified rather
    than operational. Initial-bootstrap and guard-first post-bootstrap lock
    orders are distinct and mechanically traced.
+   Pointer observation is itself externally anti-rollback: every query intent
+   is registered before a local query permit, unresolved and permanently
+   unresolved intents prevent a no-fence proof, and contradiction remains
+   FenceAnchorPending until signed `F_m`. Healthy restore accepts only a
+   sealed exact-set zero-unresolved frontier and atomically consumes a
+   single-use token at the unchanged external fencing epoch. Ordinary healthy
+   `C_n/H_n` publication and fenced `E_m/J_m` evidence publication have
+   different discriminants, commands, results and state machines. A closed
+   `B_EM` class equation pre-reserves the complete first `E→J→F` route before
+   any pointer query; its signed hard maxima cannot be replenished before
+   `1.0.0`. Genesis trust is provisioned from a pinned root/provenance lineage,
+   never TOFU: deterministic preimage generation, offline quorum signing and
+   a single-use receipt-import claim precede local `P_0` import.
    Checkpoint creation, pointer publication/Reconcile/query, restore-cursor
    advance and restore completion have distinct typed bounded protocols.
    Orphan/GC requires locked authenticated non-reference across replay,

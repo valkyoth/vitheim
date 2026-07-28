@@ -533,7 +533,18 @@ anchors; restore obtains both greatest anchors. The fence has no generic clear
 or recursive automatic replacement. The old
 archive is never a fallback. The Phase C milestone runs the full replacement
 adversarial/cross-backend/DAG/reference suite; `0.140.11` repeats and freezes
-it. BeginAbortDrain first commits a typed result and non-releasable
+it. Every pointer query first obtains an externally registered
+RegisteredUnresolved intent and a fully escrowed `R_first` evidence route.
+Registry terminal states and a sealed exact-set zero-unresolved completeness
+frontier replace current-status absence; restore consumes a single-use token
+and CASes the unchanged external fencing epoch with local Operational state.
+Ordinary `C_n/H_n` archive writers are Healthy-only and distinct from fenced
+`E_m/J_m` EvidenceMaintenance writers. The signed non-borrowable `B_EM`
+equation bounds every intent, archive-verification, anchor-query,
+restore/export and custody-strengthening class and cannot be replenished
+before `1.0.0`. `P_0` trust begins from a pinned root/provenance/lineage,
+deterministic offline signing request and single-use receipt import; TOFU and
+caller-selected roots are invalid. BeginAbortDrain first commits a typed result and non-releasable
 completion reservation covering sealed abort, WitnessWon Commit continuity,
 bounded seal-status queries, outputs/drain, exhaustion and equivocation;
 missing capacity is no-write/no-permit. Lost response/failover/restore enters

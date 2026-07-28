@@ -286,6 +286,16 @@ strengthening. It must compare greatest pointer and fence anchors, require
 fence dominance for pre-fence restore, trace the separate bootstrap and guard-
 first post-bootstrap lock orders, and prove no clear, evidence GC or recursive
 automatic replacement exists. It must
+prove the genesis receipt originates from the selected pinned
+root/provenance/lineage and deterministic offline signing ceremony, not TOFU.
+Every pointer query must show its externally registered intent and complete
+`R_first` escrow. Healthy restore must show a sealed zero-unresolved
+observation frontier and successful single-use unchanged-fencing-epoch CAS;
+the local-fence-before-`E/J/F` rollback case must stay blocked. Healthy
+`C/H` and Fenced `E/J` archive commands/results must remain disjoint, and the
+immutable signed `B_EM` maxima/consumption must prove no borrowing,
+replenishment or custody-strengthening overflow.
+It must
 exercise the distinct checkpoint-create, pointer Publish/Reconcile/query and
 restore-cursor/complete typed protocols without permit reconstruction. Any
 externally referenced recovery publication exact-commits or stays unready;

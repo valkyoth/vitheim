@@ -911,6 +911,15 @@ verification/export and custody strengthening. A shared anchor sequence makes
 the fence high-watermark dominate every earlier pointer; restore obtains both
 greatest anchors and cannot revive a pre-fence backup. No generic clear,
 evidence GC or recursive automatic replacement exists. Production evidence
+must also authenticate the pinned genesis root/provenance/lineage,
+deterministic offline signing request and single-use import claim. Every
+pointer query has an external observation intent and pre-escrowed `R_first`;
+Healthy restore has a sealed zero-unresolved frontier and atomic unchanged
+fencing-epoch token CAS. The older-backup crash after local Fenced but before
+`E/J/F` remains blocked. Dedicated Healthy `C/H` and Fenced `E/J`
+commands/results never alias, and the selected immutable `B_EM` hard maxima
+have no production replenishment path.
+Production evidence
 repeats the Phase C core recovery DAG/reference/
 typed-operation corpus at the frozen profile. Replay
 install/delete cannot split from rollover. BeginAbortDrain is no-write/no-

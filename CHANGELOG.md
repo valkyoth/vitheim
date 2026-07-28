@@ -8,6 +8,12 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Closed recovery rollback after an observed pointer contradiction with an
+  independent intent registry, sealed zero-unresolved completeness frontier,
+  and restore fencing-epoch CAS. Added distinct `E_m→J_m→F_m` archive
+  commands, exact bounded evidence-maintenance equations with first-route
+  escrow, and a pinned non-TOFU `P_0` trust-root ceremony with deterministic
+  offline signing and single-use receipt import.
 - Rooted replacement recovery in signed, tenant-bound `P_0` with explicit
   CanonicalNoPredecessor; added an absorbing evidence-backed recovery-
   equivocation fence and made signed pointer reconciliation the sole

@@ -491,7 +491,23 @@ audit decision.
   strengthening. A shared non-wrapping anchor sequence makes the fence
   high-watermark dominate all earlier pointers, and restore compares both
   greatest anchors. No generic clear or recursive automatic replacement
-  exists. Identities never
+  exists. Every pointer query is first registered in an independent
+  rollback-resistant observation registry. A signed no-fence assertion covers
+  only its sealed exact-set zero-unresolved frontier, and restore CASes a
+  single-use activation token at the unchanged registry fencing epoch.
+  Contradiction before `E/J/F` publication therefore remains externally
+  visible across restoration of an older local backup. Healthy `C_n/H_n` and
+  fenced `E_m/J_m` archives have disjoint command/result/discriminant
+  vocabularies; FenceEvidence Commit has no orphan/GC surface. The signed
+  non-borrowable `B_EM` ledger escrows the full `R_first` anchor route before
+  any pointer-query permit and has no pre-`1.0.0` replenishment.
+- Provision recovery genesis trust from a pinned canonical root/provenance
+  lineage, never caller keys or first-seen material. Deterministically build
+  `P_0`, obtain an independent offline/remote quorum signature, and import its
+  receipt once. Rotation preserves historical verification; irreversible
+  distrust invalidates pending material, unreadies recovery and preserves any
+  existing Fenced state without re-signing genesis.
+- Identities never
   cross generations. A charged local fence
   precedes external traffic. BeginAbortDrain returns no seal permit unless its
   typed transaction reserves the complete non-releasable sealed-abort/

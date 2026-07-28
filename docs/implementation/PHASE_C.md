@@ -6939,15 +6939,80 @@ and leaves the old lineage absorbing and the destination non-operational.
 
 The replacement attempt-set head has its own history lifecycle; the absorbing
 old lineage capacity archive is forbidden from owning or compacting it.
+Recovery genesis never uses trust-on-first-use. Before any `P_0` preimage or
+receipt exists, deployment-root ceremony alone provisions canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGenesisTrustRootV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGenesisTrustRootProvenanceV1`
+and predecessor-linked
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGenesisTrustRootLineageV1`.
+Provenance binds the deployment-root policy/authorization, tenant/deployment,
+root digest and algorithm, hardware/offline/remote custody profile, quorum/SoD,
+ceremony transcript commitment, created-at trusted-time interval, signer/key/
+authentication epochs, encoding/integrity epochs and predecessor or explicit
+CanonicalNoPredecessor. The trust-root state is closed to
+Provisioned→Active→RetiredForNewSignatures or Provisioned/Active→Distrusted;
+no state returns to Active.
+
+Only
+`ProvisionMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityRecoveryGenesisTrustRoot`
+may create generation zero under expected-absent CAS, returning
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGenesisTrustRootProvisionResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGenesisTrustRootProvisionConflict`.
+The root identity/digest comes from the
+deployment's already authenticated pinned-root input and provenance allowlist,
+never command/caller bytes. Exact retry joins; another key, provenance,
+deployment or ceremony conflicts.
+
+Canonical pure
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryCurrentPointerGenesisPreimageBuilderV1`
+accepts only the Active pinned root and canonical deployment state and produces
+one deterministic
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryCurrentPointerGenesisSigningRequestV1`.
+That non-authoritative offline/remote request binds the full `P_0` preimage,
+root lineage/generation/digest/provenance, signer policy/quorum, expiry,
+trusted-time and every epoch; it cannot install state. Signers are independent
+of the importer/runtime and satisfy the pinned quorum/SoD. A signed receipt is
+accepted once under
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryCurrentPointerGenesisReceiptImportClaimV1`
+and expected root/request version CAS; duplicate identical import joins while
+changed, stale, expired, already-consumed, cross-deployment or key-substituted
+material conflicts.
+
+Only
+`RotateMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityRecoveryGenesisTrustRoot`,
+`DistrustMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityRecoveryGenesisTrustRoot`
+and
+`RetireMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityRecoveryGenesisTrustRoot`
+mutate the root lineage. Rotation requires an independently authorized successor,
+predecessor link and cross-custody proof, then makes the predecessor
+RetiredForNewSignatures while preserving historical verification. Retirement
+requires no live signing request. Distrust is irreversible, invalidates every
+unconsumed request/receipt for that epoch and makes an already bootstrapped
+deployment recovery-unready; an existing Fenced state remains Fenced, but
+distrust does not synthesize equivocation evidence. It can never re-sign or
+replace `P_0`. Each command has its own
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGenesisTrustRootRotationResultV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGenesisTrustRootDistrustResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGenesisTrustRootRetirementResultV1`
+with corresponding
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGenesisTrustRootRotationConflict`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGenesisTrustRootDistrustConflict`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGenesisTrustRootRetirementConflict`.
+
 Only
 `BootstrapMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityRecoveryCurrentPointerGenesis`
 may perform initial witness-authority bootstrap. The command accepts an already
 signed
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryCurrentPointerGenesisSignedReceiptV1`
-over the complete canonical genesis preimage. It verifies signer independence,
-authority/key/distrust epochs, signature, domain, tenant/deployment and exact
-preimage before one local transaction; no external call, permit or response-
-loss state occurs inside that transaction. It then atomically imports canonical
+over the complete canonical genesis preimage. It verifies the pre-existing
+Active pinned trust root/provenance/lineage, single-use receipt-import claim,
+signer independence, quorum/SoD, authority/key/distrust epochs, signature,
+domain, tenant/deployment and exact preimage before one local transaction; no
+external call, permit or response-loss state occurs inside that transaction.
+It then atomically imports canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryCurrentPointerGenesisV1`
 (`P_0`), the verified receipt, recovery/replay-head genesis and
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityRecoveryGuardStateV1::Healthy`.
@@ -7025,6 +7090,41 @@ or
 Its own charge/result/head mutation stays hot. Same-generation `E_m→F_m`,
 pointer-after-fence, future signature/result fields and every cross-DAG back-
 edge are invalid.
+
+`J_m` has one unambiguous writer protocol distinct from ordinary `H_n`.
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationManifestV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationStateV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationReceiptV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationProofBudgetV1`
+and
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationVerificationCursorV1`
+are discriminator-closed to Fenced(`E_m`) and cannot decode an ordinary `C_n`.
+Their state is only Staged→Verified→ConsumedByFenceEvidenceCommit.
+
+Only
+`StageMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublication`,
+`VerifyMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublication`
+and
+`CommitMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublication`
+may mutate this lifecycle, returning respectively
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationStageResultV1`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationVerifyResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationCommitResultV1`
+and their operation-specific
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationStageConflict`,
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationVerifyConflict`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryFenceEvidenceArchivePublicationCommitConflict`.
+FenceEvidence Commit alone atomically
+installs exactly `J_m`, never `H_n`, and deletes only its exact captured
+maintenance copy while the canonical guard/fence/bundle/result/shared-anchor
+rows remain hot. No FenceEvidence MarkOrphan/FinalizeGc command exists.
+Conversely, ordinary `C_n` creation and ordinary recovery-publication
+Stage/Verify/Commit/MarkOrphan/FinalizeGc require Healthy and can produce only
+`H_n`; they are invalid under Fenced. Schema discriminant, command surface and
+result type prevent cross-lifecycle substitution.
 
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryArchiveReplayHeadV1`
@@ -7127,6 +7227,95 @@ greatest authenticated witnessed generation. Unknown, Unavailable,
 ContradictoryEvidence or exhaustion leaves the replacement
 ActivatedPendingPointerWitness and structurally non-operational.
 
+`SignedNoFenceAtPointer` is never a current-status negative. Canonical
+independent rollback-resistant
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPointerObservationRegistryV1`
+owns every pointer-query intent before any local pointer-query permit exists.
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPointerObservationIntentV1`
+binds tenant/deployment, exact `P_n` and shared-anchor sequence, stable query
+attempt ID, request digest, authority/key/distrust and encoding/integrity
+epochs, deadline/trusted-time profile, registrant continuity and predecessor
+registry frontier. Its external state is closed to RegisteredUnresolved,
+CancelledBeforeQueryPermit, ConsistentReceiptObserved, FenceAnchorPending,
+FenceAnchored or PermanentlyUnresolved. No state reopens or disappears.
+
+Only
+`AdmitMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryPointerObservationIntentRegistration`
+may locally persist the registration request/single-use claim, reserve its
+complete registration/terminalization/fence-anchor route and return one
+process-local registry permit. It returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPointerObservationIntentRegistrationAdmissionResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPointerObservationIntentRegistrationAdmissionConflict`.
+The independent registry returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPointerObservationIntentRegistrationSignedReceiptV1`.
+Issuing that receipt atomically records the registry's irreversible
+QueryPermitMayIssue commitment for the intent; after it exists, cancellation
+is impossible even if the local process crashes before returning its query
+permit.
+Only
+`ReconcileMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryPointerObservationIntentRegistration`
+imports that receipt and returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPointerObservationIntentRegistrationReconciliationResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPointerObservationIntentRegistrationReconciliationConflict`.
+The ordinary pointer-query Admit command below must verify the exact signed
+RegisteredUnresolved receipt and same stable attempt before returning its query
+permit. Failure, timeout, cancellation or restore before external registration
+returns no pointer-query permit.
+
+Every observed query outcome is reconciled into the registry. A verified
+noncontradictory pointer receipt may terminalize only as
+ConsistentReceiptObserved. Contradiction atomically marks the local intent
+FenceAnchorPending with Healthy→Fenced and may terminalize externally only as
+FenceAnchored after exact signed `F_m`. Unknown/Unavailable/exhaustion becomes
+PermanentlyUnresolved and forever blocks automatic Healthy restore.
+Cancellation may become CancelledBeforeQueryPermit only with registry proof
+that no registration receipt/QueryPermitMayIssue commitment was issued, under
+the same registry CAS that prevents later issuance. Canonical
+`ReconcileMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryPointerObservationIntentTerminalization`
+imports
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPointerObservationIntentTerminalSignedReceiptV1`
+and returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPointerObservationIntentTerminalizationReconciliationResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPointerObservationIntentTerminalizationReconciliationConflict`;
+exact retry joins and changed disposition/evidence conflicts.
+
+Canonical predecessor-linked
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPointerObservationCompletenessFrontierV1`
+is a sealed external exact-set frontier, not a dense local count. It binds all
+registered intent IDs/digests through its sequence, their terminal
+dispositions/receipts, zero RegisteredUnresolved/FenceAnchorPending/
+PermanentlyUnresolved members, greatest pointer/fence anchors, registry root,
+fencing epoch and all authority/key/distrust/encoding epochs.
+`SignedNoFenceAtPointer` is accepted only when it signs this exact frontier,
+all covered intents are ConsistentReceiptObserved or
+CancelledBeforeQueryPermit, no fence exists, and the frontier's pointer is the
+exact greatest `P_n`. Registry absence, current-status “none,” a range count,
+unknown membership or an unsealed frontier never proves no fence.
+
+Canonical non-wrapping
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalFencingEpochV1`
+serializes observation registration, fence-anchor publication and restore
+activation. Every externally registered observation advances/fences the epoch
+before its query permit; fence publication advances it again. Only
+`AcquireMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryRestoreActivationFencingToken`
+may issue a single-use
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreActivationFencingTokenV1`
+from an unchanged sealed no-fence frontier and returns
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreActivationFencingTokenAcquisitionResultV1`
+or
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreActivationFencingTokenAcquisitionConflict`.
+Restore completion atomically CASes
+the exact epoch/token with local guard/pointer/Operational state; changed epoch
+is no-write/Unready. Every authority-bearing command admission, queue claim,
+projection-authority transition and external-effect dispatch validates the
+same current registry fencing epoch through the selected linearizable
+conformance port; unavailable, stale or mismatched epoch denies. No cached
+epoch, snapshot or local token is bearer authority.
+
 Unknown pointer-publication state is resolved only by a dedicated bounded
 status lane. Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryBudgetV1`,
@@ -7149,6 +7338,10 @@ query permit, plus
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryAdmissionResultV1`
 or
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQueryAdmissionConflict`.
+Admission additionally requires the exact signed RegisteredUnresolved
+observation-registry receipt for the same stable attempt and an escrowed first
+complete fence-anchor route under the evidence-maintenance equation below.
+Either missing proof makes admission no-write/no-permit.
 Only
 `ReconcileMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryCurrentPointerHighWatermarkQuery`
 consumes that reservation and returns
@@ -7178,8 +7371,8 @@ activation, pointer publication/query/operationalization, capacity release and
 operational restore completion; it requires the exact Healthy guard.
 EvidenceMaintenance is permitted in Healthy or Fenced but may only preserve or
 strengthen immutable evidence. While Fenced its complete mutation set is:
-fence/evidence exact-set checkpoint creation; recovery archive
-Stage/Verify/Commit; independent recovery-fence high-watermark
+FenceEvidence exact-set `E_m` checkpoint creation; dedicated FenceEvidence
+archive Stage/Verify/Commit producing only `J_m`; independent recovery-fence high-watermark
 Publish/Reconcile/query; bounded restore verification; evidence export; and
 retention/legal-hold strengthening. It cannot change current authority,
 replacement state, capacity availability, fence identity/digest, evidence
@@ -7192,6 +7385,54 @@ future manual root-governance authority-recovery path remains explicitly
 unsupported before `1.0.0` and may not be inferred from EvidenceMaintenance.
 The canonical guard, fence and fence high-watermark remain hot permanently;
 checkpoint/archive copies cannot authorize deletion of those rows.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryEvidenceMaintenanceBudgetV1`
+funds evidence custody after Fenced without borrowing AuthorityChanging
+capacity. Its selected production policy is a bounded, non-replenishing
+maintenance envelope for indefinite evidence retention:
+deployment-root admission fixes checked non-wrapping hard maxima
+`o_max`, `a_max`, `v_max`, `q_max`, `r_max`, `x_max` and `t_max` for observation
+intents, fence-anchor cycles, archive-verification quanta per cycle,
+response-loss queries per publication, restore cursor quanta, evidence
+exports and custody-strengthening mutations. These maxima and every per-class
+encoded-byte/work/output limit are signed into the recovery profile. They
+cannot be enlarged, replenished or reset before `1.0.0`; the selected profile
+must prove `a_max >= o_max` so every maximally contradictory observation can
+own an anchor cycle.
+
+The class ledger is closed to ObservationRegisterAdmission,
+ObservationRegisterReconcile, ObservationTerminalize, FenceInstall,
+FenceEvidenceCheckpointCreate, FenceArchiveStage, FenceArchiveVerifyQuantum,
+FenceArchiveCommitJ, FenceAnchorPublish, FenceAnchorReconcile,
+FenceAnchorQueryAdmission, FenceAnchorQueryTerminalize, RestoreCursor,
+RestoreVerify, EvidenceExport, CustodyStrengthen and Exhaustion. One unit
+includes that writer's state/result/audit/outbox bytes and declared work; a
+VerifyQuantum is one bounded cursor advance, never an unbounded verification.
+With `o <= o_max`, `a <= a_max`, `v <= v_max`, `q <= q_max`,
+`r <= r_max`, `x <= x_max` and `t <= t_max`, the required escrow is:
+
+`B_EM = o(1_RegAdmit + 1_RegReconcile + 1_Terminalize + 1_FenceInstall) +
+a(1_ECreate + 1_ArchiveStage + v_Verify + 1_CommitJ + 1_FPublish +
+1_FReconcile + q_QueryAdmit + q_QueryTerminalize) +
+r_RestoreCursor + 1_RestoreVerify + x_Export + t_CustodyStrengthen +
+1_Exhaustion`.
+
+`FenceInstall` is reserved for every intent although a consistent or
+cancelled intent releases it only to the same permanently non-borrowable
+EvidenceMaintenance ledger. Before any pointer-query permit, the system must
+escrow the intent's RegisterReconcile, Terminalize and FenceInstall units plus
+one complete first anchor route
+`R_first = 1_ECreate + 1_ArchiveStage + v_max_Verify + 1_CommitJ +
+1_FPublish + 1_FReconcile + q_max_QueryAdmit +
+q_max_QueryTerminalize`.
+Registration admission itself is charged before its registry permit. If any
+class, byte, work or output dimension cannot fund `R_first`, no registry or
+pointer-query permit is returned. Exhaustion writes the sole Exhaustion unit,
+keeps every existing hold/fence/anchor authoritative and denies further
+authority or release. More storage, another custody mutation or manual
+replenishment is not an implicit recovery route; changing these hard limits is
+an explicit pre-`1.0.0` production-profile decision and migration.
 
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryAnchorSequenceV1`
@@ -7277,9 +7518,10 @@ All command dispatch, external-effect admission or transmission, queue claim,
 projection claiming authority and readiness path must co-locate one structural
 authority guard: the current pointer names the lineage, replacement state is
 Operational, recovery guard is Healthy/unfenced, and local pointer generation
-equals the greatest authenticated witnessed generation. Absence, stale cache,
-mismatch, unknown availability, contradiction or exhausted proof denies
-authority.
+equals the greatest authenticated witnessed generation. The same guard
+validates the current external observation-registry fencing epoch through the
+linearizable conformance port. Absence, stale cache/epoch/token, mismatch,
+unknown availability, contradiction or exhausted proof denies authority.
 
 Restore first enters
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreStateV1::Unready`
@@ -7287,7 +7529,13 @@ and independently obtains the greatest transfer high-watermark, greatest
 healthy current-pointer high-watermark and greatest recovery-fence high-
 watermark through their distinct bounded admission/permit/Reconcile/query
 lanes. Healthy readiness requires authenticated SignedNoFenceAtPointer at the
-greatest pointer anchor. If a fence anchor exists, its shared anchor sequence
+greatest pointer anchor over an exact sealed observation completeness frontier
+with zero unresolved, pending-fence or permanently unresolved intents.
+Immediately before activation restore acquires the single-use fencing token
+from that unchanged frontier and CASes the exact registry epoch/token together
+with guard, pointer and Operational state. A concurrent observation
+registration or fence publication advances the epoch and makes completion
+no-write/Unready. If a fence anchor exists, its shared anchor sequence
 must dominate every healthy pointer; restore verifies the exact fence
 checkpoint/replay ancestry and enters only FencedEvidenceVerified. A pointer
 after a fence anchor, incomparable anchors, Unknown, Unavailable, missing
@@ -7505,19 +7753,23 @@ mutate a field covered by the attempt-set commitment:
 | Seal-status query terminalization | import SealWon/WitnessWon/Unknown/TransportFailure/DeadlineExceeded/ContradictoryEvidence | Consume the exact reservation and commit ResponseImported, typed result and exact-once settlement; SealWon/WitnessWon/ContradictoryEvidence may co-commit their route disposition/fence, while other outcomes do not |
 | Witness abort finalization | reconcile terminal seal route | Final abort requires authority rejection tombstone, every ordinary/seal query terminal with reservations consumed/concurrency settled and no positive receipt; WitnessWon preserves ArchiveFinalize capacity, contradiction fences, and exhaustion remains AbortDrainPending/unready |
 | Authority retirement | validate independent quorum/SoD and complete the local retirement | Consume exactly one bounded fence-keyed AuthorityRetirement class/charge and commit Active→RetiredForEquivocation, retirement/result/audit/outbox and exactly one successor replacement-attempt-set head advance atomically; it issues no external permit and has no admission/finalization split, Pending state or reconciliation command |
-| Recovery-pointer genesis bootstrap | establish the only valid generation-zero recovery predecessor | Under the initial-bootstrap order, verify an already signed complete receipt and consume the separate deployment-bootstrap reserve before atomically importing `P_0`, explicit CanonicalNoPredecessor, recovery/replay genesis, Healthy guard and typed result; no external call or fence-keyed Recovery funding participates |
+| Recovery-genesis trust-root lifecycle | provision, rotate, distrust or retire the pinned root | Deployment-root ceremony commits canonical root/provenance/lineage and dedicated typed result under expected-version CAS. Offline/remote signers are separate from runtime/import; rotation preserves historical verification, retirement requires no live request, and irreversible distrust unreadies recovery while preserving any existing Fenced state |
+| Recovery-pointer genesis bootstrap | establish the only valid generation-zero recovery predecessor | Under the initial-bootstrap order, verify the Active pinned root/provenance/lineage, deterministic preimage, independent quorum/SoD and single-use receipt-import claim; then consume the separate deployment-bootstrap reserve and atomically import `P_0`, explicit CanonicalNoPredecessor, recovery/replay genesis, Healthy guard and typed result |
 | Replacement-genesis staging | select the sole fence-keyed successor and freeze transfer source | CAS NoReplacement→Staged with unique old-fence→genesis, source outbox, non-operational destination, mappings, equations, candidate disposition and successor recovery head; changed material is permanently rejected |
 | Replacement capacity-transfer import/reconciliation | consume destination inbox and reconcile applied/unknown evidence | Commit the unique inbox receipt, source disposition/status, bounded external-status reservation/settlement and successor recovery head; timeout/source absence is never completion and no old permit material crosses |
 | Replacement pending activation/current-pointer CAS | install only the staged, imported, conformance-passing and independently witnessed transfer | Fence-first CAS Staged→ActivatedPendingPointerWitness, install the sole but structurally non-operational current pointer and result/audit/outbox; no competing candidate can activate and the source is not terminalized |
-| Replacement recovery checkpoint creation | create exact-set `C_n` through fixed cut `r_n` | Guard-first classify AuthorityChanging under Healthy or EvidenceMaintenance under Healthy/Fenced. The Fenced form captures the complete fence/bundle/result/guard and no authority/capacity mutation; consume one charge/head advance and reject same-generation back-edges |
-| Replacement recovery publication lifecycle | Stage/Verify/Commit, MarkOrphan and FinalizeGc | Guard-first EvidenceMaintenance permits Stage/Verify/Commit under Healthy/Fenced; Fenced Commit preserves the hot guard/fence/anchor and deletes no authoritative fence evidence. MarkOrphan/FinalizeGc require Healthy and can never target fence evidence or an externally referenced publication |
+| Replacement recovery checkpoint creation | create exact-set healthy `C_n` through fixed cut `r_n` | Guard-first AuthorityChanging requires Healthy, consumes one charge/head advance and rejects same-generation back-edges. This writer can never decode or create fenced `E_m` |
+| Healthy recovery publication lifecycle | Stage/Verify/Commit, MarkOrphan and FinalizeGc for `C_n` | Requires Healthy and the ordinary discriminator. Commit produces only `H_n`; every command and result type rejects fenced evidence. MarkOrphan/FinalizeGc remain Healthy-only |
+| Fence-evidence checkpoint creation | create exact-set `E_m` from the absorbing fence | Guard-first EvidenceMaintenance under Fenced captures the complete fence/bundle/result/guard and predecessor anchor, consumes its bounded class, and can never create `C_n` |
+| Fence-evidence archive lifecycle | Stage/Verify/Commit for `E_m` | Dedicated discriminator, commands, states and results only. Commit produces exactly `J_m`, keeps guard/fence/bundle/result/shared anchor hot, and exposes no MarkOrphan/FinalizeGc operation |
 | Recovery current-pointer publication/reconciliation | submit `P_n` after `H_n`, then import every external outcome | Fence-first persist the semantic request and one-use claim before one process-local permit; valid signed Reconcile alone records the receipt, CASes ActivatedPendingPointerWitness→Operational, writes operationalization/source-consumption result and advances the recovery head, with `P_n→H_n` and no future receipt/result digest in the request; all other outcomes remain non-operational |
-| Recovery current-pointer query admission | admit a stable status attempt for unknown pointer publication | Atomically consume bounded calls/bytes/work/time/concurrency, create a terminalization reservation and return one process-local permit; failure is no-write/no-permit and retry is status-only |
-| Recovery current-pointer query terminalization | import SignedReceipt/Unknown/Unavailable/ContradictoryEvidence | Consume the exact reservation, commit closed outcome/result, settle concurrency once and advance the recovery head; contradiction atomically consumes its pre-reserved fence leg, stores both receipts/discovery evidence and CASes Healthy→Fenced, while no negative/unknown outcome authorizes a pointer |
-| Recovery-fence high-watermark publication/reconciliation/query | independently anchor or discover fenced evidence | Guard-first EvidenceMaintenance only. Persist one semantic claim before a process-local permit; Reconcile advances only the shared anchor/fence high-watermark. The bounded query lane settles once; SignedNoFenceAtPointer is valid only at the exact greatest healthy pointer, while other negative/unknown outcomes grant no authority |
+| Recovery pointer-observation registration/terminalization | make every possible pointer query externally durable | Register the stable intent and advance the external fencing epoch before any local query permit. Terminalize only to cancelled-before-permit, consistent receipt, fence pending/anchored or permanently unresolved; unresolved and permanently unresolved intents block no-fence completeness |
+| Recovery current-pointer query admission | admit a stable status attempt for unknown pointer publication | Require the exact RegisteredUnresolved receipt and escrow `R_first`, then consume bounded calls/bytes/work/time/concurrency and create a terminalization reservation before returning one process-local permit; failure is no-write/no-permit |
+| Recovery current-pointer query terminalization | import SignedReceipt/Unknown/Unavailable/ContradictoryEvidence | Consume the exact reservation, commit closed outcome/result, settle concurrency once and reconcile the external intent; contradiction atomically consumes its pre-reserved fence leg, stores both receipts/discovery evidence, CASes Healthy→Fenced and leaves FenceAnchorPending until signed `F_m` |
+| Recovery-fence high-watermark publication/reconciliation/query | independently anchor or discover fenced evidence | Guard-first EvidenceMaintenance only. Persist one semantic claim before a process-local permit; Reconcile advances only the shared anchor/fence high-watermark and terminalizes FenceAnchorPending. SignedNoFenceAtPointer must bind the sealed zero-unresolved observation frontier, never current absence |
 | Recovery-equivocation fence enforcement | classify and recheck every post-bootstrap recovery or authority-claiming mutation | Lock the recovery guard first. AuthorityChanging requires exact Healthy. EvidenceMaintenance may accept Fenced only for the closed preserve/strengthen set. Missing is corruption/unready; no clear, recursive replacement, capacity release or pre-`1.0.0` manual root-governance writer exists |
 | Replacement recovery restore cursor | advance one bounded hot/archive replay quantum | Consume one restore-cursor class and atomically persist cursor/result/recovery-head successor; no scan, restart, skipped predecessor or hidden work |
-| Replacement recovery restore completion | exact-complete healthy authority or verify fenced evidence | Obtain both greatest pointer and fence anchors. Healthy operational completion additionally requires SignedNoFenceAtPointer. A dominating fence permits only EvidenceMaintenance Unready→FencedEvidenceVerified and export; incomparable/missing/unknown anchors remain Unready |
+| Replacement recovery restore completion | exact-complete healthy authority or verify fenced evidence | Obtain both greatest pointer and fence anchors. Healthy completion requires SignedNoFenceAtPointer over the sealed zero-unresolved observation frontier and a single-use restore fencing token; atomically CAS the unchanged external epoch with local guard/pointer/Operational state. A dominating fence permits only EvidenceMaintenance Unready→FencedEvidenceVerified and export |
 | Plan lifecycle | Replan and proof/capacity-state carry-forward | Commit old-plan terminalization, conservative remaining-class mapping, new plan/proof binding and successor attempt-set head together; consumption never resets |
 
 Every mutating command in the table creates immutable
@@ -7541,11 +7793,13 @@ attempt-set head and deny on PreparePending, AbortDrainPending or Witnessed befo
 unrelated publication/replay rows. Archive writers acquire every applicable row
 in the displayed order; no writer may reverse the common subsequence.
 Equivocation recovery has exactly two non-overlapping canonical orders.
-Initial bootstrap is deployment-bootstrap uniqueness/trust root→deployment
-Recovery-bootstrap reserve→pre-signed `P_0` receipt/preimage→`P_0` and initial
+Initial bootstrap is deployment-bootstrap uniqueness→pinned trust-root/
+provenance/lineage→deployment Recovery-bootstrap reserve→deterministic signing
+request→pre-signed `P_0` receipt/single-use import claim→`P_0` and initial
 recovery/replay heads→recovery guard→result/audit/outbox; it cannot acquire a
 post-bootstrap row or fence-keyed Recovery budget. Every post-bootstrap
-operation is recovery guard→operation class→absorbing old-fence/evidence
+operation is recovery guard→operation class→observation frontier/operational
+fencing epoch→absorbing old-fence/evidence
 read→parent Recovery budget→replacement attempt-set head→replacement head→
 transfer high-watermark→source outbox→destination inbox/genesis→current
 pointer→shared recovery-anchor sequence→recovery current-pointer or fence high-
@@ -8700,6 +8954,17 @@ and prove one Staged/pending/Operational winner plus durable bounded loser
 dispositions. Create one signed `P_0` at initial bootstrap and prove exactly
 `C_1→P_0`; delete, duplicate, forge, roll back or cross-tenant substitute the
 genesis/Healthy guard and require RecoveryUnready without absence synthesis.
+Provision the genesis root only from the pinned canonical input/provenance,
+then substitute caller key bytes, root provenance, ceremony transcript,
+tenant/deployment, algorithm, custody profile, signer epoch or predecessor and
+require the dedicated conflict. Prove deterministic preimage-builder output,
+offline signer/runtime/importer separation, quorum/SoD, request expiry and
+single-use receipt-import CAS. Race identical and changed imports, rotate
+while a request is live, retire with a live request, distrust before/after
+bootstrap and restore historical signatures after rotation; distrust must
+invalidate unconsumed material, make recovery unready, preserve any existing
+Fenced state and never re-sign `P_0`. No absent or first-seen key may become
+trusted.
 Prove the signature exists before the bootstrap transaction, no adapter call
 or permit occurs inside it, and exact retry rejoins the imported receipt.
 Exhaust/corrupt each deployment-bootstrap reserve dimension and require no
@@ -8750,6 +9015,37 @@ anchor, missing fence checkpoint or unavailable fence query and require
 RecoveryUnready. Race fence installation, EvidenceMaintenance checkpoint/
 Commit, activation, pointer/fence reconciliation and restore under every
 supported backend; lock traces must begin guard-first and contain no inversion.
+Before each pointer query externally register its exact intent and prove no
+local query permit exists until the signed RegisteredUnresolved receipt and
+`R_first` escrow exist. Crash after external registration, after query permit,
+after contradiction/Healthy→Fenced, and after local fence commit but before
+`E_m`, `J_m` or `F_m`; then restore an older locally Healthy `P_n` backup.
+The unresolved or FenceAnchorPending registry member must prevent a sealed
+no-fence frontier and Operational restore until the exact `F_m` terminalizes
+it. Unknown, Unavailable and budget exhaustion must become
+PermanentlyUnresolved and block automatic Healthy restore permanently.
+Forge omission, range/dense counts, current-status absence, reordered intent
+sets, stale roots/epochs and false cancellation-before-permit in the
+completeness frontier and require rejection. Race registry receipt issuance
+against cancellation and prove exactly one irreversible
+QueryPermitMayIssue-or-cancel winner. Race restore-token acquisition
+and final CAS against a new intent registration and fence publication; the
+epoch winner invalidates the stale token. Race every admission, queue claim,
+projection-authority transition and effect dispatch against an epoch advance
+and require stale/unavailable validation to deny.
+Generate and cross-substitute ordinary `C_n/H_n` and fenced `E_m/J_m`
+manifests, discriminants, commands, states, receipts and results. Under Fenced,
+ordinary create/Stage/Verify/Commit/MarkOrphan/FinalizeGc must fail; dedicated
+FenceEvidence Commit alone may install `J_m` and must keep every hot
+guard/fence/bundle/result/anchor row.
+Mechanically evaluate `B_EM` and `R_first` at zero, one and every hard maximum;
+overflow, one-short class, byte/work/output exhaustion or missing first-route
+escrow is no-write/no-permit. Exhaust each observation, fence creation,
+archive Stage/Verify/Commit, publication/reconciliation/query,
+restore/export/custody and Exhaustion dimension. Prove released contradiction
+legs remain non-borrowable, custody strengthening stops at `t_max`, no
+replenishment/reset path exists, and exhaustion preserves all existing
+fences/holds/anchors without granting authority or release.
 Race MarkOrphan/FinalizeGc against replay-head Commit, transfer/pointer witness,
 replacement activation, restore cursor, signed activation receipt, evidence
 custody, legal hold and retention expiry; every reference blocks collection,
