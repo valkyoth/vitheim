@@ -968,8 +968,13 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
   `WitnessAuthorityReplacementRecoveryPointerObservationRegistryAuthorityStateV1`,
   `WitnessAuthorityReplacementRecoveryPointerObservationIntentV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCapacityV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationV1`,
-  claim receipt/disposition/provider redemption, dedicated registration,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationDispositionV1`,
+  signed local-finalization receipt/settlement and dedicated response-loss
+  status, `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCheckpointV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimArchiveReplayHeadV1`,
+  historical-result/unavailable state, claim receipt/disposition/provider redemption, dedicated registration,
   cancellation-seal, terminalization, permanent-seal and fence-anchor
   attempt/reservation/settlement/status results, sealed
   `WitnessAuthorityReplacementRecoveryPointerObservationCompletenessFrontierV1`,
@@ -985,16 +990,25 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
 
 Positive realization requires the selected registry port to pass its
 linearizable/finality/failover/key/retention/budget profile; bounded claims to
-drain before query permit; local authority to remain PreparedNonAuthoritative
-until signed RegistryConfirmed reconciliation; provider-fence redemption
+drain before query permit; the external authority transition table to deny
+claims in ObservationBlocked/FenceAnchorPending/RestoreUnready and make
+AuthorityFenced absorbing; live plus outcome-unknown claims never to exceed
+the pre-funded `c_max`; local authority to remain PreparedNonAuthoritative
+until signed RegistryConfirmed reconciliation and exact local CAS; registry
+settlement to await a signed LocalFinalizeCommitted receipt or permanent
+no-commit evidence; provider-fence redemption
 before effect send; complete response-loss protocols; a zero-unresolved sealed
-frontier; and TokenAcquired→LocalActivationPrepared→RegistryConfirmed/
-Rejected→Operational/Unready restore. Unknown/Unavailable,
+frontier; exact-set checkpoint/archive retention of claim history; and
+TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
+LocalFinalizeCommitted→RegistryFinalizationSettled→Operational or
+RestoreUnready. Unknown/Unavailable,
 LocallyExhaustedUnresolved, ExternallySealedPermanentlyUnresolved and
 LateContradictoryEvidenceObserved remain distinct, and late contradiction
 always strengthens to Fenced. Negative realization rejects distributed CAS,
 epoch check-then-use, prepared-state authority, stale send, generic status
-aliasing, transient-as-permanent, late-evidence suppression, weak adapters,
+aliasing, authority reopening from blocked/fenced state, claim admission above
+drain capacity, registry-only settlement, unsafe compaction,
+transient-as-permanent, late-evidence suppression, weak adapters,
 TOFU/caller roots, omitted observations, `C/H`↔`E/J` substitution,
 underfunding, replenishment and post-Fenced authority. Model/fault cases crash
 at every claim/drain/prepare/confirm/finalize/response/effect and pre-`E/J/F`

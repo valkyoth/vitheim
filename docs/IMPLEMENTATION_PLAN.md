@@ -538,11 +538,20 @@ RegisteredUnresolved intent and a fully escrowed `R_first` evidence route.
 Registry terminal states and a sealed exact-set zero-unresolved completeness
 frontier replace current-status absence. The registry closes new operational
 claims and drains/expires the bounded live set before query permission.
+Its closed authority machine includes ObservationBlocked,
+FenceAnchorPending, absorbing AuthorityFenced and RestoreUnready; a rolled-back
+local Healthy mirror cannot reopen any of them. Claim admission is
+structurally bounded by `c_max` across command/effect/queue/projection
+sublimits and pre-reserves every drain/terminal route.
 Authority mutations use registry claim→PreparedNonAuthoritative→signed
-RegistryConfirmed/Rejected→local finalize; effects also redeem at a
-provider/executor fence. Restore uses
-TokenAcquired→LocalActivationPrepared→RegistryConfirmed/Rejected→
-Operational/Unready, never a distributed CAS. Unknown/Unavailable remains
+RegistryConfirmed/Rejected→local finalize→signed finalization receipt→registry
+settlement; effects also redeem at a provider/executor fence. Unknown or lost
+local finalization remains live and blocks observation. Exact-set claim
+checkpoint/archive replay provides bounded retention without compacting live,
+redeemed, outcome-unknown, confirmed-unsettled or frontier-referenced claims.
+Restore uses TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
+LocalFinalizeCommitted→RegistryFinalizationSettled→Operational, or
+RestoreUnready, never a distributed CAS. Unknown/Unavailable remains
 RegisteredUnresolved, local exhaustion is LocallyExhaustedUnresolved,
 authenticated external seal alone is ExternallySealedPermanentlyUnresolved,
 and late contradiction remains appendable. Registration, cancellation,

@@ -8,6 +8,12 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Completed the portable recovery-registry authority model with explicit
+  ObservationBlocked, FenceAnchorPending, absorbing AuthorityFenced and
+  RestoreUnready states; structurally coupled operational admission to
+  per-kind and per-scope `c_max`; added signed local-finalization settlement;
+  and bounded claim history through exact-set checkpoint/archive replay,
+  unavailable-history refusal and production load/failover gates.
 - Replaced the impossible external-registry/local-database atomic CAS with a
   portable operational-claim drain and prepare/confirm/reconcile protocol.
   Added typed response-loss recovery for observation registration,

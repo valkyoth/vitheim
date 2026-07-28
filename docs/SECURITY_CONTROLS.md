@@ -495,9 +495,17 @@ audit decision.
   rollback-resistant observation registry. A signed no-fence assertion covers
   only its sealed exact-set zero-unresolved frontier. There is no
   cross-system CAS: registry claim drain, non-authoritative local preparation,
-  signed registry confirmation/rejection and local reconciliation order
-  restore and every authority mutation. Effects additionally redeem a current
-  claim at the executor/provider fence immediately before send.
+  signed registry confirmation/rejection, exact local CAS, signed local-
+  finalization receipt and registry settlement order restore and every
+  authority mutation. Effects additionally redeem a current claim at the
+  executor/provider fence immediately before send. The external registry
+  denies claims in ObservationBlocked, FenceAnchorPending and RestoreUnready;
+  exact `F_m` enters absorbing AuthorityFenced, which a stale local Healthy
+  restore cannot reopen. Operational admission proves live plus outcome-
+  unknown claims never exceed signed per-kind/tenant/deployment/global
+  `c_max`, and every claim owns protected drain/terminal work. Confirmation,
+  timeout or row absence cannot release a claim without authenticated local
+  commit or permanent no-commit evidence.
   Unknown/Unavailable and local exhaustion remain distinct fail-closed
   unresolved states; authenticated external seal alone assigns permanent
   unresolved meaning, and late contradiction always strengthens toward
@@ -505,6 +513,10 @@ audit decision.
   separate bounded response-loss lanes. The named observation-registry
   authority port must pass linearizability, failover, non-equivocation,
   key/retention, partitioning and budget conformance or the adapter refuses.
+  Exact-set claim checkpoints and Stage/Verify/Commit archives preserve live,
+  redeemed, outcome-unknown, confirmed-unsettled and frontier-referenced
+  history; missing replay/history enters RestoreUnready. Active/terminal row
+  and byte ceilings backpressure tenants before unsafe compaction.
   Contradiction before `E/J/F` publication therefore remains externally
   visible across restoration of an older local backup. Healthy `C_n/H_n` and
   fenced `E_m/J_m` archives have disjoint command/result/discriminant

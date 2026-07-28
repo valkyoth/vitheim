@@ -291,10 +291,24 @@ root/provenance/lineage and deterministic offline signing ceremony, not TOFU.
 Every pointer query must show its externally registered intent and complete
 `R_first` escrow. Healthy restore must show a sealed zero-unresolved
 observation frontier and the portable TokenAcquired→LocalActivationPrepared→
-RegistryConfirmed/Rejected→Operational/Unready protocol; no external/local
+RegistryConfirmed→LocalFinalizeCommitted→RegistryFinalizationSettled→
+Operational or RestoreUnready protocol; no external/local
 atomic CAS is permitted. Operational evidence must prove claim admission and
 drain, PreparedNonAuthoritative isolation, signed registry disposition/local
-finalize, and executor/provider redemption immediately before effects. It must
+finalize, signed local-finalization receipt/status settlement, and
+executor/provider redemption immediately before effects. The external
+authority transition suite must deny claims in ObservationBlocked,
+FenceAnchorPending and RestoreUnready, prove AuthorityFenced absorbing, and
+permit reopening only from exact consistent terminal evidence. Capacity tests
+must prove per-kind and per-tenant/deployment/global live plus outcome-unknown
+claims never exceed funded `c_max`, including hostile tenants and
+`c_max−1/c_max/c_max+1`. Registry confirmation without authenticated local
+commit or permanent no-commit evidence remains live. Exact-set claim
+checkpoint/archive replay must preserve live/redeemed/unknown/confirmed-
+unsettled/frontier-referenced history and make unavailable history
+RestoreUnready. Load/soak evidence must cover every added registry round trip,
+three local mutation stages, sharding and regional failure before enablement.
+It must
 exercise every registration/cancellation/terminal/permanent-seal/fence-anchor
 response-loss lane, the distinct transient/exhausted/sealed/late-evidence
 states and mandatory late-contradiction strengthening. The selected named

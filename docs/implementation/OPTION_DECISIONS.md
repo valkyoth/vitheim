@@ -3222,15 +3222,33 @@ FencedEvidenceVerified/export and non-releasable maintenance funding;
 rollback-resistant observation-registry provider and finality profile; exact
 tenant/deployment partition, expected-frontier CAS, epoch, non-equivocation,
 read-after-write/failover, key/distrust/history, exact-set compaction,
-independent-failure-domain and bounded-work conformance requirements; local
-database PreparedNonAuthoritative/confirmed-finalize support; executor/provider
+independent-failure-domain and bounded-work conformance requirements; exact
+OperationalClaimsOpen/ObservationDrainPending/QueryPermitMayIssue/
+ObservationBlocked/FenceAnchorPending/AuthorityFenced/
+RestoreActivationPending/RestoreUnready predicates and transitions, with
+AuthorityFenced absorbing and only authenticated consistent terminal plus
+sealed frontier reopening a blocked observation; signed
+OperationalAuthorityClaimCapacity values for command/effect/queue/projection
+and tenant/deployment/global `live + outcome_unknown <= c_max`, protected
+drain/terminal/history reservations, recovery-priority fairness and
+backpressure; local database PreparedNonAuthoritative/confirmed-finalize
+support; executor/provider
 claim-redemption enforcement; operational claim admission/drain/expiry and
-zero-live frontier; distinct registration, cancellation seal, terminalization,
+zero-live frontier; one-live-claim overlapping aggregate/expected-version
+sequencing; LocalFinalizeCommitted/VersionConflict/Unavailable/OutcomeUnknown,
+local finalization receipt signer/trust domain, permanent-no-commit evidence
+and response-loss status/settlement policy; active/terminal claim row/byte
+limits, exact-set checkpoint cadence, Stage/Verify/Commit archive/replay/
+historical-lookup backend, unavailable-history response, sharding/region
+failure profile and throughput/tail-latency SLOs; distinct registration,
+cancellation seal, terminalization,
 permanent-unresolved seal and fence-anchor status protocols; explicit
 RegisteredUnresolved/LocallyExhaustedUnresolved/
 ExternallySealedPermanentlyUnresolved/LateContradictoryEvidenceObserved
 transitions; zero-unresolved sealed frontier; portable
-TokenAcquired→LocalActivationPrepared→RegistryConfirmed/Rejected restore;
+TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
+LocalFinalizeCommitted→RegistryFinalizationSettled→Operational or
+RestoreUnready;
 distinct FenceEvidence
 archive backend/commands/results producing `J_m` only; production values for
 `o_max/c_max/a_max/v_max/q_max/r_max/x_max/t_max`, per-class byte/work/output
@@ -3266,7 +3284,14 @@ escape/starvation, query without external intent or full first-route escrow,
 omitted/unresolved/exhausted/sealed/late-contradictory registry members, forged
 completeness frontier, crash after local fence but before `E/J/F`, claim/drain
 and query-permit races, PreparedNonAuthoritative exposure, registry Confirm/
-Reject response loss, stale effect redemption, cross-system atomicity
+Reject response loss, every blocked/fenced/unready authority transition,
+stale-local reopening, `c_max−1/c_max/c_max+1`, hostile tenant fairness,
+overlapping expected-version claims, each local-finalization disposition, lost
+or forged finalization receipts, permanent-no-commit proof, confirmation-
+without-settlement, active/terminal row-byte ceilings, unsafe compaction,
+checkpoint/archive/replay loss and unavailable historical lookup, registry
+round-trip/three-local-stage load under sharding and regional failure, stale
+effect redemption, cross-system atomicity
 assumption, registration/cancellation/terminalization/permanent-seal/fence-
 anchor status loss, transient-as-permanent conversion, late-evidence
 suppression, partition/stale leader/delayed receipt/rollback/fork/read-after-

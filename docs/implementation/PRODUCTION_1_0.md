@@ -915,15 +915,29 @@ must also authenticate the pinned genesis root/provenance/lineage,
 deterministic offline signing request and single-use import claim. Every
 pointer query has an external observation intent and pre-escrowed `R_first`;
 Healthy restore has a sealed zero-unresolved frontier and portable
-TokenAcquired→LocalActivationPrepared→RegistryConfirmed/Rejected→
-Operational/Unready reconciliation, never a distributed CAS. Production must
+TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
+LocalFinalizeCommitted→RegistryFinalizationSettled→Operational or
+RestoreUnready reconciliation, never a distributed CAS. Production must
 prove operational claim drain, PreparedNonAuthoritative isolation, signed
-registry disposition/local finalize, executor/provider redemption at send,
+registry disposition/local finalize, signed local-finalization receipt/status
+settlement, executor/provider redemption at send,
 all observation response-loss lanes, distinct transient/exhausted/sealed/late-
 evidence states and mandatory late-contradiction strengthening. The named
 registry port/provider/backend combination must pass cross-adapter conformance
-or remain unsupported. The older-backup crash after local Fenced but before
-`E/J/F` remains blocked. Dedicated Healthy `C/H` and Fenced `E/J`
+or remain unsupported. Its external state table must deny operational claims
+in ObservationBlocked, FenceAnchorPending and RestoreUnready and prove
+AuthorityFenced absorbing against stale local restore. Per-kind and
+tenant/deployment/global admission must prove
+`live + outcome_unknown <= c_max`, complete protected drain work,
+recovery-priority fairness and rejection at `c_max + 1`. RegistryConfirmed
+without authenticated LocalFinalizeCommitted or permanent no-commit evidence
+remains live and non-authoritative. Exact-set claim checkpoints and
+Stage/Verify/Commit archive replay must preserve every live, redeemed,
+outcome-unknown, confirmed-unsettled and frontier-referenced member; unavailable
+history stays RestoreUnready. The selected shard/region profile must pass
+throughput, tail-latency, backpressure and failover gates for all registry
+round trips and three local mutation stages. The older-backup crash after
+local Fenced but before `E/J/F` remains blocked. Dedicated Healthy `C/H` and Fenced `E/J`
 commands/results never alias, and the selected immutable `B_EM` hard maxima
 have no production replenishment path.
 Production evidence
