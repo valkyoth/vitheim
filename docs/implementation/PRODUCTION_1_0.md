@@ -932,11 +932,22 @@ reference/erased tombstone payload variants with no classified plaintext in
 proposal/registry/signer/status/audit/archive/export; exact payload-reference
 reuse/custody transfer plus PayloadReferenceUseClaim proposal/event/shared
 membership, transfer-unknown state and authenticated global release proof
-under signed `p_claim_max` and per-reference `P_claim`; target-bound expected predecessor, atomically
+under signed `p_claim_max` and per-reference `P_claim`; pre-reserved tenant
+PayloadLifecycleMaintenanceCapacity landing space and atomic post-signing/pre-
+finalization-publication handoff into protected `L_max` before `P_claim`
+release, with registry settlement later releasing `c_max`, exact one-owner
+conservation, classified-only saturation backpressure and cleanup priority;
+target-bound expected predecessor, a passing CommitCutRecordedTimePort and atomically
 advanced RecordedTimeAuthorityRatchet with a conservative interval enclosing
 the commit cut and complete nonempty EventCommitChain mapping in the fresh
 immutable event/result/audit/outbox append. Zero-event domain batches reject
-and control/no-aggregate binds CanonicalNoDomainEventChain. Production also
+and control/no-aggregate binds CanonicalNoDomainEventChain. Exact SQLite,
+PostgreSQL, MySQL, MongoDB and SurrealDB profiles prove native authenticated
+commit evidence, a backend hard fence or equivalent attestation; start/insert/
+client time is rejected. Finalization, collection, retention, transfer, hold/
+erasure, archive and restore preserve command/claim/proposal→structurally
+sorted payload-use/membership/lifecycle→ratchet→aggregate/journal→commit/
+result/audit/outbox order. Production also
 requires separate scoped command-ID and
 idempotency-ID unique claims that must resolve to one ClaimAcquisitionPending
 through RegistrySettlementPending execution across hot/archive history.

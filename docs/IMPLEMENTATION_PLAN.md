@@ -563,14 +563,26 @@ PayloadReferenceUseClaim tracks exact proposal/event/shared members,
 transfer-pending/unknown custody and authoritative release eligibility across
 hot/archive/restore/retention/hold authorities; proposal terminality or a local
 count cannot erase a shared reference. `P_claim` reserves the bounded
-per-distinct-reference transfer/status/terminal/release routes. The target also
+per-distinct-reference pre-settlement routes, while admission also reserves a
+tenant PayloadLifecycleMaintenanceCapacity landing slot. After local signing
+and before finalization-receipt publication, one atomic local handoff transfers
+exact obligations into that long-lived ledger and releases `P_claim`; registry
+settlement later releases `c_max`. Retained memberships, transfer unknown, archives,
+holds, release proof, erasure and compaction consume protected `L_max`.
+Conservation prevents double/no owner, lifecycle saturation backpressures new
+classified payloads only, and existing cleanup remains funded. The target also
 binds the expected predecessor envelope digest. Domain finalization atomically
-advances a journal-authority RecordedTimeAuthorityRatchet, adds event ID,
+uses a passing CommitCutRecordedTimePort and advances a journal-authority
+RecordedTimeAuthorityRatchet, adds event ID,
 stream version, journal offset, transaction position and a conservative
 interval enclosing the authoritative commit cut, then derives the intra-batch
 predecessor chain canonically and binds all of it in the commit record. Time
 rollback without authenticated continuity is Unready. Zero domain events
-reject; control/no-aggregate work binds CanonicalNoDomainEventChain.
+reject; control/no-aggregate work binds CanonicalNoDomainEventChain. SQLite,
+PostgreSQL, MySQL, MongoDB and SurrealDB must prove native authenticated commit
+time/sequence, a backend commit-before fence or equivalent attestation for the
+exact profile; transaction-start/row-insert/client time is invalid and failing
+adapters reject DomainAggregateTarget.
 Separate tenant/deployment unique constraints on command ID and idempotency ID
 must both resolve to one execution; one-sided reuse conflicts across hot and
 archived history. That execution progresses from
@@ -586,6 +598,12 @@ every member attempt, response-loss query, partial, concurrency settlement,
 terminalization and one canonical quorum-combination/import operation. Signer loss enters
 CommitReceiptSignerRecoveryRequired and cannot change committed events/results
 or release the claim.
+All post-bootstrap writers preserve one structural order: command execution→
+claim→proposal→payload-use keys sorted by tenant/deployment/payload authority/
+reference identity→membership/custody→lifecycle capacity/handoff→time ratchet
+by deployment/backend/journal partition→aggregate/journal→commit record→result/
+audit/outbox. Collection, retention, hold/erasure, archive/restore and
+finalization acquire shared subsets in that relative order.
 Unknown acquisition, signer or finalization state remains live and blocks
 observation. Exact-set claim/proposal checkpoint/archive replay provides
 bounded retention without compacting live, redeemed, outcome-unknown,

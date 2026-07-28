@@ -900,13 +900,26 @@ restore, failover, and release evidence.
    lifecycle across proposal, registry, signer, status and archive surfaces.
    A PayloadReferenceUseClaim membership root owns proposal/event/shared use,
    transfer-unknown state and multi-authority release proof; bounded
-   `p_claim_max` funds every distinct-reference route. The target binds the
-   expected predecessor. Domain finalization atomically advances the journal
-   recorded-time continuity ratchet, allocates a conservative interval around
-   the commit cut and derives the canonical intra-batch integrity chain.
+   `p_claim_max` funds every pre-settlement route and reserves a tenant
+   PayloadLifecycleMaintenanceCapacity landing slot. A post-signing, pre-
+   publication local transaction hands retained obligations into protected
+   `L_max` and releases `P_claim`; registry settlement later releases `c_max`.
+   Holds and event retention therefore cannot starve command
+   capacity or lose cleanup funding. The target binds the expected predecessor.
+   Domain finalization uses a version-bound CommitCutRecordedTimePort,
+   atomically advances the journal recorded-time continuity ratchet, allocates
+   a conservative interval around the commit cut and derives the canonical
+   intra-batch integrity chain.
    Clock rollback or failover without authenticated continuity unreadies.
    Control/no-aggregate targets use CanonicalNoDomainEventChain; a zero-event
-   domain batch rejects.
+   domain batch rejects. SQLite, PostgreSQL, MySQL, MongoDB and SurrealDB must
+   prove native commit evidence, a backend commit-before fence or formally
+   equivalent attestation; transaction-start/row-insert/client time never
+   qualifies and an incapable adapter refuses domain events.
+   Finalization and every collection/retention/hold/erasure/archive/restore
+   subset share the structural order command/claim/proposal→sorted payload-use/
+   membership/lifecycle ledger→time-ratchet partition→aggregate/journal→commit/
+   result/audit/outbox.
    Independently unique command and idempotency IDs must both name the same
    command-execution row; one-sided hot or archived reuse conflicts. That row
    joins retries across every nonterminal stage and

@@ -217,11 +217,18 @@ authorities. Later proposal/event users may add/remove only their own exact
 membership; terminal proposal state or a process-local reference count never
 authorizes transfer, release, key destruction or erasure. Transfer response
 loss remains a live use until reconciled.
+The port exposes bounded maintenance-obligation classes and a stable handoff
+identity so later command owners can transfer retained membership, transfer-
+unknown, archive-proof, legal-hold, release, key-destruction, tombstone and
+compaction work into a long-lived tenant lifecycle ledger without changing the
+payload reference or erasure meaning. Exactly one short- or long-lived capacity
+owner exists throughout the handoff.
 
 Verification: classification downgrade, plaintext in metadata/log/index/receipt,
 hash substitution, held-data erasure, key destruction, double erasure, missing
 payload replay, shared proposal/event reference, transfer response loss,
-early/double release, rebuild-after-erasure, descriptor incompatibility, and forbidden
+early/double release, capacity-handoff duplication/loss, cleanup starvation,
+rebuild-after-erasure, descriptor incompatibility, and forbidden
 outward Phase F dependency tests pass.
 
 Exit criteria: erasure can remove recoverable plaintext without rewriting event

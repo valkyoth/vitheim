@@ -3254,6 +3254,16 @@ TransferOutcomeUnknown blocking, proposal-collection/event-retention/restore/
 hold non-reference authorities, release proof and exact erased tombstone;
 production `e_claim_max`/`p_claim_max` plus per-reference `P_claim`
 Admission/Publish/Reconcile/status/concurrency/terminal/release capacity;
+tenant/deployment/payload-authority PayloadLifecycleMaintenanceCapacity profile
+and `L_max` class/physical ceilings; admission-time landing reservation;
+post-signing/pre-finalization-publication atomic `P_claim→L_maintenance`
+handoff mapping/root/
+conservation, terminal-no-commit release proof and retry/conflict semantics;
+retained-membership/root-node, transfer-unknown, checkpoint/archive proof,
+legal-hold occupancy, release/non-reference proof, final erasure/key-destruction/
+tombstone, periodic reconcile and ledger-checkpoint/compaction charges;
+non-borrowable cleanup/terminalization workers, cross-tenant isolation,
+classified-only backpressure and long-retention/hold SLOs;
 rejected/cancelled
 erasure/tombstone behavior and explicit no-classified-plaintext surfaces;
 ordered descriptor-root algorithm; exact target expected-predecessor digest;
@@ -3264,6 +3274,20 @@ rollback/suspend/failover/restore/profile-rotation behavior; EventCommitChain
 algorithm mapping first target predecessor and every intra-batch predecessor/
 digest; CanonicalNoDomainEventChain encoding for empty control/no-aggregate
 targets and explicit zero-descriptor domain rejection;
+version-bound CommitCutRecordedTimePort and conformance mechanism/evidence for
+the exact SQLite, PostgreSQL, MySQL, MongoDB and SurrealDB adapter/server/
+topology profiles; selection among native authenticated commit timestamp/
+sequence, backend-enforced commit-before hard fence or formally equivalent
+attestation; delayed-commit/readback/finality/failover proof and explicit
+DomainAggregateTarget refusal when transaction-start/row-insert/client time is
+the only available signal;
+one post-bootstrap operational structural lock order: command execution→claim→
+proposal→payload-use key `(tenant,deployment,payload authority,reference
+identity)`→membership/custody/transfer→lifecycle capacity/landing/handoff→
+ratchet key `(deployment,backend authority,journal partition)`→aggregate/
+journal→commit record/result/audit/outbox; subset/deadlock-retry rules for
+finalization, collection, retention, transfer, hold/erasure, archive and
+restore, with opaque-only/process-local keys forbidden;
 finalizer-field allowlist/mapping; local database physical
 separation between PreparedNonAuthoritative proposal store and immutable event
 journal, with no proposal allocation of stream/journal/event/outbox/projection
@@ -3320,7 +3344,7 @@ RestoreUnready;
 distinct FenceEvidence
 archive backend/commands/results producing `J_m` only; production values for
 `o_max/c_max/a_max/v_max/q_max/r_max/x_max/t_max`, `e_claim_max/p_claim_max/
-n_signer_max/k_signer`, per-class byte/work/output ceilings, `P_claim`,
+n_signer_max/k_signer`, lifecycle `L_max`, per-class byte/work/output ceilings, `P_claim`,
 `S_claim`, `B_EM` and `R_first`, with no automatic replenishment; separate
 initial-bootstrap and guard-first post-bootstrap lock orders; and sequential-
 equivocation recovery; explicit `C_n→P_(n-1), H_n→C_n, P_n→H_n` ordering with
@@ -3365,10 +3389,23 @@ surface, payload reference/digest/key/residency/retention/hold/custody/
 erasure/export substitution, shared proposal/event reference, duplicate/lost
 transfer receipt, early/double release, partial batch, collection/event-
 retention/restore/hold race, rejected/cancelled crypto-erasure/tombstone,
-`p_claim_max−1/p_claim_max/p_claim_max+1`;
+`p_claim_max−1/p_claim_max/p_claim_max+1`; crash every maintenance handoff
+boundary, dual/missing owner, retention/hold after command release, lifecycle
+class/physical/cross-tenant saturation, classified-only backpressure, protected
+reconcile/release/erasure/compaction progress and `L_max−1/L_max/L_max+1`;
+two batches sharing references in opposite descriptor order, finalization
+against collection/hold/erasure, ratchet advancement against concurrent stream
+append and archive/restore against membership mutation; structural-key
+substitution, opaque-reference-only/process-local key and every shared-subset
+lock inversion/deadlock-retry path;
 target predecessor mismatch, authoritative recorded-time policy/uncertainty
 failure, clock step/rollback/suspend/restart/failover/restore/source/profile
 rotation, lower-bound regression and false transaction-start/allocation time,
+CommitCutRecordedTimePort conformance for exact SQLite/PostgreSQL/MySQL/
+MongoDB/SurrealDB versions/topologies, native/fence/equivalent-mechanism
+substitution, delayed commit beyond interval, transaction/statement-start,
+row-insert/client-response forgery and unsupported DomainAggregateTarget
+refusal;
 zero-event DomainAggregateTarget rejection, CanonicalNoDomainEventChain
 control/no-aggregate cases, one/max intra-batch chain derivation/reorder/
 substitution,

@@ -8,6 +8,12 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added a conserved handoff from short-lived `P_claim` into tenant-scoped
+  PayloadLifecycleMaintenanceCapacity so retained events and legal holds do not
+  pin command `c_max` or lose cleanup funding. Extended the canonical lock
+  order through payload membership, lifecycle ledger, time ratchet and journal
+  rows, and required CommitCutRecordedTime conformance for SQLite, PostgreSQL,
+  MySQL, MongoDB and SurrealDB before DomainAggregateTarget support.
 - Made recovery admission cardinality-safe: distinct payload references are
   funded through `P_claim`, signer members/partials and quorum import through
   `S_claim`. Added exact PayloadReferenceUseClaim ownership and release proof,

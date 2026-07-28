@@ -530,13 +530,27 @@ audit decision.
   export; raw dictionary-testable hashes are forbidden. PayloadReferenceUseClaim
   binds every proposal/event/shared member, transfer-unknown disposition and
   authoritative release proof. Neither proposal terminality nor a local count
-  authorizes erasure, and `P_claim` funds every distinct reference through
-  status/terminal/release. The target binds its expected predecessor; only journal
+  authorizes erasure. `P_claim` funds pre-settlement work and admission reserves
+  a tenant PayloadLifecycleMaintenanceCapacity landing slot; a post-signing,
+  pre-finalization-publication local handoff moves each retained obligation
+  into protected `L_max` before `P_claim` release, while registry settlement
+  later releases `c_max`. Conservation admits neither dual nor absent ownership. Lifecycle
+  saturation rejects new classified payloads without blocking unrelated
+  commands or existing cleanup. The target binds its expected predecessor; only journal
   identity, a commit-cut-containing interval under the non-regressing recorded-
   time ratchet and the canonically derived predecessor chain are finalizer-
-  owned, and the signed commit record covers them. Clock rollback or missing
+  owned, and the signed commit record covers them. A version-bound
+  CommitCutRecordedTimePort must prove native authenticated commit evidence,
+  a backend commit-before hard fence or formally equivalent attestation for
+  SQLite/PostgreSQL/MySQL/MongoDB/SurrealDB; start/insert/client time is invalid.
+  Clock rollback or missing
   failover/restore continuity unreadies. Zero-event domain batches reject;
   control/no-aggregate targets bind CanonicalNoDomainEventChain instead.
+  Finalization, collection, retention, hold/erasure, archive and restore share
+  one structural lock order from command/claim/proposal through canonically
+  sorted payload-use/membership/lifecycle rows, time-ratchet partition,
+  aggregate/journal and commit/result/audit/outbox; reference-only or process-
+  local keys are forbidden.
   Before claim acquisition, independent scoped unique constraints resolve
   command ID and idempotency ID to the same terminal or active execution;
   one-sided or cross-pair reuse conflicts even after compaction, unavailable

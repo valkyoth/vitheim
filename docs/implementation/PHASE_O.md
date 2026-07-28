@@ -310,11 +310,25 @@ signer, status, audit, logs and archive/export. PayloadReferenceUseClaim must
 bind proposal/event/shared membership, transfer unknown and authenticated
 release eligibility under signed `p_claim_max` and cardinality-safe `P_claim`;
 collection cannot erase
-a retained event/shared reference. Domain finalization atomically advances the
-journal RecordedTimeAuthorityRatchet with a conservative commit-cut interval
+a retained event/shared reference. Governed-reference admission also reserves
+tenant PayloadLifecycleMaintenanceCapacity landing space. After local signing
+and before finalization-receipt publication, one local transaction atomically
+hands exact obligations into protected `L_max` and releases `P_claim`;
+registry settlement later releases `c_max`. Conservation forbids dual/no owner, long retention/hold no
+longer pins command capacity, lifecycle saturation blocks only new classified
+payloads, and existing cleanup progresses. Domain finalization uses a passing
+CommitCutRecordedTimePort and atomically advances the journal
+RecordedTimeAuthorityRatchet with a conservative commit-cut interval
 and derives the complete nonempty EventCommitChain from the target-bound
 predecessor before persisting the descriptor-to-envelope map. Zero-event
 domain work rejects; control/no-aggregate binds CanonicalNoDomainEventChain.
+The exact SQLite, PostgreSQL, MySQL, MongoDB and SurrealDB profiles must prove
+native authenticated commit evidence, a backend hard fence or formally
+equivalent attestation; start/insert/client time fails and disables domain
+support. Finalization, collection, retention, transfer, hold/erasure, archive
+and restore preserve command/claim/proposal→structurally sorted payload-use/
+membership/lifecycle→ratchet→aggregate/journal→commit/result/audit/outbox
+order.
 Evidence must exercise separate
 tenant/deployment command-ID and idempotency-ID uniqueness across all hot/
 archive combinations; both must name the same unique ClaimAcquisitionPending

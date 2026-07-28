@@ -1760,6 +1760,15 @@ semantics and both distinct CAS boundaries must report `VIT-CAP-061`
 unsupported and refuse the feature; an emulation that narrows the guarantee is
 not parity.
 
+Every `0.23.0–0.27.0` database milestone also owns a version-bound
+`CommitCutRecordedTimePortV1` conformance profile. DomainAggregateTarget is a
+separate capability: it is enabled only when the exact adapter/server/topology
+proves native authenticated commit time/sequence, a backend-enforced commit-
+before hard fence, or formally equivalent commit-cut attestation bound to the
+journal ratchet. Transaction/statement start, row insertion, client receipt
+and response time never qualify. Failure disables DomainAggregateTarget for
+that adapter without weakening control/no-aggregate support.
+
 ## `0.23.0` — SQLite Adapter
 
 Status: planned; blocked until this milestone approves the exact SQLite driver,
@@ -1773,6 +1782,10 @@ select and evidence one admitted `DeadlineConditionalTopologyCasV1` mechanism
 inside SQLite itself; host timers, busy timeouts, connection interruption, and
 statement-time predicates are insufficient. Otherwise report the capability
 unsupported and refuse dynamic-topology-owner startup.
+Separately, the exact SQLite library/journal mode must pass
+CommitCutRecordedTimePortV1 using authenticated native commit evidence or a
+SQLite-enforced hard no-late-commit fence; host clock reads around `COMMIT` are
+not proof. Otherwise SQLite refuses DomainAggregateTarget.
 
 Goal: support development, evaluation, tests, and documented single-node use.
 
@@ -1802,8 +1815,10 @@ time/profile/continuity/tombstone field, every `0.22.0` deadline-CAS pause
 point, timeout with attempted late commit, replay-horizon/quota/checkpoint/
 archive/compaction crash and concurrent-replay cases, bounded file growth under
 maximum admitted issuance, sparse-gap/late-presentation range cases, normal-
-exhausted break-glass success, break-glass flood isolation, and conformance
-pass, including normal-to-emergency lane forgery, lane/class mismatch,
+exhausted break-glass success, break-glass flood isolation, commit-cut/ratchet
+crash points, commit delay past the claimed interval, suspend/restart/backup
+restore, unsupported-domain refusal, and conformance pass, including normal-
+to-emergency lane forgery, lane/class mismatch,
 credential rotation/revocation, mapping rollback on restore, and pre-auth work
 exhaustion, cross-lane ingress starvation, stage-one/stage-two crash boundaries,
 orphan charge non-refund/reuse, mapping-change TOCTOU, every closed disposition
@@ -1826,6 +1841,11 @@ The production profile must select and prove either an authoritative
 commit-time predicate or hard no-late-commit fence for
 `DeadlineConditionalTopologyCasV1`; PostgreSQL statement/transaction timestamps,
 client timeouts, cancel requests, and connection loss alone do not qualify.
+DomainAggregateTarget additionally requires PostgreSQL
+CommitCutRecordedTimePortV1 evidence bound to the exact committed transaction,
+journal position and ratchet; `transaction_timestamp()`,
+`statement_timestamp()` or a client-observed return alone is explicitly
+insufficient.
 
 Goal: establish the deepest-tested reference production backend.
 
@@ -1897,7 +1917,9 @@ compaction/backpressure state; proof-work budgets; and growth metrics. Startup
 fails capability negotiation if any
 mandatory semantic component or transaction-domain placement is absent.
 
-Verification: injection, auth downgrade, transaction crashes, concurrent append,
+Verification: injection, auth downgrade, transaction crashes, commit delay
+past the claimed interval, session kill, primary failover, stale-backup restore,
+time-profile rotation, unsupported-domain refusal, concurrent append,
 grant issuance/revocation reorder, revocation/final-attempt claim concurrency,
 claim/receipt idempotency and substitution, consumed-attempt failover/restore,
 grant/effect two-stream rejection, overlapping claim-set serialization,
@@ -1986,6 +2008,10 @@ encodings/collations, TLS/auth, migrations, and cancellation. A
 `DeadlineConditionalTopologyCasV1` commit-time mechanism; ordinary server/client
 timeouts and best-effort cancellation do not qualify, and absence keeps dynamic
 topology unsupported.
+MySQL DomainAggregateTarget is independently unsupported until the exact
+server/engine/replication profile passes CommitCutRecordedTimePortV1;
+automatic timestamp columns and transaction/statement time functions are not
+accepted as commit evidence.
 
 Goal: evaluate portable business correctness without making a `1.0.0`
 production-support claim by default.
@@ -1996,7 +2022,9 @@ and portability discrepancy register.
 Verification: encoding/collation confusion, isolation anomalies, injection,
 deadlock retry, rollback, tenant partition, restore, omission/reset of every
 receipt V1 and issuer/consumer time/continuity/tombstone field, the complete
-deadline-CAS pause/failover matrix, attempted late commit, and conformance pass.
+deadline-CAS pause/failover matrix, attempted late commit, commit-cut interval
+delay, engine/primary failover, time-profile rotation, unsupported-domain
+refusal, and conformance pass.
 The adapter also proves the common issuance budget, exact-replay horizon,
 authenticated checkpoint/compaction, unavailable-archive denial, and bounded-
 storage proof. That proof includes issuer range manifests, consumer sparse-gap
@@ -2028,6 +2056,10 @@ write concern, migrations, retry semantics, and topology limits. A
 in one transaction and prove an admitted `DeadlineConditionalTopologyCasV1`
 mechanism under the selected write concern and failover model; driver timeout
 or session cancellation is insufficient.
+MongoDB DomainAggregateTarget is independently unsupported until the selected
+server/topology/write-concern profile passes CommitCutRecordedTimePortV1;
+session, operation or cluster observation time is accepted only when backend
+evidence binds it to the exact committed transaction and ratchet transition.
 
 Goal: evaluate canonical event-journal behavior on a document backend without a
 `1.0.0` production-support claim by default.
@@ -2039,7 +2071,9 @@ Verification: operator/query injection, partial transactions, retry duplication,
 cross-tenant filters, failover, migration interruption, omission/reset of every
 receipt V1 and issuer/consumer time/continuity/tombstone field, all deadline-CAS
 pause points including primary failover and response loss, attempted late
-commit, common quota/horizon/checkpoint/compaction/archive-loss/bounded-growth
+commit, commit-cut attestation delay/substitution, rollback, primary failover,
+restore, time-profile rotation, unsupported-domain refusal, common quota/
+horizon/checkpoint/compaction/archive-loss/bounded-growth
 cases, sparse-gap/range-manifest/late-presentation cases, break-glass reserve
 isolation, issuance atomicity/settlement idempotency/principal isolation, and
 lineage-retention/original-claim/consumer-terminal/presentation-versus-request-
@@ -2066,6 +2100,9 @@ query parameters, migrations, capability probes, and version support. A
 `DeadlineConditionalTopologyCasV1` mechanism proven against the exact supported
 server version; a query-time predicate, RPC timeout, or cancellation request is
 not sufficient, and an incapable version reports dynamic topology unsupported.
+SurrealDB DomainAggregateTarget is independently unsupported until the exact
+server/storage/topology profile passes CommitCutRecordedTimePortV1; query
+evaluation time or RPC completion is not commit-cut evidence.
 
 Goal: evaluate graph capabilities as optimization without changing correctness
 or claiming default `1.0.0` support.
@@ -2077,7 +2114,9 @@ Verification: namespace escape, query injection, unauthorized edges, transaction
 failure, capability lies, backup/restore, omission/reset of every receipt V1 and
 issuer/consumer time/continuity/tombstone field, every deadline-CAS pause/
 failover/response-loss case, attempted late commit, common quota/horizon/
-checkpoint/compaction/archive-loss/bounded-growth cases, and full conformance
+checkpoint/compaction/archive-loss/bounded-growth cases, commit-cut delay/
+substitution, storage failover/restore, time-profile rotation, unsupported-
+domain refusal, and full conformance
 pass; include sparse-gap/range-manifest/late-presentation behavior and break-
 glass reserve isolation, atomic issuance and exact-once settlement, caller
 sub-limit isolation, lineage-retention/original-claim/consumer-terminal/
@@ -7512,6 +7551,54 @@ Only the lifecycle owner may advance ReleaseEligible to policy-authorized
 erasure and ErasedTombstone; retry is exact, double release is a conflict, and
 absence or a local reference count is never sufficient evidence.
 
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceCapacityV1`
+is a tenant/deployment/payload-authority-scoped long-lived ledger independent
+of operational `c_max`. Its immutable profile bounds and separately accounts
+retained event memberships/membership-root nodes, TransferOutcomeUnknown
+attempts, checkpoint/archive proof bytes, legal-hold occupancy, release-
+evaluation/non-reference proof work, final erasure/key destruction/tombstone
+persistence, periodic reconciliation and lifecycle-ledger checkpoint/
+compaction. Cleanup/reconciliation/erasure workers and terminalization capacity
+are non-borrowable by new admission, and one tenant cannot consume another
+tenant's ledger.
+
+Before admitting any command with governed references, local admission reserves
+the worst-case `p_claim_max` lifecycle-ledger landing capacity in the same
+transaction as `P_claim`; saturation rejects that classified-payload command
+before claim issuance while unrelated no-governed-reference commands remain
+admissible. After the immutable local commit and signed commit receipt are
+reconciled, but before the first FinalizationReceipt Publish to the registry,
+the successful path executes one atomic local
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceHandoffV1`
+transaction: it converts exact landing reservations into long-lived
+membership/maintenance charges, advances the lifecycle-ledger root, records
+the command/reference membership mapping and handoff result/audit/outbox, and
+only then releases the matching operational `P_claim` units. Only its durable receipt authorizes finalization-
+receipt publication, so any later successful registry settlement releases the
+operational claim after lifecycle ownership already exists. Lost registry
+response uses the existing settlement-status protocol; it does not undo the
+handoff or assume an external/local transaction. Rejected or permanent-no-commit commands release
+landing capacity only after authenticated no-reference/no-transfer evidence;
+unknown outcomes before either local terminal route retain `P_claim` plus
+landing capacity, while registry-settlement unknown after handoff retains
+`L_maintenance` plus the still-live registry claim.
+
+For every originally admitted payload obligation, checked non-wrapping
+accounting preserves the mutually exclusive conservation equation:
+
+`P_operational + H_handoff_pending + L_maintenance +
+P_terminal_unused_released = P_initial`.
+
+The lifecycle ledger separately proves
+`L_landing_reserved + L_maintenance + L_cleanup_in_progress <= L_max`
+at tenant/deployment/payload-authority and physical-store aggregate scopes.
+Handoff retry is exact; changed membership conflicts, and no crash may produce
+both an operational and maintenance owner or neither. Long retention/legal
+hold therefore consumes `L_max`, not command `c_max`; saturation backpressures
+new classified-payload admission while existing lifecycle cleanup keeps
+priority and protected capacity.
+
 Actual accepted recorded-time interval and integrity predecessor/digest chain
 are finalizer-owned commit metadata because they depend on the authoritative
 commit cut. They are not caller-selectable omissions. DomainAggregateTarget
@@ -7546,6 +7633,29 @@ continue only with authenticated continuity proving a lower bound at least as
 strong as the stored one; otherwise finalization and restore are Unready.
 Backends unable to prove atomic ratchet/head advancement and commit-cut
 semantics do not support DomainAggregateTarget finalization.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCommitCutRecordedTimePortV1`
+and its version-bound conformance profile are mandatory for every adapter that
+claims DomainAggregateTarget. The closed accepted mechanisms are:
+
+- NativeAuthenticatedCommitTimestampOrSequence, bound by backend evidence to
+  the exact committed transaction and journal position;
+- BackendEnforcedCommitBeforeFence, whose backend-side predicate or hard no-
+  late-commit fence proves the conservative interval encloses commit; or
+- FormallyEquivalentCommitCutAttestation, with reviewed proof obligations no
+  weaker than the first two.
+
+The profile binds adapter/server version, topology/failover mode, source and
+key identity, transaction/commit evidence, journal partition/head, ratchet
+predecessor/successor, uncertainty and readback/finality rules. Transaction-
+start, statement-start, row-insertion, client-observation or response time is
+not commit-cut evidence. SQLite, PostgreSQL, MySQL, MongoDB and SurrealDB each
+run the same crash/rollback/suspend/failover/restore conformance corpus against
+their exact promised profile. An adapter without one passing mechanism reports
+the capability unsupported and rejects DomainAggregateTarget; redefining
+`recorded_at` as allocation time is not a compatibility shim and would require
+a future explicit schema/law version rather than a silent fallback.
 
 Preparation is evidence, never domain history; rejected or abandoned proposals
 retain only policy-permitted opaque references or erased tombstones and enter
@@ -8097,12 +8207,16 @@ unfunded batch/profile before claim issuance. Per-claim payload capacity is:
 1_PayloadTransferAdmission + 1_PayloadTransferPublish +
 1_PayloadTransferReconcile + Q_claim(PayloadTransfer) +
 1_PayloadTransferConcurrencySettlement +
-1_PayloadTransferTerminalize + 1_PayloadReleaseEvaluation) +
+1_PayloadTransferTerminalize + 1_PayloadMaintenanceLandingReserve +
+1_PayloadMaintenanceHandoff + 1_PreHandoffTerminalReleaseProof) +
 1_PayloadBatchMembershipCommit`.
 
 All terms remain reserved even when exact reuse takes the shorter mutually
-exclusive path, because later proposal collection, shared membership,
-response-loss reconciliation and release proof must still complete safely.
+exclusive path, because response-loss reconciliation and the atomic
+maintenance handoff or authenticated pre-handoff terminal release must still
+complete safely. Long-lived proposal/event membership, retention/hold,
+release, erasure and compaction work is funded by
+PayloadLifecycleMaintenanceCapacityV1 after handoff, not by command `c_max`.
 Per-claim signer recovery capacity is:
 
 `S_claim = 1_SignerRecoveryReserve + 1_SignerFailureDisposition +
@@ -8144,8 +8258,14 @@ is separately protected from ordinary claim traffic. The pre-disposition
 cancellation unit is mutually exclusive with forward disposition but remains
 reserved until one path terminalizes; command-status calls have a signed hard
 maximum and never allocate another claim. `P_claim` is pre-reserved before
-proposal preparation and remains encumbered through every transfer-unknown,
-shared-reference, retention/hold and release-proof state. `S_claim` is pre-reserved before the
+proposal preparation and remains encumbered through transfer-unknown until
+either terminal no-commit proof or the post-signing/pre-publication handoff.
+The latter atomically installs the exact `L_maintenance` owner before releasing
+`P_claim`; it does not release registry `c_max`, which remains live until the
+existing finalization-receipt settlement succeeds. Terminal no-commit proof
+instead releases the unused landing reservation and `P_claim`. After handoff,
+retention/hold/release/erasure consumes only the lifecycle ledger and cannot
+pin the command's payload reserve after registry settlement. `S_claim` is pre-reserved before the
 irreversible local commit and is non-borrowable by ordinary signing or claim
 traffic; signer loss, failover or distrust cannot require an unfunded recovery
 write/status query. Its unused mutually exclusive route remains encumbered
@@ -8549,7 +8669,7 @@ mutate a field covered by the attempt-set commitment:
 | Fence-evidence checkpoint creation | create exact-set `E_m` from the absorbing fence | Guard-first EvidenceMaintenance under Fenced captures the complete fence/bundle/result/guard and predecessor anchor, consumes its bounded class, and can never create `C_n` |
 | Fence-evidence archive lifecycle | Stage/Verify/Commit for `E_m` | Dedicated discriminator, commands, states and results only. Commit produces exactly `J_m`, keeps guard/fence/bundle/result/shared anchor hot, and exposes no MarkOrphan/FinalizeGc operation |
 | Recovery current-pointer publication/reconciliation | submit `P_n` after `H_n`, then import every external outcome | Fence-first persist the semantic request and one-use claim before one process-local permit; valid signed Reconcile alone records the receipt, CASes ActivatedPendingPointerWitness→Operational, writes operationalization/source-consumption result and advances the recovery head, with `P_n→H_n` and no future receipt/result digest in the request; all other outcomes remain non-operational |
-| Operational registry claim lifecycle | structurally order one-target authority mutations and effects before observation drain | Before acquisition, independently resolve tenant/deployment-scoped command ID and idempotency ID; both must be absent or name the same unique active/terminal execution. Admit exactly one DomainAggregateTarget, ControlOwnerTarget or CanonicalNoAggregateTarget; reject multi-target work to Phase B process manager/outbox. Proposal/registry confirmation binds the complete ordered ProposedEventDescriptor root with only non-sensitive inline bytes or opaque erasable payload references. PayloadReferenceUseClaimV1 tracks every proposal/event member, transfer-unknown state and authoritative release proof under cardinality-funded `P_claim`. Domain finalization atomically advances the journal RecordedTimeAuthorityRatchetV1, allocates a commit-cut interval and derives EventCommitChainV1; non-domain targets bind CanonicalNoDomainEventChainV1. The selected commit-attestation profile proves the complete map to a post-commit signer; cardinality-funded `S_claim` covers every threshold member/partial/status/terminalization and quorum import, or root-successor recovery, without changing commit meaning. Signed receipt settlement alone reaches Succeeded/releases the claim. Cancellation ends at ProposalPrepared. External send also redeems at the provider fence. ObservationDrainPending waits for the bounded live set |
+| Operational registry claim lifecycle | structurally order one-target authority mutations and effects before observation drain | Before acquisition, independently resolve tenant/deployment-scoped command ID and idempotency ID; both must be absent or name the same unique active/terminal execution. Admit exactly one DomainAggregateTarget, ControlOwnerTarget or CanonicalNoAggregateTarget; reject multi-target work to Phase B process manager/outbox. Proposal/registry confirmation binds the complete ordered ProposedEventDescriptor root with only non-sensitive inline bytes or opaque erasable payload references. PayloadReferenceUseClaimV1 tracks every proposal/event member, transfer-unknown state and authoritative release proof under cardinality-funded `P_claim`, with a pre-reserved PayloadLifecycleMaintenanceCapacityV1 landing slot. Domain finalization uses a passing CommitCutRecordedTimePortV1, atomically advances RecordedTimeAuthorityRatchetV1, allocates a commit-cut interval and derives EventCommitChainV1; non-domain targets bind CanonicalNoDomainEventChainV1. The selected commit-attestation profile proves the complete map to a post-commit signer; cardinality-funded `S_claim` covers every threshold member/partial/status/terminalization and quorum import, or root-successor recovery, without changing commit meaning. Signed receipt settlement reaches Succeeded/releases the operational claim only after one local atomic payload-maintenance handoff preserves `P_operational + H_handoff_pending + L_maintenance + P_terminal_unused_released = P_initial`; retained/held payloads then consume lifecycle `L_max`, not `c_max`. Cancellation ends at ProposalPrepared. External send also redeems at the provider fence. ObservationDrainPending waits for the bounded live set |
 | Operational claim history lifecycle | bound registry/proposal/command storage without losing completeness, privacy or retry evidence | Enforce signed active/terminal row-byte ceilings; checkpoint exact independent command/idempotency membership, command state, target/predecessor, descriptor/payload-lifecycle root, claim, proposal, commit-chain/attestation/signature-recovery and result sets; Stage/Verify/Commit immutable archives and advance the replay head without moving classified plaintext or violating residency/holds; preserve historical one-sided-reuse conflict, retry/status and every live/redeemed/outcome-unknown/confirmed-unsettled/frontier-referenced claim. Rejected/cancelled payload references crypto-erase only when policy/hold permits and retain ErasedPayloadTombstone. Staged/Verified only may become OrphanEligible after Commit-status reconciliation, current multi-authority non-reference, retention/hold and protected GC capacity; Committed/frontier-referenced never orphan. Missing or forked history is HistoricalStateUnavailable and RestoreUnready |
 | Recovery pointer-observation registration/terminalization | make every possible pointer query externally durable | Use distinct bounded Register Publish/Reconcile/query, cancellation-seal/query, terminalization Publish/Reconcile/query and fence-anchor terminalization/query protocols. Unknown/Unavailable stays RegisteredUnresolved, exhaustion becomes LocallyExhaustedUnresolved, authenticated seal alone becomes ExternallySealedPermanentlyUnresolved, and late contradiction always strengthens toward FenceAnchored |
 | Recovery current-pointer query admission | admit a stable status attempt for unknown pointer publication | Require the exact RegisteredUnresolved receipt and escrow `R_first`, then consume bounded calls/bytes/work/time/concurrency and create a terminalization reservation before returning one process-local permit; failure is no-write/no-permit |
@@ -8586,8 +8706,11 @@ provenance/lineage→deployment Recovery-bootstrap reserve→deterministic signi
 request→pre-signed `P_0` receipt/single-use import claim→`P_0` and initial
 recovery/replay heads→recovery guard→result/audit/outbox; it cannot acquire a
 post-bootstrap row or fence-keyed Recovery budget. Every post-bootstrap
-local transaction is recovery guard→operation class→operational-claim mirror/
-non-authoritative preparation→absorbing old-fence/evidence
+local transaction is recovery guard→operation class→command execution→
+operational-claim mirror→non-authoritative proposal→canonically sorted payload-
+use claims→payload membership/custody/transfer rows→payload-lifecycle
+maintenance-capacity/landing/handoff rows→recorded-time ratchet partition→
+aggregate stream→journal head→local commit record→absorbing old-fence/evidence
 read→parent Recovery budget→replacement attempt-set head→replacement head→
 transfer high-watermark→source outbox→destination inbox/genesis→current
 pointer→shared recovery-anchor sequence→recovery current-pointer or fence high-
@@ -8599,6 +8722,28 @@ activation, pointer/fence reconciliation and restore. Expected-version loss
 commits no recovery charge except a
 bounded changed-material candidate rejection whose own reservation was
 admitted; exact retry returns the stored typed result.
+
+Payload-use structural order is the canonical tuple `(tenant, deployment,
+payload authority, opaque-reference identity digest)`, never the opaque
+reference alone or descriptor order. Recorded-time structural order is
+`(deployment, backend authority, journal partition identity)`, never a
+process-local connection, transaction or journal identifier. Membership,
+custody and lifecycle-capacity rows follow their owning payload-use key;
+aggregate stream/journal rows follow the ratchet partition; commit record,
+result, audit and outbox remain last in their applicable common subsequence.
+Finalization, proposal collection, event-retention cleanup, transfer
+reconciliation, legal-hold/erasure, archive publication/reconciliation and
+restore membership mutation acquire every shared subset in this relative order
+and use the same deadlock-retry policy. No adapter may reorder a subset.
+
+Model two batches sharing references in opposite descriptor order;
+finalization against proposal collection, hold installation and erasure; time-
+ratchet advancement against concurrent same/different-stream appends in one
+journal partition; and archive/restore reconciliation against membership/
+lifecycle-ledger mutation. Every interleaving must produce one CAS winner or a
+typed retry without ABBA deadlock, partial handoff, time regression, early
+release or skipped audit/outbox.
+
 External registry claim acquisition occurs before the local transaction and
 publishing occurs only after it releases every local lock. Reconcile starts a
 new local transaction from an authenticated registry receipt. No implementation
@@ -9876,7 +10021,16 @@ TransferPending/TransferOutcomeUnknown and every partial local-batch failure.
 Require exact PayloadReferenceUseClaimV1 membership, all-or-none event members
 and authoritative non-reference before ReleaseEligible/ErasedTombstone. At
 `p_claim_max - 1`, `p_claim_max` and `p_claim_max + 1`, prove the first two
-have a fully reserved route and the last rejects before claim issuance. Seed
+have a fully reserved route and the last rejects before claim issuance.
+Crash before/after every PayloadLifecycleMaintenanceHandoff write and prove
+`P_operational + H_handoff_pending + L_maintenance +
+P_terminal_unused_released = P_initial` with exactly one owner. Hold retained
+events indefinitely: successful command settlement releases `c_max/P_claim`
+only after `L_maintenance` installs, while legal-hold occupancy remains charged
+to `L_max`. Saturate each lifecycle-ledger class and physical aggregate:
+new classified-payload commands reject before claim issuance, unrelated
+no-governed-reference commands remain admissible, and protected reconcile/
+release/erasure/compaction of existing obligations progresses. Seed
 classified plaintext canaries only in the governed erasable store,
 submit their opaque references and attempt to inject the canaries into proposal
 metadata, then scan every database row, registry request/receipt, signer/
@@ -9898,6 +10052,14 @@ Step the clock backward/forward across allocation and commit, suspend, restart,
 fail over, restore and rotate the time profile/source; the authenticated
 RecordedTimeAuthorityRatchetV1 lower bound never regresses, overlapping
 intervals remain journal-position ordered and unavailable continuity unreadies.
+For the exact SQLite, PostgreSQL, MySQL, MongoDB and SurrealDB version/topology
+profiles, run CommitCutRecordedTimePortV1 conformance with delayed commit,
+response loss, crash, rollback, failover, restore and readback. Accept only
+NativeAuthenticatedCommitTimestampOrSequence,
+BackendEnforcedCommitBeforeFence or formally equivalent attestation; inject
+transaction/statement start, row insertion and client response time and require
+rejection. A failing adapter must reject DomainAggregateTarget without
+weakening control/no-aggregate behavior.
 Verify the signed commit record's descriptor-index-to-envelope map, recorded
 interval, ratchet predecessor/successor, source/boot/fence continuity, initial
 predecessor, full chain and final head. Reuse the same payload reference under

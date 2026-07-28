@@ -977,9 +977,13 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimProposedEventDescriptorV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimProposedEventPayloadV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimPayloadReferenceUseClaimV1`,
+  `WitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceCapacityV1`,
+  `WitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceHandoffV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimEventCommitChainV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCanonicalNoDomainEventChainV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimRecordedTimeAuthorityRatchetV1`,
+  `WitnessAuthorityReplacementRecoveryCommitCutRecordedTimePortV1`,
+  `WitnessAuthorityReplacementRecoveryCommitCutRecordedTimeConformanceProfileV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedCommandExecutionHistoricalIdentityConflictV1`,
   claim-acquisition attempt/outcome/reservation/settlement and dedicated
   Publish/Reconcile/status semantics,
@@ -1030,11 +1034,21 @@ the signed ordered event-descriptor root to bind every proposal-owned semantic
 field while classified payload remains an opaque encrypted/erasable reference
 or erased tombstone under Phase A lifecycle/residency/hold constraints;
 PayloadReferenceUseClaim to bind every proposal/event/shared member and
-authenticated release proof under per-reference `P_claim`; the target to bind
+authenticated release proof under per-reference `P_claim`; governed-reference
+admission to reserve tenant lifecycle landing capacity and a post-signing/pre-
+finalization-publication local transaction to atomically hand each retained
+obligation into long-lived `L_max` before releasing `P_claim`, with registry
+settlement later releasing `c_max`, one-owner conservation and
+protected cleanup; the target to bind
 the exact predecessor and domain finalization to atomically advance a
 rollback-resistant journal time ratchet with a conservative commit-cut
 interval plus the canonical nonempty intra-batch chain, while non-domain
-targets bind CanonicalNoDomainEventChain; independent command-ID and
+targets bind CanonicalNoDomainEventChain; every SQLite/PostgreSQL/MySQL/
+MongoDB/SurrealDB domain profile to pass CommitCutRecordedTimePort conformance
+using authenticated native commit evidence, a backend hard fence or formally
+equivalent attestation; all shared operational subsets to preserve structural
+command/claim/proposal→payload/membership/lifecycle→ratchet→aggregate/journal→
+commit/result/audit/outbox order; independent command-ID and
 idempotency-ID uniqueness to resolve both identities to one execution across
 hot/archive history; one command-execution state to join retry/status across every active and
 terminal stage with cancellation ending at ProposalPrepared; the selected
@@ -1063,8 +1077,12 @@ drain capacity, provisional events/proposal promotion, acquisition permit
 recreation, multi-aggregate or mixed-owner target, payload-only confirmation,
 classified plaintext in proposal/registry/signer/status/archive evidence,
 payload reference/residency/hold substitution, early/double/shared-reference
-release or transfer-unknown erasure, underfunded payload/signer cardinality,
-recorded-time rollback/commit-cut ambiguity, zero-domain/no-domain-chain
+release or transfer-unknown erasure, operational-capacity release before
+lifecycle handoff, retained-payload pinning of `c_max`, lifecycle conservation
+loss/duplication/cleanup starvation, opaque/process-local lock keys or ABBA
+reordering, underfunded payload/signer cardinality, transaction-start/insert/
+client time as commit evidence, backend capability lie, recorded-time rollback/
+commit-cut ambiguity, zero-domain/no-domain-chain
 substitution or predecessor-chain forgery, semantic descriptor/envelope substitution, composite-only command/
 idempotency uniqueness, one-sided identity reuse, second claim on active retry,
 unsafe signer failover/result rewrite/unfunded recovery,
