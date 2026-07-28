@@ -551,8 +551,19 @@ RegistryConfirmed/Rejected→fresh immutable event/result/audit/outbox append
 plus unsigned commit record→post-commit signer reconciliation→signed receipt→
 registry settlement; effects also redeem at a provider/executor fence.
 Proposals allocate no journal identity and never satisfy successful command
-idempotency. Unknown acquisition, signer or finalization state remains live and
-blocks observation. Exact-set claim/proposal checkpoint/archive replay provides
+idempotency. Each claim has exactly one DomainAggregateTarget,
+ControlOwnerTarget or CanonicalNoAggregateTarget; domain finalization remains
+one stream and cross-aggregate work uses the Phase B process manager/outbox.
+Registry confirmation signs the complete ordered ProposedEventDescriptor root,
+and finalization may add only event ID, stream version, journal offset and
+transaction position. A unique command execution progresses from
+ClaimAcquisitionPending through proposal/confirmation/commit/signing/settlement
+to a typed terminal state; identical retry joins active state, changed material
+conflicts, and cancellation ends at ProposalPrepared. Commit proof uses one
+selected attestation profile: trusted signer-adapter authoritative read,
+authenticated database attestation or explicit hosted-runtime attester.
+Unknown acquisition, signer or finalization state remains live and blocks
+observation. Exact-set claim/proposal checkpoint/archive replay provides
 bounded retention without compacting live, redeemed, outcome-unknown,
 confirmed-unsettled or frontier-referenced claims. Staged/Verified archive
 failures use Commit-status reconciliation and protected non-reference/retention/

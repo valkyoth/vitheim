@@ -297,9 +297,22 @@ Operational or RestoreUnready protocol; no external/local
 atomic CAS is permitted. Operational evidence must prove claim admission and
 drain, loss-safe acquisition Publish/Reconcile/status, physical separation of
 PreparedNonAuthoritative proposal rows from immutable journal/outbox/projection
-and successful idempotency, signed registry disposition, fresh immutable
-finalization plus unsigned commit record, post-commit signer
-Publish/Reconcile/status and signed-receipt settlement, and
+and successful idempotency. Each command must bind exactly one
+DomainAggregateTarget, ControlOwnerTarget or CanonicalNoAggregateTarget;
+domain batches remain on one aggregate stream and multi-target work must use
+the Phase B process-manager/outbox path. Registry confirmation must cover the
+target and ordered ProposedEventDescriptor root for every semantic envelope
+field, while finalization may add only the frozen allocator-owned fields and
+must persist the descriptor-to-envelope map. Evidence must exercise the unique
+ClaimAcquisitionPending through RegistrySettlementPending command execution,
+exact-retry join, changed-material conflict, historical lookup and the
+ProposalPrepared last-cancellable boundary. Fresh immutable finalization plus
+an unsigned commit record must be followed by one selected commit-attestation
+profile—trusted signer-adapter authoritative read, backend-authenticated
+attestation or HostedRuntimeCommitAttester—and post-commit signer
+Publish/Reconcile/status and signed-receipt settlement. Caller-provided bytes,
+replica/cache reads and a transaction-success return are not commit proof;
+unsupported attestation profiles refuse. Evidence must also prove
 executor/provider redemption immediately before effects. The external
 authority transition suite must deny claims in ObservationBlocked,
 FenceAnchorPending and RestoreUnready, prove AuthorityFenced absorbing, and

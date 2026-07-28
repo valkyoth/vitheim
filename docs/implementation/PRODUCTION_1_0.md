@@ -921,10 +921,24 @@ RegistryFinalizationSettled→Operational or
 RestoreUnready reconciliation, never a distributed CAS. Production must
 prove operational claim drain; claim-acquisition Admit/Publish/Reconcile/
 status without permit recreation; PreparedNonAuthoritative isolation in a
-separate no-journal-identity proposal store; byte-identical confirmed event
-bodies in a fresh immutable event/result/audit/outbox append; unsigned commit
-record followed by the selected post-commit signer profile and signed-receipt
-status settlement; executor/provider redemption at send;
+separate no-journal-identity proposal store; exactly one
+DomainAggregateTarget, ControlOwnerTarget or CanonicalNoAggregateTarget per
+claim, with one aggregate stream per domain transaction and Phase B
+process-manager/outbox decomposition for multi-target work; registry-signed
+target plus ordered ProposedEventDescriptor root covering every semantic
+envelope field; allocator-only final fields and an auditable
+descriptor-to-envelope map in the fresh immutable event/result/audit/outbox
+append; and one unique ClaimAcquisitionPending through
+RegistrySettlementPending command execution whose exact retry joins current or
+historical status, whose changed request conflicts and whose last cancellable
+state is ProposalPrepared. The unsigned commit record must be proven through
+the selected trusted signer-adapter authoritative-read,
+backend-authenticated-attestation or HostedRuntimeCommitAttester profile
+before the selected post-commit signer and signed-receipt status settlement.
+Backend continuity, transaction, target, descriptor map and result/audit/outbox
+roots are bound; caller bytes, replica/cache reads and transaction-return
+success are not proof, and unsupported profiles refuse. Production also proves
+executor/provider redemption at send;
 all observation response-loss lanes, distinct transient/exhausted/sealed/late-
 evidence states and mandatory late-contradiction strengthening. The named
 registry port/provider/backend combination must pass cross-adapter conformance

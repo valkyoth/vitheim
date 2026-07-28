@@ -516,6 +516,19 @@ audit decision.
   writes an unsigned commit record. The selected signer signs only that
   post-commit record through its own response-loss protocol; no HSM/KMS call or
   implicit in-process signature occurs inside the database transaction.
+  Claims bind exactly one DomainAggregateTarget, ControlOwnerTarget or
+  CanonicalNoAggregateTarget. A domain proposal/finalization touches one stream
+  only; cross-aggregate work is rejected to the Phase B process-manager/outbox
+  path. Registry confirmation signs a ProposedEventDescriptor root covering
+  event/schema identity, target, tenant, command/causation/correlation, time,
+  sensitivity/custody and payload; only allocator IDs/versions/offset/position
+  may be added. Before claim acquisition, a unique command/idempotency lookup
+  joins terminal or active execution; changed bytes conflict, unavailable
+  history unreadies, and cancellation ends at ProposalPrepared before
+  disposition publication. Remote signing requires either trusted-adapter
+  authoritative reread or authenticated backend commit attestation. The
+  explicit hosted-runtime profile names its trust boundary; caller-provided
+  bytes, cache/replica reads and transaction-return success are not proof.
   Unknown/Unavailable and local exhaustion remain distinct fail-closed
   unresolved states; authenticated external seal alone assigns permanent
   unresolved meaning, and late contradiction always strengthens toward

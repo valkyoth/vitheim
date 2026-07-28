@@ -891,6 +891,17 @@ restore, failover, and release evidence.
    receipt→registry settlement; effects also redeem at an executor/provider
    epoch fence immediately before send. Proposal rows allocate no journal
    identity, cannot satisfy successful idempotency and are never projected.
+   A claim has exactly one domain-aggregate, control-owner or no-aggregate
+   target. Domain batches stay on one stream; process managers/outbox decompose
+   cross-aggregate work. Registry confirmation signs complete ordered event
+   descriptors—schema/type, target, identities, time and custody semantics—
+   while finalization adds only allocator-owned IDs/versions/offsets/position.
+   One command-execution row joins retries across every nonterminal stage and
+   reaches Succeeded only after registry settlement; cancellation ends before
+   disposition publication and never undoes events. A remote signer trusts
+   either a signer adapter's authoritative read or authenticated backend commit
+   attestation; the in-process profile explicitly trusts the hosted runtime.
+   Caller bytes alone are never commitment proof.
    Admission proves live plus outcome-unknown claims remain at or below
    `c_max`, with protected drain work and command/effect/queue/projection
    sublimits. Confirmed-but-unsettled claims remain live.

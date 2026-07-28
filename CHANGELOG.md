@@ -8,6 +8,13 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Closed the recovery command/finalization trust gaps with an exactly-one
+  domain-stream/control-owner/no-aggregate target, Phase B decomposition for
+  multi-target work, registry-signed complete semantic event descriptors,
+  unique multi-stage retry/status and a last-cancellable ProposalPrepared
+  boundary. Added realizable trusted-reader, backend-authenticated and hosted-
+  runtime commit-attestation profiles that bind backend continuity and the
+  committed descriptor/envelope/result evidence; caller bytes are never proof.
 - Separated non-authoritative recovery proposals structurally from immutable
   event history; added loss-safe initial claim acquisition, an explicit
   post-commit finalization signer protocol, and protected orphan cleanup for

@@ -968,15 +968,21 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
   `WitnessAuthorityReplacementRecoveryPointerObservationRegistryAuthorityStateV1`,
   `WitnessAuthorityReplacementRecoveryPointerObservationIntentV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimTargetV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCapacityV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedCommandExecutionV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationProposalV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimProposedEventDescriptorV1`,
   claim-acquisition attempt/outcome/reservation/settlement and dedicated
   Publish/Reconcile/status semantics,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationDispositionV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitRecordV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationSignerPortV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationSignerConformanceProfileV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitAttestationPortV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitAttestationConformanceProfileV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitAttestationV1`,
   post-commit signing attempt/signed local-finalization receipt/settlement and dedicated response-loss
   status, `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCheckpointV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationProposalCheckpointV1`,
@@ -1008,8 +1014,14 @@ only in a non-journal proposal store until signed RegistryConfirmed
 reconciliation and an exact local transaction appends fresh immutable events/
 result/audit/outbox plus unsigned commit record; initial claim acquisition to
 use loss-safe Publish/Reconcile/status with no permit recreation; the selected
-signer profile to sign only the reread post-commit record under key/distrust/
-history and response-loss rules; registry settlement to await a reconciled
+target union to enforce one domain stream, one control owner or no aggregate;
+the signed ordered event-descriptor root to bind every non-allocator semantic
+field; one command-execution state to join retry/status across every active and
+terminal stage with cancellation ending at ProposalPrepared; the selected
+commit-attestation profile to prove the local transaction through trusted
+adapter read, authenticated backend evidence or explicit hosted-runtime trust;
+the signer profile to sign only that attested post-commit record under key/
+distrust/history and response-loss rules; registry settlement to await a reconciled
 signed LocalFinalizeCommitted receipt or permanent
 no-commit evidence; provider-fence redemption
 before effect send; complete response-loss protocols; a zero-unresolved sealed
@@ -1024,7 +1036,10 @@ always strengthens to Fenced. Negative realization rejects distributed CAS,
 epoch check-then-use, prepared-state authority, stale send, generic status
 aliasing, authority reopening from blocked/fenced state, claim admission above
 drain capacity, provisional events/proposal promotion, acquisition permit
-recreation, pre-commit or in-transaction signing, registry-only settlement,
+recreation, multi-aggregate or mixed-owner target, payload-only confirmation,
+semantic descriptor/envelope substitution, second claim on active retry,
+post-ProposalPrepared cancellation, caller bytes as commit proof, pre-commit or
+in-transaction signing, registry-only settlement,
 unsafe compaction or orphaning without Commit reconciliation/current
 non-reference/protected capacity,
 transient-as-permanent, late-evidence suppression, weak adapters,

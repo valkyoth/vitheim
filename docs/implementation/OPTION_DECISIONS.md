@@ -3233,17 +3233,33 @@ and tenant/deployment/global `live + outcome_unknown <= c_max`, protected
 drain/terminal/history reservations, recovery-priority fairness and
 backpressure; registry ClaimAcquisition Issued/Rejected/Unknown/Unavailable/
 ExpiredDefinitelyUnredeemed behavior, Admission/Publish/Reconcile/status
-limits and proof required for definite non-redemption; local database physical
+limits and proof required for definite non-redemption; exact supported
+OperationalAuthorityClaimTarget union with exact DomainAggregateTarget,
+ControlOwnerTarget and CanonicalNoAggregateTarget kinds and Phase B
+process-manager/outbox decomposition; one-domain-stream/control-owner/no-aggregate validation and
+uniqueness; complete ProposedEventDescriptor schema covering event/schema,
+target, tenant/deployment, payload, command/causation/correlation, occurrence/
+effective-time profile and sensitivity/classification/custody; ordered
+descriptor-root algorithm and allocator-field allowlist/mapping; local database physical
 separation between PreparedNonAuthoritative proposal store and immutable event
 journal, with no proposal allocation of stream/journal/event/outbox/projection
 identity or successful idempotency; canonical proposed body-byte format;
 finalization transaction support for fresh event/result/audit/outbox append
 plus unsigned commit record/signer outbox; executor/provider
 claim-redemption enforcement; operational claim admission/drain/expiry and
-zero-live frontier; one-live-claim overlapping aggregate/expected-version
-sequencing; LocalFinalizeCommitted/VersionConflict/Unavailable/OutcomeUnknown,
+zero-live frontier; one-live-claim exact-target/expected-version sequencing;
+canonical OperationalAuthorityClaimedCommandExecution states, unique active-
+or-terminal command/idempotency lookup across hot/archive history, typed status
+result and budgets, last-cancellable ProposalPrepared rule, registry-backed
+definite cancellation and terminal outcome mapping;
+LocalFinalizeCommitted/VersionConflict/Unavailable/OutcomeUnknown,
 post-commit HSM/KMS or explicitly selected in-process signer port/profile,
 signer identity/SoD/key lineage/rotation/distrust/historical verification,
+per-backend commit-attestation choice among trusted signer-adapter authoritative
+read, authenticated database attestation and HostedRuntimeCommitAttester;
+read-only authoritative-backend port or attestation-key custody, backend
+identity/continuity/boot/lease/fence and anti-replay proof, and exact production
+trust claim for hosted runtime;
 Signing Admit/Publish/Reconcile/status limits, permanent-no-commit evidence
 and signed-receipt response-loss/settlement policy; active/terminal claim and
 proposal row/byte limits, exact-set checkpoint cadence, Stage/Verify/Commit
@@ -3298,13 +3314,25 @@ completeness frontier, crash after local fence but before `E/J/F`, claim/drain
 and query-permit races, PreparedNonAuthoritative exposure, registry Confirm/
 Reject response loss, every blocked/fenced/unready authority transition,
 stale-local reopening, `c_max−1/c_max/c_max+1`, hostile tenant fairness,
-overlapping expected-version claims, acquisition response loss and every
+same-target expected-version claims, multiple/zero/mixed targets, two aggregate
+streams, aggregate-plus-control and hidden multi-aggregate finalization,
+process-manager/outbox decomposition, descriptor-root reorder/omission and
+payload reuse under changed event/schema/aggregate/tenant/command/causation/
+correlation/time/classification/custody semantics, allocator-field overreach
+and descriptor-envelope mapping, acquisition response loss and every
 Issued/Rejected/Unknown/Unavailable/ExpiredDefinitelyUnredeemed outcome,
 permit reconstruction, proposal/event/journal/outbox/projection aliasing,
 proposal idempotency success, early identity allocation, body-byte mismatch,
 proposal promotion, each local-finalization disposition, unsigned commit
-record crash, pre-commit/in-transaction signing, external and in-process signer
-profiles, signer response loss/key substitution/rotation/distrust/history,
+record crash, every ClaimAcquisitionPending/ProposalPrepared/
+RegistryDispositionPending/RegistryConfirmed/LocalCommitPending/
+SignaturePending/RegistrySettlementPending/terminal transition, identical/
+changed retry, missing active history, cancellation before/at/after disposition
+publication and committed-event irreversibility; pre-commit/in-transaction
+signing, trusted-adapter authoritative read, database-authenticated attestation
+and hosted-runtime attester profiles, caller/replica/cache/return-success proof,
+backend continuity/transaction/target/descriptor-map/result-root/nonce
+substitution, unsupported attester refusal, signer response loss/key substitution/rotation/distrust/history,
 lost or forged finalization receipts, permanent-no-commit proof, confirmation-
 without-settlement, active/terminal row-byte ceilings, Commit-status ambiguity,
 stale/partial non-reference, retention/hold races, ordinary-load cleanup
