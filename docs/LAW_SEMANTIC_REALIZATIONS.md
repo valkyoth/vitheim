@@ -979,6 +979,13 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimPayloadReferenceUseClaimV1`,
   `WitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceCapacityV1`,
   `WitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceHandoffV1`,
+  `WitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceReservationSetV1`,
+  `WitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceSettlementV1`,
+  `WitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceArchiveReplayHeadV1`,
+  `WitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenancePhysicalDeletionReceiptV1`,
+  `WitnessAuthorityReplacementRecoveryCanonicalNoPayloadMaintenanceHandoffProofV1`,
+  `GlobalTransactionLockRankCatalogV1`,
+  `GlobalTransactionLockRankCatalogActivationV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimEventCommitChainV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCanonicalNoDomainEventChainV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimRecordedTimeAuthorityRatchetV1`,
@@ -1036,19 +1043,27 @@ or erased tombstone under Phase A lifecycle/residency/hold constraints;
 PayloadReferenceUseClaim to bind every proposal/event/shared member and
 authenticated release proof under per-reference `P_claim`; governed-reference
 admission to reserve tenant lifecycle landing capacity and a post-signing/pre-
-finalization-publication local transaction to atomically hand each retained
-obligation into long-lived `L_max` before releasing `P_claim`, with registry
+finalization-publication state to become PayloadMaintenanceHandoffPending, then
+atomically hand each retained obligation into long-lived `L_max`, or prove a
+canonical empty governed-reference set, before releasing `P_claim`, with registry
 settlement later releasing `c_max`, one-owner conservation and
-protected cleanup; the target to bind
+protected cleanup; each stable reservation set then to preserve separate
+maintenance/cleanup/checkpoint/archive/deletion legs through predecessor-linked
+exact settlement and verified archive replay until authenticated physical
+deletion moves it once into absorbing PhysicallyReleased, while unavailable
+archive retains capacity and restore retains every unsettled leg; the target to bind
 the exact predecessor and domain finalization to atomically advance a
 rollback-resistant journal time ratchet with a conservative commit-cut
 interval plus the canonical nonempty intra-batch chain, while non-domain
 targets bind CanonicalNoDomainEventChain; every SQLite/PostgreSQL/MySQL/
 MongoDB/SurrealDB domain profile to pass CommitCutRecordedTimePort conformance
 using authenticated native commit evidence, a backend hard fence or formally
-equivalent attestation; all shared operational subsets to preserve structural
-command/claim/proposal→payload/membership/lifecycle→ratchet→aggregate/journal→
-commit/result/audit/outbox order; independent command-ID and
+equivalent attestation; all Phase B/C local writers to declare the active
+GlobalTransactionLockRankCatalog generation and preserve its structural subset
+from recovery/authority guards through fences, quota/uniqueness, command/claim/
+proposal, payload lifecycle, ratchet, aggregate/journal and final rows, with
+legacy writers fenced at activation and static phase/adapter traces checked;
+independent command-ID and
 idempotency-ID uniqueness to resolve both identities to one execution across
 hot/archive history; one command-execution state to join retry/status across every active and
 terminal stage with cancellation ending at ProposalPrepared; the selected

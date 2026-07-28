@@ -695,16 +695,33 @@ stale epoch, or failed reserve-floor check leaves capacity conservatively
 charged and routes the transfer to reconciliation; it cannot fail open into
 activation or reclaim.
 
-All composite local transactions use one acquisition order: authoritative
-stream head; authority-fence rows ordered by typed key; target-fence row;
-remote-mutation-exception guard; grant redemption guard; quota-capacity lease
-and quota resource keys in canonical order; uniqueness claims; then command/
-inbox/timer/activity/attempt receipt rows. A transaction omits inapplicable
-classes but never reorders them. Adapters retry only classified serialization/
-deadlock failures, with a bounded policy and the same command/claim/transition
-identities, input digests, expected versions, and fence epochs. Exhaustion is
-visible and retryable by the caller/reconciler; retry never repeats provider I/O
-or consumes a new exception/grant attempt or quota claim.
+Every composite local transaction implements
+`GlobalTransactionLockRankCatalogV1`; this catalog replaces every phase-local
+prose order. Its immutable ranks are: (10) recovery, deployment and authority
+guards; (20) authority/target/provider fences plus remote-mutation and grant-
+redemption guards; (30) quota-capacity leases/resources and uniqueness keys;
+(40) command, inbox, timer, activity, attempt, operational-claim and proposal
+rows; (50) payload-use, membership, custody and lifecycle-capacity rows; (60)
+recorded-time-ratchet partitions; (70) aggregate stream heads and journal
+allocators; and (80) commit records, results, audit and outbox rows. Keys within
+one rank use the catalog's canonical structural key and never caller order.
+A transaction declares its complete rank subset and preserves the relative
+catalog order while omitting inapplicable ranks.
+
+The catalog has a stable ID, monotonic generation, canonical encoding/digest
+and predecessor. `GlobalTransactionLockRankCatalogActivationV1` fences every
+writer generation: an adapter or old writer whose declared trace names an
+earlier catalog cannot write after activation of a successor that inserts,
+splits or reorders any rank. Activation waits for or fences old writers rather
+than allowing the Phase B prefix and a later Phase C prefix to coexist. A
+repository static checker compares every phase declaration and adapter lock
+trace with the active catalog, rejecting missing ranks, reversed common
+subsequences, undeclared acquisitions and contradictory documentation.
+Adapters retry only classified serialization/deadlock failures, with a bounded
+policy and the same command/claim/transition identities, input digests,
+expected versions, catalog generation and fence epochs. Exhaustion is visible
+and retryable by the caller/reconciler; retry never repeats provider I/O or
+consumes a new exception/grant attempt or quota claim.
 
 Only claims whose settlement policy depends on provider acceptance enter
 `HeldPendingOutcome`; such a claim continues to count against its governed

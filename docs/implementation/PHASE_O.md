@@ -312,9 +312,16 @@ release eligibility under signed `p_claim_max` and cardinality-safe `P_claim`;
 collection cannot erase
 a retained event/shared reference. Governed-reference admission also reserves
 tenant PayloadLifecycleMaintenanceCapacity landing space. After local signing
-and before finalization-receipt publication, one local transaction atomically
-hands exact obligations into protected `L_max` and releases `P_claim`;
-registry settlement later releases `c_max`. Conservation forbids dual/no owner, long retention/hold no
+the execution enters PayloadMaintenanceHandoffPending. Before finalization-
+receipt publication, one local transaction hands exact obligations into
+protected `L_max`; an empty governed-reference set instead requires
+CanonicalNoPayloadMaintenanceHandoffProof. Only either proof permits
+RegistrySettlementPending and `P_claim` release; registry settlement later
+releases `c_max`. Stable reservation sets and predecessor-linked settlements
+preserve distinct maintenance/cleanup/checkpoint/archive/deletion legs through
+verified archive and authenticated physical deletion. Unavailable archive
+retains occupancy and only absorbing PhysicallyReleased leaves `L_max`.
+Conservation forbids dual/no owner, long retention/hold no
 longer pins command capacity, lifecycle saturation blocks only new classified
 payloads, and existing cleanup progresses. Domain finalization uses a passing
 CommitCutRecordedTimePort and atomically advances the journal
@@ -325,14 +332,17 @@ domain work rejects; control/no-aggregate binds CanonicalNoDomainEventChain.
 The exact SQLite, PostgreSQL, MySQL, MongoDB and SurrealDB profiles must prove
 native authenticated commit evidence, a backend hard fence or formally
 equivalent attestation; start/insert/client time fails and disables domain
-support. Finalization, collection, retention, transfer, hold/erasure, archive
-and restore preserve command/claim/proposal→structurally sorted payload-use/
-membership/lifecycle→ratchet→aggregate/journal→commit/result/audit/outbox
-order.
+support. Every Phase B/C local writer declares the active
+GlobalTransactionLockRankCatalogV1 generation and preserves its subset from
+recovery/authority guards through fences, quota/uniqueness, command/claim/
+proposal, structurally sorted payload lifecycle, ratchet, aggregate/journal and
+commit/result/audit/outbox. Activation fences old writers and static
+phase/adapter-trace validation rejects contradictory ordering.
 Evidence must exercise separate
 tenant/deployment command-ID and idempotency-ID uniqueness across all hot/
 archive combinations; both must name the same unique ClaimAcquisitionPending
-through RegistrySettlementPending execution, while one-sided reuse conflicts.
+through PayloadMaintenanceHandoffPending and RegistrySettlementPending
+execution, while one-sided reuse conflicts.
 Exact-retry join, changed-material conflict, historical lookup and the
 ProposalPrepared last-cancellable boundary remain mandatory. Fresh immutable finalization plus
 an unsigned commit record must be followed by one selected commit-attestation

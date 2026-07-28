@@ -531,10 +531,15 @@ audit decision.
   binds every proposal/event/shared member, transfer-unknown disposition and
   authoritative release proof. Neither proposal terminality nor a local count
   authorizes erasure. `P_claim` funds pre-settlement work and admission reserves
-  a tenant PayloadLifecycleMaintenanceCapacity landing slot; a post-signing,
-  pre-finalization-publication local handoff moves each retained obligation
-  into protected `L_max` before `P_claim` release, while registry settlement
-  later releases `c_max`. Conservation admits neither dual nor absent ownership. Lifecycle
+  a tenant PayloadLifecycleMaintenanceCapacity landing slot. Post-signing enters
+  PayloadMaintenanceHandoffPending; an exact local handoff, or
+  CanonicalNoPayloadMaintenanceHandoffProof for an empty governed-reference
+  set, is required before settlement publication and `P_claim` release, while
+  registry settlement later releases `c_max`. Conservation admits neither dual
+  nor absent ownership. Stable reservation/settlement IDs, a predecessor-linked
+  journal, verified archive replay and authenticated physical-deletion receipt
+  carry each leg to absorbing PhysicallyReleased. Unavailable archive retains
+  occupancy and exact retry cannot double-release. Lifecycle
   saturation rejects new classified payloads without blocking unrelated
   commands or existing cleanup. The target binds its expected predecessor; only journal
   identity, a commit-cut-containing interval under the non-regressing recorded-
@@ -546,11 +551,12 @@ audit decision.
   Clock rollback or missing
   failover/restore continuity unreadies. Zero-event domain batches reject;
   control/no-aggregate targets bind CanonicalNoDomainEventChain instead.
-  Finalization, collection, retention, hold/erasure, archive and restore share
-  one structural lock order from command/claim/proposal through canonically
-  sorted payload-use/membership/lifecycle rows, time-ratchet partition,
-  aggregate/journal and commit/result/audit/outbox; reference-only or process-
-  local keys are forbidden.
+  Every local writer follows its declared subset of
+  GlobalTransactionLockRankCatalogV1: recovery/authority guards, fences,
+  quota/uniqueness, command/claim/proposal, canonically sorted payload
+  lifecycle, time ratchet, aggregate/journal and commit/result/audit/outbox.
+  Catalog activation fences legacy writers; static phase/adapter-trace checks
+  reject reordering, reference-only/process-local keys and undeclared locks.
   Before claim acquisition, independent scoped unique constraints resolve
   command ID and idempotency ID to the same terminal or active execution;
   one-sided or cross-pair reuse conflicts even after compaction, unavailable

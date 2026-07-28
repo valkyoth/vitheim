@@ -933,10 +933,15 @@ proposal/registry/signer/status/audit/archive/export; exact payload-reference
 reuse/custody transfer plus PayloadReferenceUseClaim proposal/event/shared
 membership, transfer-unknown state and authenticated global release proof
 under signed `p_claim_max` and per-reference `P_claim`; pre-reserved tenant
-PayloadLifecycleMaintenanceCapacity landing space and atomic post-signing/pre-
-finalization-publication handoff into protected `L_max` before `P_claim`
-release, with registry settlement later releasing `c_max`, exact one-owner
-conservation, classified-only saturation backpressure and cleanup priority;
+PayloadLifecycleMaintenanceCapacity landing space. Post-signing must expose
+PayloadMaintenanceHandoffPending and advance only through exact handoff or
+CanonicalNoPayloadMaintenanceHandoffProof. Stable reservation sets and
+predecessor-linked exact settlements preserve active/cleanup/checkpoint/archive/
+deletion legs through verified archive and authenticated physical deletion;
+unavailable archive retains capacity and only absorbing PhysicallyReleased
+stops occupying `L_max`. Registry settlement later releases `c_max`; exact
+one-owner and terminal conservation, classified-only saturation backpressure
+and cleanup priority remain mandatory;
 target-bound expected predecessor, a passing CommitCutRecordedTimePort and atomically
 advanced RecordedTimeAuthorityRatchet with a conservative interval enclosing
 the commit cut and complete nonempty EventCommitChain mapping in the fresh
@@ -945,12 +950,16 @@ and control/no-aggregate binds CanonicalNoDomainEventChain. Exact SQLite,
 PostgreSQL, MySQL, MongoDB and SurrealDB profiles prove native authenticated
 commit evidence, a backend hard fence or equivalent attestation; start/insert/
 client time is rejected. Finalization, collection, retention, transfer, hold/
-erasure, archive and restore preserve command/claim/proposal→structurally
-sorted payload-use/membership/lifecycle→ratchet→aggregate/journal→commit/
-result/audit/outbox order. Production also
+erasure, archive and restore preserve the active
+GlobalTransactionLockRankCatalogV1 subset from recovery/authority guards
+through fences, quota/uniqueness, command/claim/proposal, structurally sorted
+payload lifecycle, ratchet, aggregate/journal and commit/result/audit/outbox.
+Every writer declares the active generation/subset, activation fences legacy
+writers and static phase/adapter-trace checks reject contradictions. Production also
 requires separate scoped command-ID and
 idempotency-ID unique claims that must resolve to one ClaimAcquisitionPending
-through RegistrySettlementPending execution across hot/archive history.
+through PayloadMaintenanceHandoffPending and RegistrySettlementPending
+execution across hot/archive history.
 Exact retry joins, one-sided/cross-pair reuse conflicts, changed request
 conflicts and ProposalPrepared remains the last cancellable state. The unsigned commit record must be proven through
 the selected trusted signer-adapter authoritative-read,

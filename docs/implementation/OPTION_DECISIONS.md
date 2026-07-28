@@ -3259,6 +3259,19 @@ and `L_max` class/physical ceilings; admission-time landing reservation;
 post-signing/pre-finalization-publication atomic `P_claim→L_maintenance`
 handoff mapping/root/
 conservation, terminal-no-commit release proof and retry/conflict semantics;
+explicit PayloadMaintenanceHandoffPending after reconciled signing and before
+RegistrySettlementPending; canonical no-handoff proof for an empty governed-
+reference set; the additional command-state capacity unit; stable lifecycle
+reservation-set and settlement-ID derivation; the exact closed
+LandingReserved→MaintenanceActive→CleanupInProgress→TombstoneCheckpointed→
+ArchiveVerificationPending→PhysicalDeletionPending→PhysicallyReleased
+encoding; separate active/cleanup/checkpoint/archive/deletion capacity legs and
+the absorbing `L_initial` conservation equation; predecessor-linked settlement-
+journal and exact-set archive-replay formats; Stage/Verify/Commit provider,
+durability/finality/availability and outage-retention policy; hot settlement
+deletion threshold; physical deletion/key-destruction evidence authority;
+restore behavior for every unsettled leg; exact retry/changed-material conflict
+and double-release prevention;
 retained-membership/root-node, transfer-unknown, checkpoint/archive proof,
 legal-hold occupancy, release/non-reference proof, final erasure/key-destruction/
 tombstone, periodic reconcile and ledger-checkpoint/compaction charges;
@@ -3281,13 +3294,16 @@ sequence, backend-enforced commit-before hard fence or formally equivalent
 attestation; delayed-commit/readback/finality/failover proof and explicit
 DomainAggregateTarget refusal when transaction-start/row-insert/client time is
 the only available signal;
-one post-bootstrap operational structural lock order: command execution→claim→
-proposal→payload-use key `(tenant,deployment,payload authority,reference
-identity)`→membership/custody/transfer→lifecycle capacity/landing/handoff→
-ratchet key `(deployment,backend authority,journal partition)`→aggregate/
-journal→commit record/result/audit/outbox; subset/deadlock-retry rules for
-finalization, collection, retention, transfer, hold/erasure, archive and
-restore, with opaque-only/process-local keys forbidden;
+one project-wide `GlobalTransactionLockRankCatalogV1`, replacing both Phase B
+and Phase C prose orders, with exact ranks for recovery/authority guards,
+authority/target/provider fences, quota/uniqueness, command/claim/proposal,
+structurally keyed payload lifecycle, recorded-time ratchet, aggregate/journal
+and commit/result/audit/outbox; catalog ID/generation/canonical digest/
+predecessor; per-rank canonical key encodings; transaction subset declaration
+and adapter trace schema; deployment activation, old-writer drain/fence and
+rollback prohibition; static documentation/adapter-trace validation; bounded
+deadlock retry bound to catalog generation; no mixed legacy/current writer
+generation and opaque-only/process-local keys forbidden;
 finalizer-field allowlist/mapping; local database physical
 separation between PreparedNonAuthoritative proposal store and immutable event
 journal, with no proposal allocation of stream/journal/event/outbox/projection
@@ -3339,6 +3355,7 @@ transitions; zero-unresolved sealed frontier; portable
 TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
 LocalFinalizeCommitted→SignaturePending↔
 CommitReceiptSignerRecoveryRequired→SignedCommitRecord→
+PayloadMaintenanceHandoffPending→
 RegistryFinalizationSettled→Operational or
 RestoreUnready;
 distinct FenceEvidence
@@ -3346,7 +3363,8 @@ archive backend/commands/results producing `J_m` only; production values for
 `o_max/c_max/a_max/v_max/q_max/r_max/x_max/t_max`, `e_claim_max/p_claim_max/
 n_signer_max/k_signer`, lifecycle `L_max`, per-class byte/work/output ceilings, `P_claim`,
 `S_claim`, `B_EM` and `R_first`, with no automatic replenishment; separate
-initial-bootstrap and guard-first post-bootstrap lock orders; and sequential-
+initial-bootstrap ceremony order plus the globally cataloged post-bootstrap
+subset order; and sequential-
 equivocation recovery; explicit `C_n→P_(n-1), H_n→C_n, P_n→H_n` ordering with
 generated schema/hash-DAG and hot checkpoint-create/`P_n` records; typed
 checkpoint creation, pointer publication request/signed receipt/Publish/
@@ -3390,12 +3408,20 @@ erasure/export substitution, shared proposal/event reference, duplicate/lost
 transfer receipt, early/double release, partial batch, collection/event-
 retention/restore/hold race, rejected/cancelled crypto-erasure/tombstone,
 `p_claim_max−1/p_claim_max/p_claim_max+1`; crash every maintenance handoff
-boundary, dual/missing owner, retention/hold after command release, lifecycle
-class/physical/cross-tenant saturation, classified-only backpressure, protected
-reconcile/release/erasure/compaction progress and `L_max−1/L_max/L_max+1`;
+boundary, distinguish signed/handoff/settlement state, substitute canonical
+empty-reference proof, dual/missing owner, retention/hold after command
+release, every stable settlement ID and changed-material retry, the full
+landing/active/cleanup/checkpoint/archive/deletion/absorbing lifecycle, archive
+loss/fork/unavailability, early hot-row deletion, forged physical deletion,
+duplicate release, restore of every unsettled leg, lifecycle class/physical/
+cross-tenant saturation, classified-only backpressure, protected reconcile/
+release/erasure/compaction progress and `L_max−1/L_max/L_max+1`;
 two batches sharing references in opposite descriptor order, finalization
 against collection/hold/erasure, ratchet advancement against concurrent stream
-append and archive/restore against membership mutation; structural-key
+append and archive/restore against membership mutation; Phase B and Phase C
+catalog declarations plus every adapter trace through catalog activation;
+legacy writer after activation, old/new generation overlap, missing/duplicate
+rank, reversed common subsequence, undeclared acquisition, structural-key
 substitution, opaque-reference-only/process-local key and every shared-subset
 lock inversion/deadlock-retry path;
 target predecessor mismatch, authoritative recorded-time policy/uncertainty
@@ -3416,7 +3442,8 @@ proposal idempotency success, early identity allocation, body-byte mismatch,
 proposal promotion, each local-finalization disposition, unsigned commit
 record crash, every ClaimAcquisitionPending/ProposalPrepared/
 RegistryDispositionPending/RegistryConfirmed/LocalCommitPending/
-SignaturePending/RegistrySettlementPending/terminal transition, identical/
+SignaturePending/PayloadMaintenanceHandoffPending/
+RegistrySettlementPending/terminal transition, identical/
 changed retry, missing active history, cancellation before/at/after disposition
 publication and committed-event irreversibility; separate command/idempotency
 unique-index races and both-absent/both-same/one-sided/cross-pair resolution

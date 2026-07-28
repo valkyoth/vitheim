@@ -1768,6 +1768,13 @@ before hard fence, or formally equivalent commit-cut attestation bound to the
 journal ratchet. Transaction/statement start, row insertion, client receipt
 and response time never qualify. Failure disables DomainAggregateTarget for
 that adapter without weakening control/no-aggregate support.
+Each adapter also publishes a machine-readable
+`GlobalTransactionLockRankCatalogAdapterTraceV1` for every supported composite
+writer. The trace binds catalog ID/generation, declared subset, canonical
+within-rank keys and native lock/isolation mechanism. Static validation and
+runtime generation fencing must pass before activation; a legacy trace,
+reversed common subsequence, hidden acquisition or backend retry that changes
+the trace refuses the affected capability.
 
 ## `0.23.0` — SQLite Adapter
 
@@ -7395,11 +7402,16 @@ owns the entire user-visible multi-stage command lifecycle. Its closed states
 are ClaimAcquisitionPending, ProposalPrepared,
 RegistryDispositionPending, RegistryConfirmed, LocalCommitPending,
 SignaturePending, CommitReceiptSignerRecoveryRequired,
-RegistrySettlementPending, Succeeded, Rejected, VersionConflict and
-PermanentlyUnresolved. The first eight are nonterminal; the last four are
+PayloadMaintenanceHandoffPending, RegistrySettlementPending, Succeeded,
+Rejected, VersionConflict and
+PermanentlyUnresolved. The first nine are nonterminal; the last four are
 terminal. CommitReceiptSignerRecoveryRequired means the immutable local commit
 and attestation remain valid but no currently accepted signer can complete the
 receipt; it grants no authority and cannot be inferred as terminal.
+PayloadMaintenanceHandoffPending means a valid signed commit receipt exists but
+the exact payload-custody handoff, or the canonical proof that no governed
+reference requires one, has not yet committed. It is never aliased to unsigned
+SignaturePending or registry-settlement work.
 PermanentlyUnresolved requires authenticated terminal evidence and is never
 inferred from timeout, Unknown, Unavailable or missing local rows.
 
@@ -7574,7 +7586,13 @@ the successful path executes one atomic local
 transaction: it converts exact landing reservations into long-lived
 membership/maintenance charges, advances the lifecycle-ledger root, records
 the command/reference membership mapping and handoff result/audit/outbox, and
-only then releases the matching operational `P_claim` units. Only its durable receipt authorizes finalization-
+only then releases the matching operational `P_claim` units. A signed receipt
+first advances the command to PayloadMaintenanceHandoffPending. A command with
+no governed references must instead commit canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryCanonicalNoPayloadMaintenanceHandoffProofV1`,
+binding the command, descriptor root, empty governed-reference set, claim and
+commit receipt. Exact handoff or exact no-handoff proof alone advances to
+RegistrySettlementPending. Only that durable evidence authorizes finalization-
 receipt publication, so any later successful registry settlement releases the
 operational claim after lifecycle ownership already exists. Lost registry
 response uses the existing settlement-status protocol; it does not undo the
@@ -7598,6 +7616,47 @@ both an operational and maintenance owner or neither. Long retention/legal
 hold therefore consumes `L_max`, not command `c_max`; saturation backpressures
 new classified-payload admission while existing lifecycle cleanup keeps
 priority and protected capacity.
+
+Maintenance ownership is not a terminal disposition. Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceReservationSetV1`
+and stable `reservation_set_id` bind the original landing/handoff members,
+class/byte/work legs and profile generation. The only post-admission state
+machine is LandingReserved→MaintenanceActive→CleanupInProgress→
+TombstoneCheckpointed→ArchiveVerificationPending→PhysicalDeletionPending→
+PhysicallyReleased. Authenticated pre-handoff no-material evidence may move
+LandingReserved directly to PhysicallyReleased; no other edge skips a state.
+Every edge has a stable `settlement_id`, exact predecessor state/digest,
+unchanged reservation-set identity and material digest, and appends canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceSettlementV1`
+to a predecessor-linked, non-wrapping settlement journal. Exact retry returns
+the stored result; reused IDs or changed material conflict.
+
+Active maintenance, cleanup, terminal-checkpoint, archive-verification and
+physical-deletion-pending legs are distinct and remain capacity-bearing.
+Tombstone checkpointing alone does not release storage. The archive must Stage,
+Verify and atomically publish a predecessor-linked exact-set settlement head;
+only a verified
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenanceArchiveReplayHeadV1`
+covering the settlement and original reservation set permits hot settlement
+deletion. Unavailable, unknown, forked or incomplete archive evidence retains
+the corresponding capacity and state. Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryPayloadLifecycleMaintenancePhysicalDeletionReceiptV1`
+must bind authenticated physical deletion/key destruction, checkpoint and
+archive heads before the exact original legs move once to the absorbing
+PhysicallyReleased term. Restore imports every unsettled leg and exact
+settlement/archive predecessor; it never recomputes occupancy from remaining
+hot rows.
+
+For every lifecycle reservation set, checked non-wrapping accounting also
+preserves:
+
+`L_landing_reserved + L_maintenance_active + L_cleanup_in_progress +
+L_tombstone_checkpointed + L_archive_verification_pending +
+L_physical_deletion_pending + L_physically_released = L_initial`.
+
+Only `L_physically_released` is non-occupying and absorbing. The sum of all
+other terms is bounded by `L_max`; neither checkpoint nor archival intent is
+release evidence, and duplicate settlement can never decrement it twice.
 
 Actual accepted recorded-time interval and integrity predecessor/digest chain
 are finalizer-owned commit metadata because they depend on the authoritative
@@ -8075,6 +8134,7 @@ from an unchanged sealed frontier after claim drain. Canonical
 is TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
 LocalFinalizeCommitted→SignaturePending↔
 CommitReceiptSignerRecoveryRequired→SignedCommitRecord→
+PayloadMaintenanceHandoffPending→
 RegistryFinalizationSettled→Operational, or
 RegistryRejected/LocalFinalizeVersionConflict→RestoreUnready; Unavailable and
 OutcomeUnknown remain pending and non-authoritative. Only
@@ -8231,7 +8291,7 @@ n_signer_max(1_SignerMemberAttempt + 1_SignerMemberPublish +
 `R_claim = 1_AcquisitionAdmission + 1_AcquisitionPublish +
 1_AcquisitionReconcile + Q_claim(Acquisition) +
 1_CommandIdentityPairInsert + 1_CommandExecutionCreate +
-8_CommandStateAdvance +
+9_CommandStateAdvance +
 q_claim_max_CommandStatus + 1_CommandTerminal +
 1_PreDispositionCancelDisposition +
 1_ClaimTerminalize + 1_DrainVerify + 1_ProposalPrepare +
@@ -8261,8 +8321,11 @@ maximum and never allocate another claim. `P_claim` is pre-reserved before
 proposal preparation and remains encumbered through transfer-unknown until
 either terminal no-commit proof or the post-signing/pre-publication handoff.
 The latter atomically installs the exact `L_maintenance` owner before releasing
-`P_claim`; it does not release registry `c_max`, which remains live until the
-existing finalization-receipt settlement succeeds. Terminal no-commit proof
+`P_claim`; the execution remains PayloadMaintenanceHandoffPending until that
+receipt, or CanonicalNoPayloadMaintenanceHandoffProofV1 for an empty governed-
+reference set, advances it to RegistrySettlementPending. It does not release
+registry `c_max`, which remains live until the existing finalization-receipt
+settlement succeeds. Terminal no-commit proof
 instead releases the unused landing reservation and `P_claim`. After handoff,
 retention/hold/release/erasure consumes only the lifecycle ledger and cannot
 pin the command's payload reserve after registry settlement. `S_claim` is pre-reserved before the
@@ -8669,7 +8732,7 @@ mutate a field covered by the attempt-set commitment:
 | Fence-evidence checkpoint creation | create exact-set `E_m` from the absorbing fence | Guard-first EvidenceMaintenance under Fenced captures the complete fence/bundle/result/guard and predecessor anchor, consumes its bounded class, and can never create `C_n` |
 | Fence-evidence archive lifecycle | Stage/Verify/Commit for `E_m` | Dedicated discriminator, commands, states and results only. Commit produces exactly `J_m`, keeps guard/fence/bundle/result/shared anchor hot, and exposes no MarkOrphan/FinalizeGc operation |
 | Recovery current-pointer publication/reconciliation | submit `P_n` after `H_n`, then import every external outcome | Fence-first persist the semantic request and one-use claim before one process-local permit; valid signed Reconcile alone records the receipt, CASes ActivatedPendingPointerWitness→Operational, writes operationalization/source-consumption result and advances the recovery head, with `P_n→H_n` and no future receipt/result digest in the request; all other outcomes remain non-operational |
-| Operational registry claim lifecycle | structurally order one-target authority mutations and effects before observation drain | Before acquisition, independently resolve tenant/deployment-scoped command ID and idempotency ID; both must be absent or name the same unique active/terminal execution. Admit exactly one DomainAggregateTarget, ControlOwnerTarget or CanonicalNoAggregateTarget; reject multi-target work to Phase B process manager/outbox. Proposal/registry confirmation binds the complete ordered ProposedEventDescriptor root with only non-sensitive inline bytes or opaque erasable payload references. PayloadReferenceUseClaimV1 tracks every proposal/event member, transfer-unknown state and authoritative release proof under cardinality-funded `P_claim`, with a pre-reserved PayloadLifecycleMaintenanceCapacityV1 landing slot. Domain finalization uses a passing CommitCutRecordedTimePortV1, atomically advances RecordedTimeAuthorityRatchetV1, allocates a commit-cut interval and derives EventCommitChainV1; non-domain targets bind CanonicalNoDomainEventChainV1. The selected commit-attestation profile proves the complete map to a post-commit signer; cardinality-funded `S_claim` covers every threshold member/partial/status/terminalization and quorum import, or root-successor recovery, without changing commit meaning. Signed receipt settlement reaches Succeeded/releases the operational claim only after one local atomic payload-maintenance handoff preserves `P_operational + H_handoff_pending + L_maintenance + P_terminal_unused_released = P_initial`; retained/held payloads then consume lifecycle `L_max`, not `c_max`. Cancellation ends at ProposalPrepared. External send also redeems at the provider fence. ObservationDrainPending waits for the bounded live set |
+| Operational registry claim lifecycle | structurally order one-target authority mutations and effects before observation drain | Before acquisition, independently resolve tenant/deployment-scoped command ID and idempotency ID; both must be absent or name the same unique active/terminal execution. Admit exactly one DomainAggregateTarget, ControlOwnerTarget or CanonicalNoAggregateTarget; reject multi-target work to Phase B process manager/outbox. Proposal/registry confirmation binds the complete ordered ProposedEventDescriptor root with only non-sensitive inline bytes or opaque erasable payload references. PayloadReferenceUseClaimV1 tracks every proposal/event member, transfer-unknown state and authoritative release proof under cardinality-funded `P_claim`, with a pre-reserved PayloadLifecycleMaintenanceCapacityV1 landing slot. Domain finalization uses a passing CommitCutRecordedTimePortV1, atomically advances RecordedTimeAuthorityRatchetV1, allocates a commit-cut interval and derives EventCommitChainV1; non-domain targets bind CanonicalNoDomainEventChainV1. The selected commit-attestation profile proves the complete map to a post-commit signer; cardinality-funded `S_claim` covers every threshold member/partial/status/terminalization and quorum import, or root-successor recovery, without changing commit meaning. A signed receipt enters PayloadMaintenanceHandoffPending; an exact handoff or CanonicalNoPayloadMaintenanceHandoffProof alone permits RegistrySettlementPending. Settlement reaches Succeeded/releases the operational claim only after one local atomic payload-maintenance handoff preserves `P_operational + H_handoff_pending + L_maintenance + P_terminal_unused_released = P_initial`; retained/held payloads then follow the reservation-set/settlement/archive/physical-release conservation under `L_max`, not `c_max`. Cancellation ends at ProposalPrepared. External send also redeems at the provider fence. ObservationDrainPending waits for the bounded live set |
 | Operational claim history lifecycle | bound registry/proposal/command storage without losing completeness, privacy or retry evidence | Enforce signed active/terminal row-byte ceilings; checkpoint exact independent command/idempotency membership, command state, target/predecessor, descriptor/payload-lifecycle root, claim, proposal, commit-chain/attestation/signature-recovery and result sets; Stage/Verify/Commit immutable archives and advance the replay head without moving classified plaintext or violating residency/holds; preserve historical one-sided-reuse conflict, retry/status and every live/redeemed/outcome-unknown/confirmed-unsettled/frontier-referenced claim. Rejected/cancelled payload references crypto-erase only when policy/hold permits and retain ErasedPayloadTombstone. Staged/Verified only may become OrphanEligible after Commit-status reconciliation, current multi-authority non-reference, retention/hold and protected GC capacity; Committed/frontier-referenced never orphan. Missing or forked history is HistoricalStateUnavailable and RestoreUnready |
 | Recovery pointer-observation registration/terminalization | make every possible pointer query externally durable | Use distinct bounded Register Publish/Reconcile/query, cancellation-seal/query, terminalization Publish/Reconcile/query and fence-anchor terminalization/query protocols. Unknown/Unavailable stays RegisteredUnresolved, exhaustion becomes LocallyExhaustedUnresolved, authenticated seal alone becomes ExternallySealedPermanentlyUnresolved, and late contradiction always strengthens toward FenceAnchored |
 | Recovery current-pointer query admission | admit a stable status attempt for unknown pointer publication | Require the exact RegisteredUnresolved receipt and escrow `R_first`, then consume bounded calls/bytes/work/time/concurrency and create a terminalization reservation before returning one process-local permit; failure is no-write/no-permit |
@@ -8677,7 +8740,7 @@ mutate a field covered by the attempt-set commitment:
 | Recovery-fence high-watermark publication/reconciliation/query | independently anchor or discover fenced evidence | Guard-first EvidenceMaintenance only. Persist one semantic claim before a process-local permit; Reconcile advances only the shared anchor/fence high-watermark and terminalizes FenceAnchorPending. SignedNoFenceAtPointer must bind the sealed zero-unresolved observation frontier, never current absence |
 | Recovery-equivocation fence enforcement | classify and recheck every post-bootstrap recovery or authority-claiming mutation | Lock the recovery guard first. AuthorityChanging requires exact Healthy. EvidenceMaintenance may accept Fenced only for the closed preserve/strengthen set. Missing is corruption/unready; no clear, recursive replacement, capacity release or pre-`1.0.0` manual root-governance writer exists |
 | Replacement recovery restore cursor | advance one bounded hot/archive replay quantum | Consume one restore-cursor class and atomically persist cursor/result/recovery-head successor; no scan, restart, skipped predecessor or hidden work |
-| Replacement recovery restore completion | exact-complete healthy authority or verify fenced evidence | Obtain both greatest pointer and fence anchors plus claim replay head/hot suffix. Healthy completion requires a sealed zero-unresolved frontier, then TokenAcquired→LocalActivationPrepared→RegistryConfirmed→LocalFinalizeCommitted→SignaturePending↔CommitReceiptSignerRecoveryRequired→SignedCommitRecord→RegistryFinalizationSettled through signer/recovery and registry status reconciliation. Registry rejection/conflict/history loss is RestoreUnready; unavailable/unknown/recovery-required stays pending. No distributed transaction is assumed. A dominating external AuthorityFenced permits only EvidenceMaintenance Unready→FencedEvidenceVerified and export |
+| Replacement recovery restore completion | exact-complete healthy authority or verify fenced evidence | Obtain both greatest pointer and fence anchors plus claim replay head/hot suffix. Healthy completion requires a sealed zero-unresolved frontier, then TokenAcquired→LocalActivationPrepared→RegistryConfirmed→LocalFinalizeCommitted→SignaturePending↔CommitReceiptSignerRecoveryRequired→SignedCommitRecord→PayloadMaintenanceHandoffPending→RegistryFinalizationSettled through signer/recovery, exact handoff-or-no-handoff proof and registry status reconciliation. Registry rejection/conflict/history loss is RestoreUnready; unavailable/unknown/recovery-required/handoff-pending stays pending. No distributed transaction is assumed. A dominating external AuthorityFenced permits only EvidenceMaintenance Unready→FencedEvidenceVerified and export |
 | Plan lifecycle | Replan and proof/capacity-state carry-forward | Commit old-plan terminalization, conservative remaining-class mapping, new plan/proof binding and successor attempt-set head together; consumption never resets |
 
 Every mutating command in the table creates immutable
@@ -8696,6 +8759,9 @@ rows→result/audit/outbox. Begin creates generation-zero Unprepared high-
 watermark guard state. ArchiveFinalize or the fully drained permanently sealed
 abort alone terminalizes the old generation and installs the next Unprepared
 guard; ordinary negative status never does.
+This subsystem sequence is a within-rank structural-key sequence declared by
+the global catalog; it cannot move a row across, precede or reverse an
+applicable `GlobalTransactionLockRankCatalogV1` rank.
 Every ordinary head writer must lock and read the current guard after the
 attempt-set head and deny on PreparePending, AbortDrainPending or Witnessed before it may omit
 unrelated publication/replay rows. Archive writers acquire every applicable row
@@ -8705,20 +8771,26 @@ Initial bootstrap is deployment-bootstrap uniqueness→pinned trust-root/
 provenance/lineage→deployment Recovery-bootstrap reserve→deterministic signing
 request→pre-signed `P_0` receipt/single-use import claim→`P_0` and initial
 recovery/replay heads→recovery guard→result/audit/outbox; it cannot acquire a
-post-bootstrap row or fence-keyed Recovery budget. Every post-bootstrap
-local transaction is recovery guard→operation class→command execution→
-operational-claim mirror→non-authoritative proposal→canonically sorted payload-
-use claims→payload membership/custody/transfer rows→payload-lifecycle
-maintenance-capacity/landing/handoff rows→recorded-time ratchet partition→
-aggregate stream→journal head→local commit record→absorbing old-fence/evidence
-read→parent Recovery budget→replacement attempt-set head→replacement head→
-transfer high-watermark→source outbox→destination inbox/genesis→current
-pointer→shared recovery-anchor sequence→recovery current-pointer or fence high-
-watermark→its publication/query attempt/reservation/settlement→recovery
-checkpoint/archive publication/non-reference proof→recovery archive-replay
-head→restore state/cursor→result/audit/outbox. Every acquired subset preserves
-that order, including fence installation, EvidenceMaintenance checkpointing,
-activation, pointer/fence reconciliation and restore. Expected-version loss
+post-bootstrap row or fence-keyed Recovery budget. Every post-bootstrap local
+transaction declares a subset of the Phase B
+`GlobalTransactionLockRankCatalogV1` and preserves its relative order. Rank 10
+contains the recovery guard and operation class. Rank 20 contains the absorbing
+old-fence/evidence read and every authority, target and provider fence. Rank 30
+contains parent Recovery budget, quota and uniqueness state. Rank 40 contains
+command execution, operational-claim mirror, non-authoritative proposal,
+replacement attempt/head, transfer high-watermark, source/destination
+outbox/inbox/genesis, current pointer, shared recovery-anchor sequence and its
+publication/query attempts/reservations/settlements. Rank 50 contains
+canonically sorted payload-use, membership/custody/transfer, lifecycle
+capacity/landing/handoff/reservation-set/settlement/archive/deletion rows.
+Rank 60 contains the recorded-time ratchet partition. Rank 70 contains
+aggregate stream, journal head and recovery checkpoint/archive replay heads.
+Rank 80 contains commit record, result, audit and outbox. Canonical structural
+keys order every row within a rank. Fence installation, EvidenceMaintenance
+checkpointing, activation, pointer/fence reconciliation and restore declare
+and validate the same catalog generation. Activation of this prefix fences
+every old Phase B writer that does not declare the generation; mixed legacy
+and current orders never coexist. Expected-version loss
 commits no recovery charge except a
 bounded changed-material candidate rejection whose own reservation was
 admitted; exact retry returns the stored typed result.
@@ -10031,6 +10103,16 @@ to `L_max`. Saturate each lifecycle-ledger class and physical aggregate:
 new classified-payload commands reject before claim issuance, unrelated
 no-governed-reference commands remain admissible, and protected reconcile/
 release/erasure/compaction of existing obligations progresses. Seed
+each stable reservation set through LandingReserved→MaintenanceActive→
+CleanupInProgress→TombstoneCheckpointed→ArchiveVerificationPending→
+PhysicalDeletionPending→PhysicallyReleased and prove the complete
+`L_initial` conservation equation at every cut. Crash, retry and change
+material at every settlement-journal edge; suppress archive verification,
+fork/replay its head, delete hot settlement rows early, lose physical-deletion
+receipts and restore from every state. Unavailable archive must retain capacity,
+exact retry must not double-release, and only the absorbing PhysicallyReleased
+term may stop occupying `L_max`.
+Seed
 classified plaintext canaries only in the governed erasable store,
 submit their opaque references and attempt to inject the canaries into proposal
 metadata, then scan every database row, registry request/receipt, signer/
@@ -10068,10 +10150,13 @@ command/causation/correlation ID, valid/occurrence/effective-time or recorded-
 time policy, sensitivity/classification/custody policy and require rejection.
 Drive the command execution through ClaimAcquisitionPending→ProposalPrepared→
 RegistryDispositionPending→RegistryConfirmed→LocalCommitPending→
-SignaturePending→RegistrySettlementPending→Succeeded and every terminal
+SignaturePending→PayloadMaintenanceHandoffPending→RegistrySettlementPending→
+Succeeded and every terminal
 Rejected/VersionConflict/PermanentlyUnresolved branch, plus
 SignaturePending→CommitReceiptSignerRecoveryRequired→SignaturePending for each
-selected recovery profile. At each state, retry
+selected recovery profile. For empty governed-reference sets require
+CanonicalNoPayloadMaintenanceHandoffProofV1; reject forged nonempty/empty
+substitution. At each state, retry
 with identical and changed bytes/target/descriptor; identical retry joins and
 returns typed status without another claim, while changed material conflicts.
 Delete hot status but retain archive history and require historical join; lose

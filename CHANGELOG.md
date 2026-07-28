@@ -8,6 +8,13 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Replaced conflicting Phase B/Phase C lock prose with a versioned
+  `GlobalTransactionLockRankCatalogV1`, activation fencing for legacy writers
+  and static phase/adapter-trace validation. Made
+  PayloadMaintenanceHandoffPending explicit, including a canonical no-handoff
+  proof for reference-free commands, and closed lifecycle capacity through
+  stable reservation sets, predecessor-linked settlements, verified archive
+  replay, physical deletion and an absorbing terminal-release term.
 - Added a conserved handoff from short-lived `P_claim` into tenant-scoped
   PayloadLifecycleMaintenanceCapacity so retained events and legal holds do not
   pin command `c_max` or lose cleanup funding. Extended the canonical lock

@@ -458,8 +458,8 @@ require_text docs/implementation/PHASE_B.md \
     'Each parent-side reserve/send/reclaim transition' \
     'delayed capacity transfer rechecks current authority'
 require_text docs/implementation/PHASE_B.md \
-    'All composite local transactions use one acquisition order: authoritative' \
-    'canonical composite transaction acquisition'
+    '`GlobalTransactionLockRankCatalogV1`; this catalog replaces every phase-local' \
+    'versioned global transaction lock-rank catalog'
 require_text docs/implementation/OPTION_DECISIONS.md \
     'active/active authoritative multi-region writes are' \
     'active-active authoritative writes unsupported'

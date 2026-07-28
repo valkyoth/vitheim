@@ -565,12 +565,19 @@ hot/archive/restore/retention/hold authorities; proposal terminality or a local
 count cannot erase a shared reference. `P_claim` reserves the bounded
 per-distinct-reference pre-settlement routes, while admission also reserves a
 tenant PayloadLifecycleMaintenanceCapacity landing slot. After local signing
-and before finalization-receipt publication, one atomic local handoff transfers
-exact obligations into that long-lived ledger and releases `P_claim`; registry
-settlement later releases `c_max`. Retained memberships, transfer unknown, archives,
-holds, release proof, erasure and compaction consume protected `L_max`.
+the execution enters PayloadMaintenanceHandoffPending. Before finalization-
+receipt publication, one atomic local handoff transfers exact obligations into
+that long-lived ledger; a reference-free command instead commits
+CanonicalNoPayloadMaintenanceHandoffProof. Only either exact proof advances to
+RegistrySettlementPending and releases `P_claim`; registry settlement later
+releases `c_max`. Retained memberships, transfer unknown, archives, holds,
+release proof, erasure and compaction consume protected `L_max`.
 Conservation prevents double/no owner, lifecycle saturation backpressures new
-classified payloads only, and existing cleanup remains funded. The target also
+classified payloads only, and existing cleanup remains funded. Stable
+reservation sets progress through maintenance, cleanup, tombstone checkpoint,
+verified archive and authenticated physical deletion under predecessor-linked
+exact settlements. Archive unavailability retains capacity; only absorbing
+PhysicallyReleased leaves `L_max`. The target also
 binds the expected predecessor envelope digest. Domain finalization atomically
 uses a passing CommitCutRecordedTimePort and advances a journal-authority
 RecordedTimeAuthorityRatchet, adds event ID,
@@ -598,12 +605,14 @@ every member attempt, response-loss query, partial, concurrency settlement,
 terminalization and one canonical quorum-combination/import operation. Signer loss enters
 CommitReceiptSignerRecoveryRequired and cannot change committed events/results
 or release the claim.
-All post-bootstrap writers preserve one structural order: command execution→
-claim→proposal→payload-use keys sorted by tenant/deployment/payload authority/
-reference identity→membership/custody→lifecycle capacity/handoff→time ratchet
-by deployment/backend/journal partition→aggregate/journal→commit record→result/
-audit/outbox. Collection, retention, hold/erasure, archive/restore and
-finalization acquire shared subsets in that relative order.
+All Phase B/C writers declare a subset and generation of
+GlobalTransactionLockRankCatalogV1: recovery/authority guards→fences→quota/
+uniqueness→command/claim/proposal→payload-use keys sorted by structural
+identity→membership/custody/lifecycle settlement→time ratchet→aggregate/
+journal→commit/result/audit/outbox. Catalog activation fences legacy writers;
+collection, retention, hold/erasure, archive/restore and finalization preserve
+the relative subset, while static phase/adapter-trace validation rejects any
+contradictory order.
 Unknown acquisition, signer or finalization state remains live and blocks
 observation. Exact-set claim/proposal checkpoint/archive replay provides
 bounded retention without compacting live, redeemed, outcome-unknown,

@@ -902,10 +902,18 @@ restore, failover, and release evidence.
    transfer-unknown state and multi-authority release proof; bounded
    `p_claim_max` funds every pre-settlement route and reserves a tenant
    PayloadLifecycleMaintenanceCapacity landing slot. A post-signing, pre-
-   publication local transaction hands retained obligations into protected
-   `L_max` and releases `P_claim`; registry settlement later releases `c_max`.
+   publication local transaction enters PayloadMaintenanceHandoffPending and
+   hands retained obligations into protected `L_max`; reference-free work
+   commits CanonicalNoPayloadMaintenanceHandoffProof. Only then may settlement
+   publication proceed and `P_claim` release; registry settlement later
+   releases `c_max`.
    Holds and event retention therefore cannot starve command
-   capacity or lose cleanup funding. The target binds the expected predecessor.
+   capacity or lose cleanup funding. Stable lifecycle reservation sets then
+   progress through maintenance, cleanup, tombstone checkpoint, verified
+   archive and authenticated physical deletion. A predecessor-linked exact
+   settlement journal and archive replay head preserve retry/conflict evidence;
+   unavailable archive retains capacity, and only absorbing PhysicallyReleased
+   stops occupying `L_max`. The target binds the expected predecessor.
    Domain finalization uses a version-bound CommitCutRecordedTimePort,
    atomically advances the journal recorded-time continuity ratchet, allocates
    a conservative interval around the commit cut and derives the canonical
@@ -916,10 +924,12 @@ restore, failover, and release evidence.
    prove native commit evidence, a backend commit-before fence or formally
    equivalent attestation; transaction-start/row-insert/client time never
    qualifies and an incapable adapter refuses domain events.
-   Finalization and every collection/retention/hold/erasure/archive/restore
-   subset share the structural order command/claim/proposal→sorted payload-use/
-   membership/lifecycle ledger→time-ratchet partition→aggregate/journal→commit/
-   result/audit/outbox.
+   Every Phase B and Phase C local transaction declares a subset of
+   GlobalTransactionLockRankCatalogV1: recovery/authority guards→fences→quota/
+   uniqueness→command/claim/proposal→sorted payload lifecycle→time ratchet→
+   aggregate/journal→commit/result/audit/outbox. Catalog activation fences old
+   writer generations, and static phase plus adapter-trace checks reject a
+   reversed common subsequence or undeclared acquisition.
    Independently unique command and idempotency IDs must both name the same
    command-execution row; one-sided hot or archived reuse conflicts. That row
    joins retries across every nonterminal stage and
