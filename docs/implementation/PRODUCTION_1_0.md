@@ -914,8 +914,15 @@ evidence GC or recursive automatic replacement exists. Production evidence
 must also authenticate the pinned genesis root/provenance/lineage,
 deterministic offline signing request and single-use import claim. Every
 pointer query has an external observation intent and pre-escrowed `R_first`;
-Healthy restore has a sealed zero-unresolved frontier and atomic unchanged
-fencing-epoch token CAS. The older-backup crash after local Fenced but before
+Healthy restore has a sealed zero-unresolved frontier and portable
+TokenAcquired→LocalActivationPrepared→RegistryConfirmed/Rejected→
+Operational/Unready reconciliation, never a distributed CAS. Production must
+prove operational claim drain, PreparedNonAuthoritative isolation, signed
+registry disposition/local finalize, executor/provider redemption at send,
+all observation response-loss lanes, distinct transient/exhausted/sealed/late-
+evidence states and mandatory late-contradiction strengthening. The named
+registry port/provider/backend combination must pass cross-adapter conformance
+or remain unsupported. The older-backup crash after local Fenced but before
 `E/J/F` remains blocked. Dedicated Healthy `C/H` and Fenced `E/J`
 commands/results never alias, and the selected immutable `B_EM` hard maxima
 have no production replenishment path.

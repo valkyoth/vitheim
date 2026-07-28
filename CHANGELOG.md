@@ -8,6 +8,12 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Replaced the impossible external-registry/local-database atomic CAS with a
+  portable operational-claim drain and prepare/confirm/reconcile protocol.
+  Added typed response-loss recovery for observation registration,
+  cancellation, terminalization and fence anchoring; separated transient
+  unresolved states from authenticated permanent seals; and specified the
+  observation-registry authority port and cross-adapter conformance profile.
 - Closed recovery rollback after an observed pointer contradiction with an
   independent intent registry, sealed zero-unresolved completeness frontier,
   and restore fencing-epoch CAS. Added distinct `E_m→J_m→F_m` archive

@@ -493,8 +493,18 @@ audit decision.
   greatest anchors. No generic clear or recursive automatic replacement
   exists. Every pointer query is first registered in an independent
   rollback-resistant observation registry. A signed no-fence assertion covers
-  only its sealed exact-set zero-unresolved frontier, and restore CASes a
-  single-use activation token at the unchanged registry fencing epoch.
+  only its sealed exact-set zero-unresolved frontier. There is no
+  cross-system CAS: registry claim drain, non-authoritative local preparation,
+  signed registry confirmation/rejection and local reconciliation order
+  restore and every authority mutation. Effects additionally redeem a current
+  claim at the executor/provider fence immediately before send.
+  Unknown/Unavailable and local exhaustion remain distinct fail-closed
+  unresolved states; authenticated external seal alone assigns permanent
+  unresolved meaning, and late contradiction always strengthens toward
+  Fenced. Registration, cancellation, terminalization and fence anchoring have
+  separate bounded response-loss lanes. The named observation-registry
+  authority port must pass linearizability, failover, non-equivocation,
+  key/retention, partitioning and budget conformance or the adapter refuses.
   Contradiction before `E/J/F` publication therefore remains externally
   visible across restoration of an older local backup. Healthy `C_n/H_n` and
   fenced `E_m/J_m` archives have disjoint command/result/discriminant

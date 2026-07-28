@@ -536,8 +536,19 @@ adversarial/cross-backend/DAG/reference suite; `0.140.11` repeats and freezes
 it. Every pointer query first obtains an externally registered
 RegisteredUnresolved intent and a fully escrowed `R_first` evidence route.
 Registry terminal states and a sealed exact-set zero-unresolved completeness
-frontier replace current-status absence; restore consumes a single-use token
-and CASes the unchanged external fencing epoch with local Operational state.
+frontier replace current-status absence. The registry closes new operational
+claims and drains/expires the bounded live set before query permission.
+Authority mutations use registry claim→PreparedNonAuthoritative→signed
+RegistryConfirmed/Rejected→local finalize; effects also redeem at a
+provider/executor fence. Restore uses
+TokenAcquired→LocalActivationPrepared→RegistryConfirmed/Rejected→
+Operational/Unready, never a distributed CAS. Unknown/Unavailable remains
+RegisteredUnresolved, local exhaustion is LocallyExhaustedUnresolved,
+authenticated external seal alone is ExternallySealedPermanentlyUnresolved,
+and late contradiction remains appendable. Registration, cancellation,
+terminalization and fence anchoring each own bounded Publish/Reconcile/status
+lanes. A named registry authority port and conformance profile make unsupported
+adapters refuse the capability.
 Ordinary `C_n/H_n` archive writers are Healthy-only and distinct from fenced
 `E_m/J_m` EvidenceMaintenance writers. The signed non-borrowable `B_EM`
 equation bounds every intent, archive-verification, anchor-query,

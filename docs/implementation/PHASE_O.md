@@ -290,7 +290,15 @@ prove the genesis receipt originates from the selected pinned
 root/provenance/lineage and deterministic offline signing ceremony, not TOFU.
 Every pointer query must show its externally registered intent and complete
 `R_first` escrow. Healthy restore must show a sealed zero-unresolved
-observation frontier and successful single-use unchanged-fencing-epoch CAS;
+observation frontier and the portable TokenAcquired→LocalActivationPrepared→
+RegistryConfirmed/Rejected→Operational/Unready protocol; no external/local
+atomic CAS is permitted. Operational evidence must prove claim admission and
+drain, PreparedNonAuthoritative isolation, signed registry disposition/local
+finalize, and executor/provider redemption immediately before effects. It must
+exercise every registration/cancellation/terminal/permanent-seal/fence-anchor
+response-loss lane, the distinct transient/exhausted/sealed/late-evidence
+states and mandatory late-contradiction strengthening. The selected named
+registry port must pass its full cross-adapter conformance profile or refuse;
 the local-fence-before-`E/J/F` rollback case must stay blocked. Healthy
 `C/H` and Fenced `E/J` archive commands/results must remain disjoint, and the
 immutable signed `B_EM` maxima/consumption must prove no borrowing,

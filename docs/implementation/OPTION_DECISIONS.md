@@ -3176,6 +3176,12 @@ signing/import ceremony; independent rollback-resistant pointer-observation
 registry, sealed completeness frontier and operational fencing epoch; disjoint
 healthy `C/H` and fenced `E/J` archive protocols; and exact `B_EM`/`R_first`
 evidence-maintenance equations and hard maxima.
+Review the implemented registry authority port/conformance evidence, bounded
+operational claim/drain protocol, non-authoritative local preparation and
+signed Confirm/Reject reconciliation, executor/provider redemption fence,
+complete observation response-loss lanes and monotone unresolved/late-
+contradiction lattice. Cross-system atomic CAS and remote epoch check-then-use
+are rejected designs.
 Compare only fail-closed operational procedures; the architecture has already
 rejected generic ClearFence, selecting a convenient receipt, continuing the
 old lineage and reusing its sequencing/claim/permit/idempotency namespaces.
@@ -3214,10 +3220,20 @@ Healthy-only AuthorityChanging versus Fenced-capable preserve/strengthen-only
 EvidenceMaintenance; independent fence-high-watermark Publish/Reconcile/query,
 FencedEvidenceVerified/export and non-releasable maintenance funding;
 rollback-resistant observation-registry provider and finality profile; exact
-registration/terminalization states, zero-unresolved sealed frontier,
-fencing-epoch authority port and restore-token CAS; distinct FenceEvidence
+tenant/deployment partition, expected-frontier CAS, epoch, non-equivocation,
+read-after-write/failover, key/distrust/history, exact-set compaction,
+independent-failure-domain and bounded-work conformance requirements; local
+database PreparedNonAuthoritative/confirmed-finalize support; executor/provider
+claim-redemption enforcement; operational claim admission/drain/expiry and
+zero-live frontier; distinct registration, cancellation seal, terminalization,
+permanent-unresolved seal and fence-anchor status protocols; explicit
+RegisteredUnresolved/LocallyExhaustedUnresolved/
+ExternallySealedPermanentlyUnresolved/LateContradictoryEvidenceObserved
+transitions; zero-unresolved sealed frontier; portable
+TokenAcquired→LocalActivationPrepared→RegistryConfirmed/Rejected restore;
+distinct FenceEvidence
 archive backend/commands/results producing `J_m` only; production values for
-`o_max/a_max/v_max/q_max/r_max/x_max/t_max`, per-class byte/work/output
+`o_max/c_max/a_max/v_max/q_max/r_max/x_max/t_max`, per-class byte/work/output
 ceilings, `B_EM` and `R_first`, with no automatic replenishment; separate
 initial-bootstrap and guard-first post-bootstrap lock orders; and sequential-
 equivocation recovery; explicit `C_n→P_(n-1), H_n→C_n, P_n→H_n` ordering with
@@ -3247,9 +3263,15 @@ pointer query Unknown/Unavailable/ContradictoryEvidence/exhaustion, atomic
 Healthy→Fenced crash cuts, pre-fence backup restore, pointer-after-fence or
 incomparable anchors, fence-anchor response loss, EvidenceMaintenance class
 escape/starvation, query without external intent or full first-route escrow,
-omitted/unresolved/permanently-unresolved registry members, forged completeness
-frontier, crash after local fence but before `E/J/F`, stale restore fencing
-token, `C/H`↔`E/J` type/command/result substitution, every `B_EM` dimension
+omitted/unresolved/exhausted/sealed/late-contradictory registry members, forged
+completeness frontier, crash after local fence but before `E/J/F`, claim/drain
+and query-permit races, PreparedNonAuthoritative exposure, registry Confirm/
+Reject response loss, stale effect redemption, cross-system atomicity
+assumption, registration/cancellation/terminalization/permanent-seal/fence-
+anchor status loss, transient-as-permanent conversion, late-evidence
+suppression, partition/stale leader/delayed receipt/rollback/fork/read-after-
+write/failover/epoch-wrap/tenant-substitution adapter failures,
+`C/H`↔`E/J` type/command/result substitution, every `B_EM` dimension
 and replenishment attempt, guard-first rank inversion, fence clearing/recursive
 replacement, permit reconstruction, referenced orphan/GC,
 retention/legal-hold bypass, failover, backup/restore and second equivocation.

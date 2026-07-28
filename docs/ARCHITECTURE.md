@@ -875,9 +875,21 @@ restore, failover, and release evidence.
    is registered before a local query permit, unresolved and permanently
    unresolved intents prevent a no-fence proof, and contradiction remains
    FenceAnchorPending until signed `F_m`. Healthy restore accepts only a
-   sealed exact-set zero-unresolved frontier and atomically consumes a
-   single-use token at the unchanged external fencing epoch. Ordinary healthy
-   `C_n/H_n` publication and fenced `E_m/J_m` evidence publication have
+   sealed exact-set zero-unresolved frontier. It never assumes an atomic
+   registry/database transaction: the registry drains bounded operational
+   claims, local restore prepares non-authoritative state, registry
+   expected-frontier CAS confirms or rejects it, and local Reconcile alone
+   finalizes the signed outcome. Every authority mutation follows the same
+   claim→local prepare→registry disposition→local finalize order; effects also
+   redeem at an executor/provider epoch fence immediately before send.
+   Unknown/Unavailable remains unresolved, local exhaustion is separately
+   unresolved, authenticated external seal alone is permanently unresolved,
+   and late contradiction always strengthens toward Fenced.
+   Registration, cancellation, terminalization and fence-anchor response loss
+   have separate bounded status protocols. The named registry authority port
+   has a mandatory linearizability/finality/failover/retention/budget
+   conformance profile, and unsupported adapters refuse recovery. Ordinary
+   healthy `C_n/H_n` publication and fenced `E_m/J_m` evidence publication have
    different discriminants, commands, results and state machines. A closed
    `B_EM` class equation pre-reserves the complete first `E→J→F` route before
    any pointer query; its signed hard maxima cannot be replenished before

@@ -963,11 +963,19 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
   `WitnessAuthorityRecoveryCurrentPointerGenesisReceiptImportClaimV1`, with
   distinct Provision/Rotate/Distrust/Retire result/conflict meanings;
 - `WitnessAuthorityReplacementRecoveryPointerObservationRegistryV1`,
+  `WitnessAuthorityReplacementRecoveryPointerObservationRegistryAuthorityPortV1`,
+  `WitnessAuthorityReplacementRecoveryPointerObservationRegistryConformanceProfileV1`,
+  `WitnessAuthorityReplacementRecoveryPointerObservationRegistryAuthorityStateV1`,
   `WitnessAuthorityReplacementRecoveryPointerObservationIntentV1`,
-  registration signed receipt, terminal signed receipt, sealed
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationV1`,
+  claim receipt/disposition/provider redemption, dedicated registration,
+  cancellation-seal, terminalization, permanent-seal and fence-anchor
+  attempt/reservation/settlement/status results, sealed
   `WitnessAuthorityReplacementRecoveryPointerObservationCompletenessFrontierV1`,
   `WitnessAuthorityReplacementRecoveryOperationalFencingEpochV1` and
-  single-use `WitnessAuthorityReplacementRecoveryRestoreActivationFencingTokenV1`;
+  `WitnessAuthorityReplacementRecoveryRestoreActivationFencingTokenV1`,
+  `WitnessAuthorityReplacementRecoveryRestoreActivationProtocolStateV1`;
 - dedicated `WitnessAuthorityReplacementRecoveryFenceEvidenceCheckpointV1`,
   FenceEvidence archive manifest/state/receipt/proof-budget/verification-cursor,
   `WitnessAuthorityReplacementRecoveryFenceEvidenceArchiveReplayHeadV1` and
@@ -975,12 +983,19 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
 - `WitnessAuthorityReplacementRecoveryEvidenceMaintenanceBudgetV1` with the
   immutable `B_EM` and first-route `R_first` equations.
 
-Positive realization requires external observation registration before local
-query permit, exact registry terminalization, a zero-unresolved sealed
-frontier and unchanged fencing-epoch CAS for healthy restore. Negative
-realization rejects TOFU/caller roots, receipt reuse, omitted observations,
-current-status no-fence claims, permanently unresolved members, stale restore
-tokens, `C/H`↔`E/J` command or result substitution, underfunded first-route
-escrow, replenishment and every post-Fenced authority transition. Model and
-fault cases crash after local Fenced but before `E/J/F` and restore an older
-backup; the external intent still prevents Operational state.
+Positive realization requires the selected registry port to pass its
+linearizable/finality/failover/key/retention/budget profile; bounded claims to
+drain before query permit; local authority to remain PreparedNonAuthoritative
+until signed RegistryConfirmed reconciliation; provider-fence redemption
+before effect send; complete response-loss protocols; a zero-unresolved sealed
+frontier; and TokenAcquired→LocalActivationPrepared→RegistryConfirmed/
+Rejected→Operational/Unready restore. Unknown/Unavailable,
+LocallyExhaustedUnresolved, ExternallySealedPermanentlyUnresolved and
+LateContradictoryEvidenceObserved remain distinct, and late contradiction
+always strengthens to Fenced. Negative realization rejects distributed CAS,
+epoch check-then-use, prepared-state authority, stale send, generic status
+aliasing, transient-as-permanent, late-evidence suppression, weak adapters,
+TOFU/caller roots, omitted observations, `C/H`↔`E/J` substitution,
+underfunding, replenishment and post-Fenced authority. Model/fault cases crash
+at every claim/drain/prepare/confirm/finalize/response/effect and pre-`E/J/F`
+boundary; external state still prevents unsafe Operational state.
