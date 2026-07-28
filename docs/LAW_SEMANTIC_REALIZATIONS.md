@@ -970,9 +970,19 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCapacityV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationProposalV1`,
+  claim-acquisition attempt/outcome/reservation/settlement and dedicated
+  Publish/Reconcile/status semantics,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationDispositionV1`,
-  signed local-finalization receipt/settlement and dedicated response-loss
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitRecordV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationSignerPortV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationSignerConformanceProfileV1`,
+  post-commit signing attempt/signed local-finalization receipt/settlement and dedicated response-loss
   status, `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCheckpointV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationProposalCheckpointV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimArchivePublicationStateV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimArchivePublicationNonReferenceProofV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimArchivePublicationOrphanGcBudgetV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimArchiveReplayHeadV1`,
   historical-result/unavailable state, claim receipt/disposition/provider redemption, dedicated registration,
   cancellation-seal, terminalization, permanent-seal and fence-anchor
@@ -994,20 +1004,29 @@ drain before query permit; the external authority transition table to deny
 claims in ObservationBlocked/FenceAnchorPending/RestoreUnready and make
 AuthorityFenced absorbing; live plus outcome-unknown claims never to exceed
 the pre-funded `c_max`; local authority to remain PreparedNonAuthoritative
-until signed RegistryConfirmed reconciliation and exact local CAS; registry
-settlement to await a signed LocalFinalizeCommitted receipt or permanent
+only in a non-journal proposal store until signed RegistryConfirmed
+reconciliation and an exact local transaction appends fresh immutable events/
+result/audit/outbox plus unsigned commit record; initial claim acquisition to
+use loss-safe Publish/Reconcile/status with no permit recreation; the selected
+signer profile to sign only the reread post-commit record under key/distrust/
+history and response-loss rules; registry settlement to await a reconciled
+signed LocalFinalizeCommitted receipt or permanent
 no-commit evidence; provider-fence redemption
 before effect send; complete response-loss protocols; a zero-unresolved sealed
 frontier; exact-set checkpoint/archive retention of claim history; and
 TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
-LocalFinalizeCommitted→RegistryFinalizationSettled→Operational or
+LocalFinalizeCommitted/SignaturePending→SignedCommitRecord→
+RegistryFinalizationSettled→Operational or
 RestoreUnready. Unknown/Unavailable,
 LocallyExhaustedUnresolved, ExternallySealedPermanentlyUnresolved and
 LateContradictoryEvidenceObserved remain distinct, and late contradiction
 always strengthens to Fenced. Negative realization rejects distributed CAS,
 epoch check-then-use, prepared-state authority, stale send, generic status
 aliasing, authority reopening from blocked/fenced state, claim admission above
-drain capacity, registry-only settlement, unsafe compaction,
+drain capacity, provisional events/proposal promotion, acquisition permit
+recreation, pre-commit or in-transaction signing, registry-only settlement,
+unsafe compaction or orphaning without Commit reconciliation/current
+non-reference/protected capacity,
 transient-as-permanent, late-evidence suppression, weak adapters,
 TOFU/caller roots, omitted observations, `C/H`↔`E/J` substitution,
 underfunding, replenishment and post-Fenced authority. Model/fault cases crash

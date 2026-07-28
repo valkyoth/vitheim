@@ -878,14 +878,20 @@ restore, failover, and release evidence.
    sealed exact-set zero-unresolved frontier. It never assumes an atomic
    registry/database transaction: the registry drains bounded operational
    claims, local restore prepares non-authoritative state, registry
-   expected-frontier CAS confirms or rejects it, and local Reconcile alone
-   finalizes the signed outcome. The registry itself has explicit
+   expected-frontier CAS confirms or rejects it, local Reconcile imports that
+   outcome, an exact local transaction commits the immutable state/unsigned
+   record, and post-commit signing plus registry settlement alone opens
+   operations. The registry itself has explicit
    ObservationBlocked, FenceAnchorPending, absorbing AuthorityFenced and
    RestoreUnready states, so restoring a stale local Healthy row cannot reopen
-   authority. Every authority mutation follows claim→local prepare→registry
-   disposition→local finalize→signed finalization receipt→registry settlement;
-   effects also redeem at an executor/provider epoch fence immediately before
-   send. Admission proves live plus outcome-unknown claims remain at or below
+   authority. Claim acquisition has its own loss-safe Admit/Publish/Reconcile/
+   status lane. Every authority mutation follows claim→separate non-journal
+   proposal→registry disposition→fresh immutable journal/result/audit/outbox
+   append plus unsigned commit record→post-commit signer→signed finalization
+   receipt→registry settlement; effects also redeem at an executor/provider
+   epoch fence immediately before send. Proposal rows allocate no journal
+   identity, cannot satisfy successful idempotency and are never projected.
+   Admission proves live plus outcome-unknown claims remain at or below
    `c_max`, with protected drain work and command/effect/queue/projection
    sublimits. Confirmed-but-unsettled claims remain live.
    Unknown/Unavailable remains unresolved, local exhaustion is separately
@@ -895,9 +901,14 @@ restore, failover, and release evidence.
    have separate bounded status protocols. The named registry authority port
    has a mandatory linearizability/finality/failover/retention/budget
    conformance profile, and unsupported adapters refuse recovery. Exact-set
-   claim checkpoints and Stage/Verify/Commit archive replay bound active and
+   claim/proposal checkpoints and Stage/Verify/Commit archive replay bound active and
    terminal storage while retaining live, redeemed, unknown, confirmed-
    unsettled and frontier-referenced claims; unavailable history is Unready.
+   Failed Staged/Verified publications can be collected only after Commit-
+   status reconciliation and authenticated current non-reference across replay,
+   frontier, restore, live-claim, retention and hold authorities, using a
+   protected orphan/GC reserve. Committed or frontier-referenced history is
+   never eligible.
    Ordinary
    healthy `C_n/H_n` publication and fenced `E_m/J_m` evidence publication have
    different discriminants, commands, results and state machines. A closed

@@ -7303,13 +7303,52 @@ The claim binds tenant/deployment, exact epoch/frontier, command/effect kind,
 stable operation and idempotency IDs, request/material digest, local expected
 versions, claimant/boot continuity, issued/not-before/commit-before time,
 maximum uncertainty and every authority/key/distrust/encoding epoch. Only
-`AdmitMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaim`
-may return one process-local claim permit. Local mutation then uses
+`AdmitMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimAcquisition`
+may persist the stable acquisition request/attempt, reserve publication,
+terminalization, status-query and concurrency capacity, and return one
+process-local acquisition-publication permit. Only one-shot
+`PublishMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimAcquisition`
+may invoke the registry, and only
+`ReconcileMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimAcquisition`
+may import its signed receipt and, for Issued only, return one
+non-serializable process-local claim-use permit.
+
+Canonical claim-acquisition outcome is closed to Issued, Rejected, Unknown,
+Unavailable and ExpiredDefinitelyUnredeemed. Lost acquisition response uses
+only
+`AdmitMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimAcquisitionStatusQuery`
+and
+`ReconcileMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimAcquisitionStatusQuery`.
+The lane binds stable attempt/operation/material IDs, Admitted→PermitIssued→
+InvocationReturned→ResponseImported state, a protected terminalization
+reservation and exact-once concurrency settlement. Unknown/Unavailable is
+potentially live and blocks drain until status or a complete registry frontier
+proves otherwise. ExpiredDefinitelyUnredeemed requires authenticated expiry
+and non-redemption evidence. Exact retry returns stored status and no new
+publication or claim-use permit; changed material conflicts.
+
+Local mutation then uses
 `PrepareMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutation`
 to persist canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationV1`
-as PreparedNonAuthoritative. Readers, readiness and downstream writers cannot
-interpret that state as committed authority.
+as PreparedNonAuthoritative in a physically and logically separate proposal/
+staging namespace. It is never an event-journal row and has no mutable
+authoritative flag. Preparation allocates no aggregate stream version, journal
+offset, event ID, outbox sequence or projection position; it cannot satisfy
+command idempotency as a successful command or appear in domain/event/journal/
+projection reads.
+
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationProposalV1`
+binds the registry claim/receipt, tenant/deployment, command and idempotency
+digests, authorization/fencing/key epochs, every expected aggregate version,
+and an ordered sequence of canonical proposed domain-event body bytes and
+digests. These bodies exclude journal allocation metadata. The registry
+confirms the exact ordered body-byte sequence. Preparation is evidence, never
+domain history; rejected or abandoned proposals remain auditable evidence and
+enter only their dedicated checkpoint/retention/collection lifecycle.
+Readers, readiness and downstream writers cannot interpret it as committed
+authority.
 
 Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCapacityV1`
@@ -7340,21 +7379,71 @@ and enters local state only through
 RegistryConfirmed proves the exact claim was current and orders its prepared
 digest before any later observation drain; RegistryRejected leaves the local
 preparation non-authoritative and terminal. A final local transaction may make
-only the exact RegistryConfirmed preparation authoritative. Canonical
+only the exact RegistryConfirmed preparation authoritative. It locks and
+rechecks the issued, unexpired and unsettled claim; exact registry
+confirmation; authorization/fencing/key/distrust epochs; every expected
+aggregate version; and command/material digest. It then atomically appends a
+new immutable event batch, successful command-idempotency result, audit intent
+and outbox records. The journal allocates fresh event IDs, stream versions,
+offsets and outbox sequences only in this transaction; each stored domain-event
+body is byte-identical to the ordered body bytes in the registry-confirmed
+proposal. Finalization never mutates, toggles, promotes or relocates a proposal
+row.
+
+The same transaction writes unsigned canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitRecordV1`
+and a signer outbox. The record binds the claim, proposal/command digest,
+committed transaction/journal identity, exact allocated stream versions/event
+IDs/offsets, ordered body and envelope digests, result/audit/outbox digests,
+authorization/fencing/key epochs and local backend continuity. It is
+immutable evidence that the local commit occurred, but is not yet a registry-
+acceptable signed receipt.
+
+Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationDispositionV1`
 is closed to LocalFinalizeCommitted, LocalFinalizeVersionConflict,
 LocalFinalizeUnavailable and LocalFinalizeOutcomeUnknown. Registry aggregate
 sequencing prevents two live claims from claiming the same expected version;
 the final local CAS nevertheless checks every expected version exactly.
-Committed writes an immutable signed local-finalization receipt.
+LocalFinalizeCommitted means the atomic journal transaction and unsigned
+commit record exist; it initially enters SignaturePending.
 VersionConflict may settle only with authenticated permanent-no-commit evidence
 for the exact preparation and a non-rollbackable successor version.
 Unavailable and OutcomeUnknown remain live, non-authoritative and
 ObservationDrainPending-blocking.
 
+Receipt creation is an explicit post-commit signer protocol. Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationSignerPortV1`
+under
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationSignerConformanceProfileV1`
+binds signer identity, tenant/deployment scope, key lineage/epoch, distrust and
+rotation high-watermarks, algorithm/encoding profile, historical verification
+material, availability/response-loss behavior and separation of duties. The
+signer accepts only a post-commit record that can be reread from the
+authoritative local backend; it never signs a pre-commit proposal.
+
+Only
+`AdmitMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationSigning`
+may persist a stable signing attempt/reservation and return one process-local
+signing permit. Only one-shot
+`PublishMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationSigning`
+invokes the selected signer.
+`ReconcileMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationSigning`
+alone stores its signed receipt. Lost signer response uses dedicated
+LocalFinalizationSigningStatusQuery Admit/Reconcile state, terminalization
+reservation and exact-once concurrency settlement; exact retry returns status
+without another permit and changed record/key material conflicts. Rotation
+preserves historical verification, distrust prevents new signatures and makes
+unknown pending work fail closed without invalidating already valid historical
+receipts. An in-process signer is supported only as an explicitly selected,
+independently tested conformance profile and still signs after commit through
+this same state machine; it is never an implicit transaction capability.
+Permanent-no-commit records use the same staged authentication discipline.
+
 Only
 `PublishMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationReceipt`
-may publish that receipt or permanent-no-commit evidence to the registry, and
+may publish the reconciled signed commit record or authenticated permanent-no-
+commit evidence to the registry, and
 only
 `ReconcileMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationReceipt`
 imports its signed registry settlement. Lost receipt response uses dedicated
@@ -7362,9 +7451,10 @@ LocalFinalizationReceiptStatusQuery Admit/Reconcile state with stable IDs,
 terminalization reservation and exact-once concurrency settlement. Exact retry
 returns the stored finalization/result/receipt; changed preparation, expected
 version, result or receipt conflicts. The registry settles and releases a
-claim only after authenticated LocalFinalizeCommitted or permanent
+claim only after authenticated signed LocalFinalizeCommitted or permanent
 LocalFinalizeVersionConflict no-commit evidence. Registry confirmation alone,
-process exit, timeout or local row absence never settles it.
+the unsigned commit record, SignaturePending, process exit, timeout or local
+row absence never settles it.
 
 Registry-disposition response loss is only
 `AdmitMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimDispositionStatusQuery`
@@ -7391,7 +7481,44 @@ completeness-frontier references. Dedicated ClaimHistory Stage, bounded
 VerifyQuantum and Commit commands publish immutable archive chunks before
 advancing canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimArchiveReplayHeadV1`.
-Stage→Verify→Commit is the only compaction path.
+Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimArchivePublicationStateV1`
+is Staged→Verified→Committed or
+Staged/Verified→OrphanEligible→Collected. Commit alone advances the replay
+head. Committed, replay-head-referenced or completeness-frontier-referenced
+publication is permanently ineligible for orphaning.
+
+A missing Commit response is reconciled through a dedicated bounded
+ClaimHistoryArchiveCommitStatusQuery Admit/Reconcile lane before orphan
+eligibility. Unknown or Unavailable remains Staged/Verified and charged.
+DefinitelyNotCommitted alone may proceed to canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimArchivePublicationNonReferenceProofV1`.
+That authenticated proof locks and rechecks every current claim-history replay
+head, observation completeness frontier, restore cursor, live/redeemed/
+outcome-unknown/confirmed-unsettled claim, checkpoint/publication predecessor,
+historical result reference, evidence-custody reference, retention policy and
+legal hold. Absence, a stale snapshot or a proof from one authority is not
+non-reference.
+
+Only dedicated MarkClaimHistoryArchivePublicationOrphanEligible and
+CollectClaimHistoryArchivePublicationOrphan commands may transition the exact
+publication under expected-version CAS. Collection additionally proves
+retention expiry and preserves every predecessor/result lookup needed by the
+greatest committed replay head. Canonical
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimArchivePublicationOrphanGcBudgetV1`
+has separate non-borrowable row/byte/work/concurrency/terminalization capacity
+that normal claim traffic cannot consume. Saturation backpressures new Stage
+work while protected reconcile/orphan/collection work remains schedulable.
+
+Rejected, expired-definitely-unredeemed and permanently-no-commit proposals
+use a distinct
+`MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationProposalCheckpointV1`
+and ProposalEvidence retention/collection writer. A proposal is collectible
+only after terminal registry settlement, committed exact-set checkpoint and
+historical result, no completeness/restore/legal-hold reference, and retention
+expiry. A confirmed, locally unknown or unsettled proposal remains hot. This
+lifecycle can collect proposal evidence but can never insert, mutate or delete
+an immutable journal event.
 
 Signed active/terminal row and byte maxima, archive chunk/work maxima,
 checkpoint cadence and per-tenant/global ceilings provide backpressure before
@@ -7519,7 +7646,8 @@ may issue a single-use
 from an unchanged sealed frontier after claim drain. Canonical
 `MigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveHighWatermarkWitnessAuthorityReplacementRecoveryRestoreActivationProtocolStateV1`
 is TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
-LocalFinalizeCommitted→RegistryFinalizationSettled→Operational, or
+LocalFinalizeCommitted/SignaturePending→SignedCommitRecord→
+RegistryFinalizationSettled→Operational, or
 RegistryRejected/LocalFinalizeVersionConflict→RestoreUnready; Unavailable and
 OutcomeUnknown remain pending and non-authoritative. Only
 `PrepareMigrationImportRegistryHistoryCorruptionControlLineageCustodyReleaseCommitEligibilityRevalidationCounterCapacityArchiveWitnessAuthorityReplacementRecoveryRestoreActivation`
@@ -7639,16 +7767,25 @@ within tenant/deployment/global ceilings, and proves
 state. The `c_max_DrainVerify` leg below is reserved before ordinary claim
 admission can consume the matching claim slot. Each claim separately reserves:
 
-`R_claim = 1_ClaimTerminalize + 1_DrainVerify + 1_Prepare +
+`Q_claim(X) = q_claim_max(1_XStatusQueryAdmission +
+1_XStatusQueryTerminalize)`.
+
+`R_claim = 1_AcquisitionAdmission + 1_AcquisitionPublish +
+1_AcquisitionReconcile + Q_claim(Acquisition) +
+1_ClaimTerminalize + 1_DrainVerify + 1_ProposalPrepare +
 1_DispositionPublish + 1_DispositionReconcile + Q_claim(Disposition) +
-1_LocalFinalize + 1_FinalizationReceiptPublish +
+1_LocalFinalizeCommitRecord + 1_SigningAdmission + 1_SigningPublish +
+1_SigningReconcile + Q_claim(Signing) +
+1_FinalizationReceiptPublish +
 1_FinalizationReceiptReconcile + Q_claim(FinalizationReceipt) +
-1_HistoryCheckpointMember + 1_ResultLookup`.
+1_HistoryCheckpointMember + 1_ProposalCheckpointMember +
+1_ResultLookup + 1_ProposalCollectionDisposition`.
 
 An effect adds ProviderRedeem and EffectTerminalReceipt. The claim-specific
 status-query maximum `q_claim_max`, active/terminal row and byte maxima,
-checkpoint/archive quanta and every result/audit/outbox byte are fixed in the
-same signed profile. Reservations remain encumbered through redeemed,
+checkpoint/archive/orphan-GC quanta and every result/audit/outbox/signer byte
+are fixed in the same signed profile. The archive-publication orphan/GC reserve
+is separately protected from ordinary claim traffic. Reservations remain encumbered through redeemed,
 outcome-unknown or confirmed-but-not-locally-settled state. Consequently an
 admitted ordinary workload can never exceed the already funded complete drain
 frontier, even at `c_max`; `c_max + 1` rejects before claim issuance.
@@ -7665,7 +7802,9 @@ FenceEvidenceCheckpointCreate, FenceArchiveStage, FenceArchiveVerifyQuantum,
 FenceArchiveCommitJ, FenceAnchorPublish, FenceAnchorReconcile,
 FenceAnchorQueryAdmission, FenceAnchorQueryTerminalize; RestoreTokenAcquire,
 RestoreActivationPrepare/Publish/Reconcile/StatusQueryAdmission/
-StatusQueryTerminalize/LocalFinalize/FinalizationReceiptPublish/
+StatusQueryTerminalize/LocalFinalizeCommitRecord/SigningAdmission/
+SigningPublish/SigningReconcile/SigningStatusQueryAdmission/
+SigningStatusQueryTerminalize/FinalizationReceiptPublish/
 FinalizationReceiptReconcile/FinalizationReceiptStatusQueryAdmission/
 FinalizationReceiptStatusQueryTerminalize; RestoreCursor, RestoreVerify,
 EvidenceExport, CustodyStrengthen and Exhaustion. One unit
@@ -7690,7 +7829,9 @@ a(1_ECreate + 1_ArchiveStage + v_Verify + 1_CommitJ + 1_FPublish +
 1_FReconcile + q_QueryAdmit + q_QueryTerminalize) +
 r_RestoreCursor + 1_RestoreVerify + 1_RestoreTokenAcquire +
 1_RestorePrepare + 1_RestorePublish + 1_RestoreReconcile + Q(Restore) +
-1_RestoreLocalFinalize + 1_RestoreFinalReceiptPublish +
+1_RestoreLocalFinalizeCommitRecord + 1_RestoreSignAdmit +
+1_RestoreSignPublish + 1_RestoreSignReconcile + Q(RestoreSign) +
+1_RestoreFinalReceiptPublish +
 1_RestoreFinalReceiptReconcile + Q(RestoreFinalize) +
 x_Export + t_CustodyStrengthen +
 1_Exhaustion`.
@@ -8044,15 +8185,15 @@ mutate a field covered by the attempt-set commitment:
 | Fence-evidence checkpoint creation | create exact-set `E_m` from the absorbing fence | Guard-first EvidenceMaintenance under Fenced captures the complete fence/bundle/result/guard and predecessor anchor, consumes its bounded class, and can never create `C_n` |
 | Fence-evidence archive lifecycle | Stage/Verify/Commit for `E_m` | Dedicated discriminator, commands, states and results only. Commit produces exactly `J_m`, keeps guard/fence/bundle/result/shared anchor hot, and exposes no MarkOrphan/FinalizeGc operation |
 | Recovery current-pointer publication/reconciliation | submit `P_n` after `H_n`, then import every external outcome | Fence-first persist the semantic request and one-use claim before one process-local permit; valid signed Reconcile alone records the receipt, CASes ActivatedPendingPointerWitness→Operational, writes operationalization/source-consumption result and advances the recovery head, with `P_n→H_n` and no future receipt/result digest in the request; all other outcomes remain non-operational |
-| Operational registry claim lifecycle | structurally order authority-bearing local mutations and effects before observation drain | Admit one short-lived externally sequenced claim only when per-kind/scope `live + outcome_unknown <= c_max` and its complete drain/terminal/history route is reserved; write only PreparedNonAuthoritative locally; publish/reconcile RegistryConfirmed or RegistryRejected; exact-local-finalize only confirmed state; publish/reconcile the signed local-finalization receipt; registry settlement alone releases the claim. External send additionally redeems at the executor/provider fence. ObservationDrainPending admits no new claim and reaches QueryPermitMayIssue only after the bounded live set settles |
-| Operational claim history lifecycle | bound registry storage without losing completeness or retry evidence | Enforce signed active/terminal row-byte ceilings; checkpoint exact sets; Stage/Verify/Commit immutable archives and advance the claim replay head; preserve historical lookup and every live/redeemed/outcome-unknown/confirmed-unsettled/frontier-referenced claim. Missing or forked history is HistoricalStateUnavailable and RestoreUnready |
+| Operational registry claim lifecycle | structurally order authority-bearing local mutations and effects before observation drain | Admit/Publish/Reconcile claim acquisition with dedicated status recovery only when per-kind/scope `live + outcome_unknown <= c_max` and its complete route is reserved. Write PreparedNonAuthoritative only to the proposal store with no journal identity; publish/reconcile Confirm/Reject; atomically append fresh immutable events/result/audit/outbox plus unsigned commit record; sign that committed record through the selected post-commit signer protocol; publish/reconcile the signed receipt; registry settlement alone releases the claim. External send also redeems at the provider fence. ObservationDrainPending reaches QueryPermitMayIssue only after the bounded live set settles |
+| Operational claim history lifecycle | bound registry/proposal storage without losing completeness or retry evidence | Enforce signed active/terminal row-byte ceilings; checkpoint exact claim and proposal sets; Stage/Verify/Commit immutable archives and advance the claim replay head; preserve historical lookup and every live/redeemed/outcome-unknown/confirmed-unsettled/frontier-referenced claim. Staged/Verified only may become OrphanEligible after Commit-status reconciliation, current multi-authority non-reference, retention/hold and protected GC capacity; Committed/frontier-referenced never orphan. Missing or forked history is HistoricalStateUnavailable and RestoreUnready |
 | Recovery pointer-observation registration/terminalization | make every possible pointer query externally durable | Use distinct bounded Register Publish/Reconcile/query, cancellation-seal/query, terminalization Publish/Reconcile/query and fence-anchor terminalization/query protocols. Unknown/Unavailable stays RegisteredUnresolved, exhaustion becomes LocallyExhaustedUnresolved, authenticated seal alone becomes ExternallySealedPermanentlyUnresolved, and late contradiction always strengthens toward FenceAnchored |
 | Recovery current-pointer query admission | admit a stable status attempt for unknown pointer publication | Require the exact RegisteredUnresolved receipt and escrow `R_first`, then consume bounded calls/bytes/work/time/concurrency and create a terminalization reservation before returning one process-local permit; failure is no-write/no-permit |
 | Recovery current-pointer query terminalization | import SignedReceipt/Unknown/Unavailable/ContradictoryEvidence | Consume the exact reservation, commit closed outcome/result, settle concurrency once and reconcile the external intent; contradiction atomically consumes its pre-reserved fence leg, stores both receipts/discovery evidence, CASes Healthy→Fenced and leaves FenceAnchorPending until signed `F_m` |
 | Recovery-fence high-watermark publication/reconciliation/query | independently anchor or discover fenced evidence | Guard-first EvidenceMaintenance only. Persist one semantic claim before a process-local permit; Reconcile advances only the shared anchor/fence high-watermark and terminalizes FenceAnchorPending. SignedNoFenceAtPointer must bind the sealed zero-unresolved observation frontier, never current absence |
 | Recovery-equivocation fence enforcement | classify and recheck every post-bootstrap recovery or authority-claiming mutation | Lock the recovery guard first. AuthorityChanging requires exact Healthy. EvidenceMaintenance may accept Fenced only for the closed preserve/strengthen set. Missing is corruption/unready; no clear, recursive replacement, capacity release or pre-`1.0.0` manual root-governance writer exists |
 | Replacement recovery restore cursor | advance one bounded hot/archive replay quantum | Consume one restore-cursor class and atomically persist cursor/result/recovery-head successor; no scan, restart, skipped predecessor or hidden work |
-| Replacement recovery restore completion | exact-complete healthy authority or verify fenced evidence | Obtain both greatest pointer and fence anchors plus claim replay head/hot suffix. Healthy completion requires a sealed zero-unresolved frontier, then TokenAcquired→LocalActivationPrepared→RegistryConfirmed→LocalFinalizeCommitted→RegistryFinalizationSettled through status reconciliation. Registry rejection/conflict/history loss is RestoreUnready; unavailable/unknown stays pending. No distributed transaction is assumed. A dominating external AuthorityFenced permits only EvidenceMaintenance Unready→FencedEvidenceVerified and export |
+| Replacement recovery restore completion | exact-complete healthy authority or verify fenced evidence | Obtain both greatest pointer and fence anchors plus claim replay head/hot suffix. Healthy completion requires a sealed zero-unresolved frontier, then TokenAcquired→LocalActivationPrepared→RegistryConfirmed→LocalFinalizeCommitted/SignaturePending→SignedCommitRecord→RegistryFinalizationSettled through signer and registry status reconciliation. Registry rejection/conflict/history loss is RestoreUnready; unavailable/unknown stays pending. No distributed transaction is assumed. A dominating external AuthorityFenced permits only EvidenceMaintenance Unready→FencedEvidenceVerified and export |
 | Plan lifecycle | Replan and proof/capacity-state carry-forward | Commit old-plan terminalization, conservative remaining-class mapping, new plan/proof binding and successor attempt-set head together; consumption never resets |
 
 Every mutating command in the table creates immutable
@@ -9334,6 +9475,30 @@ finalization. QueryPermitMayIssue requires the complete zero-live-claim
 frontier. At effect transmission race drain/epoch advance against
 executor/provider redemption; stale/unavailable claim must produce
 definitely-no-send.
+Crash claim acquisition before/after Admission, Publish, registry issuance and
+Reconcile, including loss of the signed Issued receipt. Traverse Issued,
+Rejected, Unknown, Unavailable and ExpiredDefinitelyUnredeemed through the
+dedicated acquisition status lane. Unknown/Unavailable remains potentially
+live and charged; exact retry returns status with no new publication or claim-
+use permit; changed material conflicts and only authenticated definite
+non-redemption permits expiry settlement.
+Attempt to insert PreparedNonAuthoritative bytes into every event/journal/
+outbox/projection table, allocate stream version/offset/event ID/projection
+position, expose a proposal through journal reads or rebuild, or return command
+success from proposal state; all must fail structurally. Finalization must
+recheck claim, authorization/fencing epochs and expected versions, append a
+fresh immutable batch/result/audit intent/outbox atomically, and leave the
+proposal unchanged. Compare every committed canonical domain-event body byte
+and digest with the registry-confirmed ordered proposal while proving journal
+allocation metadata was created only by finalization.
+Crash after the local journal commit/unsigned commit record but before signer
+Admission, Publish, signer response, Reconcile, signed-receipt registry
+Publish and registry settlement. Lose every signer response; rotate and
+distrust keys; substitute signer, tenant, commit record, event/result/outbox
+digest or key epoch; and run both external-HSM/KMS and explicitly selected
+in-process profiles. A signer must reject pre-commit material. SignaturePending
+and signed-but-not-registry-settled claims remain live; historical valid
+receipts remain verifiable after rotation, while distrust blocks new signing.
 Traverse every registry-authority edge and reject every unlisted edge.
 RegisteredUnresolved, LocallyExhaustedUnresolved and
 ExternallySealedPermanentlyUnresolved must enter ObservationBlocked and issue
@@ -9362,6 +9527,19 @@ Fill active and terminal claim row/byte ceilings, checkpoint exact sets, Stage/
 Verify/Commit archive chunks, advance the claim replay head and restore from
 greatest head plus hot suffix. Try to compact live, redeemed, outcome-unknown,
 confirmed-unsettled and frontier-referenced claims and require rejection.
+Lose ClaimHistory Commit response in both definitely-committed and definitely-
+not-committed cases. Unknown/Unavailable stays Staged/Verified. Before
+OrphanEligible, require current authenticated non-reference across replay
+heads, completeness frontiers, restore cursors, every live/unknown/confirmed-
+unsettled claim, predecessor/result reference, evidence custody, retention and
+legal hold. Race each reference and Commit status against Mark/Collect. A
+Committed or frontier-referenced publication must never orphan. Saturate
+normal traffic and the separate orphan/GC reserve independently; normal work
+cannot starve reconciliation/collection, while exhausted cleanup capacity
+backpressures new Stage. Apply the separate proposal checkpoint/collection
+lifecycle to rejected/expired/no-commit evidence; confirmed, unknown,
+unsettled, held or unarchived proposals remain hot and no collection mutates
+journal history.
 Delete/fork/corrupt a checkpoint, archive member, result lookup or replay head
 and require OperationalAuthorityClaimHistoricalStateUnavailable plus
 RestoreUnready, never inferred settlement. Measure the added registry round

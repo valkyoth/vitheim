@@ -3231,15 +3231,26 @@ sealed frontier reopening a blocked observation; signed
 OperationalAuthorityClaimCapacity values for command/effect/queue/projection
 and tenant/deployment/global `live + outcome_unknown <= c_max`, protected
 drain/terminal/history reservations, recovery-priority fairness and
-backpressure; local database PreparedNonAuthoritative/confirmed-finalize
-support; executor/provider
+backpressure; registry ClaimAcquisition Issued/Rejected/Unknown/Unavailable/
+ExpiredDefinitelyUnredeemed behavior, Admission/Publish/Reconcile/status
+limits and proof required for definite non-redemption; local database physical
+separation between PreparedNonAuthoritative proposal store and immutable event
+journal, with no proposal allocation of stream/journal/event/outbox/projection
+identity or successful idempotency; canonical proposed body-byte format;
+finalization transaction support for fresh event/result/audit/outbox append
+plus unsigned commit record/signer outbox; executor/provider
 claim-redemption enforcement; operational claim admission/drain/expiry and
 zero-live frontier; one-live-claim overlapping aggregate/expected-version
 sequencing; LocalFinalizeCommitted/VersionConflict/Unavailable/OutcomeUnknown,
-local finalization receipt signer/trust domain, permanent-no-commit evidence
-and response-loss status/settlement policy; active/terminal claim row/byte
-limits, exact-set checkpoint cadence, Stage/Verify/Commit archive/replay/
-historical-lookup backend, unavailable-history response, sharding/region
+post-commit HSM/KMS or explicitly selected in-process signer port/profile,
+signer identity/SoD/key lineage/rotation/distrust/historical verification,
+Signing Admit/Publish/Reconcile/status limits, permanent-no-commit evidence
+and signed-receipt response-loss/settlement policy; active/terminal claim and
+proposal row/byte limits, exact-set checkpoint cadence, Stage/Verify/Commit
+archive/replay/historical-lookup backend, Commit-status reconciliation,
+multi-authority non-reference proof, proposal-evidence collection, separate
+non-borrowable orphan-GC row/byte/work/concurrency/terminalization capacity,
+retention/legal-hold authorities, unavailable-history response, sharding/region
 failure profile and throughput/tail-latency SLOs; distinct registration,
 cancellation seal, terminalization,
 permanent-unresolved seal and fence-anchor status protocols; explicit
@@ -3247,7 +3258,8 @@ RegisteredUnresolved/LocallyExhaustedUnresolved/
 ExternallySealedPermanentlyUnresolved/LateContradictoryEvidenceObserved
 transitions; zero-unresolved sealed frontier; portable
 TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
-LocalFinalizeCommitted→RegistryFinalizationSettled→Operational or
+LocalFinalizeCommitted/SignaturePending→SignedCommitRecord→
+RegistryFinalizationSettled→Operational or
 RestoreUnready;
 distinct FenceEvidence
 archive backend/commands/results producing `J_m` only; production values for
@@ -3286,9 +3298,18 @@ completeness frontier, crash after local fence but before `E/J/F`, claim/drain
 and query-permit races, PreparedNonAuthoritative exposure, registry Confirm/
 Reject response loss, every blocked/fenced/unready authority transition,
 stale-local reopening, `c_max−1/c_max/c_max+1`, hostile tenant fairness,
-overlapping expected-version claims, each local-finalization disposition, lost
-or forged finalization receipts, permanent-no-commit proof, confirmation-
-without-settlement, active/terminal row-byte ceilings, unsafe compaction,
+overlapping expected-version claims, acquisition response loss and every
+Issued/Rejected/Unknown/Unavailable/ExpiredDefinitelyUnredeemed outcome,
+permit reconstruction, proposal/event/journal/outbox/projection aliasing,
+proposal idempotency success, early identity allocation, body-byte mismatch,
+proposal promotion, each local-finalization disposition, unsigned commit
+record crash, pre-commit/in-transaction signing, external and in-process signer
+profiles, signer response loss/key substitution/rotation/distrust/history,
+lost or forged finalization receipts, permanent-no-commit proof, confirmation-
+without-settlement, active/terminal row-byte ceilings, Commit-status ambiguity,
+stale/partial non-reference, retention/hold races, ordinary-load cleanup
+starvation, proposal-evidence collection, committed/frontier-referenced
+orphan attempt, unsafe compaction,
 checkpoint/archive/replay loss and unavailable historical lookup, registry
 round-trip/three-local-stage load under sharding and regional failure, stale
 effect redemption, cross-system atomicity

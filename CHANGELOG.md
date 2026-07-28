@@ -8,6 +8,11 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Separated non-authoritative recovery proposals structurally from immutable
+  event history; added loss-safe initial claim acquisition, an explicit
+  post-commit finalization signer protocol, and protected orphan cleanup for
+  failed claim-history publications. Extended version gates, accounting,
+  restore, HA, load, audit and pentest coverage for each lifecycle.
 - Completed the portable recovery-registry authority model with explicit
   ObservationBlocked, FenceAnchorPending, absorbing AuthorityFenced and
   RestoreUnready states; structurally coupled operational admission to

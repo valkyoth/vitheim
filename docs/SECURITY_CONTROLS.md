@@ -506,6 +506,16 @@ audit decision.
   `c_max`, and every claim owns protected drain/terminal work. Confirmation,
   timeout or row absence cannot release a claim without authenticated local
   commit or permanent no-commit evidence.
+  Initial claim creation itself uses durable Admission, one-shot Publish,
+  signed Reconcile and bounded status-query settlement; a lost Issued receipt
+  cannot reconstruct a permit, and Unknown/Unavailable stays potentially live.
+  PreparedNonAuthoritative is stored only in a proposal namespace and allocates
+  no stream version, journal offset, event ID, outbox/projection position or
+  successful idempotency result. Finalization appends a new immutable batch
+  whose canonical event bodies match the confirmed proposal and atomically
+  writes an unsigned commit record. The selected signer signs only that
+  post-commit record through its own response-loss protocol; no HSM/KMS call or
+  implicit in-process signature occurs inside the database transaction.
   Unknown/Unavailable and local exhaustion remain distinct fail-closed
   unresolved states; authenticated external seal alone assigns permanent
   unresolved meaning, and late contradiction always strengthens toward
@@ -517,6 +527,11 @@ audit decision.
   redeemed, outcome-unknown, confirmed-unsettled and frontier-referenced
   history; missing replay/history enters RestoreUnready. Active/terminal row
   and byte ceilings backpressure tenants before unsafe compaction.
+  Staged/Verified claim-history publications reconcile Commit status before
+  current multi-authority non-reference, retention and legal-hold checks may
+  mark them orphan eligible. A separate non-borrowable cleanup reserve prevents
+  normal claim load from starving GC. Committed or frontier-referenced history
+  is permanently ineligible for orphaning.
   Contradiction before `E/J/F` publication therefore remains externally
   visible across restoration of an older local backup. Healthy `C_n/H_n` and
   fenced `E_m/J_m` archives have disjoint command/result/discriminant

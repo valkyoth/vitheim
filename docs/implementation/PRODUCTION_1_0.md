@@ -916,11 +916,15 @@ deterministic offline signing request and single-use import claim. Every
 pointer query has an external observation intent and pre-escrowed `R_first`;
 Healthy restore has a sealed zero-unresolved frontier and portable
 TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
-LocalFinalizeCommitted→RegistryFinalizationSettled→Operational or
+LocalFinalizeCommitted/SignaturePending→SignedCommitRecord→
+RegistryFinalizationSettled→Operational or
 RestoreUnready reconciliation, never a distributed CAS. Production must
-prove operational claim drain, PreparedNonAuthoritative isolation, signed
-registry disposition/local finalize, signed local-finalization receipt/status
-settlement, executor/provider redemption at send,
+prove operational claim drain; claim-acquisition Admit/Publish/Reconcile/
+status without permit recreation; PreparedNonAuthoritative isolation in a
+separate no-journal-identity proposal store; byte-identical confirmed event
+bodies in a fresh immutable event/result/audit/outbox append; unsigned commit
+record followed by the selected post-commit signer profile and signed-receipt
+status settlement; executor/provider redemption at send;
 all observation response-loss lanes, distinct transient/exhausted/sealed/late-
 evidence states and mandatory late-contradiction strengthening. The named
 registry port/provider/backend combination must pass cross-adapter conformance
@@ -934,9 +938,12 @@ without authenticated LocalFinalizeCommitted or permanent no-commit evidence
 remains live and non-authoritative. Exact-set claim checkpoints and
 Stage/Verify/Commit archive replay must preserve every live, redeemed,
 outcome-unknown, confirmed-unsettled and frontier-referenced member; unavailable
-history stays RestoreUnready. The selected shard/region profile must pass
-throughput, tail-latency, backpressure and failover gates for all registry
-round trips and three local mutation stages. The older-backup crash after
+history stays RestoreUnready. Staged/Verified cleanup must reconcile Commit,
+prove current multi-authority non-reference plus retention/holds and use
+separate non-borrowable capacity; Committed/frontier-referenced history never
+orphans. The selected registry/signer/archive/shard/region profile must pass
+throughput, tail-latency, backpressure, cleanup-starvation and failover gates
+for all external and local stages. The older-backup crash after
 local Fenced but before `E/J/F` remains blocked. Dedicated Healthy `C/H` and Fenced `E/J`
 commands/results never alias, and the selected immutable `B_EM` hard maxima
 have no production replenishment path.
