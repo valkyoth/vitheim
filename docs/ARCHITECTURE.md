@@ -894,14 +894,24 @@ restore, failover, and release evidence.
    A claim has exactly one domain-aggregate, control-owner or no-aggregate
    target. Domain batches stay on one stream; process managers/outbox decompose
    cross-aggregate work. Registry confirmation signs complete ordered event
-   descriptors—schema/type, target, identities, time and custody semantics—
-   while finalization adds only allocator-owned IDs/versions/offsets/position.
-   One command-execution row joins retries across every nonterminal stage and
+   descriptors—schema/type, target, identities, time and custody semantics.
+   Inline payload is non-sensitive only; classified data remains an encrypted/
+   externally erasable reference or erased tombstone governed by the Phase A
+   lifecycle across proposal, registry, signer, status and archive surfaces.
+   The target binds the expected predecessor. Finalization allocates journal
+   identity and policy-compliant recorded time, then derives the canonical
+   intra-batch integrity chain and commits the complete mapping.
+   Independently unique command and idempotency IDs must both name the same
+   command-execution row; one-sided hot or archived reuse conflicts. That row
+   joins retries across every nonterminal stage and
    reaches Succeeded only after registry settlement; cancellation ends before
    disposition publication and never undoes events. A remote signer trusts
    either a signer adapter's authoritative read or authenticated backend commit
    attestation; the in-process profile explicitly trusts the hosted runtime.
-   Caller bytes alone are never commitment proof.
+   Caller bytes alone are never commitment proof. A preselected threshold/
+   redundant set or root-authorized successor may sign only the identical
+   committed record after primary loss; otherwise
+   CommitReceiptSignerRecoveryRequired remains live and fail-closed.
    Admission proves live plus outcome-unknown claims remain at or below
    `c_max`, with protected drain work and command/effect/queue/projection
    sublimits. Confirmed-but-unsettled claims remain live.

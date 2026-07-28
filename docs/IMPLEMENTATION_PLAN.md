@@ -555,13 +555,27 @@ idempotency. Each claim has exactly one DomainAggregateTarget,
 ControlOwnerTarget or CanonicalNoAggregateTarget; domain finalization remains
 one stream and cross-aggregate work uses the Phase B process manager/outbox.
 Registry confirmation signs the complete ordered ProposedEventDescriptor root,
-and finalization may add only event ID, stream version, journal offset and
-transaction position. A unique command execution progresses from
+whose closed payload union permits inline bytes only when non-sensitive and
+otherwise carries an encrypted/externally erasable reference or erased
+tombstone under Phase A lifecycle/residency/hold rules. Classified plaintext
+never enters proposal, registry, signer, status, audit or archive evidence.
+The target also binds the expected predecessor envelope digest. Finalization
+adds event ID, stream version, journal offset, transaction position and the
+policy-compliant recorded-time interval, then derives the intra-batch
+predecessor chain canonically and binds all of it in the commit record.
+Separate tenant/deployment unique constraints on command ID and idempotency ID
+must both resolve to one execution; one-sided reuse conflicts across hot and
+archived history. That execution progresses from
 ClaimAcquisitionPending through proposal/confirmation/commit/signing/settlement
 to a typed terminal state; identical retry joins active state, changed material
 conflicts, and cancellation ends at ProposalPrepared. Commit proof uses one
 selected attestation profile: trusted signer-adapter authoritative read,
 authenticated database attestation or explicit hosted-runtime attester.
+Before admission, the selected signer profile must provision either a
+threshold/redundant set or root-authorized successor path with non-borrowable
+recovery/status capacity. Signer loss enters
+CommitReceiptSignerRecoveryRequired and cannot change committed events/results
+or release the claim.
 Unknown acquisition, signer or finalization state remains live and blocks
 observation. Exact-set claim/proposal checkpoint/archive replay provides
 bounded retention without compacting live, redeemed, outcome-unknown,
@@ -570,7 +584,8 @@ failures use Commit-status reconciliation and protected non-reference/retention/
 legal-hold orphan collection; Committed or frontier-referenced history never
 orphans.
 Restore uses TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
-LocalFinalizeCommitted/SignaturePending→SignedCommitRecord→
+LocalFinalizeCommitted→SignaturePending↔
+CommitReceiptSignerRecoveryRequired→SignedCommitRecord→
 RegistryFinalizationSettled→Operational, or
 RestoreUnready, never a distributed CAS. Unknown/Unavailable remains
 RegisteredUnresolved, local exhaustion is LocallyExhaustedUnresolved,

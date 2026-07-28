@@ -203,6 +203,13 @@ erasable store port with memory fake, tombstone proof, and redacted rebuild
 placeholder; neutral bounded lifecycle descriptor schema and inventory fixture.
 Idempotency records, integrity links, outbox routing metadata, telemetry labels,
 and search keys may contain only explicitly safe references.
+Every later-created tenant-data surface—including proposal/staging rows,
+authority-registry and signer requests, commit attestations, command status,
+checkpoint/archive/export and recovery evidence—must consume the same neutral
+lifecycle descriptor and may not duplicate classified plaintext outside the
+governed encrypted/externally erasable store. Immutable auditability is
+provided by non-sensitive digests and erased-payload tombstones, not retained
+plaintext.
 
 Verification: classification downgrade, plaintext in metadata/log/index/receipt,
 hash substitution, held-data erasure, key destruction, double erasure, missing

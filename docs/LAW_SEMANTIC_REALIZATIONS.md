@@ -971,9 +971,13 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimTargetV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCapacityV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedCommandExecutionV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedCommandExecutionIdentityRegistryV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationProposalV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimProposedEventDescriptorV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimProposedEventPayloadV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimEventCommitChainV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedCommandExecutionHistoricalIdentityConflictV1`,
   claim-acquisition attempt/outcome/reservation/settlement and dedicated
   Publish/Reconcile/status semantics,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationDispositionV1`,
@@ -983,6 +987,8 @@ families at `0.29.0`; `0.30.0` preserves them and `0.140.1` freezes them:
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitAttestationPortV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitAttestationConformanceProfileV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitAttestationV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitReceiptSignerRecoveryProfileV1`,
+  `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimLocalFinalizationCommitReceiptSignerRecoveryV1`,
   post-commit signing attempt/signed local-finalization receipt/settlement and dedicated response-loss
   status, `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimCheckpointV1`,
   `WitnessAuthorityReplacementRecoveryOperationalAuthorityClaimedMutationProposalCheckpointV1`,
@@ -1015,19 +1021,27 @@ reconciliation and an exact local transaction appends fresh immutable events/
 result/audit/outbox plus unsigned commit record; initial claim acquisition to
 use loss-safe Publish/Reconcile/status with no permit recreation; the selected
 target union to enforce one domain stream, one control owner or no aggregate;
-the signed ordered event-descriptor root to bind every non-allocator semantic
-field; one command-execution state to join retry/status across every active and
+the signed ordered event-descriptor root to bind every proposal-owned semantic
+field while classified payload remains an opaque encrypted/erasable reference
+or erased tombstone under Phase A lifecycle/residency/hold constraints; the
+target to bind the exact predecessor and finalization to bind authoritative
+recorded time plus the canonical intra-batch chain; independent command-ID and
+idempotency-ID uniqueness to resolve both identities to one execution across
+hot/archive history; one command-execution state to join retry/status across every active and
 terminal stage with cancellation ending at ProposalPrepared; the selected
 commit-attestation profile to prove the local transaction through trusted
 adapter read, authenticated backend evidence or explicit hosted-runtime trust;
 the signer profile to sign only that attested post-commit record under key/
-distrust/history and response-loss rules; registry settlement to await a reconciled
+distrust/history and response-loss rules, with a pre-funded threshold/
+redundant or root-authorized successor path and fail-closed
+CommitReceiptSignerRecoveryRequired state; registry settlement to await a reconciled
 signed LocalFinalizeCommitted receipt or permanent
 no-commit evidence; provider-fence redemption
 before effect send; complete response-loss protocols; a zero-unresolved sealed
 frontier; exact-set checkpoint/archive retention of claim history; and
 TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
-LocalFinalizeCommitted/SignaturePending→SignedCommitRecord→
+LocalFinalizeCommitted→SignaturePending↔
+CommitReceiptSignerRecoveryRequired→SignedCommitRecord→
 RegistryFinalizationSettled→Operational or
 RestoreUnready. Unknown/Unavailable,
 LocallyExhaustedUnresolved, ExternallySealedPermanentlyUnresolved and
@@ -1037,7 +1051,11 @@ epoch check-then-use, prepared-state authority, stale send, generic status
 aliasing, authority reopening from blocked/fenced state, claim admission above
 drain capacity, provisional events/proposal promotion, acquisition permit
 recreation, multi-aggregate or mixed-owner target, payload-only confirmation,
-semantic descriptor/envelope substitution, second claim on active retry,
+classified plaintext in proposal/registry/signer/status/archive evidence,
+payload reference/residency/hold substitution, recorded-time/predecessor-chain
+forgery, semantic descriptor/envelope substitution, composite-only command/
+idempotency uniqueness, one-sided identity reuse, second claim on active retry,
+unsafe signer failover/result rewrite/unfunded recovery,
 post-ProposalPrepared cancellation, caller bytes as commit proof, pre-commit or
 in-transaction signing, registry-only settlement,
 unsafe compaction or orphaning without Commit reconciliation/current

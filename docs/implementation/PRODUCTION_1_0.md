@@ -916,7 +916,8 @@ deterministic offline signing request and single-use import claim. Every
 pointer query has an external observation intent and pre-escrowed `R_first`;
 Healthy restore has a sealed zero-unresolved frontier and portable
 TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
-LocalFinalizeCommitted/SignaturePending→SignedCommitRecord→
+LocalFinalizeCommitted→SignaturePending↔
+CommitReceiptSignerRecoveryRequired→SignedCommitRecord→
 RegistryFinalizationSettled→Operational or
 RestoreUnready reconciliation, never a distributed CAS. Production must
 prove operational claim drain; claim-acquisition Admit/Publish/Reconcile/
@@ -925,19 +926,29 @@ separate no-journal-identity proposal store; exactly one
 DomainAggregateTarget, ControlOwnerTarget or CanonicalNoAggregateTarget per
 claim, with one aggregate stream per domain transaction and Phase B
 process-manager/outbox decomposition for multi-target work; registry-signed
-target plus ordered ProposedEventDescriptor root covering every semantic
-envelope field; allocator-only final fields and an auditable
-descriptor-to-envelope map in the fresh immutable event/result/audit/outbox
-append; and one unique ClaimAcquisitionPending through
-RegistrySettlementPending command execution whose exact retry joins current or
-historical status, whose changed request conflicts and whose last cancellable
-state is ProposalPrepared. The unsigned commit record must be proven through
+target plus ordered ProposedEventDescriptor root covering every proposal-owned
+semantic field; InlineNonSensitive or governed encrypted/externally erasable
+reference/erased tombstone payload variants with no classified plaintext in
+proposal/registry/signer/status/audit/archive/export; exact payload-reference
+reuse/custody transfer; target-bound expected predecessor, policy-compliant
+authoritative recorded time and complete EventCommitChain mapping in the fresh
+immutable event/result/audit/outbox append; and separate scoped command-ID and
+idempotency-ID unique claims that must resolve to one ClaimAcquisitionPending
+through RegistrySettlementPending execution across hot/archive history.
+Exact retry joins, one-sided/cross-pair reuse conflicts, changed request
+conflicts and ProposalPrepared remains the last cancellable state. The unsigned commit record must be proven through
 the selected trusted signer-adapter authoritative-read,
 backend-authenticated-attestation or HostedRuntimeCommitAttester profile
 before the selected post-commit signer and signed-receipt status settlement.
 Backend continuity, transaction, target, descriptor map and result/audit/outbox
 roots are bound; caller bytes, replica/cache reads and transaction-return
 success are not proof, and unsupported profiles refuse. Production also proves
+claim admission pre-provisions and funds exactly a threshold/redundant signer
+set or root-authorized successor. Recovery binds the original commit/
+attestation and failed signer disposition, signs no changed meaning, creates no
+event/result/capacity reset and progresses under protected `S_claim`; without a
+valid path CommitReceiptSignerRecoveryRequired remains live and fail-closed.
+Production also proves plaintext canaries across every named surface and
 executor/provider redemption at send;
 all observation response-loss lanes, distinct transient/exhausted/sealed/late-
 evidence states and mandatory late-contradiction strengthening. The named

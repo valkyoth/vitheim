@@ -8,6 +8,13 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Extended recovery proposals through the Phase A erasable-payload lifecycle:
+  classified plaintext stays out of registry/signer/status/archive evidence,
+  while opaque references, residency/hold policy and erasure tombstones remain
+  bound. Added authoritative recorded-time and predecessor-chain finalization,
+  independent command/idempotency identity constraints, and pre-funded
+  threshold or root-authorized signer-loss recovery with a fail-closed
+  CommitReceiptSignerRecoveryRequired state.
 - Closed the recovery command/finalization trust gaps with an exactly-one
   domain-stream/control-owner/no-aggregate target, Phase B decomposition for
   multi-target work, registry-signed complete semantic event descriptors,

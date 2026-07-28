@@ -3238,19 +3238,37 @@ OperationalAuthorityClaimTarget union with exact DomainAggregateTarget,
 ControlOwnerTarget and CanonicalNoAggregateTarget kinds and Phase B
 process-manager/outbox decomposition; one-domain-stream/control-owner/no-aggregate validation and
 uniqueness; complete ProposedEventDescriptor schema covering event/schema,
-target, tenant/deployment, payload, command/causation/correlation, occurrence/
-effective-time profile and sensitivity/classification/custody; ordered
-descriptor-root algorithm and allocator-field allowlist/mapping; local database physical
+target, tenant/deployment, command/causation/correlation, valid/occurrence/
+effective time and accepted recorded-time policy/profile/maximum uncertainty,
+sensitivity/classification/custody; closed ProposedEventPayload variants
+InlineNonSensitive, EncryptedPayloadReference,
+ExternallyErasablePayloadReference and ErasedPayloadTombstone; payload
+binding with Phase A keyed/domain-separated plaintext hash-authority commitment, ciphertext
+digest, key owner/epoch, residency, retention, legal-hold,
+custody, erasure-authority/profile and external-copy bindings; governed
+immutable-reference reuse, co-located atomic custody transfer or authenticated
+precommitted external-transfer receipt consumption without a distributed
+transaction; rejected/cancelled
+erasure/tombstone behavior and explicit no-classified-plaintext surfaces;
+ordered descriptor-root algorithm; exact target expected-predecessor digest;
+backend-authoritative recorded-time allocation and EventCommitChain algorithm
+mapping first target predecessor and every intra-batch predecessor/digest;
+finalizer-field allowlist/mapping; local database physical
 separation between PreparedNonAuthoritative proposal store and immutable event
 journal, with no proposal allocation of stream/journal/event/outbox/projection
-identity or successful idempotency; canonical proposed body-byte format;
+identity or successful idempotency; canonical safe payload-reference/
+non-sensitive-inline representation;
 finalization transaction support for fresh event/result/audit/outbox append
 plus unsigned commit record/signer outbox; executor/provider
 claim-redemption enforcement; operational claim admission/drain/expiry and
 zero-live frontier; one-live-claim exact-target/expected-version sequencing;
 canonical OperationalAuthorityClaimedCommandExecution states, unique active-
-or-terminal command/idempotency lookup across hot/archive history, typed status
-result and budgets, last-cancellable ProposalPrepared rule, registry-backed
+result and budgets; separate tenant/deployment unique command-ID and
+idempotency-ID constraints and identity-claim rows that must resolve to the
+same execution; predecessor-linked domain-separated exact identity-registry
+maps/root plus hot suffix, archive proof format, root CAS and storage/
+backpressure limits across hot/archive history; typed one-sided/cross-pair
+HistoricalIdentityConflict, last-cancellable ProposalPrepared rule, registry-backed
 definite cancellation and terminal outcome mapping;
 LocalFinalizeCommitted/VersionConflict/Unavailable/OutcomeUnknown,
 post-commit HSM/KMS or explicitly selected in-process signer port/profile,
@@ -3260,6 +3278,13 @@ read, authenticated database attestation and HostedRuntimeCommitAttester;
 read-only authoritative-backend port or attestation-key custody, backend
 identity/continuity/boot/lease/fence and anti-replay proof, and exact production
 trust claim for hosted runtime;
+per-backend CommitReceiptSignerRecovery selection of exactly
+ThresholdRedundantSignerSet or RootAuthorizedSuccessorSigner; threshold member/
+quorum/health and failover rules or pinned-root successor authorization,
+failed/lost/distrusted primary disposition, original commit/attestation binding,
+successor key lineage/historical verification, CommitReceiptSignerRecoveryRequired
+status, no-event/no-result-change/no-capacity-reset rules and non-borrowable
+`S_claim` recovery/status capacity;
 Signing Admit/Publish/Reconcile/status limits, permanent-no-commit evidence
 and signed-receipt response-loss/settlement policy; active/terminal claim and
 proposal row/byte limits, exact-set checkpoint cadence, Stage/Verify/Commit
@@ -3274,7 +3299,8 @@ RegisteredUnresolved/LocallyExhaustedUnresolved/
 ExternallySealedPermanentlyUnresolved/LateContradictoryEvidenceObserved
 transitions; zero-unresolved sealed frontier; portable
 TokenAcquired→LocalActivationPrepared→RegistryConfirmed→
-LocalFinalizeCommitted/SignaturePending→SignedCommitRecord→
+LocalFinalizeCommitted→SignaturePending↔
+CommitReceiptSignerRecoveryRequired→SignedCommitRecord→
 RegistryFinalizationSettled→Operational or
 RestoreUnready;
 distinct FenceEvidence
@@ -3318,8 +3344,13 @@ same-target expected-version claims, multiple/zero/mixed targets, two aggregate
 streams, aggregate-plus-control and hidden multi-aggregate finalization,
 process-manager/outbox decomposition, descriptor-root reorder/omission and
 payload reuse under changed event/schema/aggregate/tenant/command/causation/
-correlation/time/classification/custody semantics, allocator-field overreach
-and descriptor-envelope mapping, acquisition response loss and every
+correlation/time/classification/custody semantics; inline-classified payload,
+plaintext canaries across every proposal/registry/signer/status/log/archive
+surface, payload reference/digest/key/residency/retention/hold/custody/
+erasure/export substitution, rejected/cancelled crypto-erasure/tombstone;
+target predecessor mismatch, authoritative recorded-time policy/uncertainty
+failure, zero/one/max intra-batch chain derivation/reorder/substitution,
+finalizer-field overreach and descriptor-envelope mapping, acquisition response loss and every
 Issued/Rejected/Unknown/Unavailable/ExpiredDefinitelyUnredeemed outcome,
 permit reconstruction, proposal/event/journal/outbox/projection aliasing,
 proposal idempotency success, early identity allocation, body-byte mismatch,
@@ -3328,11 +3359,18 @@ record crash, every ClaimAcquisitionPending/ProposalPrepared/
 RegistryDispositionPending/RegistryConfirmed/LocalCommitPending/
 SignaturePending/RegistrySettlementPending/terminal transition, identical/
 changed retry, missing active history, cancellation before/at/after disposition
-publication and committed-event irreversibility; pre-commit/in-transaction
+publication and committed-event irreversibility; separate command/idempotency
+unique-index races and both-absent/both-same/one-sided/cross-pair resolution
+across hot/hot, hot/archive, archive/hot and archive/archive; pre-commit/in-transaction
 signing, trusted-adapter authoritative read, database-authenticated attestation
 and hosted-runtime attester profiles, caller/replica/cache/return-success proof,
 backend continuity/transaction/target/descriptor-map/result-root/nonce
 substitution, unsupported attester refusal, signer response loss/key substitution/rotation/distrust/history,
+threshold member/quorum failure and root-authorized successor after lost/
+distrusted primary, late-primary/recovered-receipt convergence, recovery
+authorization/commit/attestation/signer-lineage substitution, ordinary-lane
+exhaustion with intact `S_claim`, no-successor CommitReceiptSignerRecoveryRequired
+and proof recovery cannot append/rewrite/refund/reset,
 lost or forged finalization receipts, permanent-no-commit proof, confirmation-
 without-settlement, active/terminal row-byte ceilings, Commit-status ambiguity,
 stale/partial non-reference, retention/hold races, ordinary-load cleanup

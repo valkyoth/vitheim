@@ -291,7 +291,8 @@ root/provenance/lineage and deterministic offline signing ceremony, not TOFU.
 Every pointer query must show its externally registered intent and complete
 `R_first` escrow. Healthy restore must show a sealed zero-unresolved
 observation frontier and the portable TokenAcquired→LocalActivationPrepared→
-RegistryConfirmed→LocalFinalizeCommitted/SignaturePending→SignedCommitRecord→
+RegistryConfirmed→LocalFinalizeCommitted→SignaturePending↔
+CommitReceiptSignerRecoveryRequired→SignedCommitRecord→
 RegistryFinalizationSettled→
 Operational or RestoreUnready protocol; no external/local
 atomic CAS is permitted. Operational evidence must prove claim admission and
@@ -301,18 +302,29 @@ and successful idempotency. Each command must bind exactly one
 DomainAggregateTarget, ControlOwnerTarget or CanonicalNoAggregateTarget;
 domain batches remain on one aggregate stream and multi-target work must use
 the Phase B process-manager/outbox path. Registry confirmation must cover the
-target and ordered ProposedEventDescriptor root for every semantic envelope
-field, while finalization may add only the frozen allocator-owned fields and
-must persist the descriptor-to-envelope map. Evidence must exercise the unique
-ClaimAcquisitionPending through RegistrySettlementPending command execution,
-exact-retry join, changed-material conflict, historical lookup and the
-ProposalPrepared last-cancellable boundary. Fresh immutable finalization plus
+target and ordered ProposedEventDescriptor root for every proposal-owned
+semantic field. ProposedEventPayload permits inline non-sensitive data only;
+classified payload remains an encrypted/externally erasable reference or
+erased tombstone, and plaintext canaries must remain absent from registry,
+signer, status, audit, logs and archive/export. Finalization reuses/transfers
+that reference, obtains policy-compliant authoritative recorded time and
+derives the complete EventCommitChain from the target-bound predecessor before
+persisting the descriptor-to-envelope map. Evidence must exercise separate
+tenant/deployment command-ID and idempotency-ID uniqueness across all hot/
+archive combinations; both must name the same unique ClaimAcquisitionPending
+through RegistrySettlementPending execution, while one-sided reuse conflicts.
+Exact-retry join, changed-material conflict, historical lookup and the
+ProposalPrepared last-cancellable boundary remain mandatory. Fresh immutable finalization plus
 an unsigned commit record must be followed by one selected commit-attestation
 profile—trusted signer-adapter authoritative read, backend-authenticated
 attestation or HostedRuntimeCommitAttester—and post-commit signer
 Publish/Reconcile/status and signed-receipt settlement. Caller-provided bytes,
 replica/cache reads and a transaction-success return are not commit proof;
 unsupported attestation profiles refuse. Evidence must also prove
+the preselected threshold/redundant or root-authorized successor signer path
+under non-borrowable `S_claim`: it signs only the identical record, and an
+unrecoverable signer leaves redacted CommitReceiptSignerRecoveryRequired,
+live capacity and fail-closed authority. Evidence must also prove
 executor/provider redemption immediately before effects. The external
 authority transition suite must deny claims in ObservationBlocked,
 FenceAnchorPending and RestoreUnready, prove AuthorityFenced absorbing, and

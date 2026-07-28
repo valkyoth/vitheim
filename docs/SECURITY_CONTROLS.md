@@ -521,14 +521,27 @@ audit decision.
   only; cross-aggregate work is rejected to the Phase B process-manager/outbox
   path. Registry confirmation signs a ProposedEventDescriptor root covering
   event/schema identity, target, tenant, command/causation/correlation, time,
-  sensitivity/custody and payload; only allocator IDs/versions/offset/position
-  may be added. Before claim acquisition, a unique command/idempotency lookup
-  joins terminal or active execution; changed bytes conflict, unavailable
+  sensitivity/custody and payload lifecycle. Inline payload is permitted only
+  for non-sensitive schemas; classified data remains an opaque encrypted/
+  externally erasable reference or erased tombstone and never enters registry,
+  signer, status, audit, log/trace/error or archive records as plaintext.
+  Residency, retention, hold, ciphertext digest, keyed/domain-separated
+  plaintext commitment and key custody remain bound through finalization/
+  export; raw dictionary-testable hashes are forbidden. The target binds its expected predecessor; only journal
+  identity, policy-valid recorded time and the canonically derived predecessor
+  chain are finalizer-owned, and the signed commit record covers them.
+  Before claim acquisition, independent scoped unique constraints resolve
+  command ID and idempotency ID to the same terminal or active execution;
+  one-sided or cross-pair reuse conflicts even after compaction, unavailable
   history unreadies, and cancellation ends at ProposalPrepared before
   disposition publication. Remote signing requires either trusted-adapter
   authoritative reread or authenticated backend commit attestation. The
   explicit hosted-runtime profile names its trust boundary; caller-provided
   bytes, cache/replica reads and transaction-return success are not proof.
+  Claim admission also preselects and funds a threshold/redundant signer set or
+  root-authorized successor lineage. Recovery signs only the identical commit,
+  never rewrites events/results or resets capacity; without a valid successor,
+  CommitReceiptSignerRecoveryRequired remains live and authority stays closed.
   Unknown/Unavailable and local exhaustion remain distinct fail-closed
   unresolved states; authenticated external seal alone assigns permanent
   unresolved meaning, and late contradiction always strengthens toward
