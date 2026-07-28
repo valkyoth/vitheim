@@ -11,7 +11,9 @@ All notable Vitheim changes are documented here. The format follows
 - Rooted replacement recovery in signed, tenant-bound `P_0` with explicit
   CanonicalNoPredecessor; added an absorbing evidence-backed recovery-
   equivocation fence and made signed pointer reconciliation the sole
-  ActivatedPendingPointerWitness→Operational transition.
+  ActivatedPendingPointerWitness→Operational transition. Bootstrap now imports
+  a pre-signed receipt under separate funding, while Fenced retains a closed
+  evidence-maintenance/archive/anchor path that cannot change authority.
 - Added immutable Open→SealPending→Sealed custody-transfer fencing so delayed
   chunks, stale credentials, multipart retries, overwrites, and finalization
   cannot invalidate the exact receipt required for Commit.

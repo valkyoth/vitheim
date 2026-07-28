@@ -838,7 +838,10 @@ restore, failover, and release evidence.
    admits only one genesis; different material is durably rejected. Retirement
    is one local AuthorityRetirement class/charge and one recovery-head advance
    for Active→Retired, with no admission/finalization split or external Pending state.
-   A pre-reserved parent Recovery budget funds a closed recovery-writer head.
+   A pre-reserved parent Recovery budget funds a closed recovery-writer head
+   and a non-releasable post-fence EvidenceMaintenance partition. Initial
+   `P_0` instead consumes a separate deployment-bootstrap reserve: the local
+   import verifies an already signed receipt and performs no external I/O.
    Portable source-outbox/destination-inbox transfer freezes the old
    four-member state, maps each reservation one-to-one or quarantines it as
    inherited consumed, independently witnesses both sides, and updates the
@@ -848,17 +851,26 @@ restore, failover, and release evidence.
    reconciliation alone enters Operational and terminalizes the source. The
    separate recovery head is compacted only by
    its own exact-set checkpoint, staged/verified publication and replay head;
-   a predecessor-linked external greatest-current-pointer high-watermark
-   dominates restore across sequential equivocations. The acyclic generation
+   predecessor-linked external pointer and fence high-watermarks share one
+   total anchor sequence and jointly dominate restore across sequential
+   equivocations. The acyclic generation
    order starts from signed, tenant-bound genesis `P_0` with explicit
    CanonicalNoPredecessor, so `C_1→P_0`, then continues as
    `C_n→P_(n-1), H_n→C_n, P_n→H_n`; checkpoint creation and `P_n` remain hot,
    and generated schema/hash-DAG checks reject `C_n→P_n`. A canonical Healthy/
-   Fenced recovery guard is checked first by every recovery and authority-
-   claiming writer. Contradictory pointer receipts atomically install an
+   Fenced recovery guard is checked first by every post-bootstrap recovery and
+   authority-claiming writer. AuthorityChanging requires Healthy;
+   EvidenceMaintenance under Fenced is closed to exact fence checkpoint,
+   archive Stage/Verify/Commit, independent fence-high-watermark publication/
+   query, restore verification/export and custody strengthening. Contradictory pointer receipts atomically install an
    immutable evidence bundle and absorbing recovery-equivocation fence from a
    pre-reserved terminalization leg; no clear or recursive automatic
-   replacement exists.
+   replacement exists. One non-wrapping recovery-anchor sequence orders
+   pointer and fence high-watermarks; a fence anchor dominates every earlier
+   pointer and forbids every later pointer. Restore obtains both greatest
+   anchors, so a pre-fence local backup becomes FencedEvidenceVerified rather
+   than operational. Initial-bootstrap and guard-first post-bootstrap lock
+   orders are distinct and mechanically traced.
    Checkpoint creation, pointer publication/Reconcile/query, restore-cursor
    advance and restore completion have distinct typed bounded protocols.
    Orphan/GC requires locked authenticated non-reference across replay,

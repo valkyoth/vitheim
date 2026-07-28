@@ -269,16 +269,23 @@ destination inbox, exact reservation mappings/quarantine, inherited-consumed
 baseline and independent transfer high-watermark before the sole current
 pointer becomes pending; only signed `P_n` reconciliation may make it
 Operational and consume the source. Neither side may assume a distributed
-transaction or infer completion from absence. It must also authenticate signed
-tenant-bound `P_0`, explicit CanonicalNoPredecessor and Healthy recovery guard,
-require `C_1→P_0`, and load the independent greatest pointer,
+transaction or infer completion from absence. It must also import an already
+signed tenant-bound `P_0` under the separate deployment-bootstrap reserve with
+no signer call inside the local transaction, then authenticate explicit
+CanonicalNoPredecessor and Healthy recovery guard,
+require `C_1→P_0`, and load the independent greatest pointer and fence anchors,
 dedicated exact-set recovery checkpoint/publication/replay head and hot suffix,
 using the staggered `C_n→P_(n-1), H_n→C_n, P_n→H_n` DAG, then exact-complete
 witnessed operationalization or stay unready without old-archive fallback. It
 must atomically install and hot-retain the two-receipt recovery-equivocation
-fence on contradiction, prove every recovery/dispatch/effect/projection/
-readiness writer is fence-first, and prove no clear or recursive automatic
-replacement exists. It must
+fence on contradiction. Operational evidence must classify Healthy-only
+AuthorityChanging and Fenced-capable EvidenceMaintenance; the latter remains
+live only for exact checkpoint/archive Stage/Verify/Commit, independent fence-
+anchor publication/query, restore verification/export and custody
+strengthening. It must compare greatest pointer and fence anchors, require
+fence dominance for pre-fence restore, trace the separate bootstrap and guard-
+first post-bootstrap lock orders, and prove no clear, evidence GC or recursive
+automatic replacement exists. It must
 exercise the distinct checkpoint-create, pointer Publish/Reconcile/query and
 restore-cursor/complete typed protocols without permit reconstruction. Any
 externally referenced recovery publication exact-commits or stays unready;

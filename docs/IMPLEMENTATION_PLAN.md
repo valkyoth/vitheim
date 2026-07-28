@@ -499,8 +499,10 @@ ActivatedPendingPointerWitness current pointer and, only after signed `P_n`
 reconciliation, one Operational lineage; changed candidates are terminally
 rejected.
 Retirement is one local AuthorityRetirement class/charge and one recovery-head
-advance. Pre-reserved parent Recovery funds
-the separate closed recovery writer matrix. An explicit frozen-source outbox,
+advance. Pre-reserved parent Recovery funds the separate closed recovery
+writer matrix plus a non-releasable post-fence evidence-maintenance partition;
+`P_0` uses a separate deployment-bootstrap reserve and imports an already
+signed receipt without external I/O in its transaction. An explicit frozen-source outbox,
 non-operational destination inbox, reservation mapping/quarantine proof and
 independent predecessor-linked transfer commitment reconcile response loss
 without a distributed transaction. Activation requires exact inbox
@@ -518,13 +520,17 @@ completion protocols own bounded charges, reservations, exact outcomes and
 unreconstructable process-local permits. MarkOrphan proves locked non-reference
 across replay/transfer/pointer/replacement/restore/activation/evidence/hold
 owners; externally referenced publications exact-commit or stay unready and
-cannot be collected. Restore obtains the independent predecessor-linked
-greatest current pointer through its dedicated query lane, replays the recovery
+cannot be collected. Restore obtains both independent predecessor-linked
+greatest pointer and fence anchors through their dedicated query lanes, replays the recovery
 hot suffix and exact-completes witnessed operationalization or stays unready;
 pointer contradiction atomically Healthy→Fenced with both receipts, requests
-and discovery evidence from pre-reserved capacity. The fence is absorbing,
-fence-first for every recovery/authority writer and has no generic clear or
-recursive automatic replacement. The old
+and discovery evidence from pre-reserved capacity. Post-bootstrap writers lock
+the guard first: AuthorityChanging requires Healthy, while EvidenceMaintenance
+under Fenced can only checkpoint/archive the fence, publish/query an independent
+fence high-watermark, verify/export restore evidence or strengthen custody.
+One shared anchor sequence makes that fence dominate all earlier pointer
+anchors; restore obtains both greatest anchors. The fence has no generic clear
+or recursive automatic replacement. The old
 archive is never a fallback. The Phase C milestone runs the full replacement
 adversarial/cross-backend/DAG/reference suite; `0.140.11` repeats and freezes
 it. BeginAbortDrain first commits a typed result and non-releasable

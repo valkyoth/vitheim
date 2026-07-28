@@ -460,13 +460,17 @@ audit decision.
   permanently rejected. Signed `P_n` reconciliation alone makes the pending
   lineage operational. Retirement is one
   local AuthorityRetirement writer/class/charge, atomically terminal with one
-  recovery-head advance. A parent Recovery escrow funds the separate
-  recovery writer head. Frozen-source outbox/destination-inbox transfer,
+  recovery-head advance. A parent Recovery escrow funds the separate recovery
+  writer head and non-releasable Fenced EvidenceMaintenance partition.
+  Generation-zero bootstrap instead verifies a pre-signed receipt under a
+  separate deployment-bootstrap reserve, with no signer call in its local
+  transaction. Frozen-source outbox/destination-inbox transfer,
   one-to-one-or-quarantined reservation disposition and an independent
   predecessor-linked high-watermark make one-sided rollback detectable; the
   destination remains non-operational until exact import/conformance and
   pointer activation. Dedicated exact-set recovery checkpoint/publication/
-  replay/restore state and an independent greatest-current-pointer chain
+  replay/restore state and independent pointer/fence high-watermarks in one
+  total recovery-anchor chain
   begin from signed tenant-bound `P_0` plus explicit CanonicalNoPredecessor and
   Healthy recovery guard, require `C_1→P_0`, and use only the acyclic stagger
   `C_n→P_(n-1), H_n→C_n, P_n→H_n`; generated
@@ -480,9 +484,14 @@ audit decision.
   equivocations; historical unavailability stays unready and never falls back
   to the old archive. Contradictory pointer evidence atomically consumes a
   pre-reserved terminalization leg, preserves both requests/receipts/discovery
-  evidence and CASes Healthy→Fenced. That fence is absorbing and checked first
-  by every recovery, dispatch, effect, projection and readiness writer; no
-  generic clear or recursive automatic replacement exists. Identities never
+  evidence and CASes Healthy→Fenced. Every post-bootstrap writer locks the
+  guard first. AuthorityChanging requires Healthy; Fenced EvidenceMaintenance
+  permits only exact checkpoint/archive Commit, independent fence-anchor
+  publication/query, restore verification/export and monotone custody
+  strengthening. A shared non-wrapping anchor sequence makes the fence
+  high-watermark dominate all earlier pointers, and restore compares both
+  greatest anchors. No generic clear or recursive automatic replacement
+  exists. Identities never
   cross generations. A charged local fence
   precedes external traffic. BeginAbortDrain returns no seal permit unless its
   typed transaction reserves the complete non-releasable sealed-abort/

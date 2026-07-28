@@ -879,7 +879,9 @@ point and current pointer;
 different candidates are permanently rejected. Retirement is one local atomic
 AuthorityRetirement writer/class/charge with one recovery-head advance, and
 a pre-reserved parent Recovery budget funds the separate closed recovery
-writer head. Frozen source outbox, non-operational destination inbox, exact
+writer head and post-fence maintenance partition. `P_0` uses an independent
+deployment-bootstrap reserve and an already signed receipt; its local import
+performs no external I/O. Frozen source outbox, non-operational destination inbox, exact
 reservation mapping-or-quarantine, inherited baseline and independent
 predecessor-linked transfer witness must reconcile before pending activation;
 signed `P_n` reconciliation alone may enter Operational and consume the source;
@@ -898,12 +900,18 @@ and no retry/restore reconstructs a permit. MarkOrphan/FinalizeGc requires
 locked authenticated non-reference across all replay, transfer/pointer,
 activation, restore, evidence, retention and legal-hold owners; external
 pointer reference permits exact Commit or Unready, never orphan. Restore
-compares the independent greatest-current-pointer chain, exact-completes
-witnessed operationalization or stays unready, never reading authority from
+compares both independent greatest pointer and fence anchors, exact-completes
+witnessed operationalization or verifies fenced evidence, never reading authority from
 the old archive. Contradictory pointer evidence atomically installs the
 pre-reserved immutable evidence bundle and absorbing Healthy→Fenced recovery
-guard; all writers are fence-first and no generic clear or recursive automatic
-replacement exists. Production evidence repeats the Phase C core recovery DAG/reference/
+guard. Every post-bootstrap writer locks the guard first. AuthorityChanging
+requires Healthy; Fenced EvidenceMaintenance is closed to checkpoint/archive
+Stage/Verify/Commit, independent fence-anchor publication/query, restore
+verification/export and custody strengthening. A shared anchor sequence makes
+the fence high-watermark dominate every earlier pointer; restore obtains both
+greatest anchors and cannot revive a pre-fence backup. No generic clear,
+evidence GC or recursive automatic replacement exists. Production evidence
+repeats the Phase C core recovery DAG/reference/
 typed-operation corpus at the frozen profile. Replay
 install/delete cannot split from rollover. BeginAbortDrain is no-write/no-
 permit unless its typed transaction commits the complete non-releasable
