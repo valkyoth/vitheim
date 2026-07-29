@@ -29,14 +29,23 @@ require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     'stable source anchor' \
     'stable requirement source anchors'
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
-    'binding baseline outcome is dependency-free or unsupported' \
+    'owner policy selects repository-wide dependency-free or' \
     'early dependency-law support decision'
 require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
-    'no domain receives its first application service here' \
+    'no domain receives its first service, DTO, error, or resource' \
     'application services precede external API freeze'
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     '0.120.8` — Late-Domain Authorization Registration' \
     'chronological late-domain integration'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    '0.30.23` — Domain Surface Contribution Contract' \
+    'domain-owned surface contribution contract'
+require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
+    'registration or handler is first added here' \
+    'lifecycle stop is certification only'
+require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
+    'Vitheim never creates, amends, approves, or cancels the purchase order' \
+    'external purchase-order evidence boundary'
 
 if [ "$failed" -ne 0 ]; then
     exit 1

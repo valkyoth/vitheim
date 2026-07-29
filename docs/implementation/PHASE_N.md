@@ -1,9 +1,9 @@
 # Phase N — Complete Product Experience
 
 Scope: `0.131.0–0.140.0`. UI actions are commands or policy-filtered reads.
-Focused `0.132.3`, `0.138.4–0.138.5`, and `0.139.1` stops carry the new
-full-suite domains through workspaces/admin, external API/SDK/subscriptions,
-import/export/configuration, and cross-surface differential evidence.
+Focused `0.132.3`, `0.138.4–0.138.5`, and `0.139.1` stops compose, freeze, and
+certify domain-owned workspace/admin, external API/SDK/subscription, transfer/
+configuration, and cross-surface differential contributions.
 
 ## `0.131.0` — Unified Shell And Command Palette
 Status: planned. Setup: action registry, discovery policy, keyboard model, context, confirmation. Goal: one safe navigation/action shell. Deliverables: shell and palette. Verification: unauthorized discovery/execution, stale context, shortcut spoofing, injection, accessibility pass. Exit criteria: discovery never grants authority. `v0.131.0 implementation stop reached. Run pentest for this exact commit.`

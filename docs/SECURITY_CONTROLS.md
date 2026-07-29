@@ -13,7 +13,7 @@
   installers and operator output must expose conditional and unsupported scope
   without silent fallback. Missing or stale evidence moves readiness toward
   refusal.
-- One canonical roadmap manifest accounts for all 352 exact stops and their
+- One canonical roadmap manifest accounts for all 354 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -48,6 +48,13 @@ Every change needs:
 Tests must prove both acceptance and rejection. A rejected operation must not
 partially mutate state, consume authority, expose hidden fields, or omit an
 audit decision.
+
+From `0.30.23`, every domain owns one checked surface-contribution manifest for
+its application/API, policy/redaction, workspace, workflow/notification,
+search, transfer/configuration, and tenant-data lifecycle behavior. Late
+integration stops may compose and certify these contributions but cannot add a
+missing command, mapping, codec, registration, or recovery handler. A missing
+or falsely deferred contribution blocks the owning capability.
 
 ## Runtime Controls Planned Before Production
 

@@ -1,9 +1,9 @@
 # Phase O — Production Hardening
 
-Focused stop `0.145.3` extends the tenant data-surface registry, backup,
-restore, retention, hold, privacy, continuity, and erasure exercises to every
-new full-suite aggregate, projection, cursor, spool, pack, search, UI, API, and
-configuration surface.
+Focused stop `0.145.3` certifies the domain-owned tenant data-surface,
+backup/restore, retention, hold, privacy, continuity, and erasure contributions
+for every selected full-suite profile; it cannot add a missing registration or
+handler.
 
 Scope: `0.141.0–0.150.0`. Claims require operational evidence, not schedule.
 Before any Phase O milestone starts, resolve its one
@@ -2289,7 +2289,7 @@ and runtime supply-chain paths. Deliverables: audits, a generated capability-
 evidence report that rejects `Specified` or `Implementing` support claims and
 binds every `Implemented`, `Conditional`, `Supported`, or `Unsupported` entry
 to its executable owner and exact immutable evidence; a generated canonical
-roadmap report proving all 352 stops, owners, authority reviews and pentest
+roadmap report proving all 354 stops, owners, authority reviews and pentest
 markers agree; candidate-tree/artifact-
 bound signed evidence, SBOM/provenance, reproducible artifacts, permit-memory/
 diagnostic exposure report, executor credential-operation/egress isolation and
@@ -2823,7 +2823,7 @@ tombstone state, independent remediation profile/credential-lineage/audit/
 cleanup-quota/manual-only state, and durable fully typed floor-profile ratchet state. Goal:
 final pre-RC readiness
 proof. Deliverables: complete candidate bundle, runbooks, acceptance report,
-canonical 352-stop roadmap report, zero-drift capability-evidence/support
+canonical 354-stop roadmap report, zero-drift capability-evidence/support
 matrix, explicit conditional and unsupported profiles,
 no-permit-transport proof, fresh-parent-activation evidence, and floor-ratchet
 compatibility evidence including total typed-key migrations and successor

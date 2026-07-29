@@ -31,11 +31,11 @@ small-loop rule and were decomposed into 65 additional exact stops. The later
 capability-gap review added 21 independently scoped verification, product, and
 profile-decision stops. The second gap review added 31 requirement-ownership,
 domain-decomposition, integration, and discovery-profile stops. The coherence
-review added six requirement-source, dependency-feasibility, adapter-placement,
-and chronological-integration stops. The canonical roadmap therefore contains
-**352 exact stops**:
+reviews added eight requirement-source, dependency-feasibility, surface-
+ownership, domain-boundary, adapter-placement, and chronological-integration
+stops. The canonical roadmap therefore contains **354 exact stops**:
 
-`150 base 0.x.0 stops + 201 companion stops + 1 production stop = 352`.
+`150 base 0.x.0 stops + 203 companion stops + 1 production stop = 354`.
 
 The existing long sections remain cumulative family ledgers because they hold
 important threat, invariant, recovery, and verification context. Their heading
@@ -72,20 +72,22 @@ The second review's 31 additions live in
 | Requirement ownership | `0.18.14`, `0.20.5`, `0.30.18–0.30.21` | Registry/checker, then bounded phase-family backfills |
 | Early domain references | `0.30.22` | Opaque references and read fakes only |
 | Customer decomposition | `0.50.7–0.50.9` | Contacts, agreements, then entitlement decisions |
-| Supplier decomposition | `0.50.10–0.50.12` | Contracts, obligations/assessment, then access termination |
-| Procurement decomposition | `0.50.13–0.50.16` | Order/receipt, allocation/return, entitlement, then provider-neutral reconciliation |
+| Supplier decomposition | `0.50.10–0.50.12` | Contract, obligation lifecycle, then access termination |
+| Procurement decomposition | `0.50.13–0.50.16` | External-order evidence/receipt, allocation/return, entitlement, then provider-neutral reconciliation |
 | Continuity decomposition | `0.50.17` | Exercise/evidence authority separated from plan authority |
-| Cross-surface integration | `0.60.3`, `0.70.4`, `0.100.1`, `0.120.8–0.120.10`, `0.132.3`, `0.138.4–0.138.5`, `0.139.1`, `0.145.3` | Chronological policy/workflow/search gates, late-domain certification, UI, external API, transfer, differential, then lifecycle/recovery |
+| Cross-surface integration | `0.60.3`, `0.70.4`, `0.100.1`, `0.120.8–0.120.10`, `0.132.3`, `0.138.4–0.138.5`, `0.139.1`, `0.145.3` | Certify domain-owned policy, workflow, search, workspace, API, transfer, differential, then lifecycle/recovery contributions |
 | Asset-kind packs | `0.81.3–0.81.6` | Physical/compute, cloud-native, identity/network, then SaaS/data |
 | Cloud-native discovery | `0.86.2` | One exact connector profile or explicit manual/import-only defer |
 
-The six coherence additions live in
+The eight coherence additions live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md):
 
 | Coherence family | Exact stops | Small-loop boundary |
 | --- | --- | --- |
 | Requirement discovery | `0.18.15` | Source markers, digests, supersession, and normative drift only |
 | Hosted feasibility | `0.18.16` | Early dependency-law support/defer decision; no exception |
+| Domain surface ownership | `0.30.23` | One contribution schema/registry/checker; no domain implementation |
+| Supplier boundary | `0.50.18` | Performance assessment and inert risk proposals only |
 | ERP placement | `0.118.5` | One exact adapter profile or defer after connector infrastructure |
 | Late-domain integration | `0.120.8–0.120.10` | Authorization, automation, then search/history certification |
 
@@ -116,6 +118,6 @@ Every other exact stop passed the current sizing review because it has one
 dominant domain/adapter/decision owner and one coherent primary test boundary.
 This is not a permanent exemption. New threat-model detail, authority changes,
 schema work, provider admission, or recovery scope triggers the small-loop rule
-again before implementation. The roadmap checker verifies all 352 headings,
+again before implementation. The roadmap checker verifies all 354 headings,
 required handoff fields, authority dispositions, and exact-commit pentest
 markers; count drift blocks release.

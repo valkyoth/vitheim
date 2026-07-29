@@ -16,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 352 exact stops: 150 base `0.x.0` stops, 201
+The canonical roadmap contains 354 exact stops: 150 base `0.x.0` stops, 203
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -44,7 +44,10 @@ explicit policy decision changes that rule.
 A version-bound implementation-admission record does not itself change the
 dependency policy or create a scoped exception. A hosted profile requiring an
 external Cargo dependency remains blocked until a separate owner-approved
-policy change; N0/N1 remain dependency-free under every future profile.
+policy change; N0/N1 remain dependency-free under every future profile. The
+current owner-selected product decision is repository-wide zero dependencies:
+`0.18.16` must mark infeasible Hosted capabilities unsupported/deferred rather
+than creating an allowlist or improvised implementation.
 
 ## Scope Sizing And Focused Companion Stops
 
@@ -56,8 +59,9 @@ family ledgers were retained for their security context but decomposed into 65
 new exact stops. The later capability-gap review added 21 independently scoped
 product, verification, and profile-decision companions. The second review added
 31 requirement-ownership, domain-decomposition, cross-surface integration, and
-cloud-discovery companions. The coherence review added six requirement-source,
-dependency-feasibility, adapter-placement, and chronology companions:
+cloud-discovery companions. The coherence reviews added eight requirement-
+source, dependency-feasibility, surface-ownership, domain-boundary, adapter-
+placement, and chronology companions:
 
 | Parent family | Focused companion stops | Completion sequence |
 | --- | --- | --- |
@@ -92,8 +96,8 @@ The second additions are `0.18.14`, `0.20.5`, `0.30.18–0.30.22`,
 Their exact handoffs live in
 [Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md).
 
-The coherence additions are `0.18.15–0.18.16`, `0.118.5`, and
-`0.120.8–0.120.10`. Their exact handoffs live in
+The coherence additions are `0.18.15–0.18.16`, `0.30.23`, `0.50.18`,
+`0.118.5`, and `0.120.8–0.120.10`. Their exact handoffs live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md).
 
 Every companion has a separate exact-commit pentest. New scope discovered
@@ -158,7 +162,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 352-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 354-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -238,6 +242,7 @@ implementations remain blocked rather than being implemented casually.
 | `0.30.20` | Complete Phase H–K requirement ownership | Raw/derived, graph/search, asset/discovery, pack/policy, privacy/lifecycle gaps |
 | `0.30.21` | Complete Phase L–production requirement ownership | Optional/core confusion, missing external/profile/restore/pentest/support owner |
 | `0.30.22` | Stable early service/asset/agreement/customer/contact/supplier references and read-port fakes | Cross-type/tenant substitution, ref-as-authority, hidden/stale/unbounded reads, duplicate identity vocabulary |
+| `0.30.23` | Versioned domain-surface contribution manifest, registry, and prospective completeness checker | Missing/duplicate owner, UI-only behavior, generic transfer, absent lifecycle/search deletion, false defer |
 
 ### Migration/import irreversible-operation hardening map
 
@@ -869,13 +874,14 @@ integration is deferred to `0.70.0` and `0.100.0`.
 | `0.50.8` | Customer service agreements and coverage | Agreement-as-authority, retroactive amendment, overlapping/expired coverage, term leakage |
 | `0.50.9` | Service entitlement decisions | Subject/agreement substitution, quantity/period bypass, override escalation |
 | `0.50.10` | Supplier contract lifecycle | Party/reference substitution, silent renewal, retroactive rewrite, expired contract use |
-| `0.50.11` | Supplier obligations, performance, and assessment evidence | Metric/evidence/method manipulation, self-assessment, hidden result, proposal-as-risk |
+| `0.50.11` | Supplier contractual-obligation lifecycle | Contract/obligation substitution, silent deletion, unit/period confusion, supersession fork |
 | `0.50.12` | Supplier data access and termination | Contract-as-access, scope expansion, missed system, false external deletion |
-| `0.50.13` | Purchase orders and receipt | Requisition/order substitution, over-receipt, duplicate event, false delivery |
+| `0.50.13` | Immutable external purchase-order evidence and receipt authority | Issuer/version/digest forgery, local order mutation, over-receipt, duplicate/false delivery |
 | `0.50.14` | Allocation, return, and Phase I asset handoff | Double allocation, false return, custody loss, premature/duplicate asset creation |
 | `0.50.15` | Non-software entitlement lifecycle | Source substitution, over-allocation, double consumption, software-kind confusion |
 | `0.50.16` | Provider-neutral ERP port, ownership, fake, and reconciliation semantics | Endpoint/account/tenant confusion, stale overwrite, field/unit/currency drift |
 | `0.50.17` | Continuity exercises and corrective evidence | Wrong plan, false completion, evidence substitution, self-attestation, missing gap/action |
+| `0.50.18` | Supplier performance assessment, evidence, findings, and inert risk proposals | Obligation/evidence/method substitution, self-assessment, hidden result, proposal-as-risk |
 
 ## Phase F — Identity, Tenancy, And Policy
 
@@ -1009,7 +1015,7 @@ Phase exit: search/API conformance proves identical visibility.
 | `0.98.2` | Embedding generation and provenance | Model/tokenizer/chunk substitution, residency bypass, retention leakage, mixed-model migration |
 | `0.99.0` | Knowledge articles and runbooks | Unsafe content, poisoning, publication bypass |
 | `0.100.0` | Unified search conformance suite | Search/API/read/export authorization equivalence |
-| `0.100.1` | Phase D–J search documents, history, facets, queues, and rebuild integration | Missing/duplicate document, hidden field/count, stale revocation, rebuild divergence |
+| `0.100.1` | Phase D–J domain-owned search/history composition and certification | Missing/duplicate contribution, hidden field/count, stale revocation, rebuild divergence |
 
 ## Phase K — Compliance And Risk
 
@@ -1112,7 +1118,7 @@ Phase exit: administrators and external portal users pass full boundary review.
 | `0.132.0` | Role-specific operational workspaces | Field and aggregate leakage |
 | `0.132.1` | Composable interface blocks and dashboard layouts | Unauthorized blocks/actions, XSS, query storms, layout/plugin substitution |
 | `0.132.2` | Organization-scale information architecture profiles | Profile-based privilege, hidden routes, unified-page exhaustion, semantic divergence |
-| `0.132.3` | Full-suite role workspaces and administration | Hidden route/block/action, profile privilege, unsupported feature claim, UI/API drift |
+| `0.132.3` | Full-suite domain-owned workspace composition and certification | Hidden route/block/action, late-added behavior, profile privilege, unsupported claim |
 | `0.133.0` | Schema and form builder | Malicious schemas and stored UI injection |
 | `0.134.0` | Workflow and policy builder | Generated privilege escalation and hidden behavior |
 | `0.135.0` | Dashboards and bounded report builder | Query exhaustion and aggregate inference |
@@ -1122,8 +1128,8 @@ Phase exit: administrators and external portal users pass full boundary review.
 | `0.138.1` | Private SDK candidate | Generated-code substitution, secret logging, retry/version differential |
 | `0.138.2` | Import staging and validation | Parser bombs, mass assignment, stale plan, partial promotion, erased-data resurrection |
 | `0.138.3` | Export policy snapshots and manifests | Authorization drift, hidden fields, truncation, delivery/retention lifecycle |
-| `0.138.4` | Full-suite external API/private-SDK freeze over existing application services | Mass assignment, resource confusion, hidden fields, cursor forgery, SDK/API differential |
-| `0.138.5` | Full-suite typed import/export/configuration-as-code integration | Secret export, mass assignment, stale ref, partial activation, erased-data resurrection |
+| `0.138.4` | External API/private-SDK assembly and freeze over domain-owned mappings | Missing mapping, mass assignment, resource confusion, cursor forgery, SDK/API differential |
+| `0.138.5` | Domain-owned transfer/configuration composition and certification | Missing codec, secret export, mass assignment, stale ref, partial activation |
 | `0.139.0` | Accessibility, localization, mobile layouts | Localization injection and client-state leakage |
 | `0.139.1` | Generated full-suite cross-surface differential suite | API/UI/search/export/workflow/subscription semantic, authorization, redaction, and support drift |
 | `0.140.0` | Operator and tenant administration console | Administrative privilege and support boundaries |
@@ -1171,7 +1177,7 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | `0.144.0` | Authoritative-region placement and residency through topology successors | `VIT-INV-060` regional move/fence/tombstone, predecessor-bound rollout block, cross-region identity/lease collision, receipt/start split, floor owner split, omitted regional parent |
 | `0.145.0` | Backup format, manifest, encryption, custody, and creation path | Backup integrity/custody/partial-write/key/profile tests; restore and DR are `0.145.1–0.145.2` |
 | `0.145.1–0.145.2` | Restore/readiness and full DR/failback/disposition certification | Separate destructive restore and regional-loss exercises with exact evidence |
-| `0.145.3` | Full-suite lifecycle registry, backup, restore, retention, hold, privacy, and erasure integration | Omitted surface, stale cursor/spool resurrection, false privacy/continuity evidence, restore divergence |
+| `0.145.3` | Domain-owned lifecycle and recovery completeness certification | Omitted contribution, late-added handler, stale resurrection, false evidence, restore divergence |
 | `0.146.0` | Reproducible load harness, workload profiles, ceilings, and invariant oracle | Harness calibration and boundary tests only; soak and chaos are `0.146.1–0.146.2` |
 | `0.146.1–0.146.2` | Soak/fairness and chaos/recovery-capacity certification | Independent sustained-load and compound-fault evidence sets |
 | `0.147.0` | Final profile-governance, topology replay-lifecycle, bearer-memory, executor, migration/import-budget/activation, and supply-chain hardening | Retain prior authority/conservation/cut/physical-capacity audit; add cleanup fairness/backlog, per-unit settlement attribution, counter immutability and terminal-result parity |

@@ -1868,13 +1868,17 @@ Verification:
   requirement with one stable source anchor/content digest, primary
   implementation owner, and valid crate, schema/migration, test, integration,
   and retest ownership. Source-marker and normative-language drift checks pass.
+  The domain-surface contribution registry has complete domain-owned
+  application, policy, workspace, API, workflow/notification, search, transfer/
+  configuration, and data-lifecycle contributions; late certification evidence
+  contains no first implementation or generic fallback.
   Full-suite authorization, workflow/notification, search/history, UI/admin,
   API/SDK/subscription,
   import/export/configuration, cross-surface differential, and lifecycle/
   backup/restore/erasure stops have passing evidence for every selected
   capability. A deferred `0.86.2` profile exposes cloud-native kinds as
   manual/generic-import-only and makes no automatic discovery claim.
-- The generated roadmap/evidence differential proves exactly 352 release
+- The generated roadmap/evidence differential proves exactly 354 release
   stops and their owners, authority reviews and pentest reports; it rejects any
   README, API discovery, UI navigation, release-note, installer, operator or
   support-matrix claim without a matching executable owner and exact evidence.

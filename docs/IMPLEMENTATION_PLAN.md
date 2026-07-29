@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 352 exact release stops: 150 base `0.x.0`
-stops, 201 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 354 exact release stops: 150 base `0.x.0`
+stops, 203 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -17,7 +17,7 @@ law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
-families that exceeded it, and records 58 later focused capability,
+families that exceeded it, and records 60 later focused capability,
 requirement-ownership, decomposition, integration, discovery, and coherence
 companions.
 
@@ -49,12 +49,13 @@ project-owned ports, and third-party types can never cross inward-facing APIs.
 The
 `0.140.x` decisions revalidate and freeze production support from those records;
 they are never the first technology selection.
-`0.18.16` makes the current dependency law operational before affected Hosted
-work: each capability is backed by an audited dependency-free project
-implementation or remains explicitly unsupported/deferred. It grants no
-exception. Any future policy amendment requires its own owner-approved exact
-roadmap decision before adapter work, while `0.140.14` remains final
-revalidation rather than first resolution.
+`0.18.16` makes the selected owner-policy option operational before affected
+Hosted work: repository-wide zero dependencies remain binding, so each
+capability is backed by an audited dependency-free project implementation or
+remains explicitly unsupported/deferred. It grants no exception. Any future
+policy amendment requires its own owner-approved exact roadmap decision before
+adapter work, while `0.140.14` remains final revalidation rather than first
+resolution.
 Every user-facing capability is API-first: API contract/application/transport
 crates remain separate from UI composition/rendering crates, and the first-
 party UI has no privileged command, repository, or database path.
@@ -62,6 +63,13 @@ Every domain milestone delivers its headless application commands, policy-
 filtered reads, and project-owned internal DTOs before its UI or external
 adapter can exit. External API/SDK stops expose and freeze those contracts; they
 never introduce the domain application service for the first time.
+From `0.30.23`, the same milestone also owns its versioned
+`DomainSurfaceContribution`: policy/redaction, declarative workspace, external
+API mapping, search/history, typed transfer/configuration, and tenant-data-
+surface lifecycle contributions. Each contribution is implemented and tested
+with the domain or explicitly deferred to one exact owner. Late workspace, API,
+transfer, search, lifecycle, and recovery stops only compose, generate, freeze,
+and certify complete contributions; they cannot add missing domain behavior.
 Optional federation, AI, vendor-connector, plugin-storefront, and semantic-index
 crates depend inward on stable ports. The kernel and first-party domains must
 build, test, and operate without any optional product family.

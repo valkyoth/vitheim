@@ -140,7 +140,7 @@ Goal: make risk and exception decisions explicit, bounded, and accountable.
 Deliverables: risk/treatment/exception aggregates, deterministic scoring
 interface, approval workflows, review calendar, policy attributes, and history.
 This milestone is the exclusive authority for accepted risks, treatments,
-exceptions, and waivers. Supplier assessments from `0.50.11` contribute only
+exceptions, and waivers. Supplier assessments from `0.50.18` contribute only
 typed evidence, findings, or inert `RiskProposal` values; they cannot create or
 mutate an accepted risk decision.
 Verification: self-acceptance, score/method substitution, broad/immortal

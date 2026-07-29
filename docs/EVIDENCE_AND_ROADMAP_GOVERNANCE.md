@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **352 independently pentestable release stops**:
+The roadmap contains exactly **354 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 201 companion stops + 1 production stop = 352`.
+`150 base 0.x.0 stops + 203 companion stops + 1 production stop = 354`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “352 exact release stops” describe different
+included. “151 base stops” and “354 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 352 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 354 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -171,3 +171,22 @@ scans designated normative sources for requirement-bearing MUST, never, only,
 invariant, verification, and exit-condition blocks and rejects missing,
 duplicate, stale, or conflicting bindings. Templates, quotations, and examples
 need bounded typed exceptions rather than an unchecked ignore list.
+
+## Domain Surface Contributions
+
+`0.30.23` introduces one versioned `DomainSurfaceContribution` registry before
+Phase D. Each domain requirement owner supplies its own headless application/
+internal-DTO, authorization/redaction, declarative workspace, external API,
+workflow/notification, search/history, typed transfer/configuration, and
+tenant-data-lifecycle contributions at introduction. Rows bind stable domain/
+surface IDs, implementation and test owners, compatibility/recovery semantics,
+lifecycle, and any exact defer/retest owner. A not-applicable claim is typed,
+justified, and reviewable.
+
+Generated checks prove source-to-contribution and contribution-to-source
+coverage and reject a surface that exists only in UI, search, transfer, backup,
+or another derived plane. Late integration milestones consume this registry to
+compose, generate, freeze, and certify; they cannot create missing domain
+commands, mappings, codecs, registrations, or lifecycle handlers. The registry
+coordinates surfaces but never becomes domain, invariant, law, policy, or data-
+lifecycle authority.
