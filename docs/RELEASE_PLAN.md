@@ -16,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 398 exact stops: 150 base `0.x.0` stops, 247
+The canonical roadmap contains 400 exact stops: 150 base `0.x.0` stops, 249
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -61,7 +61,7 @@ family ledgers were retained for their security context but decomposed into 65
 new exact stops. The later capability-gap review added 21 independently scoped
 product, verification, and profile-decision companions. The second review added
 31 requirement-ownership, domain-decomposition, cross-surface integration, and
-cloud-discovery companions. The coherence reviews added 52 requirement-source,
+cloud-discovery companions. The coherence reviews added 54 requirement-source,
 dependency-feasibility, phased-surface-ownership, domain-boundary, adapter-
 placement, and chronology companions:
 
@@ -99,7 +99,7 @@ Their exact handoffs live in
 [Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md).
 
 The coherence additions are `0.18.15–0.18.16`, `0.30.23–0.30.29`, `0.50.18`,
-`0.51.3–0.51.32`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
+`0.51.3–0.51.34`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
 `0.120.8–0.120.10`, `0.132.4`, `0.138.6–0.138.7`, `0.140.28`, and `0.145.4`.
 Their exact handoffs live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
@@ -167,7 +167,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 398-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 400-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -930,11 +930,13 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.51.25` | Partial reinstall-admission abort, artifact disposition, canonical empty disposition, and candidate supersession | Rejection revival, unknown treated absent, activation/abort race, permit regeneration, competing candidates, aborted activation |
 | `0.51.26` | Permanent-unknown admission recovery policy decision | Ambiguous option, unsafe recovery claim, missing catastrophe authority/fences/floors/capacity, decision used as execution authority |
 | `0.51.27` | Conditional two-CAS unknown-admission catastrophe quarantine or explicit Unsupported refusal | Unknown relabeling, direct/final quarantine before root, incomplete permanent fence, stale key/lease/routing, unfunded residual |
-| `0.51.28` | Maximal conservative enforcement for quarantined unknown restrictions through evaluation, admission, and successor bridges | Residual omitted from roots, canonical-empty substitution, capacity without enforcement, automatic permissive lowering, unfunded bridge |
-| `0.51.29` | One finite post-quarantine replacement-evaluation lineage with fresh generations and cumulative budgets | Eligibility reuse, stale receipt crossing generations, old-fence leak, retry/budget reset, terminal-unavailable reopening |
-| `0.51.30` | One-shot successor-lifecycle genesis from a current replacement-evaluation receipt | Missing/replayed lineage or tombstone, eligibility re-consumption, identity reuse, duplicate lifecycle, top-restriction omission |
-| `0.51.31` | Tagged initial-or-replacement guard supersession, absorbing cut/evaluation consumption, operational transfer, and dual release manifest | Genesis-branch substitution, double eligibility consumption, missing tombstone/receipt, abort/expiry race, partial activation |
-| `0.51.32` | Reinstall delivery-barrier/evaluation-fence release or funded successor-retention reconciliation | Wrong control release, residual restriction loss, outage/replay, unfunded retention, premature cleanup, consumed revival, new-generation blockage |
+| `0.51.28` | Generated complete enforcement-scope coverage root for quarantined unknown restrictions | Omitted action/effect/plugin/admin/adapter/kind, forged smaller root, mixed generations, late activation, unsafe fallback |
+| `0.51.29` | Maximal conservative enforcement over the exact current coverage root through evaluation, admission, and successor bridges | Residual/coverage omitted from roots, canonical-empty substitution, capacity without enforcement, implicit lowering, unfunded bridge |
+| `0.51.30` | One finite post-quarantine replacement-evaluation lineage with fresh generations, cumulative budgets, and permanent exhaustion | Eligibility reuse, stale receipt crossing generations, old-fence leak, retry/budget reset, forged successor recovery |
+| `0.51.31` | One-shot successor-lifecycle genesis from a current replacement-evaluation receipt | Missing/replayed lineage or tombstone, eligibility re-consumption, identity reuse, duplicate lifecycle, restriction-generation omission |
+| `0.51.32` | Tagged initial-or-replacement guard supersession, absorbing cut/evaluation consumption, operational transfer, and dual release manifest | Genesis-branch substitution, double eligibility consumption, missing tombstone/receipt, abort/expiry race, partial activation |
+| `0.51.33` | Reinstall delivery-barrier/evaluation-fence release or funded successor-retention reconciliation | Wrong control release, residual restriction loss, outage/replay, unfunded retention, premature cleanup, consumed revival, new-generation blockage |
+| `0.51.34` | Destination-admitted, separately governed unknown-restriction lowering for pre-operational reservations and operational guards | Incomplete authority/evaluation/bridges, lifecycle race, non-atomic live-guard lowering, early top release, restore divergence |
 | `0.52.0` | Subjects, service principals, independent external-identity mapping epochs, and law-generation expansion | Activate `VIT-LAW-001` g04/`VIT-LAW-006` g03; principal/mapping revocation racing dispatch, unsafe linking, immutable issuer-subject identity, epoch reuse, recreation |
 | `0.52.1` | OAuth resource-server workload authentication, mapping epoch, and law-generation expansion | Activate `VIT-LAW-001` g05/`VIT-LAW-006` g04; workload remap/revoke race, stale external privileged fact, false sender constraint, bearer escalation, issuer/audience confusion |
 | `0.53.0` | Hosted OIDC integration, independent interactive-session epoch, and law-generation expansion | Activate `VIT-LAW-001` g06/`VIT-LAW-006` g05; discovery, mix-up, replay, downgrade, fixation, logout/assurance racing dispatch |

@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 398 exact release stops: 150 base `0.x.0`
-stops, 247 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 400 exact release stops: 150 base `0.x.0`
+stops, 249 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -17,7 +17,7 @@ law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
-families that exceeded it, and records 104 later focused capability,
+families that exceeded it, and records 106 later focused capability,
 requirement-ownership, decomposition, integration, discovery, and coherence
 companions.
 
@@ -103,14 +103,16 @@ proves partition currency and canonical empty state, `0.51.14` owns urgent
 restrictive invalidation, `0.51.15–0.51.18` authorize/complete takeover,
 atomically fund retained candidate controls, and release its barriers,
 `0.51.19–0.51.20` archive cleanup and verify retained namespaces, and
-`0.51.21–0.51.32` evaluate reinstall, linearize activation against abort,
+`0.51.21–0.51.34` evaluate reinstall, linearize activation against abort,
 obtain source-partition admission, fund durable bridge ownership, terminate or
 supersede partial admission, decide and conditionally implement conservative
 permanent-unknown quarantine recovery, actively enforce the maximal unknown
-restriction, run one finite cumulative-budget replacement-evaluation lineage,
-create exactly one fresh proof-bound successor, use tagged final activation
-without re-consuming replacement eligibility, consume the completely admitted
-successor, and release both candidate-control families.
+restriction over a generated complete operation universe, run one finite
+cumulative-budget replacement-evaluation lineage with permanently terminal
+exhaustion, create exactly one fresh proof-bound successor, use tagged final
+activation without re-consuming replacement eligibility, consume the
+completely admitted successor, release both candidate-control families, and
+lower the old top only through a destination-admitted fully bridged guard CAS.
 `0.145.4`
 destructively certifies
 selected retirement/reinstall profiles rather than first implementing teardown.
