@@ -9,8 +9,9 @@ tenant-membership cut, `0.51.6` separately approves and atomically admits one
 exact-cut retirement plan, `0.51.7` fences successor-plan lineage and resume
 authority, `0.51.8` transfers broad topology fencing to a narrow domain guard
 with authoritative post-cut handoffs, `0.51.9` roots successor/protection state,
-`0.51.10` reconciles bounded fair exact children and never-present coverage,
-and `0.51.11` installs permanent protection before final campaign completion;
+`0.51.10` aggregates bounded fair child terminals, `0.51.11` transfers non-clean
+residual obligations, `0.51.12` authorizes exact takeover, `0.51.13` completes
+under permanent protection, and `0.51.14` admits only final-state reinstall;
 `0.60.3` defines/backfills authoritative-interface references and installs the
 prospective gate; `0.60.4` certifies them, while `0.120.8` certifies later domains.
 

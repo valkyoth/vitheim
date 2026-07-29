@@ -98,11 +98,32 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`NeverPresentVerified(PostCutDomainAbsenceReceiptV1)`' \
     'never-present verified coverage is not retirement'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.11` — Permanent Domain Guard Takeover And Campaign Completion' \
-    'permanent guard takeover and campaign completion'
+    '`CampaignRetirementTerminalManifestV1`' \
+    'clean non-clean and nonterminal aggregation'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.11` — Non-Clean Residual Retirement Obligation Handoff' \
+    'non-clean residual obligation handoff'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ResidualRetirementObligationV1`' \
+    'durable residual retirement obligation'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.12` — Permanent Guard Takeover Authorization' \
+    'permanent guard takeover authorization'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`PermanentDomainGuardTakeoverAuthorizationV1`' \
+    'exact permanent guard takeover authorization'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.13` — Permanent Guard Takeover And Campaign Completion' \
+    'permanent guard takeover and classified completion'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`PermanentDomainGuardTransferReceiptV1`' \
     'permanent domain guard transfer receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ReinstallEligibilityV1`' \
+    'reinstall eligibility created at final completion'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.14` — Reinstall Eligibility And Guard Supersession Admission' \
+    'final-state reinstall admission'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'True cancellation exists only before the first child fence' \
     'campaign cancellation versus pause boundary'
@@ -116,8 +137,8 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'never an optional/wildcard tenant' \
     'closed tenant versus deployment retirement scope'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    'final clean status requires the' \
-    'clean deployment retirement requires coverage and permanent guard'
+    'Final `DeploymentDomainRetirementManifestV1` preserves `Clean` or `NonClean`' \
+    'final deployment retirement preserves clean classification'
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     'authoritative async family through `0.18.10`' \
     'complete async realization prerequisite'

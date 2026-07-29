@@ -18,7 +18,7 @@ membership_snapshot }`, never an optional/wildcard tenant. Define
 contribution generations, expected retirement-state version, idempotency
 identity, current authorization, separated proposer/approver/destructive
 approver identities, and approval expiry. This stop executes only the exact
-tenant child; deployment scope requires `0.51.5–0.51.11`.
+tenant child; deployment scope requires `0.51.5–0.51.14`.
 Goal: execute and recover retirement transitions without stale authority,
 partial commitment, silent command reopening, or data-loss acceptance becoming
 completion authority.
@@ -93,9 +93,9 @@ Status: planned.
 Setup: consume one current sealed `0.51.5` cut and `0.30.29`
 `DomainRetirementProposalV1`; construct an immutable deployment retirement plan
 binding exact cut ID/generation/digest, deployment/domain, manifest/contribution
-generations, registered-surface registry generation/digest, policy/expiry,
-budgets, and child-derivation rules, then obtain current separated destructive
-approval over those exact bytes.
+generations, one canonical effective deployment-domain registered-surface
+commitment, policy/expiry, budgets, and child-derivation rules, then obtain
+current separated destructive approval over those exact bytes.
 Goal: bridge membership evidence to retirement authority without letting the
 cut or parent campaign mint unrestricted tenant-child permission.
 Deliverables: `DeploymentDomainRetirementPlanV1` codec/digest and lineage,
@@ -107,11 +107,15 @@ capacity, empty completed/fenced-child receipt commitment, and
 `DerivedTenantRetirementAuthorizationV1` binding parent campaign ID/generation,
 deployment/domain/tenant, membership
 proof, plan/cut digests, child ordinal/idempotency identity, current authority,
-and expiry. Admission installs a frozen structural-commitment fence: applicable
-domain manifest, contribution, and registered-surface generations cannot
-advance until verified permanent-guard takeover. A proposal that changes that
-commitment is rejected/deferred, and a node or adapter unable to enforce the
-active fence generation is unready.
+and expiry. Admission installs a
+`DeploymentDomainStructuralCommitmentV1` fence over the exact effective
+manifest, contribution, and registered-surface entries for this deployment/
+domain—not a catalog-wide write lock. Global successors are classified:
+irrelevant entries may activate elsewhere; compatible non-expanding changes may
+activate while this deployment remains pinned; a new surface applicable here is
+denied for this deployment until verified permanent takeover; and any weakening
+or guard bypass is rejected globally. A node or adapter unable to enforce the
+active deployment-domain fence generation is unready.
 Verification: cut-only start, plan bound to another cut, cut ID/generation/
 digest substitution, approval before final cut reused after change, wrong
 manifest/contribution generation, self/stale/expired/revoked approval, response
@@ -119,13 +123,16 @@ loss during consumption, two campaigns consuming one plan, cross-deployment/
 domain plan replay, child absent from membership proof, child authorization
 replayed across campaign/generation, and unrestricted parent-derived authority
 pass; so do registered-surface generation omission/substitution, structural
-activation during the freeze, and stale-node/adapter guard bypass.
+activation for the pinned deployment, false irrelevant/non-expanding
+classification, one campaign blocking unrelated catalog/deployment evolution,
+and stale-node/adapter guard bypass.
 Exit criteria: one approved immutable plan atomically consumes and binds one
 sealed cut to exactly one admitted parent campaign or makes no admission;
 retries return that durable result. The admitted parent may derive only exact
 member authorizations under the approved template, and the cut alone grants no
 retirement or child-dispatch authority. Its frozen structural commitment
-remains authoritative until `0.51.11` transfers protection permanently.
+remains authoritative for only that deployment/domain until `0.51.13`
+transfers protection permanently.
 `v0.51.6 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.51.7` — Deployment Retirement Plan Succession And Resume Authority
@@ -271,7 +278,8 @@ disposition decision, late-member reconciliation, terminal result manifest,
 blocked-member report, and restore/restart protocol. Consume the
 `Planned → Admitted` admission edge from `0.51.6`, then define
 `Admitted → GuardReady → Dispatching → Reconciling →
-ReadyForPermanentGuard`, with `Paused` and `Blocked`.
+ReadyForPermanentGuardClean | PendingResidualObligationHandoff |
+BlockedNonterminal`, with `Paused` before terminal aggregation.
 True cancellation exists only before the first child fence. Thereafter cancel
 pauses/blocks, completed children never roll back, revocation stops new
 dispatch, resume requires current parent authority or the installed current
@@ -291,78 +299,176 @@ unfolded post-cut handoff, cursor/generation rollback, crash/reorder/retry,
 one-large-tenant starvation, recovery-capacity borrowing, fabricated
 `RetiredVerified` for a never-present tenant, unbounded retention, and
 loss-as-clean pass.
-Deliver `CampaignRetirementCoverageManifestV1` only when every snapshot member
-has exactly one tenant-isolated terminal
-child receipt whose result is `RetiredVerified`; every post-cut tenant has
-either an exact child whose result is `RetiredVerified` or
-`NeverPresentVerified(PostCutDomainAbsenceReceiptV1)` coverage evidence; every
-journal entry is folded through the final topology high-watermark; the current
-protection root and frozen structural commitment are bound; and no blocker,
-loss, unresolved, quarantined, or evidence-unavailable disposition exists.
-`NeverPresentVerified` is campaign coverage evidence, never a new `0.30.28`
-data-retirement terminal. Non-clean outcomes remain explicit per tenant and in
-the parent aggregate. New child dispatch always requires a current derived
-authorization from the active plan generation; pause/revocation/succession
-never rewrites completed evidence.
-Exit criteria: one immutable mixed verified-retirement/never-present coverage
-manifest reaches `ReadyForPermanentGuard`, or the parent remains visibly
-non-clean/blocked. This stop never claims final clean completion before
-`0.51.11` transfers permanent protection.
+Deliver `CampaignRetirementTerminalManifestV1` only after every snapshot and
+post-cut disposition is terminal, every journal entry is folded through the
+final topology high-watermark, and the current protection root/effective
+structural commitment are bound. Classify it `Clean` only when every cut member
+is `RetiredVerified`, every post-cut tenant is `RetiredVerified` or
+`NeverPresentVerified(PostCutDomainAbsenceReceiptV1)`, and no non-clean
+disposition exists. `NeverPresentVerified` is coverage evidence, never a new
+`0.30.28` terminal. A manifest containing `RetiredWithIrrecoverableLoss`,
+terminal `RetirementBlocked`, or `EvidenceUnavailable` is truthfully
+`NonClean` and enters `PendingResidualObligationHandoff`; actually nonterminal,
+unowned, quarantined, or still-reconciling work enters `BlockedNonterminal`.
+New child dispatch always requires current derived authorization; pause,
+revocation, and succession never rewrite terminal evidence.
+Exit criteria: one immutable complete terminal manifest reaches
+`ReadyForPermanentGuardClean` or `PendingResidualObligationHandoff`; anything
+nonterminal or without an owner remains visibly blocked. Neither branch claims
+final completion before its later permanent-guard path.
 `v0.51.10 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.11` — Permanent Domain Guard Takeover And Campaign Completion
+## `0.51.11` — Non-Clean Residual Retirement Obligation Handoff
+
+Status: planned.
+Setup: consume a `0.51.10` `NonClean`
+`CampaignRetirementTerminalManifestV1`, exact tenant/domain surface ownership,
+custody/hold/history/evidence/residual-work state, required tenant retirement
+fences, and pre-reserved obligation-transfer/finalization capacity.
+Goal: give every permanent non-clean consequence a durable successor owner so
+campaign infrastructure can later close without erasing loss, custody, holds,
+history obligations, evidence uncertainty, residual work, or required tenant
+fences.
+Deliverables: one idempotent `ResidualRetirementObligationV1` per exact tenant/
+dimension/owner binding deployment/domain/campaign/cut, terminal child or
+coverage receipt, terminal classification, data custody, legal hold,
+codec/upcaster/history compatibility, evidence state, residual work, current
+responsible owner, retained tenant fence, budgets, generation, and audit
+lineage. Atomically install the complete bounded obligation set, authenticated
+accumulator root/count, owner-acceptance receipts, recovery cursor, and
+audit/outbox/result; response-loss retries join it. Only after every terminal
+non-clean dimension has one current successor owner does the parent enter
+`ReadyForPermanentGuardNonClean`. This handoff never changes a terminal result,
+relabels loss as clean, releases required tenant-specific fences, or converts
+unknown custody/evidence into proof.
+Verification: omitted/duplicate obligation, tenant/dimension/result/owner/fence/
+hold/custody/history/evidence/budget substitution, owner rejection or expiry,
+partial atomic transfer, response loss, restore/root rollback, shared mutable
+cross-tenant obligation, premature campaign resource release, false clean
+classification, loss-to-verified relabeling, and actual nonterminal/unowned work
+entering the ready state pass.
+Exit criteria: every non-clean terminal dimension is immutably represented and
+owned under one current obligation root, allowing only campaign-scoped
+infrastructure to proceed toward cleanup; required tenant fences and residual
+obligations remain until their own independently verified terminals.
+`v0.51.11 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.12` — Permanent Guard Takeover Authorization
+
+Status: planned.
+Setup: consume a current `0.51.9` plan/protection-root pair, a `0.51.10`
+terminal manifest in `ReadyForPermanentGuardClean` or a `0.51.11`
+residual-obligation root in `ReadyForPermanentGuardNonClean`, exact current
+topology/domain registry generations, proposed permanent-guard bytes, expected
+campaign state/version, authority-key generation, and separated destructive
+approval policy.
+Goal: authorize the exact final safety transition with bytes that did not exist
+at initial plan admission, without letting an expired, revoked, or predecessor
+plan implicitly install permanent topology state.
+Deliverables: one-shot `PermanentDomainGuardTakeoverAuthorizationV1` binding
+deployment/domain/campaign/cut, current plan generation and protection root,
+terminal-manifest digest/classification, residual-obligation root (including
+canonical empty root), topology/domain registry generations, permanent-guard
+digest, expected state/version, issuer/key generation, approver quorum/
+separation, expiry, and idempotency identity. Define issue, revoke, expire,
+rotate/distrust, consume, result, audit, and response-loss semantics; only
+`0.51.13` may consume it atomically with guard installation. Plan authority
+revocation or expiry before takeover requires this fresh independent approval;
+authorization by a predecessor plan generation is invalid.
+Verification: approval/manifest/root/registry/guard/state/classification/
+residual-root/idempotency substitution, self-approval, stale predecessor plan,
+issue before terminal readiness, plan revocation/expiry before or after
+readiness, takeover authorization revocation/expiry, authority-key rotation/
+distrust, response loss, restore rollback, duplicate consumption, and replay
+across deployment/domain/campaign pass.
+Exit criteria: exactly one current separated authorization covers every byte
+and expected state consumed by permanent takeover, or the campaign remains
+guarded and visibly blocked; no admission-time or stale plan authority fills
+the gap.
+`v0.51.12 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.13` — Permanent Guard Takeover And Campaign Completion
 
 Status: planned.
 Setup: consume the current `0.51.9` plan/protection-root pair, `0.51.8` active
-campaign guard and final folded post-cut barrier, `0.51.10`
-`CampaignRetirementCoverageManifestV1` in `ReadyForPermanentGuard`, current
-topology/domain registry generations, frozen structural commitment, and the
-separately authorized reinstall lifecycle.
-Goal: make clean campaign completion finite under continuous tenant creation by
-atomically transferring future provisioning denial from the campaign guard to
-permanent authoritative deployment-domain state.
-Deliverables: monotonic
-`DomainGuardActive → PermanentGuardInstalling → PermanentGuardActive →
-CampaignGuardReleased → CampaignCompleted` protocol. The installation
-linearization atomically binds deployment/domain/campaign/cut, final topology
-high-watermark, frozen manifest/contribution/surface generations, exact
-coverage manifest and current protection root; installs a durable
-`(DeploymentId, DomainId)` provisioning denial/tombstone in the authoritative
-topology/domain registry; and records responsibility through the final
-high-watermark to the campaign and every later mutation to the permanent guard.
-A durable `PermanentDomainGuardTransferReceiptV1` precedes campaign-guard
-release. Final `DeploymentDomainRetirementManifestV1` atomically binds the
-coverage manifest and transfer receipt before the parent becomes `Completed`,
-with current-generation CAS, stale-node readiness fencing, audit/outbox/result,
-response-loss join, and restore/import/movement enforcement. Only the separately
-authorized reinstall lifecycle may supersede the permanent denial; ordinary
-feature enablement, manifest activation, successor planning, or administration
-cannot.
-Verification: final-high-watermark/campaign/cut/domain/deployment/manifest/
-surface/coverage-manifest/protection-root substitution, install versus tenant
-create/move/enable, response loss, restore between install/release/completion,
-campaign-guard early release, completion without or before the transfer receipt,
-missing/forged receipt, stale node or adapter, import/restore guard loss,
-ordinary re-enable, successor-plan bypass, structural activation during
-takeover, clean completion over any blocker/loss/unresolved/quarantined/
-evidence-unavailable disposition, and reinstall without distinct current
-authority pass.
-Exit criteria: exactly one permanent guard is authoritative before the campaign
-guard releases once and the parent completes; final clean status requires the
-exact verified coverage manifest plus permanent transfer receipt, responsibility
-has no temporal gap or overlap ambiguity, later topology mutations remain denied
-across restore/import/stale nodes, and only the separately certified reinstall
-lifecycle can replace the tombstone.
-`v0.51.11 implementation stop reached. Run pentest for this exact commit.`
+campaign guard/final barrier, a clean `0.51.10` terminal manifest or non-clean
+`0.51.11` residual-obligation root, one current `0.51.12` exact takeover
+authorization, current topology/domain registry generations, the effective
+deployment-domain structural commitment, reinstall/rollback floor, and
+historical compatibility set.
+Goal: make clean or truthfully non-clean campaign completion finite by
+transferring future provisioning denial to permanent authoritative state,
+retaining residual owners/fences, and then releasing campaign-only resources.
+Deliverables:
+`ReadyForPermanentGuardClean | ReadyForPermanentGuardNonClean →
+PermanentGuardInstalling → PermanentGuardActive → CampaignGuardReleased →
+CampaignCompletedClean | CampaignCompletedNonClean`. Guard installation
+atomically consumes the exact `0.51.12` authorization; binds deployment/domain/
+campaign/cut, final topology high-watermark, effective structural commitment,
+terminal manifest, residual root, current protection root and registry
+generations; installs the durable `(DeploymentId, DomainId)` denial/tombstone;
+and commits `PermanentDomainGuardTransferReceiptV1`. Campaign responsibility
+ends at the final high-watermark and permanent responsibility begins after it.
+Only after that receipt is durable may the campaign guard, cut, structural pin,
+campaign recovery capacity, and other campaign-only resources release; residual
+obligation resources and tenant-specific fences remain with successor owners.
+Final `DeploymentDomainRetirementManifestV1` preserves `Clean` or `NonClean`,
+binds terminal/residual/transfer evidence, and commits parent completion.
+That same completion transaction creates `ReinstallEligibilityV1` binding
+`CampaignCompleted*`, final manifest, permanent-guard generation/receipt,
+current residual root, reinstall/rollback floor, and historical compatibility
+set; it is structural eligibility only, never reinstall authority.
+Verification: clean/non-clean substitution, takeover authority revocation/
+expiry/response loss before versus after atomic consumption, install versus
+create/move/enable, guard or cut early release, campaign resource leak,
+residual owner/fence release, completion without transfer receipt, stale node/
+adapter, restore/import guard loss, false clean claim, structural-pin release
+before permanent guard, missing/early eligibility token, and final transaction
+response loss pass.
+Exit criteria: one permanent guard and classified final manifest are durable
+before campaign-only resources release once; non-clean evidence/obligations/
+tenant fences survive under successor owners, no temporal protection gap
+exists, and reinstall eligibility appears only atomically with final completion.
+`v0.51.13 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.14` — Reinstall Eligibility And Guard Supersession Admission
+
+Status: planned.
+Setup: consume one current `0.51.13` `ReinstallEligibilityV1`, final deployment
+retirement manifest, permanent-guard generation/transfer receipt, current
+residual-obligation root, reinstall/rollback floor, historical compatibility
+set, and a separately approved reinstall proposal from the `0.30.28` lifecycle.
+Goal: prevent reinstall from removing permanent protection before final campaign
+commitment or bypassing retained non-clean obligations, history, or rollback
+floors.
+Deliverables: one-shot reinstall-admission guard and CAS over exact
+`CampaignCompletedClean | CampaignCompletedNonClean`, final manifest digest,
+permanent-guard generation/receipt, residual root/generation, reinstall floor,
+history set, proposal/approval/expiry, target generation, and idempotency
+identity. Admission consumes eligibility and approval atomically, supersedes the
+permanent guard only through the reinstall state machine, preserves/transfers
+compatible residual obligations and tenant fences or remains blocked, and
+commits audit/outbox/result with response-loss join. Ordinary feature enablement
+or administration cannot mint eligibility or supersede the guard.
+Verification: reinstall racing permanent installation, campaign-guard release,
+final completion or eligibility creation; stale/replayed eligibility; final
+manifest, guard, receipt, residual root, floor, history, proposal, authority or
+target substitution; non-clean obligation erasure; fence loss; response loss;
+restore rollback; duplicate admission; and ordinary re-enable pass.
+Exit criteria: reinstall begins exactly once only from a final campaign state
+and exact current guard/residual/history/floor tuple under separate current
+authority, or the permanent denial and all obligations remain unchanged.
+`v0.51.14 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.4` — Domain Retirement And Historical Compatibility Certification
 
 Status: planned.
 Setup: consume `0.30.28` retirement contracts, `0.30.29` authority/recovery
-protocol and evidence, the applicable `0.51.5–0.51.11` deployment cut lifecycle,
+protocol and evidence, the applicable `0.51.5–0.51.14` deployment cut lifecycle,
 approved exact-plan admission/succession, narrow-guard/topology handoff,
-protection-root integration, permanent-guard takeover, and campaign execution,
-current domain/contribution generations, `0.145.3`
+protection-root integration, clean/non-clean terminal aggregation, residual-
+obligation ownership, exact takeover authority, permanent-guard completion,
+and reinstall admission, current domain/contribution generations, `0.145.3`
 lifecycle/recovery evidence,
 installed-extension state, cross-domain dependencies, outstanding durable work,
 retained event/snapshot/export/backup/import history, deferrals, and product state.
@@ -373,9 +479,10 @@ outstanding-work report, proposal/approval/plan and command/effect-fence
 evidence, exact plan/cut consumption, successor lineage and derived-child
 authorization evidence, broad-to-narrow fence-transfer receipt, authoritative
 post-cut absence/child-handoff journal, joint plan/protection-root lineage,
-permanent-guard transfer receipt, cut-release cursor and dependency proof,
-campaign pause/revocation/resume, mixed clean-coverage predicate, fairness and
-terminal-manifest evidence,
+terminal classification, residual-obligation ownership root, exact takeover
+authorization, permanent-guard transfer receipt, classified final manifest,
+reinstall eligibility/admission evidence, cut-release cursor and dependency
+proof, campaign pause/revocation/resume, fairness and terminal-manifest evidence,
 data-disposition/legal-hold proof, codec/upcaster retention set, historical
 read/restore/import matrix, reinstall/rollback-floor matrix, and certification report.
 Verification: stale or unauthorized retirement plan, crash-resume divergence,
@@ -391,10 +498,14 @@ protection root, ancestor-receipt invalidation, receipt/barrier/blocker rollback
 guard rollback, permanent-guard early release or reinstall bypass, manifest/
 surface drift, stale-node enforcement bypass, fabricated retirement for absent
 tenant, cross-tenant child-result substitution, invalid cancel/pause/resume,
-completion with blocked/unresolved child or unfolded handoff, campaign cursor rollback,
+non-clean terminal infrastructure deadlock, omitted/rescoped residual obligation,
+unowned custody/hold/history/evidence/work, stale/forged takeover authorization,
+takeover after authority/key revocation, completion with blocked/unresolved
+child or unfolded handoff, campaign cursor rollback,
 large-tenant fairness starvation, loss terminal presented as clean, late work,
-dangling reference, codec loss, premature deletion, hold/export/erasure bypass,
-restore/import
+dangling reference, early/stale reinstall eligibility, reinstall race or
+residual/floor/history bypass, codec loss, premature deletion,
+hold/export/erasure bypass, restore/import
 failure, uninstall loss, ID reuse, unsafe downgrade, unresolved defer, false
 support, and late implementation pass.
 Exit criteria: every selected retirement either completes with closed authority,
