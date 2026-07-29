@@ -4,9 +4,10 @@ Scope: `0.51.0–0.60.0`. Authentication supplies facts; policy grants authority
 After the complete policy conformance suite, `0.60.1–0.60.2` add the separately
 scoped policy-bound read-subscription contract and hosted delivery runtime;
 `0.51.3–0.51.4` reference and immediately certify authoritative tenant-data
-surfaces; `0.51.5` freezes an authenticated deployment tenant-membership cut
-and `0.51.6` runs a bounded fair domain-retirement campaign over isolated exact-
-tenant children;
+surfaces; `0.51.5` freezes and safely releases an authenticated deployment
+tenant-membership cut, `0.51.6` separately approves and atomically admits one
+exact-cut retirement plan, and `0.51.7` runs its bounded fair, pausable campaign
+over isolated exactly authorized tenant children;
 `0.60.3` defines/backfills authoritative-interface references and installs the
 prospective gate; `0.60.4` certifies them, while `0.120.8` certifies later domains.
 

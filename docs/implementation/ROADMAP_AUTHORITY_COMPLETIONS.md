@@ -18,7 +18,7 @@ membership_snapshot }`, never an optional/wildcard tenant. Define
 contribution generations, expected retirement-state version, idempotency
 identity, current authorization, separated proposer/approver/destructive
 approver identities, and approval expiry. This stop executes only the exact
-tenant child; deployment scope requires `0.51.5–0.51.6`.
+tenant child; deployment scope requires `0.51.5–0.51.7`.
 Goal: execute and recover retirement transitions without stale authority,
 partial commitment, silent command reopening, or data-loss acceptance becoming
 completion authority.
@@ -55,29 +55,72 @@ durable-cursor, and reconciliation laws established for bounded campaigns
 rather than treating a projection as membership authority.
 Goal: freeze one authenticated, complete deployment tenant-membership cut for a
 domain without a cross-tenant transaction or losing tenants created, migrated,
-moved, or discovered around that cut.
+moved, closed, deleted, or discovered around that cut; release its topology
+fences safely when no admitted campaign can depend on them.
 Deliverables: `DeploymentTenantMembershipCutV1` identity/generation/digest,
 bounded authenticated member chunks, source high-watermarks and final barrier,
 creation/migration/move fence and handoff receipts, monotonic snapshot cursor,
 late-member reconciliation, restore ratchet, and visible blocked-member report.
+Define `Preparing → Sealed → BoundToCampaign → Finalized`, with distinct
+terminal `Expired` and `Released` states and explicit `Blocked`/
+`EvidenceUnavailable`; bind immutable expiry/non-reuse, one campaign maximum,
+pre-reserved cleanup/finalization capacity, idempotent current-topology-checked
+fence release, handoff reconciliation, crash/restore-safe release cursor, audit,
+and outbox evidence.
 Verification: omitted/duplicate/substituted tenant, forged or stale digest,
-projection-as-authority, cut versus tenant create/migrate/move, lost handoff,
-late discovery, incomplete barrier, cursor/generation rollback after restore,
-cross-deployment/domain reuse, unbounded enumeration, and hidden blocked member
-pass.
+projection-as-authority, cut versus tenant create/migrate/move/close/delete,
+lost handoff, late discovery, incomplete barrier, cursor/generation rollback
+after restore, cross-deployment/domain reuse, unbounded enumeration, hidden
+blocked member, plan denial, cut expiry, failed admission, never-started or
+abandoned campaign, evidence unavailable, release replay, stale topology at
+release, cleanup-capacity exhaustion, and release while an admitted campaign
+or unresolved handoff remains pass.
 Exit criteria: the cut accounts for every authoritative tenant membership
 through its authenticated high-watermarks, and every around-cut mutation is
 either correctly included, explicitly post-cut with a fenced handoff, or a
-visible reconciliation blocker. It grants no tenant retirement authority.
+visible reconciliation blocker. It grants no tenant retirement authority;
+finalization or irreversible release occurs exactly once only after dependencies
+close, and an expired/released cut can never become valid after restore.
 `v0.51.5 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.6` — Deployment-Wide Domain Retirement Campaign
+## `0.51.6` — Deployment Retirement Plan Approval And Campaign Admission
 
 Status: planned.
-Setup: consume one current `0.51.5` membership cut, `0.30.29` exact tenant-child
-authority/recovery, `0.30.28` orthogonal evidence dimensions and terminals,
-tenant-specific legal-hold/disposition policy, and durable quota/fairness/
-recovery-capacity contracts.
+Setup: consume one current sealed `0.51.5` cut and `0.30.29`
+`DomainRetirementProposalV1`; construct an immutable deployment retirement plan
+binding exact cut ID/generation/digest, deployment/domain, manifest/contribution
+generations, policy/expiry, budgets, and child-derivation rules, then obtain
+current separated destructive approval over those exact bytes.
+Goal: bridge membership evidence to retirement authority without letting the
+cut or parent campaign mint unrestricted tenant-child permission.
+Deliverables: `DeploymentDomainRetirementPlanV1` codec/digest and lineage,
+proposal/approval/revocation/expiry records, one-shot plan-consumption guard,
+atomic plan+cut adoption and parent-campaign admission with audit/outbox/result,
+idempotent response-loss join, and `DerivedTenantRetirementAuthorizationV1`
+binding parent campaign ID/generation, deployment/domain/tenant, membership
+proof, plan/cut digests, child ordinal/idempotency identity, current authority,
+and expiry.
+Verification: cut-only start, plan bound to another cut, cut ID/generation/
+digest substitution, approval before final cut reused after change, wrong
+manifest/contribution generation, self/stale/expired/revoked approval, response
+loss during consumption, two campaigns consuming one plan, cross-deployment/
+domain plan replay, child absent from membership proof, child authorization
+replayed across campaign/generation, and unrestricted parent-derived authority
+pass.
+Exit criteria: one approved immutable plan atomically consumes and binds one
+sealed cut to exactly one admitted parent campaign or makes no admission;
+retries return that durable result. The admitted parent may derive only exact
+member authorizations under the approved template, and the cut alone grants no
+retirement or child-dispatch authority.
+`v0.51.6 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.7` — Deployment-Wide Domain Retirement Campaign
+
+Status: planned.
+Setup: consume one admitted `0.51.6` parent/plan/cut and its derived-child
+authorization template, `0.30.29` exact tenant-child authority/recovery,
+`0.30.28` orthogonal evidence dimensions and terminals, tenant-specific legal-
+hold/disposition policy, and durable quota/fairness/recovery-capacity contracts.
 Goal: retire one domain across a deployment through isolated tenant children
 without wildcard authority, shared mutable child state, or a cross-tenant
 transaction.
@@ -85,25 +128,36 @@ Deliverables: durable parent campaign with monotonic generation/cursor, bounded
 batch/concurrency/storage/work budgets, protected recovery lane and fairness,
 one idempotent child identity/result receipt per member, tenant-specific hold/
 disposition decision, late-member reconciliation, terminal result manifest,
-blocked-member report, and restore/restart protocol.
+blocked-member report, and restore/restart protocol. Define `Planned → Admitted
+→ Dispatching → Reconciling → Completed`, with `Paused` and `Blocked`. True cancellation exists only before the first child fence.
+Thereafter cancel pauses/blocks, completed children never roll back, revocation stops new dispatch,
+resume requires current parent authority or an explicitly approved successor
+plan, and paused state retains cut, budgets, receipts, and blockers.
 Verification: tenant omitted from membership, tenant created/moved across the
-cut, child request/result substituted across tenants, duplicate child,
-cross-tenant transaction/shared state, parent completion with missing/blocked/
-unresolved child, campaign cursor/generation rollback, crash/reorder/retry,
-one-large-tenant starvation, recovery-capacity borrowing, unbounded result
-retention, and loss terminal presented as clean pass.
+cut, tenant close/delete without explicit result, child request/result or
+derived authorization substituted across tenants, child outside membership,
+authorization replay across campaign/generation, revoked/expired parent
+dispatch, duplicate child, cross-tenant transaction/shared state, cancellation
+after first child fence, implicit rollback of a completed child, pause losing
+cut/budget/receipt/blocker state, unauthorized resume, abandoned nonterminal
+child releasing cut fences, completion with missing/blocked/unresolved child,
+cursor/generation rollback, crash/reorder/retry, one-large-tenant starvation,
+recovery-capacity borrowing, unbounded retention, and loss-as-clean pass.
 Exit criteria: every snapshot member has exactly one tenant-isolated terminal
 child receipt and every late member is reconciled before parent completion;
 blocked, evidence-unavailable, quarantined, unresolved, and loss outcomes remain
-explicit per tenant and in the parent aggregate. Only an all-`RetiredVerified`
-manifest satisfies a clean deployment-domain retirement claim.
-`v0.51.6 implementation stop reached. Run pentest for this exact commit.`
+explicit per tenant and in the parent aggregate. New child dispatch always
+requires a current derived authorization from the admitted or approved successor
+plan; pause/revocation never rewrites completed evidence.
+Only an all-`RetiredVerified` manifest satisfies a clean deployment-domain retirement claim.
+`v0.51.7 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.4` — Domain Retirement And Historical Compatibility Certification
 
 Status: planned.
 Setup: consume `0.30.28` retirement contracts, `0.30.29` authority/recovery
-protocol and evidence, applicable `0.51.5–0.51.6` deployment campaigns, current
+protocol and evidence, the applicable `0.51.5–0.51.7` deployment cut lifecycle,
+approved exact-plan admission, and campaign execution, current
 domain/contribution generations, `0.145.3` lifecycle/recovery evidence,
 installed-extension state, cross-domain dependencies, outstanding durable work,
 retained event/snapshot/export/backup/import history, deferrals, and product state.
@@ -111,18 +165,23 @@ Goal: destructively certify selected-profile domain/module/plugin retirement
 and reinstall while preserving every retained historical obligation.
 Deliverables: retirement/drain exercise corpus, dependency-closure and
 outstanding-work report, proposal/approval/plan and command/effect-fence
-evidence, membership/cut/cursor/fairness and terminal-manifest evidence,
+evidence, exact plan/cut consumption and derived-child authorization evidence,
+cut-release cursor and dependency proof, campaign pause/revocation/resume,
+fairness and terminal-manifest evidence,
 data-disposition/legal-hold proof, codec/upcaster retention set, historical
 read/restore/import matrix, reinstall/rollback-floor matrix, and certification report.
 Verification: stale or unauthorized retirement plan, crash-resume divergence,
 command reopening, forced data-loss acceptance, false authority/data evidence,
-tenant omitted from campaign membership, create/move across campaign cut,
-cross-tenant child-result substitution, completion with blocked/unresolved
-child, campaign cursor rollback, large-tenant fairness starvation, loss terminal
-presented as clean, late command/effect, undrained work, dangling reference,
-codec loss, premature deletion, hold/export/erasure bypass, backup/restore/
-import failure, uninstall data loss, ID reuse, unsafe downgrade, unresolved
-defer, false support, and late implementation pass.
+cut-only start, plan/cut ID/generation/digest mismatch, pre-final-cut approval,
+one-shot plan double consumption, parent/child cross-campaign replay,
+revoked/expired dispatch, cut release with live dependency, expired-cut restore,
+tenant omitted from membership, create/move/close/delete across cut,
+cross-tenant child-result substitution, invalid cancel/pause/resume, completion
+with blocked/unresolved child, campaign cursor rollback, large-tenant fairness
+starvation, loss terminal presented as clean, late work, dangling reference,
+codec loss, premature deletion, hold/export/erasure bypass, restore/import
+failure, uninstall loss, ID reuse, unsafe downgrade, unresolved defer, false
+support, and late implementation pass.
 Exit criteria: every selected retirement either completes with closed authority,
 drained/disposed work, truthful per-dimension and per-tenant evidence, permanent
 ID tombstone, readable retained history, and safe reinstall floor, or retains

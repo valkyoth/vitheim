@@ -62,8 +62,20 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '0.51.5` — Deployment Tenant-Membership Retirement Cut' \
     'deployment retirement membership cut'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.6` — Deployment-Wide Domain Retirement Campaign' \
+    '0.51.6` — Deployment Retirement Plan Approval And Campaign Admission' \
+    'deployment retirement plan approval and campaign admission'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'one-shot plan-consumption guard' \
+    'one-shot exact-cut plan consumption'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.7` — Deployment-Wide Domain Retirement Campaign' \
     'deployment-wide domain retirement campaign'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'True cancellation exists only before the first child fence' \
+    'campaign cancellation versus pause boundary'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'expired/released cut can never become valid after restore' \
+    'released cut restore non-revival'
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     '`RetiredWithIrrecoverableLoss`' \
     'irrecoverable loss is distinct from verified retirement'

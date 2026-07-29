@@ -11,7 +11,8 @@ current manifests, exact authoritative IDs, deferrals, and product state.
 Plugin uninstall removes an admitted installation only; it neither retires its
 domain nor deletes tenant data. Any such retirement follows the `0.30.28`
 contract and `0.30.29` exact-tenant authority/recovery protocol; deployment
-scope additionally requires `0.51.5–0.51.6`. Every selected profile must later
+scope additionally requires the `0.51.5–0.51.7` cut, plan/admission, and
+campaign sequence. Every selected profile must later
 pass `0.145.4`, and a loss terminal is never presented as clean retirement.
 
 ## `0.111.0` — Versioned WIT Interfaces
