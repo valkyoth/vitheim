@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **315 independently pentestable release stops**:
+The roadmap contains exactly **346 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 164 companion stops + 1 production stop = 315`.
+`150 base 0.x.0 stops + 195 companion stops + 1 production stop = 346`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “315 exact release stops” describe different
+included. “151 base stops” and “346 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 315 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 346 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -94,7 +94,11 @@ relax it for hosted code is not authorization. If a safe TLS, cryptographic,
 identity, database, Wasm or other hosted implementation cannot be delivered
 under current policy, that capability remains `Unsupported` until the owner
 approves a separate explicit policy change with its security and licensing
-review.
+review. A milestone implementation-admission record inventories and evaluates a
+candidate; it is never that policy change and never grants a scoped exception.
+If policy changes in the future, N0/N1 remain dependency-free, Hosted admits
+only exact allowlisted dependencies behind project-owned ports, and no
+third-party type may cross an inward-facing API.
 
 The default `1.0.0` candidate set is intentionally narrow:
 
@@ -138,3 +142,22 @@ This extraction is incremental. Existing planning detail remains authoritative
 until its implementing milestone produces the focused package and verifies
 semantic equivalence; wholesale deletion or summarization of earlier controls
 is forbidden.
+
+## Requirement Ownership
+
+Invariant and law registries cover authority-bearing guarantees but do not own
+every functional, operational, migration, support, or integration requirement.
+`0.18.14` therefore introduces a separate stable `VIT-REQ-*` registry and
+bidirectional checker. Each entry binds one immutable description and source,
+exactly one primary implementation stop, predecessors, producing/consuming
+crates, schema/migration owner, primary test/conformance owner, later
+integration/retest stops, and planned/implemented/superseded/deferred lifecycle.
+
+`0.20.5` backfills Phases A/B; `0.30.18` backfills Phase C; and
+`0.30.19–0.30.21` backfill Phases D through production before Phase D begins.
+Every later introducing stop registers new requirements before exit. Generated
+views prove source-to-registry and registry-to-source coverage, one primary
+owner, valid predecessors/crates/tests, and live integration/retest ownership.
+A cumulative ledger heading is context, not ownership; a requirement entry is
+coordination metadata, not an authority source and cannot override a
+`VIT-INV-*` or `VIT-LAW-*` owner.

@@ -5,9 +5,11 @@ owns sealed transition commands/events and rejects invalid transitions without
 domain events, business receipts, outbox work, notifications, or state effects.
 The separate `0.20.1` security-audit sink and idempotent rejection receipt may
 record the attempt without changing the aggregate. No generic status setter or
-cross-domain patch command is permitted. `0.50.1–0.50.6` then extend the suite
-through separately scoped portfolio, customer, supplier, procurement, capacity,
-and continuity domains defined in `PRODUCT_CAPABILITY_COMPLETIONS.md`.
+cross-domain patch command is permitted. `0.50.1–0.50.17` then extend the suite
+through separately scoped portfolio, customer/contact/agreement/entitlement,
+supplier/contract/assessment/access, procurement, capacity, and continuity
+domains defined in the two focused completion documents. Every service/asset/
+agreement link uses the `0.30.22` reference and read-port contract.
 
 ## `0.41.0` — Incident Management
 Status: planned. Setup: freeze incident lifecycle, impact/urgency, service impact,

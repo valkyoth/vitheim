@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 315 exact release stops: 150 base `0.x.0`
-stops, 164 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 346 exact release stops: 150 base `0.x.0`
+stops, 195 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -17,7 +17,8 @@ law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
-families that exceeded it, and records 21 later focused capability companions.
+families that exceeded it, and records 52 later focused capability,
+requirement-ownership, decomposition, integration, and discovery companions.
 
 ## Universal Setup
 
@@ -36,6 +37,15 @@ Before the first line of any hosted adapter or protocol implementation, that
 milestone must approve a version-bound implementation-admission record covering
 the exact dependency/runtime, maintenance, license, unsafe/native code, protocol
 profile, trust boundary, replacement port, and rejection alternatives. The
+admission record is not a dependency-policy exception and cannot authorize
+third-party Cargo code. Under the current repository-wide prohibition, a hosted
+profile needing any external Cargo dependency remains blocked even after its
+record is complete. Only a separate explicit owner-approved policy change can
+allow such code; until then N0, N1, and Hosted all remain dependency-free.
+If that policy ever changes, N0/N1 still remain absolutely dependency-free,
+Hosted code may use only exact reviewed allowlisted dependencies behind
+project-owned ports, and third-party types can never cross inward-facing APIs.
+The
 `0.140.x` decisions revalidate and freeze production support from those records;
 they are never the first technology selection.
 Every user-facing capability is API-first: API contract/application/transport
@@ -49,6 +59,16 @@ planes. All fact-bearing domains reuse the shared N1 provenance, correction,
 confidence, and four-clock vocabulary rather than creating local substitutes.
 Semantic index storage and embedding generation are independently replaceable
 and independently admitted.
+From `0.18.14`, every normative functional, security, operational, migration,
+support, and verification requirement also has one stable `VIT-REQ-*` entry
+with exactly one primary implementation stop, predecessors, producing and
+consuming crates, schema/migration owner, primary test owner, later integration/
+retest stops, lifecycle, and planned/implemented/superseded/deferred status.
+`0.20.5` and `0.30.18–0.30.21` backfill the complete current roadmap before
+Phase D begins. Thereafter a requirement cannot exit its introducing stop until
+the bidirectional registry checker proves it is neither omitted nor multiply
+owned. Requirement ownership complements invariant/law authority ownership; it
+does not create a second authority or allow prose to override either registry.
 Authority-bearing invariants are indexed by stable IDs in
 [Invariant Ownership Registry](INVARIANT_OWNERSHIP.md). From `0.18.3` onward,
 every invariant must have an introducing milestone declaration, exactly one
@@ -1152,6 +1172,7 @@ the same process.
 - [Foundation And Storage Scope Splits (`0.18.6–0.30.16`)](implementation/SCOPE_SPLITS_FOUNDATION_STORAGE.md)
 - [Product And Production Scope Splits (`0.70.1–0.149.3`)](implementation/SCOPE_SPLITS_PRODUCT_PRODUCTION.md)
 - [Focused Product Capability Completions (`0.20.4–0.140.27`)](implementation/PRODUCT_CAPABILITY_COMPLETIONS.md)
+- [Requirement Ownership And Product Integration Completions (`0.18.14–0.145.3`)](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md)
 - [Phase O — Production Hardening (`0.141.0–0.150.0`)](implementation/PHASE_O.md)
 - [`1.0.0` — Production Acceptance](implementation/PRODUCTION_1_0.md)
 

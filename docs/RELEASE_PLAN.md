@@ -16,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 315 exact stops: 150 base `0.x.0` stops, 164
+The canonical roadmap contains 346 exact stops: 150 base `0.x.0` stops, 195
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -41,6 +41,10 @@ threat-model and attack-surface delta, define budgets/non-goals, and write the
 release notes and pentest scope. Crates remain private and Rust files remain at
 most 500 lines. Third-party Cargo code remains forbidden unless a future,
 explicit policy decision changes that rule.
+A version-bound implementation-admission record does not itself change the
+dependency policy or create a scoped exception. A hosted profile requiring an
+external Cargo dependency remains blocked until a separate owner-approved
+policy change; N0/N1 remain dependency-free under every future profile.
 
 ## Scope Sizing And Focused Companion Stops
 
@@ -50,7 +54,9 @@ one associated persistence/migration transition, at most one external
 admission boundary, and one coherent conformance corpus. Eighteen overloaded
 family ledgers were retained for their security context but decomposed into 65
 new exact stops. The later capability-gap review added 21 independently scoped
-product, verification, and profile-decision companions:
+product, verification, and profile-decision companions. The second review added
+31 requirement-ownership, domain-decomposition, cross-surface integration, and
+cloud-discovery companions:
 
 | Parent family | Focused companion stops | Completion sequence |
 | --- | --- | --- |
@@ -78,6 +84,12 @@ The focused capability additions are `0.20.4`, `0.22.4`, `0.30.17`,
 `0.110.1–0.110.2`, `0.118.3–0.118.4`, `0.120.6–0.120.7`, and `0.140.27`.
 Their exact handoffs live in
 [Focused Product Capability Completions](implementation/PRODUCT_CAPABILITY_COMPLETIONS.md).
+
+The second additions are `0.18.14`, `0.20.5`, `0.30.18–0.30.22`,
+`0.50.7–0.50.17`, `0.60.3`, `0.70.4`, `0.81.3–0.81.6`, `0.86.2`,
+`0.100.1`, `0.132.3`, `0.138.4–0.138.5`, `0.139.1`, and `0.145.3`.
+Their exact handoffs live in
+[Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md).
 
 Every companion has a separate exact-commit pentest. New scope discovered
 during implementation triggers another split; it may not be absorbed into the
@@ -141,7 +153,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 315-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 346-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -177,12 +189,14 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.18.3` | Stable invariant/law declaration IDs, markers, and parser | Missing/duplicate/malformed declaration tests; ownership and law execution remain in `0.18.11–0.18.13` |
 | `0.18.4` | Source-delivery-complete evaluator re-evaluation plus first real catalog successor rollout | Crash/race both authenticated control receipts and action-claim issue/consume boundaries; test crash-after-commit, expiry-before-response, revocation-before-replay, restore-before-tombstone reconciliation, receiver forgery, substitution, uncertain reissue, and existing authority failures |
 | `0.18.5` | Remediation-authority bootstrap and recovery root | First admission, independent channels/KMS, quorum/separation, simultaneous loss, compromise, circularity, stale restore, manual-only providers |
+| `0.18.14` | Stable functional/operational requirement registry and bidirectional ownership checker | Missing/duplicate primary owner, predecessor/crate/schema/test/retest/lifecycle drift |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Bind both control receipts/authenticators/replay tombstones, authorization/outbox/pin, action-claim issuer sequence plus local consumption/outcome/uncertainty, exact owners/ratchets, and existing event/catalog integrity |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
 | `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
 | `0.20.2` | Hosted telemetry semantics and instrumentation contract | Tenant/secret labels, cardinality, trace spoofing, readiness lies, backpressure |
 | `0.20.3` | Shared provenance and temporal-fact primitives | Clock collapse, destructive correction, confidence inflation, cross-domain semantic drift |
-| `0.20.4` | Executable state-machine reference models and generated traces | Faulty transition detection, small-state completeness, deterministic counterexample replay |
+| `0.20.4` | Reference-model harness plus models for critical state machines implemented through `0.20.3`; later critical machines register before their own exit | Faulty transition detection, small-state completeness, deterministic counterexample replay, prospective registration |
+| `0.20.5` | Complete Phase A/B requirement-ownership backfill | Prose/registry differential, semantic duplication, uncovered requirement, dead owner/test link |
 
 ## Phase C — Storage Portability
 
@@ -197,7 +211,7 @@ implementations remain blocked rather than being implemented casually.
 | --- | --- | --- |
 | `0.21.0` | Stable storage-capability vocabulary and canonical report schema | Type/canonicalization/contradiction tests only; admission, probes, lineage, recovery, and refusal are `0.21.1–0.21.5` |
 | `0.22.0` | Reusable storage-conformance harness, deterministic fixtures, and fault-injection contract | Harness self-tests and fixture reproducibility; destructive, tenant, HA/migration, and model-correspondence matrices are `0.22.1–0.22.4` |
-| `0.22.4` | Adapter-to-model correspondence and deterministic fault execution | Memory/backend trace differential, response loss, crash, retry, failover, and explicit refusal |
+| `0.22.4` | In-memory/reference adapter correspondence and deterministic fault execution; later adapters certify at their own milestones | Seeded divergence, response loss, crash, retry, and explicit refusal |
 | `0.23.0` | SQLite single-node adapter | Retain all prior adapter proofs; prove unified checkpoint/deletion journaling, atomic checkpoint bundle, mixed-trigger archive replay, both CAS boundaries and all prior busy/crash/reopen guarantees, or refuse VIT-CAP-060/061 |
 | `0.24.0` | PostgreSQL reference production adapter | Retain all prior protections; prove concurrent atomic checkpoint bundles, checkpoint/deletion trigger isolation, unified journal ordering, mixed archives and both CAS boundaries under pool failover |
 | `0.25.0` | Experimental MySQL adapter | Prove unified checkpoint/deletion settlement and all prior two-head/bounds/exact-ID/conservative semantics plus attempt-ledger parity, or refuse VIT-CAP-060/061; no default v1 claim |
@@ -212,6 +226,11 @@ implementations remain blocked rather than being implemented casually.
 | `0.30.1` | Durable queue record model and non-authoritative semantic port | Ordering/tenant/idempotency/boundary tests; claims and recovery are `0.30.15–0.30.16` |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 | `0.30.17` | Minimal N1 policy, field-redaction, obligation, and interface-registration contract | Missing decision inputs, allow-by-default, field reappearance, unregistered DTO/command surface |
+| `0.30.18` | Complete Phase C requirement-to-stop ownership backfill | Buried requirement omission/duplication, wrong adapter/migration/test/retest owner |
+| `0.30.19` | Complete Phase D–G requirement ownership before product implementation | Domain/UI owner confusion, missing policy/fake-retest/side-effect/lifecycle owner |
+| `0.30.20` | Complete Phase H–K requirement ownership | Raw/derived, graph/search, asset/discovery, pack/policy, privacy/lifecycle gaps |
+| `0.30.21` | Complete Phase L–production requirement ownership | Optional/core confusion, missing external/profile/restore/pentest/support owner |
+| `0.30.22` | Stable early service/asset/agreement/customer/contact/supplier references and read-port fakes | Cross-type/tenant substitution, ref-as-authority, hidden/stale/unbounded reads, duplicate identity vocabulary |
 
 ### Migration/import irreversible-operation hardening map
 
@@ -834,11 +853,22 @@ integration is deferred to `0.70.0` and `0.100.0`.
 | `0.49.0` | Postmortems and corrective actions | Sensitive publication, deletion, blame/identity leakage |
 | `0.50.0` | Integrated ITSM beta with later-phase port fakes | Cross-module authorization, fake-port contracts, replay and upgrades |
 | `0.50.1` | Service portfolio lifecycle | Unauthorized activation/retirement, orphan consumers, hidden costs/risks, stale approval |
-| `0.50.2` | Customer organizations, contacts, agreements, and service entitlements | Contact takeover, agreement-as-authority, expiry, cross-customer disclosure |
-| `0.50.3` | Supplier, vendor, and contract management | Vendor impersonation, contract leakage, silent renewal, expired access |
-| `0.50.4` | Procurement and non-software entitlement workflows with external financial ports | Approval/quantity/unit bypass, duplicate receipt, false entitlement, ERP-reference substitution |
+| `0.50.2` | Customer organization identity and lifecycle | Tenant/customer confusion, alias collision, destructive merge, ownership escalation |
+| `0.50.3` | Supplier/vendor identity and lifecycle | Impersonation, external-ID collision, destructive equivalence, cross-tenant association |
+| `0.50.4` | Procurement requisition and approval | Self-approval, quantity/unit/currency confusion, supplier/contract substitution |
 | `0.50.5` | Capacity and demand management | Forecast-as-fact, unit/window confusion, hidden assumptions, stale observations |
-| `0.50.6` | Service continuity plans and exercises | Stale activation, false exercise completion, sensitive-plan leak, evidence gaps |
+| `0.50.6` | Service continuity plan lifecycle | Stale activation, recovery-objective manipulation, protected-plan leak, self-approval |
+| `0.50.7` | Customer contacts and organization relationships | Contact/principal confusion, channel takeover, stale relationship, cross-customer disclosure |
+| `0.50.8` | Customer service agreements and coverage | Agreement-as-authority, retroactive amendment, overlapping/expired coverage, term leakage |
+| `0.50.9` | Service entitlement decisions | Subject/agreement substitution, quantity/period bypass, override escalation |
+| `0.50.10` | Supplier contract lifecycle | Party/reference substitution, silent renewal, retroactive rewrite, expired contract use |
+| `0.50.11` | Supplier obligations, performance, and risk | Metric/evidence/method manipulation, self-assessment, hidden negative result |
+| `0.50.12` | Supplier data access and termination | Contract-as-access, scope expansion, missed system, false external deletion |
+| `0.50.13` | Purchase orders and receipt | Requisition/order substitution, over-receipt, duplicate event, false delivery |
+| `0.50.14` | Allocation, return, and Phase I asset handoff | Double allocation, false return, custody loss, premature/duplicate asset creation |
+| `0.50.15` | Non-software entitlement lifecycle | Source substitution, over-allocation, double consumption, software-kind confusion |
+| `0.50.16` | External ERP/procurement reconciliation or explicit defer | Endpoint/account/tenant confusion, stale overwrite, field/unit/currency drift |
+| `0.50.17` | Continuity exercises and corrective evidence | Wrong plan, false completion, evidence substitution, self-attestation, missing gap/action |
 
 ## Phase F — Identity, Tenancy, And Policy
 
@@ -868,6 +898,7 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.60.0` | Complete governed-executor and successor/cancellation conformance suite | Existing profile/rotation/TCB/recovery cases plus evaluator upgrade/mixed nodes, invalid quarantine exits/revival, remediation compromise/circularity/no-path |
 | `0.60.1` | Policy-bound read-subscription port, cursor, and gap contract | Cursor/tenant/topic substitution, hidden fields/counts, replay horizon, no command path |
 | `0.60.2` | Subscription delivery, item-level reauthorization, revocation, and backpressure | Policy/session change between items, slow consumer, flood, reconnect/failover, transport downgrade |
+| `0.60.3` | Full-suite authorization-interface and field-redaction registration | Missing route/item/action/field/purpose, hidden count, stale decision, allow-by-default |
 
 ## Phase G — Durable Workflows
 
@@ -889,6 +920,7 @@ commit, and external-outcome semantics.
 | `0.69.0` | Visual/configuration-as-code compiler | Hidden flags, generated privilege escalation, divergence |
 | `0.70.0` | Workflow worker lease, owner identity, and fencing model | Lease/fence/takeover boundary model tests only; recovery and cross-domain HA certification are `0.70.1–0.70.2` |
 | `0.70.3` | Minimal typed topology vocabulary and policy-before-traversal port | Wrong-type links, hidden intermediates/counts, temporal/provenance drift, path exhaustion |
+| `0.70.4` | Full-suite workflow-trigger and notification integration | Trigger spoof/storm/loop, generic mutation, stale authority, hidden-field notification |
 
 ## Phase H — Alerts And Security Operations
 
@@ -926,8 +958,12 @@ Phase exit: graph authorization and reconciliation are explainable and bounded.
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.81.0` | Asset lifecycle | Ownership/disposal changes, evidence removal, illegal states |
-| `0.81.1` | Signed extensible asset-kind registry and first-party cloud/orchestrator/data kinds | Kind substitution, namespace collision, cross-kind mutation, unsafe migration |
+| `0.81.1` | Signed extensible asset-kind registry, descriptor validation, activation, compatibility, and migration | Kind substitution, namespace collision, cross-kind mutation, unsafe migration |
 | `0.81.2` | Ephemeral identity, incarnation, disappearance, and reincarnation semantics | ABA identifier reuse, false deletion, stale vulnerabilities/ownership/edges |
+| `0.81.3` | Physical and compute asset-kind pack | Serial/provider-ID collision, VM/host confusion, unsafe migration, disposal gaps |
+| `0.81.4` | Cloud, Kubernetes, and container asset-kind pack | Account/cluster/namespace confusion, provider-ID reuse, image/instance collapse |
+| `0.81.5` | Identity, certificate, domain, and network asset-kind pack | Secret ingestion, authority confusion, certificate/domain takeover, identifier reuse |
+| `0.81.6` | SaaS and data asset-kind pack | SaaS-tenant/data identity collision, classification/residency/retention downgrade |
 | `0.82.0` | Business and technical services | Service-owner escalation and tenant linkage |
 | `0.82.1` | Service health, availability, and SLO binding | False/stale health, raw/rollup authority confusion, override abuse, unknown-to-healthy fail-open |
 | `0.83.0` | Typed relationship graph | Malicious cycles, unauthorized edges, traversal bounds |
@@ -935,6 +971,7 @@ Phase exit: graph authorization and reconciliation are explainable and bounded.
 | `0.85.0` | Bitemporal facts | Historical rewrite, overlaps, invalid intervals |
 | `0.86.0` | Discovery and import interface | Poisoned sources, oversized imports, replay |
 | `0.86.1` | Concrete CMDB discovery connector | Endpoint/account confusion, identity collision, poisoned relationships, delta gaps, source drift |
+| `0.86.2` | One representative cloud-native discovery profile or explicit manual/import-only defer | Account/cluster confusion, watch gap, UID reuse, forged deletion, cursor/source drift |
 | `0.87.0` | Reconciliation engine with target-fence-safe identity lifecycle | Source-priority abuse, destructive merge, stale target fence, dispatch race, nondeterminism |
 | `0.88.0` | Dependency impact analysis | Exhaustion and hidden-node inference |
 | `0.88.1` | Unified cross-domain operational graph | Wrong-type links, stale provenance, hidden endpoints, rebuild divergence |
@@ -965,6 +1002,7 @@ Phase exit: search/API conformance proves identical visibility.
 | `0.98.2` | Embedding generation and provenance | Model/tokenizer/chunk substitution, residency bypass, retention leakage, mixed-model migration |
 | `0.99.0` | Knowledge articles and runbooks | Unsafe content, poisoning, publication bypass |
 | `0.100.0` | Unified search conformance suite | Search/API/read/export authorization equivalence |
+| `0.100.1` | Full-suite search documents, history, facets, queues, and rebuild integration | Missing/duplicate document, hidden field/count, stale revocation, rebuild divergence |
 
 ## Phase K — Compliance And Risk
 
@@ -1063,6 +1101,7 @@ Phase exit: administrators and external portal users pass full boundary review.
 | `0.132.0` | Role-specific operational workspaces | Field and aggregate leakage |
 | `0.132.1` | Composable interface blocks and dashboard layouts | Unauthorized blocks/actions, XSS, query storms, layout/plugin substitution |
 | `0.132.2` | Organization-scale information architecture profiles | Profile-based privilege, hidden routes, unified-page exhaustion, semantic divergence |
+| `0.132.3` | Full-suite role workspaces and administration | Hidden route/block/action, profile privilege, unsupported feature claim, UI/API drift |
 | `0.133.0` | Schema and form builder | Malicious schemas and stored UI injection |
 | `0.134.0` | Workflow and policy builder | Generated privilege escalation and hidden behavior |
 | `0.135.0` | Dashboards and bounded report builder | Query exhaustion and aggregate inference |
@@ -1072,7 +1111,10 @@ Phase exit: administrators and external portal users pass full boundary review.
 | `0.138.1` | Private SDK candidate | Generated-code substitution, secret logging, retry/version differential |
 | `0.138.2` | Import staging and validation | Parser bombs, mass assignment, stale plan, partial promotion, erased-data resurrection |
 | `0.138.3` | Export policy snapshots and manifests | Authorization drift, hidden fields, truncation, delivery/retention lifecycle |
+| `0.138.4` | Full-suite application/API/private-SDK contracts including subscription cursor/gap/reconnect | Mass assignment, resource confusion, hidden fields, cursor forgery, SDK/API differential |
+| `0.138.5` | Full-suite typed import/export/configuration-as-code integration | Secret export, mass assignment, stale ref, partial activation, erased-data resurrection |
 | `0.139.0` | Accessibility, localization, mobile layouts | Localization injection and client-state leakage |
+| `0.139.1` | Generated full-suite cross-surface differential suite | API/UI/search/export/workflow/subscription semantic, authorization, redaction, and support drift |
 | `0.140.0` | Operator and tenant administration console | Administrative privilege and support boundaries |
 
 ## Pre-Production Profile Freeze Decisions
@@ -1118,6 +1160,7 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | `0.144.0` | Authoritative-region placement and residency through topology successors | `VIT-INV-060` regional move/fence/tombstone, predecessor-bound rollout block, cross-region identity/lease collision, receipt/start split, floor owner split, omitted regional parent |
 | `0.145.0` | Backup format, manifest, encryption, custody, and creation path | Backup integrity/custody/partial-write/key/profile tests; restore and DR are `0.145.1–0.145.2` |
 | `0.145.1–0.145.2` | Restore/readiness and full DR/failback/disposition certification | Separate destructive restore and regional-loss exercises with exact evidence |
+| `0.145.3` | Full-suite lifecycle registry, backup, restore, retention, hold, privacy, and erasure integration | Omitted surface, stale cursor/spool resurrection, false privacy/continuity evidence, restore divergence |
 | `0.146.0` | Reproducible load harness, workload profiles, ceilings, and invariant oracle | Harness calibration and boundary tests only; soak and chaos are `0.146.1–0.146.2` |
 | `0.146.1–0.146.2` | Soak/fairness and chaos/recovery-capacity certification | Independent sustained-load and compound-fault evidence sets |
 | `0.147.0` | Final profile-governance, topology replay-lifecycle, bearer-memory, executor, migration/import-budget/activation, and supply-chain hardening | Retain prior authority/conservation/cut/physical-capacity audit; add cleanup fairness/backlog, per-unit settlement attribution, counter immutability and terminal-result parity |

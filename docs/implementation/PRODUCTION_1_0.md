@@ -1857,13 +1857,22 @@ Verification:
 - The `0.140.27` full-suite matrix independently evaluates service portfolio,
   customer agreements, supplier/contracts, procurement/non-software
   entitlements, capacity/demand, continuity, real-time subscriptions, extended
-  asset kinds, privacy cases, inbound mail, and security-audit export. Each
+  asset kinds and any selected cloud-native discovery profile, privacy cases,
+  inbound mail, and security-audit export. Each
   shipped profile has an executable owner, passing API/policy/UI/restore/
   operational evidence, and an explicit enabled/support boundary. Missing or
   conditional evidence leaves that capability unavailable or named
   conditional; it never weakens the supported core ITSM/SecOps/asset/risk
   profile or becomes supported merely because its milestone was planned.
-- The generated roadmap/evidence differential proves exactly 315 release
+- The stable requirement registry contains every normative production
+  requirement with one primary implementation owner and valid crate, schema/
+  migration, test, integration, and retest ownership. Full-suite authorization,
+  workflow/notification, search/history, UI/admin, API/SDK/subscription,
+  import/export/configuration, cross-surface differential, and lifecycle/
+  backup/restore/erasure stops have passing evidence for every selected
+  capability. A deferred `0.86.2` profile exposes cloud-native kinds as
+  manual/generic-import-only and makes no automatic discovery claim.
+- The generated roadmap/evidence differential proves exactly 346 release
   stops and their owners, authority reviews and pentest reports; it rejects any
   README, API discovery, UI navigation, release-note, installer, operator or
   support-matrix claim without a matching executable owner and exact evidence.

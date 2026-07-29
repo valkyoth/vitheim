@@ -5,12 +5,15 @@ Document status: planned companion stops introduced by the capability-gap review
 These stops close independently implementable product and verification gaps
 without expanding their neighboring base milestones. Each stop has one primary
 owner and one coherent pentest boundary. The existing phase documents remain
-the cumulative context; this file is the exact implementation handoff.
+the cumulative context; this file is the exact implementation handoff. Every
+pre-Phase-I domain uses the `0.30.22` opaque service/asset/agreement references
+and bounded read-port fakes; it may not define a competing identity vocabulary.
 
 ## `0.20.4` — Executable State-Machine Reference Models
 
 Status: planned.
-Setup: select each critical state machine by stable invariant ID and define its
+Setup: select each critical state machine implemented through `0.20.3` by
+stable invariant ID and define its
 finite abstraction, operation alphabet, preconditions, observable outcomes,
 invariant oracle, correspondence boundary, and bounded state limits.
 Goal: give “model checked” one executable, tool-independent meaning before
@@ -22,8 +25,10 @@ tool may later supplement this contract but cannot replace the mapping.
 Verification: deliberately faulty transition, stale-version, duplicate,
 reorder, crash-cut, and liveness fixtures must be found and minimized
 deterministically; identical seeds and model versions reproduce identical traces.
-Exit criteria: every critical state machine can name its executable model,
-bounded completeness claim, and replayable counterexample format.
+Exit criteria: every critical state machine implemented through `0.20.3` names
+its executable model, bounded completeness claim, and replayable counterexample
+format. Every later critical state machine must register and pass its model
+before its own stop exits; `0.20.4` does not claim to model future domains.
 `v0.20.4 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.22.4` — Adapter-To-Model Correspondence Testkit
@@ -32,13 +37,15 @@ Status: planned.
 Setup: bind the `0.20.4` abstract operations and observations to the semantic
 storage ports, transaction cuts, fault points, capability profile, and backend
 normalization rules without exposing backend types to the model.
-Goal: prove each adapter realizes the same state machine under generated
-interleavings and deterministic failures.
+Goal: certify the in-memory/reference implementation now and provide the
+mandatory correspondence contract each later adapter runs at its own milestone.
 Deliverables: correspondence adapter, trace executor, fault scheduler hooks,
 observation normalizer, per-profile exclusion record, and differential report.
-Verification: memory plus every admitted database profile execute the same
-generated corpus; response loss, crash, retry, failover, and unsupported
-capability paths either correspond or produce an explicit refusal.
+Verification: the in-memory/reference profile executes the generated corpus
+and catches seeded deviations. SQLite at `0.23.0`, PostgreSQL at `0.24.0`, and
+each experimental adapter at `0.25.0–0.27.0` run the applicable correspondence
+corpus when implemented; response loss, crash, retry, failover, and unsupported
+paths either correspond or produce an explicit refusal.
 Exit criteria: no adapter support claim exists without passing model
 correspondence evidence for every critical state machine it implements.
 `v0.22.4 implementation stop reached. Run pentest for this exact commit.`
@@ -78,51 +85,54 @@ Exit criteria: every portfolio transition is explicit, authorized, evidenced,
 and preserves dependent-service consequences.
 `v0.50.1 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.2` — Customer Organizations, Contacts, And Agreements
+## `0.50.2` — Customer Organization Identity And Lifecycle
 
 Status: planned.
-Setup: separate customer organization, contact, relationship, agreement,
-service entitlement, support tier, coverage window, data visibility, delegation,
-effective dates, correction, and termination from Vitheim tenant authority.
-Goal: support internal, external, and managed-service customers without treating
-a contact or commercial agreement as an authorization grant.
-Deliverables: typed customer/agreement aggregates, entitlement facts, request/
-incident links, policy attributes, and agreement-history projections.
-Verification: contact takeover, agreement-as-authority, expired entitlement,
-cross-customer disclosure, overlapping corrections, and termination races pass.
-Exit criteria: customer context can shape policy and service commitments but
-never bypass current identity and authorization.
+Setup: define customer organization identity, external aliases, organization
+type, ownership, lifecycle, provenance, correction, merge/equivalence,
+termination, tenant boundary, and explicit separation from Vitheim tenants.
+Goal: establish the customer organization aggregate without contacts,
+agreements, or entitlement decisions.
+Deliverables: customer organization aggregate, typed references, alias/
+equivalence assertions, lifecycle commands/events, and bounded projections.
+Verification: tenant/customer confusion, external-ID collision, destructive
+merge, ownership escalation, stale correction, and termination races pass.
+Exit criteria: customer organizations have one typed lifecycle and grant no
+identity, agreement, contact, or entitlement authority. Contacts, agreements,
+and entitlement decisions remain `0.50.7–0.50.9`.
 `v0.50.2 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.3` — Supplier, Vendor, And Contract Management
+## `0.50.3` — Supplier And Vendor Identity
 
 Status: planned.
-Setup: define supplier/vendor identities, contacts, contracts, obligations,
-renewals, performance, risk, data access, subprocessors, evidence, approvals,
-expiry, termination, and links to services/assets without embedding procurement.
-Goal: make third-party operational responsibility and risk visible.
-Deliverables: supplier and contract aggregates, obligation calendar, service/
-asset relationships, assessment hooks, and renewal/termination workflows.
-Verification: vendor impersonation, contract leakage, silent renewal, expired
-access, obligation deletion, self-approval, and cross-tenant association pass.
-Exit criteria: vendor obligations and access remain time-bound, reviewable, and
-separate from technical credential authority.
+Setup: define supplier/vendor organization identity, external aliases,
+ownership, classification, lifecycle, provenance, equivalence, correction,
+tenant boundary, and approved relationship references.
+Goal: establish accountable third-party identity without contract, assessment,
+or access authority.
+Deliverables: supplier aggregate, typed references, alias/equivalence rules,
+lifecycle commands/events, and projections.
+Verification: vendor impersonation, external-ID collision, destructive merge,
+owner escalation, stale correction, and cross-tenant association pass.
+Exit criteria: supplier identity is explicit and grants no contract, obligation,
+risk, data-access, credential, or procurement authority. Those remain
+`0.50.10–0.50.12`.
 `v0.50.3 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.4` — Procurement And Non-Software Entitlements
+## `0.50.4` — Procurement Requisition And Approval
 
 Status: planned.
-Setup: define requisition, approval, order reference, receipt, allocation,
-return, warranty/maintenance entitlement, quantity, unit, supplier/contract,
-asset link, financial classification, and external-system reference boundaries.
-Goal: cover governed acquisition and entitlement workflows without claiming to
-be an ERP, payment system, or general ledger.
-Deliverables: requisition and entitlement aggregates, fulfillment workflow,
-asset handoff, external ERP/accounting ports, and reconciliation evidence.
-Verification: quantity/currency/unit confusion, approval bypass, duplicate
-receipt, false entitlement, external-reference substitution, and refund races pass.
-Exit criteria: Vitheim governs the work and evidence while authoritative
-financial posting remains behind an explicitly selected external port.
+Setup: define requester, business purpose, item/service description, quantity/
+unit, estimate/currency evidence, supplier/contract references, cost center
+reference, approval policy, separation, expiry, rejection, and cancellation.
+Goal: govern the request and approval to procure without implementing orders,
+receipts, allocation, entitlements, ERP reconciliation, payment, or accounting.
+Deliverables: requisition aggregate, approval workflow, immutable decision
+evidence, budget/reference validations, and fulfillment proposal.
+Verification: quantity/unit/currency confusion, requester self-approval,
+supplier/contract substitution, split approval, stale estimate, and replay pass.
+Exit criteria: an approved requisition authorizes only the next governed
+procurement step; `0.50.13–0.50.16` own all later lifecycles and integrations.
 `v0.50.4 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.50.5` — Capacity And Demand Management
@@ -130,30 +140,33 @@ financial posting remains behind an explicitly selected external port.
 Status: planned.
 Setup: distinguish measured capacity, forecast demand, scenario assumptions,
 service thresholds, reservations, constraints, confidence, horizon, correction,
-owner, and decision version from quota/security accounting.
+owner, and decision version from quota/security accounting; measurements consume
+the `0.38.2–0.38.3` source/raw/rollup contract, and service/SLO links use
+`0.30.22` references plus `0.38.1`.
 Goal: plan service capacity without allowing forecasts to become operational
 or admission-control authority.
 Deliverables: capacity/demand fact models, forecast/scenario engine, threshold
 workflows, service links, and explanation reports.
 Verification: unit/window confusion, forecast-as-fact, confidence inflation,
-hidden assumptions, stale measurement, overflow, and cross-service leakage pass.
+hidden assumptions, stale/non-authoritative rollup, SLO/service substitution,
+overflow, and cross-service leakage pass.
 Exit criteria: every recommendation separates observations, assumptions,
 forecast, and approved operational decision.
 `v0.50.5 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.6` — Service Continuity Plans And Exercises
+## `0.50.6` — Service Continuity Plan Lifecycle
 
 Status: planned.
 Setup: define continuity scope, critical service/dependency, recovery objective,
-plan version, owner, contacts, protected procedure, exercise scenario,
-observations, gaps, corrective actions, approvals, and activation authority.
-Goal: make continuity preparation and exercises governed, testable work.
-Deliverables: continuity-plan and exercise aggregates, evidence package,
-corrective-action links, schedule, and read-only disaster-recovery evidence port.
-Verification: stale-plan activation, false exercise completion, sensitive plan
-leak, recovery-objective manipulation, self-attestation, and missing action pass.
-Exit criteria: a plan is never marked ready solely because a document exists;
-readiness cites current approvals, exercises, evidence, and open gaps.
+plan version, owner, contacts, protected procedure, approvals, review cadence,
+supersession, retirement, and activation authority.
+Goal: govern continuity-plan authorship and lifecycle without combining exercise authority.
+Deliverables: continuity-plan aggregate, version/supersession chain, approval/
+activation workflow, protected read model, and exercise scheduling intent.
+Verification: stale-plan activation, hidden procedure leak, recovery-objective
+manipulation, self-approval, skipped supersession, and retirement race pass.
+Exit criteria: a plan version is current only through explicit authority;
+`0.50.17` separately owns exercises, results, evidence, gaps, and actions.
 `v0.50.6 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.60.1` — Policy-Bound Read Subscription Contract
@@ -216,14 +229,13 @@ identity/fact/lifecycle fields, relationship constraints, discovery mappings,
 custom namespace ownership, migration, compatibility, and activation review.
 Goal: extend asset taxonomy without a universal untyped asset or executable
 schema escape hatch.
-Deliverables: registry and validator plus first-party kinds for physical
-devices, VMs, cloud resources, Kubernetes clusters/workloads, containers/images,
-SaaS tenants, identities/service principals, certificates, domains/DNS,
-network identities, data stores, and data assets.
+Deliverables: registry, descriptor validator, activation/supersession workflow,
+compatibility/migration checker, namespace governance, and empty test kind pack.
 Verification: kind substitution/downgrade, namespace collision, missing identity,
 unsafe migration, cross-kind setter, malicious schema, and unknown-kind pass.
 Exit criteria: every asset instance names one admitted kind/version and retains
-typed identity, provenance, lifecycle, and relationship rules.
+typed identity, provenance, lifecycle, and relationship rules. First-party kind
+implementations remain isolated in `0.81.3–0.81.6`.
 `v0.81.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.81.2` — Ephemeral Identity And Reincarnation Semantics
@@ -266,11 +278,13 @@ Status: planned.
 Setup: inventory data surfaces and third-party copies; define staged search,
 review, correction/export/erasure/restriction work, partial/uncertain results,
 external requests, reconciliation, legal hold precedence, completion evidence,
-appeal, retention, and safe requester delivery.
+appeal, retention, safe requester delivery, and explicit `0.51.2` tenant data-
+surface lifecycle registry membership.
 Goal: execute privacy cases truthfully across Vitheim and external processors.
 Deliverables: fulfilment process manager, data-surface manifest, signed export
 manifest, third-party request receipts, uncertainty/escalation outcomes, and
-completion evidence package.
+completion evidence package; every surface lookup and disposition reconciles
+with the registry rather than a privacy-local inventory.
 Verification: omitted surface, stale snapshot, export leakage, early completion,
 external response loss, erasure resurrection, hold conflict, duplicate work,
 and false third-party certainty pass.
@@ -302,7 +316,8 @@ sender-authentication evidence never authenticates a Vitheim principal.
 
 Status: planned.
 Setup: define opaque signed reply tokens, mailbox/conversation membership,
-message ancestry, permitted sender/contact mapping, duplicate/retry behavior,
+message ancestry, permitted sender/contact mapping through the `0.50.7`
+contact-resolution port, duplicate/retry behavior,
 bounce/DSN/auto-reply/forward handling, loop headers/counters, expiry,
 moderation, policy, and normal command authorization.
 Goal: correlate replies safely and turn accepted mail into reviewable proposals
@@ -356,8 +371,12 @@ Status: planned.
 Setup: inventory executable evidence for core ITSM plus service portfolio,
 customer agreements, supplier/contracts, procurement/non-software entitlement,
 capacity/demand, continuity, subscriptions, extended asset kinds, privacy,
-inbound mail, and audit export; classify every capability and external profile
-as Supported, Conditional, Unsupported, or deferred.
+inbound mail, audit export, and any `0.86.2` cloud-native discovery profile;
+classify every capability and external profile
+as Supported, Conditional, Unsupported, or deferred. Require implementing
+evidence from `0.60.3`, `0.70.4`, `0.100.1`, `0.132.3`,
+`0.138.4–0.139.1`, and later production acceptance of `0.145.3`; this freeze
+cannot create a missing integration or treat future Phase O evidence as passed.
 Goal: decide the exact full-suite `1.0.0` product claim without allowing roadmap
 aspiration, partial implementation, or a connected provider to imply support.
 Deliverables: capability/support matrix, default-enabled set, dependency and

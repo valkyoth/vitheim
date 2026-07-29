@@ -29,10 +29,11 @@ convenience, and passing a parent pentest never covers a companion commit.
 All 229 previously planned stops were reviewed. Eighteen families failed the
 small-loop rule and were decomposed into 65 additional exact stops. The later
 capability-gap review added 21 independently scoped verification, product, and
-profile-decision stops. The canonical roadmap therefore contains **315 exact
-stops**:
+profile-decision stops. The second gap review added 31 requirement-ownership,
+domain-decomposition, integration, and discovery-profile stops. The canonical
+roadmap therefore contains **346 exact stops**:
 
-`150 base 0.x.0 stops + 164 companion stops + 1 production stop = 315`.
+`150 base 0.x.0 stops + 195 companion stops + 1 production stop = 346`.
 
 The existing long sections remain cumulative family ledgers because they hold
 important threat, invariant, recovery, and verification context. Their heading
@@ -61,6 +62,21 @@ stop. Their independent handoffs are in
 | Audit export | `0.120.6–0.120.7` | Signed export contract, then delivery/reconciliation |
 | Product freeze | `0.140.27` | Evidence-based full-suite support/defer decision |
 
+The second review's 31 additions live in
+[Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md):
+
+| Capability family | Exact stops | Small-loop boundary |
+| --- | --- | --- |
+| Requirement ownership | `0.18.14`, `0.20.5`, `0.30.18–0.30.21` | Registry/checker, then bounded phase-family backfills |
+| Early domain references | `0.30.22` | Opaque references and read fakes only |
+| Customer decomposition | `0.50.7–0.50.9` | Contacts, agreements, then entitlement decisions |
+| Supplier decomposition | `0.50.10–0.50.12` | Contracts, obligations/assessment, then access termination |
+| Procurement decomposition | `0.50.13–0.50.16` | Order/receipt, allocation/return, entitlement, then external reconciliation |
+| Continuity decomposition | `0.50.17` | Exercise/evidence authority separated from plan authority |
+| Cross-surface integration | `0.60.3`, `0.70.4`, `0.100.1`, `0.132.3`, `0.138.4–0.138.5`, `0.139.1`, `0.145.3` | Policy, workflow, search, UI, API, transfer, differential, then lifecycle/recovery |
+| Asset-kind packs | `0.81.3–0.81.6` | Physical/compute, cloud-native, identity/network, then SaaS/data |
+| Cloud-native discovery | `0.86.2` | One exact connector profile or explicit manual/import-only defer |
+
 | Overloaded family | Exact first slice | Added exact stops | Why it was split |
 | --- | --- | --- | --- |
 | `0.18.1` quota accounting | Claim/ledger vocabulary | `0.18.6–0.18.7` | Admission, settlement, and recovery are separate transactional concerns |
@@ -88,6 +104,6 @@ Every other exact stop passed the current sizing review because it has one
 dominant domain/adapter/decision owner and one coherent primary test boundary.
 This is not a permanent exemption. New threat-model detail, authority changes,
 schema work, provider admission, or recovery scope triggers the small-loop rule
-again before implementation. The roadmap checker verifies all 315 headings,
+again before implementation. The roadmap checker verifies all 346 headings,
 required handoff fields, authority dispositions, and exact-commit pentest
 markers; count drift blocks release.

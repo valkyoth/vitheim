@@ -3130,7 +3130,8 @@ Setup: inventory implemented and requested identity, vulnerability, SBOM,
 threat-intelligence, logging, webhook, discovery, and document interchange
 profiles plus their exact specification versions, extensions, codecs, vendor
 connector profiles (including selected Microsoft Defender/Sentinel, Tenable,
-and any `0.86.1` CMDB API), licenses, trust and update models. Explicitly decide
+any `0.86.1` CMDB API, and any `0.86.2` cloud-native discovery API), licenses,
+trust and update models. Explicitly decide
 inbound versus outbound SCIM, threat-intelligence ingestion versus STIX/TAXII
 publication, and whether raw log management or detection-rule authoring/testing
 remains outside the product boundary.
@@ -3139,13 +3140,16 @@ standards compatibility. This milestone cannot implement a missing profile.
 Deliverables: supported/deferred/rejected matrix for directional SCIM/SAML,
 CVSS/VEX, SPDX/CycloneDX, STIX/TAXII ingestion/publication, authenticated
 alert-bearing syslog/security webhooks, raw-log/SIEM detection features, CMDB
-discovery, and any shipped profile; conformance corpora, version policy,
+discovery, cloud-native discovery versus manual/generic-import-only asset kinds,
+and any shipped profile; conformance corpora, version policy,
 admission records, implementing-milestone references, and truthful
 compatibility wording. Every profile without complete earlier implementation
 and pentest evidence is explicitly deferred. The default `1.0.0` boundary
 defers general raw-log storage/query, detection-rule authoring/execution,
 outbound STIX/TAXII publication, the unselected SCIM direction, and an
-unimplemented CMDB connector. If a post-`1.0.0` SIEM option is ever approved,
+unimplemented CMDB connector. An unimplemented or deferred `0.86.2` makes
+cloud/Kubernetes/container kinds manual/generic-import-only and forbids any
+automatic discovery claim. If a post-`1.0.0` SIEM option is ever approved,
 it must be a separate bounded context and capacity architecture for security
 telemetry ingestion/storage/query, versioned signed detection content, test
 corpora and backtesting, staged activation/rollback, coverage mappings,

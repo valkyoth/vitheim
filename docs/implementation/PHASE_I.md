@@ -2,13 +2,31 @@
 
 Scope: `0.81.0–0.90.0`. Facts retain provenance; graphs are tenant/policy aware.
 `0.81.1–0.81.2` separately add the extensible asset-kind registry and ephemeral
-identity/reincarnation law before service and relationship work builds on them.
+identity/reincarnation law; `0.81.3–0.81.6` then add four independently reviewed
+first-party kind packs. `0.86.2` selects one representative cloud-native
+discovery profile or records cloud-native kinds as manual/generic-import-only.
 
 ## `0.81.0` — Asset Lifecycle
-Status: planned. Setup: typed assets, ownership/location/cost/warranty, lifecycle, sanitization/disposal evidence. Goal: complete governed asset state. Deliverables: aggregate and inventory projections. Verification: ownership/disposal escalation, illegal states, evidence removal, duplicate identity, tenant pass. Exit criteria: irreversible actions require evidence. `v0.81.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: implement authoritative typed assets, ownership/
+location/cost/warranty, lifecycle, sanitization/disposal evidence, and the
+`0.30.22` `AssetRef`/asset-read contract. Goal: complete governed asset state.
+Deliverables: aggregate, inventory projections, and fake-versus-real reference/
+read-port conformance. Verification: ownership/disposal escalation, illegal
+states, evidence removal, duplicate identity, reference mismatch, tenant pass.
+Exit criteria: irreversible actions require evidence and no pre-Phase-I domain
+owns a competing asset identity.
+`v0.81.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.82.0` — Business And Technical Services
-Status: planned. Setup: service identity/type, owner, criticality, offerings, lifecycle, tenant scope. Goal: model accountable services. Deliverables: service aggregate/catalog. Verification: owner escalation, cross-tenant linkage, false criticality, retirement with dependents, replay pass. Exit criteria: service authority is explicit. `v0.82.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: implement the authoritative service identity/type,
+owner, criticality, offerings, lifecycle, and tenant scope behind the `0.30.22`
+`ServiceRef` and service-read contract. Goal: model accountable services.
+Deliverables: service aggregate/catalog and fake-versus-real reference/read-port
+conformance. Verification: owner escalation, cross-tenant linkage, false
+criticality, retirement with portfolio/agreement/supplier/continuity dependents,
+reference mismatch, and replay pass. Exit criteria: service authority is
+explicit and no pre-Phase-I domain owns a competing identity.
+`v0.82.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.82.1` — Service Health, Availability, And SLO Binding
 
@@ -146,8 +164,11 @@ Status: planned.
 Setup: define typed, directional, temporal, provenance-aware edge vocabularies
 between organizations, teams, people/service principals, services, assets,
 software instances, vulnerabilities/exposures, alerts, incidents, changes,
-tasks, controls, and evidence. Preserve each source aggregate ID and prohibit
-generic untyped links or graph-owned mutation of domain truth.
+tasks, controls, evidence, portfolio entries, customer agreements,
+supplier contracts/obligations/access, procurement allocations/entitlements,
+capacity/demand decisions, continuity plans/exercises, privacy cases, and their
+`0.30.22` references. Preserve each source aggregate ID and prohibit generic
+untyped links or graph-owned mutation of domain truth.
 
 Goal: project one explainable relationship graph where, for example, server A
 is operated by team X, hosts vulnerable software Y, produced alert Z, affected
@@ -155,7 +176,9 @@ service Q, and is referenced by incident and remediation work.
 
 Deliverables: cross-domain graph schema/registry, per-domain projection adapters,
 edge provenance and lifecycle rules, deterministic rebuild, consistency/lag
-tokens, and policy-filtered neighborhood API.
+tokens, policy-filtered neighborhood API, and fake-versus-real differentials
+for portfolio↔service, supplier↔service/asset/risk, procurement↔asset/
+entitlement, capacity↔service/measurement/SLO, and continuity↔dependency paths.
 
 Verification: wrong-type/tenant edges, source deletion/correction, duplicate or
 contradictory links, cycles, stale projections, hidden endpoint/intermediate

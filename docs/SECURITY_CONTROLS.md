@@ -13,7 +13,7 @@
   installers and operator output must expose conditional and unsupported scope
   without silent fallback. Missing or stale evidence moves readiness toward
   refusal.
-- One canonical roadmap manifest accounts for all 315 exact stops and their
+- One canonical roadmap manifest accounts for all 346 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
