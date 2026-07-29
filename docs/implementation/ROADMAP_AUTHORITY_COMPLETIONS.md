@@ -18,7 +18,7 @@ membership_snapshot }`, never an optional/wildcard tenant. Define
 contribution generations, expected retirement-state version, idempotency
 identity, current authorization, separated proposer/approver/destructive
 approver identities, and approval expiry. This stop executes only the exact
-tenant child; deployment scope requires `0.51.5–0.51.24`.
+tenant child; deployment scope requires `0.51.5–0.51.26`.
 Goal: execute and recover retirement transitions without stale authority,
 partial commitment, silent command reopening, or data-loss acceptance becoming
 completion authority.
@@ -850,9 +850,9 @@ partition fence-release authority. No delayed invalidation outbox may leave the
 parent eligible. The evaluation binds one
 `PartitionCandidateStatusReceiptV1` per real partition. `0.51.22` must actively
 redeem each reinstall-mode permit; a parent signature alone is insufficient.
-Fences remain active until `0.51.23` atomically consumes the admitted root or
-that already-invalidated parent drives bounded release across every partition.
-No cross-tenant transaction exists.
+Fences remain active until `0.51.25` atomically consumes the admitted and
+bridge-ownership roots, or `0.51.24` proves every failed candidate artifact
+disposed before bounded fence release. No cross-tenant transaction exists.
 Verification: omitted/duplicate partition or obligation, membership/cut/local
 generation/high-watermark/owner/fence/hold/custody/history/evidence/work/plan/
 target substitution, restrictive/neutral/permissive class confusion, urgent
@@ -881,7 +881,7 @@ Goal: prove every source partition still admits the exact permissive successor
 before that guard can become operational.
 Deliverables:
 `ActivationProposedNonOperational → PartitionAdmissionPending →
-PartitionAdmissionComplete`; only `0.51.23` may transition to `Operational`.
+PartitionAdmissionComplete`; only `0.51.25` may transition to `Operational`.
 Dispatch deterministic `AdmitReinstallCandidateActivationV1` requests under
 bounded cursor/batch/concurrency/storage/retry budgets, fairness and recovery
 capacity. Each partition atomically checks candidate/evaluation fence/safety
@@ -894,10 +894,17 @@ it cannot revive the predecessor candidate.
 Immediate and response-loss results enter the same authenticated inbox/
 reconciliation path. The parent emits `ReinstallPartitionAdmissionRootV1` only
 after one current `Accepted` receipt per partition and exact manifest/root/count
-fold; missing, rejected, unknown, stale or invalidated admission remains fail-
-closed. The canonical clean zero-member path produces a domain-separated empty
-admission root without requests or synthetic partitions. Admission creates no
-operational authority and remains bound to the active evaluation fences.
+fold. A durable rejection irreversibly denies this candidate and enters
+`AdmissionBlocked`; stale/invalidated/expired evidence enters
+`AdmissionRevalidationRequired`. Unknown remains live
+`PartitionAdmissionPending` work under authoritative status reconciliation:
+timeout is neither rejection nor absence. No failed or incomplete candidate
+may become operational or yield a complete admission root. `0.51.24` owns
+abort/supersession and is the only path that disposes partially consumed
+permits and installed bridges. The canonical clean zero-member path produces a
+domain-separated empty admission root without requests or synthetic
+partitions. Admission creates no operational authority and remains bound to
+the active evaluation fences.
 Verification: status signature treated as admission, missing/duplicate permit,
 candidate/evaluation/fence/safety-epoch/target substitution, restrictive
 mutation before/during/after acceptance, successor bridge omission, permit
@@ -907,11 +914,124 @@ partial fold, cursor/root rollback, admission starvation, clean absent/empty
 confusion, restore/import, and early operational guard pass.
 Exit criteria: every real partition has durably redeemed the exact permit and
 accepted one non-operational successor with a restrictive-state bridge, or the
-candidate remains non-operational and visibly blocked; the clean path has one
-typed zero-member admission root.
+candidate remains non-operational and visibly pending, revalidation-required,
+or irreversibly blocked for `0.51.24` disposition; the clean path has one typed
+zero-member admission root.
 `v0.51.22 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.23` — Reinstall Guard Supersession Consumption
+## `0.51.23` — Successor-Restriction Bridge Ownership And Capacity Transfer
+
+Status: planned.
+Setup: consume one exact `0.51.22` admission manifest in pending, complete,
+blocked, or revalidation-required state; every accepted successor-restriction
+bridge and permit tombstone; source admission reservation; proposed operational
+guard owner or residual owner; authoritative source/successor routing; capacity
+profiles; and physical provisioning evidence.
+Goal: give every durable bridge exactly one funded long-lived owner on both
+successful activation and failed-admission disposition.
+Deliverables: `SuccessorRestrictionBridgeOwnershipReceiptV1` binding exact
+partition, candidate, bridge and safety-epoch generations; current restriction
+set and residual lineage; `OperationalPrepared | Operational | Aborted |
+Superseded | Retained | Released` disposition; source and successor owner/
+routing generations; storage and non-borrowable enforcement, recovery and
+checkpoint capacity; physical provisioning evidence; one-shot transfer grant;
+atomic destination-owner acceptance transaction/version; result, audit and
+outbox identity; and any exact final-activation condition.
+Each bridge follows bounded deterministic
+`BridgeDispositionPending → BridgeTransferDispatching →
+BridgeTransferReconciling → OperationalTransferPrepared |
+ResidualTransferComplete | BridgeReleased`. Destination acceptance atomically
+installs ownership, routing, restriction lineage and provisioned capacity.
+Response loss or an unknown/rejected acceptance keeps the source reservation
+encumbered. `OperationalTransferPrepared` requires one complete current
+`0.51.22` admission root; a pending, blocked or revalidation-required admission
+may transfer only toward its residual disposition. An operational transfer
+remains conditional on the exact `0.51.25` activation identity; it carries no
+candidate-activation authority and the source reservation cannot settle before
+that result. An abort transfer becomes releasable only after `0.51.24` has
+removed all candidate meaning while preserving its restrictive state. Enforce
+canonical, non-wrapping:
+
+`admission bridge reservation = operational successor bridges +
+aborted/retained bridges + disposition pending + verified released`.
+
+A bridge, grant or capacity unit cannot fund two candidates, owners,
+generations or dispositions. Parent reconciliation folds exact manifest/root/
+count and conservation evidence before any original admission capacity
+settles. Restore/import reconcile both ownership ledgers, routing and physical
+evidence and reject missing, double, split, unfunded or disposition-unknown
+ownership.
+Verification: partition/candidate/bridge/safety-epoch/restriction/lineage/
+disposition/owner/routing/budget/profile/provisioning/activation substitution,
+acceptance without physical capacity, transfer replay, two destination owners,
+neither/both-owner capacity, operational disposition before activation,
+operational preparation without a complete current admission root, aborted
+disposition before candidate authority removal, response loss,
+successor outage, accounting overflow/rounding, parent-root rollback,
+settlement while pending, restore at every transfer edge, and later restrictive
+mutation pass.
+Exit criteria: every installed bridge remains funded by its source reservation
+or has one atomically accepting destination owner with complete enforcement,
+recovery and checkpoint capacity; no pending or unknown disposition releases
+capacity or candidate safety state.
+`v0.51.23 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.24` — Reinstall Admission Abort And Supersession
+
+Status: planned.
+Setup: consume one non-operational `0.51.22` admission in
+`AdmissionBlocked | AdmissionRevalidationRequired` or under separately
+authorized candidate abandonment/expiry; its immutable partition manifest,
+accepted/rejected/unknown receipts, one-shot permit/tombstone inventory,
+installed bridge inventory, active evaluation fences, the `0.51.23` bridge-
+ownership contract, protected abort/reconciliation capacity, and proposed
+successor candidate identity if any.
+Goal: terminate a partially admitted candidate without reviving permits,
+dropping restrictive state, leaking funded bridges, or allowing two candidates
+to compete.
+Deliverables:
+`AdmissionBlocked | AdmissionRevalidationRequired →
+AdmissionAbortDispatching → AdmissionAbortReconciling → AdmissionAborted →
+AdmissionSuperseded`. Durable rejection enters the blocked branch irreversibly;
+expiry, evidence invalidation or authorized abandonment cannot relabel
+rejection or unknown as absence. An unknown result remains live and is queried
+through the same authenticated status/reconciliation path until its exact
+permit and bridge outcome is known; permanent unknown keeps abort incomplete
+and blocks a new candidate.
+Dispatch deterministic idempotent `DisposeReinstallAdmissionCandidateV1` work
+under bounded cursor/batch/concurrency/storage/retry budgets, fairness and
+non-borrowable recovery capacity. Each source partition atomically tombstones
+the consumed or unused permit for this candidate; removes all activation
+meaning from an accepted bridge; preserves and transfers its current
+restrictive safety state plus funded capacity to the residual owner under
+`0.51.23`; and returns one authenticated
+`ReinstallAdmissionDispositionReceiptV1` with result/audit/outbox. Consumed
+permits can never be regenerated for the same candidate.
+The parent folds one current receipt per partition into
+`ReinstallAdmissionDispositionRootV1`. Only a complete root may enter
+`AdmissionAborted`, release candidate-only work, and create
+`AdmissionSupersessionReceiptV1` binding the next candidate/evaluation. A new
+candidate cannot begin admission until that receipt proves every former
+permit, bridge, fence interaction and capacity reservation has a durable
+disposition. Immediate and response-loss outcomes share one inbox path.
+Restore/import reject any operational successor derived from rejected,
+incomplete, aborted or superseded admission and reject reuse of its permit or
+bridge as activation authority.
+Verification: partial acceptance plus rejection, permanent unknown, timeout
+treated as rejection/absence, expiry and revalidation during admission,
+candidate abandonment authority, accepted/unaccepted permit substitution,
+missing/duplicate partition disposition, bridge activation meaning retained,
+restrictive state or lineage loss, unfunded residual transfer, response loss,
+replay/reorder, cursor/root rollback, two competing candidates, same-candidate
+permit regeneration, premature reservation/fence release, starvation, restore
+before/during/after abort, and activation from aborted/superseded state pass.
+Exit criteria: the candidate is either still visibly pending on an exact
+unknown outcome, or every partition artifact is durably tombstoned, released,
+or transferred with restrictive state and funded capacity before a different
+candidate can start; no aborted or superseded candidate can become operational.
+`v0.51.24 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.25` — Reinstall Guard Supersession Consumption
 
 Status: planned.
 Setup: consume one `0.51.21` `ReinstallEligibleCurrent` evaluation root with
@@ -920,6 +1040,8 @@ one complete fresh `0.51.14` partition-status root, one current `0.51.16`
 eligibility, final manifest/permanent-guard transfer receipt, `0.51.19`
 cleanup-complete or current `0.51.20` retained-namespace receipt, one complete
 current `0.51.22` `ReinstallPartitionAdmissionRootV1` with successor bridges,
+one complete `0.51.23` operational-transfer-prepared bridge ownership/capacity
+root, proof no `0.51.24` blocked/abort/supersession state applies,
 reinstall/rollback floor, historical compatibility set, and separately
 approved reinstall proposal from the `0.30.28` lifecycle.
 Goal: supersede permanent protection exactly once only after the independently
@@ -929,9 +1051,10 @@ Deliverables: one-shot control-plane CAS binding exact
 `CampaignCompletedClean | CampaignCompletedNonClean`, final manifest,
 permanent-guard generation/receipt, membership/lineage, sealed delivery cut,
 `ReinstallEvaluationRootV1`, fresh safety-status root/count, active partition-
-fence root/count, `ReinstallPartitionAdmissionRootV1`, successor-bridge root/
-count, cleanup/archive/retained-namespace proof, reinstall floor/history,
-proposal/approval/expiry, target generation, and idempotency identity.
+fence root/count, `ReinstallPartitionAdmissionRootV1`, successor-bridge and
+ownership/capacity roots/counts, cleanup/archive/retained-namespace proof,
+reinstall floor/history, proposal/approval/expiry, target generation, and
+idempotency identity.
 One local transaction consumes eligibility, evaluation and approval; moves the
 delivery cut to absorbing `ConsumedByReinstall`; moves the evaluation to
 absorbing `Consumed`; creates exact `ReinstallBarrierReleaseManifestV1` entries
@@ -939,20 +1062,26 @@ for every delivery-cut barrier and evaluation fence with reserved bounded
 release/reconciliation capacity and outbox; enters the reinstall state machine;
 replaces the permanent guard with a reinstall guard that binds the evaluation
 and admission roots, atomically transitions the admitted successor from
-non-operational to `Operational`, keeps every tenant-local residual obligation/
-fence and successor restriction bridge authoritative, and commits result/audit/
-outbox. Any later obligation transfer remains tenant-local and cannot weaken
-that guard. `0.51.24` release work cannot grant authority or delete
-replacement state. Any invalid cut,
-evaluation, partition fence, admission/bridge root, cleanup proof or retained
-namespace proof makes no guard change. Response-loss retries join the durable
-result. Ordinary enablement cannot mint or consume these records.
+non-operational to `Operational`, atomically consumes the exact condition on
+every preaccepted bridge-ownership transfer so the operational reinstall guard
+owns the bridge root and funded capacity, keeps every tenant-local residual
+obligation/fence and successor restriction bridge authoritative, and commits
+result/audit/outbox. The original admission reservation settles only after this
+durable result is folded under `0.51.23` conservation. Any later obligation
+transfer remains tenant-local and cannot weaken that guard. `0.51.26` release
+work cannot grant authority or delete replacement state. Any invalid cut,
+evaluation, partition fence, admission/bridge/ownership/capacity root, cleanup
+proof, retained namespace proof, or abort/supersession state makes no guard
+change. Response-loss retries join the durable result. Ordinary enablement
+cannot mint or consume these records.
 Verification: completion/evaluation/guard-supersession race, stale/replayed
 eligibility/evaluation/cut, missing or released partition fence, candidate
 revalidation, restrictive mutation or stale/omitted status receipt, final
 manifest/guard/receipt/membership/root/archive/retained-receipt/floor/history/
 proposal/authority/target/admission/bridge substitution, missing/rejected/
 unknown/stale admission, restrictive mutation absent from successor bridge,
+missing/double/unfunded bridge owner, incomplete capacity-conservation root,
+blocked/aborted/superseded candidate, operational transfer-condition mismatch,
 cleanup uncertainty, unsafe retained namespace, failure to atomically enter
 both consumed states and `Operational`, incomplete dual release manifest/outbox/
 capacity, delayed delete, non-clean obligation erasure, response loss, restore
@@ -962,12 +1091,12 @@ archive-safe cleanup state, current sealed cut and complete still-fenced
 evaluation under separate current authority; both candidates become absorbing
 and the completely admitted successor becomes operational with durable release
 work, or permanent denial and every obligation/fence remain unchanged.
-`v0.51.23 implementation stop reached. Run pentest for this exact commit.`
+`v0.51.25 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.24` — Reinstall Barrier And Evaluation-Fence Release Reconciliation
+## `0.51.26` — Reinstall Barrier And Evaluation-Fence Release Reconciliation
 
 Status: planned.
-Setup: consume one successful `0.51.23` reinstall, its absorbing
+Setup: consume one successful `0.51.25` reinstall, its absorbing
 `ConsumedByReinstall` cut/`Consumed` evaluation, exact
 `ReinstallBarrierReleaseManifestV1`, the `0.51.17` retention/capacity contract,
 reserved reconciliation capacity, and authoritative owner-partition routing.
@@ -1002,20 +1131,21 @@ Exit criteria: every obsolete control in the exact reinstall release manifest
 is proved released or durably retained under a successor owner, restrictive
 state remains enforced, and neither consumed candidate can block or authorize
 future work.
-`v0.51.24 implementation stop reached. Run pentest for this exact commit.`
+`v0.51.26 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.4` — Domain Retirement And Historical Compatibility Certification
 
 Status: planned.
 Setup: consume `0.30.28` retirement contracts, `0.30.29` authority/recovery
-protocol and evidence, the applicable `0.51.5–0.51.24` deployment cut lifecycle,
+protocol and evidence, the applicable `0.51.5–0.51.26` deployment cut lifecycle,
 approved exact-plan admission/succession, narrow-guard/topology handoff,
 protection-root integration, clean/non-clean terminal aggregation, residual-
 obligation lineage evolution, transition delivery cuts, mutation safety
 classification/emergency invalidation, candidate-control retention capacity
 transfer, takeover/reinstall barrier-release reconciliation, terminalization
 reserves, archive-safe cleanup, retained-namespace verification,
-partition-fenced evaluation, source-partition activation admission, and final
+partition-fenced evaluation, source-partition activation admission, bridge-
+ownership/capacity transfer, partial-admission abort/supersession, and final
 guard-supersession consumption, current domain/contribution generations, `0.145.3`
 lifecycle/recovery evidence,
 installed-extension state, cross-domain dependencies, outstanding durable work,
@@ -1034,10 +1164,12 @@ mutation-classification/safety-epoch/status evidence, permanent-guard slot/
 transfer receipt, classified final manifest, takeover barrier-release root,
 terminalization reserve, archive checkpoint/replay head and cleanup outcome,
 retained-namespace safety receipt, partition evaluation/fence roots, consumed
-activation permits, successor-restriction bridge/admission root, reinstall
-eligibility/consumption and dual release evidence, candidate-control retention
-receipts and capacity-conservation proof, cut-release cursor and dependency
-proof, campaign pause/revocation/resume, fairness and terminal-manifest evidence,
+activation permits, successor-restriction bridge/admission root, bridge-
+ownership receipts/capacity-conservation and abort/supersession evidence,
+reinstall eligibility/consumption and dual release evidence, candidate-control
+retention receipts and capacity-conservation proof, cut-release cursor and
+dependency proof, campaign pause/revocation/resume, fairness and terminal-
+manifest evidence,
 data-disposition/legal-hold proof, codec/upcaster retention set, historical
 read/restore/import matrix, reinstall/rollback-floor matrix, and certification report.
 Verification: stale or unauthorized retirement plan, crash-resume divergence,
@@ -1068,8 +1200,11 @@ retained-namespace self-certification/scope omission/delayed delete, clean
 absent-versus-canonical-empty confusion, partition evaluation TOCTOU,
 invalidation loss, signed status mistaken for atomic admission, unconsumed or
 replayed activation permit, missing successor-restriction bridge, rejected/
-unknown partition admission, early operational successor, released evaluation
-fence, unfunded/doubly funded retained control, capacity-conservation mismatch,
+unknown partition admission, missing admission abort/supersession disposition,
+competing candidate, aborted-candidate activation, bridge activation meaning
+surviving abort, unowned/doubly owned/unfunded bridge, bridge-capacity
+conservation mismatch, early operational successor, released evaluation fence,
+unfunded/doubly funded retained control, capacity-conservation mismatch,
 incomplete reinstall dual release,
 cleanup-pending reinstall, completion with blocked/unresolved child or unfolded
 handoff, campaign cursor rollback,

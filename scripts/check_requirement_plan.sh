@@ -236,13 +236,40 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'ActivationProposedNonOperational' \
     'non-operational activation proposal'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.23` — Reinstall Guard Supersession Consumption' \
+    '0.51.23` — Successor-Restriction Bridge Ownership And Capacity Transfer' \
+    'successor-restriction bridge ownership transfer'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`SuccessorRestrictionBridgeOwnershipReceiptV1`' \
+    'typed successor-restriction bridge ownership receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'admission bridge reservation = operational successor bridges' \
+    'admission bridge capacity conservation'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.24` — Reinstall Admission Abort And Supersession' \
+    'partial reinstall admission abort and supersession'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`DisposeReinstallAdmissionCandidateV1`' \
+    'deterministic admission-candidate disposition command'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ReinstallAdmissionDispositionReceiptV1`' \
+    'typed partition admission disposition receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ReinstallAdmissionDispositionRootV1`' \
+    'complete admission disposition root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`AdmissionSupersessionReceiptV1`' \
+    'typed admission supersession receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'timeout is neither rejection nor absence' \
+    'unknown admission remains fail closed'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.25` — Reinstall Guard Supersession Consumption' \
     'final guard supersession consumption'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallBarrierReleaseManifestV1`' \
     'dual reinstall control release manifest'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.24` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
+    '0.51.26` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
     'reinstall control release reconciliation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'True cancellation exists only before the first child fence' \

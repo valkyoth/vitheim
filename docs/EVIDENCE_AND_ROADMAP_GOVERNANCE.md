@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **390 independently pentestable release stops**:
+The roadmap contains exactly **392 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 239 companion stops + 1 production stop = 390`.
+`150 base 0.x.0 stops + 241 companion stops + 1 production stop = 392`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “390 exact release stops” describe different
+included. “151 base stops” and “392 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 390 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 392 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -230,9 +230,10 @@ lineage and delivery cuts, `0.51.14` owns mutation classification/emergency
 invalidation, `0.51.15–0.51.18` authorize/complete takeover, fund retained
 candidate controls, and reconcile barrier release; `0.51.19–0.51.20` own
 archival cleanup and independently verified retained namespaces; and
-`0.51.21–0.51.24` evaluate reinstall, redeem source-partition activation
-permits, consume the admitted successor, supersede the guard, and reconcile
-both release families;
+`0.51.21–0.51.26` evaluate reinstall, redeem source-partition activation
+permits, fund every successor-restriction bridge, reconcile and supersede
+partial admission, consume the fully admitted successor, supersede the guard,
+and reconcile both release families;
 none uses a wildcard tenant or cross-tenant transaction. Plugin uninstall and
 feature disablement
 never imply data retirement. `0.145.4` destructively certifies all of these

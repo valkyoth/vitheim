@@ -11,11 +11,12 @@ current manifests, exact authoritative IDs, deferrals, and product state.
 Plugin uninstall removes an admitted installation only; it neither retires its
 domain nor deletes tenant data. Any such retirement follows the `0.30.28`
 contract and `0.30.29` exact-tenant authority/recovery protocol; deployment
-scope additionally requires the `0.51.5–0.51.24` cut, plan/succession, guard/
+scope additionally requires the `0.51.5–0.51.26` cut, plan/succession, guard/
 root, terminal aggregation, residual handoff/state/delivery cuts, restrictive
 invalidation, takeover/release, funded retained-control transfer,
 archival/retained-namespace safety, partition-fenced evaluation, source-
-partition activation admission, guard supersession, and dual release sequence. Every
+partition activation admission, funded bridge ownership, partial-admission
+abort/supersession, guard supersession, and dual release sequence. Every
 selected profile must later
 pass `0.145.4`, and a loss terminal is never presented as clean retirement.
 
