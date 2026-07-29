@@ -104,25 +104,46 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '0.51.11` — Non-Clean Residual Retirement Obligation Handoff' \
     'non-clean residual obligation handoff'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '`ResidualRetirementObligationV1`' \
-    'durable residual retirement obligation'
+    '`HandoffPreparing → HandoffDispatching → HandoffReconciling →' \
+    'partition-safe residual handoff process manager'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.12` — Permanent Guard Takeover Authorization' \
+    '`ResidualRetirementObligationManifestV1`' \
+    'immutable residual handoff membership'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.12` — Residual Retirement Obligation Lineage Evolution' \
+    'residual obligation lineage evolution'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ResidualRetirementMembershipRootV1`' \
+    'immutable residual retirement membership root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ResidualRetirementStateHeadV1`' \
+    'authenticated residual retirement state head'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.13` — Permanent Guard Takeover Authorization' \
     'permanent guard takeover authorization'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`PermanentDomainGuardTakeoverAuthorizationV1`' \
     'exact permanent guard takeover authorization'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.13` — Permanent Guard Takeover And Campaign Completion' \
+    '`DeploymentDomainGuardSlotVersionV1`' \
+    'target-local permanent guard slot'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.14` — Permanent Guard Takeover And Campaign Completion' \
     'permanent guard takeover and classified completion'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`PermanentDomainGuardTransferReceiptV1`' \
     'permanent domain guard transfer receipt'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'non-borrowable terminalization reserve' \
+    'protected completion capacity'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`CleanupPending`' \
+    'orthogonal cleanup lineage'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallEligibilityV1`' \
     'reinstall eligibility created at final completion'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.14` — Reinstall Eligibility And Guard Supersession Admission' \
+    '0.51.15` — Reinstall Eligibility And Guard Supersession Admission' \
     'final-state reinstall admission'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'True cancellation exists only before the first child fence' \

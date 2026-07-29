@@ -18,8 +18,9 @@ orthogonal evidence and truthful verified/loss terminals. `0.30.29` separately
 owns exact tenant-child authority, atomic commitment, cancellation and crash
 recovery. Deployment-wide cut lifecycle, exact-plan admission/succession,
 narrow-guard topology handoff, joint protection roots, mixed coverage,
-non-clean residual ownership, exact takeover authority, permanent-guard
-completion, and reinstall admission wait for `0.51.5–0.51.14` after
+non-clean tenant-local residual handoff, residual-state lineage, target-slot
+takeover authority, reserved permanent-guard completion/cleanup, and current-
+state reinstall admission wait for `0.51.5–0.51.15` after
 authoritative tenant lifecycle exists.
 Every database profile must implement every applicable negotiated `0.18.2`
 `AtomicWorkCommitBundle` variant and every other mandatory semantic port claimed

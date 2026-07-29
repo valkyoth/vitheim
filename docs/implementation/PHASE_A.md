@@ -22,9 +22,9 @@ Deliverables:
   artifacts through a signed detached attestation or constrained evidence-only
   child commit whose reviewed parent and allowed tree delta are verified.
 - One machine-readable roadmap manifest that generates or verifies all 150 base
-  `0.x.0` stops, 229 companion stops, the `1.0.0` stop, their owners and exact
+  `0.x.0` stops, 230 companion stops, the `1.0.0` stop, their owners and exact
   pentest markers. README, release-plan, release-notes, phase-index, authority-
-  review and checker counts must agree on 380 exact stops.
+  review and checker counts must agree on 381 exact stops.
 - An evidence-status manifest using the normative `Specified`, `Implementing`,
   `Implemented`, `Conditional`, `Supported`, and `Unsupported` vocabulary,
   with executable-owner and immutable-evidence references for every claim.
@@ -38,7 +38,7 @@ roadmap count/owner/marker drift, and documentation that promotes a merely
 specified or conditional capability.
 
 Exit criteria: baseline claims match evidence, the formula
-`150 + 229 + 1 = 380` is machine-derived, and no release gate is bypassed.
+`150 + 230 + 1 = 381` is machine-derived, and no release gate is bypassed.
 `v0.1.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.2.0` — Typed IDs, Time, And Stable Errors

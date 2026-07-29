@@ -16,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 380 exact stops: 150 base `0.x.0` stops, 229
+The canonical roadmap contains 381 exact stops: 150 base `0.x.0` stops, 230
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -99,7 +99,7 @@ Their exact handoffs live in
 [Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md).
 
 The coherence additions are `0.18.15–0.18.16`, `0.30.23–0.30.29`, `0.50.18`,
-`0.51.3–0.51.14`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
+`0.51.3–0.51.15`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
 `0.120.8–0.120.10`, `0.132.4`, `0.138.6–0.138.7`, `0.140.28`, and `0.145.4`.
 Their exact handoffs live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
@@ -167,7 +167,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 380-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 381-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -913,10 +913,11 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.51.8` | Narrow domain guard, authenticated post-cut absence/child handoffs, broad-fence transfer, and finite handoff barrier | Unguarded transfer, projection-as-absence, omitted surface, moved-in tenant gap, stale topology, response loss/restore, blocked campaign holding broad fence |
 | `0.51.9` | Canonical campaign-protection root and joint successor/protection CAS with authenticated ancestor-issued receipt validity | Successor/append race, stale root, receipt/barrier/blocker rollback, omitted guard, nonancestor receipt, dual current root |
 | `0.51.10` | Bounded fair child execution and complete terminal aggregation into clean, non-clean, or blocked-nonterminal branches | Unauthorized dispatch, fabricated retirement for absence, hidden terminal loss, nonterminal treated ready, cursor rollback, starvation |
-| `0.51.11` | Durable per-tenant/dimension residual-obligation ownership for every non-clean terminal | Omitted obligation, owner/custody/hold/history/evidence/fence substitution, partial handoff, false clean, premature cleanup |
-| `0.51.12` | Fresh separated exact authorization for permanent-guard takeover | Stale plan, manifest/root/registry/guard substitution, authority-key rotation, revoke/expiry race, duplicate/replayed consumption |
-| `0.51.13` | Permanent guard takeover, classified campaign completion, campaign-resource release, and atomic reinstall-eligibility issuance | Protection gap, non-clean evidence/fence loss, false clean, early resource release, stale node/import, early eligibility |
-| `0.51.14` | Final-state reinstall admission and permanent-guard supersession | Reinstall/completion race, stale eligibility, guard/receipt/residual/floor/history substitution, obligation erasure, ordinary re-enable |
+| `0.51.11` | Bounded process-manager handoff of non-clean residual obligations through tenant-local atomic owner acceptance | Cross-tenant transaction, partial acceptance, tenant outage, receipt substitution/replay, fold rollback, starvation, premature cleanup |
+| `0.51.12` | Immutable residual membership and predecessor-linked mutable residual-state evolution | Membership mutation, state fork/rollback, unauthorized transition, receipt replay, restore divergence, stale eligibility lineage |
+| `0.51.13` | Fresh separated permanent-guard authorization over one target deployment-domain guard slot | Stale plan, slot/manifest/root/guard substitution, unrelated topology churn starvation, key/revoke/expiry race |
+| `0.51.14` | Slot-scoped permanent takeover and classified atomic completion under terminalization/cleanup reserves | Protection gap, finalization-capacity loss, cleanup starvation, false clean, early resource release/eligibility |
+| `0.51.15` | Final-state lineage-aware reinstall admission and permanent-guard supersession | Stale eligibility/head, residual fork, incomplete reevaluation, cleanup-pending race, obligation/floor/history bypass |
 | `0.52.0` | Subjects, service principals, independent external-identity mapping epochs, and law-generation expansion | Activate `VIT-LAW-001` g04/`VIT-LAW-006` g03; principal/mapping revocation racing dispatch, unsafe linking, immutable issuer-subject identity, epoch reuse, recreation |
 | `0.52.1` | OAuth resource-server workload authentication, mapping epoch, and law-generation expansion | Activate `VIT-LAW-001` g05/`VIT-LAW-006` g04; workload remap/revoke race, stale external privileged fact, false sender constraint, bearer escalation, issuer/audience confusion |
 | `0.53.0` | Hosted OIDC integration, independent interactive-session epoch, and law-generation expansion | Activate `VIT-LAW-001` g06/`VIT-LAW-006` g05; discovery, mix-up, replay, downgrade, fixation, logout/assurance racing dispatch |
