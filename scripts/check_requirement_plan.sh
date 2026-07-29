@@ -83,8 +83,26 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'broad-fence release is idempotent cleanup and cannot' \
     'narrow guard precedes broad fence release'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.9` — Deployment-Wide Domain Retirement Campaign' \
-    'deployment-wide domain retirement campaign'
+    '0.51.9` — Campaign Protection Root And Successor Integration' \
+    'campaign protection root and successor integration'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`CampaignProtectionStateRootV1`' \
+    'canonical campaign protection state root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'ancestor of the current plan and the immutable' \
+    'ancestor-issued coverage receipt validity'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.10` — Deployment-Wide Domain Retirement Reconciliation' \
+    'deployment-wide retirement reconciliation'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`NeverPresentVerified(PostCutDomainAbsenceReceiptV1)`' \
+    'never-present verified coverage is not retirement'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.11` — Permanent Domain Guard Takeover And Campaign Completion' \
+    'permanent guard takeover and campaign completion'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`PermanentDomainGuardTransferReceiptV1`' \
+    'permanent domain guard transfer receipt'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'True cancellation exists only before the first child fence' \
     'campaign cancellation versus pause boundary'
@@ -98,8 +116,8 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'never an optional/wildcard tenant' \
     'closed tenant versus deployment retirement scope'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    'Only an all-`RetiredVerified`' \
-    'clean deployment retirement requires all verified children'
+    'final clean status requires the' \
+    'clean deployment retirement requires coverage and permanent guard'
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     'authoritative async family through `0.18.10`' \
     'complete async realization prerequisite'

@@ -8,8 +8,9 @@ surfaces; `0.51.5` freezes and safely releases an authenticated deployment
 tenant-membership cut, `0.51.6` separately approves and atomically admits one
 exact-cut retirement plan, `0.51.7` fences successor-plan lineage and resume
 authority, `0.51.8` transfers broad topology fencing to a narrow domain guard
-with authoritative post-cut handoffs, and `0.51.9` runs the bounded fair,
-pausable campaign over isolated exactly authorized tenant children;
+with authoritative post-cut handoffs, `0.51.9` roots successor/protection state,
+`0.51.10` reconciles bounded fair exact children and never-present coverage,
+and `0.51.11` installs permanent protection before final campaign completion;
 `0.60.3` defines/backfills authoritative-interface references and installs the
 prospective gate; `0.60.4` certifies them, while `0.120.8` certifies later domains.
 

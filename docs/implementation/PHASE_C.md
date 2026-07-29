@@ -17,8 +17,9 @@ the permanent-ID, fenced, drained, history-preserving retirement contract with
 orthogonal evidence and truthful verified/loss terminals. `0.30.29` separately
 owns exact tenant-child authority, atomic commitment, cancellation and crash
 recovery. Deployment-wide cut lifecycle, exact-plan admission/succession,
-narrow-guard topology handoff, and campaign execution authority wait for
-`0.51.5–0.51.9` after authoritative tenant lifecycle exists.
+narrow-guard topology handoff, joint protection roots, mixed coverage,
+permanent-guard takeover, and final campaign completion wait for
+`0.51.5–0.51.11` after authoritative tenant lifecycle exists.
 Every database profile must implement every applicable negotiated `0.18.2`
 `AtomicWorkCommitBundle` variant and every other mandatory semantic port claimed
 for that profile, or fail startup capability negotiation. No adapter may
