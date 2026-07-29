@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 370 exact stops and their
+- One canonical roadmap manifest accounts for all 372 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -67,13 +67,15 @@ or messages cannot defer their structural controls.
 `0.30.26` backfills current event ownership/evolution. `0.30.27` consumes the
 complete `0.18.8–0.18.10` family and gates effects/messages/consumers/timers/
 activities/poison/replay/quarantine/results. `0.30.28` requires permanent-ID,
-fenced, drained, history-preserving retirement at domain introduction;
-`0.30.29` separately governs immutable proposal authority, current generations,
-separation of duties, atomic audit/outbox commitment and crash recovery; and
-`0.51.4` immediately certifies tenant surfaces. `0.139.1` iterates every
-contribution kind's mandatory dimensions and reviewed `NotApplicable` records,
-while `0.145.4` destructively certifies retirement/history/reinstall without
-first implementation. Missing obligations block the owner, RC, and production.
+fenced, drained, history-preserving retirement with orthogonal evidence and
+distinct verified/loss/blocking terminals. `0.30.29` governs exact tenant-child
+proposal authority and recovery; `0.51.5` owns authenticated deployment
+membership cuts and create/move reconciliation; `0.51.6` owns the bounded fair
+isolated-child parent campaign. No wildcard tenant or cross-tenant retirement
+transaction exists, and loss never counts as clean or grants deletion/hold
+release. `0.51.4` immediately certifies tenant surfaces; `0.139.1` iterates
+contribution-kind obligations; and `0.145.4` destructively certifies retirement
+without first implementation. Missing obligations block the owner and release.
 
 ## Runtime Controls Planned Before Production
 

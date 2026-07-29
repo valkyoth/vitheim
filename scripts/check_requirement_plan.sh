@@ -58,6 +58,21 @@ require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '0.30.29` — Domain Retirement Authority And Crash Recovery' \
     'domain retirement authority and crash recovery'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.5` — Deployment Tenant-Membership Retirement Cut' \
+    'deployment retirement membership cut'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.6` — Deployment-Wide Domain Retirement Campaign' \
+    'deployment-wide domain retirement campaign'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    '`RetiredWithIrrecoverableLoss`' \
+    'irrecoverable loss is distinct from verified retirement'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'never an optional/wildcard tenant' \
+    'closed tenant versus deployment retirement scope'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'Only an all-`RetiredVerified`' \
+    'clean deployment retirement requires all verified children'
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     'authoritative async family through `0.18.10`' \
     'complete async realization prerequisite'

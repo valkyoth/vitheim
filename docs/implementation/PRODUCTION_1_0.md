@@ -1891,12 +1891,14 @@ Verification:
   import/export/configuration, cross-surface differential, and lifecycle/
   backup/restore/erasure stops have passing evidence for every selected
   capability. Every selected domain/module/plugin retirement has separately
-  passing immutable-plan/current-generation/separated-authority, atomic commit/
-  crash recovery, work drainage, data/hold disposition, retained-history codec/
-  upcaster, backup/import, external-reference, and safe-reinstall evidence from
-  `0.145.4`, or remains visibly blocked. A deferred `0.86.2` profile exposes cloud-native kinds as
+  passing immutable-plan/current-generation/separated-authority, exact-tenant
+  child and applicable authenticated deployment-membership cut/bounded fair
+  campaign, atomic commit/crash recovery, work drainage, data/hold disposition,
+  retained-history codec/upcaster, backup/import, external-reference, safe-
+  reinstall, and truthful verified-versus-loss terminal evidence from `0.145.4`,
+  or remains visibly non-clean/blocked. A deferred `0.86.2` profile exposes cloud-native kinds as
   manual/generic-import-only and makes no automatic discovery claim.
-- The generated roadmap/evidence differential proves exactly 370 release
+- The generated roadmap/evidence differential proves exactly 372 release
   stops and their owners, authority reviews and pentest reports; it rejects any
   README, API discovery, UI navigation, release-note, installer, operator or
   support-matrix claim without a matching executable owner and exact evidence.

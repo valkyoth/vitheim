@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **370 independently pentestable release stops**:
+The roadmap contains exactly **372 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 219 companion stops + 1 production stop = 370`.
+`150 base 0.x.0 stops + 221 companion stops + 1 production stop = 372`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “370 exact release stops” describe different
+included. “151 base stops” and “372 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 370 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 372 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -213,12 +213,17 @@ dead-letter policy, replay authorization, quarantine/disposition, retry horizon,
 terminal/manual resolution, result/reconciliation, and compensation owners.
 `0.30.28` gives every domain an introduction-time retirement lifecycle with
 permanent `DomainId` tombstone, command/effect fencing, dependency/work drainage,
-data disposition, historical codec/upcaster preservation, and reinstall floors.
-`0.30.29` separately owns immutable scoped proposal authority, generation/version
-checks, separation of duties, atomic audit/outbox commitment, cancellation and
-crash recovery. Plugin uninstall and feature disablement never imply data
-retirement. `0.145.4` later destructively certifies both implementations and
-cannot first add teardown or recovery behavior.
+data disposition, historical codec/upcaster preservation, reinstall floors,
+orthogonal authority/work/data/history evidence, and distinct verified/loss/
+blocking terminals. Only `RetiredVerified` is clean. `0.30.29` defines a closed
+tenant-versus-deployment scope but executes only exact tenant children with
+immutable proposal authority, generation/version checks, separation of duties,
+atomic audit/outbox commitment, cancellation and crash recovery. Once `0.51.1`
+owns tenant lifecycle/topology, `0.51.5` freezes an authenticated membership cut
+and `0.51.6` coordinates bounded fair isolated children; neither uses a wildcard
+tenant or cross-tenant transaction. Plugin uninstall and feature disablement
+never imply data retirement. `0.145.4` destructively certifies all of these
+implementations and cannot first add teardown, campaign, or recovery behavior.
 
 Typed extensions appear only after their vocabulary exists. `0.51.3–0.51.4`
 reference and immediately certify the authoritative `TenantDataSurface`

@@ -204,30 +204,39 @@ or compensation behavior.
 
 Status: planned.
 Setup: extend the domain registry with `Active → DeprecationAnnounced →
-RetirementApproved → Quiescing → DispositionPending → Retired`, explicit
-`Cancelled`, `Blocked`, and `EvidenceUnavailable` recovery/disposition states,
-permanent `DomainId` non-reuse, command/effect admission fences, dependency/
-drain and data-disposition references, codec/upcaster preservation, rollback/
-reinstallation floors, and a distinction between plugin uninstall, tenant
-feature disablement, and domain-data retirement.
+RetirementApproved → Quiescing → DispositionPending → Terminal`, permanent
+`DomainId` non-reuse, command/effect admission fences, dependency/drain and
+data-disposition references, codec/upcaster preservation, rollback/reinstallation
+floors, and a distinction between plugin uninstall, tenant feature disablement,
+and domain-data retirement. Keep `AuthorityState` (`Active | Fenced | Closed`),
+`WorkState` (`Pending | Drained | Quarantined | Unresolved`),
+`DataDispositionState` (`Verified | PartiallyVerified | IrrecoverableLoss |
+EvidenceUnavailable`), and `HistoricalCompatibilityState` (`Verified | Degraded |
+Unavailable`) orthogonal. Terminal outcomes are `RetiredVerified`,
+`RetiredWithIrrecoverableLoss`, `RetirementBlocked`, and `EvidenceUnavailable`;
+`Cancelled` is a pre-fence outcome, not retirement.
 Goal: make safe removal a domain-owned lifecycle from introduction rather than
 first designing teardown during production certification.
-Deliverables: `DomainRetirementStateV1`, transition/recovery vocabulary,
-immutable ID tombstone, dependency/outstanding-work manifest, quiescence/fence
-contract, historical-codec/data-disposition obligations, rollback/reinstall
-rules, and prospective domain-exit gate. `0.30.29` separately implements the
-authority-bearing proposal, transactional transition, and crash-recovery protocol.
+Deliverables: `DomainRetirementStateV1`, orthogonal evidence dimensions and
+terminal-claim projection, transition/recovery vocabulary, immutable ID
+tombstone, dependency/outstanding-work manifest, quiescence/fence contract,
+historical-codec/data-disposition obligations, rollback/reinstall rules, and
+prospective gate. `0.30.29` separately implements proposal authority and recovery.
 Verification: `DomainId` reuse, retirement with incoming references, command/
 effect admitted after fence, undrained workflow/API/search/notification edge,
 pending inbox/outbox/timer/activity loss, codec/upcaster removal with retained
 history, projection disposal before rebuild/disposition, hold/export/erasure
 bypass, plugin uninstall treated as data deletion, reinstall below floor,
-future backup/import incompatibility, and future-only retirement claim pass.
+future backup/import incompatibility, loss terminal presented as verified,
+loss evidence releasing hold/deletion/residual obligations, dimension collapse,
+and future-only retirement claim pass.
 Exit criteria: each current applicable manifest has an explicit retirement
-contract and every later domain must define one at introduction; retirement
-cannot complete while authority, work, data, retained history, backup/import,
-or external-reference obligations remain unresolved, and this contract alone
-does not authorize or execute retirement.
+contract and every later domain must define one at introduction. Clean
+retirement cannot complete while authority, work, data, retained history,
+backup/import, or external-reference obligations remain unresolved, and this
+contract alone does not authorize or execute retirement. Only
+`RetiredVerified` satisfies a clean-retirement claim; every degraded,
+unavailable, blocked, quarantined, unresolved, or loss fact remains permanently visible.
 `v0.30.28 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.50.18` — Supplier Performance Assessment And Risk Proposals

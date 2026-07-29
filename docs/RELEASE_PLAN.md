@@ -16,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 370 exact stops: 150 base `0.x.0` stops, 219
+The canonical roadmap contains 372 exact stops: 150 base `0.x.0` stops, 221
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -61,7 +61,7 @@ family ledgers were retained for their security context but decomposed into 65
 new exact stops. The later capability-gap review added 21 independently scoped
 product, verification, and profile-decision companions. The second review added
 31 requirement-ownership, domain-decomposition, cross-surface integration, and
-cloud-discovery companions. The coherence reviews added 24 requirement-source,
+cloud-discovery companions. The coherence reviews added 26 requirement-source,
 dependency-feasibility, phased-surface-ownership, domain-boundary, adapter-
 placement, and chronology companions:
 
@@ -99,7 +99,7 @@ Their exact handoffs live in
 [Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md).
 
 The coherence additions are `0.18.15–0.18.16`, `0.30.23–0.30.29`, `0.50.18`,
-`0.51.3–0.51.4`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
+`0.51.3–0.51.6`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
 `0.120.8–0.120.10`, `0.132.4`, `0.138.6–0.138.7`, `0.140.28`, and `0.145.4`.
 Their exact handoffs live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
@@ -167,7 +167,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 370-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 372-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -252,8 +252,8 @@ implementations remain blocked rather than being implemented casually.
 | `0.30.25` | Contribution deferral lifecycle, structural no-deferral rule, and product-state/certification gates | Existing schema/store/route/derived/effect/message deferred, incomplete/expired defer, owner/retest gap, silent support, bypass |
 | `0.30.26` | Current domain-event ownership backfill and prospective emission/consumer/upcaster/generation gate | Unowned/wrong-domain event, undeclared emission/consumption, owner mismatch, stale generation, future-only claim, bypass |
 | `0.30.27` | Complete `0.18.8–0.18.10` durable async ownership backfill and prospective effect/message/consumer/timer/activity/poison/replay/result gate | Kind/instance confusion, wrong owner/schema/destination, unauthorized replay, orphaned poison/quarantine, retention loss, downgrade |
-| `0.30.28` | Domain retirement lifecycle, permanent ID tombstone, fences, work/dependency drainage, data/history disposition, and prospective gate | ID reuse, late command/effect, undrained work/reference, codec loss, hold/backup/import break, uninstall/data confusion, unsafe reinstall |
-| `0.30.29` | Immutable retirement proposal authority, expected-generation/version admission, atomic audit/outbox commitment, cancellation, and crash recovery | Scope/digest/generation substitution, self-approval, partial commit, unsafe cancel/resume, command reopening, forced data-loss completion |
+| `0.30.28` | Domain retirement lifecycle, orthogonal authority/work/data/history evidence, distinct verified/loss/blocking terminals, and prospective gate | Dimension collapse, loss presented as clean, hold/residual release from loss evidence, ID reuse, late work, codec/backup/import break |
+| `0.30.29` | Closed tenant-versus-deployment scope, exact tenant-child proposal authority, expected-version admission, atomic commitment, cancellation, and recovery | Optional/wildcard tenant, deployment-as-one-child, cross-tenant transaction, scope/digest/generation substitution, self-approval, unsafe resume |
 
 ### Migration/import irreversible-operation hardening map
 
@@ -907,6 +907,8 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.51.2` | Tenant data-surface lifecycle registry | Backfill/outward-dependency/gate bypass, inherited retention, partial cleanup, evidence inflation |
 | `0.51.3` | Domain tenant-surface reference extension, Phase D/E backfill, and prospective gate | Copied lifecycle semantics, dangling/wrong-tenant ID, missing derived/external surface, recovery cycle |
 | `0.51.4` | Immediate tenant-surface contribution and recovery-order certification | Omitted surface, wrong owner/key, copied lifecycle fields, stale generation, unresolved defer, late handler |
+| `0.51.5` | Authenticated deployment tenant-membership retirement cut, fenced create/migrate/move handling, and late-member reconciliation | Omitted/substituted member, projection authority, cut race, lost handoff, incomplete barrier, cursor rollback, hidden blocker |
+| `0.51.6` | Bounded fair deployment-domain retirement parent over isolated exact-tenant children | Cross-tenant child/state/transaction, missing or blocked result, cursor rollback, starvation, recovery borrowing, loss presented as clean |
 | `0.52.0` | Subjects, service principals, independent external-identity mapping epochs, and law-generation expansion | Activate `VIT-LAW-001` g04/`VIT-LAW-006` g03; principal/mapping revocation racing dispatch, unsafe linking, immutable issuer-subject identity, epoch reuse, recreation |
 | `0.52.1` | OAuth resource-server workload authentication, mapping epoch, and law-generation expansion | Activate `VIT-LAW-001` g05/`VIT-LAW-006` g04; workload remap/revoke race, stale external privileged fact, false sender constraint, bearer escalation, issuer/audience confusion |
 | `0.53.0` | Hosted OIDC integration, independent interactive-session epoch, and law-generation expansion | Activate `VIT-LAW-001` g06/`VIT-LAW-006` g05; discovery, mix-up, replay, downgrade, fixation, logout/assurance racing dispatch |
@@ -1198,7 +1200,7 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | `0.145.0` | Backup format, manifest, encryption, custody, and creation path | Backup integrity/custody/partial-write/key/profile tests; restore and DR are `0.145.1–0.145.2` |
 | `0.145.1–0.145.2` | Restore/readiness and full DR/failback/disposition certification | Separate destructive restore and regional-loss exercises with exact evidence |
 | `0.145.3` | Manifest-driven destructive full-suite lifecycle and recovery certification after immediate `0.51.4` coverage | Omitted/stale contribution, unresolved defer, late-added reference/handler, resurrection, false evidence, restore divergence |
-| `0.145.4` | Destructive domain/module/plugin retirement authority/recovery, historical readability, restore/import, and reinstall certification | Stale plan, unsafe resume, false loss evidence, late authority/work, data/hold or codec loss, backup/import failure, ID reuse, late implementation |
+| `0.145.4` | Destructive tenant/deployment retirement campaign, terminal truth, historical readability, restore/import, and reinstall certification | Membership omission/cut race, child substitution, blocked completion, cursor rollback, starvation, loss-as-clean, late work, data/codec failure |
 | `0.146.0` | Reproducible load harness, workload profiles, ceilings, and invariant oracle | Harness calibration and boundary tests only; soak and chaos are `0.146.1–0.146.2` |
 | `0.146.1–0.146.2` | Soak/fairness and chaos/recovery-capacity certification | Independent sustained-load and compound-fault evidence sets |
 | `0.147.0` | Final profile-governance, topology replay-lifecycle, bearer-memory, executor, migration/import-budget/activation, and supply-chain hardening | Retain prior authority/conservation/cut/physical-capacity audit; add cleanup fairness/backlog, per-unit settlement attribution, counter immutability and terminal-result parity |

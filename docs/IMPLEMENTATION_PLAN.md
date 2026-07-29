@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 370 exact release stops: 150 base `0.x.0`
-stops, 219 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 372 exact release stops: 150 base `0.x.0`
+stops, 221 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -17,7 +17,7 @@ law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
-families that exceeded it, and records 76 later focused capability,
+families that exceeded it, and records 78 later focused capability,
 requirement-ownership, decomposition, integration, discovery, and coherence
 companions.
 
@@ -88,10 +88,14 @@ outbox effects, messages/consumers, timers/activities, poison/dead-letter,
 replay/quarantine, result/reconciliation, and compensation contracts after the
 complete `0.18.8–0.18.10` realization family. `0.30.28` defines permanent-ID,
 fenced, dependency-draining, history-preserving domain retirement at
-introduction; `0.30.29` separately owns retirement proposal authority, atomic
-audit/outbox commitment, cancellation and crash recovery; and `0.145.4`
-destructively certifies selected retirement/reinstall profiles rather than
-first implementing teardown. Tenant lifecycle references begin only
+introduction with orthogonal authority/work/data/history evidence and distinct
+verified/loss/blocking terminals. `0.30.29` separately owns exact tenant-child
+retirement proposal authority, atomic audit/outbox commitment, cancellation and
+crash recovery. After authoritative tenant lifecycle exists, `0.51.5` freezes
+one authenticated deployment membership cut and `0.51.6` runs a bounded fair
+parent campaign of isolated tenant children. `0.145.4` destructively certifies
+selected retirement/reinstall profiles rather than first implementing teardown.
+Tenant lifecycle references begin only
 after `0.51.2`, with immediate backfill certification at `0.51.4`;
 authorization follows Phase F, workflow Phase G, search Phase J, workspace its
 block vocabulary, and API/transfer their Phase N contracts. Each surface stop

@@ -13,9 +13,11 @@ compatibility for current applicable owners, then installs the prospective
 domain-exit gate without defining missing behavior. `0.30.27` consumes the
 complete `0.18.8–0.18.10` realizations for the parallel effect/message/consumer/
 timer/activity/poison/replay/quarantine/result ownership gate. `0.30.28` defines
-the permanent-ID, fenced, drained, history-preserving retirement contract, and
-`0.30.29` separately owns retirement authority, atomic commitment, cancellation
-and crash recovery required of every later domain.
+the permanent-ID, fenced, drained, history-preserving retirement contract with
+orthogonal evidence and truthful verified/loss terminals. `0.30.29` separately
+owns exact tenant-child authority, atomic commitment, cancellation and crash
+recovery. Deployment-wide membership/campaign authority waits for
+`0.51.5–0.51.6` after authoritative tenant lifecycle exists.
 Every database profile must implement every applicable negotiated `0.18.2`
 `AtomicWorkCommitBundle` variant and every other mandatory semantic port claimed
 for that profile, or fail startup capability negotiation. No adapter may
