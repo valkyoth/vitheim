@@ -18,7 +18,7 @@ membership_snapshot }`, never an optional/wildcard tenant. Define
 contribution generations, expected retirement-state version, idempotency
 identity, current authorization, separated proposer/approver/destructive
 approver identities, and approval expiry. This stop executes only the exact
-tenant child; deployment scope requires `0.51.5–0.51.18`.
+tenant child; deployment scope requires `0.51.5–0.51.22`.
 Goal: execute and recover retirement transitions without stale authority,
 partial commitment, silent command reopening, or data-loss acceptance becoming
 completion authority.
@@ -131,7 +131,7 @@ sealed cut to exactly one admitted parent campaign or makes no admission;
 retries return that durable result. The admitted parent may derive only exact
 member authorizations under the approved template, and the cut alone grants no
 retirement or child-dispatch authority. Its frozen structural commitment
-remains authoritative for only that deployment/domain until `0.51.15`
+remains authoritative for only that deployment/domain until `0.51.16`
 transfers protection permanently.
 `v0.51.6 implementation stop reached. Run pentest for this exact commit.`
 
@@ -408,14 +408,20 @@ that observed head into a current-at-cut claim.
 Status: planned.
 Setup: consume the `0.51.11` residual handoff manifest, `0.51.12` immutable
 membership/latest-acknowledged state lineage, and the authoritative residual-
-owner partition manifest with exact routing and generations. Clean retirement
-uses one canonical empty sealed cut.
+owner partition manifest with exact routing and generations. For clean
+retirement define one typed `CanonicalEmptyResidualStateV1` tuple containing
+the domain-separated zero-member residual membership root, residual state head,
+owner-partition manifest, delivery-cut acknowledgement root/count, and barrier
+root/count. Absence is never accepted as this tuple.
 Goal: prove a finite current-at-cut residual state without a cross-tenant
 transaction or mistaking a parent fold for tenant-partition currency.
 Deliverables:
 `CutPreparing → PartitionBarrierRequested → CutSealing →
-CutSealed | ResidualTransitionDeliveryBlocked`. Define
+CutSealed → ConsumedByTakeover | ConsumedByReinstall`, with
+`ResidualTransitionDeliveryBlocked` and `Invalidated` fail-closed branches.
+Define
 `ResidualTransitionDeliveryCutV1` binding deployment/domain/campaign,
+candidate purpose (`Takeover` or exact reinstall proposal),
 membership root/lineage, authoritative owner-partition manifest/generation,
 per-partition stable identity and transition generation, requested and sealed
 monotonic high-watermarks, exact source-sequence-to-parent acknowledgement
@@ -429,35 +435,97 @@ source sequence through it as delivered or explicitly superseded by an
 authenticated successor, installs a durable candidate barrier generation, and
 commits receipt/audit/outbox/result. The bounded parent process manager
 deduplicates receipts and seals only after every partition and sequence is
-proven. A later tenant transition either remains blocked by the barrier or
-waits for a parent CAS that first marks the cut invalid and issues exact
-partition release authority; only then may the local transition commit under a
-successor generation and remain a preserved descendant. It can never hide in
-an outbox while the cut remains valid. Abort/invalidate/release is bounded and
-idempotent, and release authority cannot restore cut validity.
+proven. Except for the `0.51.14` `RestrictiveSafety` emergency path, a later
+tenant transition either remains blocked by the barrier or waits for a parent
+CAS that first marks the cut invalid and issues exact partition release
+authority; only then may the local transition commit under a successor
+generation and remain a preserved descendant. It can never hide in an outbox
+while the cut remains valid. Abort/invalidate/release is bounded and idempotent,
+and release authority cannot restore cut validity.
+Successful consumption is absorbing: the consuming local control-plane
+transaction permanently ends candidacy, records the exact consumer/result, and
+creates an immutable partition-barrier release manifest/root/count with bounded
+release/reconciliation capacity and outbox. Consumption alone never claims the
+barriers are released. Each partition returns one authenticated release receipt
+or an explicit successor-owner retention receipt; cut-control state remains
+live until the applicable release stop reconciles the complete manifest.
 Restore/import retain cut generations, invalidation tombstones, barrier state,
-and acknowledgement ancestry.
+consumption purpose/result, release manifests/receipts, and acknowledgement
+ancestry. A consumed cut can never become sealed/current again.
 Verification: omitted/duplicate partition, route/generation/high-watermark/
 sequence/acknowledgement/fold substitution, local commit with delayed outbox,
 explicit-supersession forgery, transition racing barrier installation or cut
 seal, partial barrier outage, response loss, duplicate/reordered receipts,
 parent fold rollback, candidate invalidation loss, blocked-state concealment,
-abort/release race, restore with an old valid-looking cut, and canonical-empty
-cut confusion pass.
+abort/consume/release race, missing/duplicate release manifest, consumed-cut
+reuse, restore with an old valid-looking cut, absent-versus-canonical-empty
+confusion, and synthetic clean obligation pass.
 Exit criteria: one sealed cut proves every authoritative partition sequence
 through its local barrier is folded or explicitly superseded, and remains
-valid only while all barrier generations do; otherwise the visible state is
-blocked or invalidated and no takeover candidate may proceed.
+valid only while all barrier generations do. Consumption irreversibly records
+its purpose and release work; otherwise the visible state is blocked/invalidated
+and no candidate may proceed.
 `v0.51.13 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.14` — Permanent Guard Takeover Authorization
+## `0.51.14` — Residual Mutation Safety Classification And Emergency Invalidation
+
+Status: planned.
+Setup: consume the `0.51.12` residual transition vocabulary, `0.51.13`
+delivery-cut barriers, every command capable of changing residual owner/fence/
+hold/custody/history/evidence/work semantics, and independently reserved
+emergency mutation capacity.
+Goal: never let a takeover or reinstall candidate block an urgent safety-
+restrictive mutation while preventing permissive/destructive changes from
+racing a supposedly current decision.
+Deliverables: closed `ResidualMutationClassV1`:
+
+- `RestrictiveSafety`: add/strengthen hold or fence, quarantine custody,
+  distrust evidence/verifier, revoke a compromised owner/capability, or another
+  reviewed monotonic restriction;
+- `DecisionNeutral`: admitted only by executable proof that command/event bytes
+  cannot alter any takeover/reinstall evaluation input or authority;
+- `PermissiveOrDestructive`: every release, weakening, deletion, trust grant,
+  owner/capability grant, or unknown/unclassified mutation.
+
+The authoritative command-kind classifier has a generation/digest, exhaustive
+registry, deny-by-default result, separation from caller input, and semantic
+compatibility tests. `RestrictiveSafety` commits tenant-locally through a
+protected emergency lane even during parent/network outage; in the same local
+transaction it advances non-wrapping `ResidualSafetyEpochV1`, irreversibly
+invalidates the local cut/evaluation fence generation, retains the restriction
+for every successor guard, and commits result/audit/outbox. `DecisionNeutral`
+preserves every epoch/root. `PermissiveOrDestructive` waits for exact release
+authority or first drives parent revalidation.
+Define `PartitionCandidateStatusReceiptV1` binding partition/candidate/fence
+generations, current safety epoch, latest restrictive transition, invalidation
+state, trusted signer/key generation, and freshness. Final takeover/reinstall
+consumption must obtain and bind a complete fresh status-root/count; a local
+invalidation wins even if notification delivery is delayed, and successor
+guards enforce restrictive state independently of parent observation. Each
+status receipt carries a source-local conditional activation permit; the
+partition rejects candidate activation unless the exact safety epoch still
+matches, so a restrictive mutation racing a collected receipt wins locally.
+Verification: caller-controlled class, unregistered command, weakening labeled
+restrictive/neutral, legal hold/fence/quarantine/distrust/revocation during
+partial barrier and parent/network outage, emergency-capacity starvation,
+epoch rollback/wrap, invalidation/outbox response loss, stale/forged/omitted
+status receipt, signer rotation/distrust, permissive mutation without release,
+restrictive mutation racing final consumption, restore/import, and successor
+guard ignoring the restriction pass.
+Exit criteria: urgent monotonic restriction always commits locally and
+irreversibly defeats stale candidate authority, neutral changes are proven
+semantically irrelevant, and every other mutation waits or revalidates.
+`v0.51.14 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.15` — Permanent Guard Takeover Authorization
 
 Status: planned.
 Setup: consume a current `0.51.9` plan/protection-root pair, a `0.51.10`
 terminal manifest in `ReadyForPermanentGuardClean` or a `0.51.11` residual
 manifest plus `0.51.12` membership/state lineage in
 `ReadyForPermanentGuardNonClean`, one current sealed `0.51.13`
-`ResidualTransitionDeliveryCutV1`, the target
+`ResidualTransitionDeliveryCutV1`, the `0.51.14` mutation classifier/status
+contract, the target
 `DeploymentDomainGuardSlotVersionV1`, proposed permanent-guard bytes, campaign
 final topology high-watermark, broader registry evidence, expected campaign
 state/version, authority-key generation, and separated destructive approval.
@@ -468,11 +536,12 @@ Deliverables: one-shot `PermanentDomainGuardTakeoverAuthorizationV1` binding
 deployment/domain/campaign/cut, current plan generation and protection root,
 terminal-manifest digest/classification, residual-obligation root (including
 canonical empty root), residual membership/lineage, sealed delivery-cut
-generation/digest and cut state head, target guard-slot version, final topology
-high-watermark, permanent-guard digest, broader registry evidence, expected
-state/version, issuer/key generation, approver quorum/separation, expiry, and
-idempotency identity. Define issue, revoke, expire, rotate/distrust, consume,
-result, audit, and response-loss semantics; only `0.51.15` may consume it
+generation/digest and cut state head, current safety-epoch status root/count,
+target guard-slot version, final topology high-watermark, permanent-guard
+digest, broader registry evidence, expected state/version, issuer/key
+generation, approver quorum/separation, expiry, and idempotency identity. Define
+issue, revoke, expire, rotate/distrust, consume, result, audit, and response-loss
+semantics; only `0.51.16` may consume it
 atomically with guard installation. Plan authority
 revocation or expiry before takeover requires this fresh independent approval;
 authorization by a predecessor plan generation is invalid. Unrelated tenant
@@ -480,10 +549,11 @@ creation/movement or broader registry generation advance does not invalidate
 authorization; only mutations capable of enabling this domain in this
 deployment serialize through the target guard slot. Broader generations remain
 evidence, never the expected-version CAS target. Any residual partition barrier
-invalidation invalidates this authorization before consumption.
+or safety-epoch invalidation invalidates this authorization before consumption.
 Verification: approval/manifest/root/registry/guard/state/classification/
 residual-root/membership/delivery-cut/idempotency substitution, unsealed or
-blocked cut, unseen local transition, self-approval, stale predecessor plan,
+blocked cut, omitted/stale partition-status root, restrictive mutation or
+unseen local transition, self-approval, stale predecessor plan,
 issue before terminal readiness, plan revocation/expiry before or after
 readiness, takeover authorization revocation/expiry, authority-key rotation/
 distrust, guard-slot substitution, unrelated continuous tenant churn, target
@@ -493,16 +563,17 @@ Exit criteria: exactly one current separated authorization covers every byte
 and sealed residual cut consumed by permanent takeover, or the campaign remains
 guarded and visibly blocked; no observed-only parent head, admission-time
 authority, or stale plan fills the gap.
-`v0.51.14 implementation stop reached. Run pentest for this exact commit.`
+`v0.51.15 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.15` — Permanent Guard Takeover And Campaign Completion
+## `0.51.16` — Permanent Guard Takeover And Campaign Completion
 
 Status: planned.
 Setup: consume the current `0.51.9` plan/protection-root pair, `0.51.8` active
 campaign guard/final barrier, a clean `0.51.10` terminal manifest or non-clean
 `0.51.11`/`0.51.12` residual membership/state pair, the still-valid sealed
-`0.51.13` delivery cut, one current `0.51.14` exact takeover authorization,
-the target
+`0.51.13` delivery cut, a complete fresh `0.51.14`
+partition-candidate status root, one current `0.51.15` exact takeover
+authorization, the target
 `DeploymentDomainGuardSlotVersionV1`, campaign final topology high-watermark,
 broader registry evidence, the effective deployment-domain structural
 commitment, reinstall/rollback floor, historical compatibility set, and
@@ -517,11 +588,11 @@ PermanentGuardInstalling → PermanentGuardActive →
 (CampaignCompletedClean | CampaignCompletedNonClean) }`,
 where the braced guard-release acknowledgement and parent terminal transition
 are one local atomic edge. Guard installation
-atomically consumes the exact `0.51.14` authorization; validates and binds the
-still-current sealed `0.51.13` delivery cut; binds deployment/domain/
-campaign/cut, final topology high-watermark, effective structural commitment,
-terminal manifest, residual membership/cut-state evidence, current
-protection root and target guard-slot version; installs the durable
+atomically consumes the exact `0.51.15` authorization; validates the fresh
+partition-status root; binds deployment/domain/campaign/cut, final topology
+high-watermark, effective structural commitment, terminal manifest, residual
+membership/cut-state evidence, current protection root and target guard-slot
+version; installs the durable
 `(DeploymentId, DomainId)` denial/tombstone; advances only that local slot; and
 commits `PermanentDomainGuardTransferReceiptV1`. Unrelated topology/registry
 churn after the final high-watermark cannot starve it; only target mutations
@@ -532,14 +603,17 @@ permanent receipt; terminalization capacity remains encumbered through one
 local atomic transaction committing final
 `DeploymentDomainRetirementManifestV1`, `CampaignCompletedClean | NonClean`,
 `ReinstallEligibilityV1`, result/audit/outbox, campaign-guard release
-acknowledgement, and mandatory cleanup schedule/checkpoint. Only after that
+acknowledgement, mandatory cleanup schedule/checkpoint, the still-current
+`0.51.13` cut transition to absorbing `ConsumedByTakeover`, and exact
+`TakeoverBarrierReleaseManifestV1` root/count, reserved bounded release/
+reconciliation capacity and outbox. Only after that
 transaction is durable may terminalization capacity release. Cross-owner/
 remote physical cleanup continues from an orthogonal durable `CleanupPending`
 state under the cleanup lane; crash, retry, or quota pressure cannot strand it.
 Cut/structural pin/campaign execution resources may release through that
 checkpoint, while residual obligation resources and tenant-specific fences
 remain with successor owners. No campaign hot row, cleanup lane, occupied
-storage, or deletion capacity releases before `0.51.16`; only its verified
+storage, or deletion capacity releases before `0.51.18`; only its verified
 `CampaignCleanupComplete` result authorizes deletion-related release, while
 permanent retention remains charged. Final `DeploymentDomainRetirementManifestV1` preserves `Clean` or `NonClean`
 classification exactly and binds terminal/residual/transfer evidence; later
@@ -554,6 +628,8 @@ Verification: clean/non-clean substitution, takeover authority revocation/
 expiry/response loss before versus after atomic consumption, install versus
 target create/move/enable, continuous unrelated tenant/topology/registry churn,
 delivery-cut invalidation or unseen transition before consumption,
+restrictive mutation or stale/omitted partition-status receipt, failure to
+atomically enter `ConsumedByTakeover`, missing release manifest/outbox/capacity,
 guard or cut early release, execution/terminalization/cleanup reserve confusion,
 borrowed or prematurely released terminalization capacity, crash/quota
 exhaustion between permanent receipt and terminal transaction, missing cleanup
@@ -566,15 +642,50 @@ Exit criteria: one permanent guard and classified final manifest are durable
 with parent terminal state, eligibility, result/audit/outbox, guard-release
 acknowledgement and cleanup checkpoint before terminalization reserve releases;
 non-clean obligations/fences survive, remote cleanup cannot be starved, no
-protection gap exists, and eligibility appears only in that atomic completion.
-`v0.51.15 implementation stop reached. Run pentest for this exact commit.`
+protection gap exists, eligibility appears only in that atomic completion, and
+the consumed cut has durable bounded release work before any barrier may move.
+`v0.51.16 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.16` — Campaign Retirement Archive And Cleanup Reconciliation
+## `0.51.17` — Takeover Delivery-Barrier Release Reconciliation
 
 Status: planned.
-Setup: consume one completed `0.51.15` campaign, immutable cleanup lineage and
-pre-reserved cleanup lane, every campaign/control/partition hot-state owner,
-archive destination/profile, retained-history laws, and deletion authority.
+Setup: consume one `0.51.16` completed campaign, its absorbing
+`ConsumedByTakeover` cut, exact `TakeoverBarrierReleaseManifestV1`, protected
+release/reconciliation capacity, parent outbox/inbox, and authoritative
+partition routing.
+Goal: release every takeover delivery barrier after permanent protection is
+durable without losing residual restrictions, stranding partitions, or
+allowing cleanup to erase live barrier authority.
+Deliverables:
+`TakeoverReleaseDispatching → TakeoverReleaseReconciling →
+TakeoverBarriersReleased | TakeoverBarriersRetained`. Dispatch deterministic
+idempotent release work under bounded cursor/batch/concurrency/storage/retry
+budgets and fairness. Each partition atomically verifies cut/purpose/barrier/
+safety epoch, releases only the exact consumed-candidate barrier while
+preserving every `0.51.14` restrictive transition, and commits one authenticated
+release receipt plus result/audit/outbox. A barrier that must survive transfers
+to one durable successor owner through a typed retention receipt; it is never
+silently abandoned. Parent inbox deduplication folds the exact manifest/root/
+count and checkpoints recovery. Only the complete receipt/retention root permits
+cut-control archival; consumed candidacy never revives.
+Verification: omitted/duplicate partition, wrong cut/purpose/barrier/safety
+epoch, release of residual fence instead of candidate barrier, restrictive
+mutation during release, tenant/network outage, response loss, replay/reorder,
+receipt or successor-owner substitution, cursor/root rollback, starvation,
+premature cut-control cleanup, restore/import with installed barrier, and
+consumed-cut revival pass.
+Exit criteria: every barrier in the immutable takeover release manifest is
+proved released or truthfully retained by one successor owner before cut-
+control state becomes archive-eligible; residual safety restrictions remain.
+`v0.51.17 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.18` — Campaign Retirement Archive And Cleanup Reconciliation
+
+Status: planned.
+Setup: consume one completed `0.51.16` campaign, complete `0.51.17` takeover
+barrier-release/retention root, immutable cleanup lineage and pre-reserved
+cleanup lane, every campaign/control/partition hot-state owner, archive
+destination/profile, retained-history laws, and deletion authority.
 Goal: make campaign cleanup finite without deleting the authority, replay,
 audit, or verification evidence needed to prove retirement and safe reinstall.
 Deliverables:
@@ -586,7 +697,8 @@ Define authenticated `CampaignRetirementArchiveCheckpointV1` covering the
 membership cut/release evidence; every plan generation and predecessor
 tombstone; protection-root history; child/post-cut receipt accumulators;
 residual handoff manifest/receipts, membership/state/delivery-cut lineages;
-takeover-authorization lifecycle; terminal/permanent-guard manifests;
+takeover-authorization lifecycle; consumed-cut barrier release manifest/
+receipt/retention root; terminal/permanent-guard manifests;
 idempotency identities/replay tombstones; audit/outbox causal heads; and exact
 codec, key, signature, and verification-profile retention requirements.
 Each owning partition archives and verifies its immutable payload, then in the
@@ -612,16 +724,50 @@ Exit criteria: every hot-state owner has an authenticated replayable archive
 checkpoint and locally atomic archive-head/delete result, or its rows remain
 truthfully retained/uncertain and capacity stays assigned; no missing evidence
 can become cleanup completion.
-`v0.51.16 implementation stop reached. Run pentest for this exact commit.`
+`v0.51.18 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.17` — Partition-Fenced Reinstall Evaluation
+## `0.51.19` — Retained Campaign Namespace Safety Authorization
 
 Status: planned.
-Setup: consume one current `0.51.15` `ReinstallEligibilityV1`, final retirement
-manifest/permanent guard, `0.51.16` cleanup completion or explicitly retained
-namespace-safe proof, `0.51.12` residual membership/state lineage, a fresh
-`0.51.13` sealed delivery cut, reinstall plan/target generation, and the
-authoritative residual-owner partition manifest.
+Setup: consume one `0.51.18` `PermanentlyRetained` cleanup result, exact archive
+checkpoint/replay head, retained hot/object state inventory, outstanding
+deletion machinery, proposed reinstall target namespace/generation, current
+restore/import applicability, and independent verifier trust policy.
+Goal: permit a retained campaign to approach reinstall only under typed,
+current, independently authorized proof that no old operation can delete or
+alias replacement state.
+Deliverables: `RetainedCampaignNamespaceSafetyReceiptV1` binding campaign and
+cleanup lineage/checkpoint; backend and exact bucket/database/schema/namespace/
+object-version scope; every outstanding deletion job, credential, lease,
+multipart operation, TTL and lifecycle rule; proof each destructive mechanism
+is revoked, fenced, terminal, or permanently target-disjoint; retained owner/
+capacity; reinstall target namespace/generation; verifier identity/trust/key
+generation, evidence strength, issuance/expiry, separation of duties; and
+current restore/import applicability. The cleanup/retention owner cannot
+self-certify. Define canonical bytes, issue/refuse/revoke/expire, key rotation/
+distrust, evidence refresh, idempotent response-loss join, audit/outbox/result,
+and restore invalidation. Namespace safety grants neither cleanup completion
+nor reinstall authority; scope/evidence change invalidates it.
+Verification: backend/bucket/database/schema/namespace/object-version/target
+substitution, omitted delete job/credential/lease/multipart/TTL/lifecycle rule,
+revocation without enforcement, target overlap, owner self-certification,
+collusion/separation failure, weak/stale evidence, signer/key rotation/distrust,
+expiry race, issue response loss, restore/import applicability change,
+duplicate/replay across campaign/backend/target, and delayed delete pass.
+Exit criteria: one current independently verified receipt proves every retained
+artifact and destructive mechanism is target-disjoint/fenced for one exact
+reinstall generation, or retained cleanup remains visibly ineligible.
+`v0.51.19 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.20` — Partition-Fenced Reinstall Evaluation
+
+Status: planned.
+Setup: consume one current `0.51.16` `ReinstallEligibilityV1`, final retirement
+manifest/permanent guard, `0.51.18` cleanup completion or current `0.51.19`
+retained-namespace receipt, `0.51.12` residual membership/state lineage or the
+exact `0.51.13` canonical-empty residual tuple, a fresh purpose-bound `0.51.13`
+sealed delivery cut, `0.51.14` mutation/status contract, reinstall plan/target
+generation, and the authoritative residual-owner partition manifest.
 Goal: evaluate every current residual obligation without a logically global
 lock, stale parent fold, or tenant-local mutation racing the decision.
 Deliverables:
@@ -636,32 +782,46 @@ authenticated `ReinstallPartitionEvaluationReceiptV1` binding current owner,
 fence, hold, custody, history, evidence and residual-work state plus reinstall
 plan digest and target generation. The parent folds the exact manifest/root/
 count into `ReinstallEvaluationRootV1` only after all receipts verify.
-A mutation after evaluation is blocked by the durable fence. Revalidation or
+The clean canonical-empty path deterministically emits domain-separated
+zero-member `ReinstallEvaluationRootV1` and partition-fence root/count without
+creating synthetic obligations, partitions, or receipts; missing non-clean
+state never equals those values.
+`RestrictiveSafety` mutations follow `0.51.14`: they bypass the evaluation
+fence through emergency capacity, advance the local safety epoch/invalidation
+generation, remain binding on successor guards, and force revalidation.
+Proven `DecisionNeutral` mutations preserve the candidate; every
+`PermissiveOrDestructive` mutation remains blocked. Ordinary revalidation or
 abort first performs a parent CAS to `RevalidationRequired` and issues exact
-partition fence-release authority; only then may a partition advance its local
-lineage/candidate generation and commit the mutation. No delayed invalidation
-outbox may leave the parent eligible. Fences remain active until `0.51.18`
+partition fence-release authority. No delayed invalidation outbox may leave the
+parent eligible. The evaluation binds one
+`PartitionCandidateStatusReceiptV1` per real partition and the final consumer
+must refresh that complete status root. Fences remain active until `0.51.21`
 atomically consumes the root or that already-invalidated parent drives bounded
 release across every partition. No cross-tenant transaction exists.
 Verification: omitted/duplicate partition or obligation, membership/cut/local
 generation/high-watermark/owner/fence/hold/custody/history/evidence/work/plan/
-target substitution, mutation before/during/after evaluation, invalidation
-loss, partial fencing, tenant outage, response loss, receipt replay/reordering,
-parent fold rollback, stale index, barrier expiry/release, abort/consume race,
-restore/import, starvation, and false `ReinstallEligibleCurrent` pass.
+target substitution, restrictive/neutral/permissive class confusion, urgent
+legal hold/fence/quarantine/distrust/revocation during partial evaluation and
+parent outage, stale/omitted partition-status receipt, mutation before/during/
+after evaluation, invalidation loss, partial fencing, tenant outage, response
+loss, receipt replay/reordering, parent fold rollback, stale index, barrier
+expiry/release, abort/consume race, restore/import, starvation, absent-versus-
+canonical-empty confusion, synthetic clean work, and false
+`ReinstallEligibleCurrent` pass.
 Exit criteria: one complete authenticated evaluation root represents every
 partition under still-active durable fences and a current sealed delivery cut,
-or the candidate is visibly revalidation-required/blocked and cannot be
-consumed.
-`v0.51.17 implementation stop reached. Run pentest for this exact commit.`
+or the exact clean zero-member roots do; otherwise the candidate is visibly
+revalidation-required/blocked and cannot be consumed.
+`v0.51.20 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.18` — Reinstall Guard Supersession Consumption
+## `0.51.21` — Reinstall Guard Supersession Consumption
 
 Status: planned.
-Setup: consume one `0.51.17` `ReinstallEligibleCurrent` evaluation root with
-all partition fences active, its current sealed delivery cut, one current
-`0.51.15` eligibility, final manifest/permanent-guard transfer receipt,
-`0.51.16` cleanup-complete or retained namespace-safety proof, reinstall/
+Setup: consume one `0.51.20` `ReinstallEligibleCurrent` evaluation root with
+all real partition fences active, its current purpose-bound sealed delivery cut,
+one complete fresh `0.51.14` partition-status root, one current `0.51.16`
+eligibility, final manifest/permanent-guard transfer receipt, `0.51.18`
+cleanup-complete or current `0.51.19` retained-namespace receipt, reinstall/
 rollback floor, historical compatibility set, and separately approved
 reinstall proposal from the `0.30.28` lifecycle.
 Goal: supersede permanent protection exactly once only after the independently
@@ -669,41 +829,86 @@ partitioned current-state evaluation is complete and remains fenced.
 Deliverables: one-shot control-plane CAS binding exact
 `CampaignCompletedClean | CampaignCompletedNonClean`, final manifest,
 permanent-guard generation/receipt, membership/lineage, sealed delivery cut,
-`ReinstallEvaluationRootV1`, active partition-fence root/count, cleanup/archive
-proof, reinstall floor/history, proposal/approval/expiry, target generation,
-and idempotency identity. One local transaction consumes eligibility,
-evaluation and approval; enters the reinstall state machine; replaces the
-permanent guard with a reinstall guard that binds the evaluation root and keeps
+`ReinstallEvaluationRootV1`, fresh safety-status root/count, active partition-
+fence root/count, cleanup/archive/retained-namespace proof, reinstall floor/
+history, proposal/approval/expiry, target generation, and idempotency identity.
+One local transaction consumes eligibility, evaluation and approval; moves the
+delivery cut to absorbing `ConsumedByReinstall`; moves the evaluation to
+absorbing `Consumed`; creates exact `ReinstallBarrierReleaseManifestV1` entries
+for every delivery-cut barrier and evaluation fence with reserved bounded
+release/reconciliation capacity and outbox; enters the reinstall state machine;
+replaces the permanent guard with a reinstall guard that binds the evaluation
+root and keeps
 every tenant-local residual obligation/fence authoritative; and commits result/
 audit/outbox. Any later obligation transfer remains tenant-local and cannot
-weaken that guard. Later idempotent evaluation-fence release work cannot grant
-authority or delete replacement state. Any invalid cut,
+weaken that guard. `0.51.22` release work cannot grant authority or delete
+replacement state. Any invalid cut,
 evaluation, partition fence, cleanup proof or retained namespace proof makes no
 guard change. Response-loss retries join the durable result. Ordinary enablement
 cannot mint or consume these records.
 Verification: completion/evaluation/guard-supersession race, stale/replayed
 eligibility/evaluation/cut, missing or released partition fence, candidate
-revalidation, final manifest/guard/receipt/membership/root/archive/floor/history/
+revalidation, restrictive mutation or stale/omitted status receipt, final
+manifest/guard/receipt/membership/root/archive/retained-receipt/floor/history/
 proposal/authority/target substitution, cleanup uncertainty, unsafe retained
-namespace, delayed delete, non-clean obligation erasure, response loss,
-restore rollback, duplicate consumption, and ordinary re-enable pass.
+namespace, failure to atomically enter both consumed states, incomplete dual
+release manifest/outbox/capacity, delayed delete, non-clean obligation erasure,
+response loss, restore rollback, duplicate consumption, and ordinary re-enable
+pass.
 Exit criteria: reinstall begins exactly once from the exact final guard,
 archive-safe cleanup state, current sealed cut and complete still-fenced
-evaluation under separate current authority, or permanent denial and every
-obligation/fence remain unchanged.
-`v0.51.18 implementation stop reached. Run pentest for this exact commit.`
+evaluation under separate current authority; both candidates become absorbing
+and durable release work exists, or permanent denial and every obligation/
+fence remain unchanged.
+`v0.51.21 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.22` — Reinstall Barrier And Evaluation-Fence Release Reconciliation
+
+Status: planned.
+Setup: consume one successful `0.51.21` reinstall, its absorbing
+`ConsumedByReinstall` cut/`Consumed` evaluation, exact
+`ReinstallBarrierReleaseManifestV1`, reserved reconciliation capacity, and
+authoritative owner-partition routing.
+Goal: remove every obsolete delivery barrier and evaluation fence without
+weakening retained restrictions or leaving old candidate state able to block
+the new generation.
+Deliverables:
+`ReinstallReleaseDispatching → ReinstallReleaseReconciling →
+ReinstallBarriersReleased | ReinstallBarriersRetained`. Dispatch deterministic
+idempotent work with bounded cursor/batch/concurrency/storage/retry budgets,
+fairness, and protected recovery capacity. Each partition atomically verifies
+cut/evaluation/target generation, candidate barrier/fence generations and
+safety epoch; releases only those obsolete candidate controls; preserves every
+restrictive residual fence/hold/quarantine/distrust/revocation; and commits one
+authenticated receipt or explicit successor-owner retention receipt with
+result/audit/outbox. Parent inbox deduplication folds the exact dual-kind
+manifest/root/count. Cleanup of cut/evaluation control rows and release capacity
+waits for the complete receipt/retention root. Restore/import resume from the
+checkpoint and never revive either candidate.
+Verification: omitted/duplicate delivery barrier or evaluation fence, wrong
+cut/evaluation/target/safety epoch, residual restriction release, restrictive
+mutation during reconciliation, partial tenant/network outage, response loss,
+replay/reorder, receipt/owner substitution, cursor/root rollback, starvation,
+early control-row cleanup or capacity release, restore with old barriers,
+consumed-candidate revival, and new-generation blockage pass.
+Exit criteria: every obsolete control in the exact reinstall release manifest
+is proved released or durably retained under a successor owner, restrictive
+state remains enforced, and neither consumed candidate can block or authorize
+future work.
+`v0.51.22 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.4` — Domain Retirement And Historical Compatibility Certification
 
 Status: planned.
 Setup: consume `0.30.28` retirement contracts, `0.30.29` authority/recovery
-protocol and evidence, the applicable `0.51.5–0.51.18` deployment cut lifecycle,
+protocol and evidence, the applicable `0.51.5–0.51.22` deployment cut lifecycle,
 approved exact-plan admission/succession, narrow-guard/topology handoff,
 protection-root integration, clean/non-clean terminal aggregation, residual-
-obligation lineage evolution and transition delivery cuts, terminalization
-reserves, archive-safe cleanup, partition-fenced evaluation, and final guard-
-supersession consumption, current
-domain/contribution generations, `0.145.3`
+obligation lineage evolution, transition delivery cuts, mutation safety
+classification/emergency invalidation, takeover/reinstall barrier-release
+reconciliation, terminalization reserves, archive-safe cleanup, retained-
+namespace verification, partition-fenced evaluation, and final guard-
+supersession consumption, current domain/contribution generations, `0.145.3`
 lifecycle/recovery evidence,
 installed-extension state, cross-domain dependencies, outstanding durable work,
 retained event/snapshot/export/backup/import history, deferrals, and product state.
@@ -716,12 +921,14 @@ authorization evidence, broad-to-narrow fence-transfer receipt, authoritative
 post-cut absence/child-handoff journal, joint plan/protection-root lineage,
 terminal classification, residual-obligation ownership root, exact takeover
 authorization, immutable residual membership/current state lineage,
-tenant-local handoff receipts, sealed transition-delivery cuts, permanent-guard
-slot/transfer receipt, classified final manifest, terminalization reserve,
-archive checkpoint/replay head and cleanup outcome, partition evaluation/fence
-roots, reinstall eligibility/consumption evidence, cut-release cursor and
-dependency proof,
-campaign pause/revocation/resume, fairness and terminal-manifest evidence,
+tenant-local handoff receipts, sealed/consumed transition-delivery cuts,
+mutation-classification/safety-epoch/status evidence, permanent-guard slot/
+transfer receipt, classified final manifest, takeover barrier-release root,
+terminalization reserve, archive checkpoint/replay head and cleanup outcome,
+retained-namespace safety receipt, partition evaluation/fence roots, reinstall
+eligibility/consumption and dual release evidence, cut-release cursor and
+dependency proof, campaign pause/revocation/resume, fairness and terminal-
+manifest evidence,
 data-disposition/legal-hold proof, codec/upcaster retention set, historical
 read/restore/import matrix, reinstall/rollback-floor matrix, and certification report.
 Verification: stale or unauthorized retirement plan, crash-resume divergence,
@@ -741,14 +948,18 @@ non-clean terminal infrastructure deadlock, omitted/rescoped residual obligation
 cross-tenant obligation transaction, tenant handoff outage/replay/starvation,
 unowned custody/hold/history/evidence/work, residual membership mutation or
 state-head fork/rollback, unseen local transition/outbox, delivery-cut
-high-watermark/acknowledgement/barrier forgery, stale/forged takeover
+high-watermark/acknowledgement/barrier forgery, consumed-cut revival, missing or
+starved barrier release, restrictive mutation blockage/misclassification,
+safety-epoch/status/activation-permit rollback or forgery, stale takeover
 authorization, unrelated topology churn starvation, takeover after authority/
 key revocation, terminalization-reserve early release, archive omission/
-corruption, delete-before-archive, unknown deletion claimed complete, cleanup
-capacity release under uncertainty, unsafe retained namespace, partition
-evaluation TOCTOU, invalidation loss, released evaluation fence, cleanup-
-pending reinstall, completion with blocked/unresolved child or unfolded handoff,
-campaign cursor rollback,
+corruption or archival with installed unowned barrier, delete-before-archive,
+unknown deletion claimed complete, cleanup capacity release under uncertainty,
+retained-namespace self-certification/scope omission/delayed delete, clean
+absent-versus-canonical-empty confusion, partition evaluation TOCTOU,
+invalidation loss, released evaluation fence, incomplete reinstall dual release,
+cleanup-pending reinstall, completion with blocked/unresolved child or unfolded
+handoff, campaign cursor rollback,
 large-tenant fairness starvation, loss terminal presented as clean, late work,
 dangling reference, early/stale reinstall eligibility, reinstall race or
 residual/floor/history bypass, codec loss, premature deletion,

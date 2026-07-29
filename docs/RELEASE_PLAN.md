@@ -16,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 384 exact stops: 150 base `0.x.0` stops, 233
+The canonical roadmap contains 388 exact stops: 150 base `0.x.0` stops, 237
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -99,7 +99,7 @@ Their exact handoffs live in
 [Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md).
 
 The coherence additions are `0.18.15–0.18.16`, `0.30.23–0.30.29`, `0.50.18`,
-`0.51.3–0.51.18`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
+`0.51.3–0.51.22`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
 `0.120.8–0.120.10`, `0.132.4`, `0.138.6–0.138.7`, `0.140.28`, and `0.145.4`.
 Their exact handoffs live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
@@ -167,7 +167,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 384-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 388-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -915,12 +915,16 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.51.10` | Bounded fair child execution and complete terminal aggregation into clean, non-clean, or blocked-nonterminal branches | Unauthorized dispatch, fabricated retirement for absence, hidden terminal loss, nonterminal treated ready, cursor rollback, starvation |
 | `0.51.11` | Bounded process-manager handoff of non-clean residual obligations through tenant-local atomic owner acceptance | Cross-tenant transaction, partial acceptance, tenant outage, receipt substitution/replay, fold rollback, starvation, premature cleanup |
 | `0.51.12` | Immutable residual membership and predecessor-linked mutable residual-state evolution | Membership mutation, state fork/rollback, unauthorized transition, receipt replay, restore divergence, stale eligibility lineage |
-| `0.51.13` | Restore-safe residual-transition delivery cut over every owner partition and source sequence | Delayed outbox, high-watermark/ack/fold substitution, barrier race, unseen local transition, invalidation loss |
-| `0.51.14` | Fresh separated permanent-guard authorization over one target slot and sealed residual cut | Stale plan/cut, slot/manifest/root/guard substitution, unrelated topology churn starvation, key/revoke/expiry race |
-| `0.51.15` | Slot-scoped permanent takeover and classified atomic completion under terminalization reserve | Protection gap, delivery-cut invalidation, finalization-capacity loss, false clean, early resource release/eligibility |
-| `0.51.16` | Authenticated campaign archive checkpoints and uncertainty-preserving cleanup reconciliation | Archive omission/corruption, delete-before-verify, partial archive/head/delete, false cleanup, capacity release, delayed delete |
-| `0.51.17` | Bounded partition-fenced reinstall evaluation and authenticated evaluation-root reconciliation | Tenant mutation TOCTOU, partial fencing, stale local generation, invalidation loss, receipt replay, starvation |
-| `0.51.18` | Exact final guard-supersession consumption from a current fenced evaluation and archive-safe cleanup state | Stale evaluation/cut, released fence, cleanup uncertainty, unsafe retained namespace, obligation erasure, duplicate consumption |
+| `0.51.13` | Restore-safe purpose-bound delivery cuts, consuming states, release manifests, and canonical-empty residual tuple | Delayed outbox, barrier race, consumed-cut revival, absent/empty confusion, missing release work |
+| `0.51.14` | Closed residual-mutation classification, protected restrictive lane, safety epochs, invalidation and source status | Misclassification, blocked legal hold/revocation, emergency starvation, stale status/permit, invalidation loss |
+| `0.51.15` | Fresh permanent-guard authorization over one target slot, sealed cut, and safety-status root | Stale plan/cut/status, slot/root/guard substitution, topology starvation, key/revoke/expiry race |
+| `0.51.16` | Atomic permanent takeover/completion, ConsumedByTakeover and bounded barrier-release work | Protection gap, restrictive mutation race, incomplete consumed/release state, capacity loss, false clean |
+| `0.51.17` | Takeover delivery-barrier release/retention reconciliation | Wrong barrier release, residual restriction loss, outage/replay, successor-owner substitution, premature archive |
+| `0.51.18` | Authenticated campaign archive checkpoints and uncertainty-preserving cleanup reconciliation | Archive omission/corruption, delete-before-verify, partial archive/head/delete, false cleanup, capacity release |
+| `0.51.19` | Independent retained-campaign namespace-safety authorization | Self-certification, omitted deletion mechanism, target overlap, stale evidence/key, delayed delete |
+| `0.51.20` | Bounded partition-fenced reinstall evaluation with restrictive bypass and canonical clean-empty result | Mutation class confusion, partial fencing, stale status, invalidation loss, absent/empty confusion, starvation |
+| `0.51.21` | Exact guard supersession with absorbing cut/evaluation consumption and dual release manifest | Stale status/evaluation, restrictive race, unsafe retained namespace, partial consumption/release, obligation erasure |
+| `0.51.22` | Reinstall delivery-barrier/evaluation-fence release or successor retention reconciliation | Wrong control release, residual restriction loss, outage/replay, premature cleanup, consumed revival, new-generation blockage |
 | `0.52.0` | Subjects, service principals, independent external-identity mapping epochs, and law-generation expansion | Activate `VIT-LAW-001` g04/`VIT-LAW-006` g03; principal/mapping revocation racing dispatch, unsafe linking, immutable issuer-subject identity, epoch reuse, recreation |
 | `0.52.1` | OAuth resource-server workload authentication, mapping epoch, and law-generation expansion | Activate `VIT-LAW-001` g05/`VIT-LAW-006` g04; workload remap/revoke race, stale external privileged fact, false sender constraint, bearer escalation, issuer/audience confusion |
 | `0.53.0` | Hosted OIDC integration, independent interactive-session epoch, and law-generation expansion | Activate `VIT-LAW-001` g06/`VIT-LAW-006` g05; discovery, mix-up, replay, downgrade, fixation, logout/assurance racing dispatch |

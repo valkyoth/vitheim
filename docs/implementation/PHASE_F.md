@@ -11,10 +11,10 @@ authority, `0.51.8` transfers broad topology fencing to a narrow domain guard
 with authoritative post-cut handoffs, `0.51.9` roots successor/protection state,
 `0.51.10` aggregates bounded fair child terminals, `0.51.11` transfers non-clean
 residual obligations tenant-locally, `0.51.12` governs residual membership/state
-lineage, `0.51.13` seals current partition delivery, `0.51.14` authorizes exact
-target-slot takeover, `0.51.15` completes under reserved permanent protection,
-`0.51.16` archives before cleanup, `0.51.17` evaluates under partition fences,
-and `0.51.18` consumes only that current evaluation to supersede the guard;
+lineage, `0.51.13` seals/consumes partition delivery, `0.51.14` owns restrictive
+emergency invalidation, `0.51.15–0.51.17` authorize/complete takeover and
+release its barriers, `0.51.18–0.51.19` archive/verify retained cleanup, and
+`0.51.20–0.51.22` evaluate/consume reinstall and release both control families;
 `0.60.3` defines/backfills authoritative-interface references and installs the
 prospective gate; `0.60.4` certifies them, while `0.120.8` certifies later domains.
 
