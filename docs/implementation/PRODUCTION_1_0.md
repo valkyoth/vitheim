@@ -1875,9 +1875,12 @@ Verification:
   Every domain manifest has a dedicated `DomainId`, exact requirement/crate/
   aggregate/stream/command/event/upcaster-owner/read/consumer links, an admitted
   complete metadata generation, and no unresolved required defer. Metadata
-  admission has not enabled a tenant feature, plugin, license, entitlement, or
-  authorization. The event-ownership/evolution gate has passed at every
-  introducing domain stop, and immediate tenant-surface certification passes.
+  admission has not enabled a tenant feature, plugin, consumer, license,
+  entitlement, or authorization. Every contribution kind names its registry,
+  lifecycle binding, mandatory test dimensions, and certifier; no existing
+  schema/store/route/derived surface/effect/message uses deferral to avoid
+  structural controls. Event and durable asynchronous ownership gates pass at
+  every introducing domain stop, and immediate tenant-surface certification passes.
   Policy, tenant-surface, workflow, search, workspace, API,
   and transfer references resolve to their authoritative registries with no
   copied semantics; every separate extension/backfill and certification stop
@@ -1886,9 +1889,12 @@ Verification:
   API/SDK/subscription,
   import/export/configuration, cross-surface differential, and lifecycle/
   backup/restore/erasure stops have passing evidence for every selected
-  capability. A deferred `0.86.2` profile exposes cloud-native kinds as
+  capability. Every selected domain/module/plugin retirement has separately
+  passing authority/work drainage, data/hold disposition, retained-history
+  codec/upcaster, backup/import, external-reference, and safe-reinstall evidence
+  from `0.145.4`, or remains visibly blocked. A deferred `0.86.2` profile exposes cloud-native kinds as
   manual/generic-import-only and makes no automatic discovery claim.
-- The generated roadmap/evidence differential proves exactly 366 release
+- The generated roadmap/evidence differential proves exactly 369 release
   stops and their owners, authority reviews and pentest reports; it rejects any
   README, API discovery, UI navigation, release-note, installer, operator or
   support-matrix claim without a matching executable owner and exact evidence.

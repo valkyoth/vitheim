@@ -16,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 366 exact stops: 150 base `0.x.0` stops, 215
+The canonical roadmap contains 369 exact stops: 150 base `0.x.0` stops, 218
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -61,7 +61,7 @@ family ledgers were retained for their security context but decomposed into 65
 new exact stops. The later capability-gap review added 21 independently scoped
 product, verification, and profile-decision companions. The second review added
 31 requirement-ownership, domain-decomposition, cross-surface integration, and
-cloud-discovery companions. The coherence reviews added 20 requirement-source,
+cloud-discovery companions. The coherence reviews added 23 requirement-source,
 dependency-feasibility, phased-surface-ownership, domain-boundary, adapter-
 placement, and chronology companions:
 
@@ -98,9 +98,9 @@ The second additions are `0.18.14`, `0.20.5`, `0.30.18–0.30.22`,
 Their exact handoffs live in
 [Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md).
 
-The coherence additions are `0.18.15–0.18.16`, `0.30.23–0.30.26`, `0.50.18`,
+The coherence additions are `0.18.15–0.18.16`, `0.30.23–0.30.28`, `0.50.18`,
 `0.51.3–0.51.4`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
-`0.120.8–0.120.10`, `0.132.4`, `0.138.6–0.138.7`, and `0.140.28`.
+`0.120.8–0.120.10`, `0.132.4`, `0.138.6–0.138.7`, `0.140.28`, and `0.145.4`.
 Their exact handoffs live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md).
 
@@ -166,7 +166,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 366-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 369-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -247,9 +247,11 @@ implementations remain blocked rather than being implemented casually.
 | `0.30.21` | Complete Phase L–production requirement ownership | Optional/core confusion, missing external/profile/restore/pentest/support owner |
 | `0.30.22` | Stable early service/asset/agreement/customer/contact/supplier references and read-port fakes | Cross-type/tenant substitution, ref-as-authority, hidden/stale/unbounded reads, duplicate identity vocabulary |
 | `0.30.23` | Stable domain manifest, dedicated `DomainId`, requirement/crate plus aggregate/stream/command/event/read/consumer links, and typed reference envelope | Requirement/domain confusion, duplicate ID, wrong-domain event, unowned upcaster, embedded future mapping, authority grant |
-| `0.30.24` | Contribution-kind references, scope-separated complete metadata admission, composition, compatibility, and rollback safety | Dangling/mismatched ID, namespace collision, dependency cycle, downgrade, mixed-node drift, partial admission, metadata-as-enable |
-| `0.30.25` | Contribution deferral lifecycle and product-state/certification gates | Incomplete/expired defer, owner/retest gap, defer loop, silent support, final-certification bypass |
+| `0.30.24` | Contribution-kind references, required registry/lifecycle/test/certification dimensions, scope-separated metadata admission, compatibility, and rollback safety | Dangling/mismatched ID, missing kind obligations, namespace/dependency collision, downgrade, partial admission, metadata-as-enable |
+| `0.30.25` | Contribution deferral lifecycle, structural no-deferral rule, and product-state/certification gates | Existing schema/store/route/derived/effect/message deferred, incomplete/expired defer, owner/retest gap, silent support, bypass |
 | `0.30.26` | Current domain-event ownership backfill and prospective emission/consumer/upcaster/generation gate | Unowned/wrong-domain event, undeclared emission/consumption, owner mismatch, stale generation, future-only claim, bypass |
+| `0.30.27` | Current durable asynchronous-contract ownership backfill and prospective effect/message/consumer/timer/activity/result gate | Kind/instance confusion, wrong schema/destination/consumer/result owner, missing reconciliation/compensation, downgrade, metadata enablement |
+| `0.30.28` | Domain retirement state, permanent ID tombstone, authority/work/dependency drainage, data/history disposition, and prospective gate | ID reuse, late command/effect, undrained work/reference, codec loss, hold/backup/import break, uninstall/data confusion, unsafe reinstall |
 
 ### Migration/import irreversible-operation hardening map
 
@@ -1146,7 +1148,7 @@ Phase exit: administrators and external portal users pass full boundary review.
 | `0.138.6` | External API/SDK assembly, freeze, compatibility, and contribution certification | Mass assignment, cursor/consistency mismatch, SDK drift, unresolved defer, late implementation |
 | `0.138.7` | Transfer/configuration composition, round-trip, activation, and contribution certification | Secret export, generic fallback, partial activation, unresolved defer, late implementation |
 | `0.139.0` | Accessibility, localization, mobile layouts | Localization injection and client-state leakage |
-| `0.139.1` | Requirement-, manifest/contribution-, and authorization-driven full-suite cross-surface differential suite | Missing differential, stale generation, false not-applicable/defer/support, absent manifest/surface, semantic/redaction drift |
+| `0.139.1` | Contribution-kind-driven full-suite differential suite jointly sourced from requirements, manifests, and authorization | Kind missing registry/lifecycle/certification/test dimensions, missing differential, stale generation, false defer/support, future-surface omission |
 | `0.140.0` | Operator and tenant administration console | Administrative privilege and support boundaries |
 
 ## Pre-Production Profile Freeze Decisions
@@ -1194,6 +1196,7 @@ exit: production candidate has passed external pentest and all acceptance tests.
 | `0.145.0` | Backup format, manifest, encryption, custody, and creation path | Backup integrity/custody/partial-write/key/profile tests; restore and DR are `0.145.1–0.145.2` |
 | `0.145.1–0.145.2` | Restore/readiness and full DR/failback/disposition certification | Separate destructive restore and regional-loss exercises with exact evidence |
 | `0.145.3` | Manifest-driven destructive full-suite lifecycle and recovery certification after immediate `0.51.4` coverage | Omitted/stale contribution, unresolved defer, late-added reference/handler, resurrection, false evidence, restore divergence |
+| `0.145.4` | Destructive domain/module/plugin retirement, historical readability, restore/import, and reinstall certification | Late authority/work, dependency/data/hold loss, missing codec/upcaster, backup/import failure, ID reuse, downgrade, late implementation |
 | `0.146.0` | Reproducible load harness, workload profiles, ceilings, and invariant oracle | Harness calibration and boundary tests only; soak and chaos are `0.146.1–0.146.2` |
 | `0.146.1–0.146.2` | Soak/fairness and chaos/recovery-capacity certification | Independent sustained-load and compound-fault evidence sets |
 | `0.147.0` | Final profile-governance, topology replay-lifecycle, bearer-memory, executor, migration/import-budget/activation, and supply-chain hardening | Retain prior authority/conservation/cut/physical-capacity audit; add cleanup fairness/backlog, per-unit settlement attribution, counter immutability and terminal-result parity |

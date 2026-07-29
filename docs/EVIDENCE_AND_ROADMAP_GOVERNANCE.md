@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **366 independently pentestable release stops**:
+The roadmap contains exactly **369 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 215 companion stops + 1 production stop = 366`.
+`150 base 0.x.0 stops + 218 companion stops + 1 production stop = 369`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “366 exact release stops” describe different
+included. “151 base stops” and “369 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 366 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 369 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -194,11 +194,25 @@ catalog membership, deployment-profile selection, tenant feature availability,
 and signed plugin installation are distinct scopes. Metadata admission never
 enables a tenant feature, installs a plugin, grants a license, or authorizes
 access; runtime availability remains separately filtered by tenant, policy,
-entitlement, license, and installation state. Unknown kinds, namespace
+entitlement, license, and installation state. Each `ContributionKindId` also
+declares its authoritative registry, lifecycle binding, mandatory verification
+dimensions, certification owner, and generated-test obligations. Unknown kinds,
+missing obligations, namespace
 collisions, dependency/recovery cycles, mixed-version disagreement, downgrade,
 partial admission, and plugin attempts to grant authority fail closed. A
 reference never grants authorization, exposes a command, or overrides policy or
 lifecycle semantics.
+
+`0.30.27` extends the prospective ownership gate across durable asynchronous
+contracts: effect kind versus immutable execution identity, message schemas and
+consumers, timer/activity kinds, result/reconciliation owners, and compensation
+effects. `0.30.28` gives every domain an introduction-time retirement contract
+with permanent `DomainId` tombstone, command/effect fencing, dependency and
+durable-work drainage, data disposition, historical codec/upcaster preservation,
+and reinstall/rollback floors. Plugin uninstall and tenant feature disablement
+never imply domain-data retirement. `0.145.4` later performs destructive
+selected-profile retirement/history/restore/reinstall certification and cannot
+first implement missing teardown behavior.
 
 Typed extensions appear only after their vocabulary exists. `0.51.3–0.51.4`
 reference and immediately certify the authoritative `TenantDataSurface`
@@ -210,13 +224,19 @@ register prospectively, while `0.120.8–0.120.10` certify their applicable
 authorization, automation, and search references from current manifest
 generations, exact authoritative IDs, deferrals, and product state. `0.139.1`
 generates differentials jointly from requirements, manifests/contributions,
-and authorization interfaces. `0.145.3` consumes the same model for destructive
+and authorization interfaces by iterating every active contribution kind and
+its declared dimensions rather than a fixed surface list. `0.145.3` consumes the same model for destructive
 full-suite lifecycle/recovery certification and cannot create a reference or handler.
 
 `0.30.25` makes a defer an explicit lifecycle record with implementation
 milestone, prerequisite, responsible crate, retest owner, product-state effect,
 review/expiry, and closure evidence. No Supported capability, RC, or `1.0.0`
-profile can retain an unresolved required defer. Generated checks reject
+profile can retain an unresolved required defer. Deferral is valid only while a
+surface is absent and unimplemented; an existing event schema, tenant-bearing
+store, exposed route/read/action, derived surface, emitted effect, or accepted
+message must immediately register its structural owner and applicable policy,
+lifecycle, deletion/rebuild, and reconciliation behavior regardless of support
+wording. Generated checks reject
 dangling or disagreeing references and cover attachments/blobs, audit/evidence,
 subscriptions/changefeeds, reports/analytics/counts, telemetry, federation/
 external replicas, caches, queues, inbox/outbox, and every other tenant-bearing

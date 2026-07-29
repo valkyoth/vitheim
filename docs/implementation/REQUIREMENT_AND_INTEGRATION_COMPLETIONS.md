@@ -472,21 +472,25 @@ entries; `0.138.7` alone composes and certifies them.
 Status: planned.
 Setup: derive cases jointly from the requirement registry, current
 `DomainManifest` generations and exact typed contribution references, and the
-authorization/redaction interface registry for every domain across application/
-API/SDK/UI/search/history/workflow/notification/import/export/configuration/
-subscription surfaces; consume deferrals and product state.
+authorization/redaction interface registry; iterate every active
+`ContributionKindId` and its mandatory verification dimensions/certification
+owner rather than a fixed surface list, and consume deferrals and product state.
 Goal: prove semantic, authorization, redaction, and support-state equivalence.
 Deliverables: generated cross-surface matrix, golden domain journeys, tenant/
-role/field pairs, contribution-to-differential coverage report, correction/
-revocation fixtures, and evidence report.
+role/field pairs, contribution-kind/dimension/owner coverage report, generated
+future-kind test obligations, correction/revocation fixtures, and evidence report.
 Verification: mutation/read mismatch, hidden field/count, stale lifecycle,
 contribution without a differential, stale contribution generation, required
 surface marked not applicable, deferred surface shown as supported, requirement
 without an active manifest, manifest surface absent from API/UI/search/export,
-fake/real divergence, retry/cursor mismatch, and cross-surface differential pass.
+active/new contribution kind missing authoritative registry, lifecycle binding,
+certification owner, or required test dimension, attachment/audit/report/count/
+telemetry/federation/webhook/external-replica omission, fake/real divergence,
+retry/cursor mismatch, and cross-surface differential pass.
 Exit criteria: no registered full-suite requirement, active manifest
-contribution, or authorization interface lacks its required positive, negative,
-boundary, correction, and revocation comparison.
+contribution/kind dimension, or authorization interface lacks its generated
+required comparison; adding a contribution kind expands the suite without
+editing a hard-coded surface list.
 `v0.139.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.3` — Full-Suite Lifecycle And Recovery Certification

@@ -6,6 +6,10 @@ authoritative tenant data-surface references, deferrals/product state,
 backup/restore, retention, hold, privacy, continuity, and erasure contributions
 for every selected full-suite profile; it cannot add a missing reference,
 registration, handler, or recovery behavior.
+Focused `0.145.4` then destructively certifies the independently implemented
+`0.30.28` domain-retirement contract across authority/work drainage, data and
+hold disposition, retained history/codecs, backup/import, external references,
+plugin uninstall, and safe reinstall; it cannot first implement teardown.
 
 Scope: `0.141.0–0.150.0`. Claims require operational evidence, not schedule.
 The pre-Phase-O `0.140.28` decision blocks a Hosted production claim unless
@@ -2293,7 +2297,7 @@ and runtime supply-chain paths. Deliverables: audits, a generated capability-
 evidence report that rejects `Specified` or `Implementing` support claims and
 binds every `Implemented`, `Conditional`, `Supported`, or `Unsupported` entry
 to its executable owner and exact immutable evidence; a generated canonical
-roadmap report proving all 366 stops, owners, authority reviews and pentest
+roadmap report proving all 369 stops, owners, authority reviews and pentest
 markers agree; candidate-tree/artifact-
 bound signed evidence, SBOM/provenance, reproducible artifacts, permit-memory/
 diagnostic exposure report, executor credential-operation/egress isolation and
@@ -2827,7 +2831,7 @@ tombstone state, independent remediation profile/credential-lineage/audit/
 cleanup-quota/manual-only state, and durable fully typed floor-profile ratchet state. Goal:
 final pre-RC readiness
 proof. Deliverables: complete candidate bundle, runbooks, acceptance report,
-canonical 366-stop roadmap report, zero-drift capability-evidence/support
+canonical 369-stop roadmap report, zero-drift capability-evidence/support
 matrix, explicit conditional and unsupported profiles,
 no-permit-transport proof, fresh-parent-activation evidence, and floor-ratchet
 compatibility evidence including total typed-key migrations and successor

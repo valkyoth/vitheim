@@ -10,7 +10,10 @@ domain/application/event reference manifest, scope-separated contribution
 metadata admission, and deferral gates; `0.30.26` separately checks event
 ownership, emission/consumption, upcaster ownership, and generation
 compatibility for current applicable owners, then installs the prospective
-domain-exit gate without defining missing behavior.
+domain-exit gate without defining missing behavior. `0.30.27` installs the
+parallel effect/message/consumer/timer/activity/result ownership gate, and
+`0.30.28` defines the permanent-ID, fenced, drained, history-preserving
+retirement contract required of every later domain.
 Every database profile must implement every applicable negotiated `0.18.2`
 `AtomicWorkCommitBundle` variant and every other mandatory semantic port claimed
 for that profile, or fail startup capability negotiation. No adapter may

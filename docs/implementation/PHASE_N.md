@@ -5,6 +5,8 @@ Focused `0.132.3–0.132.4`, `0.138.4–0.138.7`, and `0.139.1` stops define/
 backfill then separately compose/freeze/certify workspace/admin, external
 API/SDK/subscription, transfer/configuration, and requirement-, manifest/
 contribution-, and authorization-driven cross-surface differentials.
+`0.139.1` iterates every active contribution kind's declared verification
+dimensions so future surfaces cannot bypass the suite.
 
 ## `0.131.0` — Unified Shell And Command Palette
 Status: planned. Setup: action registry, discovery policy, keyboard model, context, confirmation. Goal: one safe navigation/action shell. Deliverables: shell and palette. Verification: unauthorized discovery/execution, stale context, shortcut spoofing, injection, accessibility pass. Exit criteria: discovery never grants authority. `v0.131.0 implementation stop reached. Run pentest for this exact commit.`

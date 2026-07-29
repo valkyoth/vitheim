@@ -50,6 +50,12 @@ require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     '0.30.26` — Domain Event Ownership And Compatibility Gate' \
     'domain event ownership gate'
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    '0.30.27` — Asynchronous Contract Ownership And Compatibility Gate' \
+    'asynchronous contract ownership gate'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    '0.30.28` — Domain Retirement Contract And Prospective Gate' \
+    'domain retirement contract'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     '0.51.3` — Tenant-Surface Reference Extension And Backfill' \
     'authoritative tenant-surface references'
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
@@ -58,6 +64,12 @@ require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     '0.140.28` — Minimum Hosted Production Profile Go/No-Go' \
     'hosted production feasibility gate'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    '0.145.4` — Domain Retirement And Historical Compatibility Certification' \
+    'domain retirement certification'
+require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
+    'contribution-kind/dimension/owner coverage report' \
+    'contribution-kind-driven differential suite'
 require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
     'reference, registration, lifecycle handler, or recovery behavior is first added' \
     'lifecycle stop is certification only'

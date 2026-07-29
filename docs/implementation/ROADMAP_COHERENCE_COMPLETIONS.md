@@ -86,19 +86,24 @@ entry ID, schema version, generation/digest, domain-schema compatibility,
 dependencies, metadata admission, supersession, rollback floor, mixed-version
 behavior, and an explicit scope distinction among compiled first-party catalog,
 deployment-profile selection, tenant feature availability, and signed plugin
-installation.
+installation. Every kind declaration names its authoritative registry,
+lifecycle/retention binding, required authorization/redaction, tenant-isolation,
+positive/negative/boundary, revocation/correction, rebuild/recovery, and
+cross-surface verification dimensions, certification owner, and generated-test
+obligations.
 Goal: compose future typed extensions without duplicating their registries or
 letting manifest metadata become authority.
 Deliverables: reference resolver, kind catalog, complete-generation metadata-
 admission protocol, scope discriminant, first-party/deployment/plugin admission
 bindings, tenant-availability separation, collision/dependency checker,
-compatibility matrix, and HA fixtures.
+verification-obligation schema/generator, compatibility matrix, and HA fixtures.
 Verification: dangling/mismatched reference, route/resource/command/event/
 trigger/facet/block/document namespace collision, dependency/recovery cycle,
 schema mismatch, downgrade/rollback, mixed-node interpretation, unknown kind,
 partial admission, profile/plugin/tenant scope substitution, metadata admission
-enabling a feature or license, plugin installation enabling another tenant, and
-digest substitution pass.
+enabling a feature or license, plugin installation enabling another tenant,
+kind missing registry/lifecycle/certification/test obligations, dimension
+downgrade, and digest substitution pass.
 Exit criteria: one domain contribution generation is admitted atomically only
 when every reference resolves to the exact authoritative entry; metadata
 admission never enables a tenant feature, installs a plugin, grants a license
@@ -113,17 +118,24 @@ Status: planned.
 Setup: define required/not-applicable/deferred contribution states with exact
 implementation milestone, blocking prerequisite, responsible crate, retest
 milestone, Supported/Conditional/Unsupported effect, review/expiry point,
-supersession, and closure evidence.
+supersession, and closure evidence. Deferral applies only to an absent,
+unimplemented surface: an existing event schema, tenant-bearing store, exposed
+route/read/action, derived surface, emitted effect, or accepted message requires
+its structural ownership, policy/redaction, lifecycle, deletion/rebuild, and
+reconciliation registrations immediately.
 Goal: permit honest sequencing without allowing difficult surfaces to remain
 indefinitely deferred behind a nominally supported domain.
 Deliverables: deferral record/lifecycle, overdue review and product-state
 projection, certification blocker, generated unresolved report, and fixtures.
 Verification: owner-only defer, missing prerequisite/crate/retest, expiry
 rollback, defer loop, false not-applicable, silent support, stale closure,
-supersession fork, and final-certification bypass pass.
+supersession fork, existing event/store/route/derived surface/effect/message
+marked deferred, and final-certification bypass pass.
 Exit criteria: a domain may exit with a bounded deferral only when all fields
-are complete and its product state reflects the gap; no Supported capability,
-RC, or `1.0.0` profile has an unresolved required contribution.
+are complete, no structural artifact exists, and its product state reflects the
+gap; existing code, data, routing, or schema is registered regardless of
+advertised support, and no Supported capability, RC, or `1.0.0` profile has an
+unresolved required contribution.
 `v0.30.25 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.30.26` — Domain Event Ownership And Compatibility Gate
@@ -149,6 +161,57 @@ authoritative event lineage and compatible generation, and no later domain can
 exit until the same checks pass at its introducing stop; missing behavior
 blocks its owner and is never added here.
 `v0.30.26 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.30.27` — Asynchronous Contract Ownership And Compatibility Gate
+
+Status: planned.
+Setup: consume `0.16.0–0.18.2` authoritative outbox/effect, inbox/message,
+timer/activity, result/reconciliation, and compensation contracts plus current
+domain manifests. Distinguish stable `EffectKindId` capability/request schema
+from immutable execution `EffectId`, and register exact `MessageSchemaId`,
+`ConsumerId`, `TimerKindId`, `ActivityKindId`, result/reconciliation owner, and
+compensation-effect-kind references.
+Goal: complete command→event/outbox→consumer→resulting-event/effect ownership
+for current contracts and every later domain without moving execution authority
+into manifest metadata.
+Deliverables: `DomainAsyncContractV1` references, current ownership backfill,
+command/effect/message/consumer/result matrix, generation-compatibility corpus,
+and prospective domain-exit checker.
+Verification: undeclared command outbox effect, kind/instance identity
+confusion, unowned or wrong-destination message, consumer accepting undeclared
+schema/version, consumer emitting undeclared event/effect, wrong result owner,
+missing reconciliation/compensation owner, schema downgrade, metadata-enabled
+unsupported consumer, future-only claim, and later-domain bypass pass.
+Exit criteria: every current asynchronous path resolves to exact authoritative
+kind/schema/consumer/result owners and compatible generations, and no later
+domain exits without the same proof; the gate creates no effect, message,
+consumer, timer, activity, reconciliation, or compensation behavior.
+`v0.30.27 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.30.28` — Domain Retirement Contract And Prospective Gate
+
+Status: planned.
+Setup: extend the domain registry with `Active → Deprecated → Quiescing →
+Retired`, permanent `DomainId` non-reuse, command/effect admission fences,
+dependency/drain and data-disposition references, codec/upcaster preservation,
+rollback/reinstallation floors, and a distinction between plugin uninstall,
+tenant feature disablement, and domain-data retirement.
+Goal: make safe removal a domain-owned lifecycle from introduction rather than
+first designing teardown during production certification.
+Deliverables: `DomainRetirementStateV1`, immutable ID tombstone, dependency and
+outstanding-work manifest, quiescence/fence contract, historical-codec and data-
+disposition obligations, rollback/reinstall rules, and prospective domain-exit gate.
+Verification: `DomainId` reuse, retirement with incoming references, command/
+effect admitted after fence, undrained workflow/API/search/notification edge,
+pending inbox/outbox/timer/activity loss, codec/upcaster removal with retained
+history, projection disposal before rebuild/disposition, hold/export/erasure
+bypass, plugin uninstall treated as data deletion, reinstall below floor,
+future backup/import incompatibility, and future-only retirement claim pass.
+Exit criteria: each current applicable manifest has an explicit retirement
+contract and every later domain must define one at introduction; retirement
+cannot complete while authority, work, data, retained history, backup/import,
+or external-reference obligations remain unresolved.
+`v0.30.28 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.50.18` — Supplier Performance Assessment And Risk Proposals
 
@@ -405,3 +468,28 @@ Exit criteria: `1.0.0` proceeds as a Hosted production product only if every
 mandatory baseline capability is Supported with exact evidence; otherwise the
 Hosted release and claim remain blocked regardless of schedule.
 `v0.140.28 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.145.4` — Domain Retirement And Historical Compatibility Certification
+
+Status: planned.
+Setup: consume `0.30.28` retirement contracts, current domain/contribution
+generations, `0.145.3` lifecycle/recovery evidence, installed-extension state,
+cross-domain dependencies, outstanding durable work, retained event/snapshot/
+export/backup/import history, deferrals, and product state.
+Goal: destructively certify selected-profile domain/module/plugin retirement
+and reinstall while preserving every retained historical obligation.
+Deliverables: retirement/drain exercise corpus, dependency-closure and
+outstanding-work report, command/effect fence evidence, data-disposition and
+legal-hold proof, codec/upcaster retention set, historical read/restore/import
+matrix, reinstall/rollback-floor matrix, and certification report.
+Verification: late command/effect, undrained consumer/timer/activity, dangling
+cross-domain or external reference, retained event without decoder/upcaster,
+projection/data deletion before disposition, hold/export/erasure bypass,
+backup/restore/import failure, plugin-uninstall data loss, `DomainId` reuse,
+unsafe reinstall/downgrade, unresolved defer, false support, and handler first
+implemented in the certifier pass.
+Exit criteria: every selected retirement either completes with closed authority,
+drained/disposed work, truthful data evidence, permanent ID tombstone, readable
+retained history, and safe reinstall floor, or remains visibly blocked; the
+certifier adds no missing retirement, codec, lifecycle, or reconciliation behavior.
+`v0.145.4 implementation stop reached. Run pentest for this exact commit.`
