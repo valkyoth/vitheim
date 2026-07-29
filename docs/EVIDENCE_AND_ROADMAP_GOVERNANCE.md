@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **381 independently pentestable release stops**:
+The roadmap contains exactly **384 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 230 companion stops + 1 production stop = 381`.
+`150 base 0.x.0 stops + 233 companion stops + 1 production stop = 384`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “381 exact release stops” describe different
+included. “151 base stops” and “384 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 381 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 384 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -226,9 +226,11 @@ lineage and resume authority, `0.51.8` transfers broad topology fencing to a
 narrow guard with authenticated post-cut absence/child handoffs, `0.51.9`
 jointly roots protection state and successor CAS, `0.51.10` aggregates clean/
 non-clean terminals, `0.51.11` transfers residual obligations tenant-locally,
-`0.51.12` owns immutable membership/mutable state lineage, `0.51.13` authorizes
-slot-scoped takeover, `0.51.14` completes under terminalization/cleanup
-reserves, and `0.51.15` gates lineage-aware reinstall from final state;
+`0.51.12` owns immutable membership/mutable state lineage, `0.51.13` seals
+partition delivery cuts, `0.51.14` authorizes slot-scoped takeover, `0.51.15`
+completes under terminalization reserves, `0.51.16` archives before reconciled
+cleanup, `0.51.17` evaluates reinstall under partition fences, and `0.51.18`
+consumes that current evaluation to supersede the permanent guard;
 none uses a wildcard tenant or cross-tenant transaction. Plugin uninstall and
 feature disablement
 never imply data retirement. `0.145.4` destructively certifies all of these

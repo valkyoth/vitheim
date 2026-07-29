@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 381 exact release stops: 150 base `0.x.0`
-stops, 230 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 384 exact release stops: 150 base `0.x.0`
+stops, 233 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -17,7 +17,7 @@ law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
-families that exceeded it, and records 87 later focused capability,
+families that exceeded it, and records 90 later focused capability,
 requirement-ownership, decomposition, integration, discovery, and coherence
 companions.
 
@@ -99,8 +99,10 @@ narrow domain guard with authoritative post-cut handoffs, `0.51.9` joins the
 successor head to one canonical protection root, `0.51.10` aggregates every
 terminal child honestly, `0.51.11` transfers non-clean obligations through
 tenant-local handoffs, `0.51.12` owns residual state evolution, `0.51.13`
-authorizes target-slot takeover, `0.51.14` completes with protected
-terminalization/cleanup, and `0.51.15` admits reinstall only from final state.
+proves partition currency with a sealed delivery cut, `0.51.14` authorizes
+target-slot takeover, `0.51.15` completes with protected terminalization,
+`0.51.16` archives before cleanup, `0.51.17` evaluates reinstall under tenant
+fences, and `0.51.18` consumes that current evaluation to supersede the guard.
 `0.145.4`
 destructively certifies
 selected retirement/reinstall profiles rather than first implementing teardown.

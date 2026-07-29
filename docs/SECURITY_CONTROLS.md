@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 381 exact stops and their
+- One canonical roadmap manifest accounts for all 384 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -80,12 +80,15 @@ protection-root CAS and ancestor-receipt validity; `0.51.10` owns bounded fair
 isolated-child dispatch and truthful terminal aggregation; `0.51.11` owns
 tenant-local residual-obligation handoff, authenticated receipt reconciliation,
 and retained tenant fences; `0.51.12` separates immutable residual membership
-from authenticated predecessor-linked mutable state; `0.51.13` owns fresh exact
-target-slot takeover authority without unrelated-topology starvation; `0.51.14`
-owns slot-scoped permanent guard takeover, atomic classified completion,
-non-borrowable terminalization capacity, cleanup lineage, and eligibility
-issuance; `0.51.15` owns final-state reinstall admission against the current
-authenticated residual-state head and completed cleanup ancestry. No
+from authenticated predecessor-linked mutable state; `0.51.13` owns exact
+restore-safe partition delivery cuts so a folded parent head cannot hide local
+state; `0.51.14` owns fresh exact target-slot takeover authority without
+unrelated-topology starvation; `0.51.15` owns slot-scoped permanent guard
+takeover, atomic classified completion, non-borrowable terminalization
+capacity, and eligibility issuance; `0.51.16` owns authenticated archive-before-
+delete and uncertainty-preserving cleanup; `0.51.17` owns current tenant-
+partition evaluation under durable fences; `0.51.18` alone consumes that
+complete still-fenced evaluation to supersede the permanent guard. No
 wildcard tenant or cross-tenant retirement
 transaction exists, and loss never counts as clean or grants deletion/hold
 release. `0.51.4` immediately certifies tenant surfaces; `0.139.1` iterates

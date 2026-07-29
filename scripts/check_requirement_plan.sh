@@ -119,7 +119,19 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ResidualRetirementStateHeadV1`' \
     'authenticated residual retirement state head'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.13` — Permanent Guard Takeover Authorization' \
+    '0.51.13` — Residual Transition Delivery Cut' \
+    'residual transition delivery cut'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ResidualTransitionDeliveryCutV1`' \
+    'sealed residual transition cut'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ResidualTransitionDeliveryBlocked`' \
+    'visible residual delivery blocking'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'source-sequence-to-parent acknowledgement' \
+    'partition source acknowledgement proof'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.14` — Permanent Guard Takeover Authorization' \
     'permanent guard takeover authorization'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`PermanentDomainGuardTakeoverAuthorizationV1`' \
@@ -128,7 +140,7 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`DeploymentDomainGuardSlotVersionV1`' \
     'target-local permanent guard slot'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.14` — Permanent Guard Takeover And Campaign Completion' \
+    '0.51.15` — Permanent Guard Takeover And Campaign Completion' \
     'permanent guard takeover and classified completion'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`PermanentDomainGuardTransferReceiptV1`' \
@@ -137,14 +149,35 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'non-borrowable terminalization reserve' \
     'protected completion capacity'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '`CleanupPending`' \
-    'orthogonal cleanup lineage'
+    '0.51.16` — Campaign Retirement Archive And Cleanup Reconciliation' \
+    'archive-safe campaign cleanup'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`CampaignRetirementArchiveCheckpointV1`' \
+    'authenticated retirement archive checkpoint'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`CleanupEvidenceUnavailable`' \
+    'truthful cleanup uncertainty'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'authoritative archive replay head' \
+    'archive replay head before hot deletion'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallEligibilityV1`' \
     'reinstall eligibility created at final completion'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.15` — Reinstall Eligibility And Guard Supersession Admission' \
-    'final-state reinstall admission'
+    '0.51.17` — Partition-Fenced Reinstall Evaluation' \
+    'partition-fenced reinstall evaluation'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ReinstallPartitionEvaluationReceiptV1`' \
+    'authenticated partition evaluation receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ReinstallEvaluationRootV1`' \
+    'complete reinstall evaluation root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`RevalidationRequired`' \
+    'mutation invalidates reinstall evaluation'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.18` — Reinstall Guard Supersession Consumption' \
+    'final guard supersession consumption'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'True cancellation exists only before the first child fence' \
     'campaign cancellation versus pause boundary'

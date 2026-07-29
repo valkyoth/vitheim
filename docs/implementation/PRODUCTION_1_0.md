@@ -1898,16 +1898,17 @@ Verification:
   authority, broad-to-narrow domain-guard transfer, authoritative post-cut
   absence/child handoffs, joint successor/protection-root CAS, frozen structural
   commitment, mixed retired/never-present coverage, permanent-guard takeover,
-  truthful non-clean terminal aggregation, tenant-local residual-obligation
-  handoff and authenticated state lineage, exact target-slot takeover authority,
-  reserved classified completion and cleanup, current-state-only reinstall
-  admission, bounded fair campaign pause/revocation/resume, atomic
+  truthful non-clean terminal aggregation, tenant-local residual handoff/state/
+  delivery cuts, exact target-slot takeover authority, reserved classified
+  completion, archive-safe cleanup, partition-fenced current reinstall
+  evaluation and exact guard-supersession consumption, bounded fair campaign
+  pause/revocation/resume, atomic
   commit/crash recovery, safe fence release, work drainage, data/hold disposition,
   retained-history codec/upcaster, backup/import, external-reference, safe-
   reinstall, and truthful verified-versus-loss terminal evidence from `0.145.4`,
   or remains visibly non-clean/blocked. A deferred `0.86.2` profile exposes cloud-native kinds as
   manual/generic-import-only and makes no automatic discovery claim.
-- The generated roadmap/evidence differential proves exactly 381 release
+- The generated roadmap/evidence differential proves exactly 384 release
   stops and their owners, authority reviews and pentest reports; it rejects any
   README, API discovery, UI navigation, release-note, installer, operator or
   support-matrix claim without a matching executable owner and exact evidence.
