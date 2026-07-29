@@ -16,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 392 exact stops: 150 base `0.x.0` stops, 241
+The canonical roadmap contains 395 exact stops: 150 base `0.x.0` stops, 244
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -61,7 +61,7 @@ family ledgers were retained for their security context but decomposed into 65
 new exact stops. The later capability-gap review added 21 independently scoped
 product, verification, and profile-decision companions. The second review added
 31 requirement-ownership, domain-decomposition, cross-surface integration, and
-cloud-discovery companions. The coherence reviews added 46 requirement-source,
+cloud-discovery companions. The coherence reviews added 49 requirement-source,
 dependency-feasibility, phased-surface-ownership, domain-boundary, adapter-
 placement, and chronology companions:
 
@@ -99,7 +99,7 @@ Their exact handoffs live in
 [Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md).
 
 The coherence additions are `0.18.15–0.18.16`, `0.30.23–0.30.29`, `0.50.18`,
-`0.51.3–0.51.26`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
+`0.51.3–0.51.29`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
 `0.120.8–0.120.10`, `0.132.4`, `0.138.6–0.138.7`, `0.140.28`, and `0.145.4`.
 Their exact handoffs live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
@@ -167,7 +167,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 392-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 395-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -924,11 +924,14 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.51.19` | Authenticated campaign archive checkpoints and uncertainty-preserving cleanup reconciliation | Archive omission/corruption, delete-before-verify, partial archive/head/delete, false cleanup, capacity release |
 | `0.51.20` | Independent retained-campaign namespace-safety authorization | Self-certification, omitted deletion mechanism, target overlap, stale evidence/key, delayed delete |
 | `0.51.21` | Bounded partition-fenced reinstall evaluation with restrictive bypass and canonical clean-empty result | Mutation class confusion, partial fencing, stale status, invalidation loss, absent/empty confusion, starvation |
-| `0.51.22` | Source-partition reinstall activation admission with one-shot permit redemption and successor-restriction bridges | Signature-as-admission, permit race/replay, rejected/unknown admission, bridge omission, early operational successor |
-| `0.51.23` | Durable successor-restriction bridge ownership and funded long-lived capacity transfer | Missing/double bridge owner, unfunded enforcement/recovery, disposition substitution, premature reservation settlement, restore divergence |
-| `0.51.24` | Partial reinstall-admission abort, artifact disposition, and candidate supersession | Rejection revival, unknown treated absent, permit regeneration, restrictive-state loss, competing candidates, aborted activation |
-| `0.51.25` | Exact guard supersession with admission/bridge-ownership roots, absorbing cut/evaluation consumption, operational transfer, and dual release manifest | Stale admission/status/evaluation, abort race, unfunded bridge owner, restrictive race, unsafe retained namespace, partial consumption/release |
-| `0.51.26` | Reinstall delivery-barrier/evaluation-fence release or funded successor-retention reconciliation | Wrong control release, residual restriction loss, outage/replay, unfunded retention, premature cleanup, consumed revival, new-generation blockage |
+| `0.51.22` | Shared generation-CAS lifecycle for admission, abort, quarantine, expiry and activation | Split terminal outcomes, final-acceptance/abort race, prepared-activation/abort race, late response completion, restore rollback |
+| `0.51.23` | Source-partition reinstall activation admission with one-shot permit redemption and successor-restriction bridges | Signature-as-admission, permit race/replay, rejected/unknown admission, abort-fenced late result, bridge omission |
+| `0.51.24` | Durable successor-restriction bridge ownership, funded long-lived capacity transfer, and canonical empty ownership root | Missing/double bridge owner, unfunded enforcement/recovery, absent/empty confusion, premature reservation settlement, restore divergence |
+| `0.51.25` | Partial reinstall-admission abort, artifact disposition, canonical empty disposition, and candidate supersession | Rejection revival, unknown treated absent, activation/abort race, permit regeneration, competing candidates, aborted activation |
+| `0.51.26` | Permanent-unknown admission recovery policy decision | Ambiguous option, unsafe recovery claim, missing catastrophe authority/fences/floors/capacity, decision used as execution authority |
+| `0.51.27` | Conditional unknown-admission catastrophe quarantine or explicit Unsupported refusal | Unknown relabeling, incomplete permanent fence, stale key/lease/routing, identity reuse, unfunded residual, late-evidence activation |
+| `0.51.28` | Exact guard supersession with lifecycle/admission/bridge-ownership roots, absorbing cut/evaluation consumption, operational transfer, and dual release manifest | Stale admission/status/evaluation, abort/expiry race, unfunded bridge owner, restrictive race, unsafe retained namespace, partial consumption |
+| `0.51.29` | Reinstall delivery-barrier/evaluation-fence release or funded successor-retention reconciliation | Wrong control release, residual restriction loss, outage/replay, unfunded retention, premature cleanup, consumed revival, new-generation blockage |
 | `0.52.0` | Subjects, service principals, independent external-identity mapping epochs, and law-generation expansion | Activate `VIT-LAW-001` g04/`VIT-LAW-006` g03; principal/mapping revocation racing dispatch, unsafe linking, immutable issuer-subject identity, epoch reuse, recreation |
 | `0.52.1` | OAuth resource-server workload authentication, mapping epoch, and law-generation expansion | Activate `VIT-LAW-001` g05/`VIT-LAW-006` g04; workload remap/revoke race, stale external privileged fact, false sender constraint, bearer escalation, issuer/audience confusion |
 | `0.53.0` | Hosted OIDC integration, independent interactive-session epoch, and law-generation expansion | Activate `VIT-LAW-001` g06/`VIT-LAW-006` g05; discovery, mix-up, replay, downgrade, fixation, logout/assurance racing dispatch |

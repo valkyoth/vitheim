@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 392 exact stops and their
+- One canonical roadmap manifest accounts for all 395 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -88,12 +88,15 @@ epochs and mode-bound source status; `0.51.15–0.51.18` authorize/complete
 target-slot takeover, atomically transfer funded capacity for retained
 candidate controls, and reconcile every barrier release/retention receipt;
 `0.51.19` archives before deletion under truthful uncertainty; `0.51.20`
-independently authorizes exact retained-namespace safety; `0.51.21–0.51.26`
-evaluate reinstall under partition fences, require source-local activation-
-permit redemption and successor-restriction bridges, fund each bridge under
-one durable owner, reconcile/abort/supersede partial admission without treating
-unknown as absence, atomically consume both candidates only after complete
-admission and bridge-ownership transfer, and reconcile both release families.
+independently authorizes exact retained-namespace safety; `0.51.21–0.51.29`
+evaluate reinstall under partition fences, serialize activation against abort,
+require source-local activation-permit redemption and successor-restriction
+bridges, fund each bridge under one durable owner, define canonical clean-empty
+ownership/disposition roots, reconcile/abort/supersede partial admission
+without treating unknown as absence, default permanent unknown to terminal
+unavailable unless an independent quarantine profile is selected and fully
+fences it, atomically consume both candidates only after complete admission and
+bridge-ownership transfer, and reconcile both release families.
 No wildcard tenant or cross-tenant retirement transaction exists, and loss
 never counts as clean or grants deletion/hold release. `0.51.4` immediately
 certifies tenant surfaces; `0.139.1` iterates

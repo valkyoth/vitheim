@@ -221,7 +221,19 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'zero-member `ReinstallEvaluationRootV1`' \
     'canonical clean reinstall evaluation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.22` — Reinstall Partition Activation Admission' \
+    '0.51.22` — Reinstall Admission Candidate Lifecycle Linearization' \
+    'shared reinstall admission candidate lifecycle'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ReinstallAdmissionCandidateLifecycleV1`' \
+    'typed shared admission candidate lifecycle'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`AdmissionAbortFenced`' \
+    'linearized admission abort fence'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'generation. Final acceptance versus abort' \
+    'activation and abort share one generation CAS'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.23` — Reinstall Partition Activation Admission' \
     'source-partition activation admission'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`AdmitReinstallCandidateActivationV1`' \
@@ -236,7 +248,7 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'ActivationProposedNonOperational' \
     'non-operational activation proposal'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.23` — Successor-Restriction Bridge Ownership And Capacity Transfer' \
+    '0.51.24` — Successor-Restriction Bridge Ownership And Capacity Transfer' \
     'successor-restriction bridge ownership transfer'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`SuccessorRestrictionBridgeOwnershipReceiptV1`' \
@@ -245,7 +257,10 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'admission bridge reservation = operational successor bridges' \
     'admission bridge capacity conservation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.24` — Reinstall Admission Abort And Supersession' \
+    'zero-partition candidate emits a domain-separated' \
+    'canonical zero-member bridge ownership root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.25` — Reinstall Admission Abort And Supersession' \
     'partial reinstall admission abort and supersession'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`DisposeReinstallAdmissionCandidateV1`' \
@@ -263,13 +278,37 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'timeout is neither rejection nor absence' \
     'unknown admission remains fail closed'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.25` — Reinstall Guard Supersession Consumption' \
+    'zero-member `ReinstallAdmissionDispositionRootV1`' \
+    'canonical zero-member admission disposition root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.26` — Permanent-Unknown Admission Recovery Policy Decision' \
+    'permanent unknown admission recovery decision'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`UnknownAdmissionRecoveryPolicyV1`' \
+    'typed permanent unknown recovery policy'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`TerminalUnavailable` or `QuarantineRecoveryEnabled`' \
+    'closed permanent unknown recovery options'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.27` — Quarantined Unknown-Admission Catastrophe Recovery' \
+    'conditional unknown admission catastrophe quarantine'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`QuarantinedUnknownAdmissionResidualV1`' \
+    'conservative unknown admission residual owner'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`UnknownAdmissionQuarantineRootV1`' \
+    'complete unknown admission quarantine root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'Unknown remains unknown.' \
+    'quarantine never reclassifies unknown'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.28` — Reinstall Guard Supersession Consumption' \
     'final guard supersession consumption'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallBarrierReleaseManifestV1`' \
     'dual reinstall control release manifest'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.26` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
+    '0.51.29` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
     'reinstall control release reconciliation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'True cancellation exists only before the first child fence' \
