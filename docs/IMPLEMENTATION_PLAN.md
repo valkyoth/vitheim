@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 388 exact release stops: 150 base `0.x.0`
-stops, 237 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 390 exact release stops: 150 base `0.x.0`
+stops, 239 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -17,7 +17,7 @@ law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
-families that exceeded it, and records 94 later focused capability,
+families that exceeded it, and records 96 later focused capability,
 requirement-ownership, decomposition, integration, discovery, and coherence
 companions.
 
@@ -100,10 +100,12 @@ successor head to one canonical protection root, `0.51.10` aggregates every
 terminal child honestly, `0.51.11` transfers non-clean obligations through
 tenant-local handoffs, `0.51.12` owns residual state evolution, `0.51.13`
 proves partition currency and canonical empty state, `0.51.14` owns urgent
-restrictive invalidation, `0.51.15–0.51.17` authorize/complete takeover and
-release its barriers, `0.51.18–0.51.19` archive cleanup and verify retained
-namespaces, and `0.51.20–0.51.22` evaluate/consume reinstall and release both
-candidate-control families.
+restrictive invalidation, `0.51.15–0.51.18` authorize/complete takeover,
+atomically fund retained candidate controls, and release its barriers,
+`0.51.19–0.51.20` archive cleanup and verify retained namespaces, and
+`0.51.21–0.51.24` evaluate reinstall, obtain source-partition activation
+admission, consume the admitted successor, and release both candidate-control
+families.
 `0.145.4`
 destructively certifies
 selected retirement/reinstall profiles rather than first implementing teardown.

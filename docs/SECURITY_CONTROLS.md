@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 388 exact stops and their
+- One canonical roadmap manifest accounts for all 390 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -84,15 +84,17 @@ from authenticated predecessor-linked mutable state; `0.51.13` owns exact
 restore-safe partition delivery cuts so a folded parent head cannot hide local
 state and defines absorbing consumption/canonical empty state; `0.51.14` owns
 closed mutation classification, emergency restrictive invalidation, safety
-epochs and source status; `0.51.15–0.51.17` authorize/complete target-slot
-takeover and reconcile every barrier release/retention receipt; `0.51.18`
-archives before deletion under truthful uncertainty; `0.51.19` independently
-authorizes exact retained-namespace safety; `0.51.20–0.51.22` evaluate
-reinstall under partition fences, atomically consume both candidates, and
-reconcile both release families. No
-wildcard tenant or cross-tenant retirement
-transaction exists, and loss never counts as clean or grants deletion/hold
-release. `0.51.4` immediately certifies tenant surfaces; `0.139.1` iterates
+epochs and mode-bound source status; `0.51.15–0.51.18` authorize/complete
+target-slot takeover, atomically transfer funded capacity for retained
+candidate controls, and reconcile every barrier release/retention receipt;
+`0.51.19` archives before deletion under truthful uncertainty; `0.51.20`
+independently authorizes exact retained-namespace safety; `0.51.21–0.51.24`
+evaluate reinstall under partition fences, require source-local activation-
+permit redemption and successor-restriction bridges, atomically consume both
+candidates only after complete admission, and reconcile both release families.
+No wildcard tenant or cross-tenant retirement transaction exists, and loss
+never counts as clean or grants deletion/hold release. `0.51.4` immediately
+certifies tenant surfaces; `0.139.1` iterates
 contribution-kind obligations; and `0.145.4` destructively certifies retirement
 without first implementation. Missing obligations block the owner and release.
 

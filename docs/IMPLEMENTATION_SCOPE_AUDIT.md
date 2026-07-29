@@ -31,11 +31,11 @@ small-loop rule and were decomposed into 65 additional exact stops. The later
 capability-gap review added 21 independently scoped verification, product, and
 profile-decision stops. The second gap review added 31 requirement-ownership,
 domain-decomposition, integration, and discovery-profile stops. The coherence
-reviews added 42 requirement-source, dependency-feasibility, phased surface-
+reviews added 44 requirement-source, dependency-feasibility, phased surface-
 ownership, domain-boundary, adapter-placement, and chronological-integration
-stops. The canonical roadmap therefore contains **388 exact stops**:
+stops. The canonical roadmap therefore contains **390 exact stops**:
 
-`150 base 0.x.0 stops + 237 companion stops + 1 production stop = 388`.
+`150 base 0.x.0 stops + 239 companion stops + 1 production stop = 390`.
 
 The existing long sections remain cumulative family ledgers because they hold
 important threat, invariant, recovery, and verification context. Their heading
@@ -79,7 +79,7 @@ The second review's 31 additions live in
 | Asset-kind packs | `0.81.3–0.81.6` | Physical/compute, cloud-native, identity/network, then SaaS/data |
 | Cloud-native discovery | `0.86.2` | One exact connector profile or explicit manual/import-only defer |
 
-The 42 coherence additions live in
+The 44 coherence additions live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
 and [Roadmap Authority And Recovery Completions](implementation/ROADMAP_AUTHORITY_COMPLETIONS.md):
 
@@ -91,7 +91,7 @@ and [Roadmap Authority And Recovery Completions](implementation/ROADMAP_AUTHORIT
 | Contribution safety | `0.30.24–0.30.25` | Kind-owned verification obligations and scope-separated metadata admission, then bounded absent-surface-only deferral/product gates |
 | Domain-event gate | `0.30.26` | Current event-owner backfill plus prospective emission/consumption, upcaster, and generation checks |
 | Async-contract gate | `0.30.27` | Complete `0.18.8–0.18.10` effect/message/consumer/timer/activity/poison/replay/result ownership backfill and prospective checks |
-| Domain retirement | `0.30.28–0.30.29`, `0.51.5–0.51.22`, `0.145.4` | Truthful terminals; cut/plan/guard/root; residual handoff/lineage/cuts; restrictive invalidation; takeover/release; archival/retained namespace; fenced reinstall/dual release; certification |
+| Domain retirement | `0.30.28–0.30.29`, `0.51.5–0.51.24`, `0.145.4` | Truthful terminals; cut/plan/guard/root; residual handoff/lineage/cuts; restrictive invalidation; takeover/release; funded retained controls; archival/retained namespace; fenced evaluation; source-partition activation admission; guard consumption/dual release; certification |
 | Supplier boundary | `0.50.18` | Performance assessment and inert risk proposals only |
 | Tenant-surface linkage | `0.51.3–0.51.4` | Reference authoritative lifecycle IDs, then immediately certify the backfill |
 | Surface certification | `0.60.4`, `0.70.5`, `0.100.2`, `0.132.4`, `0.138.6–0.138.7` | Authorization, workflow, search, workspace, API, and transfer each certify separately |
@@ -126,6 +126,6 @@ Every other exact stop passed the current sizing review because it has one
 dominant domain/adapter/decision owner and one coherent primary test boundary.
 This is not a permanent exemption. New threat-model detail, authority changes,
 schema work, provider admission, or recovery scope triggers the small-loop rule
-again before implementation. The roadmap checker verifies all 388 headings,
+again before implementation. The roadmap checker verifies all 390 headings,
 required handoff fields, authority dispositions, and exact-commit pentest
 markers; count drift blocks release.

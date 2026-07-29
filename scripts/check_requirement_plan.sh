@@ -170,13 +170,22 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'non-borrowable terminalization reserve' \
     'protected completion capacity'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.17` — Takeover Delivery-Barrier Release Reconciliation' \
+    '0.51.17` — Candidate-Control Retention Capacity Transfer' \
+    'candidate-control retention capacity transfer'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`CandidateControlRetentionReceiptV1`' \
+    'funded candidate-control retention receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'original release reservation = released controls + successor-retained controls' \
+    'retained-control capacity conservation'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.18` — Takeover Delivery-Barrier Release Reconciliation' \
     'takeover barrier release reconciliation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`TakeoverBarrierReleaseManifestV1`' \
     'takeover barrier release manifest'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.18` — Campaign Retirement Archive And Cleanup Reconciliation' \
+    '0.51.19` — Campaign Retirement Archive And Cleanup Reconciliation' \
     'archive-safe campaign cleanup'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`CampaignRetirementArchiveCheckpointV1`' \
@@ -188,7 +197,7 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'authoritative archive replay head' \
     'archive replay head before hot deletion'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.19` — Retained Campaign Namespace Safety Authorization' \
+    '0.51.20` — Retained Campaign Namespace Safety Authorization' \
     'retained namespace safety authority'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`RetainedCampaignNamespaceSafetyReceiptV1`' \
@@ -197,7 +206,7 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallEligibilityV1`' \
     'reinstall eligibility created at final completion'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.20` — Partition-Fenced Reinstall Evaluation' \
+    '0.51.21` — Partition-Fenced Reinstall Evaluation' \
     'partition-fenced reinstall evaluation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallPartitionEvaluationReceiptV1`' \
@@ -212,13 +221,28 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'zero-member `ReinstallEvaluationRootV1`' \
     'canonical clean reinstall evaluation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.21` — Reinstall Guard Supersession Consumption' \
+    '0.51.22` — Reinstall Partition Activation Admission' \
+    'source-partition activation admission'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`AdmitReinstallCandidateActivationV1`' \
+    'source-local activation-admission command'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`PartitionActivationAdmissionReceiptV1 { Accepted | Rejected | Unknown }`' \
+    'typed partition activation-admission outcome'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ReinstallPartitionAdmissionRootV1`' \
+    'complete partition activation-admission root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'ActivationProposedNonOperational' \
+    'non-operational activation proposal'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.23` — Reinstall Guard Supersession Consumption' \
     'final guard supersession consumption'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallBarrierReleaseManifestV1`' \
     'dual reinstall control release manifest'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.22` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
+    '0.51.24` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
     'reinstall control release reconciliation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'True cancellation exists only before the first child fence' \

@@ -12,9 +12,10 @@ with authoritative post-cut handoffs, `0.51.9` roots successor/protection state,
 `0.51.10` aggregates bounded fair child terminals, `0.51.11` transfers non-clean
 residual obligations tenant-locally, `0.51.12` governs residual membership/state
 lineage, `0.51.13` seals/consumes partition delivery, `0.51.14` owns restrictive
-emergency invalidation, `0.51.15–0.51.17` authorize/complete takeover and
-release its barriers, `0.51.18–0.51.19` archive/verify retained cleanup, and
-`0.51.20–0.51.22` evaluate/consume reinstall and release both control families;
+emergency invalidation, `0.51.15–0.51.18` authorize/complete takeover, fund
+retained controls and release its barriers, `0.51.19–0.51.20` archive/verify
+retained cleanup, and `0.51.21–0.51.24` evaluate, source-admit and consume
+reinstall before releasing both control families;
 `0.60.3` defines/backfills authoritative-interface references and installs the
 prospective gate; `0.60.4` certifies them, while `0.120.8` certifies later domains.
 

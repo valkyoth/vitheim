@@ -19,9 +19,10 @@ owns exact tenant-child authority, atomic commitment, cancellation and crash
 recovery. Deployment-wide cut lifecycle, exact-plan admission/succession,
 narrow-guard topology handoff, joint protection roots, mixed coverage,
 non-clean residual handoff/lineage/cuts, restrictive emergency invalidation,
-target-slot takeover and barrier release, archival/retained-namespace safety,
-partition-fenced evaluation, guard supersession and dual release wait for
-`0.51.5–0.51.22` after
+target-slot takeover, funded retained-control transfer and barrier release,
+archival/retained-namespace safety, partition-fenced evaluation, source-local
+activation admission, guard supersession and dual release wait for
+`0.51.5–0.51.24` after
 authoritative tenant lifecycle exists.
 Every database profile must implement every applicable negotiated `0.18.2`
 `AtomicWorkCommitBundle` variant and every other mandatory semantic port claimed
