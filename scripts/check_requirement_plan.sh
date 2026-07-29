@@ -359,7 +359,22 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'permanently terminal for the current product' \
     'permanent replacement evaluation exhaustion'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.31` — Quarantine Replacement Successor Lifecycle Genesis' \
+    '0.51.31` — Unknown-Restriction Lowering Evaluation And Source Admission' \
+    'lowering-specific evaluation and source admission'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`UnknownRestrictionLoweringEvaluationRootV1`' \
+    'non-substitutable lowering evaluation root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`UnknownRestrictionLoweringPermitV1`' \
+    'typed source-side lowering permit'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`AdmitUnknownRestrictionLoweringV1`' \
+    'source-side lowering admission command'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`UnknownRestrictionLoweringPartitionReceiptV1' \
+    'authenticated lowering admission receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.32` — Quarantine Replacement Successor Lifecycle Genesis' \
     'quarantine replacement successor lifecycle genesis'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`CreateQuarantineReplacementSuccessorLifecycleV1`' \
@@ -368,7 +383,22 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`QuarantineReplacementGenesisReceiptV1`' \
     'typed quarantine replacement genesis receipt'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.32` — Reinstall Guard Supersession Consumption' \
+    '`EffectiveRestrictionGenesisAuthorityV1`' \
+    'closed effective-restriction genesis authority'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`TopRestrictionGenesis' \
+    'top restriction genesis branch'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`PreOperationalLoweredGenesis' \
+    'pre-operational lowered genesis branch'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`RebindPreOperationalLoweringAdmissionV1`' \
+    'lifecycle-bound lowering admission rebinding'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`PreOperationalLoweringAdoptionReceiptV1`' \
+    'pre-operational lowering adoption receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.33` — Reinstall Guard Supersession Consumption' \
     'final guard supersession consumption'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallGenesisAuthorityV1`' \
@@ -383,11 +413,8 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallBarrierReleaseManifestV1`' \
     'dual reinstall control release manifest'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.33` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
+    '0.51.34` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
     'reinstall control release reconciliation'
-require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.34` — Governed Unknown-Restriction Lowering' \
-    'governed unknown-restriction lowering'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`UnknownRestrictionLoweringAuthorizationV1`' \
     'destination-admitted restriction-lowering authority'
@@ -395,14 +422,29 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`UnknownRestrictionLoweringBridgePreparedRootV1`' \
     'complete restriction-lowering bridge root'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.35` — Operational Unknown-Restriction Lowering Activation' \
+    'operational unknown-restriction lowering activation'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ActivateUnknownRestrictionLoweringV1`' \
     'atomic restriction-lowering activation command'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '`PreOperationalUnknownRestrictionLoweringReceiptV1`' \
-    'pre-operational restriction-lowering receipt'
-require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`OperationalUnknownRestrictionLoweringReceiptV1`' \
     'operational restriction-lowering receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`UnknownRestrictionLoweringReleaseManifestV1`' \
+    'predecessor top release manifest'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.36` — Unknown-Restriction Predecessor Release Reconciliation' \
+    'predecessor restriction release reconciliation'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`UnknownRestrictionLoweringReleaseReceiptV1' \
+    'authenticated predecessor release receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`UnknownRestrictionLoweringReleaseRootV1`' \
+    'complete predecessor release root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'old top reservation = verified released + funded successor-retained + pending' \
+    'old top capacity conservation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'True cancellation exists only before the first child fence' \
     'campaign cancellation versus pause boundary'

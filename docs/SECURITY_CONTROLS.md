@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 400 exact stops and their
+- One canonical roadmap manifest accounts for all 402 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -88,7 +88,7 @@ epochs and mode-bound source status; `0.51.15–0.51.18` authorize/complete
 target-slot takeover, atomically transfer funded capacity for retained
 candidate controls, and reconcile every barrier release/retention receipt;
 `0.51.19` archives before deletion under truthful uncertainty; `0.51.20`
-independently authorizes exact retained-namespace safety; `0.51.21–0.51.34`
+independently authorizes exact retained-namespace safety; `0.51.21–0.51.36`
 evaluate reinstall under partition fences, enforce explicit lifecycle
 adjacency, serialize activation against abort,
 require source-local activation-permit redemption and successor-restriction
@@ -101,11 +101,14 @@ members over a generated complete operation universe actively enforced by
 evaluation, admission and funded bridges, consume replacement eligibility once
 into a finite predecessor-linked evaluation lineage with cumulative budgets
 and permanently terminal exhaustion, create exactly one proof-bound successor
-lifecycle, use tagged initial/replacement final activation so eligibility
-cannot be consumed twice, atomically consume both candidates only after
-complete admission and bridge-ownership transfer, reconcile both release
-families, and permit lowering only through destination admission, complete
-parallel bridges and one guard-slot CAS while the old top stays enforced.
+lifecycle, keep lowering evaluation/permits distinct from reinstall authority,
+use one closed top-or-pre-operational-lowered genesis tag through lifecycle
+creation and final activation so neither the restriction branch nor eligibility
+can be consumed incorrectly, atomically consume both candidates only after
+complete admission and bridge-ownership transfer, reconcile both reinstall
+release families, permit already-operational lowering only through a complete
+prepared root and one guard-slot CAS, and release the old top only through
+per-enforcement-point authenticated conservation with funded retention.
 No wildcard tenant or cross-tenant retirement transaction exists, and loss
 never counts as clean or grants deletion/hold release. `0.51.4` immediately
 certifies tenant surfaces; `0.139.1` iterates

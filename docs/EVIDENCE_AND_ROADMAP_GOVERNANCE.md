@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **400 independently pentestable release stops**:
+The roadmap contains exactly **402 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 249 companion stops + 1 production stop = 400`.
+`150 base 0.x.0 stops + 251 companion stops + 1 production stop = 402`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “400 exact release stops” describe different
+included. “151 base stops” and “402 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 400 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 402 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -230,16 +230,18 @@ lineage and delivery cuts, `0.51.14` owns mutation classification/emergency
 invalidation, `0.51.15–0.51.18` authorize/complete takeover, fund retained
 candidate controls, and reconcile barrier release; `0.51.19–0.51.20` own
 archival cleanup and independently verified retained namespaces; and
-`0.51.21–0.51.34` evaluate reinstall, serialize activation against abort,
+`0.51.21–0.51.36` evaluate reinstall, serialize activation against abort,
 redeem source-partition permits, fund every successor-restriction bridge,
 reconcile and supersede partial admission, decide and conditionally implement
 permanent-unknown quarantine recovery, actively enforce the maximal unknown
 restriction over a generated complete operation universe, consume replacement
 eligibility into one finite cumulative-budget evaluation lineage whose
-exhaustion is permanent, create one proof-bound fresh successor, use tagged
-initial/replacement final activation without double consumption, supersede the
-guard, reconcile both release families, and make the old top survive every
-lowering attempt until a destination-admitted fully bridged guard CAS;
+exhaustion is permanent, evaluate/admit lowering under separate
+non-substitutable authority, create one proof-bound fresh successor from an
+exact top-or-lowered tag, use tagged initial/replacement final activation
+without double consumption, supersede the guard, reconcile both reinstall
+release families, and make the old top survive until a destination-admitted
+fully bridged guard CAS plus authenticated funded predecessor reconciliation;
 none uses a wildcard tenant or cross-tenant transaction. Plugin uninstall and
 feature disablement
 never imply data retirement. `0.145.4` destructively certifies all of these
