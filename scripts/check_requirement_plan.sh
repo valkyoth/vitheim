@@ -68,7 +68,22 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'one-shot plan-consumption guard' \
     'one-shot exact-cut plan consumption'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.7` — Deployment-Wide Domain Retirement Campaign' \
+    '0.51.7` — Deployment Retirement Plan Succession And Resume Authority' \
+    'deployment retirement plan succession and resume authority'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'platform-capped cumulative campaign-lineage budget that never resets' \
+    'successor cumulative budget cannot reset'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.8` — Post-Cut Domain Guard And Topology Handoff' \
+    'post-cut guard and topology handoff'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`PostCutDomainAbsenceReceiptV1`' \
+    'authoritative post-cut domain absence receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'broad-fence release is idempotent cleanup and cannot' \
+    'narrow guard precedes broad fence release'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.9` — Deployment-Wide Domain Retirement Campaign' \
     'deployment-wide domain retirement campaign'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'True cancellation exists only before the first child fence' \

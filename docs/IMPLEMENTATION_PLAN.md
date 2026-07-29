@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 373 exact release stops: 150 base `0.x.0`
-stops, 222 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 375 exact release stops: 150 base `0.x.0`
+stops, 224 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -17,7 +17,7 @@ law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
-families that exceeded it, and records 79 later focused capability,
+families that exceeded it, and records 81 later focused capability,
 requirement-ownership, decomposition, integration, discovery, and coherence
 companions.
 
@@ -93,8 +93,10 @@ verified/loss/blocking terminals. `0.30.29` separately owns exact tenant-child
 retirement proposal authority, atomic audit/outbox commitment, cancellation and
 crash recovery. After authoritative tenant lifecycle exists, `0.51.5` freezes
 and safely releases one authenticated deployment membership cut, `0.51.6`
-admits one separately approved exact-cut plan, and `0.51.7` runs its bounded
-fair, pausable campaign of exactly authorized tenant children. `0.145.4`
+admits one separately approved exact-cut plan, `0.51.7` fences successor-plan
+lineage and resume authority, `0.51.8` transfers broad topology fencing to a
+narrow domain guard with authoritative post-cut handoffs, and `0.51.9` runs the
+bounded fair, pausable campaign of exactly authorized tenant children. `0.145.4`
 destructively certifies
 selected retirement/reinstall profiles rather than first implementing teardown.
 Tenant lifecycle references begin only

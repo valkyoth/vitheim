@@ -6,8 +6,10 @@ scoped policy-bound read-subscription contract and hosted delivery runtime;
 `0.51.3–0.51.4` reference and immediately certify authoritative tenant-data
 surfaces; `0.51.5` freezes and safely releases an authenticated deployment
 tenant-membership cut, `0.51.6` separately approves and atomically admits one
-exact-cut retirement plan, and `0.51.7` runs its bounded fair, pausable campaign
-over isolated exactly authorized tenant children;
+exact-cut retirement plan, `0.51.7` fences successor-plan lineage and resume
+authority, `0.51.8` transfers broad topology fencing to a narrow domain guard
+with authoritative post-cut handoffs, and `0.51.9` runs the bounded fair,
+pausable campaign over isolated exactly authorized tenant children;
 `0.60.3` defines/backfills authoritative-interface references and installs the
 prospective gate; `0.60.4` certifies them, while `0.120.8` certifies later domains.
 

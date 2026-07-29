@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **373 independently pentestable release stops**:
+The roadmap contains exactly **375 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 222 companion stops + 1 production stop = 373`.
+`150 base 0.x.0 stops + 224 companion stops + 1 production stop = 375`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “373 exact release stops” describe different
+included. “151 base stops” and “375 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 373 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 375 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -221,8 +221,10 @@ immutable proposal authority, generation/version checks, separation of duties,
 atomic audit/outbox commitment, cancellation and crash recovery. Once `0.51.1`
 owns tenant lifecycle/topology, `0.51.5` freezes and safely releases an
 authenticated membership cut, `0.51.6` atomically consumes separately approved
-exact-cut authority into one admitted parent, and `0.51.7` coordinates bounded
-fair isolated children with derived authority and explicit pause/resume;
+exact-cut authority into one admitted parent, `0.51.7` governs successor-plan
+lineage and resume authority, `0.51.8` transfers broad topology fencing to a
+narrow guard with authenticated post-cut absence/child handoffs, and `0.51.9`
+coordinates bounded fair isolated children with explicit pause/resume;
 none uses a wildcard tenant or cross-tenant transaction. Plugin uninstall and
 feature disablement
 never imply data retirement. `0.145.4` destructively certifies all of these

@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 373 exact stops and their
+- One canonical roadmap manifest accounts for all 375 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -72,8 +72,11 @@ distinct verified/loss/blocking terminals. `0.30.29` governs exact tenant-child
 proposal authority and recovery; `0.51.5` owns authenticated deployment
 membership cuts, topology reconciliation, and safe fence release; `0.51.6`
 owns separated approval, exact-cut plan consumption, atomic campaign admission,
-and constrained child-authority derivation; `0.51.7` owns bounded fair
-isolated-child dispatch, pause/revocation/resume, and reconciliation. No
+and constrained child-authority derivation; `0.51.7` owns successor-plan CAS,
+allowed deltas, cumulative budgets, predecessor fencing, and resume authority;
+`0.51.8` owns narrow domain guarding, authoritative post-cut absence/child
+handoffs, and broad-fence transfer; `0.51.9` owns bounded fair isolated-child
+dispatch, pause/revocation/resume, and reconciliation. No
 wildcard tenant or cross-tenant retirement
 transaction exists, and loss never counts as clean or grants deletion/hold
 release. `0.51.4` immediately certifies tenant surfaces; `0.139.1` iterates

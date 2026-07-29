@@ -16,9 +16,9 @@ timer/activity/poison/replay/quarantine/result ownership gate. `0.30.28` defines
 the permanent-ID, fenced, drained, history-preserving retirement contract with
 orthogonal evidence and truthful verified/loss terminals. `0.30.29` separately
 owns exact tenant-child authority, atomic commitment, cancellation and crash
-recovery. Deployment-wide cut lifecycle, exact-plan admission, and campaign
-execution authority wait for `0.51.5–0.51.7` after authoritative tenant
-lifecycle exists.
+recovery. Deployment-wide cut lifecycle, exact-plan admission/succession,
+narrow-guard topology handoff, and campaign execution authority wait for
+`0.51.5–0.51.9` after authoritative tenant lifecycle exists.
 Every database profile must implement every applicable negotiated `0.18.2`
 `AtomicWorkCommitBundle` variant and every other mandatory semantic port claimed
 for that profile, or fail startup capability negotiation. No adapter may
