@@ -9,8 +9,8 @@ identity and connector infrastructure. `0.120.8–0.120.10` separately certify
 late-domain authorization, automation, and search/history contributions from
 current manifests, exact authoritative IDs, deferrals, and product state.
 Plugin uninstall removes an admitted installation only; it neither retires its
-domain nor deletes tenant data. Any such retirement follows `0.30.28` and must
-later pass `0.145.4`.
+domain nor deletes tenant data. Any such retirement follows the `0.30.28`
+contract and `0.30.29` authority/recovery protocol, then must pass `0.145.4`.
 
 ## `0.111.0` — Versioned WIT Interfaces
 Status: planned. Setup: pin Component Model/WIT sources, ABI versions, owned

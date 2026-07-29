@@ -88,9 +88,14 @@ behavior, and an explicit scope distinction among compiled first-party catalog,
 deployment-profile selection, tenant feature availability, and signed plugin
 installation. Every kind declaration names its authoritative registry,
 lifecycle/retention binding, required authorization/redaction, tenant-isolation,
-positive/negative/boundary, revocation/correction, rebuild/recovery, and
-cross-surface verification dimensions, certification owner, and generated-test
-obligations.
+canonical encoding/schema evolution, positive/negative/boundary, parser/decoder
+fuzzing, memory/CPU/size/query-work budgets, concurrency/idempotency/replay,
+audit/evidence, revocation/correction, migration/mixed-version, failure-injection/
+partial-commit, rebuild/recovery/degraded-availability, timing/count/metadata
+leakage, and cross-surface verification dimensions, certification owner, and
+generated-test obligations.
+An inapplicable dimension requires a typed, reviewed `NotApplicable` record
+with rationale and review owner; omission is never equivalent to inapplicability.
 Goal: compose future typed extensions without duplicating their registries or
 letting manifest metadata become authority.
 Deliverables: reference resolver, kind catalog, complete-generation metadata-
@@ -103,7 +108,8 @@ schema mismatch, downgrade/rollback, mixed-node interpretation, unknown kind,
 partial admission, profile/plugin/tenant scope substitution, metadata admission
 enabling a feature or license, plugin installation enabling another tenant,
 kind missing registry/lifecycle/certification/test obligations, dimension
-downgrade, and digest substitution pass.
+downgrade or omission, unreviewed/false `NotApplicable`, and digest substitution
+pass.
 Exit criteria: one domain contribution generation is admitted atomically only
 when every reference resolves to the exact authoritative entry; metadata
 admission never enables a tenant feature, installs a plugin, grants a license
@@ -165,42 +171,52 @@ blocks its owner and is never added here.
 ## `0.30.27` — Asynchronous Contract Ownership And Compatibility Gate
 
 Status: planned.
-Setup: consume `0.16.0–0.18.2` authoritative outbox/effect, inbox/message,
-timer/activity, result/reconciliation, and compensation contracts plus current
-domain manifests. Distinguish stable `EffectKindId` capability/request schema
-from immutable execution `EffectId`, and register exact `MessageSchemaId`,
-`ConsumerId`, `TimerKindId`, `ActivityKindId`, result/reconciliation owner, and
-compensation-effect-kind references.
+Setup: consume the authoritative async family through `0.18.10`: `0.16.x–0.18.2`
+schemas plus command/consumer realization at `0.18.8`, timer/activity realization
+at `0.18.9`, and poison/dead-letter plus adapter certification at `0.18.10`.
+Distinguish stable `EffectKindId` capability/request schema from immutable
+execution `EffectId`, and register exact `MessageSchemaId`, `ConsumerId`,
+`TimerKindId`, `ActivityKindId`, result/reconciliation and compensation-effect-
+kind references, poison/dead-letter policy and owner, replay authorization,
+quarantine/disposition owner, retry/replay-horizon profile, and terminal-failure/
+manual-resolution owner.
 Goal: complete command→event/outbox→consumer→resulting-event/effect ownership
 for current contracts and every later domain without moving execution authority
 into manifest metadata.
 Deliverables: `DomainAsyncContractV1` references, current ownership backfill,
-command/effect/message/consumer/result matrix, generation-compatibility corpus,
-and prospective domain-exit checker.
+command/effect/message/consumer/timer/activity/poison/replay/quarantine/result
+matrix, generation-compatibility corpus, and prospective domain-exit checker.
 Verification: undeclared command outbox effect, kind/instance identity
 confusion, unowned or wrong-destination message, consumer accepting undeclared
 schema/version, consumer emitting undeclared event/effect, wrong result owner,
 missing reconciliation/compensation owner, schema downgrade, metadata-enabled
-unsupported consumer, future-only claim, and later-domain bypass pass.
+unsupported consumer, orphaned poison work, unauthorized replay, dead-letter
+tenant substitution, retention loss, retirement with quarantined work, future-
+only claim, and later-domain bypass pass.
 Exit criteria: every current asynchronous path resolves to exact authoritative
-kind/schema/consumer/result owners and compatible generations, and no later
-domain exits without the same proof; the gate creates no effect, message,
-consumer, timer, activity, reconciliation, or compensation behavior.
+kind/schema/consumer/policy/replay/disposition/horizon/terminal/result owners
+and compatible generations, and no later domain exits without the same proof;
+the gate creates no effect, message, consumer, timer, activity, reconciliation,
+or compensation behavior.
 `v0.30.27 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.30.28` — Domain Retirement Contract And Prospective Gate
 
 Status: planned.
-Setup: extend the domain registry with `Active → Deprecated → Quiescing →
-Retired`, permanent `DomainId` non-reuse, command/effect admission fences,
-dependency/drain and data-disposition references, codec/upcaster preservation,
-rollback/reinstallation floors, and a distinction between plugin uninstall,
-tenant feature disablement, and domain-data retirement.
+Setup: extend the domain registry with `Active → DeprecationAnnounced →
+RetirementApproved → Quiescing → DispositionPending → Retired`, explicit
+`Cancelled`, `Blocked`, and `EvidenceUnavailable` recovery/disposition states,
+permanent `DomainId` non-reuse, command/effect admission fences, dependency/
+drain and data-disposition references, codec/upcaster preservation, rollback/
+reinstallation floors, and a distinction between plugin uninstall, tenant
+feature disablement, and domain-data retirement.
 Goal: make safe removal a domain-owned lifecycle from introduction rather than
 first designing teardown during production certification.
-Deliverables: `DomainRetirementStateV1`, immutable ID tombstone, dependency and
-outstanding-work manifest, quiescence/fence contract, historical-codec and data-
-disposition obligations, rollback/reinstall rules, and prospective domain-exit gate.
+Deliverables: `DomainRetirementStateV1`, transition/recovery vocabulary,
+immutable ID tombstone, dependency/outstanding-work manifest, quiescence/fence
+contract, historical-codec/data-disposition obligations, rollback/reinstall
+rules, and prospective domain-exit gate. `0.30.29` separately implements the
+authority-bearing proposal, transactional transition, and crash-recovery protocol.
 Verification: `DomainId` reuse, retirement with incoming references, command/
 effect admitted after fence, undrained workflow/API/search/notification edge,
 pending inbox/outbox/timer/activity loss, codec/upcaster removal with retained
@@ -210,7 +226,8 @@ future backup/import incompatibility, and future-only retirement claim pass.
 Exit criteria: each current applicable manifest has an explicit retirement
 contract and every later domain must define one at introduction; retirement
 cannot complete while authority, work, data, retained history, backup/import,
-or external-reference obligations remain unresolved.
+or external-reference obligations remain unresolved, and this contract alone
+does not authorize or execute retirement.
 `v0.30.28 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.50.18` — Supplier Performance Assessment And Risk Proposals
@@ -468,28 +485,3 @@ Exit criteria: `1.0.0` proceeds as a Hosted production product only if every
 mandatory baseline capability is Supported with exact evidence; otherwise the
 Hosted release and claim remain blocked regardless of schedule.
 `v0.140.28 implementation stop reached. Run pentest for this exact commit.`
-
-## `0.145.4` — Domain Retirement And Historical Compatibility Certification
-
-Status: planned.
-Setup: consume `0.30.28` retirement contracts, current domain/contribution
-generations, `0.145.3` lifecycle/recovery evidence, installed-extension state,
-cross-domain dependencies, outstanding durable work, retained event/snapshot/
-export/backup/import history, deferrals, and product state.
-Goal: destructively certify selected-profile domain/module/plugin retirement
-and reinstall while preserving every retained historical obligation.
-Deliverables: retirement/drain exercise corpus, dependency-closure and
-outstanding-work report, command/effect fence evidence, data-disposition and
-legal-hold proof, codec/upcaster retention set, historical read/restore/import
-matrix, reinstall/rollback-floor matrix, and certification report.
-Verification: late command/effect, undrained consumer/timer/activity, dangling
-cross-domain or external reference, retained event without decoder/upcaster,
-projection/data deletion before disposition, hold/export/erasure bypass,
-backup/restore/import failure, plugin-uninstall data loss, `DomainId` reuse,
-unsafe reinstall/downgrade, unresolved defer, false support, and handler first
-implemented in the certifier pass.
-Exit criteria: every selected retirement either completes with closed authority,
-drained/disposed work, truthful data evidence, permanent ID tombstone, readable
-retained history, and safe reinstall floor, or remains visibly blocked; the
-certifier adds no missing retirement, codec, lifecycle, or reconciliation behavior.
-`v0.145.4 implementation stop reached. Run pentest for this exact commit.`

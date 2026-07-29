@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **369 independently pentestable release stops**:
+The roadmap contains exactly **370 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 218 companion stops + 1 production stop = 369`.
+`150 base 0.x.0 stops + 219 companion stops + 1 production stop = 370`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “369 exact release stops” describe different
+included. “151 base stops” and “370 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 369 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 370 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -195,24 +195,30 @@ and signed plugin installation are distinct scopes. Metadata admission never
 enables a tenant feature, installs a plugin, grants a license, or authorizes
 access; runtime availability remains separately filtered by tenant, policy,
 entitlement, license, and installation state. Each `ContributionKindId` also
-declares its authoritative registry, lifecycle binding, mandatory verification
-dimensions, certification owner, and generated-test obligations. Unknown kinds,
-missing obligations, namespace
+declares its authoritative registry, lifecycle binding, certification owner,
+generated-test obligations, and canonical/schema, fuzz, resource-budget,
+concurrency/replay, evidence, migration, failure/recovery and timing/count/
+metadata-leakage dimensions.
+An omitted dimension fails closed; inapplicability requires a typed reviewed
+`NotApplicable` disposition. Unknown kinds, missing obligations, namespace
 collisions, dependency/recovery cycles, mixed-version disagreement, downgrade,
 partial admission, and plugin attempts to grant authority fail closed. A
-reference never grants authorization, exposes a command, or overrides policy or
-lifecycle semantics.
+reference never grants authorization, exposes a command, or overrides policy
+or lifecycle semantics.
 
 `0.30.27` extends the prospective ownership gate across durable asynchronous
-contracts: effect kind versus immutable execution identity, message schemas and
-consumers, timer/activity kinds, result/reconciliation owners, and compensation
-effects. `0.30.28` gives every domain an introduction-time retirement contract
-with permanent `DomainId` tombstone, command/effect fencing, dependency and
-durable-work drainage, data disposition, historical codec/upcaster preservation,
-and reinstall/rollback floors. Plugin uninstall and tenant feature disablement
-never imply domain-data retirement. `0.145.4` later performs destructive
-selected-profile retirement/history/restore/reinstall certification and cannot
-first implement missing teardown behavior.
+contracts only after the full `0.18.8–0.18.10` realization family: effect kind
+versus execution identity, message/consumer and timer/activity kinds, poison/
+dead-letter policy, replay authorization, quarantine/disposition, retry horizon,
+terminal/manual resolution, result/reconciliation, and compensation owners.
+`0.30.28` gives every domain an introduction-time retirement lifecycle with
+permanent `DomainId` tombstone, command/effect fencing, dependency/work drainage,
+data disposition, historical codec/upcaster preservation, and reinstall floors.
+`0.30.29` separately owns immutable scoped proposal authority, generation/version
+checks, separation of duties, atomic audit/outbox commitment, cancellation and
+crash recovery. Plugin uninstall and feature disablement never imply data
+retirement. `0.145.4` later destructively certifies both implementations and
+cannot first add teardown or recovery behavior.
 
 Typed extensions appear only after their vocabulary exists. `0.51.3–0.51.4`
 reference and immediately certify the authoritative `TenantDataSurface`

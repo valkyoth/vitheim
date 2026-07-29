@@ -30,7 +30,7 @@ done
 
 for field in Status Setup Goal Deliverables Verification 'Exit criteria'; do
     count="$(grep -R -o "$field:" docs/implementation | wc -l)"
-    if [ "$count" -lt 369 ]; then
+    if [ "$count" -lt 370 ]; then
         echo "implementation plan: field '$field' appears only $count times" >&2
         failed=1
     fi
@@ -41,8 +41,8 @@ pentest_count="$(
         docs/implementation |
         wc -l
 )"
-if [ "$pentest_count" -ne 369 ]; then
-    echo "implementation plan: expected 369 exact-commit pentest stops, found $pentest_count" >&2
+if [ "$pentest_count" -ne 370 ]; then
+    echo "implementation plan: expected 370 exact-commit pentest stops, found $pentest_count" >&2
     failed=1
 fi
 

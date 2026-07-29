@@ -474,7 +474,8 @@ Setup: derive cases jointly from the requirement registry, current
 `DomainManifest` generations and exact typed contribution references, and the
 authorization/redaction interface registry; iterate every active
 `ContributionKindId` and its mandatory verification dimensions/certification
-owner rather than a fixed surface list, and consume deferrals and product state.
+owner, including typed reviewed `NotApplicable` dispositions, rather than a
+fixed surface list, and consume deferrals and product state.
 Goal: prove semantic, authorization, redaction, and support-state equivalence.
 Deliverables: generated cross-surface matrix, golden domain journeys, tenant/
 role/field pairs, contribution-kind/dimension/owner coverage report, generated
@@ -484,9 +485,11 @@ contribution without a differential, stale contribution generation, required
 surface marked not applicable, deferred surface shown as supported, requirement
 without an active manifest, manifest surface absent from API/UI/search/export,
 active/new contribution kind missing authoritative registry, lifecycle binding,
-certification owner, or required test dimension, attachment/audit/report/count/
-telemetry/federation/webhook/external-replica omission, fake/real divergence,
-retry/cursor mismatch, and cross-surface differential pass.
+certification owner, canonical/schema/fuzz/budget/concurrency/replay/audit/
+migration/failure/recovery/timing/count/metadata-leakage dimension, or reviewed
+`NotApplicable`; attachment/audit/report/count/telemetry/federation/webhook/
+external-replica
+omission, fake/real divergence, retry/cursor mismatch, and differential pass.
 Exit criteria: no registered full-suite requirement, active manifest
 contribution/kind dimension, or authorization interface lacks its generated
 required comparison; adding a contribution kind expands the suite without

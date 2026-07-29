@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 369 exact release stops: 150 base `0.x.0`
-stops, 218 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 370 exact release stops: 150 base `0.x.0`
+stops, 219 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -17,7 +17,7 @@ law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
-families that exceeded it, and records 75 later focused capability,
+families that exceeded it, and records 76 later focused capability,
 requirement-ownership, decomposition, integration, discovery, and coherence
 companions.
 
@@ -75,15 +75,21 @@ references to exact authoritative IDs and atomically admits complete compatible
 metadata generations while keeping compiled catalog, deployment profile, tenant
 feature, and signed plugin-installation scopes separate; metadata admission
 never enables runtime availability or authority. Every contribution kind owns
-its registry/lifecycle binding, mandatory verification dimensions, certification
-owner, and generated-test obligations. `0.30.25` governs bounded deferrals and
-product-state effects, but code/data/routing/schema that already exists can
+its registry/lifecycle binding, certification owner, generated tests, and
+canonical/schema, fuzz, budget, concurrency/replay, evidence, migration,
+failure/recovery and timing/count/metadata-leakage dimensions; omission fails,
+while inapplicability requires a reviewed typed `NotApplicable`. `0.30.25`
+governs bounded deferrals and product-state effects, but code/data/routing/
+schema that already exists can
 never defer structural ownership, policy, lifecycle, deletion/rebuild, or
 reconciliation registration. `0.30.26` backfills current domain-event ownership
 and installs a prospective compatibility gate; `0.30.27` does the same for
-outbox effects, messages/consumers, timers/activities, result/reconciliation,
-and compensation contracts. `0.30.28` defines permanent-ID, fenced, dependency-
-draining, history-preserving domain retirement at introduction, while `0.145.4`
+outbox effects, messages/consumers, timers/activities, poison/dead-letter,
+replay/quarantine, result/reconciliation, and compensation contracts after the
+complete `0.18.8–0.18.10` realization family. `0.30.28` defines permanent-ID,
+fenced, dependency-draining, history-preserving domain retirement at
+introduction; `0.30.29` separately owns retirement proposal authority, atomic
+audit/outbox commitment, cancellation and crash recovery; and `0.145.4`
 destructively certifies selected retirement/reinstall profiles rather than
 first implementing teardown. Tenant lifecycle references begin only
 after `0.51.2`, with immediate backfill certification at `0.51.4`;
@@ -1218,7 +1224,8 @@ the same process.
 - [Product And Production Scope Splits (`0.70.1–0.149.3`)](implementation/SCOPE_SPLITS_PRODUCT_PRODUCTION.md)
 - [Focused Product Capability Completions (`0.20.4–0.140.27`)](implementation/PRODUCT_CAPABILITY_COMPLETIONS.md)
 - [Requirement Ownership And Product Integration Completions (`0.18.14–0.145.3`)](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md)
-- [Roadmap Coherence Completions (`0.18.15–0.145.4`)](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
+- [Roadmap Coherence Completions (`0.18.15–0.140.28`)](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
+- [Roadmap Authority And Recovery Completions (`0.30.29–0.145.4`)](implementation/ROADMAP_AUTHORITY_COMPLETIONS.md)
 - [Phase O — Production Hardening (`0.141.0–0.150.0`)](implementation/PHASE_O.md)
 - [`1.0.0` — Production Acceptance](implementation/PRODUCTION_1_0.md)
 
