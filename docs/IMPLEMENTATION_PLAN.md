@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 364 exact release stops: 150 base `0.x.0`
-stops, 213 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 366 exact release stops: 150 base `0.x.0`
+stops, 215 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -17,7 +17,7 @@ law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
-families that exceeded it, and records 70 later focused capability,
+families that exceeded it, and records 72 later focused capability,
 requirement-ownership, decomposition, integration, discovery, and coherence
 companions.
 
@@ -67,17 +67,23 @@ filtered reads, and project-owned internal DTOs before its UI or external
 adapter can exit. External API/SDK stops expose and freeze those contracts; they
 never introduce the domain application service for the first time.
 From `0.30.23`, each domain has one stable `DomainManifest` keyed by dedicated
-`DomainId`, owning crate, requirement set, application command/read schema IDs,
-classifications, and typed extension references. It never embeds another
-registry's semantics. `0.30.24` resolves references to exact authoritative IDs
-and atomically activates complete compatible generations; `0.30.25` governs
-bounded deferrals and product-state effects. Tenant lifecycle references begin
-only after `0.51.2`, authorization after Phase F, workflow after Phase G, search
-after Phase J, workspace after its block vocabulary, and API/transfer after
-their Phase N contracts. Each surface stop defines and backfills its typed
-extension, then a separate stop certifies it. Late certification cannot add
-missing domain behavior, and no Supported/RC/`1.0.0` profile may carry an
-unresolved required deferral.
+`DomainId`, owning crate, requirement set, exact aggregate/stream, command,
+event, compatibility/upcaster-owner, application-read, and applicable
+projector/process-manager references, classifications, and typed extension
+references. It never embeds another registry's semantics. `0.30.24` resolves
+references to exact authoritative IDs and atomically admits complete compatible
+metadata generations while keeping compiled catalog, deployment profile, tenant
+feature, and signed plugin-installation scopes separate; metadata admission
+never enables runtime availability or authority. `0.30.25` governs bounded
+deferrals and product-state effects, and `0.30.26` backfills current
+domain-event ownership and installs a prospective compatibility gate for every
+later domain. Tenant lifecycle references begin only
+after `0.51.2`, with immediate backfill certification at `0.51.4`;
+authorization follows Phase F, workflow Phase G, search Phase J, workspace its
+block vocabulary, and API/transfer their Phase N contracts. Each surface stop
+defines and backfills its typed extension, then a separate stop certifies it.
+Late certification cannot add missing domain behavior, and no Supported/RC/
+`1.0.0` profile may carry an unresolved required deferral.
 Optional federation, AI, vendor-connector, plugin-storefront, and semantic-index
 crates depend inward on stable ports. The kernel and first-party domains must
 build, test, and operate without any optional product family.

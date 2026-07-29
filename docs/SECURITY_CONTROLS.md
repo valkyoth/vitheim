@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 364 exact stops and their
+- One canonical roadmap manifest accounts for all 366 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -52,14 +52,20 @@ Tests must prove both acceptance and rejection. A rejected operation must not
 partially mutate state, consume authority, expose hidden fields, or omit an
 audit decision.
 
-From `0.30.23`, every domain owns one checked identity/application manifest;
-later typed extensions reference, never copy, authoritative policy, tenant-
-surface, workflow, search, workspace, API, and transfer registry entries.
-`0.30.24` enforces namespace, dependency, generation, compatibility, rollback,
-mixed-node, atomic-activation, and no-authority-from-declaration rules.
+From `0.30.23`, every domain owns one checked identity/application/event
+manifest with exact aggregate/stream, command, event, compatibility/upcaster,
+read, and applicable consumer references; later typed extensions reference,
+never copy, authoritative policy, tenant-surface, workflow, search, workspace,
+API, and transfer registry entries. `0.30.24` enforces namespace, dependency,
+generation, compatibility, rollback, mixed-node, atomic metadata admission,
+scope separation, and no-authority-from-declaration rules. Metadata admission
+cannot enable a feature, plugin, license, entitlement, or authorization.
 `0.30.25` makes deferrals exact, expiring, retested, and product-state visible.
-Extension/backfill and certification are separate stops; missing or unresolved
-required contributions block the owning capability, RC, and production.
+`0.30.26` backfills current event ownership/evolution and installs the
+prospective gate for later domains; `0.51.4` immediately certifies the tenant-
+surface backfill. Extension/backfill and certification are separate
+stops; missing or unresolved required contributions block the owning
+capability, RC, and production.
 
 ## Runtime Controls Planned Before Production
 

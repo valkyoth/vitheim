@@ -470,32 +470,43 @@ entries; `0.138.7` alone composes and certifies them.
 ## `0.139.1` — Full-Suite Cross-Surface Differential Suite
 
 Status: planned.
-Setup: derive cases from the requirement and authorization registries for each
-new domain across application/API/SDK/UI/search/history/workflow/notification/
-import/export/configuration/subscription surfaces.
+Setup: derive cases jointly from the requirement registry, current
+`DomainManifest` generations and exact typed contribution references, and the
+authorization/redaction interface registry for every domain across application/
+API/SDK/UI/search/history/workflow/notification/import/export/configuration/
+subscription surfaces; consume deferrals and product state.
 Goal: prove semantic, authorization, redaction, and support-state equivalence.
 Deliverables: generated cross-surface matrix, golden domain journeys, tenant/
-role/field pairs, correction/revocation fixtures, and evidence report.
+role/field pairs, contribution-to-differential coverage report, correction/
+revocation fixtures, and evidence report.
 Verification: mutation/read mismatch, hidden field/count, stale lifecycle,
-unsupported capability discovery, fake/real divergence, retry/cursor mismatch,
-and API/UI/search/export differential pass.
-Exit criteria: no registered full-suite requirement or interface lacks its
-required positive, negative, boundary, correction, and revocation comparison.
+contribution without a differential, stale contribution generation, required
+surface marked not applicable, deferred surface shown as supported, requirement
+without an active manifest, manifest surface absent from API/UI/search/export,
+fake/real divergence, retry/cursor mismatch, and cross-surface differential pass.
+Exit criteria: no registered full-suite requirement, active manifest
+contribution, or authorization interface lacks its required positive, negative,
+boundary, correction, and revocation comparison.
 `v0.139.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.3` — Full-Suite Lifecycle And Recovery Certification
 
 Status: planned.
-Setup: consume domain-owned tenant-data-surface registrations, backup/restore
-codecs, rebuild/recovery order, retention/hold/erasure handlers, export class,
-external-copy disposition, privacy linkage, and continuity/DR evidence.
+Setup: consume `0.51.3–0.51.4` exact authoritative tenant-surface references
+and immediate certification, current `DomainManifest`/contribution generations,
+deferrals, product state, backup/restore codecs, rebuild/recovery order,
+retention/hold/erasure handlers, export class, external-copy disposition,
+privacy linkage, and continuity/DR evidence.
 Goal: certify that the complete registered suite recovers and closes data truthfully.
 Deliverables: generated completeness/differential report, composed recovery
-manifest/order, privacy and continuity evidence joins, and destructive exercise corpus.
+manifest/order, reference-registry/generation checks, product-state blockers,
+privacy and continuity evidence joins, and destructive exercise corpus.
 Verification: omitted surface, stale cursor/spool resurrection, missing
 external copy, broken reference, erasure rollback, kind/config downgrade,
-privacy false completion, continuity false evidence, and restore divergence pass.
+generation mismatch, unresolved required defer, deferred surface shown as
+supported, privacy false completion, continuity false evidence, and restore
+divergence pass.
 Exit criteria: selected profiles restore or erase with complete evidence; no
-registration or handler is first added here, and missing state leaves the
-owning capability unready rather than guessed.
+reference, registration, lifecycle handler, or recovery behavior is first added
+here, and missing state leaves the owning capability unready rather than guessed.
 `v0.145.3 implementation stop reached. Run pentest for this exact commit.`

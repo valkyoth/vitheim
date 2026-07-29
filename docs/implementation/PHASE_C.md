@@ -5,6 +5,12 @@ adapter requires an independently approved implementation-admission record
 before code begins. The default `1.0.0` target is in-memory for semantics,
 SQLite for single-node, and PostgreSQL for HA; MySQL, MongoDB, and SurrealDB are
 experimental unless `0.140.2` promotes an evidenced profile.
+After portability work, focused `0.30.23–0.30.25` stops define the stable
+domain/application/event reference manifest, scope-separated contribution
+metadata admission, and deferral gates; `0.30.26` separately checks event
+ownership, emission/consumption, upcaster ownership, and generation
+compatibility for current applicable owners, then installs the prospective
+domain-exit gate without defining missing behavior.
 Every database profile must implement every applicable negotiated `0.18.2`
 `AtomicWorkCommitBundle` variant and every other mandatory semantic port claimed
 for that profile, or fail startup capability negotiation. No adapter may

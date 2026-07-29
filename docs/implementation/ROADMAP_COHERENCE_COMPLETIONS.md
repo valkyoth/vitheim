@@ -58,16 +58,21 @@ roadmap text, admission record, or adapter can silently relax the dependency law
 
 Status: planned.
 Setup: define stable `DomainId`, owning crate/layer, one-or-more `VIT-REQ-*`
-links, aggregate/application command and read schema IDs, classifications, and
-a bounded list of typed extension references without defining future surface
-protocols.
+links, exact `AggregateTypeId`/`StreamTypeId`, `CommandSchemaId`,
+`EventSchemaId`, event-compatibility/upcaster-owner, application-read-schema,
+and applicable registered projector/process-manager references,
+classifications, and a bounded list of typed extension references without
+defining future surface protocols.
 Goal: provide one mechanically discoverable domain identity without becoming a
 parallel authority or forcing Phase D to invent later vocabularies.
 Deliverables: `DomainManifestV1`, registry, marker grammar, requirement/crate/
-schema link checker, bounded extension-reference envelope, and fixtures.
+aggregate/stream/command/event/read/consumer link checker, bounded extension-
+reference envelope, and fixtures.
 Verification: requirement-as-domain identity, missing/duplicate `DomainId`,
-wrong crate/layer, dangling command/read schema, cross-domain substitution,
-embedded future mapping, unknown reference encoding, and parser/work-budget pass.
+wrong crate/layer, dangling or wrong-domain command/event/read schema,
+cross-domain aggregate/stream substitution, unowned compatibility/upcaster
+reference, embedded future mapping, unknown reference encoding, and parser/
+work-budget pass.
 Exit criteria: every introduced domain has one stable manifest and requirement
 set; the core contains identifiers and references only and grants no command,
 authorization, data exposure, lifecycle decision, or surface semantics.
@@ -78,19 +83,28 @@ authorization, data exposure, lifecycle decision, or surface semantics.
 Status: planned.
 Setup: define registered `ContributionKindId`, authoritative registry/profile,
 entry ID, schema version, generation/digest, domain-schema compatibility,
-dependencies, activation, supersession, rollback floor, and mixed-version behavior.
+dependencies, metadata admission, supersession, rollback floor, mixed-version
+behavior, and an explicit scope distinction among compiled first-party catalog,
+deployment-profile selection, tenant feature availability, and signed plugin
+installation.
 Goal: compose future typed extensions without duplicating their registries or
 letting manifest metadata become authority.
-Deliverables: reference resolver, kind catalog, complete-generation activation
-protocol, collision/dependency checker, compatibility matrix, and HA fixtures.
+Deliverables: reference resolver, kind catalog, complete-generation metadata-
+admission protocol, scope discriminant, first-party/deployment/plugin admission
+bindings, tenant-availability separation, collision/dependency checker,
+compatibility matrix, and HA fixtures.
 Verification: dangling/mismatched reference, route/resource/command/event/
 trigger/facet/block/document namespace collision, dependency/recovery cycle,
 schema mismatch, downgrade/rollback, mixed-node interpretation, unknown kind,
-partial activation, and digest substitution pass.
-Exit criteria: one domain contribution generation activates atomically only
-when every reference resolves to the exact authoritative entry; declarations
-cannot grant authorization, expose commands, override lifecycle policy, or
-change the referenced authority.
+partial admission, profile/plugin/tenant scope substitution, metadata admission
+enabling a feature or license, plugin installation enabling another tenant, and
+digest substitution pass.
+Exit criteria: one domain contribution generation is admitted atomically only
+when every reference resolves to the exact authoritative entry; metadata
+admission never enables a tenant feature, installs a plugin, grants a license
+or authorization, exposes commands, overrides lifecycle policy, or changes the
+referenced authority. Runtime availability remains a separate tenant-, policy-,
+entitlement-, license-, and installation-filtered decision.
 `v0.30.24 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.30.25` — Contribution Deferral And Product-State Gates
@@ -111,6 +125,30 @@ Exit criteria: a domain may exit with a bounded deferral only when all fields
 are complete and its product state reflects the gap; no Supported capability,
 RC, or `1.0.0` profile has an unresolved required contribution.
 `v0.30.25 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.30.26` — Domain Event Ownership And Compatibility Gate
+
+Status: planned.
+Setup: consume `0.30.23` manifests, the authoritative `0.8.0` event-schema
+registry, `0.14.0` compatibility/upcaster ownership, registered projector/
+process-manager identities, current applicable foundation/control aggregates,
+deferrals, and product state.
+Goal: backfill current ownership and install a prospective domain-exit gate
+without pretending future domains exist or defining an event, upcaster,
+projector, or process manager here.
+Deliverables: generated domain/aggregate/stream/command/event/upcaster/consumer
+matrix, current backfill report, command-emission and consumer differentials,
+generation-compatibility corpus, prospective checker, and gate report.
+Verification: unowned or wrong-domain event schema, command emitting an
+undeclared event, upcaster-owner mismatch, projector/process manager consuming
+an undeclared event, aggregate/stream substitution, stale manifest or event
+generation, unresolved required defer, false support, future-only declaration,
+later-domain bypass, and implementation inside the gate pass.
+Exit criteria: every current applicable emission/consumer resolves to the exact
+authoritative event lineage and compatible generation, and no later domain can
+exit until the same checks pass at its introducing stop; missing behavior
+blocks its owner and is never added here.
+`v0.30.26 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.50.18` — Supplier Performance Assessment And Risk Proposals
 
@@ -148,6 +186,26 @@ Exit criteria: domain manifests contain only exact `TenantDataSurfaceId`
 references; `0.51.2` remains the sole lifecycle metadata authority and every
 later tenant-bearing surface registers and links at introduction.
 `v0.51.3 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.4` — Tenant-Surface Contribution Certification
+
+Status: planned.
+Setup: consume `0.51.3` references, the authoritative `0.51.2`
+`TenantDataSurface` registry, current domain/contribution generations,
+deferrals, product state, tenant-key rules, and recovery dependencies.
+Goal: certify the Phase D/E backfill immediately while leaving destructive
+full-suite restore, erasure, and closure certification to `0.145.3`.
+Deliverables: generated domain/surface/lifecycle completeness matrix,
+reference-registry and tenant-key differentials, recovery-order graph, negative
+corpus, and certification report.
+Verification: omitted authoritative/derived/cached/queued/backed-up/attachment/
+audit/telemetry/external-copy surface, dangling or copied lifecycle metadata,
+wrong tenant key/owner, recovery cycle, stale generation, unresolved required
+defer, false support, and late registration/handler pass.
+Exit criteria: every current tenant-bearing surface references the exact
+authoritative registry entry with acyclic recovery order and truthful product
+state; the certifier adds no registration, lifecycle field, or handler.
+`v0.51.4 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.60.4` — Authorization Contribution Certification
 
@@ -221,58 +279,66 @@ the `0.50.16` port and deterministic fake remain usable without a production
 ERP claim.
 `v0.118.5 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.120.8` — Late-Domain Authorization Registration
+## `0.120.8` — Late-Domain Authorization Contribution Certification
 
 Status: planned.
-Setup: consume Phase K/L domain-owned authorization/redaction contributions for
-privacy, inbound mail, audit export, federation, plugin/connector, and other
-post-`0.60.3` interfaces through the prospective registration gate.
+Setup: consume current `DomainManifest` generations and exact authoritative
+authorization/redaction contribution IDs for privacy, inbound mail, audit
+export, federation, plugin/connector, and other post-`0.60.4` domains, together
+with generation compatibility, deferrals, and product state.
 Goal: certify late-domain policy and redaction coverage without pretending
 those domains existed during Phase F.
 Deliverables: generated completeness matrix, action/resource/field/purpose
-differentials, negative-policy fixtures, support-state bindings, and report.
+differentials, reference-registry/generation checks, negative-policy fixtures,
+support-state bindings, and report.
 Verification: omitted route/item/action/field, hidden count, purpose confusion,
-stale policy, mail/export/federation leak, unsupported surface activation, and
-allow-by-default pass.
-Exit criteria: every implemented late-domain interface has one current
-domain-owned authorization/redaction case; missing behavior is not implemented
-here and no future-facing registration counts as implemented capability.
+stale policy or contribution generation, wrong authoritative ID, false
+not-applicable, unresolved defer, mail/export/federation leak, deferred surface
+presented as supported, and allow-by-default pass.
+Exit criteria: every applicable late-domain reference resolves and passes;
+the certifier adds no interface, policy/redaction case, or registration, and
+missing behavior blocks its owning capability.
 `v0.120.8 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.120.9` — Late-Domain Workflow And Notification Integration
+## `0.120.9` — Late-Domain Workflow And Notification Contribution Certification
 
 Status: planned.
-Setup: consume domain-owned ordinary-command, event, trigger, action, audience,
-field, loop-guard, and support-state contributions for privacy, inbound-mail
-proposals, audit export, federation, and plugin/connector administration.
+Setup: consume current `DomainManifest` generations and exact authoritative
+ordinary-command, event, trigger, action, audience, field, and loop-guard
+contribution IDs for late domains, with generation compatibility, deferrals,
+and product state.
 Goal: certify late-domain automation after those domains exist without moving
 their lifecycles into the workflow engine.
 Deliverables: composed workflow templates, completeness/differential report,
-reauthorization tests, deterministic fakes, and end-to-end fixtures.
-Verification: trigger spoof/replay/storm, generic status mutation, stale
-authority, hidden-field notification, recursive loop, unsupported action, and
-workflow/domain-version drift pass.
-Exit criteria: late-domain workflows invoke only domain-owned registered
-commands and every notification reauthorizes recipients and visible fields at
-dispatch; missing mappings are not first implemented here.
+reference-registry/generation checks, reauthorization tests, deterministic
+fakes, and end-to-end fixtures.
+Verification: trigger spoof/replay/storm, wrong authoritative ID, generic status
+mutation, stale authority/generation, hidden-field notification, recursive
+loop, false not-applicable, unresolved defer, and unsupported action pass.
+Exit criteria: late-domain automation invokes only exact authoritative
+ordinary commands and reauthorizes notifications at dispatch; the certifier
+adds no trigger, action, mapping, or notification rule.
 `v0.120.9 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.120.10` — Late-Domain Search And History Integration
+## `0.120.10` — Late-Domain Search And History Contribution Certification
 
 Status: planned.
-Setup: consume post-`0.100.1` domain-owned search/history documents, fields,
-deletion/redaction behavior, facets, queues, graph references, rebuild hooks,
-retention, policy, and support-state contributions.
+Setup: consume current `DomainManifest` generations and exact authoritative
+search/history document, field, deletion/redaction, facet, queue, graph, and
+rebuild-owner contribution IDs for late domains, with generation compatibility,
+deferrals, and product state.
 Goal: certify late-domain discoverability without implementing mappings here or
 making search an authority or information oracle.
 Deliverables: generated completeness matrix, shared facet/queue composition,
-rebuild orchestration, policy differentials, support filters, and report.
-Verification: missing/duplicate document, hidden field/count/facet, stale
-revocation, cross-organization leak, rebuild divergence, unsupported result,
-and query-complexity exhaustion pass.
-Exit criteria: each late-domain mapping is domain-owned and current application
-reads and search return policy-equivalent visibility; missing behavior is not
-implemented by this certification stop.
+rebuild orchestration, reference-registry/generation checks, policy
+differentials, support filters, and report.
+Verification: missing/duplicate or wrong-ID document, hidden field/count/facet,
+stale revocation/generation, false not-applicable, unresolved defer,
+cross-organization leak, rebuild divergence, deferred result shown as
+supported, and query-complexity exhaustion pass.
+Exit criteria: every applicable reference resolves and current application
+reads and search remain policy-equivalent; the certifier adds no document,
+mapping, facet, deletion behavior, or rebuild hook.
 `v0.120.10 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.132.4` — Workspace Contribution Composition And Certification

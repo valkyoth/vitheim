@@ -1873,18 +1873,22 @@ Verification:
   implementation owner, and valid crate, schema/migration, test, integration,
   and retest ownership. Source-marker and normative-language drift checks pass.
   Every domain manifest has a dedicated `DomainId`, exact requirement/crate/
-  application-schema links, an admitted complete reference generation, and no
-  unresolved required defer. Policy, tenant-surface, workflow, search,
-  workspace, API, and transfer references resolve to their authoritative
-  registries with no copied semantics; every separate extension/backfill and
-  certification stop passes without late implementation or generic fallback.
+  aggregate/stream/command/event/upcaster-owner/read/consumer links, an admitted
+  complete metadata generation, and no unresolved required defer. Metadata
+  admission has not enabled a tenant feature, plugin, license, entitlement, or
+  authorization. The event-ownership/evolution gate has passed at every
+  introducing domain stop, and immediate tenant-surface certification passes.
+  Policy, tenant-surface, workflow, search, workspace, API,
+  and transfer references resolve to their authoritative registries with no
+  copied semantics; every separate extension/backfill and certification stop
+  passes without late implementation or generic fallback.
   Full-suite authorization, workflow/notification, search/history, UI/admin,
   API/SDK/subscription,
   import/export/configuration, cross-surface differential, and lifecycle/
   backup/restore/erasure stops have passing evidence for every selected
   capability. A deferred `0.86.2` profile exposes cloud-native kinds as
   manual/generic-import-only and makes no automatic discovery claim.
-- The generated roadmap/evidence differential proves exactly 364 release
+- The generated roadmap/evidence differential proves exactly 366 release
   stops and their owners, authority reviews and pentest reports; it rejects any
   README, API discovery, UI navigation, release-note, installer, operator or
   support-matrix claim without a matching executable owner and exact evidence.

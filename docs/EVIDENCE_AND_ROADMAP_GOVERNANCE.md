@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **364 independently pentestable release stops**:
+The roadmap contains exactly **366 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 213 companion stops + 1 production stop = 364`.
+`150 base 0.x.0 stops + 215 companion stops + 1 production stop = 366`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “364 exact release stops” describe different
+included. “151 base stops” and “366 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 364 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 366 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -176,27 +176,42 @@ need bounded typed exceptions rather than an unchecked ignore list.
 
 `0.30.23` introduces a small `DomainManifest`, keyed by dedicated stable
 `DomainId`, owning crate/layer, one-or-more requirement links, classifications,
-application command/read schema IDs, and typed extension references. A domain
-is not a requirement, and the manifest is an index rather than another
-universal metadata authority.
+exact aggregate/stream, command, event, compatibility/upcaster-owner,
+application-read, and applicable projector/process-manager references, and
+typed extension references. These resolve to the authoritative event and
+consumer registries rather than copying definitions. A domain is not a
+requirement, and the manifest is an index rather than another universal
+metadata authority. `0.30.26` separately checks command emission, event
+ownership/evolution, consumer declarations, and generation compatibility for
+current applicable owners, then installs the same prospective exit gate for
+every later domain rather than declaring future coverage.
 
 `0.30.24` defines the reference envelope and kind catalog. Each reference binds
 an authoritative registry/profile, entry ID, schema version, generation/digest,
 compatibility, dependencies, supersession, and rollback floor. One complete
-compatible generation activates atomically. Unknown kinds, namespace
+compatible metadata generation is admitted atomically. First-party compiled
+catalog membership, deployment-profile selection, tenant feature availability,
+and signed plugin installation are distinct scopes. Metadata admission never
+enables a tenant feature, installs a plugin, grants a license, or authorizes
+access; runtime availability remains separately filtered by tenant, policy,
+entitlement, license, and installation state. Unknown kinds, namespace
 collisions, dependency/recovery cycles, mixed-version disagreement, downgrade,
-partial activation, and plugin attempts to grant authority fail closed. A
+partial admission, and plugin attempts to grant authority fail closed. A
 reference never grants authorization, exposes a command, or overrides policy or
 lifecycle semantics.
 
-Typed extensions appear only after their vocabulary exists. `0.51.3` references
-the authoritative `TenantDataSurface` registry; `0.60.3–0.60.4` own
+Typed extensions appear only after their vocabulary exists. `0.51.3–0.51.4`
+reference and immediately certify the authoritative `TenantDataSurface`
+registry; `0.60.3–0.60.4` own
 authorization extension/backfill/certification; `0.70.4–0.70.5` workflow and
 notification; `0.100.1–0.100.2` search/history; `0.132.3–0.132.4` workspace;
 and `0.138.4–0.138.7` external API and transfer/configuration. Later domains
 register prospectively, while `0.120.8–0.120.10` certify their applicable
-authorization, automation, and search references. `0.145.3` certifies lifecycle
-and recovery references and cannot create one.
+authorization, automation, and search references from current manifest
+generations, exact authoritative IDs, deferrals, and product state. `0.139.1`
+generates differentials jointly from requirements, manifests/contributions,
+and authorization interfaces. `0.145.3` consumes the same model for destructive
+full-suite lifecycle/recovery certification and cannot create a reference or handler.
 
 `0.30.25` makes a defer an explicit lifecycle record with implementation
 milestone, prerequisite, responsible crate, retest owner, product-state effect,

@@ -31,11 +31,11 @@ small-loop rule and were decomposed into 65 additional exact stops. The later
 capability-gap review added 21 independently scoped verification, product, and
 profile-decision stops. The second gap review added 31 requirement-ownership,
 domain-decomposition, integration, and discovery-profile stops. The coherence
-reviews added 18 requirement-source, dependency-feasibility, phased surface-
+reviews added 20 requirement-source, dependency-feasibility, phased surface-
 ownership, domain-boundary, adapter-placement, and chronological-integration
-stops. The canonical roadmap therefore contains **364 exact stops**:
+stops. The canonical roadmap therefore contains **366 exact stops**:
 
-`150 base 0.x.0 stops + 213 companion stops + 1 production stop = 364`.
+`150 base 0.x.0 stops + 215 companion stops + 1 production stop = 366`.
 
 The existing long sections remain cumulative family ledgers because they hold
 important threat, invariant, recovery, and verification context. Their heading
@@ -75,24 +75,25 @@ The second review's 31 additions live in
 | Supplier decomposition | `0.50.10–0.50.12` | Contract, obligation lifecycle, then access termination |
 | Procurement decomposition | `0.50.13–0.50.16` | External-order evidence/receipt, allocation/return, entitlement, then provider-neutral reconciliation |
 | Continuity decomposition | `0.50.17` | Exercise/evidence authority separated from plan authority |
-| Cross-surface integration | `0.60.3–0.60.4`, `0.70.4–0.70.5`, `0.100.1–0.100.2`, `0.120.8–0.120.10`, `0.132.3–0.132.4`, `0.138.4–0.138.7`, `0.139.1`, `0.145.3` | Per-vocabulary extension/backfill, then separate certification; late lifecycle/recovery remains certification-only |
+| Cross-surface integration | `0.51.3–0.51.4`, `0.60.3–0.60.4`, `0.70.4–0.70.5`, `0.100.1–0.100.2`, `0.120.8–0.120.10`, `0.132.3–0.132.4`, `0.138.4–0.138.7`, `0.139.1`, `0.145.3` | Per-vocabulary extension/backfill, then separate manifest-driven certification; destructive lifecycle/recovery remains certification-only |
 | Asset-kind packs | `0.81.3–0.81.6` | Physical/compute, cloud-native, identity/network, then SaaS/data |
 | Cloud-native discovery | `0.86.2` | One exact connector profile or explicit manual/import-only defer |
 
-The 18 coherence additions live in
+The 20 coherence additions live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md):
 
 | Coherence family | Exact stops | Small-loop boundary |
 | --- | --- | --- |
 | Requirement discovery | `0.18.15` | Source markers, digests, supersession, and normative drift only |
 | Hosted feasibility | `0.18.16` | Early dependency-law support/defer decision; no exception |
-| Domain identity | `0.30.23` | Stable manifest and opaque typed references only |
-| Contribution safety | `0.30.24–0.30.25` | Reference/generation composition, then bounded deferral/product gates |
+| Domain identity | `0.30.23` | Stable manifest with authoritative application/event/consumer references only |
+| Contribution safety | `0.30.24–0.30.25` | Scope-separated metadata admission/composition, then bounded deferral/product gates |
+| Domain-event gate | `0.30.26` | Current event-owner backfill plus prospective emission/consumption, upcaster, and generation checks |
 | Supplier boundary | `0.50.18` | Performance assessment and inert risk proposals only |
-| Tenant-surface linkage | `0.51.3` | Reference authoritative lifecycle IDs; never duplicate their fields |
+| Tenant-surface linkage | `0.51.3–0.51.4` | Reference authoritative lifecycle IDs, then immediately certify the backfill |
 | Surface certification | `0.60.4`, `0.70.5`, `0.100.2`, `0.132.4`, `0.138.6–0.138.7` | Authorization, workflow, search, workspace, API, and transfer each certify separately |
 | ERP placement | `0.118.5` | One exact adapter profile or defer after connector infrastructure |
-| Late-domain integration | `0.120.8–0.120.10` | Authorization, automation, then search/history certification |
+| Late-domain integration | `0.120.8–0.120.10` | Manifest-driven authorization, automation, then search/history certification |
 | Hosted production gate | `0.140.28` | Mandatory baseline go/no-go under the selected dependency law |
 
 | Overloaded family | Exact first slice | Added exact stops | Why it was split |
@@ -122,6 +123,6 @@ Every other exact stop passed the current sizing review because it has one
 dominant domain/adapter/decision owner and one coherent primary test boundary.
 This is not a permanent exemption. New threat-model detail, authority changes,
 schema work, provider admission, or recovery scope triggers the small-loop rule
-again before implementation. The roadmap checker verifies all 364 headings,
+again before implementation. The roadmap checker verifies all 366 headings,
 required handoff fields, authority dispositions, and exact-commit pentest
 markers; count drift blocks release.
