@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 346 exact release stops: 150 base `0.x.0`
-stops, 195 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 352 exact release stops: 150 base `0.x.0`
+stops, 201 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -17,8 +17,9 @@ law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
-families that exceeded it, and records 52 later focused capability,
-requirement-ownership, decomposition, integration, and discovery companions.
+families that exceeded it, and records 58 later focused capability,
+requirement-ownership, decomposition, integration, discovery, and coherence
+companions.
 
 ## Universal Setup
 
@@ -48,9 +49,19 @@ project-owned ports, and third-party types can never cross inward-facing APIs.
 The
 `0.140.x` decisions revalidate and freeze production support from those records;
 they are never the first technology selection.
+`0.18.16` makes the current dependency law operational before affected Hosted
+work: each capability is backed by an audited dependency-free project
+implementation or remains explicitly unsupported/deferred. It grants no
+exception. Any future policy amendment requires its own owner-approved exact
+roadmap decision before adapter work, while `0.140.14` remains final
+revalidation rather than first resolution.
 Every user-facing capability is API-first: API contract/application/transport
 crates remain separate from UI composition/rendering crates, and the first-
 party UI has no privileged command, repository, or database path.
+Every domain milestone delivers its headless application commands, policy-
+filtered reads, and project-owned internal DTOs before its UI or external
+adapter can exit. External API/SDK stops expose and freeze those contracts; they
+never introduce the domain application service for the first time.
 Optional federation, AI, vendor-connector, plugin-storefront, and semantic-index
 crates depend inward on stable ports. The kernel and first-party domains must
 build, test, and operate without any optional product family.
@@ -69,6 +80,10 @@ Phase D begins. Thereafter a requirement cannot exit its introducing stop until
 the bidirectional registry checker proves it is neither omitted nor multiply
 owned. Requirement ownership complements invariant/law authority ownership; it
 does not create a second authority or allow prose to override either registry.
+`0.18.15` then makes source coverage prospective: each normative block has a
+stable adjacent marker or structured-manifest origin, canonical content digest,
+and supersession lineage. The checker detects newly added normative language,
+not merely drift in registry rows it already knows.
 Authority-bearing invariants are indexed by stable IDs in
 [Invariant Ownership Registry](INVARIANT_OWNERSHIP.md). From `0.18.3` onward,
 every invariant must have an introducing milestone declaration, exactly one

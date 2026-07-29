@@ -25,6 +25,18 @@ require_text docs/IMPLEMENTATION_PLAN.md \
 require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
     'manual/generic-import-only for `1.0.0`' \
     'truthful cloud-native discovery limitation'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    'stable source anchor' \
+    'stable requirement source anchors'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    'binding baseline outcome is dependency-free or unsupported' \
+    'early dependency-law support decision'
+require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
+    'no domain receives its first application service here' \
+    'application services precede external API freeze'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    '0.120.8` — Late-Domain Authorization Registration' \
+    'chronological late-domain integration'
 
 if [ "$failed" -ne 0 ]; then
     exit 1

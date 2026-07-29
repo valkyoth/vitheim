@@ -4,6 +4,9 @@ Scope: `0.111.0–0.120.0`. Components receive capabilities, never direct storag
 Focused companions `0.118.3–0.118.4` own inbound service-desk mail, while
 `0.120.6–0.120.7` own signed security-audit export and hosted delivery; neither
 is hidden inside the generic connector milestone.
+`0.118.5` owns the first real ERP adapter/defer decision after workload
+identity and connector infrastructure. `0.120.8–0.120.10` separately certify
+late-domain authorization, automation, and search/history coverage.
 
 ## `0.111.0` — Versioned WIT Interfaces
 Status: planned. Setup: pin Component Model/WIT sources, ABI versions, owned

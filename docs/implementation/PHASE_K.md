@@ -139,9 +139,14 @@ expiry, revocation, supersession, and evidence.
 Goal: make risk and exception decisions explicit, bounded, and accountable.
 Deliverables: risk/treatment/exception aggregates, deterministic scoring
 interface, approval workflows, review calendar, policy attributes, and history.
+This milestone is the exclusive authority for accepted risks, treatments,
+exceptions, and waivers. Supplier assessments from `0.50.11` contribute only
+typed evidence, findings, or inert `RiskProposal` values; they cannot create or
+mutate an accepted risk decision.
 Verification: self-acceptance, score/method substitution, broad/immortal
 exception, waiver-precedence bypass, stale owner/control/evidence, hidden
-decision, approval reuse, expiry/revocation race, and tenant leak pass.
+decision, proposal-as-acceptance, parallel supplier exception, approval reuse,
+expiry/revocation race, and tenant leak pass.
 Exit criteria: accepted residual risk and every exception name exact scope,
 method, evidence, authority, precedence, expiry, and next review.
 `v0.108.0 implementation stop reached. Run pentest for this exact commit.`

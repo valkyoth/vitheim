@@ -1865,14 +1865,16 @@ Verification:
   conditional; it never weakens the supported core ITSM/SecOps/asset/risk
   profile or becomes supported merely because its milestone was planned.
 - The stable requirement registry contains every normative production
-  requirement with one primary implementation owner and valid crate, schema/
-  migration, test, integration, and retest ownership. Full-suite authorization,
-  workflow/notification, search/history, UI/admin, API/SDK/subscription,
+  requirement with one stable source anchor/content digest, primary
+  implementation owner, and valid crate, schema/migration, test, integration,
+  and retest ownership. Source-marker and normative-language drift checks pass.
+  Full-suite authorization, workflow/notification, search/history, UI/admin,
+  API/SDK/subscription,
   import/export/configuration, cross-surface differential, and lifecycle/
   backup/restore/erasure stops have passing evidence for every selected
   capability. A deferred `0.86.2` profile exposes cloud-native kinds as
   manual/generic-import-only and makes no automatic discovery claim.
-- The generated roadmap/evidence differential proves exactly 346 release
+- The generated roadmap/evidence differential proves exactly 352 release
   stops and their owners, authority reviews and pentest reports; it rejects any
   README, API discovery, UI navigation, release-note, installer, operator or
   support-matrix claim without a matching executable owner and exact evidence.

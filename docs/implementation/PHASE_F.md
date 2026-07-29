@@ -3,7 +3,8 @@
 Scope: `0.51.0–0.60.0`. Authentication supplies facts; policy grants authority.
 After the complete policy conformance suite, `0.60.1–0.60.2` add the separately
 scoped policy-bound read-subscription contract and hosted delivery runtime;
-`0.60.3` registers every full-suite interface and field with the same policy law.
+`0.60.3` registers interfaces implemented through Phase F and installs the
+prospective gate; `0.120.8` certifies post-Phase-F domains.
 
 ## `0.51.0` — Formal Cross-Surface Tenant Assurance
 Status: planned. Setup: audit the structural tenant model already required since

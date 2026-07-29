@@ -16,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 346 exact stops: 150 base `0.x.0` stops, 195
+The canonical roadmap contains 352 exact stops: 150 base `0.x.0` stops, 201
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -56,7 +56,8 @@ family ledgers were retained for their security context but decomposed into 65
 new exact stops. The later capability-gap review added 21 independently scoped
 product, verification, and profile-decision companions. The second review added
 31 requirement-ownership, domain-decomposition, cross-surface integration, and
-cloud-discovery companions:
+cloud-discovery companions. The coherence review added six requirement-source,
+dependency-feasibility, adapter-placement, and chronology companions:
 
 | Parent family | Focused companion stops | Completion sequence |
 | --- | --- | --- |
@@ -90,6 +91,10 @@ The second additions are `0.18.14`, `0.20.5`, `0.30.18–0.30.22`,
 `0.100.1`, `0.132.3`, `0.138.4–0.138.5`, `0.139.1`, and `0.145.3`.
 Their exact handoffs live in
 [Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md).
+
+The coherence additions are `0.18.15–0.18.16`, `0.118.5`, and
+`0.120.8–0.120.10`. Their exact handoffs live in
+[Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md).
 
 Every companion has a separate exact-commit pentest. New scope discovered
 during implementation triggers another split; it may not be absorbed into the
@@ -153,7 +158,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 346-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 352-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -190,6 +195,8 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.18.4` | Source-delivery-complete evaluator re-evaluation plus first real catalog successor rollout | Crash/race both authenticated control receipts and action-claim issue/consume boundaries; test crash-after-commit, expiry-before-response, revocation-before-replay, restore-before-tombstone reconciliation, receiver forgery, substitution, uncertain reissue, and existing authority failures |
 | `0.18.5` | Remediation-authority bootstrap and recovery root | First admission, independent channels/KMS, quorum/separation, simultaneous loss, compromise, circularity, stale restore, manual-only providers |
 | `0.18.14` | Stable functional/operational requirement registry and bidirectional ownership checker | Missing/duplicate primary owner, predecessor/crate/schema/test/retest/lifecycle drift |
+| `0.18.15` | Stable requirement source anchors, content digests, supersession, and normative drift checker | Unmarked normative block, mutable line binding, digest drift, orphan/supersession conflict |
+| `0.18.16` | Early Hosted feasibility and dependency-law support/defer decision | Hidden dependency, improvised protocol, premature adapter, false support, N0/N1 contamination |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Bind both control receipts/authenticators/replay tombstones, authorization/outbox/pin, action-claim issuer sequence plus local consumption/outcome/uncertainty, exact owners/ratchets, and existing event/catalog integrity |
 | `0.20.0` | Replay, verification, and projection-rebuild CLI | Corrupt streams, unbounded replay, evidence omission, unsafe repair |
 | `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
@@ -862,12 +869,12 @@ integration is deferred to `0.70.0` and `0.100.0`.
 | `0.50.8` | Customer service agreements and coverage | Agreement-as-authority, retroactive amendment, overlapping/expired coverage, term leakage |
 | `0.50.9` | Service entitlement decisions | Subject/agreement substitution, quantity/period bypass, override escalation |
 | `0.50.10` | Supplier contract lifecycle | Party/reference substitution, silent renewal, retroactive rewrite, expired contract use |
-| `0.50.11` | Supplier obligations, performance, and risk | Metric/evidence/method manipulation, self-assessment, hidden negative result |
+| `0.50.11` | Supplier obligations, performance, and assessment evidence | Metric/evidence/method manipulation, self-assessment, hidden result, proposal-as-risk |
 | `0.50.12` | Supplier data access and termination | Contract-as-access, scope expansion, missed system, false external deletion |
 | `0.50.13` | Purchase orders and receipt | Requisition/order substitution, over-receipt, duplicate event, false delivery |
 | `0.50.14` | Allocation, return, and Phase I asset handoff | Double allocation, false return, custody loss, premature/duplicate asset creation |
 | `0.50.15` | Non-software entitlement lifecycle | Source substitution, over-allocation, double consumption, software-kind confusion |
-| `0.50.16` | External ERP/procurement reconciliation or explicit defer | Endpoint/account/tenant confusion, stale overwrite, field/unit/currency drift |
+| `0.50.16` | Provider-neutral ERP port, ownership, fake, and reconciliation semantics | Endpoint/account/tenant confusion, stale overwrite, field/unit/currency drift |
 | `0.50.17` | Continuity exercises and corrective evidence | Wrong plan, false completion, evidence substitution, self-attestation, missing gap/action |
 
 ## Phase F — Identity, Tenancy, And Policy
@@ -898,7 +905,7 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.60.0` | Complete governed-executor and successor/cancellation conformance suite | Existing profile/rotation/TCB/recovery cases plus evaluator upgrade/mixed nodes, invalid quarantine exits/revival, remediation compromise/circularity/no-path |
 | `0.60.1` | Policy-bound read-subscription port, cursor, and gap contract | Cursor/tenant/topic substitution, hidden fields/counts, replay horizon, no command path |
 | `0.60.2` | Subscription delivery, item-level reauthorization, revocation, and backpressure | Policy/session change between items, slow consumer, flood, reconnect/failover, transport downgrade |
-| `0.60.3` | Full-suite authorization-interface and field-redaction registration | Missing route/item/action/field/purpose, hidden count, stale decision, allow-by-default |
+| `0.60.3` | Current-surface authorization registration and prospective field-redaction gate | Missing route/item/action/field/purpose, hidden count, stale decision, allow-by-default |
 
 ## Phase G — Durable Workflows
 
@@ -920,7 +927,7 @@ commit, and external-outcome semantics.
 | `0.69.0` | Visual/configuration-as-code compiler | Hidden flags, generated privilege escalation, divergence |
 | `0.70.0` | Workflow worker lease, owner identity, and fencing model | Lease/fence/takeover boundary model tests only; recovery and cross-domain HA certification are `0.70.1–0.70.2` |
 | `0.70.3` | Minimal typed topology vocabulary and policy-before-traversal port | Wrong-type links, hidden intermediates/counts, temporal/provenance drift, path exhaustion |
-| `0.70.4` | Full-suite workflow-trigger and notification integration | Trigger spoof/storm/loop, generic mutation, stale authority, hidden-field notification |
+| `0.70.4` | Phase D–G workflow-trigger and notification integration | Trigger spoof/storm/loop, generic mutation, stale authority, hidden-field notification |
 
 ## Phase H — Alerts And Security Operations
 
@@ -1002,7 +1009,7 @@ Phase exit: search/API conformance proves identical visibility.
 | `0.98.2` | Embedding generation and provenance | Model/tokenizer/chunk substitution, residency bypass, retention leakage, mixed-model migration |
 | `0.99.0` | Knowledge articles and runbooks | Unsafe content, poisoning, publication bypass |
 | `0.100.0` | Unified search conformance suite | Search/API/read/export authorization equivalence |
-| `0.100.1` | Full-suite search documents, history, facets, queues, and rebuild integration | Missing/duplicate document, hidden field/count, stale revocation, rebuild divergence |
+| `0.100.1` | Phase D–J search documents, history, facets, queues, and rebuild integration | Missing/duplicate document, hidden field/count, stale revocation, rebuild divergence |
 
 ## Phase K — Compliance And Risk
 
@@ -1046,6 +1053,7 @@ Phase exit: cross-plugin/tenant isolation and compatibility suite pass pentest.
 | `0.118.2` | Tenable vulnerability connector pack | Asset/finding confusion, forged fixed state, score drift, coverage gaps |
 | `0.118.3` | Inbound service-desk mail intake, bounded MIME handling, and quarantine | Sender/tenant spoofing, MIME/nested/decompression bombs, duplicate delivery, attachment escape |
 | `0.118.4` | Reply-token correlation, loop suppression, moderation, and work proposals | Subject/token/case substitution, forwarding leak, DSN/auto-reply loop, direct mutation |
+| `0.118.5` | One exact ERP connector adapter profile or explicit unsupported/deferred result | Workload/account confusion, secret/egress bypass, stale overwrite, ambiguous effect |
 | `0.119.0` | Outbound agent with local governed credential-operation authority | Existing rotation/orphan/count/bearer isolation plus no spool evaluator/resolve/remediate authority and offline-work invalidation |
 | `0.120.0` | Plugin compatibility/isolation suite | Cross-plugin and cross-tenant interference |
 
@@ -1066,6 +1074,9 @@ both organizational boundaries.
 | `0.120.5` | Federation conformance, revocation, and recovery | Malicious peer, partitions, protocol skew, stale restore, cleanup/offboarding failure |
 | `0.120.6` | Signed, redacted, resumable security-audit export contract | Destination/tenant substitution, field leak, cursor forgery, batch gap/reorder/key rollback |
 | `0.120.7` | Audit-export delivery, backpressure, reconciliation, and offboarding | Silent loss, response ambiguity, slow sink, spool exhaustion, revoked destination |
+| `0.120.8` | Late-domain authorization and field-redaction certification | Missing interface/field/purpose, mail/export/federation leak, false support |
+| `0.120.9` | Late-domain workflow and notification certification | Trigger replay/storm, generic mutation, stale authority, recursive loop |
+| `0.120.10` | Late-domain search and history certification | Hidden field/count, cross-organization leak, rebuild drift, unsupported result |
 
 ## Phase M — Optional AI Capabilities
 
@@ -1111,7 +1122,7 @@ Phase exit: administrators and external portal users pass full boundary review.
 | `0.138.1` | Private SDK candidate | Generated-code substitution, secret logging, retry/version differential |
 | `0.138.2` | Import staging and validation | Parser bombs, mass assignment, stale plan, partial promotion, erased-data resurrection |
 | `0.138.3` | Export policy snapshots and manifests | Authorization drift, hidden fields, truncation, delivery/retention lifecycle |
-| `0.138.4` | Full-suite application/API/private-SDK contracts including subscription cursor/gap/reconnect | Mass assignment, resource confusion, hidden fields, cursor forgery, SDK/API differential |
+| `0.138.4` | Full-suite external API/private-SDK freeze over existing application services | Mass assignment, resource confusion, hidden fields, cursor forgery, SDK/API differential |
 | `0.138.5` | Full-suite typed import/export/configuration-as-code integration | Secret export, mass assignment, stale ref, partial activation, erased-data resurrection |
 | `0.139.0` | Accessibility, localization, mobile layouts | Localization injection and client-state leakage |
 | `0.139.1` | Generated full-suite cross-surface differential suite | API/UI/search/export/workflow/subscription semantic, authorization, redaction, and support drift |

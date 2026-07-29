@@ -179,19 +179,21 @@ Exit criteria: one immutable lifecycle explains the current contract and every
 renewal, amendment, termination, and dependent action.
 `v0.50.10 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.11` — Supplier Obligations, Performance, And Risk
+## `0.50.11` — Supplier Obligations, Performance, And Assessment Evidence
 
 Status: planned.
 Setup: define contractual obligation, measure, evidence source, period, target,
-performance result, risk method, assessment owner, finding, treatment,
-exception, correction, and review schedule.
-Goal: assess supplier delivery and risk without mutating contract truth.
+performance result, assessment method/owner, finding, inert `RiskProposal`,
+correction, review schedule, and typed evidence reference.
+Goal: assess supplier delivery without duplicating Phase K risk authority.
 Deliverables: obligation and assessment aggregates, measurement/evidence ports,
-score explanations, finding/treatment links, and reports.
+score explanations, evidence-backed findings, inert risk proposals, and reports.
 Verification: obligation deletion, metric/period/source substitution, score
-manipulation, self-assessment, hidden negative result, and stale evidence pass.
-Exit criteria: every supplier performance/risk claim cites exact contract
-obligation, evidence, method, owner, time, and correction history.
+manipulation, self-assessment, hidden negative result, proposal-as-accepted-risk,
+parallel treatment/exception, and stale evidence pass.
+Exit criteria: every supplier assessment cites exact obligation, evidence,
+method, owner, time, and correction history; only Phase K can accept risk,
+create treatment, or authorize an exception or waiver.
 `v0.50.11 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.50.12` — Supplier Data Access And Termination
@@ -254,20 +256,21 @@ Exit criteria: every entitlement use is bounded by current source, quantity,
 scope, time, and evidence without becoming identity or payment authority.
 `v0.50.15 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.16` — External ERP And Procurement Reconciliation
+## `0.50.16` — ERP Port And Procurement Reconciliation Semantics
 
-Status: planned; blocked until one exact external profile is admitted or deferred.
+Status: planned.
 Setup: define directional ownership, external IDs/versions, approved fields,
 currency/unit semantics, cursor, idempotency, conditional mutation profile,
 response ambiguity, reconciliation, conflict, and no-payment/no-ledger boundary.
-Goal: integrate procurement references without letting an ERP overwrite work authority.
-Deliverables: project-owned port, selected adapter or explicit deferred profile,
-mapping pack, cursor/reconcile state, fake server, and unsupported matrix.
+Goal: freeze the provider-neutral boundary without prematurely implementing an ERP adapter.
+Deliverables: project-owned port, mapping contract, cursor/reconcile state,
+deterministic fake server, ownership model, and conformance fixtures.
 Verification: endpoint/account/tenant substitution, stale overwrite, field
 smuggling, duplicate/reordered event, response loss, currency/unit drift, and
-outbound authority escalation pass.
-Exit criteria: Vitheim and the external system retain explicit field ownership;
-no generic ERP compatibility, payment, or accounting claim is made.
+outbound authority escalation pass against the fake.
+Exit criteria: field ownership and reconciliation semantics are executable
+without external credentials or network access; real support belongs only to
+the later `0.118.5` exact adapter/defer decision.
 `v0.50.16 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.50.17` — Continuity Exercises And Corrective Evidence
@@ -285,34 +288,35 @@ Exit criteria: readiness cites current plan plus independently reviewed exercise
 evidence and open gaps; an exercise never activates a plan or asserts DR success.
 `v0.50.17 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.60.3` — Full-Suite Authorization Registration
+## `0.60.3` — Implemented-Surface Authorization Registration And Gate
 
 Status: planned.
-Setup: enumerate every new service-management, subscription, asset-kind,
-privacy, inbound-mail, audit-export, integration, search, API, and UI interface
-descriptor plus action/resource/field/purpose and obligation semantics.
-Goal: ensure no new surface falls outside the Phase F policy/redaction matrix.
-Deliverables: generated registrations, mandatory negative cases, field DTOs,
-subscription item/reconnect cases, and future-surface registration gate.
+Setup: enumerate interfaces implemented through `0.60.2`, including broader
+service management and subscriptions, plus action/resource/field/purpose and
+obligation semantics.
+Goal: cover current surfaces and install a prospective policy/redaction gate.
+Deliverables: generated current registrations, mandatory negative cases, field
+DTOs, subscription item/reconnect cases, and later-surface registration gate.
 Verification: omitted route/item/action/field, hidden count, purpose confusion,
 policy-version drift, notification/export leak, and allow-by-default pass.
-Exit criteria: each new authority-bearing or data-bearing interface has one
-registered authorization case before its implementing stop may exit.
+Exit criteria: every implemented interface is registered; each later domain
+must add its own case before exit, with late-domain certification at `0.120.8`.
 `v0.60.3 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.70.4` — Full-Suite Workflow And Notification Integration
+## `0.70.4` — Phase D–G Workflow And Notification Integration
 
 Status: planned.
 Setup: map domain events and ordinary commands for portfolio, agreements,
-suppliers, procurement, capacity, continuity, privacy, mail proposals, and
-audit-export operations to versioned workflow triggers and notification intents.
+suppliers, procurement, capacity, continuity, and other implemented Phase D–G
+domains to versioned workflow triggers and notification intents.
 Goal: provide automation without embedding a second domain lifecycle.
 Deliverables: trigger/action descriptors, workflow templates, notification
 audience/field rules, loop guards, fakes, and end-to-end fixtures.
 Verification: trigger spoof/replay/storm, generic status mutation, stale
 authority, hidden-field notification, recursive loop, and workflow/domain drift pass.
 Exit criteria: workflows orchestrate only registered commands and notifications
-reauthorize current recipients and visible fields at dispatch.
+reauthorize current recipients and visible fields at dispatch; later domains
+add mappings at introduction and are certified at `0.120.9`.
 `v0.70.4 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.81.3` — Physical And Compute Asset-Kind Pack
@@ -394,20 +398,21 @@ Exit criteria: only the exact passing profile is supported; otherwise UI/API/
 documentation clearly state manual/generic-import-only cloud-native inventory.
 `v0.86.2 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.100.1` — Full-Suite Search And History Integration
+## `0.100.1` — Phase D–J Search And History Integration
 
 Status: planned.
 Setup: define documents, fields, facets, queues, saved-view predicates,
 temporal/history events, graph references, snippets, counts, retention, and
-policy behavior for every new full-suite domain and subscription status.
-Goal: make new domains discoverable without search becoming an authorization oracle.
+policy behavior for implemented domains through Phase J and subscription status.
+Goal: make current domains discoverable without search becoming an authorization oracle.
 Deliverables: versioned projection mappings, rebuild/migration hooks, default
 facets/queues, redaction registrations, and domain-versus-search differentials.
 Verification: missing/duplicate document, hidden field/count/facet, stale
 revocation, cross-customer/supplier/privacy leak, rebuild divergence, and query
 complexity pass.
-Exit criteria: every new domain names its search/history owner and current
-API reads and search return policy-equivalent visibility.
+Exit criteria: every Phase D–J domain names its search/history owner and current
+application reads and search return policy-equivalent visibility; later domains
+add mappings at introduction and are certified at `0.120.10`.
 `v0.100.1 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.132.3` — Full-Suite Workspaces And Administration
@@ -415,32 +420,36 @@ API reads and search return policy-equivalent visibility.
 Status: planned.
 Setup: define role/purpose-specific workspaces, composable blocks, queues,
 details, actions, administration, feature/support discovery, empty/error states,
-and small-versus-large organization layouts for every new domain.
+and small-versus-large organization layouts over existing headless application
+commands, reads, and internal DTOs for every new domain.
 Goal: expose the full suite without a privileged UI path or one overloaded page.
 Deliverables: workspaces/blocks for portfolio, customers, suppliers, procurement,
 capacity, continuity, assets, privacy, mail, subscriptions, and audit export;
 admin surfaces and accessibility fixtures.
 Verification: hidden route/block/action, field/count leak, profile-based
 privilege, query storm, unsupported feature shown active, XSS, and UI/API differential pass.
-Exit criteria: UI actions use registered application commands, reads use
-policy-filtered APIs, and unsupported/conditional capabilities are truthful.
+Exit criteria: UI consumes existing registered commands and policy-filtered
+reads without introducing domain application services, and unsupported or
+conditional capabilities are truthful.
 `v0.132.3 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.138.4` — Full-Suite Application, API, And SDK Contracts
+## `0.138.4` — Full-Suite External API And SDK Contract Freeze
 
 Status: planned.
-Setup: freeze application services, external resource/command/read schemas,
+Setup: consume existing headless application services/internal DTOs and freeze
+external resource/command/read schemas,
 pagination/concurrency/idempotency/errors, events, compatibility, and private
 SDK bindings for all new domains and subscription operations.
-Goal: give every full-suite capability an API-first public boundary before freeze.
-Deliverables: application services, OpenAPI/schema descriptions, private SDK
-generation, compatibility fixtures, and explicit subscribe/cancel/reconnect/
+Goal: expose every supported full-suite capability through an API-first boundary.
+Deliverables: external adapters, OpenAPI/schema descriptions, private SDK
+generation, compatibility fixtures, and subscribe/cancel/reconnect/
 cursor/gap/item contracts for SSE and any selected WebSocket profile.
 Verification: mass assignment, resource/type confusion, cursor/gap forgery,
 reconnect downgrade, hidden field, retry/idempotency mismatch, SDK/API
 differential, and undocumented UI action pass.
-Exit criteria: every shipped UI/integration uses the same versioned application
-and API contracts; subscription semantics are first-class, not transport folklore.
+Exit criteria: no domain receives its first application service here; every
+shipped UI/integration uses the same versioned services and external API
+contracts, with subscription semantics defined independently of transport.
 `v0.138.4 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.138.5` — Full-Suite Import, Export, And Configuration Integration

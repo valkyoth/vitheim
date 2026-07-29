@@ -2,7 +2,7 @@
 
 Scope: `0.131.0–0.140.0`. UI actions are commands or policy-filtered reads.
 Focused `0.132.3`, `0.138.4–0.138.5`, and `0.139.1` stops carry the new
-full-suite domains through workspaces/admin, API/SDK/subscriptions,
+full-suite domains through workspaces/admin, external API/SDK/subscriptions,
 import/export/configuration, and cross-surface differential evidence.
 
 ## `0.131.0` — Unified Shell And Command Palette

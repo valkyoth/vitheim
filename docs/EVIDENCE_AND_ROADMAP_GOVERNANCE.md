@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **346 independently pentestable release stops**:
+The roadmap contains exactly **352 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 195 companion stops + 1 production stop = 346`.
+`150 base 0.x.0 stops + 201 companion stops + 1 production stop = 352`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “346 exact release stops” describe different
+included. “151 base stops” and “352 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 346 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 352 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -161,3 +161,13 @@ owner, valid predecessors/crates/tests, and live integration/retest ownership.
 A cumulative ledger heading is context, not ownership; a requirement entry is
 coordination metadata, not an authority source and cannot override a
 `VIT-INV-*` or `VIT-LAW-*` owner.
+
+At `0.18.15`, source discovery becomes prospective. Every in-scope normative
+block has an adjacent `<!-- vitheim-requirement VIT-REQ-NNNN -->` marker or a
+stable structured-manifest origin; the registry records that immutable anchor,
+canonical text digest, primary owner, integration/retest owners, and symmetric
+supersession lineage. Mutable line numbers are diagnostic only. The checker
+scans designated normative sources for requirement-bearing MUST, never, only,
+invariant, verification, and exit-condition blocks and rejects missing,
+duplicate, stale, or conflicting bindings. Templates, quotations, and examples
+need bounded typed exceptions rather than an unchecked ignore list.
