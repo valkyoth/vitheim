@@ -55,19 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **396 independently pentestable release stops**:
+The roadmap contains exactly **398 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 245 companion stops + 1 production stop = 396`.
+`150 base 0.x.0 stops + 247 companion stops + 1 production stop = 398`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “396 exact release stops” describe different
+included. “151 base stops” and “398 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
 milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
 valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 396 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 398 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -230,12 +230,14 @@ lineage and delivery cuts, `0.51.14` owns mutation classification/emergency
 invalidation, `0.51.15–0.51.18` authorize/complete takeover, fund retained
 candidate controls, and reconcile barrier release; `0.51.19–0.51.20` own
 archival cleanup and independently verified retained namespaces; and
-`0.51.21–0.51.30` evaluate reinstall, serialize activation against abort,
+`0.51.21–0.51.32` evaluate reinstall, serialize activation against abort,
 redeem source-partition permits, fund every successor-restriction bridge,
 reconcile and supersede partial admission, decide and conditionally implement
-permanent-unknown quarantine recovery, create one proof-bound fresh successor
-after quarantine, consume the fully admitted successor, supersede the guard,
-and reconcile both release families;
+permanent-unknown quarantine recovery, actively enforce the maximal unknown
+restriction, consume replacement eligibility into one finite cumulative-budget
+evaluation lineage, create one proof-bound fresh successor, use tagged
+initial/replacement final activation without double consumption, supersede the
+guard, and reconcile both release families;
 none uses a wildcard tenant or cross-tenant transaction. Plugin uninstall and
 feature disablement
 never imply data retirement. `0.145.4` destructively certifies all of these

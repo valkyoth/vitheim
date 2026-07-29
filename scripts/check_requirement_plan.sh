@@ -317,8 +317,20 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`AdmissionQuarantineFenced → AdmissionQuarantined`' \
     'quarantine completion CAS after durable root'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.28` — Quarantine Replacement Successor Genesis' \
-    'quarantine replacement successor genesis'
+    '0.51.28` — Conservative Unknown-Restriction Enforcement' \
+    'conservative unknown-restriction enforcement'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`UnknownRestrictionTopV1`' \
+    'maximal unknown restriction'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`QuarantinedUnknownRestrictionRootV1`' \
+    'authoritative quarantined unknown-restriction root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`QuarantinedUnknownRestrictionAdmissionPermitV1`' \
+    'unknown-restriction admission permit'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.29` — Quarantine Replacement Evaluation Lineage' \
+    'quarantine replacement evaluation lineage'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`BeginQuarantineReplacementEvaluationV1`' \
     'typed quarantine replacement evaluation command'
@@ -326,16 +338,40 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`QuarantineReplacementGenesisReservationV1`' \
     'one-shot quarantine replacement genesis reservation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`QuarantineReplacementEvaluationLineageV1`' \
+    'typed replacement evaluation lineage'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`QuarantineReplacementEvaluationCurrentReceiptV1`' \
+    'current replacement evaluation receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'budgets are cumulative, canonical and' \
+    'cumulative replacement evaluation budgets'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.30` — Quarantine Replacement Successor Lifecycle Genesis' \
+    'quarantine replacement successor lifecycle genesis'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`CreateQuarantineReplacementSuccessorLifecycleV1`' \
     'typed replacement successor lifecycle command'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.29` — Reinstall Guard Supersession Consumption' \
+    '`QuarantineReplacementGenesisReceiptV1`' \
+    'typed quarantine replacement genesis receipt'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.31` — Reinstall Guard Supersession Consumption' \
     'final guard supersession consumption'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`ReinstallGenesisAuthorityV1`' \
+    'tagged reinstall genesis authority'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`InitialGenesis' \
+    'initial reinstall genesis branch'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`QuarantineReplacementGenesis' \
+    'quarantine replacement genesis branch'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallBarrierReleaseManifestV1`' \
     'dual reinstall control release manifest'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.30` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
+    '0.51.32` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
     'reinstall control release reconciliation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'True cancellation exists only before the first child fence' \
