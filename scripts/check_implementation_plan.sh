@@ -30,7 +30,7 @@ extra_versions="
 0.120.1 0.120.2 0.120.3 0.120.4 0.120.5
 0.132.1 0.132.2
 0.138.1 0.138.2 0.138.3
-0.140.1 0.140.2 0.140.3 0.140.4 0.140.5 0.140.6 0.140.7 0.140.8 0.140.9 0.140.10
+0.140.1 0.140.2 0.140.3 0.140.4 0.140.5 0.140.6 0.140.7 0.140.8 0.140.9 0.140.10 0.140.11
 0.142.1
 "
 
@@ -44,7 +44,7 @@ done
 
 for field in Status Setup Goal Deliverables Verification 'Exit criteria'; do
     count="$(grep -R -o "$field:" docs/implementation | wc -l)"
-    if [ "$count" -lt 225 ]; then
+    if [ "$count" -lt 229 ]; then
         echo "implementation plan: field '$field' appears only $count times" >&2
         failed=1
     fi
@@ -55,8 +55,8 @@ pentest_count="$(
         docs/implementation |
         wc -l
 )"
-if [ "$pentest_count" -ne 228 ]; then
-    echo "implementation plan: expected 228 exact-commit pentest stops, found $pentest_count" >&2
+if [ "$pentest_count" -ne 229 ]; then
+    echo "implementation plan: expected 229 exact-commit pentest stops, found $pentest_count" >&2
     failed=1
 fi
 

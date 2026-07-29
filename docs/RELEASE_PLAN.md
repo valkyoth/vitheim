@@ -14,12 +14,19 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
+The canonical roadmap contains 229 exact stops: 150 base `0.x.0` stops, 78
+companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
+valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
+are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
+defines the claim states and canonical-manifest rules.
 
 ## Required Format And Setup
 
 The detailed handoff for every active version must name:
 
 - **Status**: planned, implementing, awaiting pentest, or ready to tag;
+- **Evidence state**: specified, implementing, implemented, conditional,
+  supported, or unsupported, with executable owner and immutable references;
 - **Goal**: one bounded outcome;
 - **Deliverables**: implementation, documentation, fixtures, and evidence;
 - **Verification**: version-specific positive, negative, boundary, property,
@@ -58,6 +65,12 @@ verification/pentest target. It is additive to all of these gates:
 - release notes, known limitations, CI, CodeQL default setup, and signed
   release-evidence review.
 
+Planning prose, a passing documentation check, or an elapsed date cannot satisfy
+an implementation exit. Every shipped claim must name an executable owner and
+be no broader than the exact tested protocol, provider, topology, storage,
+platform, and deployment profile. Conditional and unsupported combinations
+remain explicit and fail closed.
+
 When a row's deliverable and verification pass, stop and report:
 
 ```text
@@ -78,7 +91,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 229-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |

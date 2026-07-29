@@ -5,8 +5,12 @@ Status: planned; never reached by date or version count alone.
 Setup: select an exact unchanged `v1.0.0-rc.N` commit and artifact set that has
 passed every preceding gate, independent external pentest, clean retest,
 reproducible build comparison, compatibility freeze, and operational exercise.
-The decisions in `0.140.1–0.140.10` are frozen, their selected profiles have
+The decisions in `0.140.1–0.140.11` are frozen, their selected profiles have
 passed Phase O, and unsupported alternatives are excluded from release claims.
+The generated evidence manifest contains no `Specified` or `Implementing`
+state for a shipped claim. Every `Conditional` entry is excluded from the
+default support promise or names the exact separately passing profile; every
+unsupported or disabled combination is discoverable and fails closed.
 Every post-`0.18.3` milestone authority disposition is resolved to exact
 declarations, exact existing roots/laws, or reviewed `none`; zero
 `VIT-PAUTH-*` proposals remain. Every effective composite-law generation and
@@ -1438,6 +1442,11 @@ Deliverables:
   tenant/storage, identity/session, plugin, privacy/residency, deployment,
   API/SDK/publication, AI, interchange, and federation profiles—and explicitly
   names unsupported options.
+- Default storage claims are limited to evidenced in-memory semantics, SQLite
+  single-node, and PostgreSQL HA profiles. MySQL, MongoDB, and SurrealDB remain
+  experimental unless `0.140.2` explicitly promoted their independently
+  passing exact profiles. Optional AI, federation, semantic search, and vendor
+  connectors remain disabled unless separately selected and evidenced.
 
 Verification:
 - Full tenant/authorization matrix across API/UI/search/workflow/plugins/AI/
@@ -1798,7 +1807,7 @@ Verification:
 - Reproducible builds, clean install/upgrade/rollback/failover, load/soak/chaos,
   secure defaults, accessibility, localization, and disaster-recovery exercises.
 - Decision-record conformance proves each shipped artifact and deployment
-  matches the reviewed `0.140.1–0.140.10` choices without silent fallback.
+  matches the reviewed `0.140.1–0.140.11` choices without silent fallback.
 - The generated `docs/INVARIANT_OWNERSHIP.md` conformance report covers every
   selected production storage/deployment profile. Coverage is derived
   bidirectionally from introducing phase declarations. Every applicable stable
@@ -1845,6 +1854,10 @@ Verification:
   cites its earlier implementation admission, conformance corpus, pentest, and
   operational owner; missing profiles and unselected SCIM/STIX/SIEM/CMDB
   directions are explicitly unsupported.
+- The generated roadmap/evidence differential proves exactly 229 release
+  stops and their owners, authority reviews and pentest reports; it rejects any
+  README, API discovery, UI navigation, release-note, installer, operator or
+  support-matrix claim without a matching executable owner and exact evidence.
 
 Exit criteria: no acceptance criterion is waived for schedule. Any candidate
 code or artifact change creates a new RC and repeats affected review. After the

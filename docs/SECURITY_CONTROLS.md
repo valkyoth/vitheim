@@ -1,5 +1,22 @@
 # Security Controls
 
+## Truthful Capability And Release Evidence
+
+- Every capability uses the normative evidence states in
+  [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
+  Planning prose, generated documentation, a type name, or a passing docs check
+  proves `Specified` only.
+- `Implemented` requires an executable owner and its exact required tests;
+  `Supported` additionally requires the selected profile's release, security,
+  compatibility, operational and exact-commit pentest evidence.
+- README, API discovery, UI navigation, release notes, support matrices,
+  installers and operator output must expose conditional and unsupported scope
+  without silent fallback. Missing or stale evidence moves readiness toward
+  refusal.
+- One canonical roadmap manifest accounts for all 229 exact stops and their
+  owners, evidence, authority review and pentest markers. Count or claim drift
+  is a release-blocking integrity failure.
+
 ## Repository Baseline
 
 - Rust `1.97.1`, edition 2024, resolver 3, warnings denied.

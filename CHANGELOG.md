@@ -8,6 +8,17 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added normative evidence and roadmap governance: specified, implementing,
+  implemented, conditional, supported, and unsupported are distinct states;
+  documentation alone cannot satisfy an implementation exit; and support
+  claims must bind exact executable owners and immutable evidence.
+- Corrected the canonical roadmap to 229 exact pentestable stops (150 base
+  `0.x.0`, 78 companion, and one production stop), assigned a single generated
+  manifest at reopened `0.1.0`, and included the previously under-counted
+  `0.140.11` decision in every pre-production scope.
+- Required focused, owner-scoped normative protocol packages before each first
+  implementation while preserving the detailed phase ledgers, and narrowed
+  default `1.0.0` profiles without removing experimental milestones.
 - Replaced conflicting Phase B/Phase C lock prose with a versioned
   `GlobalTransactionLockRankCatalogV1`, activation fencing for legacy writers
   and static phase/adapter-trace validation. Made

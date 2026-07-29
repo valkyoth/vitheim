@@ -27,9 +27,38 @@ Hosted crates may use `std` only when their responsibility is intrinsically
 hosted. Their interfaces accept and return project-owned types and traits so
 runtime, database, protocol, and UI implementations remain replaceable.
 
+## Deployment Shape
+
+The default architecture is a modular monolith: one deployable may compose
+independent domain, application, API, projection, and adapter crates without
+collapsing their types, authorities, transactions, or dependency direction.
+API, worker, ingest, indexer, agent, and CLI processes split only at an
+evidenced trust, scaling, failure, availability, or operational boundary. A
+process split never creates a distributed transaction or a shared universal
+record model.
+
+Optional AI, federation, vendor connectors, plugin storefront, and semantic
+index families depend inward on stable ports. The kernel and first-party
+domains build and operate without them. UI crates consume the public API
+contract and have no domain, repository, dispatcher, or database dependency.
+
+## Protocol Specification Packages
+
+Phase files remain version ledgers. Before implementation begins, the consuming
+milestone extracts its protocol into focused normative files organized by
+stable invariant/protocol owner. The package separately names semantic types
+and codec, closed state machine, authority, transaction/lock order, budgets,
+recovery/migration, and conformance corpus. New normative protocol files follow
+the same 500-line hard limit and 400-line split review as code.
+
+The invariant/law registry owns a generated index from milestone to focused
+package and rejects missing, duplicated, or contradictory owners. Extraction
+is incremental and must prove semantic equivalence; it cannot delete or weaken
+the detailed source ledger. See
+[Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
+
 ## Testing Boundary
 
 Each crate owns unit tests for its invariants. Cross-crate behavior uses
 integration or conformance tests. Adapters must pass one shared semantic
 testkit; duplicating weaker backend-specific assertions is insufficient.
-

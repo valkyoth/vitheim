@@ -1,6 +1,6 @@
 # Pre-Production Profile Freeze Decisions
 
-Scope: `0.140.1–0.140.10`. These evidence-producing releases revalidate and
+Scope: `0.140.1–0.140.11`. These evidence-producing releases revalidate and
 freeze production profiles from version-bound implementation-admission records
 created at each first consuming milestone. They are never the first dependency,
 protocol, backend, or runtime selection and cannot retroactively legitimize
@@ -3490,5 +3490,5 @@ are additions rather than substitutes.
 Exit criteria: unresolved evidence custody, authority retirement, safe
 capacity transfer or replacement bootstrap keeps witness archival unavailable
 for production. The selected profile requires an external pentest with zero
-unresolved critical/high findings. `v0.140.11 implementation stop reached. Run
-pentest for this exact commit.`
+unresolved critical/high findings.
+`v0.140.11 implementation stop reached. Run pentest for this exact commit.`

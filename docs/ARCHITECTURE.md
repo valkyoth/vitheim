@@ -10,15 +10,25 @@ first-party applications for service management, security operations, assets
 and services, risk and compliance, knowledge, custom cases, and controlled
 automation.
 
-The initial deployment architecture is a modular deployable. Separate API,
+The initial deployment architecture is a modular monolith. Separate API,
 worker, ingest, indexer, agent, and CLI processes become optional deployment
-choices only after the crate boundaries work inside one process.
+choices only after the crate boundaries work inside one process and an
+evidenced trust, scaling, failure, availability, or operational boundary
+justifies the split. A process split never changes domain ownership, invents a
+distributed transaction, or permits a universal record/database authority.
 
 Vitheim is API-first. The hosted API contract/transport and UI are separate
 crates and deployable boundaries. The first-party UI consumes the same
 versioned commands, policy-filtered reads, consistency tokens, and errors
 available to other authorized clients; it has no privileged repository,
 dispatcher, database, or hidden administration path.
+
+Architecture prose is specification, not availability evidence. Every
+capability is labelled with the evidence vocabulary and exact support profile
+defined in
+[Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md);
+`Implemented` never implies `Supported`, and optional or experimental profiles
+fail closed when their named conformance evidence is absent.
 
 The interface is a governed composition system rather than one fixed screen.
 Vitheim supplies safe layout primitives, panels, lists, graphs, forms, actions,

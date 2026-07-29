@@ -36,11 +36,13 @@ The current `0.1.0` workspace is only the repository and security baseline. It
 contains dependency-free private `no_std` foundation crates; it is not a
 server, product preview, SDK, database, ITSM implementation, or production
 release. Capability claims advance only through the granular
-[release plan](docs/RELEASE_PLAN.md).
+[release plan](docs/RELEASE_PLAN.md) and its
+[evidence-state policy](docs/EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 
 ## Current Status
 
-Legend: 🟢 available for the stated scope, 🟡 foundation only, 🔴 planned.
+Legend: 🟢 implemented for the stated scope, 🟡 foundation only, 🔴 specified
+but not implemented. Production support is a separate evidence state.
 
 | Capability | Status | Current scope |
 | --- | --- | --- |
@@ -106,8 +108,9 @@ and licensing decision. See [Publication Policy](docs/PUBLICATION_POLICY.md).
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
-- [Implementation Plan — all 225 milestones](docs/IMPLEMENTATION_PLAN.md)
+- [Implementation Plan — 229 exact release stops](docs/IMPLEMENTATION_PLAN.md)
 - [Release Plan](docs/RELEASE_PLAN.md)
+- [Evidence And Roadmap Governance](docs/EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
 - [Roadmap Gap Dispositions](docs/ROADMAP_GAP_DISPOSITIONS.md)
 - [Invariant Ownership Registry](docs/INVARIANT_OWNERSHIP.md)
 - [Composite Security Law Generations](docs/LAW_GENERATIONS.md)

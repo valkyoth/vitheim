@@ -2261,7 +2261,12 @@ semantic SBOM, reproducibility, full key generation/storage/use/rotation/revocat
 recovery/destruction lifecycle, `0.28.3` in-process memory assurance, crash/
 core-dump/swap profile, sealed transmission-permit construction/consumption/drop
 assurance, executor isolation, provenance and secret scanning. Goal: close build
-and runtime supply-chain paths. Deliverables: audits, candidate-tree/artifact-
+and runtime supply-chain paths. Deliverables: audits, a generated capability-
+evidence report that rejects `Specified` or `Implementing` support claims and
+binds every `Implemented`, `Conditional`, `Supported`, or `Unsupported` entry
+to its executable owner and exact immutable evidence; a generated canonical
+roadmap report proving all 229 stops, owners, authority reviews and pentest
+markers agree; candidate-tree/artifact-
 bound signed evidence, SBOM/provenance, reproducible artifacts, permit-memory/
 diagnostic exposure report, executor credential-operation/egress isolation and
 residual-blast-radius report, bearer-broker memory lifetime/zeroization/
@@ -2355,7 +2360,9 @@ Recovery. Audit every lifecycle edge, terminal fence, owner preparation port,
 candidate/receipt/barrier binding and activation transaction; no coordinator,
 staging reader, cleanup worker or recovery path may make dormant or partial
 state authoritative.
-Exit criteria: every trusted input is pinned/accounted. `v0.147.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: every trusted input is pinned/accounted and no documentation,
+API, UI, installer or support-matrix claim exceeds its evidence state.
+`v0.147.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.148.0` — Compatibility Freeze
 Status: planned. Migration/import focus: reject every legacy encoding that
@@ -2786,6 +2793,8 @@ tombstone state, independent remediation profile/credential-lineage/audit/
 cleanup-quota/manual-only state, and durable fully typed floor-profile ratchet state. Goal:
 final pre-RC readiness
 proof. Deliverables: complete candidate bundle, runbooks, acceptance report,
+canonical 229-stop roadmap report, zero-drift capability-evidence/support
+matrix, explicit conditional and unsupported profiles,
 no-permit-transport proof, fresh-parent-activation evidence, and floor-ratchet
 compatibility evidence including total typed-key migrations and successor
 rollbacks. Verification: clean install, split executor, scoped credential and
@@ -2834,5 +2843,7 @@ cursor-precharges-result/typed state join/restoration/clearance/result/rebuild
 parent-proposals/complete-rejection-authority/successor/
 checkpoint.
 Exit criteria:
-no known blocking gap remains.
+no known blocking gap remains; every shipped claim is `Supported` for an exact
+profile, while every conditional, experimental, disabled, or excluded
+combination is explicit and fails closed.
 `v0.150.0 implementation stop reached. Run pentest for this exact commit.`

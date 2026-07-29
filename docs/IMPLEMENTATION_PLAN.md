@@ -8,6 +8,14 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
+The canonical roadmap contains 229 exact release stops: 150 base `0.x.0`
+stops, 78 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+repository/N0 scaffold is currently executable, and its release status remains
+reopened. Every other capability is `Specified` until its versioned executable
+owner and evidence gates pass. The authoritative claim vocabulary, cardinality
+law, production-profile boundary, and protocol-specification extraction rules
+are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
+
 ## Universal Setup
 
 Every version begins from a clean `main` after the previous version's permanent
@@ -1111,7 +1119,8 @@ composite lock/retry behavior,
 refund/write-off evidence, and
 compensation/recovery-capacity behavior.
 
-At each implementation stop: do not tag, publish, or begin the next milestone.
+At each implementation stop: record the exact evidence state and support scope;
+do not tag, publish, or begin the next milestone.
 Pentest the exact commit, fix every blocking finding, rerun all gates, obtain a
 permanent `Status: PASS` report, and run the versioned readiness gate. Patch
 versions contain corrections only and follow the same process.
@@ -1133,7 +1142,7 @@ versions contain corrections only and follow the same process.
 - [Organization Federation (`0.120.1–0.120.5`)](implementation/FEDERATION.md)
 - [Phase M — Optional AI (`0.121.0–0.130.0`)](implementation/PHASE_M.md)
 - [Phase N — Product Experience (`0.131.0–0.140.0`)](implementation/PHASE_N.md)
-- [Pre-Production Option Decisions (`0.140.1–0.140.10`)](implementation/OPTION_DECISIONS.md)
+- [Pre-Production Option Decisions (`0.140.1–0.140.11`)](implementation/OPTION_DECISIONS.md)
 - [Phase O — Production Hardening (`0.141.0–0.150.0`)](implementation/PHASE_O.md)
 - [`1.0.0` — Production Acceptance](implementation/PRODUCTION_1_0.md)
 

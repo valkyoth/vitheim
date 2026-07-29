@@ -13,8 +13,11 @@ baseline. This is not a production release.
 - Pinned Rust 1.97.1 with Rust 2024 edition and resolver 3.
 - Added private `no_std` foundation crates and a private facade.
 - Added repository policy, CI, documentation, release, and pentest gates.
-- Added detailed implementation handoffs for all 225 planned milestones and a
-  completeness check that prevents missing version plans or pentest stops.
+- Added detailed implementation handoffs for 229 exact release stops: 150
+  base `0.x.0` stops, 78 companion stops, and the `1.0.0` production stop.
+- Added evidence-state and canonical-roadmap governance so specified,
+  implemented, conditional, supported, and unsupported claims cannot be
+  conflated, and count drift blocks release.
 - Enforced the 500-line Rust source limit and no-third-party baseline.
 - Made repository verification portable to GitHub-hosted runners without an
   undeclared ripgrep installation.
