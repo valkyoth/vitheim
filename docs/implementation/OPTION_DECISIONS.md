@@ -2,7 +2,9 @@
 
 Scope: primary decisions `0.140.1–0.140.11`; focused refinements
 `0.140.12–0.140.26` live in
-[Product And Production Scope Splits](SCOPE_SPLITS_PRODUCT_PRODUCTION.md).
+[Product And Production Scope Splits](SCOPE_SPLITS_PRODUCT_PRODUCTION.md), and
+the independent full-suite support/defer decision `0.140.27` lives in
+[Focused Product Capability Completions](PRODUCT_CAPABILITY_COMPLETIONS.md).
 Together these evidence-producing releases revalidate and
 freeze production profiles from version-bound implementation-admission records
 created at each first consuming milestone. They are never the first dependency,
@@ -3143,7 +3145,13 @@ compatibility wording. Every profile without complete earlier implementation
 and pentest evidence is explicitly deferred. The default `1.0.0` boundary
 defers general raw-log storage/query, detection-rule authoring/execution,
 outbound STIX/TAXII publication, the unselected SCIM direction, and an
-unimplemented CMDB connector.
+unimplemented CMDB connector. If a post-`1.0.0` SIEM option is ever approved,
+it must be a separate bounded context and capacity architecture for security
+telemetry ingestion/storage/query, versioned signed detection content, test
+corpora and backtesting, staged activation/rollback, coverage mappings,
+threat-hunting queries, indicator confidence/revocation/sightings, and evidence
+promotion. It may never reuse the authoritative event journal as a telemetry
+lake or allow detection execution to become domain authority.
 Verification: namespace/version/extension confusion, parser differentials,
 downgrade, signature/source spoofing, round trips, lossiness, bombs, tenant/
 policy/marking mapping, directional-role confusion, high-volume capacity

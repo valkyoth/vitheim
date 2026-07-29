@@ -1,6 +1,8 @@
 # Phase D — Universal Work Platform
 
-Scope: `0.31.0–0.40.0`. Every mutation is a command; reads are policy-filtered.
+Scope: `0.31.0–0.40.0`. Every mutation is a command; reads consume the minimal
+deny-by-default policy/redaction contract introduced at `0.30.17` and are later
+proved against the full Phase F policy engine.
 
 ## `0.31.0` — Shared Work-Item Components
 Status: planned.

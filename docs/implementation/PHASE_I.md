@@ -1,6 +1,8 @@
 # Phase I — Assets, Configuration, And Services
 
 Scope: `0.81.0–0.90.0`. Facts retain provenance; graphs are tenant/policy aware.
+`0.81.1–0.81.2` separately add the extensible asset-kind registry and ephemeral
+identity/reincarnation law before service and relationship work builds on them.
 
 ## `0.81.0` — Asset Lifecycle
 Status: planned. Setup: typed assets, ownership/location/cost/warranty, lifecycle, sanitization/disposal evidence. Goal: complete governed asset state. Deliverables: aggregate and inventory projections. Verification: ownership/disposal escalation, illegal states, evidence removal, duplicate identity, tenant pass. Exit criteria: irreversible actions require evidence. `v0.81.0 implementation stop reached. Run pentest for this exact commit.`
@@ -45,7 +47,15 @@ rollup rather than a disposable downsampling projection.
 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.83.0` — Typed Relationship Graph
-Status: planned. Setup: edge vocabulary, direction, cardinality, temporal validity, provenance, policy, traversal bounds. Goal: first-class safe relationships. Deliverables: relationship aggregate and graph port. Verification: unauthorized edges, cycles, hidden endpoints, duplicate/contradictory edges, exhaustion pass. Exit criteria: every edge is tenant-bound and evidenced. `v0.83.0 implementation stop reached. Run pentest for this exact commit.`
+Status: planned. Setup: implement and extend the `0.70.3` edge vocabulary,
+direction, cardinality, temporal validity, provenance, policy-before-traversal,
+and traversal bounds without changing its established node/edge meanings.
+Goal: first-class safe relationships. Deliverables: relationship aggregate and
+production graph port. Verification: unauthorized edges, cycles, hidden
+endpoints, duplicate/contradictory edges, contract incompatibility, and
+exhaustion pass. Exit criteria: every edge is tenant-bound and evidenced, and
+SecOps/Phase I topology-port differential tests pass.
+`v0.83.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.84.0` — Provenance And Confidence
 Status: planned. Setup: specialize the shared `0.20.3` source, observation,

@@ -1,6 +1,9 @@
 # Phase L — WASM And Integrations
 
 Scope: `0.111.0–0.120.0`. Components receive capabilities, never direct storage.
+Focused companions `0.118.3–0.118.4` own inbound service-desk mail, while
+`0.120.6–0.120.7` own signed security-audit export and hosted delivery; neither
+is hidden inside the generic connector milestone.
 
 ## `0.111.0` — Versioned WIT Interfaces
 Status: planned. Setup: pin Component Model/WIT sources, ABI versions, owned

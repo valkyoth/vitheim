@@ -1,6 +1,8 @@
 # Phase F — Identity, Tenancy, And Policy
 
 Scope: `0.51.0–0.60.0`. Authentication supplies facts; policy grants authority.
+After the complete policy conformance suite, `0.60.1–0.60.2` add the separately
+scoped policy-bound read-subscription contract and hosted delivery runtime.
 
 ## `0.51.0` — Formal Cross-Surface Tenant Assurance
 Status: planned. Setup: audit the structural tenant model already required since

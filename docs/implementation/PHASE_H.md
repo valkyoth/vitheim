@@ -123,14 +123,15 @@ evidence deletion, timezone abuse, self-approval, hidden active rules, bypass
 pass. Exit criteria: suppressed alerts remain evidenced. `v0.74.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.75.0` — Topology And Temporal Correlation
-Status: planned. Setup: define a minimal topology-fact port with deterministic
-fake, admitted edges, time windows, confidence, scoring, traversal/work limits,
-and explanation; do not claim the Phase I service graph. Goal: group related
-alerts safely against a replaceable topology contract. Deliverables: pure
+Status: planned. Setup: consume the exact `0.70.3` topology-fact/read port,
+admitted edges, time windows, confidence, scoring, traversal/work limits, and
+explanation; do not claim the Phase I service graph. Goal: group related alerts
+safely against the shared replaceable topology contract. Deliverables: pure
 correlation planner/engine and fake topology corpus. Verification: poisoning,
-graph cycles, hidden-node inference, order dependence, exhaustion, differential
-fixtures pass; real graph integration is repeated at `0.88.0`. Exit criteria:
-correlations cite bounded evidence and no later graph capability is assumed.
+graph cycles, hidden-node inference, order dependence, exhaustion, port/fake
+differential fixtures pass; real graph integration is repeated at `0.88.0`.
+Exit criteria: correlations cite bounded evidence and use no parallel topology
+vocabulary or unimplemented later graph capability.
 `v0.75.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.76.0` — Alert-To-Incident Orchestration

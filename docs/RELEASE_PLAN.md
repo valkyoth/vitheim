@@ -6,8 +6,9 @@ Vitheim is built in small releases that can be understood, tested, pentested,
 and stopped independently. This list is not a maximum: split a version or add
 a corrective patch whenever its scope is too broad for one safe review pass.
 
-Tags use `v0.N.0` for capability milestones, `v0.N.P` for corrections or
-focused completion slices of the already-specified `0.N.0` family,
+Tags use `v0.N.0` for capability milestones, `v0.N.P` for corrections,
+focused completion slices, or explicitly planned bounded capability increments
+within the current `0.N.0` phase family,
 `v1.0.0-rc.N` for exact production candidates, and `v1.0.0` only for the first
 serious production release. No tag or artifact publication is authorized by
 this plan.
@@ -15,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 294 exact stops: 150 base `0.x.0` stops, 143
+The canonical roadmap contains 315 exact stops: 150 base `0.x.0` stops, 164
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -48,7 +49,8 @@ exact stop to one primary authority/state-machine change or adapter/profile,
 one associated persistence/migration transition, at most one external
 admission boundary, and one coherent conformance corpus. Eighteen overloaded
 family ledgers were retained for their security context but decomposed into 65
-new exact stops:
+new exact stops. The later capability-gap review added 21 independently scoped
+product, verification, and profile-decision companions:
 
 | Parent family | Focused companion stops | Completion sequence |
 | --- | --- | --- |
@@ -70,6 +72,12 @@ new exact stops:
 | `0.145.0` backup/DR | `0.145.1–0.145.2` | restore/readiness, then DR/failback/disposition |
 | `0.146.0` performance | `0.146.1–0.146.2` | soak/fairness, then chaos/recovery |
 | `0.149.0` remediation | `0.149.1–0.149.3` | authority/tenant, storage/recovery, then external boundaries/final retest |
+
+The focused capability additions are `0.20.4`, `0.22.4`, `0.30.17`,
+`0.50.1–0.50.6`, `0.60.1–0.60.2`, `0.70.3`, `0.81.1–0.81.2`,
+`0.110.1–0.110.2`, `0.118.3–0.118.4`, `0.120.6–0.120.7`, and `0.140.27`.
+Their exact handoffs live in
+[Focused Product Capability Completions](implementation/PRODUCT_CAPABILITY_COMPLETIONS.md).
 
 Every companion has a separate exact-commit pentest. New scope discovered
 during implementation triggers another split; it may not be absorbed into the
@@ -120,8 +128,9 @@ vX.Y.Z implementation stop reached. Run pentest for this exact commit.
 Do not tag. Fix findings, rerun all gates, obtain a permanent `Status: PASS`
 report for the exact reviewed commit, and run the readiness gate. Critical or
 high findings always block release. A companion version may correct or complete
-one pre-declared parent-family slice, but cannot introduce an unrelated
-capability or widen the parent contract; it follows the same process.
+one pre-declared parent-family slice or deliver one explicitly planned bounded
+phase capability. It cannot absorb unrelated scope or widen an earlier contract
+implicitly, and it follows the same process.
 
 ## Phase A — Pure Foundation
 
@@ -132,7 +141,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 294-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 315-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -173,6 +182,7 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.20.1` | Security audit projection, access receipts, and journal | Crash rebuild, bytes released before audit, stream completion/abort gaps, outage policy |
 | `0.20.2` | Hosted telemetry semantics and instrumentation contract | Tenant/secret labels, cardinality, trace spoofing, readiness lies, backpressure |
 | `0.20.3` | Shared provenance and temporal-fact primitives | Clock collapse, destructive correction, confidence inflation, cross-domain semantic drift |
+| `0.20.4` | Executable state-machine reference models and generated traces | Faulty transition detection, small-state completeness, deterministic counterexample replay |
 
 ## Phase C — Storage Portability
 
@@ -186,7 +196,8 @@ implementations remain blocked rather than being implemented casually.
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.21.0` | Stable storage-capability vocabulary and canonical report schema | Type/canonicalization/contradiction tests only; admission, probes, lineage, recovery, and refusal are `0.21.1–0.21.5` |
-| `0.22.0` | Reusable storage-conformance harness, deterministic fixtures, and fault-injection contract | Harness self-tests and fixture reproducibility; destructive, tenant, and HA/migration matrices are `0.22.1–0.22.3` |
+| `0.22.0` | Reusable storage-conformance harness, deterministic fixtures, and fault-injection contract | Harness self-tests and fixture reproducibility; destructive, tenant, HA/migration, and model-correspondence matrices are `0.22.1–0.22.4` |
+| `0.22.4` | Adapter-to-model correspondence and deterministic fault execution | Memory/backend trace differential, response loss, crash, retry, failover, and explicit refusal |
 | `0.23.0` | SQLite single-node adapter | Retain all prior adapter proofs; prove unified checkpoint/deletion journaling, atomic checkpoint bundle, mixed-trigger archive replay, both CAS boundaries and all prior busy/crash/reopen guarantees, or refuse VIT-CAP-060/061 |
 | `0.24.0` | PostgreSQL reference production adapter | Retain all prior protections; prove concurrent atomic checkpoint bundles, checkpoint/deletion trigger isolation, unified journal ordering, mixed archives and both CAS boundaries under pool failover |
 | `0.25.0` | Experimental MySQL adapter | Prove unified checkpoint/deletion settlement and all prior two-head/bounds/exact-ID/conservative semantics plus attempt-ledger parity, or refuse VIT-CAP-060/061; no default v1 claim |
@@ -200,6 +211,7 @@ implementations remain blocked rather than being implemented casually.
 | `0.30.0` | Canonical cross-backend manifest format and bounded preflight verifier | Manifest substitution/truncation/version/tenant/law/profile/budget tests; transfer program is `0.30.3–0.30.14` |
 | `0.30.1` | Durable queue record model and non-authoritative semantic port | Ordering/tenant/idempotency/boundary tests; claims and recovery are `0.30.15–0.30.16` |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
+| `0.30.17` | Minimal N1 policy, field-redaction, obligation, and interface-registration contract | Missing decision inputs, allow-by-default, field reappearance, unregistered DTO/command surface |
 
 ### Migration/import irreversible-operation hardening map
 
@@ -821,6 +833,12 @@ integration is deferred to `0.70.0` and `0.100.0`.
 | `0.48.2` | Hosted publication through governed credential-operation profiles | Existing rotation/orphan/bearer/uncertainty controls plus evaluator reevaluation, evidence-backed quarantine exit, independent remediation or manual outage |
 | `0.49.0` | Postmortems and corrective actions | Sensitive publication, deletion, blame/identity leakage |
 | `0.50.0` | Integrated ITSM beta with later-phase port fakes | Cross-module authorization, fake-port contracts, replay and upgrades |
+| `0.50.1` | Service portfolio lifecycle | Unauthorized activation/retirement, orphan consumers, hidden costs/risks, stale approval |
+| `0.50.2` | Customer organizations, contacts, agreements, and service entitlements | Contact takeover, agreement-as-authority, expiry, cross-customer disclosure |
+| `0.50.3` | Supplier, vendor, and contract management | Vendor impersonation, contract leakage, silent renewal, expired access |
+| `0.50.4` | Procurement and non-software entitlement workflows with external financial ports | Approval/quantity/unit bypass, duplicate receipt, false entitlement, ERP-reference substitution |
+| `0.50.5` | Capacity and demand management | Forecast-as-fact, unit/window confusion, hidden assumptions, stale observations |
+| `0.50.6` | Service continuity plans and exercises | Stale activation, false exercise completion, sensitive-plan leak, evidence gaps |
 
 ## Phase F — Identity, Tenancy, And Policy
 
@@ -848,6 +866,8 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.58.0` | Authority registry for governed profiles, serialized credential state, TCB, and rollout recovery | Evaluator lineage/epoch/start fence, quarantine owner/resolver/tombstones, remediation profile/lineage/audit/quota, existing boundaries |
 | `0.59.0` | Delegation/break-glass with enforcement epoch and final planned law-generation expansion | Activate `VIT-LAW-001` g11/`VIT-LAW-006` g10; delegation revoke racing dispatch, epoch reuse, unbounded privilege, grant amplification, weak audit |
 | `0.60.0` | Complete governed-executor and successor/cancellation conformance suite | Existing profile/rotation/TCB/recovery cases plus evaluator upgrade/mixed nodes, invalid quarantine exits/revival, remediation compromise/circularity/no-path |
+| `0.60.1` | Policy-bound read-subscription port, cursor, and gap contract | Cursor/tenant/topic substitution, hidden fields/counts, replay horizon, no command path |
+| `0.60.2` | Subscription delivery, item-level reauthorization, revocation, and backpressure | Policy/session change between items, slow consumer, flood, reconnect/failover, transport downgrade |
 
 ## Phase G — Durable Workflows
 
@@ -868,6 +888,7 @@ commit, and external-outcome semantics.
 | `0.68.0` | Workflow history, versioning, and migration | Unbounded history, corrupt checkpoint, orphan activity, unsafe remap |
 | `0.69.0` | Visual/configuration-as-code compiler | Hidden flags, generated privilege escalation, divergence |
 | `0.70.0` | Workflow worker lease, owner identity, and fencing model | Lease/fence/takeover boundary model tests only; recovery and cross-domain HA certification are `0.70.1–0.70.2` |
+| `0.70.3` | Minimal typed topology vocabulary and policy-before-traversal port | Wrong-type links, hidden intermediates/counts, temporal/provenance drift, path exhaustion |
 
 ## Phase H — Alerts And Security Operations
 
@@ -884,7 +905,7 @@ Phase exit: integrated SecOps isolation and evidence custody pass pentest.
 | `0.72.0` | Alert normalization | Parser confusion, field smuggling, oversized records |
 | `0.73.0` | Deduplication engine | Collision abuse and evidence loss |
 | `0.74.0` | Suppression and maintenance windows | Malicious suppression and expiry bypass |
-| `0.75.0` | Topology-port and temporal correlation | Poisoning, hidden-node inference, graph exhaustion, no premature graph claim |
+| `0.75.0` | `0.70.3` topology-port and temporal correlation | Poisoning, hidden-node inference, graph exhaustion, no premature full-CMDB claim |
 | `0.76.0` | Alert-to-incident orchestration | Incident flooding, unauthorized linking, feedback loops |
 | `0.77.0` | Security-incident domain | Evidence access and containment privilege |
 | `0.78.0` | Vulnerability findings and remediation | Finding spoofing and risk-score manipulation |
@@ -905,6 +926,8 @@ Phase exit: graph authorization and reconciliation are explainable and bounded.
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.81.0` | Asset lifecycle | Ownership/disposal changes, evidence removal, illegal states |
+| `0.81.1` | Signed extensible asset-kind registry and first-party cloud/orchestrator/data kinds | Kind substitution, namespace collision, cross-kind mutation, unsafe migration |
+| `0.81.2` | Ephemeral identity, incarnation, disappearance, and reincarnation semantics | ABA identifier reuse, false deletion, stale vulnerabilities/ownership/edges |
 | `0.82.0` | Business and technical services | Service-owner escalation and tenant linkage |
 | `0.82.1` | Service health, availability, and SLO binding | False/stale health, raw/rollup authority confusion, override abuse, unknown-to-healthy fail-open |
 | `0.83.0` | Typed relationship graph | Malicious cycles, unauthorized edges, traversal bounds |
@@ -951,16 +974,18 @@ Phase exit: pack conflicts and impact are explainable before activation.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.101.0` | Signed framework-pack format | Substitution, downgrade, signature and licensing confusion |
-| `0.102.0` | Requirement and control graph | Malicious mappings, cycles, hidden obligations |
-| `0.103.0` | Evidence requirements and lineage | Forgery, detached provenance, cross-tenant evidence |
-| `0.104.0` | Versioned NIST CSF pack | Activation, mapping integrity, source provenance |
-| `0.105.0` | Versioned DORA pack | Applicability and mandatory-evidence bypass |
-| `0.106.0` | Versioned ITIL practice packs | Overlay conflicts, licensing metadata, unsafe override |
-| `0.107.0` | Licensed/custom standards importer | Untrusted pack content and mapping escalation |
-| `0.108.0` | Risk, treatment, and exception workflows | Self-acceptance, immortal exceptions, hidden owner |
-| `0.109.0` | Control testing, findings, and reports | Falsified tests and report leakage |
-| `0.110.0` | Pack impact and conflict simulator | Precedence error and simulation/runtime divergence |
+| `0.101.0` | Signed framework-pack format with dependency, signer-rotation, revocation, and licensing semantics | Content/dependency substitution, signer downgrade/distrust, incompatible activation |
+| `0.102.0` | Requirement/control graph, applicability, mappings, and overlays | Malicious mappings/cycles, scope inheritance, hidden obligations, provenance loss |
+| `0.103.0` | Point-in-time and continuous evidence requirements, admissibility, lineage, custody, and redaction | Forgery, stale/reused evidence, collector downgrade, cross-tenant/export leakage |
+| `0.104.0` | Versioned NIST CSF pack | Source drift, false normative status, activation, mapping and overlay integrity |
+| `0.105.0` | Versioned DORA pack | Jurisdiction/entity/effective-date confusion, applicability and mandatory-evidence bypass |
+| `0.106.0` | Licensed versioned ITIL practice packs and organization overlays | Overlay/dependency precedence, licensing metadata, workflow conflict, unsafe override |
+| `0.107.0` | Quarantined licensed/custom standards importer | Untrusted content, namespace collision, mapping escalation, import-as-activation |
+| `0.108.0` | Risk, treatment, acceptance, waiver, and exception workflows | Self-acceptance, scoring/method tamper, precedence bypass, immortal exceptions |
+| `0.109.0` | Control testing, continuous observations, findings, reports, and redacted exports | Plan/sample/result substitution, selective rerun, self-review, report leakage |
+| `0.110.0` | Pack dependency/overlay/applicability impact and conflict simulator | Precedence error, hidden obligation removal, simulation/runtime divergence |
+| `0.110.1` | Privacy request case domain | Requester impersonation, subject disclosure, hold/approval/deadline bypass |
+| `0.110.2` | Privacy fulfilment, data-surface evidence, safe export, and third-party uncertainty | Omitted surface, export leak, early completion, erasure resurrection, false certainty |
 
 ## Phase L — WASM And Integrations
 
@@ -981,6 +1006,8 @@ Phase exit: cross-plugin/tenant isolation and compatibility suite pass pentest.
 | `0.118.0` | Mail, webhook, and collaboration connectors | Header injection, spoofing, action-link abuse |
 | `0.118.1` | Microsoft Defender and Sentinel connector pack | Provider/workspace confusion, cursor/webhook replay, schema drift, action escalation |
 | `0.118.2` | Tenable vulnerability connector pack | Asset/finding confusion, forged fixed state, score drift, coverage gaps |
+| `0.118.3` | Inbound service-desk mail intake, bounded MIME handling, and quarantine | Sender/tenant spoofing, MIME/nested/decompression bombs, duplicate delivery, attachment escape |
+| `0.118.4` | Reply-token correlation, loop suppression, moderation, and work proposals | Subject/token/case substitution, forwarding leak, DSN/auto-reply loop, direct mutation |
 | `0.119.0` | Outbound agent with local governed credential-operation authority | Existing rotation/orphan/count/bearer isolation plus no spool evaluator/resolve/remediate authority and offline-work invalidation |
 | `0.120.0` | Plugin compatibility/isolation suite | Cross-plugin and cross-tenant interference |
 
@@ -999,6 +1026,8 @@ both organizational boundaries.
 | `0.120.3` | Federated work exchange and synchronization | Forged/stale proposals, replay/reorder, lifecycle mismatch, echo loops, split brain |
 | `0.120.4` | Managed-service asset and security delegation | Provider escalation, cross-customer confusion, false ownership, unauthorized remediation |
 | `0.120.5` | Federation conformance, revocation, and recovery | Malicious peer, partitions, protocol skew, stale restore, cleanup/offboarding failure |
+| `0.120.6` | Signed, redacted, resumable security-audit export contract | Destination/tenant substitution, field leak, cursor forgery, batch gap/reorder/key rollback |
+| `0.120.7` | Audit-export delivery, backpressure, reconciliation, and offboarding | Silent loss, response ambiguity, slow sink, spool exhaustion, revoked destination |
 
 ## Phase M — Optional AI Capabilities
 
@@ -1070,6 +1099,7 @@ the first technology decision. An unselected option remains unsupported at
 | `0.140.15–0.140.20` | Focused storage isolation, transaction, migration, recovery, promotion, and final-support freezes | No storage claim spans an unproven backend, topology, operation, or recovery path |
 | `0.140.21–0.140.23` | Focused HA, regional/DR, and operational-authority freezes | Each deployment claim has one topology, failure model, role matrix, and exercise corpus |
 | `0.140.24–0.140.26` | Focused witness replacement bootstrap, capacity transfer, and operationalization freezes | No approval can select a convenient receipt, reuse an old namespace, fabricate credit, or skip witnessed replay |
+| `0.140.27` | Full-suite product profile freeze decision | Evidence-based support/defer matrix for extended service management, subscriptions, assets, privacy, inbound mail, and audit export |
 
 ## Phase O — Production Hardening
 

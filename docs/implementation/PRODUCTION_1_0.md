@@ -5,7 +5,7 @@ Status: planned; never reached by date or version count alone.
 Setup: select an exact unchanged `v1.0.0-rc.N` commit and artifact set that has
 passed every preceding gate, independent external pentest, clean retest,
 reproducible build comparison, compatibility freeze, and operational exercise.
-The decisions in `0.140.1–0.140.26` are frozen, their selected profiles have
+The decisions in `0.140.1–0.140.27` are frozen, their selected profiles have
 passed Phase O, and unsupported alternatives are excluded from release claims.
 The generated evidence manifest contains no `Specified` or `Implementing`
 state for a shipped claim. Every `Conditional` entry is excluded from the
@@ -1807,7 +1807,7 @@ Verification:
 - Reproducible builds, clean install/upgrade/rollback/failover, load/soak/chaos,
   secure defaults, accessibility, localization, and disaster-recovery exercises.
 - Decision-record conformance proves each shipped artifact and deployment
-  matches the reviewed `0.140.1–0.140.26` choices without silent fallback.
+  matches the reviewed `0.140.1–0.140.27` choices without silent fallback.
 - The generated `docs/INVARIANT_OWNERSHIP.md` conformance report covers every
   selected production storage/deployment profile. Coverage is derived
   bidirectionally from introducing phase declarations. Every applicable stable
@@ -1854,7 +1854,16 @@ Verification:
   cites its earlier implementation admission, conformance corpus, pentest, and
   operational owner; missing profiles and unselected SCIM/STIX/SIEM/CMDB
   directions are explicitly unsupported.
-- The generated roadmap/evidence differential proves exactly 294 release
+- The `0.140.27` full-suite matrix independently evaluates service portfolio,
+  customer agreements, supplier/contracts, procurement/non-software
+  entitlements, capacity/demand, continuity, real-time subscriptions, extended
+  asset kinds, privacy cases, inbound mail, and security-audit export. Each
+  shipped profile has an executable owner, passing API/policy/UI/restore/
+  operational evidence, and an explicit enabled/support boundary. Missing or
+  conditional evidence leaves that capability unavailable or named
+  conditional; it never weakens the supported core ITSM/SecOps/asset/risk
+  profile or becomes supported merely because its milestone was planned.
+- The generated roadmap/evidence differential proves exactly 315 release
   stops and their owners, authority reviews and pentest reports; it rejects any
   README, API discovery, UI navigation, release-note, installer, operator or
   support-matrix claim without a matching executable owner and exact evidence.

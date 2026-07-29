@@ -2284,7 +2284,7 @@ and runtime supply-chain paths. Deliverables: audits, a generated capability-
 evidence report that rejects `Specified` or `Implementing` support claims and
 binds every `Implemented`, `Conditional`, `Supported`, or `Unsupported` entry
 to its executable owner and exact immutable evidence; a generated canonical
-roadmap report proving all 294 stops, owners, authority reviews and pentest
+roadmap report proving all 315 stops, owners, authority reviews and pentest
 markers agree; candidate-tree/artifact-
 bound signed evidence, SBOM/provenance, reproducible artifacts, permit-memory/
 diagnostic exposure report, executor credential-operation/egress isolation and
@@ -2818,7 +2818,7 @@ tombstone state, independent remediation profile/credential-lineage/audit/
 cleanup-quota/manual-only state, and durable fully typed floor-profile ratchet state. Goal:
 final pre-RC readiness
 proof. Deliverables: complete candidate bundle, runbooks, acceptance report,
-canonical 294-stop roadmap report, zero-drift capability-evidence/support
+canonical 315-stop roadmap report, zero-drift capability-evidence/support
 matrix, explicit conditional and unsupported profiles,
 no-permit-transport proof, fresh-parent-activation evidence, and floor-ratchet
 compatibility evidence including total typed-key migrations and successor

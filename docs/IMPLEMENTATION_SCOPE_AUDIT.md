@@ -27,10 +27,12 @@ convenience, and passing a parent pentest never covers a companion commit.
 ## Audit Result
 
 All 229 previously planned stops were reviewed. Eighteen families failed the
-small-loop rule and are decomposed into 65 additional exact stops. The canonical
-roadmap therefore contains **294 exact stops**:
+small-loop rule and were decomposed into 65 additional exact stops. The later
+capability-gap review added 21 independently scoped verification, product, and
+profile-decision stops. The canonical roadmap therefore contains **315 exact
+stops**:
 
-`150 base 0.x.0 stops + 143 companion stops + 1 production stop = 294`.
+`150 base 0.x.0 stops + 164 companion stops + 1 production stop = 315`.
 
 The existing long sections remain cumulative family ledgers because they hold
 important threat, invariant, recovery, and verification context. Their heading
@@ -41,6 +43,23 @@ and
 own every later slice. Family-level `Goal`, `Deliverables`, `Verification`, and
 `Exit criteria` prose is an eventual completion contract, not authorization to
 implement all of it in the heading version.
+
+The 21 gap-driven additions are not scope silently pulled into an existing
+stop. Their independent handoffs are in
+[Focused Product Capability Completions](implementation/PRODUCT_CAPABILITY_COMPLETIONS.md):
+
+| Capability family | Exact stops | Small-loop boundary |
+| --- | --- | --- |
+| Executable verification | `0.20.4`, `0.22.4` | Reference-model method, then adapter correspondence |
+| Early policy contract | `0.30.17` | Policy/redaction shape only; full engines remain Phase F |
+| Broader service management | `0.50.1–0.50.6` | One domain each: portfolio, customer, supplier, procurement, capacity, continuity |
+| Real-time reads | `0.60.1–0.60.2` | Semantic subscription/cursor, then hosted delivery/revocation |
+| Pre-SecOps topology | `0.70.3` | Shared vocabulary/port only; graph ownership remains Phase I |
+| Asset extensibility | `0.81.1–0.81.2` | Kind registry, then ephemeral identity/reincarnation |
+| Privacy operations | `0.110.1–0.110.2` | Case authority, then fulfilment/evidence |
+| Inbound email | `0.118.3–0.118.4` | Hostile intake/quarantine, then correlation/proposals |
+| Audit export | `0.120.6–0.120.7` | Signed export contract, then delivery/reconciliation |
+| Product freeze | `0.140.27` | Evidence-based full-suite support/defer decision |
 
 | Overloaded family | Exact first slice | Added exact stops | Why it was split |
 | --- | --- | --- | --- |
@@ -69,6 +88,6 @@ Every other exact stop passed the current sizing review because it has one
 dominant domain/adapter/decision owner and one coherent primary test boundary.
 This is not a permanent exemption. New threat-model detail, authority changes,
 schema work, provider admission, or recovery scope triggers the small-loop rule
-again before implementation. The roadmap checker verifies all 294 headings,
+again before implementation. The roadmap checker verifies all 315 headings,
 required handoff fields, authority dispositions, and exact-commit pentest
 markers; count drift blocks release.
