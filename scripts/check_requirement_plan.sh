@@ -230,6 +230,12 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`AdmissionAbortFenced`' \
     'linearized admission abort fence'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`AdmissionQuarantineFenced`' \
+    'intermediate quarantine lifecycle fence'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'closed authoritative adjacency relation' \
+    'explicit lifecycle adjacency table'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'generation. Final acceptance versus abort' \
     'activation and abort share one generation CAS'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
@@ -259,6 +265,12 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'zero-partition candidate emits a domain-separated' \
     'canonical zero-member bridge ownership root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`PrepareReinstallCandidateActivationV1`' \
+    'typed activation preparation command'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    'CASes `PartitionAdmissionComplete → ActivationPrepared`' \
+    'root-bound activation preparation CAS'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '0.51.25` — Reinstall Admission Abort And Supersession' \
     'partial reinstall admission abort and supersession'
@@ -302,13 +314,28 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'Unknown remains unknown.' \
     'quarantine never reclassifies unknown'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.28` — Reinstall Guard Supersession Consumption' \
+    '`AdmissionQuarantineFenced → AdmissionQuarantined`' \
+    'quarantine completion CAS after durable root'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.28` — Quarantine Replacement Successor Genesis' \
+    'quarantine replacement successor genesis'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`BeginQuarantineReplacementEvaluationV1`' \
+    'typed quarantine replacement evaluation command'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`QuarantineReplacementGenesisReservationV1`' \
+    'one-shot quarantine replacement genesis reservation'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '`CreateQuarantineReplacementSuccessorLifecycleV1`' \
+    'typed replacement successor lifecycle command'
+require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
+    '0.51.29` — Reinstall Guard Supersession Consumption' \
     'final guard supersession consumption'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallBarrierReleaseManifestV1`' \
     'dual reinstall control release manifest'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.29` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
+    '0.51.30` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
     'reinstall control release reconciliation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     'True cancellation exists only before the first child fence' \

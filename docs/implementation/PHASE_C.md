@@ -23,7 +23,8 @@ target-slot takeover, funded retained-control transfer and barrier release,
 archival/retained-namespace safety, partition-fenced evaluation, source-local
 activation/abort linearization, activation admission, funded bridge ownership,
 partial-admission abort/supersession, permanent-unknown policy/quarantine,
-guard supersession and dual release wait for `0.51.5–0.51.29` after
+proof-bound replacement genesis, guard supersession and dual release wait for
+`0.51.5–0.51.30` after
 authoritative tenant lifecycle exists.
 Every database profile must implement every applicable negotiated `0.18.2`
 `AtomicWorkCommitBundle` variant and every other mandatory semantic port claimed
