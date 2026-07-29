@@ -552,6 +552,10 @@ cancellation/rollback/restore/failover and archive failure at every boundary.
 
 ## `0.141.0` — Single-Node Production Packaging
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.141.0`
+implements package/install layout only; startup compatibility, topology
+bootstrap, replay/rate budgets, and capacity drains are `0.141.1–0.141.4`.
 <!-- vitheim-invariant VIT-INV-060 0.141.0 -->
 <!-- vitheim-invariant VIT-INV-061 0.141.0 -->
 
@@ -1375,8 +1379,13 @@ Exit criteria: every selected production profile exposes bounded operational
 signals and has an explicit telemetry-loss policy. `v0.142.1 implementation stop
 reached. Run pentest for this exact commit.`
 
-## `0.143.0` — HA Leases, Failover, And Partitions
-Status: planned. Migration/import focus: model immutable-total/monotonic-release
+## `0.143.0` — HA Lease And Fencing Model
+Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.143.0`
+implements the lease/fencing model only; owner-specific storage/control-plane
+failover and service partition/recovery are `0.143.1–0.143.2`.
+Migration/import focus: model immutable-total/monotonic-release
 leg settlement, adversarial foreground-versus-cleanup scheduling/backlog
 thresholds, unknown-deletion reconciliation/retention races, whole-member
 custody release, both cleanup origins, complete retention/release authorization
@@ -1728,8 +1737,13 @@ Exit criteria: placement violations, unsupported active/active writes, or
 incomplete surface mapping fail closed.
 `v0.144.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.145.0` — Backup, Restore, And Disaster Recovery
-Status: planned. Migration/import focus: restore original/released/settled-leg
+## `0.145.0` — Backup Format And Custody
+Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.145.0`
+implements backup format and custody only; restore/readiness and full
+DR/failback/retention/erasure are `0.145.1–0.145.2`.
+Migration/import focus: restore original/released/settled-leg
 history, cleanup scheduler counters/claimant/backlog/maxima and stored terminal
 authorization outcomes, reconciliation budgets, retention pool/authority and
 linked custody-release checkpoint plus CleanupOrigin/reference, release grants,
@@ -2005,8 +2019,13 @@ convert reconciliation into retry authority, or let a previously absent
 transaction commit.
 `v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.146.0` — Performance, Load, Soak, And Chaos Certification
-Status: planned. Migration/import focus: fuzz equation/leg/scheduler/outcome
+## `0.146.0` — Load Harness And Capacity Ceilings
+Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.146.0`
+implements the load harness and ceilings only; soak/fairness and
+chaos/recovery-capacity certification are `0.146.1–0.146.2`.
+Migration/import focus: fuzz equation/leg/scheduler/outcome
 codecs, counters, thresholds, unfair backend locks, every crash boundary and
 changed retry plus lost credentials/keys, inconsistent deletion, late evidence,
 both cleanup origins, complete retention/release authorization families,
@@ -2265,7 +2284,7 @@ and runtime supply-chain paths. Deliverables: audits, a generated capability-
 evidence report that rejects `Specified` or `Implementing` support claims and
 binds every `Implemented`, `Conditional`, `Supported`, or `Unsupported` entry
 to its executable owner and exact immutable evidence; a generated canonical
-roadmap report proving all 229 stops, owners, authority reviews and pentest
+roadmap report proving all 294 stops, owners, authority reviews and pentest
 markers agree; candidate-tree/artifact-
 bound signed evidence, SBOM/provenance, reproducible artifacts, permit-memory/
 diagnostic exposure report, executor credential-operation/egress isolation and
@@ -2473,8 +2492,14 @@ can lower the durable platform floor, reactivate a superseded rollout, or
 broaden executor credential/network authority.
 `v0.148.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.149.0` — External Pentest Remediation Candidate
-Status: planned. Migration/import focus: attack original/released rollback,
+## `0.149.0` — External Pentest Finding Intake
+Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.149.0`
+owns finding intake, severity, dependency, and remediation ownership only;
+authority/tenant, storage/recovery, and external-boundary remediation waves are
+`0.149.1–0.149.3`.
+Migration/import focus: attack original/released rollback,
 fractional/double leg settlement and split parent credit; cleanup starvation,
 backlog exhaustion and priority bypass; and terminal revocation retry/conflict
 loops; plus unknown-as-deleted, credential/key loss, retention self-approval,
@@ -2793,7 +2818,7 @@ tombstone state, independent remediation profile/credential-lineage/audit/
 cleanup-quota/manual-only state, and durable fully typed floor-profile ratchet state. Goal:
 final pre-RC readiness
 proof. Deliverables: complete candidate bundle, runbooks, acceptance report,
-canonical 229-stop roadmap report, zero-drift capability-evidence/support
+canonical 294-stop roadmap report, zero-drift capability-evidence/support
 matrix, explicit conditional and unsupported profiles,
 no-permit-transport proof, fresh-parent-activation evidence, and floor-ratchet
 compatibility evidence including total typed-key migrations and successor

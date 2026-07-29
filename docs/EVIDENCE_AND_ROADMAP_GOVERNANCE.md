@@ -55,18 +55,19 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 ## Canonical Roadmap Cardinality
 
-The roadmap contains exactly **229 independently pentestable release stops**:
+The roadmap contains exactly **294 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 78 companion/patch stops + 1 production stop = 229`.
+`150 base 0.x.0 stops + 143 companion stops + 1 production stop = 294`.
 
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “229 exact release stops” describe different
+included. “151 base stops” and “294 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
-milestones,” and “228 exact stops” are not valid repository descriptions.
+milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
+valid current repository descriptions.
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
 manifest: it enumerates every companion version, requires every base version,
-and requires 229 exact-commit pentest markers. Reopened `0.1.0` must replace
+and requires 294 exact-commit pentest markers. Reopened `0.1.0` must replace
 that embedded list with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
@@ -85,7 +86,7 @@ is admitted at its first consuming milestone. Its admission record binds the
 normative snapshot, options/features, source/license, implementation version,
 trust boundary, known-answer and negative corpus, fuzz/interoperability
 evidence, replacement boundary, maintenance owner and unsupported
-combinations. `0.140.1–0.140.11` revalidate and freeze already evidenced
+combinations. `0.140.1–0.140.26` revalidate and freeze already evidenced
 choices; they cannot be the first selection or retroactively legitimize code.
 
 The current no-third-party-Cargo rule remains binding. The audit proposal to

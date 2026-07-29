@@ -1,6 +1,9 @@
 # Pre-Production Profile Freeze Decisions
 
-Scope: `0.140.1–0.140.11`. These evidence-producing releases revalidate and
+Scope: primary decisions `0.140.1–0.140.11`; focused refinements
+`0.140.12–0.140.26` live in
+[Product And Production Scope Splits](SCOPE_SPLITS_PRODUCT_PRODUCTION.md).
+Together these evidence-producing releases revalidate and
 freeze production profiles from version-bound implementation-admission records
 created at each first consuming milestone. They are never the first dependency,
 protocol, backend, or runtime selection and cannot retroactively legitimize
@@ -12,9 +15,13 @@ work begins. A decision that changes authority names the exact existing
 generation; it cannot hide an
 authority change inside a topology, dependency, or support-profile choice.
 
-## `0.140.1` — Dependency, Cryptography, And KMS Decision
+## `0.140.1` — Cryptographic Primitive And Signature Decision
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.140.1`
+freezes cryptographic primitives and signature profiles only; transport/time,
+KMS/key lifecycle, and build/dependency evidence are `0.140.12–0.140.14`.
 Migration/import decision: freeze the permanent-quarantine revocation intent
 preimage, target-scoped non-wrapping sequence, issuer/signing-key continuity,
 covering time/uncertainty fields and exact shared logical/physical workspace
@@ -476,9 +483,14 @@ the stored per-action result or typed conflict without mutation.
 Exit criteria: Phase O has one approved, replaceable crypto/key profile.
 `v0.140.1 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.2` — Tenant And Storage Topology Decision
+## `0.140.2` — Default Storage And Tenancy Candidate Decision
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.140.2`
+selects the default storage/tenancy support matrix only; isolation,
+transactions, migration, recovery, experimental promotion, and final support
+truth are `0.140.15–0.140.20`.
 Migration/import decision: freeze all four parent aggregate/membership rows,
 workspace parent transfer/inverse transactions, exact-cut checkpoint, bounded
 cleanup against the old stable Closed fence, settlement checkpoint and
@@ -2593,9 +2605,13 @@ surface and immutable non-sensitive evidence of the precedence decision and
 authority loss.
 `v0.140.5 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.6` — Deployment, HA, And Recovery Profile Decision
+## `0.140.6` — Deployment Shape Decision
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.140.6`
+selects deployment shapes only; HA/failover, regional/DR, and operational
+authority/recovery are `0.140.21–0.140.23`.
 Migration/import decision: failover and restore resume the exact workspace
 parent member/transfer, logical+physical cut, old cleanup fence, settlement
 checkpoint, original/released/leg history, cleanup turn/contention/backlog and
@@ -3156,9 +3172,14 @@ Exit criteria: federation remains disabled by default; only exact profiles with
 complete bilateral evidence may enter Phase O and `1.0.0` support claims.
 `v0.140.10 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.11` — Witness-Authority Equivocation Recovery Freeze Decision
+## `0.140.11` — Witness-Authority Retirement Freeze Decision
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.140.11`
+freezes authority retirement only; replacement bootstrap, capacity
+transfer/quarantine, and checkpoint/replay operationalization are
+`0.140.24–0.140.26`.
 Setup: review the implemented contradictory-evidence fence, permanently
 retained proposal and both signed receipts, authority/key/distrust history,
 four-member capacity state, active reservation/settlement history, authority

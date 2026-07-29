@@ -90,9 +90,13 @@ idempotent restore-safe receipts, conservative parents, no independent restore,
 current-state/authority rechecks, and deadline escalation. Each delayed transfer transition
 rechecks current local tenant/principal/policy epochs.
 
-## `0.21.0` — Storage Capability Negotiation
+## `0.21.0` — Storage Capability Vocabulary And Report
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.21.0`
+defines the capability vocabulary and report schema only; admission, probing,
+lineage, recovery, and refusal are `0.21.1–0.21.5`.
 
 Setup: derive mandatory invariant capabilities from every declaration-resolved
 ownership/lifecycle row in `docs/INVARIANT_OWNERSHIP.md`, then classify
@@ -1245,9 +1249,13 @@ manifest/chunk proof.
 Exit criteria: correctness never depends on an unverified optional capability.
 `v0.21.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.22.0` — Storage Conformance Testkit
+## `0.22.0` — Storage Conformance Harness And Fixtures
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.22.0`
+builds the harness and fixture contract only; atomic destruction, twin-tenant,
+and HA/migration certification are `0.22.1–0.22.3`.
 
 Setup: derive tests from every semantic port and every applicable stable
 invariant declaration, `VIT-ENF-*` enforcement contract, `VIT-TST-*`
@@ -2292,12 +2300,16 @@ broker/executor TCB for the shortest practical lifetime and cannot enter a
 general connector process. `v0.28.3
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.29.0` — Migration Registry And Resumable Migrations
+## `0.29.0` — Migration Registry And Immutable Planner
 
 <!-- vitheim-invariant VIT-INV-062 0.29.0 -->
 <!-- vitheim-law VIT-LAW-009 0.29.0 -->
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.29.0`
+implements the immutable migration registry and planner only; execution,
+fencing, activation, recovery, and disposition are `0.29.1–0.29.5`.
 
 Setup: define immutable migration identity/hash, ordering, preconditions,
 forward/rollback steps, leases, checkpoints, signatures, operator approval, and
@@ -3215,9 +3227,14 @@ writes nothing.
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
 `v0.29.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.0` — Cross-Backend Export And Import
+## `0.30.0` — Cross-Backend Manifest And Preflight
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.30.0`
+freezes the canonical manifest and preflight verifier only; export/import,
+activation, history, recovery, corruption, re-cost, witness replacement, and
+settlement are `0.30.3–0.30.14`.
 
 Setup: freeze canonical export version, tenant scope, event/blob manifests,
 integrity checkpoints, planning-superset provenance, separate `VIT-INV-057`
@@ -10351,9 +10368,13 @@ the winning charge.
 Exit criteria: successful import proves complete semantic and integrity parity.
 `v0.30.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.1` — Durable Journal-Backed Work Queue
+## `0.30.1` — Durable Queue Record And Semantic Port
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.30.1`
+implements the queue record and semantic port only; claims/scheduling and
+recovery/conformance are `0.30.15–0.30.16`.
 
 Setup: define queue/topic identity, tenant scope, ordered/unordered semantics,
 enqueue transaction, visibility lease/fencing, retry/backoff, dead-letter,

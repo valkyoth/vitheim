@@ -19,19 +19,20 @@ if [ "$production_count" -ne 1 ]; then
 fi
 
 extra_versions="
-0.8.1 0.15.1 0.16.1 0.17.1 0.18.1 0.18.2 0.18.3 0.18.4 0.18.5 0.20.1 0.20.2 0.20.3
-0.28.1 0.28.2 0.28.3 0.30.1 0.30.2 0.36.1
+0.8.1 0.15.1 0.16.1 0.17.1 0.18.1 0.18.2 0.18.3 0.18.4 0.18.5 0.18.6 0.18.7 0.18.8 0.18.9 0.18.10 0.18.11 0.18.12 0.18.13 0.20.1 0.20.2 0.20.3
+0.21.1 0.21.2 0.21.3 0.21.4 0.21.5 0.22.1 0.22.2 0.22.3 0.28.1 0.28.2 0.28.3 0.30.1 0.30.2 0.36.1
+0.29.1 0.29.2 0.29.3 0.29.4 0.29.5 0.30.3 0.30.4 0.30.5 0.30.6 0.30.7 0.30.8 0.30.9 0.30.10 0.30.11 0.30.12 0.30.13 0.30.14 0.30.15 0.30.16
 0.38.1 0.38.2 0.38.3 0.39.1 0.39.2 0.39.3 0.39.4 0.40.1 0.48.1 0.48.2
-0.51.1 0.51.2 0.52.1 0.53.1 0.53.2 0.53.3 0.54.1 0.56.1
-0.71.1 0.71.2 0.71.3 0.78.1 0.78.2 0.78.3 0.78.4 0.78.5
+0.51.1 0.51.2 0.52.1 0.53.1 0.53.2 0.53.3 0.54.1 0.56.1 0.70.1 0.70.2 0.71.1 0.71.2 0.71.3 0.78.1 0.78.2 0.78.3 0.78.4 0.78.5
 0.82.1 0.86.1 0.88.1 0.88.2 0.88.3 0.89.1
 0.93.1 0.98.1 0.98.2
 0.116.1 0.118.1 0.118.2
 0.120.1 0.120.2 0.120.3 0.120.4 0.120.5
 0.132.1 0.132.2
 0.138.1 0.138.2 0.138.3
-0.140.1 0.140.2 0.140.3 0.140.4 0.140.5 0.140.6 0.140.7 0.140.8 0.140.9 0.140.10 0.140.11
-0.142.1
+0.140.1 0.140.2 0.140.3 0.140.4 0.140.5 0.140.6 0.140.7 0.140.8 0.140.9 0.140.10 0.140.11 0.140.12 0.140.13 0.140.14 0.140.15 0.140.16 0.140.17 0.140.18 0.140.19 0.140.20 0.140.21 0.140.22 0.140.23 0.140.24 0.140.25 0.140.26
+0.141.1 0.141.2 0.141.3 0.141.4 0.142.1 0.143.1 0.143.2
+0.145.1 0.145.2 0.146.1 0.146.2 0.149.1 0.149.2 0.149.3
 "
 
 for version in $extra_versions; do
@@ -44,7 +45,7 @@ done
 
 for field in Status Setup Goal Deliverables Verification 'Exit criteria'; do
     count="$(grep -R -o "$field:" docs/implementation | wc -l)"
-    if [ "$count" -lt 229 ]; then
+    if [ "$count" -lt 294 ]; then
         echo "implementation plan: field '$field' appears only $count times" >&2
         failed=1
     fi
@@ -55,8 +56,8 @@ pentest_count="$(
         docs/implementation |
         wc -l
 )"
-if [ "$pentest_count" -ne 229 ]; then
-    echo "implementation plan: expected 229 exact-commit pentest stops, found $pentest_count" >&2
+if [ "$pentest_count" -ne 294 ]; then
+    echo "implementation plan: expected 294 exact-commit pentest stops, found $pentest_count" >&2
     failed=1
 fi
 
@@ -194,7 +195,7 @@ require_text docs/implementation/PHASE_B.md \
     'Credential operations use one explicit `ProviderCredentialOperationProfile`.' \
     'explicit bearer versus non-exportable credential profile'
 require_text docs/implementation/PHASE_B.md \
-    '## `0.18.3` — Machine-Checkable Invariant Ownership Registry' \
+    '## `0.18.3` — Stable Invariant And Law Declaration Registry' \
     'invariant ownership corrective milestone'
 require_text docs/implementation/PHASE_B.md \
     'formally backfill all authority declared from' \

@@ -210,8 +210,13 @@ history. `v0.68.0 implementation stop reached. Run pentest for this exact commit
 ## `0.69.0` — Visual And Config-As-Code Compiler
 Status: planned. Setup: one canonical source model, round-trip policy, provenance, signing, and no hidden flags. Goal: equivalent visual/text authoring. Deliverables: compiler, decompiler, simulator integration, review diff. Verification: hidden behavior, injection, privilege generation, round-trip drift, huge graphs, signature substitution pass. Exit criteria: generated IR is fully reviewable. `v0.69.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.70.0` — HA Workflow Workers
-Status: planned. Setup: define leases/fencing, activity idempotency, specialize
+## `0.70.0` — Workflow Worker Lease And Fencing
+Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.70.0`
+implements the worker lease/fence only; takeover/recovery and real cross-domain
+HA certification are `0.70.1–0.70.2`.
+Setup: define leases/fencing, activity idempotency, specialize
 the `0.18.2` activity/poison variants, `0.30.1` queue semantics, poison policy,
 drain, failover, commit-and-dispatch authorization freshness, all three typed
 execution authorities, immutable effect bindings, bounded multi-kind quota

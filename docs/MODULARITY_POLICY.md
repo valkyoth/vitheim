@@ -62,3 +62,9 @@ the detailed source ledger. See
 Each crate owns unit tests for its invariants. Cross-crate behavior uses
 integration or conformance tests. Adapters must pass one shared semantic
 testkit; duplicating weaker backend-specific assertions is insufficient.
+
+Release sizing follows the
+[Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md): one exact stop
+owns one primary authority/adapter/profile and one coherent evidence set.
+Crate modularity does not make a multi-authority release small; independently
+shippable slices receive independent versions and pentests.

@@ -1057,9 +1057,13 @@ retry storms, overflow, cancellation, and model interleavings pass.
 Exit criteria: expired or unfenced workers cannot commit protected work.
 `v0.18.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.18.1` — Durable Quota Accounting
+## `0.18.1` — Quota Vocabulary And Ledger Schema
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.18.1`
+implements quota vocabulary and the durable ledger only; admission and
+settlement/recovery are exact stops `0.18.6–0.18.7`.
 <!-- vitheim-invariant VIT-INV-007 0.18.1 -->
 <!-- vitheim-invariant VIT-INV-024 0.18.1 -->
 <!-- vitheim-invariant VIT-INV-025 0.18.1 -->
@@ -1300,9 +1304,13 @@ exhausted or abusive tenants cannot block fair bounded reconciliation or
 security cleanup.
 `v0.18.1 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.18.2` — Atomic Timer, Activity, And Work Commit Family
+## `0.18.2` — Atomic Work Discriminated Bundle Schema
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.18.2`
+freezes the discriminated bundle schema only; command/consumer,
+timer/activity, poison, and adapter certification are `0.18.8–0.18.10`.
 <!-- vitheim-invariant VIT-INV-001 0.18.2 -->
 <!-- vitheim-invariant VIT-INV-002 0.18.2 -->
 <!-- vitheim-invariant VIT-INV-003 0.18.2 -->
@@ -1844,9 +1852,13 @@ release capacity. Delayed transfer transitions recheck current local authority
 and fail conservatively.
 `v0.18.2 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.18.3` — Machine-Checkable Invariant Ownership Registry
+## `0.18.3` — Stable Invariant And Law Declaration Registry
 
 Status: planned.
+Scope note: this retained family ledger is decomposed by
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.18.3`
+introduces stable declaration IDs and parsing only; ownership/lifecycle, law
+manifests/admission, and semantic conformance are `0.18.11–0.18.13`.
 <!-- vitheim-invariant VIT-INV-057 0.18.3 -->
 <!-- vitheim-invariant VIT-INV-058 0.18.3 -->
 <!-- vitheim-invariant VIT-INV-059 0.18.3 -->

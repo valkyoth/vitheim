@@ -8,13 +8,16 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 229 exact release stops: 150 base `0.x.0`
-stops, 78 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 294 exact release stops: 150 base `0.x.0`
+stops, 143 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
 law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
+The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
+small-loop rule to every stop and assigns 65 focused companions to the 18
+families that exceeded it.
 
 ## Universal Setup
 
@@ -1123,7 +1126,9 @@ At each implementation stop: record the exact evidence state and support scope;
 do not tag, publish, or begin the next milestone.
 Pentest the exact commit, fix every blocking finding, rerun all gates, obtain a
 permanent `Status: PASS` report, and run the versioned readiness gate. Patch
-versions contain corrections only and follow the same process.
+and companion versions contain corrections or one pre-declared focused
+parent-family completion slice only; they introduce no unrelated capability
+and follow the same process.
 
 ## Phase Documents
 
@@ -1143,6 +1148,8 @@ versions contain corrections only and follow the same process.
 - [Phase M — Optional AI (`0.121.0–0.130.0`)](implementation/PHASE_M.md)
 - [Phase N — Product Experience (`0.131.0–0.140.0`)](implementation/PHASE_N.md)
 - [Pre-Production Option Decisions (`0.140.1–0.140.11`)](implementation/OPTION_DECISIONS.md)
+- [Foundation And Storage Scope Splits (`0.18.6–0.30.16`)](implementation/SCOPE_SPLITS_FOUNDATION_STORAGE.md)
+- [Product And Production Scope Splits (`0.70.1–0.149.3`)](implementation/SCOPE_SPLITS_PRODUCT_PRODUCTION.md)
 - [Phase O — Production Hardening (`0.141.0–0.150.0`)](implementation/PHASE_O.md)
 - [`1.0.0` — Production Acceptance](implementation/PRODUCTION_1_0.md)
 

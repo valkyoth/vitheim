@@ -8,12 +8,18 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Audited all 229 existing release stops against a one-authority/one-boundary
+  small-loop rule and split 18 overloaded families into 65 focused companion
+  stops. The roadmap now has 294 independently testable and pentestable stops,
+  including separate passes for quota/atomic work/law governance, storage
+  capability/conformance/migration/import, workflow HA, production decisions,
+  packaging, HA, DR, load/chaos, and pentest remediation.
 - Added normative evidence and roadmap governance: specified, implementing,
   implemented, conditional, supported, and unsupported are distinct states;
   documentation alone cannot satisfy an implementation exit; and support
   claims must bind exact executable owners and immutable evidence.
-- Corrected the canonical roadmap to 229 exact pentestable stops (150 base
-  `0.x.0`, 78 companion, and one production stop), assigned a single generated
+- Corrected the canonical roadmap to 294 exact pentestable stops (150 base
+  `0.x.0`, 143 companion, and one production stop), assigned a single generated
   manifest at reopened `0.1.0`, and included the previously under-counted
   `0.140.11` decision in every pre-production scope.
 - Required focused, owner-scoped normative protocol packages before each first

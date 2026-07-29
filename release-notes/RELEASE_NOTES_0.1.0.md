@@ -13,8 +13,11 @@ baseline. This is not a production release.
 - Pinned Rust 1.97.1 with Rust 2024 edition and resolver 3.
 - Added private `no_std` foundation crates and a private facade.
 - Added repository policy, CI, documentation, release, and pentest gates.
-- Added detailed implementation handoffs for 229 exact release stops: 150
-  base `0.x.0` stops, 78 companion stops, and the `1.0.0` production stop.
+- Added detailed implementation handoffs for 294 exact release stops: 150
+  base `0.x.0` stops, 143 companion stops, and the `1.0.0` production stop.
+- Added a whole-roadmap scope audit and small-loop rule, splitting 18
+  overloaded families into 65 independently implementable and pentestable
+  companion stops without deleting their cumulative security context.
 - Added evidence-state and canonical-roadmap governance so specified,
   implemented, conditional, supported, and unsupported claims cannot be
   conflated, and count drift blocks release.

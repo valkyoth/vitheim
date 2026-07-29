@@ -6,7 +6,8 @@ Vitheim is built in small releases that can be understood, tested, pentested,
 and stopped independently. This list is not a maximum: split a version or add
 a corrective patch whenever its scope is too broad for one safe review pass.
 
-Tags use `v0.N.0` for capability milestones, `v0.N.P` for corrections,
+Tags use `v0.N.0` for capability milestones, `v0.N.P` for corrections or
+focused completion slices of the already-specified `0.N.0` family,
 `v1.0.0-rc.N` for exact production candidates, and `v1.0.0` only for the first
 serious production release. No tag or artifact publication is authorized by
 this plan.
@@ -14,7 +15,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 229 exact stops: 150 base `0.x.0` stops, 78
+The canonical roadmap contains 294 exact stops: 150 base `0.x.0` stops, 143
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -39,6 +40,45 @@ threat-model and attack-surface delta, define budgets/non-goals, and write the
 release notes and pentest scope. Crates remain private and Rust files remain at
 most 500 lines. Third-party Cargo code remains forbidden unless a future,
 explicit policy decision changes that rule.
+
+## Scope Sizing And Focused Companion Stops
+
+The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) limits each
+exact stop to one primary authority/state-machine change or adapter/profile,
+one associated persistence/migration transition, at most one external
+admission boundary, and one coherent conformance corpus. Eighteen overloaded
+family ledgers were retained for their security context but decomposed into 65
+new exact stops:
+
+| Parent family | Focused companion stops | Completion sequence |
+| --- | --- | --- |
+| `0.18.1` quota | `0.18.6–0.18.7` | admission, then settlement/recovery |
+| `0.18.2` atomic work | `0.18.8–0.18.10` | command/consumer, timer/activity, then poison/adapter certification |
+| `0.18.3` invariant governance | `0.18.11–0.18.13` | ownership/lifecycle, law admission, then executable realization |
+| `0.21.0` capability negotiation | `0.21.1–0.21.5` | static admission, probe, lineage, recovery, then refusal differential |
+| `0.22.0` storage testkit | `0.22.1–0.22.3` | atomic destruction, tenant isolation, then HA/migration matrix |
+| `0.29.0` migration | `0.29.1–0.29.5` | execution, fencing, activation, recovery, then history/disposition |
+| `0.30.0` export/import | `0.30.3–0.30.14` | export, stage, prepare, activate, history, budget, corruption, rebuild, re-cost, witness fence, bootstrap, operationalize |
+| `0.30.1` durable queue | `0.30.15–0.30.16` | claims/scheduling, then recovery/conformance |
+| `0.70.0` workflow HA | `0.70.1–0.70.2` | takeover/recovery, then real integration certification |
+| `0.140.1` crypto/dependencies | `0.140.12–0.140.14` | transport/time, KMS/key lifecycle, then build/dependency evidence |
+| `0.140.2` storage decision | `0.140.15–0.140.20` | isolation, transaction, migration, recovery, experimental promotion, then final matrix |
+| `0.140.6` deployment decision | `0.140.21–0.140.23` | HA, regional/DR, then operational authority |
+| `0.140.11` witness decision | `0.140.24–0.140.26` | bootstrap, capacity transfer, then checkpoint/replay |
+| `0.141.0` packaging | `0.141.1–0.141.4` | startup, topology bootstrap, replay budgets, then capacity drains |
+| `0.143.0` HA | `0.143.1–0.143.2` | owner failover, then service partition/recovery |
+| `0.145.0` backup/DR | `0.145.1–0.145.2` | restore/readiness, then DR/failback/disposition |
+| `0.146.0` performance | `0.146.1–0.146.2` | soak/fairness, then chaos/recovery |
+| `0.149.0` remediation | `0.149.1–0.149.3` | authority/tenant, storage/recovery, then external boundaries/final retest |
+
+Every companion has a separate exact-commit pentest. New scope discovered
+during implementation triggers another split; it may not be absorbed into the
+parent or covered by an earlier report.
+
+Splitting does not weaken the cumulative Phase C transaction law. Every
+`0.29.x–0.30.x` slice uses the canonical
+deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-active-recost-campaign-slot→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox
+order and may implement only the ranks needed by its exact slice.
 
 ## Universal Verification And Exit Criteria
 
@@ -79,8 +119,9 @@ vX.Y.Z implementation stop reached. Run pentest for this exact commit.
 
 Do not tag. Fix findings, rerun all gates, obtain a permanent `Status: PASS`
 report for the exact reviewed commit, and run the readiness gate. Critical or
-high findings always block release. Patch versions add corrections only and
-follow the same process.
+high findings always block release. A companion version may correct or complete
+one pre-declared parent-family slice, but cannot introduce an unrelated
+capability or widen the parent contract; it follows the same process.
 
 ## Phase A — Pure Foundation
 
@@ -91,7 +132,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 229-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 294-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -122,9 +163,9 @@ Phase exit: corrupt streams are detected and projections rebuild from authority.
 | `0.17.0` | Inbox and idempotent consumer model | Replay, duplicate local commits, poisoned receipts, remote-duplication ambiguity |
 | `0.17.1` | Atomic consumer commit bundle | Receipt/local-commit split, redelivery duplication, hidden multi-stream or remote-in-transaction work |
 | `0.18.0` | Leases, timers, and scheduler primitives | Double ownership, clock shifts, expired lease use, retry storms |
-| `0.18.1` | Active-generation successor/cancellation recovery and typed floor ratchet | Prepared cancellation creates one complete recovery successor; no independent restore; idempotent receipts/deadline; successor/key migration races |
-| `0.18.2` | Atomic work, independent provider epochs, and complete transmission-start law | Profile/account/credential/broker root separation; exact dispatch/grant-or-exception/target/provider/capability/evaluator/quarantine/lease/claimant/time/quota start proof; unproven start and `OutcomeUnknown`; existing evaluator/rotation/remediation cases |
-| `0.18.3` | Declared ownership roots including global lineage, exact local placement owners, serialized rollout root/law, activation-floor catalogs, shared verifier, and closed semantic registry | Define the exact action-claim/freshness/owner-protocol scope matrix, external issuer/local atomic consumption split and replay precedence; authenticate authorization/global-result receipts; retain irreversible authorization, static topology, `Superseded`, `AllRequired`, ancestry, and P/N/M/F |
+| `0.18.1` | Durable quota vocabulary, kinds, epochs, and ledger schema | Type/boundary/overflow/cross-tenant tests; no admission or settlement implementation is pulled forward |
+| `0.18.2` | Discriminated atomic-work bundle schema and canonical variant envelope | Closed discriminant/codec/property tests; executable variants remain in `0.18.8–0.18.10` |
+| `0.18.3` | Stable invariant/law declaration IDs, markers, and parser | Missing/duplicate/malformed declaration tests; ownership and law execution remain in `0.18.11–0.18.13` |
 | `0.18.4` | Source-delivery-complete evaluator re-evaluation plus first real catalog successor rollout | Crash/race both authenticated control receipts and action-claim issue/consume boundaries; test crash-after-commit, expiry-before-response, revocation-before-replay, restore-before-tombstone reconciliation, receiver forgery, substitution, uncertain reissue, and existing authority failures |
 | `0.18.5` | Remediation-authority bootstrap and recovery root | First admission, independent channels/KMS, quorum/separation, simultaneous loss, compromise, circularity, stale restore, manual-only providers |
 | `0.19.0` | Integrity chains and signed-checkpoint interface | Bind both control receipts/authenticators/replay tombstones, authorization/outbox/pin, action-claim issuer sequence plus local consumption/outcome/uncertainty, exact owners/ratchets, and existing event/catalog integrity |
@@ -144,8 +185,8 @@ implementations remain blocked rather than being implemented casually.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.21.0` | Stable-invariant, law-manifest, catalog lineage/rollout/local-ratchet, and semantic-realization storage negotiation | Retain transactional original reservations, reservation-free joins, lifecycle transfers, per-leg exact-once settlement, distinct heads/CAS boundaries, captured-range/H-revalidation and bounded conservative replay; add unified checkpoint/deletion replay, atomic checkpoint bundle and complete recovery tuple; only new empty deployments initialize both genesis heads and no singular schema is admitted |
-| `0.22.0` | Declaration-derived destructive invariant and ancestry-complete generation-pinned law/catalog conformance | Retain every prior attack; omit/default recovery fields; present singular input as local/archive/both/empty/complete and require pre-mutation quarantine; retry lost refusals without mutation; retain checkpoint/compaction/publication/mixed-trigger/between-stage/unavailable-history tests |
+| `0.21.0` | Stable storage-capability vocabulary and canonical report schema | Type/canonicalization/contradiction tests only; admission, probes, lineage, recovery, and refusal are `0.21.1–0.21.5` |
+| `0.22.0` | Reusable storage-conformance harness, deterministic fixtures, and fault-injection contract | Harness self-tests and fixture reproducibility; destructive, tenant, and HA/migration matrices are `0.22.1–0.22.3` |
 | `0.23.0` | SQLite single-node adapter | Retain all prior adapter proofs; prove unified checkpoint/deletion journaling, atomic checkpoint bundle, mixed-trigger archive replay, both CAS boundaries and all prior busy/crash/reopen guarantees, or refuse VIT-CAP-060/061 |
 | `0.24.0` | PostgreSQL reference production adapter | Retain all prior protections; prove concurrent atomic checkpoint bundles, checkpoint/deletion trigger isolation, unified journal ordering, mixed archives and both CAS boundaries under pool failover |
 | `0.25.0` | Experimental MySQL adapter | Prove unified checkpoint/deletion settlement and all prior two-head/bounds/exact-ID/conservative semantics plus attempt-ledger parity, or refuse VIT-CAP-060/061; no default v1 claim |
@@ -155,9 +196,9 @@ implementations remain blocked rather than being implemented casually.
 | `0.28.1` | S3-compatible object-storage adapter | Tenant/object confusion, endpoint spoofing, multipart races, retention/deletion |
 | `0.28.2` | KMS and secret-provider adapters | Serialized provisioning/inventory/orphan/count controls plus governed evaluator upgrade/reevaluation, strong-resolution evidence, independent recovery or manual limitation |
 | `0.28.3` | In-process secret and brokered-bearer memory handling | HTTP/TLS/redirect/error/log/crash/core-dump/swap canaries, stale cache, honest transient-memory/erasure limits |
-| `0.29.0` | Declare `VIT-INV-062 MigrationImportJobAuthorityState` and `VIT-LAW-009 AtomicMigrationImportActivation` for resumable migration/import | Add an independently rooted Pending/Retired/EvidenceUnavailable deployment-retirement protocol and permit only empty new-identity bootstrap when old evidence is unavailable. Extend the linearizable governance fence so Activate/Abort/PermanentlyUnresolved are one per-transition terminal CAS beside Rotate/Distrust/Retire. Govern storage-cost profiles through lineage/head/classifier/destructive weakening and one parent/selector active re-cost slot. Re-cost conserves active + campaign-RecostPending + pending-successor + workspace encumbrances; uses a pre-reservation release tombstone matrix and folded reservation cut; closes campaign/mutation-fence product states and bounded prior-state recovery; terminal-checkpoints slot release; requires one-shot authorization plus destination-applied revocation for permanent quarantine; and runs parent-funded physical workspace build/catch-up/same-cut verify/cleanup/quarantine/exact inverse settlement under campaign ownership before authority-consuming activation. Workspace accounting has immutable OriginalTotal, monotonic Released, a derived remaining parent member and exact complete-leg atomic settlement. Post-terminal cleanup uses the current slot only for bounded rank serialization and the old stable Closed fence, plus a protected cleanup admission lane, non-resettable contention budget and hard count/row/byte/encumbrance/work/backlog maxima. The six-state permanent-quarantine authorization uses one first-terminal-wins outcome table so valid terminal observations return stored quarantine/expiry/revocation results. Add constant-time parent aggregates plus checkpointed budgeted streaming verification. Preserve protected completion reserves, two manifest heads, split ledgers, atomic parent/child transfers and canonical deployment-retirement-fence→active-coordinator-generation→job→candidate/barrier→authorization→ordered-domain-owner→control-settlement-archive-head→control-settlement-journal-head→recovery-capacity-parent-ledger→backend-storage-cost-active-recost-campaign-slot→backend-storage-cost-recost-campaign-fence→corruption-control-reserve→history-obligation→corruption-fence→corruption-control-lineage→corruption-control-lineage-checkpoint→lineage-disposition→recovery-authorization→clearance-anchor-source-manifest-head→clearance-anchor-source-manifest-authorization→corruption-clearance-anchor-registry→corruption-clearance-scope→corruption-clearance-authorization→corruption-clearance-attempt→corruption-rebuild→corruption-rebuild-rejection-authorization→archive-head→history/idempotency→recovery-lineage-budget→attempt/successor-budget→retention/legal-hold→audit/result/outbox order |
-| `0.30.0` | Cross-backend export and import with explicit law trust closure, the same durable budget, exact candidate-to-owner activation and inert history archival | Preserve all prior state plus immutable workspace OriginalTotal, monotonic Released, exact settled-leg tombstones, cleanup lane/turn/contention/backlog/maxima and permanent-quarantine authorization outcome/result. Missing/defaulted lifecycle, accounting, scheduler or terminal-result state; mutable-total inference; release rollback; cleanup-turn reset; pre-reservation credit; invented refund; unbounded recovery/finalization; premature workspace release; or source inference denies |
-| `0.30.1` | Durable queue preserving governed provider and cancellation-recovery authority | Existing guard/orphan/count/recovery state remains complete; evaluator revocation/resolution never revives work; queues cannot evaluate, clear, or remediate |
+| `0.29.0` | Immutable migration registry, identity, plan hash, preconditions, and dry-run planner | Deterministic plan/canonicalization/signature/non-rewrite tests; execution through disposition is `0.29.1–0.29.5` |
+| `0.30.0` | Canonical cross-backend manifest format and bounded preflight verifier | Manifest substitution/truncation/version/tenant/law/profile/budget tests; transfer program is `0.30.3–0.30.14` |
+| `0.30.1` | Durable queue record model and non-authoritative semantic port | Ordering/tenant/idempotency/boundary tests; claims and recovery are `0.30.15–0.30.16` |
 | `0.30.2` | Cache semantics and hosted adapter | Cross-tenant/policy keys, stale authorization, poisoning, erasure leaks |
 
 ### Migration/import irreversible-operation hardening map
@@ -826,7 +867,7 @@ commit, and external-outcome semantics.
 | `0.67.0` | Signals and subworkflows | Signal spoofing, cross-tenant routing, recursion exhaustion |
 | `0.68.0` | Workflow history, versioning, and migration | Unbounded history, corrupt checkpoint, orphan activity, unsafe remap |
 | `0.69.0` | Visual/configuration-as-code compiler | Hidden flags, generated privilege escalation, divergence |
-| `0.70.0` | HA workers with governed executors and cancellation-recovery rollout | Existing guard/orphan/count/TCB/rollout failover plus evaluator split brain, quarantine-generation races, remediation-lineage recovery |
+| `0.70.0` | Workflow worker lease, owner identity, and fencing model | Lease/fence/takeover boundary model tests only; recovery and cross-domain HA certification are `0.70.1–0.70.2` |
 
 ## Phase H — Alerts And Security Operations
 
@@ -1014,16 +1055,21 @@ the first technology decision. An unselected option remains unsupported at
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.140.1` | Cryptography/time, executable workload identity, exact catalog/topology-receipt authentication, topology authorization, and credential-operation decision | Retain retirement and permanent-quarantine grant/revocation preimages, target sequence/time/key continuity, symbolic classifier proof, exact-cut and activation preimages. Additionally freeze first-terminal outcome/conflict wrappers. Remote intent, result loops, cross-target suppression, different cuts, self-retirement, dual terminal or inferred custody deny |
-| `0.140.2` | Storage topology for law manifests/dependency closure, rollout/topology/authorization state, active catalogs/ratchets, provider state, destination-local migration/import jobs, and activation handoff | Retain four parent aggregates/memberships, workspace transfers, exact-cut, old-fence cleanup, settlement checkpoint and revocation rows. Add OriginalTotal/Released/legs, cleanup lane/contention/backlog/maxima and total authorization transactions. Missing any prior atomicity, monotonic accounting, bounded scheduling or uniform result refuses |
+| `0.140.1` | Cryptographic primitive, signature, and canonical-authentication profile decision | Known-answer/negative/canonicalization/replacement review; transport/time, KMS, and build inputs remain `0.140.12–0.140.14` |
+| `0.140.2` | Default production storage and tenancy candidate matrix | Evidence-based SQLite/PostgreSQL/default-versus-experimental selection only; focused storage decisions are `0.140.15–0.140.20` |
 | `0.140.3` | Human/workload/session, migration-authorization issuer/SoD, and worker-instance identity decision | Retain issuer/admitter/applier/operator, campaign/recovery, allocator/verifier and worker/settler separation. Add cleanup scheduler/claimant versus foreground admission. No role may reset priority, rewrite accounting, self-settle, issue+apply revocation, mutate a new campaign or repair/credit state |
 | `0.140.4` | Component runtime and governed credential-broker TCB decision | Evaluator binary/corpus admission and upgrade; quarantine-resolution evidence; non-composable remediation authority; existing TCB |
 | `0.140.5` | Privacy, tenant-surface lifecycle, evidence, and residency decision | Retain all prior transfer/cut/fence/settlement/grant/revocation evidence plus immutable totals, releases, leg tombstones, cleanup turn/budget/backlog and terminal outcomes. Erasure cannot drop a member, roll back release, reset priority, recreate a leg, invent credit or revive authority |
-| `0.140.6` | Deployment/HA invariant-owner, catalog rollout/topology/authorization, recovery, migration/import budget, revocation and activation decision | Retain failover reconciliation for parent member/cut/old fence/settlement/revocation, and add original/released/legs, cleanup scheduler/backlog and first-terminal results. Failover cannot infer/reset state, starve cleanup, duplicate credit or convert a terminal |
+| `0.140.6` | Supported deployment-shape decision | Select modular-monolith/split/single-node topology shapes only; HA, regional/DR, and operational authority are `0.140.21–0.140.23` |
 | `0.140.7` | API, SDK, licensing, and publication decision | Compatibility, registry ownership/provenance/recovery, exact SDK exception or no publication |
 | `0.140.8` | AI production enablement decision | Advisory-only isolation, provider policy, evaluation, injection, kill switch, disabled fallback |
 | `0.140.9` | Interchange and integration-boundary freeze decision | Directional SCIM, STIX publication, authenticated syslog, SIEM/detection, and CMDB support/defer evidence |
 | `0.140.10` | Federation production enablement decision | Cross-organization isolation, malicious peer, delegation abuse, revocation/offboarding evidence |
+| `0.140.11` | Witness-authority retirement freeze decision | Contradictory evidence stays permanent; old authority/lineage is absorbing; retirement requires independent quorum and custody |
+| `0.140.12–0.140.14` | Focused transport/time, KMS/key-lifecycle, and build/dependency freezes | Each decision binds its own exact profile, evidence, unsupported combinations, and pentest |
+| `0.140.15–0.140.20` | Focused storage isolation, transaction, migration, recovery, promotion, and final-support freezes | No storage claim spans an unproven backend, topology, operation, or recovery path |
+| `0.140.21–0.140.23` | Focused HA, regional/DR, and operational-authority freezes | Each deployment claim has one topology, failure model, role matrix, and exercise corpus |
+| `0.140.24–0.140.26` | Focused witness replacement bootstrap, capacity transfer, and operationalization freezes | No approval can select a convenient receipt, reuse an old namespace, fabricate credit, or skip witnessed replay |
 
 ## Phase O — Production Hardening
 
@@ -1033,16 +1079,21 @@ exit: production candidate has passed external pentest and all acceptance tests.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.141.0` | Single-node packaging plus independent topology authorization, governed handoff, and replay-safe dynamic admission | Implement every prior two-head control plus unified checkpoint/deletion settlement, indivisible checkpoint bundle, mixed-leg archive replay and conservative checkpoint-history failure |
+| `0.141.0` | Single-node package/image layout, users, paths, permissions, and secure install/uninstall | Clean-install, ownership, permissions, secret-sink, uninstall-retention, and unsupported-platform tests; operational gates are `0.141.1–0.141.4` |
+| `0.141.1–0.141.4` | Startup compatibility, topology bootstrap, authorization replay/rate budgets, and capacity drains | Each focused stop passes its own failure matrix, evidence report, and exact-commit pentest |
 | `0.142.0` | Split deployments with separated topology/authorization services and exact topology-issued catalog placement owners | RPC carries all prior parent/campaign/cut/fence/settlement/revocation state plus original/released/legs, cleanup turn/backlog and terminal outcomes; it grants no remote retirement, terminal, recovery, settlement, scheduler reset, revocation apply, debit/credit/release or lock authority |
 | `0.142.1` | Production telemetry exporters and graceful drain | `0.20.2` contract conformance, exporter failure, readiness and drain |
-| `0.143.0` | HA atomic work, catalog rollout/topology/authorization, governed execution, cancellation recovery, and fenced migration/import jobs | Retain parent/workspace conservation, cut closure, slot/new/old cleanup and revocation/consume race models. Add immutable-total/release settlement, hostile cleanup scheduling/backlog and every terminal CAS loser. Require all prior exclusions plus bounded cleanup, no double/fractional leg and stable first terminal |
+| `0.143.0` | HA lease, owner identity, and fencing model | Model one-owner lease/fence safety; owner failover and service partitions are `0.143.1–0.143.2` |
+| `0.143.1–0.143.2` | Stateful-owner failover and cross-service partition/recovery certification | Each owner and service-pair failure campaign passes independently |
 | `0.144.0` | Authoritative-region placement and residency through topology successors | `VIT-INV-060` regional move/fence/tombstone, predecessor-bound rollout block, cross-region identity/lease collision, receipt/start split, floor owner split, omitted regional parent |
-| `0.145.0` | Backup, restore, and disaster recovery | Restore all prior aggregate/transfer/cut/fence/settlement/revocation state plus original/released/legs, cleanup scheduler/backlog and terminal outcomes. Unavailable proof leaves custody/cost/capacity and foreground admission fenced without guesses |
-| `0.146.0` | Provider-governance, topology anti-replay, rotation/drift, credential-TCB, cancellation and migration/import contention certification | Retain prior transfer/cut/product/takeover/grant/workspace fault cases; fuzz equation/leg/scheduler/outcome codecs, thresholds, crash points and unfair locks within hard limits |
+| `0.145.0` | Backup format, manifest, encryption, custody, and creation path | Backup integrity/custody/partial-write/key/profile tests; restore and DR are `0.145.1–0.145.2` |
+| `0.145.1–0.145.2` | Restore/readiness and full DR/failback/disposition certification | Separate destructive restore and regional-loss exercises with exact evidence |
+| `0.146.0` | Reproducible load harness, workload profiles, ceilings, and invariant oracle | Harness calibration and boundary tests only; soak and chaos are `0.146.1–0.146.2` |
+| `0.146.1–0.146.2` | Soak/fairness and chaos/recovery-capacity certification | Independent sustained-load and compound-fault evidence sets |
 | `0.147.0` | Final profile-governance, topology replay-lifecycle, bearer-memory, executor, migration/import-budget/activation, and supply-chain hardening | Retain prior authority/conservation/cut/physical-capacity audit; add cleanup fairness/backlog, per-unit settlement attribution, counter immutability and terminal-result parity |
 | `0.148.0` | Compatibility freeze for provider authority, rollout recovery, topology replay lifecycle, and migration/import budget/activation | Retain prior strict campaign/workspace/revocation encodings and additionally reject mutable-current-total, missing released/leg/scheduler/maxima or non-total terminal schemas; no defaults/downgrade |
-| `0.149.0` | Release candidate and external pentest remediation | Retain every prior re-cost attack and add total/released rollback, fractional/double settlement, cleanup starvation/backlog/priority bypass and terminal retry/conflict loops |
+| `0.149.0` | Pentest finding intake, severity, dependency graph, ownership, and immutable remediation ledger | Completeness/triage/ownership checks only; remediation waves are `0.149.1–0.149.3` |
+| `0.149.1–0.149.3` | Authority/tenant, storage/recovery, then external-boundary remediation and final retest | Every wave fixes and independently retests one finding family with zero unresolved critical/high issues |
 | `0.150.0` | Final production-readiness candidate | Prove install/upgrade/restore/failover continuity for independent retirement and empty bootstrap, mutually exclusive external terminal state, governed one-slot cost succession with exact logical/physical conservation and bounded parent verification beside protected terminalization, two heads, atomic transfers, universal locking and rollback-safe reclaim |
 
 ## `1.0.0` — Serious Production Release

@@ -108,7 +108,8 @@ and licensing decision. See [Publication Policy](docs/PUBLICATION_POLICY.md).
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
-- [Implementation Plan — 229 exact release stops](docs/IMPLEMENTATION_PLAN.md)
+- [Implementation Plan — 294 exact release stops](docs/IMPLEMENTATION_PLAN.md)
+- [Implementation Scope Audit](docs/IMPLEMENTATION_SCOPE_AUDIT.md)
 - [Release Plan](docs/RELEASE_PLAN.md)
 - [Evidence And Roadmap Governance](docs/EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
 - [Roadmap Gap Dispositions](docs/ROADMAP_GAP_DISPOSITIONS.md)
