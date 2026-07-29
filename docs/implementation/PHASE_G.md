@@ -3,8 +3,8 @@
 Scope: `0.61.0–0.70.0`. Definitions compile to deterministic IR; hosted effects
 return as events. After workflow HA, `0.70.3` freezes the minimal shared typed
 topology contract consumed by SecOps before the full Phase I graph exists, and
-`0.70.4` certifies domain-owned Phase D–G workflow/notification contributions;
-later domains contribute at introduction and `0.120.9` certifies them.
+`0.70.4` defines/backfills workflow/notification references, `0.70.5`
+certifies Phase D–G, and `0.120.9` certifies later domains.
 
 ## `0.61.0` — Workflow IR
 Status: planned. Setup: version node/opcode schemas, graph validity, types, capabilities, and budgets. Goal: canonical hidden-free workflows. Deliverables: IR, validator, codec, disassembler. Verification: malformed graphs, unknown opcodes, cycles, depth/instruction bombs, canonical round trips pass. Exit criteria: invalid IR cannot activate. `v0.61.0 implementation stop reached. Run pentest for this exact commit.`

@@ -5,7 +5,7 @@ Status: planned; never reached by date or version count alone.
 Setup: select an exact unchanged `v1.0.0-rc.N` commit and artifact set that has
 passed every preceding gate, independent external pentest, clean retest,
 reproducible build comparison, compatibility freeze, and operational exercise.
-The decisions in `0.140.1–0.140.27` are frozen, their selected profiles have
+The decisions in `0.140.1–0.140.28` are frozen, their selected profiles have
 passed Phase O, and unsupported alternatives are excluded from release claims.
 The generated evidence manifest contains no `Specified` or `Implementing`
 state for a shipped claim. Every `Conditional` entry is excluded from the
@@ -1807,7 +1807,7 @@ Verification:
 - Reproducible builds, clean install/upgrade/rollback/failover, load/soak/chaos,
   secure defaults, accessibility, localization, and disaster-recovery exercises.
 - Decision-record conformance proves each shipped artifact and deployment
-  matches the reviewed `0.140.1–0.140.27` choices without silent fallback.
+  matches the reviewed `0.140.1–0.140.28` choices without silent fallback.
 - The generated `docs/INVARIANT_OWNERSHIP.md` conformance report covers every
   selected production storage/deployment profile. Coverage is derived
   bidirectionally from introducing phase declarations. Every applicable stable
@@ -1864,21 +1864,27 @@ Verification:
   conditional evidence leaves that capability unavailable or named
   conditional; it never weakens the supported core ITSM/SecOps/asset/risk
   profile or becomes supported merely because its milestone was planned.
+- The `0.140.28` minimum Hosted matrix passes every mandatory transport/crypto,
+  storage, identity/session, hostile-input, packaging, operations, and recovery
+  row under the repository-wide zero-dependency rule. Any missing row blocks
+  this Hosted production release and its installer/API/UI/documentation claims.
 - The stable requirement registry contains every normative production
   requirement with one stable source anchor/content digest, primary
   implementation owner, and valid crate, schema/migration, test, integration,
   and retest ownership. Source-marker and normative-language drift checks pass.
-  The domain-surface contribution registry has complete domain-owned
-  application, policy, workspace, API, workflow/notification, search, transfer/
-  configuration, and data-lifecycle contributions; late certification evidence
-  contains no first implementation or generic fallback.
+  Every domain manifest has a dedicated `DomainId`, exact requirement/crate/
+  application-schema links, an admitted complete reference generation, and no
+  unresolved required defer. Policy, tenant-surface, workflow, search,
+  workspace, API, and transfer references resolve to their authoritative
+  registries with no copied semantics; every separate extension/backfill and
+  certification stop passes without late implementation or generic fallback.
   Full-suite authorization, workflow/notification, search/history, UI/admin,
   API/SDK/subscription,
   import/export/configuration, cross-surface differential, and lifecycle/
   backup/restore/erasure stops have passing evidence for every selected
   capability. A deferred `0.86.2` profile exposes cloud-native kinds as
   manual/generic-import-only and makes no automatic discovery claim.
-- The generated roadmap/evidence differential proves exactly 354 release
+- The generated roadmap/evidence differential proves exactly 364 release
   stops and their owners, authority reviews and pentest reports; it rejects any
   README, API discovery, UI navigation, release-note, installer, operator or
   support-matrix claim without a matching executable owner and exact evidence.

@@ -13,7 +13,10 @@
   installers and operator output must expose conditional and unsupported scope
   without silent fallback. Missing or stale evidence moves readiness toward
   refusal.
-- One canonical roadmap manifest accounts for all 354 exact stops and their
+- `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
+  transport/crypto, storage, identity/session, hostile-input, packaging,
+  operations, and recovery profiles are all Supported with exact evidence.
+- One canonical roadmap manifest accounts for all 364 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -49,12 +52,14 @@ Tests must prove both acceptance and rejection. A rejected operation must not
 partially mutate state, consume authority, expose hidden fields, or omit an
 audit decision.
 
-From `0.30.23`, every domain owns one checked surface-contribution manifest for
-its application/API, policy/redaction, workspace, workflow/notification,
-search, transfer/configuration, and tenant-data lifecycle behavior. Late
-integration stops may compose and certify these contributions but cannot add a
-missing command, mapping, codec, registration, or recovery handler. A missing
-or falsely deferred contribution blocks the owning capability.
+From `0.30.23`, every domain owns one checked identity/application manifest;
+later typed extensions reference, never copy, authoritative policy, tenant-
+surface, workflow, search, workspace, API, and transfer registry entries.
+`0.30.24` enforces namespace, dependency, generation, compatibility, rollback,
+mixed-node, atomic-activation, and no-authority-from-declaration rules.
+`0.30.25` makes deferrals exact, expiring, retested, and product-state visible.
+Extension/backfill and certification are separate stops; missing or unresolved
+required contributions block the owning capability, RC, and production.
 
 ## Runtime Controls Planned Before Production
 

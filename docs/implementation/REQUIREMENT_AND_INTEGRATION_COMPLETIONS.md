@@ -291,35 +291,36 @@ Exit criteria: readiness cites current plan plus independently reviewed exercise
 evidence and open gaps; an exercise never activates a plan or asserts DR success.
 `v0.50.17 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.60.3` — Implemented-Surface Authorization Registration And Gate
+## `0.60.3` — Authorization Contribution Extension And Backfill
 
 Status: planned.
-Setup: consume domain-owned authorization/redaction contributions for interfaces
-implemented through `0.60.2`, including broader service management and
-subscriptions, plus action/resource/field/purpose and obligation semantics.
-Goal: cover current surfaces and install a prospective policy/redaction gate.
-Deliverables: generated completeness matrix, mandatory negative cases,
-subscription item/reconnect differentials, and later-surface registration gate.
+Setup: after Phase F vocabulary exists, define the authorization/redaction
+contribution kind as exact `AuthorizationInterfaceId` references plus domain
+generation; backfill Phase D–F domains and subscriptions.
+Goal: link domains to the authoritative policy registry without copying its fields.
+Deliverables: typed extension/resolver, historical backfill, prospective gate,
+dangling/disagreement report, and fixtures.
 Verification: omitted route/item/action/field, hidden count, purpose confusion,
-policy-version drift, notification/export leak, and allow-by-default pass.
-Exit criteria: every implemented interface has a domain-owned registration;
-missing behavior is not implemented here, and later domains certify at `0.120.8`.
+policy-version drift, copied policy semantics, duplicate ownership, generation
+mismatch, false defer, and allow-by-default pass.
+Exit criteria: current domains reference authoritative interface entries;
+`0.60.4` certifies the backfill and later domains certify at `0.120.8`.
 `v0.60.3 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.70.4` — Phase D–G Workflow And Notification Integration
+## `0.70.4` — Workflow/Notification Contribution Extension And Backfill
 
 Status: planned.
-Setup: consume domain-owned event, ordinary-command, workflow-trigger,
-notification-audience/field, loop-guard, and support-state contributions for
-implemented Phase D–G domains.
-Goal: certify automation without implementing mappings or a second lifecycle here.
-Deliverables: composed workflow templates, completeness/differential report,
-notification reauthorization tests, fakes, and end-to-end fixtures.
+Setup: after Phase G IR and notification vocabulary exists, define exact
+`WorkflowTriggerId`, ordinary-command/event, and notification-rule references;
+backfill Phase D–G domains.
+Goal: link domain automation to authoritative registries without a second lifecycle.
+Deliverables: typed extension/resolver, historical backfill, prospective gate,
+dangling/collision/disagreement report, and fixtures.
 Verification: trigger spoof/replay/storm, generic status mutation, stale
-authority, hidden-field notification, recursive loop, and workflow/domain drift pass.
-Exit criteria: workflows orchestrate only domain-owned registered commands and
-notifications reauthorize at dispatch; missing mappings block their owning
-domain, while later domains certify at `0.120.9`.
+authority, hidden-field notification, recursive loop, copied IR, generation
+mismatch, false defer, and workflow/domain drift pass.
+Exit criteria: Phase D–G manifests reference authoritative automation entries;
+`0.70.5` certifies the backfill and later domains certify at `0.120.9`.
 `v0.70.4 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.81.3` — Physical And Compute Asset-Kind Pack
@@ -401,72 +402,69 @@ Exit criteria: only the exact passing profile is supported; otherwise UI/API/
 documentation clearly state manual/generic-import-only cloud-native inventory.
 `v0.86.2 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.100.1` — Phase D–J Search And History Integration
+## `0.100.1` — Search/History Contribution Extension And Backfill
 
 Status: planned.
-Setup: consume implemented Phase D–J `DomainSurfaceContribution` search/history
-mappings, deletion/redaction behavior, rebuild hooks, and subscription status.
-Goal: certify current-domain discoverability without implementing mappings here.
-Deliverables: generated completeness matrix, shared facets/queue composition,
-rebuild orchestration, redaction and domain-versus-search differentials, and report.
+Setup: after Phase J document/projection vocabulary exists, define exact
+`SearchDocumentSchemaId`, facet/history, deletion/redaction, and rebuild-owner
+references; backfill Phase D–J domains.
+Goal: link discoverability to authoritative search entries without copying mappings.
+Deliverables: typed extension/resolver, historical backfill, prospective gate,
+dangling/collision/disagreement report, and fixtures.
 Verification: missing/duplicate document, hidden field/count/facet, stale
-revocation, cross-customer/supplier/privacy leak, rebuild divergence, and query
-complexity pass.
-Exit criteria: every Phase D–J domain-owned mapping is complete and current
-application reads and search return policy-equivalent visibility; a missing
-mapping blocks the owning domain rather than being implemented here.
+revocation, copied deletion/retention semantics, rebuild-owner mismatch,
+generation downgrade, false defer, and query-complexity pass.
+Exit criteria: Phase D–J manifests reference authoritative search/history
+entries; `0.100.2` certifies the backfill and `0.120.10` certifies later domains.
 `v0.100.1 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.132.3` — Full-Suite Workspace Composition And Certification
+## `0.132.3` — Workspace Contribution Extension And Backfill
 
 Status: planned.
-Setup: consume each domain-owned declarative workspace contribution, existing
-headless commands/reads/internal DTOs, composable blocks, and small/large
-organization profiles.
-Goal: compose the full suite without implementing domain workspaces here.
-Deliverables: navigation and composition manifests, role/purpose layouts,
-feature/support discovery, administration integration, empty/error states,
-cross-domain journeys, and accessibility fixtures.
+Setup: after `0.132.1–0.132.2`, define exact `WorkspaceContributionId`, block/
+profile, command/read, empty/error, and support-state references; backfill all
+earlier selected domains.
+Goal: link declarative workspaces to authoritative blocks and application services.
+Deliverables: typed extension/resolver, full historical backfill, prospective
+gate, dangling/collision/disagreement report, and fixtures.
 Verification: hidden route/block/action, field/count leak, profile-based
-privilege, query storm, unsupported feature shown active, XSS, and UI/API differential pass.
-Exit criteria: composition adds no domain command, DTO, field, or privilege;
-missing contributions block that domain, and unsupported or conditional
-capabilities remain truthful.
+privilege, copied command/policy semantics, query storm, unsupported feature,
+generation mismatch, false defer, XSS, and UI/API differential pass.
+Exit criteria: selected domain manifests reference authoritative workspace
+entries; `0.132.4` alone composes and certifies them.
 `v0.132.3 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.138.4` — Full-Suite External API And SDK Contract Freeze
+## `0.138.4` — External API Contribution Extension And Backfill
 
 Status: planned.
-Setup: consume domain-owned external resource/command/query/error/pagination/
-consistency mappings and compatibility fixtures plus existing headless
-application services and subscription operations.
-Goal: assemble and freeze the supported API without implementing domain mappings here.
-Deliverables: composed OpenAPI/schema descriptions, private SDK generation,
-whole-suite compatibility report, and subscribe/cancel/reconnect/
-cursor/gap/item contracts for SSE and any selected WebSocket profile.
+Setup: after `0.138.0`, define exact `ExternalApiResourceId`, route, command/
+query/error, pagination/consistency, event/subscription, and compatibility-
+fixture references; backfill selected domains.
+Goal: link domains to authoritative API entries without copying external schemas.
+Deliverables: typed extension/resolver, historical backfill, prospective gate,
+dangling/route-collision/disagreement report, and fixtures.
 Verification: mass assignment, resource/type confusion, cursor/gap forgery,
-reconnect downgrade, hidden field, retry/idempotency mismatch, SDK/API
-differential, and undocumented UI action pass.
-Exit criteria: no domain receives its first service, DTO, error, or resource
-mapping here; every shipped client uses the same versioned contracts, with
-subscription semantics defined independently of transport.
+reconnect downgrade, hidden field, copied schema, generation mismatch, false
+defer, SDK/API differential, and undocumented UI action pass.
+Exit criteria: selected manifests reference authoritative API entries;
+`0.138.6` alone assembles/freezes the API and SDK.
 `v0.138.4 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.138.5` — Full-Suite Transfer And Configuration Certification
+## `0.138.5` — Transfer/Configuration Contribution Extension And Backfill
 
 Status: planned.
-Setup: consume domain-owned typed codecs/manifests for schema/configuration,
-domain data, relationships/references, layouts, workflow/policy bindings,
-kind packs, secret references, and environment overlays.
-Goal: certify cross-domain transfer without implementing missing codecs here.
-Deliverables: composed transfer manifest, staging/orchestration rules, dry-run
-impact report, compatibility matrix, activation/rollback checks, and round-trip corpus.
+Setup: after `0.138.2–0.138.3`, define exact `TransferCodecId` and configuration
+schema, relationship/reference, workflow/policy binding, secret-reference,
+environment-overlay, migration, activation/rollback, and round-trip references;
+backfill selected domains.
+Goal: link transfers to authoritative codecs without copying their semantics.
+Deliverables: typed extension/resolver, historical backfill, prospective gate,
+dangling/collision/disagreement report, and fixtures.
 Verification: hidden field/secret export, mass assignment, stale reference,
-kind/schema downgrade, partial activation, erased-data resurrection, and
-configuration/runtime differential pass.
-Exit criteria: every supported transfer is domain-owned, typed, staged,
-policy-filtered, versioned, and separately activated; missing or unsupported
-contributions fail explicitly rather than gaining a generic fallback.
+kind/schema downgrade, copied codec semantics, generation mismatch, false
+defer, partial activation, erased-data resurrection, and differential pass.
+Exit criteria: selected manifests reference authoritative transfer/config
+entries; `0.138.7` alone composes and certifies them.
 `v0.138.5 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.139.1` — Full-Suite Cross-Surface Differential Suite

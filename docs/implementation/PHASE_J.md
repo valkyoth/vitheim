@@ -1,8 +1,8 @@
 # Phase J — Search And Knowledge
 
 Scope: `0.91.0–0.100.0`. Search is disposable and never an authorization oracle.
-After core conformance, `0.100.1` certifies domain-owned contributions through
-Phase J; later domains contribute at introduction and `0.120.10` certifies them.
+After core conformance, `0.100.1` defines/backfills search/history references,
+`0.100.2` certifies through Phase J, and `0.120.10` certifies later domains.
 
 ## `0.91.0` — Canonical Query AST
 Status: planned. Setup: typed fields/operators, sorts, pagination, temporal/graph clauses, complexity budget. Goal: database-independent safe queries. Deliverables: AST, validator, canonical codec. Verification: malformed/type-confused queries, nesting/work bombs, unstable sort, fuzz/property pass. Exit criteria: invalid/expensive queries fail before adapters. `v0.91.0 implementation stop reached. Run pentest for this exact commit.`

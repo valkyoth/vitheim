@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 354 exact release stops: 150 base `0.x.0`
-stops, 203 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 364 exact release stops: 150 base `0.x.0`
+stops, 213 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -17,7 +17,7 @@ law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
-families that exceeded it, and records 60 later focused capability,
+families that exceeded it, and records 70 later focused capability,
 requirement-ownership, decomposition, integration, discovery, and coherence
 companions.
 
@@ -55,7 +55,10 @@ capability is backed by an audited dependency-free project implementation or
 remains explicitly unsupported/deferred. It grants no exception. Any future
 policy amendment requires its own owner-approved exact roadmap decision before
 adapter work, while `0.140.14` remains final revalidation rather than first
-resolution.
+resolution. `0.140.28` is the mandatory Hosted production go/no-go: if safe
+dependency-free TLS/crypto, storage, identity/session, hostile-input handling,
+packaging, operations, and recovery evidence is incomplete, a Hosted `1.0.0`
+claim remains blocked rather than silently shrinking its meaning.
 Every user-facing capability is API-first: API contract/application/transport
 crates remain separate from UI composition/rendering crates, and the first-
 party UI has no privileged command, repository, or database path.
@@ -63,13 +66,18 @@ Every domain milestone delivers its headless application commands, policy-
 filtered reads, and project-owned internal DTOs before its UI or external
 adapter can exit. External API/SDK stops expose and freeze those contracts; they
 never introduce the domain application service for the first time.
-From `0.30.23`, the same milestone also owns its versioned
-`DomainSurfaceContribution`: policy/redaction, declarative workspace, external
-API mapping, search/history, typed transfer/configuration, and tenant-data-
-surface lifecycle contributions. Each contribution is implemented and tested
-with the domain or explicitly deferred to one exact owner. Late workspace, API,
-transfer, search, lifecycle, and recovery stops only compose, generate, freeze,
-and certify complete contributions; they cannot add missing domain behavior.
+From `0.30.23`, each domain has one stable `DomainManifest` keyed by dedicated
+`DomainId`, owning crate, requirement set, application command/read schema IDs,
+classifications, and typed extension references. It never embeds another
+registry's semantics. `0.30.24` resolves references to exact authoritative IDs
+and atomically activates complete compatible generations; `0.30.25` governs
+bounded deferrals and product-state effects. Tenant lifecycle references begin
+only after `0.51.2`, authorization after Phase F, workflow after Phase G, search
+after Phase J, workspace after its block vocabulary, and API/transfer after
+their Phase N contracts. Each surface stop defines and backfills its typed
+extension, then a separate stop certifies it. Late certification cannot add
+missing domain behavior, and no Supported/RC/`1.0.0` profile may carry an
+unresolved required deferral.
 Optional federation, AI, vendor-connector, plugin-storefront, and semantic-index
 crates depend inward on stable ports. The kernel and first-party domains must
 build, test, and operate without any optional product family.
@@ -1196,6 +1204,7 @@ the same process.
 - [Product And Production Scope Splits (`0.70.1–0.149.3`)](implementation/SCOPE_SPLITS_PRODUCT_PRODUCTION.md)
 - [Focused Product Capability Completions (`0.20.4–0.140.27`)](implementation/PRODUCT_CAPABILITY_COMPLETIONS.md)
 - [Requirement Ownership And Product Integration Completions (`0.18.14–0.145.3`)](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md)
+- [Roadmap Coherence Completions (`0.18.15–0.140.28`)](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
 - [Phase O — Production Hardening (`0.141.0–0.150.0`)](implementation/PHASE_O.md)
 - [`1.0.0` — Production Acceptance](implementation/PRODUCTION_1_0.md)
 

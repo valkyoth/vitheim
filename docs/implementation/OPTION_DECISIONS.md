@@ -4,7 +4,9 @@ Scope: primary decisions `0.140.1–0.140.11`; focused refinements
 `0.140.12–0.140.26` live in
 [Product And Production Scope Splits](SCOPE_SPLITS_PRODUCT_PRODUCTION.md), and
 the independent full-suite support/defer decision `0.140.27` lives in
-[Focused Product Capability Completions](PRODUCT_CAPABILITY_COMPLETIONS.md).
+[Focused Product Capability Completions](PRODUCT_CAPABILITY_COMPLETIONS.md),
+and the minimum Hosted production go/no-go `0.140.28` lives in
+[Roadmap Coherence Completions](ROADMAP_COHERENCE_COMPLETIONS.md).
 Together these evidence-producing releases revalidate and
 freeze production profiles from version-bound implementation-admission records
 created at each first consuming milestone. They are never the first dependency,

@@ -31,15 +31,27 @@ require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     'owner policy selects repository-wide dependency-free or' \
     'early dependency-law support decision'
-require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
-    'no domain receives its first service, DTO, error, or resource' \
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    'certifier creates no service, DTO, route, or error mapping' \
     'application services precede external API freeze'
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     '0.120.8` — Late-Domain Authorization Registration' \
     'chronological late-domain integration'
 require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
-    '0.30.23` — Domain Surface Contribution Contract' \
-    'domain-owned surface contribution contract'
+    '0.30.23` — Stable Domain Manifest Core' \
+    'stable domain manifest core'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    '0.30.24` — Contribution Reference And Generation Safety' \
+    'contribution composition and version safety'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    '0.30.25` — Contribution Deferral And Product-State Gates' \
+    'bounded contribution deferral'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    '0.51.3` — Tenant-Surface Reference Extension And Backfill' \
+    'authoritative tenant-surface references'
+require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
+    '0.140.28` — Minimum Hosted Production Profile Go/No-Go' \
+    'hosted production feasibility gate'
 require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
     'registration or handler is first added here' \
     'lifecycle stop is certification only'
