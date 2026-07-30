@@ -1,6 +1,8 @@
 # Vitheim Implementation Plan
 
-Status: complete planning baseline from `0.1.0` through `1.0.0`
+Status: architectural planning superset from `0.1.0` through `1.0.0`; selected
+execution is governed by the
+[Implementation Convergence Plan](IMPLEMENTATION_CONVERGENCE_PLAN.md)
 
 This index turns the [release ladder](RELEASE_PLAN.md) into implementation
 handoffs. Every milestone has its own status, setup, goal, deliverables,
@@ -15,6 +17,12 @@ reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
 law, production-profile boundary, and protocol-specification extraction rules
 are in [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
+The 425-stop catalog is not a serial-all-features production critical path.
+`1.0.0` consumes the transitive closure of the selected mandatory core and any
+separately selected optional profile. Unselected stops remain explicitly
+Specified, deferred, Conditional, or Unsupported and cannot broaden release
+claims. A skipped old stop cannot be backfilled later under its old release
+identity; future implementation receives a successor version.
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
 small-loop rule to every stop, assigns 65 decomposition companions to the 18
 families that exceeded it, and records 109 later focused capability,
@@ -59,6 +67,12 @@ resolution. `0.140.28` is the mandatory Hosted production go/no-go: if safe
 dependency-free TLS/crypto, storage, identity/session, hostile-input handling,
 packaging, operations, and recovery evidence is incomplete, a Hosted `1.0.0`
 claim remains blocked rather than silently shrinking its meaning.
+Before affected Hosted contracts freeze, the same early feasibility dossier
+records the first single-node process/TCB topology and exact PostgreSQL,
+SQLite, HTTP/TLS, OIDC/WebAuthn, cryptography, MIME, Wasm, UI-build, KMS, and
+observability technology disposition as safely project-owned or Unsupported.
+Late `0.140.x` stops revalidate selected evidence; they never make the first
+technology or topology choice.
 Every user-facing capability is API-first: API contract/application/transport
 crates remain separate from UI composition/rendering crates, and the first-
 party UI has no privileged command, repository, or database path.

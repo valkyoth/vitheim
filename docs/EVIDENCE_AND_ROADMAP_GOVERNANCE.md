@@ -59,6 +59,14 @@ The roadmap contains exactly **425 independently pentestable release stops**:
 
 `150 base 0.x.0 stops + 274 companion stops + 1 production stop = 425`.
 
+This is the architectural/evidence superset, not a serial mandate that all 424
+pre-production capabilities become Supported before `1.0.0`. The
+[Implementation Convergence Plan](IMPLEMENTATION_CONVERGENCE_PLAN.md) selects
+the mandatory core and integration increments. Production consumes that
+profile's complete transitive dependency/evidence closure plus any optional
+profile explicitly selected for the candidate. Unselected entries remain
+discoverably non-shipping and cannot satisfy or broaden a core claim.
+
 The public `.0` skeleton still contains 151 base stops when `1.0.0` is
 included. “151 base stops” and “425 exact release stops” describe different
 views and must always be qualified. The phrases “151 phases,” “225
@@ -73,10 +81,11 @@ roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
 verified from the same manifest. A count mismatch is a release blocker.
 
-Owner policy requires a pentest at every exact stop. The audit recommendation
-to reduce that requirement is not adopted. Scope and depth remain proportional
-to the change, but no stop may silently relabel a review, scan or regression
-run as the required pentest.
+Owner policy requires a pentest whenever an exact stop is implemented/tagged.
+The audit recommendation to weaken that per-stop requirement is not adopted.
+Scope and depth remain proportional to the change, but no implemented stop may
+silently relabel a review, scan or regression run as the required pentest.
+A deferred/Unsupported stop has no passing pentest and grants no capability.
 
 ## First-Implementation And Production-Profile Law
 
@@ -100,7 +109,8 @@ If policy changes in the future, N0/N1 remain dependency-free, Hosted admits
 only exact allowlisted dependencies behind project-owned ports, and no
 third-party type may cross an inward-facing API.
 
-The default `1.0.0` candidate set is intentionally narrow:
+The selected `1.0.0` core is the ITSM/SecOps/asset/workflow profile defined by
+the convergence plan. Its storage and extension set is intentionally narrow:
 
 - in-memory semantics, SQLite single-node and PostgreSQL HA may become default
   storage profiles;

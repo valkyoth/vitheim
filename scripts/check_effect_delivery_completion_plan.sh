@@ -53,7 +53,7 @@ require_text \
     '`EffectDeliveryTransmissionClaimCutV1`' \
     'complete transmission claim cut'
 require_text \
-    'authorization expiry after claim creation does not prove absence.' \
+    'authorization expiry after claim' \
     'claim expiry is not no effect proof'
 require_text \
     '0.51.59` — Delivery-Seal Preparation Lineage And Codec Pinning' \

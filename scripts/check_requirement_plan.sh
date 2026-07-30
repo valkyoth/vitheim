@@ -490,6 +490,7 @@ require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
 
 sh scripts/check_requirement_lowering_plan.sh
 sh scripts/check_effect_delivery_completion_plan.sh
+sh scripts/check_implementation_convergence_plan.sh
 
 if [ "$failed" -ne 0 ]; then
     exit 1

@@ -19,6 +19,15 @@
 - One canonical roadmap manifest accounts for all 425 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
+- The roadmap is a planning superset. `1.0.0` consumes only the complete
+  transitive closure of the selected mandatory core and explicitly selected
+  optional profiles; every unselected stop remains visibly non-shipping and
+  grants no claim.
+- The first Hosted architecture proof is the persistent OIDC/policy/PostgreSQL
+  incident slice in the
+  [Implementation Convergence Plan](IMPLEMENTATION_CONVERGENCE_PLAN.md).
+  Every Supported deployment publishes numeric workload, recovery, and refusal
+  limits beginning with that slice.
 
 ## Repository Baseline
 

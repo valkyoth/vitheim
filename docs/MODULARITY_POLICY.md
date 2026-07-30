@@ -57,6 +57,19 @@ is incremental and must prove semantic equivalence; it cannot delete or weaken
 the detailed source ledger. See
 [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md).
 
+Migration progress, untrusted import staging, activation/cutover, integrity,
+evidence custody, capacity/quota, external witness observation, corruption
+recovery, and retirement coordination are separate authority families. One
+deployable may compose them, but no aggregate, state enum, repository, or
+process manager may absorb their internal states. Coordinators persist only
+their own expected-version progress plus immutable child request/receipt
+references. Cross-owner response loss is reconciled through authenticated
+status, never a cross-store transaction or copied child authority.
+
+The 425 roadmap IDs are not permission to build a 425-step serial monolith.
+The selected execution/profile overlay is
+[Implementation Convergence Plan](IMPLEMENTATION_CONVERGENCE_PLAN.md).
+
 ## Testing Boundary
 
 Each crate owns unit tests for its invariants. Cross-crate behavior uses

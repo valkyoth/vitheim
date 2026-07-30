@@ -3120,10 +3120,12 @@ rollback, dual-current source or unreviewed reset.
 Deliverables: define `PhysicalEffectStatusAuthorityContinuityV1` binding
 tenant, profile/owner scope, immutable non-wrapping continuity generation,
 predecessor identity/digest, one expected-version current head and
-`Active → SuccessorPrepared → HandoffFenced → SuccessorActive`, with `Aborted`
-allowed only before `HandoffFenced`. Preparation is non-authoritative. The
-fenced/active edges are schema-only until `0.51.56` supplies authenticated
-local fence, admission and activation receipts.
+`Active → SuccessorPrepared → HandoffFenced →
+SuccessorActivationPending → SuccessorActive`, with `Aborted` allowed only
+before `HandoffFenced`. Preparation and activation-pending state are
+non-authoritative. The fenced/activation-pending/active edges are schema-only
+until `0.51.56` supplies authenticated local fence, admission, activation and
+activation-applied receipts.
 The predecessor emits an authenticated final sequence/root receipt; the
 successor emits a genesis receipt binding that final root and a baseline not
 below its high-watermark. If numeric sequence continuity is impossible,
@@ -3133,25 +3135,32 @@ handoff fence prevents predecessor and successor from both issuing current
 authoritative receipts. Independently authorized separation-of-duties approval
 binds the exact receipts, profiles, continuity identities/generations,
 routing, restriction/incident epochs and expiry.
-The final expected-version handoff CAS consumes the approval/receipts,
-activates one successor, permanently tombstones predecessor issuance and
-advances current head/ratchets with audit/outbox/result. Response loss joins
-that result. Until it commits, the predecessor alone remains supported when
-still valid; otherwise the profile is `Refused` and unresolved. Restore/import
-requires the greatest handoff/current head and cannot resurrect a predecessor
-or derive authority from prepared state. Once fenced, a failed successor can
-only be replaced or permanently refused through `0.51.57`; the predecessor
-never reactivates.
+The first expected-version handoff CAS consumes the approval/fence/admission
+receipts, permanently tombstones predecessor issuance and advances the head to
+`SuccessorActivationPending` with audit/outbox/result. The successor is not
+reported operational and cannot issue until `0.51.56` proves its local
+activation was applied. Only a later Vitheim fold of that exact authenticated
+applied receipt advances the current head/ratchets to `SuccessorActive`.
+Response loss joins either stable result. Before fencing, the predecessor
+alone remains supported when still valid; after fencing, the profile is
+`Refused` until exact successor activation completes. Restore/import requires
+the greatest handoff/current head and cannot resurrect a predecessor or derive
+authority from prepared or activation-pending state. Once fenced, a failed
+successor can only be replaced or permanently refused through `0.51.57`; the
+predecessor never reactivates.
 Verification: old/new source race, delayed predecessor receipt, two successors,
 self/stale approval, receipt/profile/scope substitution, aborted preparation,
-abort after fence, handoff response loss, clone from final snapshot, lower
-successor baseline, numeric namespace restart without generation, route or
-restriction/incident-epoch movement, restore during every state, predecessor
-resurrection and prepared-state authority pass.
+abort after fence, handoff response loss, missing/forged activation-applied
+receipt, operational reporting before applied-receipt fold, clone from final
+snapshot, lower successor baseline, numeric namespace restart without
+generation, route or restriction/incident-epoch movement, restore during every
+state, predecessor resurrection and prepared/activation-pending authority
+pass.
 Exit criteria: every legitimate status-authority replacement has exactly one
 current continuity head and authenticated predecessor-to-successor handoff;
-unexpected change, uncertainty or incomplete handoff remains refused and
-restrictively unresolved.
+successor activity is reported only after the exact local activation-applied
+receipt is folded; unexpected change, uncertainty or incomplete handoff
+remains refused and restrictively unresolved.
 `v0.51.53 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.51.54` — Authorization Dispatch-Attempt Ledger
@@ -3286,10 +3295,17 @@ Define `AdmitPhysicalStatusSuccessorGenesis`. One successor-local CAS binds the
 authenticated predecessor root/fence receipt into a dormant admission row and
 returns `PhysicalStatusSuccessorAdmissionReceiptV1`. Dormant admission cannot
 issue authoritative status. The `0.51.53` final CAS consumes both local
-receipts and the exact approval, advances one current continuity head,
-tombstones predecessor and losing successors, and emits a
+receipts and the exact approval, advances the current continuity head to
+`SuccessorActivationPending`, tombstones predecessor and losing successors,
+and emits a
 `PhysicalStatusSuccessorActivationReceiptV1`. One successor-local activation
-CAS must consume that exact receipt before issuance.
+CAS must consume that exact receipt, durably enable issuance and return an
+authenticated `PhysicalStatusSuccessorActivationAppliedReceiptV1`. Only a
+later Vitheim expected-version fold of that exact applied receipt advances
+`0.51.53` to `SuccessorActive` and permits the successor to be reported
+operational. A command-status query returns the stable applied receipt after
+response loss; absence, ambiguity or authentication failure remains
+activation-pending and refused.
 Every side commits its transition, audit and authenticated outbox atomically;
 the receiver imports through a durable idempotent inbox. Response loss queries
 the stable command/receipt status and never reissues a fence, admission or
@@ -3300,12 +3316,15 @@ and Vitheim continuity heads and refuses any side whose authenticated history
 is unavailable.
 Verification: suppressed fence delivery, forged/substituted fence receipt,
 predecessor emission after fence, successor issuance before activation,
-activation-response loss, competing successor admission, activation/fence
-message reorderings, duplicate commands with changed material, inbox rollback,
-local transaction response loss and restore between every boundary pass.
+activation-response loss, missing/forged/substituted activation-applied
+receipt, operational reporting before the applied-receipt fold, competing
+successor admission, activation/fence message reorderings, duplicate commands
+with changed material, inbox rollback, local transaction response loss and
+restore between every boundary pass.
 Exit criteria: predecessor fence, dormant successor admission and successor
-activation are distinct authenticated local atomic transitions; no remote side
-can issue current status between them, and uncertainty grants no authority.
+activation/application/final fold are distinct authenticated local atomic
+transitions; no remote side can issue or be reported current between them, and
+uncertainty grants no authority.
 `v0.51.56 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.51.57` — Post-Fence Status-Successor Recovery
@@ -3322,13 +3341,24 @@ reactivating it, recycling the failed successor or manufacturing continuity.
 Deliverables: implement
 `HandoffFenced → HandoffRecoveryRequired →
 ReplacementSuccessorPrepared → SuccessorActive | PermanentlyRefused`.
-The transition into recovery permanently tombstones the failed successor and
-invalidates its unconsumed approval/activation authority. One expected-version
-head permits one replacement candidate at a time. Each candidate reuses only
-the authenticated predecessor final root/fence receipt and allocates fresh
-continuity generation/identity, approval, dormant genesis, capacity, immutable
-attempt/work budget and idempotency namespace. It cannot lower the predecessor
-high-watermark, refund work or reuse failed material.
+Before that transition may admit a replacement, define idempotent
+`FenceFailedPhysicalStatusSuccessor`. One failed-successor-local CAS advances a
+non-wrapping failed-successor fence generation, blocks every issuance and
+activation path and returns authenticated
+`PhysicalStatusFailedSuccessorFenceReceiptV1` binding tenant/scope, failed
+continuity/admission/activation identities, local authority/profile and fence
+generation. Exact retry joins; changed material conflicts. The Vitheim
+recovery CAS must consume that exact receipt, permanently tombstone the failed
+successor and invalidate its unconsumed approval/activation authority before
+one replacement candidate can exist. If the failed successor cannot be
+contacted, authenticated or fenced, recovery cannot prove sole authority and
+enters absorbing `PermanentlyRefused`; loss of the failed authority is not a
+no-effect proof. One expected-version head permits one replacement candidate
+at a time. Each candidate reuses only the authenticated predecessor final
+root/fence receipt and allocates fresh continuity generation/identity,
+approval, dormant genesis, capacity, immutable attempt/work budget and
+idempotency namespace. It cannot lower the predecessor high-watermark, refund
+work or reuse failed material.
 Replacement preparation and activation reuse the `0.51.56` dormant-admission
 and authenticated activation receipts. Separation-of-duties recovery authority
 binds the exact failed and replacement generations, cause, current routing/
@@ -3342,12 +3372,16 @@ recovery-budget and candidate heads and can never restore predecessor or a
 failed successor.
 Verification: successor loss after every boundary, approval expiry after
 fence, source/successor key distrust, two recovery candidates, stale recovery
-approval, response loss, exact last budget unit, budget exhaustion, replacement
-baseline rollback, restore during every recovery state and attempted
-predecessor/failed-successor resurrection pass.
+approval, failed-successor fence response loss, forged/substituted failed-
+successor fence receipt, replacement admission before failed-successor fence,
+unreachable or unauthenticated failed successor, response loss, exact last
+budget unit, budget exhaustion, replacement baseline rollback, restore during
+every recovery state and attempted predecessor/failed-successor resurrection
+pass.
 Exit criteria: every post-fence failure either activates one fresh authenticated
 replacement or remains permanently refused; predecessor and failed successor
-authority stay irreversibly fenced and all work remains cumulatively bounded.
+authority are proven irreversibly fenced before replacement admission, and all
+work remains cumulatively bounded.
 `v0.51.57 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.51.58` — Transmission-Claim Closure Interlock And Conformance
@@ -3369,9 +3403,19 @@ the socket-owning executor, and exact `DefinitelyNotStarted`, `OutcomeUnknown`
 or `StartClaimedReconciling` outcomes. No alternate release-effect permit,
 retry or failover path exists.
 Define `EffectDeliveryTransmissionClaimCutV1` over every claim/current result,
-greatest claim/result/outbox head and reconciliation evidence. Sealing first
-prevents new claims, then waits until no permit may be live. Permit or
-authorization expiry after claim creation does not prove absence.
+greatest claim/result/outbox head and reconciliation evidence, with the
+single authoritative claim-admission state
+`ClaimAdmissionOpen → ClaimAdmissionSealing → ClaimAdmissionSealed`.
+Every transmission-claim CAS locks the same admission row, requires
+`ClaimAdmissionOpen`, durably charges the attempt and creates the claim in one
+atomic transition. The sealing CAS locks that row, advances it to
+`ClaimAdmissionSealing` and thereby prevents every later claim before it
+examines live permits or claim dispositions. A concurrent claim and seal have
+one database serialization winner: the claim is included in the cut or it is
+rejected without charge or permit. Sealing reaches `ClaimAdmissionSealed` only
+after no permit may be live and every admitted claim has a terminal or
+conservatively owned disposition. Permit or authorization expiry after claim
+creation does not prove absence.
 `OutcomeUnknown` and `StartClaimedReconciling` remain blocking until an
 authenticated provider/authority result proves definitely no effect, the exact
 effect receipt is folded, or the conservative conflict path owns the unresolved
@@ -3384,10 +3428,12 @@ Verification: seal versus claim at prevalidation, claim CAS, permit delivery,
 socket acquisition/write, write-response loss, return to application control
 and permit expiry; executor crash/failover, lease loss, credential revocation,
 remote receipt import, forged no-effect result, omitted claim, claim/result
-head rollback and restore at every point pass.
+head rollback, claim created after `ClaimAdmissionSealing`, two concurrent
+final claims versus sealing and restore at every point pass.
 Exit criteria: release-effect dispatch has exactly one platform transmission
-boundary, and delivery closure is impossible while any claim may still produce
-or conceal a physical effect.
+boundary and one atomic open/sealed claim-admission cut; delivery closure is
+impossible while any admitted claim may still produce or conceal a physical
+effect.
 `v0.51.58 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.51.59` — Delivery-Seal Preparation Lineage And Codec Pinning
@@ -3405,11 +3451,26 @@ Deliverables: define intent-scoped
 `EffectDeliverySealPreparationLineageV1` with one expected-version current
 head, one active generation, predecessor links, stable preparation/disposition
 IDs and immutable non-wrapping cumulative restart/work/row/byte/time maxima.
+Its lifecycle is
+`SealPreparationOpen → SealPreparationActive →
+SealPreparationExhausted → SealRecoveryRequired →
+SealPublished | SealPermanentlyUnresolved`.
 Exact identity/material retry joins; changed material conflicts. A stale
 issuance, budget, dispatch, claim, conflict, codec, schema or profile head
 terminally enters `SealBundleDiscarded` before one successor generation may be
 admitted. Discard never refunds work; exhaustion remains visibly unsealed and
-enters protected reconciliation.
+enters `SealPreparationExhausted` and then protected
+`SealRecoveryRequired`. Exhaustion never resets an ordinary generation,
+counter, byte/work maximum or idempotency namespace. Admission reserves one
+exact, independently authorized terminal recovery action before ordinary
+preparation begins. That action may publish only the currently pinned,
+already-admitted direct/bundle closure using the retained codec/schema/backend
+profile, or record `SealPermanentlyUnresolved` with the conservative
+restriction and evidence-retention obligation. It cannot admit another
+ordinary preparation generation, widen the original bundle or synthesize
+capacity. An intent remains nonterminal until `SealPublished`;
+`SealPermanentlyUnresolved` is a truthful supported operational block, never a
+successful delivery closure.
 Admission reserves terminalization and cleanup capacity before preparation.
 Discarded or published staging rows remain covered by a greatest checkpoint
 and authenticated archive root before physical deletion; cleanup is
@@ -3427,10 +3488,14 @@ identity/material conflict, cleanup before checkpoint, live-reference deletion,
 restore with partial discarded generations, codec expansion under one backend
 profile, schema migration during preparation, size-algorithm substitution,
 old decoder removal, profile reduction with live intent and final CAS against
-different codec/schema/profile generations pass.
+different codec/schema/profile generations, exhaustion followed by ordinary
+counter/idempotency reset, duplicate terminal recovery, recovery widening,
+publication without retained pinned support and unresolved state mislabeled
+closed pass.
 Exit criteria: each intent has one finite preparation lineage and one pinned,
 replayable admission encoding contract; stale work is terminally accountable,
-cleanup preserves history and evolution cannot invalidate bounded closure.
+exhaustion has exactly one bounded truthful recovery outcome, cleanup
+preserves history and evolution cannot invalidate bounded closure.
 `v0.51.59 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.4` — Domain Retirement And Historical Compatibility Certification

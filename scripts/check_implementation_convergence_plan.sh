@@ -1,0 +1,94 @@
+#!/usr/bin/env sh
+set -eu
+
+failed=0
+
+require_text() {
+    file="$1"
+    expected="$2"
+    label="$3"
+    if ! grep -Fq "$expected" "$file"; then
+        echo "implementation convergence: missing semantic anchor '$label' in $file" >&2
+        failed=1
+    fi
+}
+
+plan=docs/IMPLEMENTATION_CONVERGENCE_PLAN.md
+
+require_text "$plan" \
+    'repository-wide prohibition on third-party Cargo code' \
+    'owner dependency policy'
+require_text "$plan" \
+    'planning/evidence superset, not a requirement to' \
+    'non-serial roadmap interpretation'
+require_text "$plan" \
+    'Selected Production-v1 Capability Contract' \
+    'selected production core'
+require_text "$plan" \
+    'Persistent Authenticated Incident Proof' \
+    'early real vertical slice'
+require_text "$plan" \
+    'PostgreSQL is the reference production backend' \
+    'PostgreSQL reference profile'
+require_text "$plan" \
+    'SQLite is a separately evidenced bounded single-node/local profile' \
+    'bounded SQLite profile'
+require_text "$plan" \
+    'Explicit Product Boundaries' \
+    'explicit non-goals'
+require_text "$plan" \
+    'Dynamic built-in-domain retirement/reinstall' \
+    'advanced retirement default refusal'
+require_text "$plan" \
+    'MinimumProfileWorkloadEnvelopeV1' \
+    'quantitative workload envelope'
+require_text "$plan" \
+    'Authority Decomposition' \
+    'independent authority ownership'
+require_text "$plan" \
+    'Existing Late-Protocol Corrections' \
+    'existing-version corrections'
+require_text "$plan" \
+    'Stopping Rule' \
+    'finite planning stop rule'
+
+require_text docs/IMPLEMENTATION_PLAN.md \
+    'transitive closure of the selected mandatory core' \
+    'canonical selected closure'
+require_text docs/implementation/PRODUCTION_1_0.md \
+    'selected core'\''s complete transitive' \
+    'production selected closure'
+require_text docs/implementation/PRODUCTION_1_0.md \
+    'not select dynamic built-in-domain retirement/reinstall' \
+    'production retirement refusal'
+require_text docs/implementation/PHASE_C.md \
+    'selected core production path implements PostgreSQL first' \
+    'Phase C PostgreSQL-first order'
+require_text docs/implementation/PHASE_C.md \
+    'backend migration is Unsupported by default' \
+    'Phase C migration boundary'
+
+authority=docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md
+
+require_text "$authority" \
+    'PhysicalStatusSuccessorActivationAppliedReceiptV1' \
+    'successor activation applied receipt'
+require_text "$authority" \
+    'PhysicalStatusFailedSuccessorFenceReceiptV1' \
+    'failed successor local fence'
+require_text "$authority" \
+    'ClaimAdmissionOpen → ClaimAdmissionSealing → ClaimAdmissionSealed' \
+    'atomic claim admission cut'
+require_text "$authority" \
+    'SealPermanentlyUnresolved' \
+    'non-resetting seal exhaustion result'
+
+require_text docs/ROADMAP_GAP_DISPOSITIONS.md \
+    'Consolidated 2026-07-30 Review' \
+    'consolidated finding dispositions'
+
+if [ "$failed" -ne 0 ]; then
+    exit 1
+fi
+
+echo "implementation convergence: ok"

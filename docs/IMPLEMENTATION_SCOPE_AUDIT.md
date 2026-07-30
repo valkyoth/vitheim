@@ -122,12 +122,30 @@ and [Roadmap Authority And Recovery Completions](implementation/ROADMAP_AUTHORIT
 | `0.146.0` performance certification | Load harness and ceilings | `0.146.1–0.146.2` | Soak/fairness and chaos/recovery are different evidence sets |
 | `0.149.0` pentest remediation | Finding intake and ownership | `0.149.1–0.149.3` | Authority, data/recovery, and integration findings require separate remediation and retest waves |
 
-## Stops That Passed
+## Stop IDs Are Not Size Certificates
 
-Every other exact stop passed the current sizing review because it has one
-dominant domain/adapter/decision owner and one coherent primary test boundary.
-This is not a permanent exemption. New threat-model detail, authority changes,
-schema work, provider admission, or recovery scope triggers the small-loop rule
-again before implementation. The roadmap checker verifies all 425 headings,
-required handoff fields, authority dispositions, and exact-commit pentest
-markers; count drift blocks release.
+The earlier audit classified every remaining exact stop as having a dominant
+owner, but the consolidated review found that several cumulative Phase C and
+retirement specifications still describe multiple child authorities in one
+logical protocol. The 425 IDs remain stable requirement/evidence owners; their
+existence is not proof that one implementation PR, crate, state machine, or
+process should contain all surrounding prose.
+
+Before implementation, every stop must extract a focused protocol package and
+pass a fresh authority/test-boundary audit. Migration progress, import staging,
+activation, integrity, evidence custody, capacity, witness observation,
+corruption recovery, and retirement coordination remain separate owners joined
+only by immutable requests/receipts and local idempotent folds. A coordinator
+cannot copy child state machines or add cross-concern fields merely because the
+phase ledger discusses them together.
+
+The [Implementation Convergence Plan](IMPLEMENTATION_CONVERGENCE_PLAN.md)
+prevents further numbering growth for acceptance details and makes dynamic
+domain retirement plus generalized backend migration optional profiles rather
+than default-v1 blockers. New numbering is reserved for a genuinely missing
+independent authority or implementation boundary.
+
+New threat-model detail, authority changes, schema work, provider admission, or
+recovery scope still triggers the small-loop audit before code. The roadmap
+checker verifies all 425 headings, required handoff fields, authority
+dispositions, and exact-commit pentest markers; count drift blocks release.

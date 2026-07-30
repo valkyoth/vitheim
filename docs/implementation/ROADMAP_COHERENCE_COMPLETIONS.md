@@ -38,17 +38,24 @@ Setup: inventory each planned Hosted primitive and adapter against Rust `std`
 capabilities, including TLS, cryptography, databases, OIDC/WebAuthn/SAML,
 MIME, and the Wasm component runtime; bind its first implementation stop,
 project-owned port, safe implementation evidence, and support/defer consequence.
+Before affected API/schema/adapter contracts freeze, also inventory the exact
+HTTP server/client, PostgreSQL/SQLite access, browser/UI build, KMS and
+observability needs and the first single-node process/TCB boundaries.
 Goal: resolve infeasible Hosted work before the first affected implementation,
 while preserving the repository-wide prohibition on third-party Cargo code.
 Deliverables: capability-to-technology feasibility matrix, earliest-owner
 report, decision record materializing the selected zero-dependency option,
+bounded compile/runtime/target/license/maintenance spikes, first single-node
+topology and trusted-process/data-flow diagram, mandatory-core and explicit
+non-goal profile, exact safely-project-owned-or-Unsupported dispositions,
 explicit unsupported/deferred gates, and a change protocol requiring a new
 owner-approved exact roadmap decision before any future policy amendment can
 unblock an affected adapter.
 Verification: hidden transitive/native dependency, improvised crypto/protocol,
 adapter work preceding its decision, admission-record-as-exception, unsupported
-feature advertised as active, N0/N1 contamination, and stale `0.140.14`
-revalidation pass.
+feature advertised as active, first API/schema freeze without a technology
+disposition, topology/TCB first chosen in Phase O, N0/N1 contamination, and
+stale `0.140.14` revalidation pass.
 Exit criteria: every affected Hosted milestone is either backed by an audited
 dependency-free project implementation or is visibly blocked/deferred; no
 roadmap text, admission record, or adapter can silently relax the dependency law.
@@ -482,11 +489,15 @@ staged, policy-filtered, and separately activated; the certifier adds no codec.
 Status: planned; failure blocks a Hosted `1.0.0` production claim.
 Setup: consume `0.18.16` feasibility outcomes and frozen transport/crypto/KMS,
 storage, identity/session, hostile-input, packaging, operational, recovery, and
-exact-commit evidence; distinguish mandatory Hosted baseline from optional features.
+exact-commit evidence; consume the selected mandatory ITSM/SecOps/asset/workflow
+core and its versioned quantitative workload envelope, and distinguish it from
+optional features.
 Goal: ensure repository-wide zero dependencies produce either a safe deployable
 minimum profile or an explicit no-go, never misleading production wording.
 Deliverables: mandatory Hosted capability matrix, exact supported/conditional/
-unsupported results, blocker ledger, product/installer/API/UI claim gates, and decision.
+unsupported results, selected-profile transitive-stop/evidence closure,
+quantitative envelope and explicit product-boundary differential, blocker
+ledger, product/installer/API/UI claim gates, and decision.
 Verification: TLS/crypto/storage/identity/input/runtime omission, planned-as-
 supported evidence, unsafe project implementation, optional-as-mandatory
 confusion, hidden installer path, documentation drift, and gate bypass pass.

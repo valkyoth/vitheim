@@ -16,6 +16,11 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
+The [Implementation Convergence Plan](IMPLEMENTATION_CONVERGENCE_PLAN.md)
+defines the selected production critical path and integration increments. This
+release ladder remains the complete capability/evidence catalog; optional or
+Unsupported stops are not silently converted into mandatory `1.0.0`
+prerequisites.
 The canonical roadmap contains 425 exact stops: 150 base `0.x.0` stops, 274
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
@@ -955,13 +960,13 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.51.50` | Seal the sole issued-authorization universe, terminally dispose unused budget legs and consume delivery closure with conflict/budget heads | Issue/seal race, candidate/issued substitution, invented non-issued member, unresolved outbox/inbox, unused reservation refund/omission, stale closure |
 | `0.51.51` | Profile-gated ABA-resistant physical status authority plus create-or-join incident ownership, with manual evidence forbidden from lowering unresolved identity | Snapshot/manual certainty, remove/recreate ABA, forged custody, sequence invention, false capability claim, duplicate incident/charge/owner |
 | `0.51.52` | No-effect disposition plus stable route reservations, immutable cumulative lifetime budget, explicit exhaustion and funded replanning | Reservation omission/reuse/refund, issue without consumption, dead destination, uncertain delivery, budget reset/overflow, unauthorized widening |
-| `0.51.53` | Governed status-continuity generation/head and schema, gated on remote receipt semantics and post-fence recovery | Database/connector/region/rekey migration, old/new race, clone/rollback, lower baseline, namespace restart, predecessor resurrection |
+| `0.51.53` | Governed status-continuity generation/head with non-authoritative activation-pending state, gated on remote applied-receipt semantics and post-fence recovery | Database/connector/region/rekey migration, old/new race, clone/rollback, lower baseline, missing/forged applied receipt, early operational report, predecessor resurrection |
 | `0.51.54` | Prepaid dispatch ledger realized through the canonical VIT-LAW-006 charge/start claim and trusted-executor permit | Crash before/after claim/send, ambiguous permit delivery, two publishers, failover reset, exhaustion, counter/claim rollback |
 | `0.51.55` | Backend-profiled bounded delivery-seal bundle, intent/replan preflight and authority-inert staging gated on finite lineage | Maximum-plus-one, encoded expansion, partial stage, profile reduction, transaction rejection, backend without final atomic CAS |
-| `0.51.56` | Receipt-driven predecessor-local status fence, dormant successor admission and exact activation | Suppressed/forged/reordered receipts, predecessor issue after fence, successor issue before activation, response loss, competing successor |
-| `0.51.57` | Finite post-fence recovery with failed-successor tombstone, fresh bounded replacement or permanent refusal | Successor loss at each boundary, approval expiry, distrust, two replacements, budget exhaustion, restore, predecessor resurrection |
-| `0.51.58` | Release-effect realization of VIT-LAW-006 plus complete transmission-claim cut consumed by closure | Seal versus claim/permit/socket write, executor crash, lease/credential loss, remote receipt import, forged no-effect result |
-| `0.51.59` | Intent-scoped bounded seal-preparation lineage with archive-safe cleanup and pinned codec/schema/profile | Stale-root exhaustion, two preparers, premature cleanup, codec expansion, schema migration, decoder removal, size-algorithm substitution |
+| `0.51.56` | Receipt-driven predecessor fence, dormant successor admission, successor-local activation-applied receipt and final Vitheim operational fold | Suppressed/forged/reordered receipts, predecessor issue after fence, successor issue or operational report before applied fold, response loss, competing successor |
+| `0.51.57` | Finite post-fence recovery with authenticated failed-successor local fence before fresh bounded replacement or permanent refusal | Successor loss at each boundary, failed authority unreachable, forged fence receipt, replacement-before-fence, approval expiry, distrust, budget exhaustion, restore |
+| `0.51.58` | Release-effect realization of VIT-LAW-006 plus one atomic open/sealed claim-admission cut consumed by closure | Claim versus seal serialization, permit/socket-write race, post-sealing claim, executor crash, lease/credential loss, forged no-effect result |
+| `0.51.59` | Intent-scoped bounded seal-preparation lineage with non-resetting exhaustion recovery, archive-safe cleanup and pinned codec/schema/profile | Stale-root exhaustion, counter/idempotency reset, duplicate or widening recovery, premature cleanup, codec/schema/profile drift, false closed outcome |
 | `0.52.0` | Subjects, service principals, independent external-identity mapping epochs, and law-generation expansion | Activate `VIT-LAW-001` g04/`VIT-LAW-006` g03; principal/mapping revocation racing dispatch, unsafe linking, immutable issuer-subject identity, epoch reuse, recreation |
 | `0.52.1` | OAuth resource-server workload authentication, mapping epoch, and law-generation expansion | Activate `VIT-LAW-001` g05/`VIT-LAW-006` g04; workload remap/revoke race, stale external privileged fact, false sender constraint, bearer escalation, issuer/audience confusion |
 | `0.53.0` | Hosted OIDC integration, independent interactive-session epoch, and law-generation expansion | Activate `VIT-LAW-001` g06/`VIT-LAW-006` g05; discovery, mix-up, replay, downgrade, fixation, logout/assurance racing dispatch |

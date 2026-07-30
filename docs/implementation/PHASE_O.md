@@ -353,10 +353,13 @@ RecordedTimeAuthorityRatchet with a conservative commit-cut interval
 and derives the complete nonempty EventCommitChain from the target-bound
 predecessor before persisting the descriptor-to-envelope map. Zero-event
 domain work rejects; control/no-aggregate binds CanonicalNoDomainEventChain.
-The exact SQLite, PostgreSQL, MySQL, MongoDB and SurrealDB profiles must prove
-native authenticated commit evidence, a backend hard fence or formally
-equivalent attestation; start/insert/client time fails and disables domain
-support. Every Phase B/C local writer declares the active
+Every exact storage profile selected for the candidate must prove native
+authenticated commit evidence, a backend hard fence or formally equivalent
+attestation; start/insert/client time fails and disables domain support.
+PostgreSQL is the default production selection and SQLite is a separately
+bounded single-node/local selection. MySQL, MongoDB, and SurrealDB have no
+production obligation unless an exact independently passing profile is
+explicitly selected. Every Phase B/C local writer declares the active
 GlobalTransactionLockRankCatalogV1 generation and preserves its subset from
 recovery/authority guards through fences, quota/uniqueness, command/claim/
 proposal, structurally sorted payload lifecycle, ratchet, aggregate/journal and

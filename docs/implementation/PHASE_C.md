@@ -5,6 +5,16 @@ adapter requires an independently approved implementation-admission record
 before code begins. The default `1.0.0` target is in-memory for semantics,
 SQLite for single-node, and PostgreSQL for HA; MySQL, MongoDB, and SurrealDB are
 experimental unless `0.140.2` promotes an evidenced profile.
+The selected core production path implements PostgreSQL first and treats
+SQLite as a separately bounded local/single-node profile. Online arbitrary-
+backend migration is Unsupported by default; v1 portability requires
+project-owned semantic ports, the reference oracle, canonical fixtures, and
+staged export/import only. Experimental adapters cannot delay the persistent
+authenticated incident proof or the selected PostgreSQL profile.
+Migration job progress, import staging, activation, integrity, evidence
+custody, capacity, external witness and corruption recovery remain distinct
+authorities. This cumulative phase ledger does not authorize one combined
+state machine, repository, transaction, or crate for them.
 After portability work, focused `0.30.23–0.30.25` stops define the stable
 domain/application/event reference manifest, scope-separated contribution
 metadata admission, and deferral gates; `0.30.26` separately checks event
@@ -26,6 +36,11 @@ partial-admission abort/supersession, permanent-unknown policy/quarantine,
 proof-bound replacement genesis, guard supersession and dual release wait for
 `0.51.5–0.51.59` after
 authoritative tenant lifecycle exists.
+That deployment-wide dynamic built-in-domain retirement/reinstall profile is
+not selected for the default v1 core. Built-in schemas remain installed and may
+be disabled; tenant deletion and plugin uninstall retain their separate
+mandatory lifecycles. The advanced profile remains Unsupported unless a future
+candidate explicitly selects and evidences its complete transitive closure.
 Every database profile must implement every applicable negotiated `0.18.2`
 `AtomicWorkCommitBundle` variant and every other mandatory semantic port claimed
 for that profile, or fail startup capability negotiation. No adapter may
@@ -7747,10 +7762,11 @@ The profile binds adapter/server version, topology/failover mode, source and
 key identity, transaction/commit evidence, journal partition/head, ratchet
 predecessor/successor, uncertainty and readback/finality rules. Transaction-
 start, statement-start, row-insertion, client-observation or response time is
-not commit-cut evidence. SQLite, PostgreSQL, MySQL, MongoDB and SurrealDB each
-run the same crash/rollback/suspend/failover/restore conformance corpus against
-their exact promised profile. An adapter without one passing mechanism reports
-the capability unsupported and rejects DomainAggregateTarget; redefining
+not commit-cut evidence. PostgreSQL, bounded SQLite, and every other adapter
+independently promoted for support run the same
+crash/rollback/suspend/failover/restore conformance corpus against their exact
+promised profile. An adapter without one passing mechanism reports the
+capability unsupported and rejects DomainAggregateTarget; redefining
 `recorded_at` as allocation time is not a compatibility shim and would require
 a future explicit schema/law version rather than a silent fallback.
 
@@ -10172,9 +10188,10 @@ Step the clock backward/forward across allocation and commit, suspend, restart,
 fail over, restore and rotate the time profile/source; the authenticated
 RecordedTimeAuthorityRatchetV1 lower bound never regresses, overlapping
 intervals remain journal-position ordered and unavailable continuity unreadies.
-For the exact SQLite, PostgreSQL, MySQL, MongoDB and SurrealDB version/topology
-profiles, run CommitCutRecordedTimePortV1 conformance with delayed commit,
-response loss, crash, rollback, failover, restore and readback. Accept only
+For PostgreSQL, bounded SQLite, and every other exact version/topology profile
+independently promoted for support, run CommitCutRecordedTimePortV1
+conformance with delayed commit, response loss, crash, rollback, failover,
+restore and readback. Accept only
 NativeAuthenticatedCommitTimestampOrSequence,
 BackendEnforcedCommitBeforeFence or formally equivalent attestation; inject
 transaction/statement start, row insertion and client response time and require

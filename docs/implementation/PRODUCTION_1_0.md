@@ -3,8 +3,14 @@
 Status: planned; never reached by date or version count alone.
 
 Setup: select an exact unchanged `v1.0.0-rc.N` commit and artifact set that has
-passed every preceding gate, independent external pentest, clean retest,
-reproducible build comparison, compatibility freeze, and operational exercise.
+passed every mandatory stop in the selected core's complete transitive
+dependency/evidence closure, every explicitly selected optional-profile stop,
+independent external pentest, clean retest, reproducible build comparison,
+compatibility freeze, and operational exercise. The 425-stop planning superset
+is not a serial support requirement: unselected stops remain explicitly
+Specified/deferred/Conditional/Unsupported and cannot broaden this candidate.
+Any skipped old stop requires a future successor version before implementation;
+it is never backfilled into this release.
 The decisions in `0.140.1–0.140.28` are frozen, their selected profiles have
 passed Phase O, and unsupported alternatives are excluded from release claims.
 The generated evidence manifest contains no `Specified` or `Implementing`
@@ -58,7 +64,11 @@ applicable workload proof/claim, topology CAS, member fences/tombstones, typed
 deadline result, and fence outbox. Evidence at every lock/time/CAS/commit/
 timeout/response-loss/failover pause proves only a pre-expiry commit or a
 transaction that cannot commit later. An uncertain response reconciles without
-ordinary retry and without weakening that proof.
+ordinary retry and without weakening that proof. The default candidate does
+not select dynamic built-in-domain retirement/reinstall or online arbitrary-
+backend migration; their detailed specifications remain Unsupported and do
+not block the selected core. Tenant deletion and plugin uninstall remain
+separate mandatory lifecycles and cannot claim those broader semantics.
 Production also freezes `TopologyAuthorizationReplayLifecycleV1`: monotonic
 issuance sequences; layered pre-allocation per-deployment, issuer/class, and
 canonical principal-or-authority/class successful-admission-rate and
@@ -950,11 +960,14 @@ target-bound expected predecessor, a passing CommitCutRecordedTimePort and atomi
 advanced RecordedTimeAuthorityRatchet with a conservative interval enclosing
 the commit cut and complete nonempty EventCommitChain mapping in the fresh
 immutable event/result/audit/outbox append. Zero-event domain batches reject
-and control/no-aggregate binds CanonicalNoDomainEventChain. Exact SQLite,
-PostgreSQL, MySQL, MongoDB and SurrealDB profiles prove native authenticated
-commit evidence, a backend hard fence or equivalent attestation; start/insert/
-client time is rejected. Finalization, collection, retention, transfer, hold/
-erasure, archive and restore preserve the active
+and control/no-aggregate binds CanonicalNoDomainEventChain. Every exact storage
+profile selected for the candidate proves native authenticated commit
+evidence, a backend hard fence or equivalent attestation; start/insert/client
+time is rejected. PostgreSQL is the default production selection, SQLite is a
+separately bounded local selection, and the other storage profiles impose no
+production obligation unless explicitly promoted with independent passing
+evidence. Finalization, collection, retention, transfer, hold/erasure, archive
+and restore preserve the active
 GlobalTransactionLockRankCatalogV1 subset from recovery/authority guards
 through fences, quota/uniqueness, command/claim/proposal, structurally sorted
 payload lifecycle, ratchet, aggregate/journal and commit/result/audit/outbox.

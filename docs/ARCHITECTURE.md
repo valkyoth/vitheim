@@ -930,10 +930,11 @@ restore, failover, and release evidence.
    intra-batch integrity chain.
    Clock rollback or failover without authenticated continuity unreadies.
    Control/no-aggregate targets use CanonicalNoDomainEventChain; a zero-event
-   domain batch rejects. SQLite, PostgreSQL, MySQL, MongoDB and SurrealDB must
-   prove native commit evidence, a backend commit-before fence or formally
-   equivalent attestation; transaction-start/row-insert/client time never
-   qualifies and an incapable adapter refuses domain events.
+   domain batch rejects. Every storage profile selected or independently
+   promoted for support must prove native commit evidence, a backend
+   commit-before fence or formally equivalent attestation;
+   transaction-start/row-insert/client time never qualifies and an incapable
+   adapter refuses domain events.
    Every Phase B and Phase C local transaction declares a subset of
    GlobalTransactionLockRankCatalogV1: recovery/authority guards→fences→quota/
    uniqueness→command/claim/proposal→sorted payload lifecycle→time ratchet→

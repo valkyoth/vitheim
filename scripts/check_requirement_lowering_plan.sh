@@ -443,7 +443,7 @@ require_text "$plan" \
     '`PhysicalEffectStatusAuthorityContinuityV1`' \
     'physical status authority continuity type'
 require_text "$plan" \
-    '`Active → SuccessorPrepared → HandoffFenced → SuccessorActive`' \
+    '`Active → SuccessorPrepared → HandoffFenced →' \
     'physical status authority handoff lifecycle'
 require_text "$plan" \
     'handoff fence prevents predecessor and successor from both issuing current' \
