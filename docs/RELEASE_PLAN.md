@@ -16,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 410 exact stops: 150 base `0.x.0` stops, 259
+The canonical roadmap contains 414 exact stops: 150 base `0.x.0` stops, 263
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -99,7 +99,7 @@ Their exact handoffs live in
 [Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md).
 
 The coherence additions are `0.18.15–0.18.16`, `0.30.23–0.30.29`, `0.50.18`,
-`0.51.3–0.51.44`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
+`0.51.3–0.51.48`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
 `0.120.8–0.120.10`, `0.132.4`, `0.138.6–0.138.7`, `0.140.28`, and `0.145.4`.
 Their exact handoffs live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
@@ -167,7 +167,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 410-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 414-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -936,17 +936,21 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.51.31` | Dedicated unknown-restriction lowering evaluation and source admission with non-substitutable roots, permits and receipts | Reinstall/lowering authority confusion, permit reuse, incomplete evaluation/admission, unfunded prepared bridge, mode substitution |
 | `0.51.32` | One-shot successor-lifecycle genesis with closed top-or-pre-operational-lowered authority and pending bridge-adoption binding | Tag/member substitution, lowering adoption replay, admission-permit misbinding, eligibility re-consumption, duplicate lifecycle |
 | `0.51.33` | Per-partition pre-operational lowered-bridge adoption through the shared lifecycle CAS, closed admission receipt/root, and funded ownership pipeline | Partial/duplicate adoption, response-loss acceptance, process/lifecycle divergence, incomplete adoption-root fold, top/lowered owner mixing, bridge/capacity duplication |
-| `0.51.34` | Tagged final activation with one typed revalidation edge and a bounded CAS consuming one sealed policy-derived release-construction root | Independent Blocked authority, post-prepare race, stale/partial root, inventory/policy substitution, unbounded guard-slot work, unsafe loser disposition |
+| `0.51.34` | Tagged final activation with one typed revalidation edge and a bounded CAS consuming one sealed, source-fenced inventory and policy-derived release root | Independent Blocked authority, post-prepare race, stale/partial root/cut, delayed invalidation, inventory/policy substitution, unsafe disposition |
 | `0.51.35` | Reinstall delivery-barrier/evaluation-fence release or funded successor-retention reconciliation | Wrong control release, residual restriction loss, outage/replay, unfunded retention, premature cleanup, consumed revival, new-generation blockage |
-| `0.51.36` | Atomic operational lowering CAS with commit freshness and bounded consumption of the same sealed construction-root contract | Stale root, unrelated guard loss, partial sealing, policy/inventory substitution, unbounded CAS work, early top release |
+| `0.51.36` | Atomic operational lowering CAS with commit freshness and bounded consumption of the same source-fenced sealed construction contract | Stale root/cut, delayed invalidation, unrelated guard loss, partial sealing, policy/inventory substitution, early top release |
 | `0.51.37` | Dispatch-gated parent-local member reconciliation fed by partition-local effect receipts, with exact saturation arithmetic, absorbing terminals, heterogeneous vector and zero-pending completion | Cross-store atomicity, receipt/effect mismatch, response loss, route movement, ceiling errors, fork/vector substitution, completion with pending |
 | `0.51.38` | Certification that immutable V1 manifests were completely batch-prepared, policy-funded and sealed before bounded activation binding | Batch omission/reorder, retroactive digest attachment, unbound V1, activation-root mismatch, invalid limits, restore default |
 | `0.51.39` | Separation-of-duties retry-only authority charging a separate versioned saturated-retry ledger before outbox | Unique keys exceed lifetime budget, ledger fork/rollback/reset/refund/overflow, member same-version mutation, retry manufactures terminal |
 | `0.51.40` | Predispatch parent-member continuity admission from sealed genesis through every co-transactional expected-predecessor fold receipt | First transition before gate, missing/late genesis, parent receipt after CAS, source effect inferred as parent state, signed leap, fork |
 | `0.51.41` | Deterministic release-member budget policy with class bounds, aggregate-work ceiling, cost units and non-borrowable worst-case funding | Caller-selected tiny/huge limits, policy/class substitution, mixed-cost underfunding, arithmetic overflow, policy rotation |
 | `0.51.42` | Bounded Preparing → ConstructionSealed → Activated or Disposed release-member construction lifecycle | Unbounded guard CAS, batch/root omission, seal/activate/dispose race, partial funding, unsafe inactive-bundle cleanup |
-| `0.51.43` | Source/destination-local effect receipts with durable-inbox delivery and one parent-local member/transition-head fold | Cross-store transaction assumption, effect-before-fold crash, outage, duplicate receipt, route movement, retention response loss |
+| `0.51.43` | Source/destination-local effect receipts with durable-inbox delivery and parent-local intent-aware folding, with contradictions remaining nonterminal | Cross-store transaction assumption, effect-before-fold crash, outage, duplicate/contradictory receipt, route movement, retention response loss |
 | `0.51.44` | Independent versioned saturated-retry ledger continuity bound into restore, vectors and terminal evidence | Same-version member fork, ledger lost update/fork/rollback, retry-terminal race, omitted head, unauthorized reset/replenishment |
+| `0.51.45` | Source-fenced distributed predecessor inventory cut with high-watermarks, routing generations, invalidation and late-member closure | Stale projection, member creation/movement/plugin activation around seal/CAS, delayed invalidation, old-generation late restriction |
+| `0.51.46` | Parent-local one-winner Release or Retention effect intent committed before remote dispatch | Release/retain race, two destinations, branch/owner/effect substitution, outbox split, intent mutating member version |
+| `0.51.47` | Closed one-shot activation-, intent-, route- and local-version-bound remote effect authorization consumed with the physical effect | Inactive/disposed root, cross-intent use, stale route/object ABA, expiry/key rotation, replay, receipt authorization substitution |
+| `0.51.48` | Nonterminal contradictory-physical-effect discovery, funded settlement and complete conservation before terminal folding | Parent CAS treated as undo, two physical owners, incomplete discovery, unfunded residual, premature terminal/capacity release |
 | `0.52.0` | Subjects, service principals, independent external-identity mapping epochs, and law-generation expansion | Activate `VIT-LAW-001` g04/`VIT-LAW-006` g03; principal/mapping revocation racing dispatch, unsafe linking, immutable issuer-subject identity, epoch reuse, recreation |
 | `0.52.1` | OAuth resource-server workload authentication, mapping epoch, and law-generation expansion | Activate `VIT-LAW-001` g05/`VIT-LAW-006` g04; workload remap/revoke race, stale external privileged fact, false sender constraint, bearer escalation, issuer/audience confusion |
 | `0.53.0` | Hosted OIDC integration, independent interactive-session epoch, and law-generation expansion | Activate `VIT-LAW-001` g06/`VIT-LAW-006` g05; discovery, mix-up, replay, downgrade, fixation, logout/assurance racing dispatch |

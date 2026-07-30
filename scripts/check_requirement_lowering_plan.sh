@@ -240,6 +240,51 @@ require_text "$plan" \
 require_text "$plan" \
     'The release member remains' \
     'retry charge does not mutate saturated member'
+require_text "$plan" \
+    '0.51.45` — Distributed Predecessor Enforcement Inventory Cut' \
+    'distributed predecessor inventory cut stop'
+require_text "$plan" \
+    '`PredecessorEnforcementInventoryCutV1`' \
+    'sealed distributed predecessor inventory'
+require_text "$plan" \
+    '`PredecessorInventoryCutFenceV1`' \
+    'source-local inventory cut fence'
+require_text "$plan" \
+    'parent invalidation projection is never sufficient authority to activate.' \
+    'delayed invalidation cannot prove activation freshness'
+require_text "$plan" \
+    '0.51.46` — Parent-Local Release Effect Intent' \
+    'parent-local effect intent stop'
+require_text "$plan" \
+    '`ReleaseMemberEffectIntentV1`' \
+    'one-winner parent effect intent'
+require_text "$plan" \
+    '`Pending → ReleaseIntentCommitted { source_owner, effect_id } |' \
+    'closed release or retention intent adjacency'
+require_text "$plan" \
+    'does not mutate or consume the release-member version' \
+    'effect intent does not spend member version'
+require_text "$plan" \
+    '0.51.47` — Activation-Bound Remote Effect Authorization' \
+    'activation-bound remote effect authority stop'
+require_text "$plan" \
+    '`ReleaseMemberEffectAuthorizationV1 = Release { source_owner, effect_id, ... }' \
+    'closed release or retention effect authority'
+require_text "$plan" \
+    'atomically consumes the one-shot authority, commits the physical effect,' \
+    'remote effect consumes authority locally'
+require_text "$plan" \
+    '0.51.48` — Physical Effect Conflict Reconciliation' \
+    'physical effect conflict reconciliation stop'
+require_text "$plan" \
+    '`EffectConflictDetected → EffectConflictReconciling → SingleEffectSettled`' \
+    'closed physical effect conflict lifecycle'
+require_text "$plan" \
+    '`ReleaseMemberEffectConflictConservationRootV1`' \
+    'physical effect conflict conservation root'
+require_text "$plan" \
+    'a member becomes terminal only after every physical effect is' \
+    'no terminal member with unsettled physical effects'
 
 if [ "$failed" -ne 0 ]; then
     exit 1

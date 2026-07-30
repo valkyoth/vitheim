@@ -14,7 +14,7 @@ residual obligations tenant-locally, `0.51.12` governs residual membership/state
 lineage, `0.51.13` seals/consumes partition delivery, `0.51.14` owns restrictive
 emergency invalidation, `0.51.15–0.51.18` authorize/complete takeover, fund
 retained controls and release its barriers, `0.51.19–0.51.20` archive/verify
-retained cleanup, and `0.51.21–0.51.44` evaluate, linearize activation/abort,
+retained cleanup, and `0.51.21–0.51.48` evaluate, linearize activation/abort,
 source-admit, fund bridge ownership, dispose failed admission, decide and
 conditionally quarantine permanent unknown, create its proof-bound replacement
 successor, and consume reinstall before releasing both control families;
