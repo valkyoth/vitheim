@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 418 exact stops and their
+- One canonical roadmap manifest accounts for all 421 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -88,7 +88,7 @@ epochs and mode-bound source status; `0.51.15–0.51.18` authorize/complete
 target-slot takeover, atomically transfer funded capacity for retained
 candidate controls, and reconcile every barrier release/retention receipt;
 `0.51.19` archives before deletion under truthful uncertainty; `0.51.20`
-independently authorizes exact retained-namespace safety; `0.51.21–0.51.52`
+independently authorizes exact retained-namespace safety; `0.51.21–0.51.55`
 evaluate reinstall under partition fences, enforce explicit lifecycle
 adjacency, serialize activation against abort,
 require source-local activation-permit redemption and successor-restriction
@@ -160,6 +160,8 @@ observation identities and create-or-join heads prevent duplicate/reordered
 polls from multiplying incidents, charges or owners. Its closed physical-
 status port requires an ABA-resistant authority sequence and continuity
 ratchet; snapshot-only profiles refuse and remain restrictively unresolved.
+Manual evidence may add custody/annotations or funded residual ownership but
+cannot invent identity/absence, authorize safe removal or lower that fence.
 `0.51.52` permits a dead
 intent to be abandoned or replanned only from a complete no-effect closure;
 uncertainty or any observed effect enters conflict, and successor identities
@@ -168,6 +170,15 @@ multidimensional lifetime ledger creates stable route reservation legs before
 successor authority, `.47` consumes issuance legs, `.50` closes unused legs,
 and explicit exhaustion can be widened only by a separate policy-authorized
 predecessor-linked amendment—never ordinary retry.
+`0.51.53` replaces a supported status authority only through independently
+approved predecessor-final/successor-genesis receipts, one continuity head and
+a dual-source fence; prepared or uncertain handoff grants no authority.
+`0.51.54` prepays one immutable per-authorization send allowance and charges a
+non-wrapping attempt head before each I/O permit; failover, response loss,
+route movement and restore cannot refund or reset it. `0.51.55` admits an
+intent/replan only when its worst-case closure bundle fits the active backend;
+staged dispositions are authority-inert and one bounded final CAS alone
+publishes complete issuance/budget/dispatch/conflict closure.
 Saturated recovery remains
 a retry-only lane with no terminal or cleanup authority; `0.51.44` charges its
 non-resetting lifetime limit through a separate versioned ledger before outbox

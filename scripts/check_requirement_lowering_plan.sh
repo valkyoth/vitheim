@@ -430,6 +430,51 @@ require_text "$plan" \
 require_text "$plan" \
     'Neither branch resets observation/retry/intent lifetime budgets or reuses an' \
     'intent replanning forbids budget and identity reuse'
+require_text "$plan" \
+    'manual evidence can append annotations, provenance and' \
+    'manual evidence is limited to annotation and custody provenance'
+require_text "$plan" \
+    'cannot manufacture an effect identity/sequence, prove historical absence,' \
+    'manual evidence cannot manufacture authority or absence'
+require_text "$plan" \
+    '0.51.53` — Physical-Status Authority Continuity Succession' \
+    'physical status authority continuity succession stop'
+require_text "$plan" \
+    '`PhysicalEffectStatusAuthorityContinuityV1`' \
+    'physical status authority continuity type'
+require_text "$plan" \
+    '`Active → SuccessorPrepared → HandoffFenced → SuccessorActive`' \
+    'physical status authority handoff lifecycle'
+require_text "$plan" \
+    'handoff fence prevents predecessor and successor from both issuing current' \
+    'status authority predecessor successor exclusion'
+require_text "$plan" \
+    '0.51.54` — Authorization Dispatch-Attempt Ledger' \
+    'authorization dispatch attempt accounting stop'
+require_text "$plan" \
+    '`AuthorizationDispatchAttemptLedgerV1`' \
+    'authorization dispatch attempt ledger type'
+require_text "$plan" \
+    'Before every external transmission, one local expected-version CAS increments' \
+    'dispatch attempt is charged before external transmission'
+require_text "$plan" \
+    'process-local non-reconstructable send permit' \
+    'dispatch charge emits a non-reconstructable send permit'
+require_text "$plan" \
+    '0.51.55` — Bounded Delivery-Seal Construction And Backend Admission' \
+    'bounded delivery seal construction stop'
+require_text "$plan" \
+    '`EffectDeliverySealAtomicityProfileV1`' \
+    'backend delivery seal atomicity profile'
+require_text "$plan" \
+    '`EffectDeliverySealBundleV1` maxima' \
+    'bounded delivery seal bundle maxima'
+require_text "$plan" \
+    '`SealBundlePreparing → SealBundlePrepared → SealBundlePublished |' \
+    'authority inert seal bundle staging lifecycle'
+require_text "$plan" \
+    'One final bounded local CAS verifies the complete exact prepared root' \
+    'single bounded final seal publication CAS'
 
 if [ "$failed" -ne 0 ]; then
     exit 1

@@ -16,7 +16,7 @@ this plan.
 The version-by-version implementation handoffs live in the
 [Implementation Plan](IMPLEMENTATION_PLAN.md); the summary tables below never
 replace their required setup, deliverables, verification, or pentest stops.
-The canonical roadmap contains 418 exact stops: 150 base `0.x.0` stops, 267
+The canonical roadmap contains 421 exact stops: 150 base `0.x.0` stops, 270
 companion stops, and one `1.0.0` stop. “151 base stops including `1.0.0`” is a
 valid qualified summary; “151 phases,” “225 milestones,” and “228 exact stops”
 are not. [Evidence And Roadmap Governance](EVIDENCE_AND_ROADMAP_GOVERNANCE.md)
@@ -99,7 +99,7 @@ Their exact handoffs live in
 [Requirement Ownership And Product Integration Completions](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md).
 
 The coherence additions are `0.18.15–0.18.16`, `0.30.23–0.30.29`, `0.50.18`,
-`0.51.3–0.51.52`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
+`0.51.3–0.51.55`, `0.60.4`, `0.70.5`, `0.100.2`, `0.118.5`,
 `0.120.8–0.120.10`, `0.132.4`, `0.138.6–0.138.7`, `0.140.28`, and `0.145.4`.
 Their exact handoffs live in
 [Roadmap Coherence Completions](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
@@ -167,7 +167,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 418-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 421-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -953,8 +953,11 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.51.48` | Nonterminal contradictory-physical-effect discovery, funded settlement and complete conservation before terminal folding | Parent CAS treated as undo, two physical owners, incomplete discovery, unfunded residual, premature terminal/capacity release |
 | `0.51.49` | Immediate protected RestrictiveSafety mutation lane that enforces stronger state and invalidates fenced inventory/construction | Hold/quarantine/revocation/vulnerability/plugin restriction delayed by cut, neutral misclassification, activation race, restore rollback |
 | `0.51.50` | Seal the sole issued-authorization universe, terminally dispose unused budget legs and consume delivery closure with conflict/budget heads | Issue/seal race, candidate/issued substitution, invented non-issued member, unresolved outbox/inbox, unused reservation refund/omission, stale closure |
-| `0.51.51` | Profile-gated ABA-resistant physical status authority plus create-or-join observation, incident and funded residual ownership | Snapshot certainty, remove/recreate ABA, sequence rollback/wrap, continuity clone, false capability claim, duplicate incident/charge/owner |
+| `0.51.51` | Profile-gated ABA-resistant physical status authority plus create-or-join incident ownership, with manual evidence forbidden from lowering unresolved identity | Snapshot/manual certainty, remove/recreate ABA, forged custody, sequence invention, false capability claim, duplicate incident/charge/owner |
 | `0.51.52` | No-effect disposition plus stable route reservations, immutable cumulative lifetime budget, explicit exhaustion and funded replanning | Reservation omission/reuse/refund, issue without consumption, dead destination, uncertain delivery, budget reset/overflow, unauthorized widening |
+| `0.51.53` | One governed predecessor-to-successor physical-status continuity handoff with final/genesis receipts and dual-source fencing | Database/connector/region/rekey migration, old/new race, clone/rollback, lower baseline, namespace restart, predecessor resurrection |
+| `0.51.54` | Prepaid per-authorization dispatch-attempt ledger charging a non-wrapping head before every send and binding final heads into closure | Crash before/after send, response loss, two publishers, failover reset, route movement, exhaustion send, counter rollback/wrap |
+| `0.51.55` | Backend-profiled bounded delivery-seal bundle, intent/replan preflight, authority-inert staging and one atomic final publish | Maximum-plus-one, encoded expansion, partial stage, profile reduction, transaction rejection, backend without final atomic CAS |
 | `0.52.0` | Subjects, service principals, independent external-identity mapping epochs, and law-generation expansion | Activate `VIT-LAW-001` g04/`VIT-LAW-006` g03; principal/mapping revocation racing dispatch, unsafe linking, immutable issuer-subject identity, epoch reuse, recreation |
 | `0.52.1` | OAuth resource-server workload authentication, mapping epoch, and law-generation expansion | Activate `VIT-LAW-001` g05/`VIT-LAW-006` g04; workload remap/revoke race, stale external privileged fact, false sender constraint, bearer escalation, issuer/audience confusion |
 | `0.53.0` | Hosted OIDC integration, independent interactive-session epoch, and law-generation expansion | Activate `VIT-LAW-001` g06/`VIT-LAW-006` g05; discovery, mix-up, replay, downgrade, fixation, logout/assurance racing dispatch |

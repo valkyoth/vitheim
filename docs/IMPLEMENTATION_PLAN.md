@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 418 exact release stops: 150 base `0.x.0`
-stops, 267 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 421 exact release stops: 150 base `0.x.0`
+stops, 270 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -103,7 +103,7 @@ proves partition currency and canonical empty state, `0.51.14` owns urgent
 restrictive invalidation, `0.51.15–0.51.18` authorize/complete takeover,
 atomically fund retained candidate controls, and release its barriers,
 `0.51.19–0.51.20` archive cleanup and verify retained namespaces, and
-`0.51.21–0.51.52` evaluate reinstall, linearize activation against abort,
+`0.51.21–0.51.55` evaluate reinstall, linearize activation against abort,
 obtain source-partition admission, fund durable bridge ownership, terminate or
 supersede partial admission, decide and conditionally implement conservative
 permanent-unknown quarantine recovery, actively enforce the maximal unknown
@@ -128,7 +128,7 @@ complete immutable member/genesis roots in bounded authority-inert batches,
 bind them through a bounded guard CAS, keep source/destination effects local
 and fold their receipts through a parent inbox, define exact ceiling
 arithmetic, and place retry charges in a separate versioned non-resetting
-ledger. The final eight stops source-fence one distributed predecessor
+ledger. The final eleven stops source-fence one distributed predecessor
 inventory cut, select one parent effect intent, require activation-bound
 one-shot local effect authority from one intent-scoped expected-version
 issuance scope plus immutable entries, atomically consume its stable lifetime-
@@ -139,7 +139,10 @@ issued universe and unused reservations before terminality, require an
 ABA-resistant physical-status capability or explicit refusal, own unauthorized
 post-closure effects as create-or-join funded incidents and recover no-effect
 intents only with fresh predecessor-linked identities, stable lifetime
-reservation legs and explicit fail-closed exhaustion. Dispatch remains closed until
+reservation legs and explicit fail-closed exhaustion, govern legitimate
+status-authority continuity handoff, charge a prepaid non-wrapping attempt
+ledger before every transmission, and preflight/stage only authority-inert
+seal bundles that one backend-supported final CAS can publish. Dispatch remains closed until
 construction, inventory, authorization, delivery and continuity contracts are
 certified.
 `0.145.4`
