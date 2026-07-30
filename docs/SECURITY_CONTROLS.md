@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 406 exact stops and their
+- One canonical roadmap manifest accounts for all 410 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -88,7 +88,7 @@ epochs and mode-bound source status; `0.51.15–0.51.18` authorize/complete
 target-slot takeover, atomically transfer funded capacity for retained
 candidate controls, and reconcile every barrier release/retention receipt;
 `0.51.19` archives before deletion under truthful uncertainty; `0.51.20`
-independently authorizes exact retained-namespace safety; `0.51.21–0.51.40`
+independently authorizes exact retained-namespace safety; `0.51.21–0.51.44`
 evaluate reinstall under partition fences, enforce explicit lifecycle
 adjacency, serialize activation against abort,
 require source-local activation-permit redemption and successor-restriction
@@ -125,19 +125,22 @@ heterogeneous cross-member versions; identical pending observations coalesce
 under a separate bounded attempt budget; pending version saturation reserves
 terminal capacity; and completion requires zero pending under authenticated
 conservation.
-The activation transaction creates the immutable release manifest, every
-checked finite member budget and identity-bound digest, initial Pending member,
-transition genesis/high-watermark, funded capacity and audit/outbox together;
-failure aborts activation, and no digest is attached later. Pending advances
-only below its ceiling, enters saturation exactly at the ceiling and jumps
-from valid Pending/saturation directly to the reserved terminal version.
-Saturated recovery is a separation-of-duties retry-only lane with no terminal,
-budget, enforcement, ownership, capacity or cleanup authority and a member-
-bound non-resetting lifetime claim limit/count charged before outbox work.
-Dispatch remains closed until continuity from construction genesis is admitted;
-every first and later member transition atomically emits an expected-
-predecessor receipt and advances its high-watermark. A signature, larger
-version or later reconstructed history alone grants nothing.
+`0.51.41` derives every finite budget from governed per-class bounds and cost
+units and funds the checked worst authorized work without borrowing.
+`0.51.42` constructs immutable manifest members, transition and retry-ledger
+geneses in authority-inert bounded batches, seals their exact root, and leaves
+the guard-slot transaction only a bounded root recheck/binding; inactive roots
+are safely disposed under retained funding. Pending advances only below its
+ceiling, enters saturation exactly at the ceiling and jumps from valid
+Pending/saturation directly to the reserved terminal version.
+`0.51.43` forbids cross-store transactions: source release and destination
+retention each commit a local effect receipt, while a durable parent inbox
+folds it through one parent-local member/head CAS. Saturated recovery remains
+a retry-only lane with no terminal or cleanup authority; `0.51.44` charges its
+non-resetting lifetime limit through a separate versioned ledger before outbox
+work and binds that head into restore and terminal evidence. Dispatch remains
+closed until continuity from sealed construction genesis is admitted; a
+signature, larger version or reconstructed history alone grants nothing.
 No wildcard tenant or cross-tenant retirement transaction exists, and loss
 never counts as clean or grants deletion/hold release. `0.51.4` immediately
 certifies tenant surfaces; `0.139.1` iterates

@@ -94,8 +94,8 @@ require_text "$plan" \
     '`UnknownRestrictionLoweringReleaseMemberOutcomeV1`' \
     'three-way predecessor member outcome'
 require_text "$plan" \
-    '`UnknownRestrictionLoweringReleaseMemberV1 { generation, version, state }`' \
-    'versioned predecessor release member'
+    '`ReleaseReconciliationMemberV1 { generation, version, state }`' \
+    'parent-local versioned predecessor release member'
 require_text "$plan" \
     '`Pending(v) → Terminal { state: Released | RetainedAccepted,' \
     'absorbing predecessor member transition'
@@ -133,7 +133,7 @@ require_text "$plan" \
     'only when pending is exactly zero' \
     'predecessor cleanup requires zero pending'
 require_text "$plan" \
-    '0.51.38` — Release-Member Budget Construction Certification' \
+    '0.51.38` — Release-Member Prepared-Construction Certification' \
     'release-member construction certification stop'
 require_text "$plan" \
     '`UnknownRestrictionLoweringReleaseMemberBudgetDigestV1`' \
@@ -160,14 +160,14 @@ require_text "$plan" \
     '`ReleaseMemberTransitionHighWatermarkV1 { generation, version, state_digest,' \
     'per-member transition high-watermark'
 require_text "$plan" \
-    '`SourceAuthoritativeReleaseMemberStatusProofV1`' \
-    'source-authoritative continuity proof'
+    '`ParentAuthoritativeReleaseMemberStatusProofV1`' \
+    'parent-authoritative continuity proof'
 require_text "$plan" \
     '`ReleaseMemberTransitionGenesisV1` plus' \
     'activation-time transition genesis'
 require_text "$plan" \
-    'capacity and audit/outbox are one all-or-nothing bundle.' \
-    'all-or-nothing activation construction bundle'
+    '`ReleaseMemberConstructionPreparedRootV1`' \
+    'sealed bounded construction root'
 require_text "$plan" \
     'there is no later manifest extension.' \
     'immutable manifest is never retrofitted'
@@ -181,7 +181,7 @@ require_text "$plan" \
     '`Pending(version = pending_update_ceiling)`' \
     'normal pending at ceiling is impossible'
 require_text "$plan" \
-    'From the first nonterminal or terminal member transition' \
+    'From the first nonterminal or terminal parent-member transition' \
     'continuity receipt begins at first transition'
 require_text "$plan" \
     '`ReleaseMemberConstructionBundleReceiptV1`' \
@@ -190,8 +190,8 @@ require_text "$plan" \
     'an unbound encoding is invalid, not a legacy' \
     'unbound V1 is rejected'
 require_text "$plan" \
-    '`saturated_retry_claim_count < saturated_retry_limit`' \
-    'lifetime retry count charged below immutable limit'
+    '`claim_count < saturated_retry_limit`' \
+    'retry ledger count charged below immutable limit'
 require_text "$plan" \
     'Retry-budget replenishment or count reset is unsupported through `1.0.0`.' \
     'no retry lifetime budget reset'
@@ -201,6 +201,45 @@ require_text "$plan" \
 require_text "$plan" \
     'There is no one-time event-journal, signed-checkpoint or inferred-history' \
     'no post-hoc transition history bootstrap'
+require_text "$plan" \
+    '0.51.41` — Release-Member Budget Policy And Worst-Case Funding' \
+    'release-member policy and funding stop'
+require_text "$plan" \
+    '`ReleaseMemberBudgetPolicyV1`' \
+    'governed deterministic budget policy'
+require_text "$plan" \
+    'facts but no numeric limits.' \
+    'caller cannot select member limits'
+require_text "$plan" \
+    '0.51.42` — Bounded Release-Member Construction Lifecycle' \
+    'bounded release-member construction stop'
+require_text "$plan" \
+    '`Preparing → ConstructionSealed → Activated | Disposed`' \
+    'closed bounded construction lifecycle'
+require_text "$plan" \
+    'The final `0.51.34`/`0.51.36` guard-slot CAS performs bounded work only' \
+    'bounded final guard-slot activation'
+require_text "$plan" \
+    '0.51.43` — Partition-Local Release Effects And Parent Folding' \
+    'partition-local effect and parent fold stop'
+require_text "$plan" \
+    '`PredecessorReleaseEffectReceiptV1`' \
+    'source-local release effect receipt'
+require_text "$plan" \
+    '`PredecessorRetentionAcceptanceReceiptV1`' \
+    'destination-local retention acceptance receipt'
+require_text "$plan" \
+    'No transaction spans stores.' \
+    'cross-store transactions forbidden'
+require_text "$plan" \
+    '0.51.44` — Saturated-Retry Ledger Continuity' \
+    'saturated retry ledger continuity stop'
+require_text "$plan" \
+    '`SaturatedRetryBudgetLedgerV1 { member_id, member_generation, budget_digest,' \
+    'separate versioned saturated retry ledger'
+require_text "$plan" \
+    'The release member remains' \
+    'retry charge does not mutate saturated member'
 
 if [ "$failed" -ne 0 ]; then
     exit 1

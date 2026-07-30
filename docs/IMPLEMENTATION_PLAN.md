@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 406 exact release stops: 150 base `0.x.0`
-stops, 255 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 410 exact release stops: 150 base `0.x.0`
+stops, 259 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -103,7 +103,7 @@ proves partition currency and canonical empty state, `0.51.14` owns urgent
 restrictive invalidation, `0.51.15–0.51.18` authorize/complete takeover,
 atomically fund retained candidate controls, and release its barriers,
 `0.51.19–0.51.20` archive cleanup and verify retained namespaces, and
-`0.51.21–0.51.40` evaluate reinstall, linearize activation against abort,
+`0.51.21–0.51.44` evaluate reinstall, linearize activation against abort,
 obtain source-partition admission, fund durable bridge ownership, terminate or
 supersede partial admission, decide and conditionally implement conservative
 permanent-unknown quarantine recovery, actively enforce the maximal unknown
@@ -122,13 +122,14 @@ lower an operational guard only through a commit-fresh prepared CAS, and
 release the old top only through expected-version absorbing member outcomes,
 canonical heterogeneous per-member version-vector folds, coalesced bounded
 pending observations with reserved terminal capacity, and zero-pending
-authenticated funded reconciliation. The final release-member refinements bind
-one immutable valid budget digest and continuity genesis at manifest creation,
-certify that all-or-nothing construction without retrofitting V1, define exact
-ceiling arithmetic, constrain saturated recovery to a separation-of-duties
-retry-only command with a non-resetting lifetime claim count, and keep dispatch
-closed until contiguous expected-predecessor receipts are guaranteed from the
-first member transition.
+authenticated funded reconciliation. The final release-member refinements
+derive policy-bound budgets and worst-case funding, construct and seal the
+complete immutable member/genesis roots in bounded authority-inert batches,
+bind them through a bounded guard CAS, keep source/destination effects local
+and fold their receipts through a parent inbox, define exact ceiling
+arithmetic, and place retry charges in a separate versioned non-resetting
+ledger. Dispatch remains closed until construction and both continuity
+contracts are certified.
 `0.145.4`
 destructively certifies
 selected retirement/reinstall profiles rather than first implementing teardown.
