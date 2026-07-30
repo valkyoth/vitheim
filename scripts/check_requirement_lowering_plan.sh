@@ -356,7 +356,7 @@ require_text "$plan" \
     '`EffectDeliveryClosureRootV1` counts exactly every' \
     'delivery closure exact issued-entry membership'
 require_text "$plan" \
-    'terminal member CAS consumes that' \
+    'CAS consumes that current closure root' \
     'terminal CAS consumes delivery closure'
 require_text "$plan" \
     '0.51.51` — Post-Closure Unauthorized Effect Incident Ownership' \
@@ -458,8 +458,8 @@ require_text "$plan" \
     'Before every external transmission, one local expected-version CAS increments' \
     'dispatch attempt is charged before external transmission'
 require_text "$plan" \
-    'process-local non-reconstructable send permit' \
-    'dispatch charge emits a non-reconstructable send permit'
+    'sealed non-`Clone`, non-serializable process-local permit.' \
+    'dispatch charge uses canonical non-transferable permit custody'
 require_text "$plan" \
     '0.51.55` — Bounded Delivery-Seal Construction And Backend Admission' \
     'bounded delivery seal construction stop'

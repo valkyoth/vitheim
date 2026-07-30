@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 421 exact stops and their
+- One canonical roadmap manifest accounts for all 425 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -88,7 +88,7 @@ epochs and mode-bound source status; `0.51.15–0.51.18` authorize/complete
 target-slot takeover, atomically transfer funded capacity for retained
 candidate controls, and reconcile every barrier release/retention receipt;
 `0.51.19` archives before deletion under truthful uncertainty; `0.51.20`
-independently authorizes exact retained-namespace safety; `0.51.21–0.51.55`
+independently authorizes exact retained-namespace safety; `0.51.21–0.51.59`
 evaluate reinstall under partition fences, enforce explicit lifecycle
 adjacency, serialize activation against abort,
 require source-local activation-permit redemption and successor-restriction
@@ -173,12 +173,22 @@ predecessor-linked amendment—never ordinary retry.
 `0.51.53` replaces a supported status authority only through independently
 approved predecessor-final/successor-genesis receipts, one continuity head and
 a dual-source fence; prepared or uncertain handoff grants no authority.
-`0.51.54` prepays one immutable per-authorization send allowance and charges a
-non-wrapping attempt head before each I/O permit; failover, response loss,
+`0.51.54` prepays one immutable per-authorization send allowance, charges a
+non-wrapping attempt head and creates the canonical `VIT-LAW-006` start claim
+before each I/O permit; failover, response loss,
 route movement and restore cannot refund or reset it. `0.51.55` admits an
 intent/replan only when its worst-case closure bundle fits the active backend;
 staged dispositions are authority-inert and one bounded final CAS alone
 publishes complete issuance/budget/dispatch/conflict closure.
+`0.51.56` installs the predecessor fence, dormant successor admission and
+successor activation through separately authenticated local atomic receipts.
+`0.51.57` keeps the predecessor and failed successor tombstoned while one fresh
+bounded post-fence replacement either activates or becomes permanently
+refused. `0.51.58` makes every live or unknown/reconciling transmission claim
+block closure until authenticated reconciliation settles its possible effect.
+`0.51.59` limits stale seal preparation through one cumulative lineage and
+pins codec, schema, size algorithm and backend profile through final publish;
+cleanup requires checkpoint/archive coverage.
 Saturated recovery remains
 a retry-only lane with no terminal or cleanup authority; `0.51.44` charges its
 non-resetting lifetime limit through a separate versioned ledger before outbox

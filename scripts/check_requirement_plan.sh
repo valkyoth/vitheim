@@ -489,6 +489,7 @@ require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
     'external purchase-order evidence boundary'
 
 sh scripts/check_requirement_lowering_plan.sh
+sh scripts/check_effect_delivery_completion_plan.sh
 
 if [ "$failed" -ne 0 ]; then
     exit 1

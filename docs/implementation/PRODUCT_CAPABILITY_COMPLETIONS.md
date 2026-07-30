@@ -374,7 +374,7 @@ capacity/demand, continuity, subscriptions, extended asset kinds, privacy,
 inbound mail, audit export, and any `0.86.2` cloud-native discovery profile;
 classify every capability and external profile
 as Supported, Conditional, Unsupported, or deferred. Require implementing
-evidence from `0.30.23–0.30.29`, `0.50.18`, `0.51.3–0.51.55`,
+evidence from `0.30.23–0.30.29`, `0.50.18`, `0.51.3–0.51.59`,
 `0.60.3–0.60.4`, `0.70.4–0.70.5`, `0.100.1–0.100.2`, `0.118.5`,
 `0.120.8–0.120.10`, `0.132.3–0.132.4`, `0.138.4–0.139.1`, and later
 production acceptance of `0.140.28` and `0.145.3–0.145.4`; this freeze
