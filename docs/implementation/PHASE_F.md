@@ -691,6 +691,13 @@ governance/typed-key-
 ratchet/root-manifest/
 active-generation-successor/cancellation-recovery/fresh-parent-activation/
 current-authority cases.
+As the final conformance scenario, consume the already implemented `0.57.0`
+PostgreSQL, `0.119.0` transport/UI, `0.121.0` incident, tenant, subject,
+session/OIDC, RBAC/ABAC, policy-lifecycle, redaction, audit, outbox, projection,
+backup/restore, and upgrade owners to run the first production-authenticated
+incident proof. The certifier adds no route, handler, aggregate transition,
+schema, adapter, or policy behavior; any missing behavior fails this stop and
+returns to its existing owner or a new successor minor.
 Goal: prove
 equivalent deny-by-default policy independent of authentication mechanism and
 make later registration mechanically mandatory. Deliverables: generated
@@ -708,6 +715,9 @@ bearer-memory fixtures, and capacity-policy
 floor-governance/key-migration/ratchet/root-membership/active-generation/
 successor/cancellation-recovery/post-finalization-activation/delayed-transfer
 authority fixtures.
+Deliver the immutable vertical-proof manifest, selected profile/envelope,
+owner/evidence matrix, exact candidate commit, and pentest scope beside the
+authorization coverage report.
 Verification: mutation and read parity, tenant pairs, stale policy/credential,
 wrong audience/scope, false sender constraint, bearer-to-privileged escalation,
 replay-cache limitations, cache/index lag, commit-to-lease-to-dispatch policy/
@@ -822,4 +832,11 @@ transfer steps prove current local authority. Prepared cancellation creates one
 complete recovery successor with conservative parents, idempotent restore-safe
 receipts, no independent release, current-state/authority rechecks, and deadline
 escalation.
+The exact PostgreSQL-backed incident path must also pass OIDC login and mapping,
+tenant collision, field-policy denial, session/policy revocation racing read
+and write, stale ETag, exact retry and changed material, crash at every atomic
+bundle member, projection deletion/rebuild, backup/restore, upgrade, and
+independent pentest. Passing this campaign is the first
+production-authenticated architecture proof; it does not promote the
+`0.119.0` fake-identity stop or implement missing product behavior.
 `v0.225.0 implementation stop reached. Run pentest for this exact commit.`

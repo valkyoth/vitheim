@@ -28,6 +28,13 @@ Deliverables:
 - An evidence-status manifest using the normative `Specified`, `Implementing`,
   `Implemented`, `Conditional`, `Supported`, and `Unsupported` vocabulary,
   with executable-owner and immutable-evidence references for every claim.
+- `SelectedProfileManifestV1` generation 1 with one row for each of the 425
+  exact stops, its selection state, predecessor closure, delivery checkpoint,
+  executable-owner state, required profiles, retests, skip/successor rule, and
+  support boundary.
+- Project-owned checks for the selected-profile manifest, strict
+  `ImplementationWorkPackageV1` admission records, the closed critical-model
+  stop set, and `ExecutableModelBindingV1`.
 
 Verification: run all gates and core target checks; prove Cargo metadata has
 only workspace paths and both publication and incomplete readiness are denied.
@@ -35,7 +42,11 @@ Negative tests reject arbitrary 40-hex reviewed commits, self-referential or
 wrong-parent reports, malformed/prerelease-incompatible inputs, stale SBOM
 versions/licenses/relationships, changed candidate trees, changed artifacts,
 roadmap count/owner/marker drift, and documentation that promotes a merely
-specified or conditional capability.
+specified or conditional capability. Regenerate and compare the selected
+profile; reject missing/duplicate stops, non-increasing or unselected
+predecessors, inward optional dependencies, stale production storage order,
+unpackaged implementation status, incomplete critical-model bindings, and
+planned Rust owners attached to implemented stops.
 
 Exit criteria: baseline claims match evidence, the formula
 `424 + 1 = 425` is machine-derived, and no release gate is bypassed.

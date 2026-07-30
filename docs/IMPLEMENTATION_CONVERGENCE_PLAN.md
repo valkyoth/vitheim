@@ -39,7 +39,7 @@ and which planning-only or optional profiles may remain unimplemented.
 | G-02 425-stop serial production path | Replace serial-all-stops interpretation with the selected mandatory-profile dependency closure and the capability increments below. Optional/deferred stops do not block the selected core claim. |
 | G-03 logical Phase C/retirement monolith | Enforce the authority decomposition below. Dynamic built-in-domain retirement/reinstall is not in the default v1 profile; tenant deletion and safe plugin uninstall remain separate mandatory lifecycles. |
 | G-04 oversized milestone prose | Treat phase ledgers as context only. Before code, each owner extracts a focused protocol package and executable model. No coordinator may absorb child state machines merely to avoid another file or crate. |
-| G-05 late persistent authenticated slice | Make the persistent authenticated incident slice the first Hosted architecture proof. Its integration campaign runs before broad adapter/domain implementation, while support remains gated by each owning stop. |
+| G-05 late persistent authenticated slice | Preserve numeric ownership. `0.119.0–0.121.0` provide a PostgreSQL-backed transport/domain test slice with static identity facts only. The first production-authenticated incident proof occurs after `0.225.0`, consumes rather than duplicates every earlier owner, and cannot back-promote the test slice. |
 | G-06 premature five-store/migration scope | PostgreSQL is the reference production backend; SQLite is a bounded local/single-node profile. MySQL, MongoDB, SurrealDB, and online arbitrary-backend migration remain experimental/deferred unless separately promoted by evidence. |
 | G-07 late technology choices | The Increment 0 dossier and bounded spikes complete before affected Hosted API, schema, or adapter contracts freeze. Final `0.371.0–0.398.0` decisions revalidate; they do not make the first selection. |
 | G-08 prose-only protocols | Retain `0.44.0` and `0.56.0`; every critical later state machine must register an executable finite model and adapter correspondence before its own exit. |
@@ -47,6 +47,9 @@ and which planning-only or optional profiles may remain unimplemented.
 | G-10 unclear first topology/TCB/UI stack | Increment 0 freezes the first single-node process/TCB boundaries and the exact HTTP/TLS/identity/UI technology disposition. HA remains a later extension of an operated profile. |
 | G-11 broad product boundary | The v1 capability contract and explicit non-goals below govern API, UI, installer, documentation, and connector claims. |
 | G-12 placeholder foundation types | Existing `0.2.0` and `0.3.0` are hard gates before envelopes, durable schemas, or tenant-bearing authority code. |
+| G-13 selected closure remained prose | Make `SelectedProfileManifestV1` generation 1 an exact 425-row machine-checked artifact owned by reopened `0.1.0`; reject missing predecessors, selected-to-deferred edges, inward optional dependencies, version-order violations, and production claims without implemented owners. |
+| G-14 small-pass/model admission remained prose | Add `ImplementationWorkPackageV1`, the concrete `0.2.0` package, a closed critical-model stop set, `ExecutableModelBindingV1`, and project-owned validation before implementation begins. |
+| G-15 PostgreSQL/SQLite order contradicted the selected profile | Assign PostgreSQL to `0.57.0` and bounded SQLite to `0.58.0`; keep PostgreSQL mandatory and SQLite separately selected. |
 
 ## Selected Production-v1 Capability Contract
 
@@ -92,6 +95,13 @@ evidenced:
 
 Optional capability code may depend inward on stable ports. The kernel and
 mandatory first-party domains never depend on it.
+
+The exact selection, predecessor closure, delivery slice, required runtime
+profiles, successor-after-skip rule, and support boundary for every stop are in
+[Selected Production Profile Manifest](SELECTED_PROFILE_MANIFEST.md) and the
+generated `docs/selected_profile_manifest_v1.txt`. This manifest is required
+before `0.2.0`; `0.398.0` revalidates it and may narrow claims, but it does not
+create the first selected closure.
 
 ## Explicit Product Boundaries
 
@@ -149,9 +159,32 @@ Complete the existing Phase A owners without expanding them:
 Fuzz, property, finite-model, and compile-fail tests must demonstrate
 determinism, boundedness, tenant typing, and invalid-ID rejection.
 
-### Increment 2 — Persistent Authenticated Incident Proof
+### Increment 2 — Persistent Incident Transport Test Slice
 
-Prove the smallest real cross-phase path before broad stores or domains:
+After PostgreSQL `0.57.0`, `0.119.0–0.121.0` prove the first persistent
+incident transport/domain slice with static, deterministic identity and policy
+facts. This is deliberately not a production authentication proof:
+
+```text
+static tenant/subject/policy facts
+  -> CreateIncident typed command
+  -> pure incident decision
+  -> PostgreSQL expected-version atomic work bundle
+  -> event + result + audit + outbox
+  -> disposable incident projection
+  -> policy-shaped HTTP read and minimal UI
+  -> projection deletion/rebuild
+```
+
+All Phase D/E Hosted paths before `0.225.0` remain contracts, fakes, or this
+test slice. They cannot be deployed with the fake identity profile, described
+as production authenticated, or used to claim session/revocation correctness.
+
+### Increment 3 — Production-Authenticated Incident Proof
+
+After the exact tenant, subject, session/OIDC, RBAC/ABAC, policy-lifecycle,
+redaction, and authorization-conformance owners through `0.225.0` exist, prove
+the smallest real cross-phase path:
 
 ```text
 OIDC-authenticated user
@@ -165,17 +198,21 @@ OIDC-authenticated user
   -> projection deletion/rebuild
 ```
 
-The campaign consumes, rather than duplicates, the existing journal, model,
-PostgreSQL, policy, API/UI, incident, tenant/subject/session/OIDC, audit, and
-projection owners. It includes exact retry, changed-material conflict, stale
-writer, crash at each bundle component, notification fake, tenant-ID collision,
-policy and session revocation, backup/restore, and upgrade. A real notification
-provider is added only after its transmission profile is admitted.
+The `0.225.0` conformance campaign consumes, rather than duplicates, the
+existing journal, model, PostgreSQL, policy, API/UI, incident, tenant/subject/
+session/OIDC, audit, and projection owners. It includes exact retry,
+changed-material conflict, stale writer, crash at each bundle component,
+notification fake, tenant-ID collision, policy and session revocation,
+backup/restore, and upgrade. A real notification provider is added only after
+its transmission profile is admitted.
 
 No five-backend abstraction, broad domain suite, or production authentication
-claim may substitute for this proof.
+claim may substitute for this proof. Missing product behavior fails `0.225.0`
+and returns to its existing owner or a new successor minor; the conformance
+commit cannot implement it. Passing evidence cannot retroactively promote
+`0.119.0`.
 
-### Increment 3 — Operational Kernel
+### Increment 4 — Operational Kernel
 
 Add scheduler/timer/lease/fence/queue behavior, basic workflow, quotas and
 measured fairness, external effect intent/dispatch/reconciliation, externally
@@ -183,33 +220,52 @@ anchored integrity checkpoints, observability, failure injection, replay,
 restore, and rolling upgrade. Each authority uses a separate model and local
 owner transaction.
 
-### Increment 4 — Core Service Management
+### Increment 5 — Core Service Management
 
 Deliver the mandatory ITSM set through real policy, storage, workflow, API, and
 notification paths. Shared work-item values and read composition never become a
 universal mutable aggregate, repository, patch command, or nullable mega-table.
 
-### Increment 5 — Assets, SecOps, And Correlation
+### Increment 6 — Assets, SecOps, And Correlation
 
 Deliver the mandatory asset/service/SecOps profile with one real discovery and
 selected ingestion profiles. Graph and search remain disposable projections;
 raw facts/evidence remain immutable or governed erasable references;
 reconciliation is a pure pinned-input decision.
 
-### Increment 6 — Independent Optional Profiles
+### Increment 7 — Independent Optional Profiles
 
 Pure Wasm components precede effectful connector profiles. Builders, extended
 business modules, semantic search, federation, AI, additional databases, and
 vendor packs remain separately selectable and cannot become kernel
 dependencies.
 
-### Increment 7 — Production Qualification
+### Increment 8 — Production Qualification
 
 Operate and harden the same selected minimum profile through packaging,
 startup/upgrade compatibility, HA fencing/failover, backup/restore/DR/failback,
 load/soak/fairness/rebuild/chaos, external security assessment/remediation, and
 the final support/refusal matrix. Phase O verifies decisions already made; it
 does not discover the first viable topology.
+
+## Independently Operable Delivery Checkpoints
+
+The combined `VITHEIM-PRODUCTION-V1` promise still requires service operations
+and security/asset operations. To obtain feedback without weakening that
+promise, the selected manifest labels two independently operated evidence
+slices:
+
+1. `core-service-operations`: kernel, PostgreSQL, identity/policy, core ITSM,
+   workflow basics, attachments, notifications, knowledge/search, and its
+   API/UI paths.
+2. `security-asset-operations`: SecOps, vulnerability, custody, assets,
+   services, selected discovery, bitemporal graph, impact, and correlation.
+
+Each checkpoint has its own workload envelope, backup/restore exercise,
+operational runbook, support boundary, and exact selected-stop evidence. The
+second composes with the first through typed APIs and facts. Neither checkpoint
+alone is Vitheim `1.0.0`; production requires both plus the common
+qualification closure.
 
 ## Authority Decomposition
 
@@ -328,6 +384,10 @@ This planning pass is complete when:
 - Phase C/retirement coordinators satisfy the authority split;
 - every critical implemented protocol has a focused package and executable
   model;
+- `SelectedProfileManifestV1` remains exact, closed, acyclic, and consistent
+  with numeric implementation order;
+- every entering stop has a validated `ImplementationWorkPackageV1`, and every
+  critical stop has an `ExecutableModelBindingV1`;
 - numeric workload envelopes begin with the first vertical slice;
 - optional and out-of-scope capabilities are discoverably refused; and
 - the four late-protocol corrections are enforced by their existing owners.

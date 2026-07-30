@@ -2261,8 +2261,8 @@ Phase C — Storage portability
 Version	Deliverable	Primary pentest target
 0.46.0	Storage capability negotiation	False capability claims and unsafe fallback
 0.52.0	Storage conformance testkit	Test bypass and backend-specific divergence
-0.57.0	SQLite adapter	Locking, rollback and local-file permissions
-0.58.0	PostgreSQL adapter	Transaction, authentication and tenant partitioning
+0.57.0	PostgreSQL adapter	Transaction, authentication and tenant partitioning
+0.58.0	SQLite adapter	Locking, rollback and local-file permissions
 0.59.0	MySQL adapter	Isolation-level and encoding differences
 0.60.0	MongoDB adapter	Transaction boundaries and query injection
 0.61.0	SurrealDB adapter	Namespace, graph and query isolation
@@ -2280,7 +2280,7 @@ Version	Deliverable	Primary pentest target
 0.109.0	Priority, severity and impact models	Priority manipulation and integer boundary errors
 0.110.0	Calendars, targets and SLA calculations	Time-zone, holiday and clock-boundary errors
 0.114.0	Approval and notification foundations	Self-approval and delivery replay
-0.119.0	First authenticated API and service-desk UI	IDOR, CSRF, XSS and field leakage
+0.119.0	Internal API and service-desk UI test slice	IDOR, CSRF, XSS, fake-profile deployment refusal and field leakage
 Phase E — IT service management
 Version	Deliverable	Primary pentest target
 0.121.0	Incident management	Unauthorized assignment, resolution and closure

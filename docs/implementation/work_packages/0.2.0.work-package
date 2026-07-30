@@ -1,0 +1,15 @@
+schema=ImplementationWorkPackageV1
+stop_id=0.2.0
+package_generation=1
+status=planned
+authority_owner=VIT-INV-001
+primary_transition_or_boundary=untrusted identifier bytes to validated tenant-bound typed identity
+crates_and_files=crates/vitheim-id and its compile-fail/property/fuzz fixtures
+schema_migration=none
+external_boundary=none
+prerequisites=0.1.0 repository and security baseline
+excluded_neighbor_scope=budgets fixed-capacity values codecs persistence random ID generation and hosted identity
+verification_owners=vitheim-id unit property compile-fail parser-fuzz and exact-commit pentest suites
+rollback_or_refusal=reject zero malformed noncanonical cross-domain or overflowed values without allocation or partial output
+pentest_question=can attacker-controlled identity material cross tenant or ID domains bypass canonical validation or leak host error detail
+independently_shippable_units=1

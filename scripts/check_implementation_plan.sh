@@ -476,6 +476,8 @@ if [ "$failed" -ne 0 ]; then
     exit 1
 fi
 
+scripts/check_selected_profile_manifest.sh
+scripts/check_implementation_work_packages.sh
 scripts/check_invariant_ownership.sh
 scripts/check_law_generations.sh
 scripts/check_authority_reviews.sh

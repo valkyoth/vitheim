@@ -23,11 +23,14 @@
   transitive closure of the selected mandatory core and explicitly selected
   optional profiles; every unselected stop remains visibly non-shipping and
   grants no claim.
-- The first Hosted architecture proof is the persistent OIDC/policy/PostgreSQL
-  incident slice in the
+- `0.119.0–0.121.0` are a PostgreSQL-backed transport/domain test slice with
+  static identity facts only. The first production-authenticated Hosted
+  architecture proof occurs after the real identity/policy owners through
+  `0.225.0`, as defined by the
   [Implementation Convergence Plan](IMPLEMENTATION_CONVERGENCE_PLAN.md).
-  Every Supported deployment publishes numeric workload, recovery, and refusal
-  limits beginning with that slice.
+  No fake profile is retroactively promoted. Every Supported deployment
+  publishes numeric workload, recovery, and refusal limits beginning with the
+  production-authenticated proof.
 
 ## Repository Baseline
 

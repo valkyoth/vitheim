@@ -42,7 +42,7 @@ mandatory correspondence contract each later adapter runs at its own milestone.
 Deliverables: correspondence adapter, trace executor, fault scheduler hooks,
 observation normalizer, per-profile exclusion record, and differential report.
 Verification: the in-memory/reference profile executes the generated corpus
-and catches seeded deviations. SQLite at `0.57.0`, PostgreSQL at `0.58.0`, and
+and catches seeded deviations. SQLite at `0.58.0`, PostgreSQL at `0.57.0`, and
 each experimental adapter at `0.59.0–0.61.0` run the applicable correspondence
 corpus when implemented; response loss, crash, retry, failover, and unsupported
 paths either correspond or produce an explicit refusal.

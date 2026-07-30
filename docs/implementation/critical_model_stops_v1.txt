@@ -1,0 +1,33 @@
+schema|CriticalModelStopSetV1
+generation|1
+stop_id|reason
+0.10.0|pure aggregate decision evolution and bounded replay
+0.19.0|atomic command result event audit and outbox commit
+0.23.0|quota claim conservation settlement and recovery
+0.24.0|discriminated atomic work and remote-effect ambiguity
+0.46.0|storage capability admission lineage and refusal
+0.66.0|migration planning activation and recovery authority
+0.73.0|durable queue claim scheduling and recovery
+0.121.0|incident lifecycle authority
+0.152.0|tenant lifecycle and topology migration
+0.213.0|OIDC session and mapping lifecycle
+0.219.0|RBAC role assignment authority
+0.220.0|ABAC decision evaluation authority
+0.221.0|policy lifecycle bootstrap and recovery
+0.230.0|workflow intermediate representation lifecycle
+0.239.0|workflow worker lease fencing and takeover
+0.245.0|authenticated alert ingestion admission
+0.250.0|alert deduplication evidence-preserving decision
+0.254.0|security-incident lifecycle authority
+0.255.0|vulnerability finding and remediation authority
+0.263.0|asset lifecycle authority
+0.274.0|bitemporal fact correction and supersession
+0.278.0|asset reconciliation identity and target fencing
+0.287.0|search projection checkpoint and rebuild lifecycle
+0.308.0|risk treatment and exception authority
+0.311.0|privacy-request case authority
+0.318.0|plugin package admission rollout and revocation
+0.329.0|federation trust enrollment and revocation
+0.399.0|placement topology authority handoff and succession
+0.406.0|HA lease fencing and owner failover
+0.410.0|backup custody restore and retirement lifecycle

@@ -21,7 +21,7 @@ fuzz/load pass. Exit criteria: parser and execution are bounded and portable.
 
 ## `0.289.0` — PostgreSQL Full-Text Search Adapter
 
-Status: planned; blocked until this milestone extends the `0.58.0` admission
+Status: planned; blocked until this milestone extends the `0.57.0` admission
 record for exact PostgreSQL full-text/tokenization capabilities.
 
 Setup: map the `0.288.0` lexical port to pinned PostgreSQL configuration,

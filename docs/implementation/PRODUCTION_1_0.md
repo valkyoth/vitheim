@@ -11,6 +11,13 @@ is not a serial support requirement: unselected stops remain explicitly
 Specified/deferred/Conditional/Unsupported and cannot broaden this candidate.
 Any skipped old stop requires a future successor version before implementation;
 it is never backfilled into this release.
+The candidate's exact closure is `SelectedProfileManifestV1` generation 1.
+Every selected row names an implemented executable owner and immutable evidence;
+every predecessor is selected and passing; optional code remains outward-only;
+and both `core-service-operations` and `security-asset-operations` checkpoints,
+plus their common production rows, pass their workload, recovery, operational,
+compatibility and pentest gates. Neither checkpoint can substitute for the
+other or independently claim Vitheim `1.0.0`.
 The decisions in `0.371.0–0.398.0` are frozen, their selected profiles have
 passed Phase O, and unsupported alternatives are excluded from release claims.
 The generated evidence manifest contains no `Specified` or `Implementing`

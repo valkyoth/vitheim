@@ -373,19 +373,23 @@ authenticated provider disposition, while unknown delivery remains unknown and
 triggers the documented escalation/reconciliation policy. `v0.118.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.119.0` — Authenticated API And Service-Desk UI
+## `0.119.0` — Internal API And Service-Desk UI Test Slice
 Status: planned; internal test slice only until Phase F identity passes.
 Setup: define static/fake test authentication facts, CSRF/origin policy, command
 endpoints with exact expected-version/ETag behavior, externally returned
 projection consistency tokens, typed policy-limited read DTOs, field
 classification, and limits.
-Goal: expose the first internal API/UI vertical slice without a production authentication claim.
+Goal: expose the first PostgreSQL-backed internal API/UI transport slice
+without a production authentication claim.
 Deliverables: HTTP/API boundary, minimal UI, secure headers/cookies, and end-to-end audit; no fetch-everything-then-redact path.
 Verification: IDOR, CSRF, XSS, fixation, enumeration, body/rate exhaustion,
 field leakage, stale ETag, read-your-write token misuse, logout/revocation, and
 DAST pass.
 Exit criteria: the UI has no direct mutation bypass and cannot be deployed with
-the test identity profile as production. `v0.119.0 implementation stop reached. Run pentest for this exact commit.`
+the test identity profile as production. The first production-authenticated
+architecture proof occurs only after `0.225.0`; this stop cannot be promoted by
+later evidence.
+`v0.119.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.120.0` — API-First Application And UI Crate Boundary
 

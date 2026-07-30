@@ -8,6 +8,22 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Added a generated, 425-row `SelectedProfileManifestV1` that makes the
+  mandatory, optional-selected, deferred, and unsupported production closure
+  executable, including predecessor, delivery-checkpoint, runtime-profile,
+  executable-owner, retest, skip/successor, and support-boundary fields.
+- Added checked `ImplementationWorkPackageV1` entry certificates, the first
+  `0.2.0` work package, a closed critical-model stop set, and
+  `ExecutableModelBindingV1` records so small-pass and model-ownership rules
+  fail closed before implementation.
+- Corrected production integration chronology: `0.119.0–0.121.0` is an
+  undeployable static-identity PostgreSQL test slice, while `0.225.0` certifies
+  the first real OIDC/policy-authenticated incident path from already
+  implemented owners.
+- Put mandatory PostgreSQL at `0.57.0` before optional SQLite at `0.58.0`,
+  corrected Phase C scope through `0.74.0`, and introduced independently
+  operable service-operations and security/asset-operations evidence
+  checkpoints without weakening the combined `1.0.0` promise.
 - Normalized the complete pre-production roadmap to 424 contiguous minor
   releases, `0.1.0–0.424.0`, with one independently implementable, testable,
   reviewable, and pentestable stop per minor. Planned patch families were

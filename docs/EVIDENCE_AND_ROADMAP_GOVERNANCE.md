@@ -80,6 +80,21 @@ roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
 verified from the same manifest. A count mismatch is a release blocker.
 
+The exact production selection is
+[`SelectedProfileManifestV1`](SELECTED_PROFILE_MANIFEST.md) generation 1,
+materialized as `docs/selected_profile_manifest_v1.txt`. Its 425 rows bind
+selection state, predecessor closure, independently operable delivery slice,
+executable-owner state, required profiles, retests, skip/successor behavior and
+support boundary. A `specified:` owner is not implementation evidence.
+`0.398.0` revalidates this established closure and may narrow support; it cannot
+invent a production selection at the end of the program.
+
+Before a selected stop enters implementation, its checked
+[`ImplementationWorkPackageV1`](IMPLEMENTATION_WORK_PACKAGES.md) and applicable
+`ExecutableModelBindingV1` must be complete. These records make entry
+admission, scope splitting and model ownership auditable without promoting
+planned code to an implemented evidence state.
+
 Owner policy requires a pentest whenever an exact stop is implemented/tagged.
 The audit recommendation to weaken that per-stop requirement is not adopted.
 Scope and depth remain proportional to the change, but no implemented stop may

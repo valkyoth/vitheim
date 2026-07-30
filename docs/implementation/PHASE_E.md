@@ -10,6 +10,11 @@ through separately scoped portfolio, customer/contact/agreement/entitlement,
 supplier/contract/assessment/access, procurement, capacity, and continuity
 domains defined in the two focused completion documents. Every service/asset/
 agreement link uses the `0.94.0` reference and read-port contract.
+Until `0.225.0`, Phase E Hosted integration uses deterministic identity/policy
+facts and fakes only. Domain aggregates, commands, events, DTOs, and PostgreSQL
+paths may be implemented at their assigned stops, but no stop in this phase
+claims production authentication, session revocation, or complete policy
+enforcement.
 
 ## `0.121.0` — Incident Management
 Status: planned. Setup: freeze incident lifecycle, impact/urgency, service impact,

@@ -47,6 +47,11 @@ threat-model and attack-surface delta, define budgets/non-goals, and write the
 release notes and pentest scope. Crates remain private and Rust files remain at
 most 500 lines. Third-party Cargo code remains forbidden unless a future,
 explicit policy decision changes that rule.
+The exact stop must be selected by
+[`SelectedProfileManifestV1`](SELECTED_PROFILE_MANIFEST.md), and a validated
+[`ImplementationWorkPackageV1`](IMPLEMENTATION_WORK_PACKAGES.md) must name its
+single shippable boundary before the status changes to implementing. Critical
+state-machine stops must also have a complete executable-model binding.
 A version-bound implementation-admission record does not itself change the
 dependency policy or create a scoped exception. A hosted profile requiring an
 external Cargo dependency remains blocked until a separate owner-approved
@@ -173,7 +178,7 @@ exact-commit pentest.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
-| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 425-stop roadmap manifest, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, count/claim drift, fail-closed release gate |
+| `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 425-stop roadmap manifest, exact `SelectedProfileManifestV1`, work-package/model-binding gates, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, roadmap/selection/owner/model drift, fail-closed release gate |
 | `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
@@ -234,8 +239,8 @@ implementations remain blocked rather than being implemented casually.
 | `0.46.0` | Stable storage-capability vocabulary and canonical report schema | Type/canonicalization/contradiction tests only; admission, probes, lineage, recovery, and refusal are `0.47.0–0.51.0` |
 | `0.52.0` | Reusable storage-conformance harness, deterministic fixtures, and fault-injection contract | Harness self-tests and fixture reproducibility; destructive, tenant, HA/migration, and model-correspondence matrices are `0.53.0–0.56.0` |
 | `0.56.0` | In-memory/reference adapter correspondence and deterministic fault execution; later adapters certify at their own milestones | Seeded divergence, response loss, crash, retry, and explicit refusal |
-| `0.57.0` | SQLite single-node adapter | Retain all prior adapter proofs; prove unified checkpoint/deletion journaling, atomic checkpoint bundle, mixed-trigger archive replay, both CAS boundaries and all prior busy/crash/reopen guarantees, or refuse VIT-CAP-060/061 |
-| `0.58.0` | PostgreSQL reference production adapter | Retain all prior protections; prove concurrent atomic checkpoint bundles, checkpoint/deletion trigger isolation, unified journal ordering, mixed archives and both CAS boundaries under pool failover |
+| `0.57.0` | PostgreSQL reference production adapter | Retain all prior protections; prove concurrent atomic checkpoint bundles, checkpoint/deletion trigger isolation, unified journal ordering, mixed archives and both CAS boundaries under pool failover |
+| `0.58.0` | SQLite single-node adapter | Retain all prior adapter proofs; prove unified checkpoint/deletion journaling, atomic checkpoint bundle, mixed-trigger archive replay, both CAS boundaries and all prior busy/crash/reopen guarantees, or refuse VIT-CAP-060/061 |
 | `0.59.0` | Experimental MySQL adapter | Prove unified checkpoint/deletion settlement and all prior two-head/bounds/exact-ID/conservative semantics plus attempt-ledger parity, or refuse VIT-CAP-060/061; no default v1 claim |
 | `0.60.0` | Experimental MongoDB adapter | Prove unified checkpoint/deletion settlement and all prior semantics under transactions/failover, or refuse VIT-CAP-060/061; no default v1 claim |
 | `0.61.0` | Experimental SurrealDB adapter | Prove version-specific unified checkpoint/deletion settlement and all prior two-head semantics, or refuse VIT-CAP-060/061; retain capability truthfulness |
@@ -836,7 +841,9 @@ the preceding recovery history, guard, anchor, custody and rollback controls.
 
 Setup: every mutation is a command and every read is policy-filtered. Goal:
 shared work composition without one universal mutable ticket table. Phase exit:
-the first authenticated UI/API slice passes cross-module isolation testing.
+the PostgreSQL-backed static-identity UI/API test slice passes cross-module
+isolation and cannot be deployed as a production-authenticated profile. The
+first real authenticated proof is the `0.225.0` Phase F certification.
 
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
@@ -857,7 +864,7 @@ the first authenticated UI/API slice passes cross-module isolation testing.
 | `0.116.0` | Paging escalation, acknowledgement, and receipts | Forged acknowledgement, escalation skip, flood/retry loops, provider outage |
 | `0.117.0` | Notification preferences, quiet hours, and emergency overrides | Endpoint takeover, mandatory suppression, quiet-hour abuse, notification flood |
 | `0.118.0` | Hosted paging and notification delivery | Forged receipts, provider/account confusion, retry storms, outage reconciliation |
-| `0.119.0` | First authenticated API and service-desk UI | IDOR, CSRF, XSS, session fixation, field leakage |
+| `0.119.0` | PostgreSQL-backed internal API and service-desk UI test slice with static identity facts | IDOR, CSRF, XSS, fake-profile deployment refusal, field leakage |
 | `0.120.0` | API-first application and UI crate boundary | Privileged UI path, forbidden dependencies, headless/UI differential, undocumented actions |
 
 ## Phase E — IT Service Management
@@ -982,7 +989,7 @@ exit: the authorization conformance matrix covers command/read/export/search.
 | `0.222.0` | Relationship authorization with fact epochs and law-generation expansion | Activate `VIT-LAW-001` g10/`VIT-LAW-006` g09; edge-change races, epoch reuse, malicious paths, ownership spoofing, traversal bounds |
 | `0.223.0` | Authority registry for governed profiles, serialized credential state, TCB, and rollout recovery | Evaluator lineage/epoch/start fence, quarantine owner/resolver/tombstones, remediation profile/lineage/audit/quota, existing boundaries |
 | `0.224.0` | Delegation/break-glass with enforcement epoch and final planned law-generation expansion | Activate `VIT-LAW-001` g11/`VIT-LAW-006` g10; delegation revoke racing dispatch, epoch reuse, unbounded privilege, grant amplification, weak audit |
-| `0.225.0` | Complete governed-executor and successor/cancellation conformance suite | Existing profile/rotation/TCB/recovery cases plus evaluator upgrade/mixed nodes, invalid quarantine exits/revival, remediation compromise/circularity/no-path |
+| `0.225.0` | Complete governed-executor/successor conformance and certify the first production-authenticated incident path without adding missing behavior | Existing profile/rotation/TCB/recovery cases plus exact OIDC/policy/PostgreSQL/incident/UI owner evidence, revocation races, crash/rebuild/restore/upgrade, and independent pentest |
 | `0.226.0` | Policy-bound read-subscription port, cursor, and gap contract | Cursor/tenant/topic substitution, hidden fields/counts, replay horizon, no command path |
 | `0.227.0` | Subscription delivery, item-level reauthorization, revocation, and backpressure | Policy/session change between items, slow consumer, flood, reconnect/failover, transport downgrade |
 | `0.228.0` | Authorization/redaction contribution extension, Phase D–F backfill, and prospective gate | Dangling/copied policy entry, duplicate owner, generation mismatch, false defer, allow-by-default |
@@ -1239,7 +1246,7 @@ the first technology decision. An unselected option remains unsupported at
 | `0.391.0–0.393.0` | Focused HA, regional/DR, and operational-authority freezes | Each deployment claim has one topology, failure model, role matrix, and exercise corpus |
 | `0.394.0–0.396.0` | Focused witness replacement bootstrap, capacity transfer, and operationalization freezes | No approval can select a convenient receipt, reuse an old namespace, fabricate credit, or skip witnessed replay |
 | `0.397.0` | Full-suite product profile freeze decision | Evidence-based support/defer matrix for extended service management, subscriptions, assets, privacy, inbound mail, and audit export |
-| `0.398.0` | Mandatory Hosted production baseline go/no-go under repository-wide zero dependencies | Missing TLS/crypto/storage/identity/input/operations evidence, false support, hidden installer or claim bypass |
+| `0.398.0` | Revalidate the mandatory Hosted production baseline and established `SelectedProfileManifestV1` under repository-wide zero dependencies; never create the selection here | Missing TLS/crypto/storage/identity/input/operations evidence, selected-closure drift, false support, hidden installer or claim bypass |
 
 ## Phase O — Production Hardening
 

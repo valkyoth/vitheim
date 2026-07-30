@@ -28,6 +28,11 @@ small-loop rule to every stop, assigns 65 focused successor releases to the 18
 families that exceeded it, and records 109 later focused capability,
 requirement-ownership, decomposition, integration, discovery, and coherence
 releases.
+The exact production selection is
+[SelectedProfileManifestV1](SELECTED_PROFILE_MANIFEST.md), and every entering
+implementation stop is governed by
+[ImplementationWorkPackageV1](IMPLEMENTATION_WORK_PACKAGES.md) plus its
+applicable executable-model binding.
 
 ## Universal Setup
 
@@ -1282,7 +1287,7 @@ the same exact-commit review process. See
 
 - [Phase A — Pure Foundation (`0.1.0–0.11.0`)](implementation/PHASE_A.md)
 - [Phase B — Journal And Projections (`0.12.0–0.43.0`, including corrective `0.25.0–0.27.0` passes)](implementation/PHASE_B.md)
-- [Phase C — Storage Portability (`0.46.0–0.72.0`)](implementation/PHASE_C.md)
+- [Phase C — Storage Portability (`0.46.0–0.74.0`)](implementation/PHASE_C.md)
 - [Phase D — Universal Work (`0.102.0–0.119.0`)](implementation/PHASE_D.md)
 - [Phase E — IT Service Management (`0.121.0–0.132.0`)](implementation/PHASE_E.md)
 - [Phase F — Identity, Tenancy, And Policy (`0.151.0–0.225.0`)](implementation/PHASE_F.md)

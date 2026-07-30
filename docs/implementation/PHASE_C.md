@@ -1,10 +1,11 @@
 # Phase C — Storage Portability
 
-Scope: `0.46.0–0.72.0`. Domain code sees semantic ports only. Each hosted
+Scope: `0.46.0–0.74.0`. Domain code sees semantic ports only. Each hosted
 adapter requires an independently approved implementation-admission record
 before code begins. The default `1.0.0` target is in-memory for semantics,
-SQLite for single-node, and PostgreSQL for HA; MySQL, MongoDB, and SurrealDB are
-experimental unless `0.372.0` promotes an evidenced profile.
+PostgreSQL for the mandatory multi-user production profile, and SQLite as a
+separately selected bounded single-node/local profile; MySQL, MongoDB, and
+SurrealDB are experimental unless `0.372.0` promotes an evidenced profile.
 The selected core production path implements PostgreSQL first and treats
 SQLite as a separately bounded local/single-node profile. Online arbitrary-
 backend migration is Unsupported by default; v1 portability requires
@@ -1820,66 +1821,7 @@ runtime generation fencing must pass before activation; a legacy trace,
 reversed common subsequence, hidden acquisition or backend retry that changes
 the trace refuses the affected capability.
 
-## `0.57.0` — SQLite Adapter
-
-Status: planned; blocked until this milestone approves the exact SQLite driver,
-bundling/native-code policy, maintenance, license, and file-encryption strategy.
-
-Setup: document single-node limits, dedicated database-file-per-tenant strong
-profile, shared-file evaluation-only profile, ownership, secure paths, journal
-mode, transactions, busy handling, migrations, backup, cancellation, keys, and
-the version-bound implementation-admission record. To claim `VIT-CAP-060`,
-select and evidence one admitted `DeadlineConditionalTopologyCasV1` mechanism
-inside SQLite itself; host timers, busy timeouts, connection interruption, and
-statement-time predicates are insufficient. Otherwise report the capability
-unsupported and refuse dynamic-topology-owner startup.
-Separately, the exact SQLite library/journal mode must pass
-CommitCutRecordedTimePortV1 using authenticated native commit evidence or a
-SQLite-enforced hard no-late-commit fence; host clock reads around `COMMIT` are
-not proof. Otherwise SQLite refuses DomainAggregateTarget.
-
-Goal: support development, evaluation, tests, and documented single-node use.
-
-Deliverables: semantic adapter, migration set, secure file setup, backup/restore
-tooling, capability profile, canonical
-`TopologyMutationAuthorizationReceiptV1` codec/readback, complete issuer/
-consumer time schema, atomic deadline-CAS evidence, quota rows, exact-replay
-hot store, authenticated checkpoint/high-watermark, archive index, and bounded
-compaction worker; include non-borrowable ingress-lane accept/TLS/decode/
-executor/pool profiles with a global ceiling, two-stage presentation charge
-rows/evidence/sequence/closed dispositions/result links/continuity/checkpoints/
-compaction and atomic saturation behavior, non-borrowable per-lane charge
-rows/bytes/awaiting/backlog/checkpoint/archive-I/O/compaction-worker
-reservations below aggregate disk/work ceilings, immutable capacity-profile
-lineage/typed-diff/activation-record/sequence/drain/provisioning-evidence rows,
-drain-authorization identity/digest/replay state, activation checkpoints,
-lineage/activation high-watermarks, the authenticated derived lane/aggregate
-drain-fence row, atomic fence events and typed draining result, authenticated endpoint/
-audience/credential-profile presentation-lane mappings with generation/fence/
-revocation state, separate normal/recovery/break-glass counters and
-reserve, issuer range manifests, consumer sparse commitments, and eligible-
-through proof state.
-
-Verification: injection, locking, crash rollback, symlink/permission attacks,
-tenant isolation, interrupted migration, restore, every omitted/reset receipt/
-time/profile/continuity/tombstone field, every `0.52.0` deadline-CAS pause
-point, timeout with attempted late commit, replay-horizon/quota/checkpoint/
-archive/compaction crash and concurrent-replay cases, bounded file growth under
-maximum admitted issuance, sparse-gap/late-presentation range cases, normal-
-exhausted break-glass success, break-glass flood isolation, commit-cut/ratchet
-crash points, commit delay past the claimed interval, suspend/restart/backup
-restore, unsupported-domain refusal, and conformance pass, including normal-
-to-emergency lane forgery, lane/class mismatch,
-credential rotation/revocation, mapping rollback on restore, and pre-auth work
-exhaustion, cross-lane ingress starvation, stage-one/stage-two crash boundaries,
-orphan charge non-refund/reuse, mapping-change TOCTOU, every closed disposition
-transition, terminal irreversibility, checkpoint-before-compaction, and atomic
-charge-ledger saturation.
-
-Exit criteria: no HA claim and all single-node semantics are evidenced.
-`v0.57.0 implementation stop reached. Run pentest for this exact commit.`
-
-## `0.58.0` — PostgreSQL Reference Adapter
+## `0.57.0` — PostgreSQL Reference Adapter
 
 Status: planned; blocked until this milestone approves the exact PostgreSQL
 driver, TLS stack/profile, pool, maintenance, license, and native-code policy.
@@ -2044,6 +1986,65 @@ conformance, and bounded range-chunk decode/verification exhaustion, and
 conformance pass.
 
 Exit criteria: production claims match tested deployment profiles only.
+`v0.57.0 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.58.0` — SQLite Adapter
+
+Status: planned; blocked until this milestone approves the exact SQLite driver,
+bundling/native-code policy, maintenance, license, and file-encryption strategy.
+
+Setup: document single-node limits, dedicated database-file-per-tenant strong
+profile, shared-file evaluation-only profile, ownership, secure paths, journal
+mode, transactions, busy handling, migrations, backup, cancellation, keys, and
+the version-bound implementation-admission record. To claim `VIT-CAP-060`,
+select and evidence one admitted `DeadlineConditionalTopologyCasV1` mechanism
+inside SQLite itself; host timers, busy timeouts, connection interruption, and
+statement-time predicates are insufficient. Otherwise report the capability
+unsupported and refuse dynamic-topology-owner startup.
+Separately, the exact SQLite library/journal mode must pass
+CommitCutRecordedTimePortV1 using authenticated native commit evidence or a
+SQLite-enforced hard no-late-commit fence; host clock reads around `COMMIT` are
+not proof. Otherwise SQLite refuses DomainAggregateTarget.
+
+Goal: support development, evaluation, tests, and documented single-node use.
+
+Deliverables: semantic adapter, migration set, secure file setup, backup/restore
+tooling, capability profile, canonical
+`TopologyMutationAuthorizationReceiptV1` codec/readback, complete issuer/
+consumer time schema, atomic deadline-CAS evidence, quota rows, exact-replay
+hot store, authenticated checkpoint/high-watermark, archive index, and bounded
+compaction worker; include non-borrowable ingress-lane accept/TLS/decode/
+executor/pool profiles with a global ceiling, two-stage presentation charge
+rows/evidence/sequence/closed dispositions/result links/continuity/checkpoints/
+compaction and atomic saturation behavior, non-borrowable per-lane charge
+rows/bytes/awaiting/backlog/checkpoint/archive-I/O/compaction-worker
+reservations below aggregate disk/work ceilings, immutable capacity-profile
+lineage/typed-diff/activation-record/sequence/drain/provisioning-evidence rows,
+drain-authorization identity/digest/replay state, activation checkpoints,
+lineage/activation high-watermarks, the authenticated derived lane/aggregate
+drain-fence row, atomic fence events and typed draining result, authenticated endpoint/
+audience/credential-profile presentation-lane mappings with generation/fence/
+revocation state, separate normal/recovery/break-glass counters and
+reserve, issuer range manifests, consumer sparse commitments, and eligible-
+through proof state.
+
+Verification: injection, locking, crash rollback, symlink/permission attacks,
+tenant isolation, interrupted migration, restore, every omitted/reset receipt/
+time/profile/continuity/tombstone field, every `0.52.0` deadline-CAS pause
+point, timeout with attempted late commit, replay-horizon/quota/checkpoint/
+archive/compaction crash and concurrent-replay cases, bounded file growth under
+maximum admitted issuance, sparse-gap/late-presentation range cases, normal-
+exhausted break-glass success, break-glass flood isolation, commit-cut/ratchet
+crash points, commit delay past the claimed interval, suspend/restart/backup
+restore, unsupported-domain refusal, and conformance pass, including normal-
+to-emergency lane forgery, lane/class mismatch,
+credential rotation/revocation, mapping rollback on restore, and pre-auth work
+exhaustion, cross-lane ingress starvation, stage-one/stage-two crash boundaries,
+orphan charge non-refund/reuse, mapping-change TOCTOU, every closed disposition
+transition, terminal irreversibility, checkpoint-before-compaction, and atomic
+charge-ledger saturation.
+
+Exit criteria: no HA claim and all single-node semantics are evidenced.
 `v0.58.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.59.0` — MySQL Adapter

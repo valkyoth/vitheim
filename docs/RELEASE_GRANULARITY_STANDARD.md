@@ -40,7 +40,8 @@ preallocated in the architectural roadmap.
 ## Small-Pass Admission Certificate
 
 Before any planned release moves from `Specified` to `Implementing`, its owner
-must record one implementation work package containing:
+must record one checked
+[`ImplementationWorkPackageV1`](IMPLEMENTATION_WORK_PACKAGES.md) containing:
 
 1. one dominant authority owner, or `none` for a pure adapter/decision/
    certification release;
@@ -59,6 +60,11 @@ must record one implementation work package containing:
 The work package fails admission when two entries in any category could ship,
 fail, roll back, or be pentested independently. The remedy is a new minor
 release, not a larger pull request or a broader pentest report.
+
+The line-oriented record and model-binding registry make this admission rule
+machine-checkable. The checker verifies shape and single-unit assertions; human
+review still verifies that the exact code/schema diff does not conceal a second
+independently shippable boundary.
 
 ## Cumulative Ledger Rule
 

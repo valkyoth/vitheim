@@ -110,6 +110,8 @@ and licensing decision. See [Publication Policy](docs/PUBLICATION_POLICY.md).
 - [Architecture](docs/ARCHITECTURE.md)
 - [Implementation Plan — 425 exact release stops](docs/IMPLEMENTATION_PLAN.md)
 - [Implementation Convergence Plan](docs/IMPLEMENTATION_CONVERGENCE_PLAN.md)
+- [Selected Production Profile Manifest](docs/SELECTED_PROFILE_MANIFEST.md)
+- [Implementation Work Packages And Model Bindings](docs/IMPLEMENTATION_WORK_PACKAGES.md)
 - [Release Granularity Standard](docs/RELEASE_GRANULARITY_STANDARD.md)
 - [Implementation Scope Audit](docs/IMPLEMENTATION_SCOPE_AUDIT.md)
 - [Release Plan](docs/RELEASE_PLAN.md)

@@ -25,8 +25,20 @@ require_text "$plan" \
     'Selected Production-v1 Capability Contract' \
     'selected production core'
 require_text "$plan" \
-    'Persistent Authenticated Incident Proof' \
+    'Production-Authenticated Incident Proof' \
     'early real vertical slice'
+require_text "$plan" \
+    'Persistent Incident Transport Test Slice' \
+    'non-production transport slice'
+require_text "$plan" \
+    'cannot retroactively promote' \
+    'fake identity cannot gain production support'
+require_text "$plan" \
+    'SelectedProfileManifestV1' \
+    'machine-readable selected closure'
+require_text "$plan" \
+    'Independently Operable Delivery Checkpoints' \
+    'separate service and security asset feedback slices'
 require_text "$plan" \
     'PostgreSQL is the reference production backend' \
     'PostgreSQL reference profile'
@@ -65,8 +77,23 @@ require_text docs/implementation/PHASE_C.md \
     'selected core production path implements PostgreSQL first' \
     'Phase C PostgreSQL-first order'
 require_text docs/implementation/PHASE_C.md \
+    'Scope: `0.46.0–0.74.0`' \
+    'complete Phase C scope'
+require_text docs/implementation/PHASE_C.md \
+    '## `0.57.0` — PostgreSQL Reference Adapter' \
+    'PostgreSQL numerically first'
+require_text docs/implementation/PHASE_C.md \
+    '## `0.58.0` — SQLite Adapter' \
+    'SQLite bounded successor'
+require_text docs/implementation/PHASE_C.md \
     'backend migration is Unsupported by default' \
     'Phase C migration boundary'
+require_text docs/implementation/PHASE_D.md \
+    'Internal API And Service-Desk UI Test Slice' \
+    'truthful fake-identity API slice'
+require_text docs/implementation/PHASE_F.md \
+    'production-authenticated architecture proof' \
+    'post-identity vertical certification'
 
 authority=docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md
 
