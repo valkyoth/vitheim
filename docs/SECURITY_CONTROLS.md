@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 414 exact stops and their
+- One canonical roadmap manifest accounts for all 418 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -88,7 +88,7 @@ epochs and mode-bound source status; `0.51.15–0.51.18` authorize/complete
 target-slot takeover, atomically transfer funded capacity for retained
 candidate controls, and reconcile every barrier release/retention receipt;
 `0.51.19` archives before deletion under truthful uncertainty; `0.51.20`
-independently authorizes exact retained-namespace safety; `0.51.21–0.51.48`
+independently authorizes exact retained-namespace safety; `0.51.21–0.51.52`
 evaluate reinstall under partition fences, enforce explicit lifecycle
 adjacency, serialize activation against abort,
 require source-local activation-permit redemption and successor-restriction
@@ -141,6 +141,16 @@ activation; `0.51.46–0.51.47` commit one parent intent and require its closed,
 activation-bound one-shot authority to be consumed with the remote effect.
 `0.51.48` keeps contradictory physical effects nonterminal until every losing
 effect is removed/transferred or durably funded and exact conservation holds.
+`0.51.49` gives every restrictive-safety mutation an immediate protected lane
+through any prepared inventory fence and atomically invalidates both the cut
+and prepared construction. `0.51.50` cuts authorization issuance, reconciles
+the complete delivery universe and requires the terminal CAS to consume its
+closure root with the current conflict head. `0.51.51` treats a truly
+unauthorized post-closure effect as a separately funded current-generation
+incident/residual without reopening terminal history. `0.51.52` permits a dead
+intent to be abandoned or replanned only from a complete no-effect closure;
+uncertainty or any observed effect enters conflict, and successor identities
+and cumulative budgets are never reused or reset.
 Saturated recovery remains
 a retry-only lane with no terminal or cleanup authority; `0.51.44` charges its
 non-resetting lifetime limit through a separate versioned ledger before outbox

@@ -250,7 +250,7 @@ require_text "$plan" \
     '`PredecessorInventoryCutFenceV1`' \
     'source-local inventory cut fence'
 require_text "$plan" \
-    'parent invalidation projection is never sufficient authority to activate.' \
+    'invalidation projection is never sufficient authority to activate.' \
     'delayed invalidation cannot prove activation freshness'
 require_text "$plan" \
     '0.51.46` — Parent-Local Release Effect Intent' \
@@ -285,6 +285,57 @@ require_text "$plan" \
 require_text "$plan" \
     'a member becomes terminal only after every physical effect is' \
     'no terminal member with unsettled physical effects'
+require_text "$plan" \
+    '0.51.49` — Restrictive-Safety Inventory Mutation Lane' \
+    'restrictive safety inventory mutation lane'
+require_text "$plan" \
+    '`RestrictiveSafety` commits in one source-local transaction even' \
+    'restrictive safety bypasses the inventory fence'
+require_text "$plan" \
+    'the restriction itself never waits.' \
+    'restrictive safety is enforced without delay'
+require_text "$plan" \
+    '`DecisionNeutral` requires a typed proof' \
+    'neutral inventory mutation requires proof'
+require_text "$plan" \
+    '0.51.50` — Effect Authorization And Delivery Closure' \
+    'effect authorization and delivery closure stop'
+require_text "$plan" \
+    '`EffectDeliveryOpen → EffectAuthorizationCutSealed →' \
+    'closed effect delivery lifecycle'
+require_text "$plan" \
+    '`EffectDeliveryClosureRootV1`' \
+    'complete effect delivery closure root'
+require_text "$plan" \
+    'terminal member CAS consumes that' \
+    'terminal CAS consumes delivery closure'
+require_text "$plan" \
+    '0.51.51` — Post-Closure Unauthorized Effect Incident Ownership' \
+    'post-closure unauthorized effect incident stop'
+require_text "$plan" \
+    '`PostClosureUnauthorizedEffectIncidentV1`' \
+    'post-closure unauthorized effect incident type'
+require_text "$plan" \
+    '`Detected → CurrentGenerationFenced → ResidualOwned | SafelyRemoved →' \
+    'closed post-closure incident lifecycle'
+require_text "$plan" \
+    'reopens, changes or derives authority from the absorbing release member' \
+    'post-closure incident cannot reopen terminal history'
+require_text "$plan" \
+    '0.51.52` — No-Effect Intent Disposition And Replanning' \
+    'no-effect intent disposition stop'
+require_text "$plan" \
+    '`IntentCommitted → IntentDispositionRequested → IntentDispatchFenced →' \
+    'closed intent disposition lifecycle'
+require_text "$plan" \
+    '`NoEffectIntentClosureRootV1`' \
+    'no-effect intent closure root'
+require_text "$plan" \
+    'Any uncertainty or discovered effect enters `EffectConflictDetected`' \
+    'uncertain no-effect disposition enters conflict'
+require_text "$plan" \
+    'Neither branch resets observation/retry/intent lifetime budgets or reuses an' \
+    'intent replanning forbids budget and identity reuse'
 
 if [ "$failed" -ne 0 ]; then
     exit 1

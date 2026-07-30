@@ -7,7 +7,7 @@ deliberately separate from the declarative domain-retirement contract. It does
 not weaken the lifecycle, drainage, history, disposition, or certification
 obligations owned elsewhere.
 
-Forward references inside `0.51.34–0.51.48` are mandatory feature gates. The
+Forward references inside `0.51.34–0.51.52` are mandatory feature gates. The
 earlier-numbered implementation slices must use the final declared schemas and
 remain operationally disabled until every referenced construction, policy,
 locality and continuity stop has passed its exact-commit gate. No intermediate
@@ -25,7 +25,7 @@ membership_snapshot }`, never an optional/wildcard tenant. Define
 contribution generations, expected retirement-state version, idempotency
 identity, current authorization, separated proposer/approver/destructive
 approver identities, and approval expiry. This stop executes only the exact
-tenant child; deployment scope requires `0.51.5–0.51.48`.
+tenant child; deployment scope requires `0.51.5–0.51.52`.
 Goal: execute and recover retirement transitions without stale authority,
 partial commitment, silent command reopening, or data-loss acceptance becoming
 completion authority.
@@ -1404,7 +1404,7 @@ capacity root before activation can prepare.
 Late evidence appends under the quarantine evidence head and can confirm or
 strengthen lineage but never automatically lower or remove the top
 restriction. Any lowering is `PermissiveOrDestructive` and may occur only
-through the dedicated `0.51.31–0.51.48` evaluation, tagged adoption or
+through the dedicated `0.51.31–0.51.52` evaluation, tagged adoption or
 operational activation, and predecessor reconciliation protocols; evidence,
 evaluation, a permit, bridge or ownership record alone grants no lowering.
 Uncertainty keeps the top. Ownership or capacity without installed evaluation/
@@ -1416,7 +1416,7 @@ ownership without enforcement, top restriction omitted from evaluation/status
 root, coverage-root/generation/algorithm substitution, new operation without
 coverage invalidation, ordinary permit substituted, missing/unfunded successor
 bridge, late evidence automatically lowering restriction, stale evidence head,
-lowering outside `0.51.31–0.51.48`, restore/import losing the top member, and
+lowering outside `0.51.31–0.51.52`, restore/import losing the top member, and
 replacement eligibility from structurally incomplete roots pass.
 Exit criteria: every possible unknown restriction is a funded, authoritative
 and actively enforced maximal residual over one complete current coverage scope
@@ -1739,7 +1739,7 @@ or revalidation-required while the predecessor top remains authoritative.
 
 Status: planned; operational activation remains disabled until mandatory
 `0.51.38`, `0.51.41–0.51.42` construction/policy and `0.51.45` distributed
-inventory-cut gates pass.
+inventory-cut plus `0.51.49` restrictive-safety mutation gates pass.
 Setup: consume one `0.51.21` `ReinstallEligibleCurrent` evaluation root with
 all real partition fences active, its current `0.51.22` lifecycle generation in
 `ActivationPrepared`, its current purpose-bound sealed delivery cut,
@@ -1957,7 +1957,7 @@ Status: planned conditionally; unavailable without one current operational-mode
 `0.51.31` lowering prepared root and one exact `0.51.34` operational reinstall
 guard; operational activation remains disabled until mandatory `0.51.38` and
 `0.51.41–0.51.42` construction/policy and `0.51.45` distributed inventory-cut
-gates pass.
+plus `0.51.49` restrictive-safety mutation gates pass.
 Setup: consume the destination-admitted lowering authorization tombstone,
 current `UnknownRestrictionLoweringEvaluationRootV1`,
 `UnknownRestrictionLoweringBridgePreparedRootV1`, exact predecessor top/
@@ -2035,9 +2035,10 @@ branch becomes operational at `0.51.34` or operational lowering activates at
 `0.51.36`. This stop owns the core reconciliation state machine. Its records
 remain dispatch-disabled and cannot make their first operational member
 transition or authorize predecessor cleanup until mandatory `0.51.38`,
-`0.51.40`, and `0.51.41–0.51.48` construction, policy, inventory, locality,
-intent, effect-authorization, conflict and retry-ledger admissions are
-complete; `0.51.39` exclusively governs saturated-member retry issuance.
+`0.51.40`, and `0.51.41–0.51.52` construction, policy, inventory, locality,
+intent, effect-authorization, conflict, delivery-closure, post-closure
+incident, intent-disposition and retry-ledger admissions are complete;
+`0.51.39` exclusively governs saturated-member retry issuance.
 Setup: consume one exact `UnknownRestrictionLoweringReleaseManifestV1`, the
 corresponding `PreOperationalLoweringAdoptionReceiptV1` plus successful
 `0.51.34` transition or `OperationalUnknownRestrictionLoweringReceiptV1`,
@@ -2098,9 +2099,11 @@ PendingObservationSaturated at the ceiling directly to
 `reserved_terminal_version`, so hostile response loss cannot exhaust terminal
 capacity, but only after the exact `0.51.46` parent intent won, the matching
 `0.51.47` local effect authorization was consumed, and `0.51.48` proves no
-unsettled contradictory physical effect. The intent is a separate parent-local
-one-winner record and does not consume member version. Any contradictory
-receipt keeps the member nonterminal in effect-conflict reconciliation.
+unsettled contradictory physical effect. The same parent-local terminal CAS
+must consume the current `0.51.50` `EffectDeliveryClosureRootV1` and exact
+conflict generation/head. The intent is a separate parent-local one-winner
+record and does not consume member version. Any unresolved authorization,
+delivery or contradictory receipt keeps the member nonterminal.
 Budget/counter arithmetic never wraps, resets or borrows
 across members or generations. Duplicate terminal responses join the durable
 winner. Released versus RetainedAccepted races have one CAS winner, and
@@ -2144,7 +2147,7 @@ Parent reconciliation emits domain-separated
 `member_id → { generation, maximum_authenticated_version, state_digest,
 budget_digest, transition_head_digest,
 saturated_retry_ledger_head_digest, effect_intent_digest,
-effect_conflict_head_digest }`.
+effect_conflict_head_digest, effect_delivery_closure_digest }`.
 
 Different members may and normally will carry heterogeneous versions. For each
 exact manifest member the parent selects one maximum authenticated record and
@@ -2174,7 +2177,8 @@ and capacity equation are durable. Restore/import preserves the exact
 heterogeneous version-vector root, each member's independent maximum
 generation/version, version budget, saturated-retry ledger head and terminal
 receipt plus the intent/authorization/conflict heads before resuming the
-cursor, reconciles every physical-effect ownership ledger, rejects a
+cursor, including the delivery-closure root consumed by the terminal CAS,
+reconciles every physical-effect ownership ledger, rejects a
 pre-terminal snapshot over a terminal member, and never revives a released
 authority or forgets a retained one.
 Verification: omitted/duplicate enforcement point or bridge, wrong manifest/
@@ -2201,7 +2205,9 @@ parent fold, parent outage, lost source response, duplicate effect receipt,
 route movement during delivery, retention acceptance followed by destination
 response loss, terminal fold without a selected intent or consumed
 authorization, contradictory physical receipt treated only as security
-evidence, conflict head omitted from vector/restore, member version
+evidence, delivery closed with unresolved authorization/outbox/inbox state,
+terminal CAS not consuming the current closure/conflict heads, closure root
+omitted from vector/restore, member version
 rollback/fork/overflow, partial tenant/network outage, stale
 route, late restrictive evidence, unsafe predecessor release, unauthenticated/
 unfunded/double-funded retention, both/neither owner, capacity overflow or
@@ -2509,7 +2515,7 @@ disposed or remains visibly funded without gaining operational authority.
 
 Status: planned conditionally; locality substrate required before the first
 operational `0.51.37` dispatch, while remote effect dispatch remains disabled
-until `0.51.46–0.51.48` pass.
+until `0.51.46–0.51.52` pass.
 Setup: consume one activated construction root, parent-local members and
 transition heads, source/destination routing epochs, durable parent inbox,
 source enforcement authority, destination retention ownership/capacity
@@ -2605,10 +2611,17 @@ high-watermarks, routing/ownership generations, predecessor restriction,
 canonical manifest-membership root, source fence receipts, parent invalidation
 generation and cut digest. Each source installs a local
 `PredecessorInventoryCutFenceV1` before issuing its receipt. While sealed but
-not activated, creation, movement, replacement, plugin activation or newly
-discovered predecessor-top state must atomically invalidate the source cut and
-remain blocked/deferred, or enter a new construction generation; a delayed
-parent invalidation projection is never sufficient authority to activate.
+not activated, classify every mutation through the closed `0.51.14`
+classification. `RestrictiveSafety` never waits for the inventory fence:
+under `0.51.49` it commits and becomes enforced immediately from protected
+emergency capacity, atomically advances the safety/inventory invalidation
+generation, invalidates the prepared cut, and attaches the restriction to the
+current predecessor top plus every prepared successor bridge. Proven
+`DecisionNeutral` work follows its exact neutral path and cannot change
+membership, routing, ownership or restriction meaning. Only permissive or
+destructive creation, movement, replacement or plugin changes may remain
+blocked/deferred or enter a new construction generation. A delayed parent
+invalidation projection is never sufficient authority to activate.
 The source fence remains active after its seal receipt until it consumes the
 exact activation outcome. Success transitions it to successor mode, where new
 restrictions attach to the successor generation; failed/disposed construction
@@ -2623,7 +2636,9 @@ sealing, between seal and activation, concurrently with the guard CAS and
 after activation; delayed/reordered invalidation, stale parent projection,
 omitted partition, high-watermark rollback, mixed routing generations,
 source-fence response loss, restore in sealed/activated/invalidated states and
-late restriction attaching to the old generation pass.
+late restriction attaching only to the old generation; legal hold, quarantine,
+distrust, revocation, vulnerability evidence and a newly activated restrictive
+plugin at every boundary pass.
 Exit criteria: every activated manifest is rooted in one source-fenced
 distributed inventory cut; pre-activation mutation invalidates or rebuilds it,
 and post-activation restrictive state can enter only the successor generation.
@@ -2650,8 +2665,10 @@ generation, expected remote object version, policy/budget digests, purpose and
 idempotency. One expected-version parent transaction commits the sole intent,
 intent head, audit and outbox. The intent is absorbing for ordinary dispatch,
 does not mutate or consume the release-member version, and cannot itself claim
-a physical effect or terminal outcome. Replanning requires conflict/
-disposition authority at `0.51.48`; no worker may overwrite or switch intent.
+a physical effect or terminal outcome. Replanning or abandonment requires the
+separate `0.51.52` disposition lifecycle and a current `0.51.50` no-effect
+delivery-closure proof; no worker may overwrite or switch an intent in place.
+Any observed or uncertain effect enters `0.51.48` instead.
 Verification: two release workers, release/retain race, two retention
 destinations, stale member/guard/cut/route/object version, branch/owner/effect
 substitution, replay, response loss, intent without outbox, outbox without
@@ -2714,8 +2731,10 @@ Detection atomically fences terminal member folding, creates an immutable
 `ReleaseMemberEffectConflictManifestV1` over every observed source removal and
 destination retention owner, preserves original reservations and charges the
 protected conflict reserve. Bounded authenticated discovery closes the
-supported owner/routing universe; late receipts append through a
-predecessor-linked conflict generation and reopen settlement if necessary.
+supported owner/routing universe. Before `0.51.50` closes delivery, late
+receipts append through a predecessor-linked conflict generation and reopen
+conflict settlement. `SingleEffectSettled` alone cannot terminalize the member
+or release conflict/recovery capacity.
 For the selected intent, reconciliation proves the intended effect remains
 valid or uses separately approved disposition to replace it. Every losing
 effect must be proved released, transferred to the selected owner, or accepted
@@ -2729,25 +2748,187 @@ any additional physical enforcement is separately owned residual restriction,
 not duplicate terminal authority. Unknown owner/effect, incomplete discovery,
 capacity mismatch or evidence above the supported hard maximum remains
 nonterminal, enforced and incident-visible. Restore binds the conflict
-manifest/head and conservation root.
+manifest/head and conservation root. After delivery closure and the absorbing
+member terminal, no valid old authorization can still create an effect;
+genuinely unauthorized post-closure effects enter the separately funded
+`0.51.51` current-generation incident/residual path and never rewrite or
+silently reopen terminal member history.
 Verification: source removed plus destination retained, two destinations
 retained, contradictory unauthorized receipt, parent outage, receipt response
 loss, duplicate/late receipt after apparent settlement, route movement,
 owner ABA, incomplete discovery, loser cleanup failure, unfunded/double-owned
 residual, conservation overflow/mismatch, terminal fold during conflict,
-capacity release before settlement, restore before/after each state and valid
-single-effect settlement pass.
+capacity release before settlement or delivery closure, valid late receipt
+after a claimed closure, unauthorized post-closure effect incorrectly
+reopening the member, restore before/after each state and valid single-effect
+settlement pass.
 Exit criteria: a member becomes terminal only after every physical effect is
 accounted for, one selected effect supplies terminal authority, every extra
 restriction has funded ownership or is proved gone, and conservation is
-durable.
+durable; member terminality still waits for the separate delivery closure.
 `v0.51.48 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.49` — Restrictive-Safety Inventory Mutation Lane
+
+Status: planned conditionally; mandatory before any `0.51.45` inventory fence
+may block ordinary mutation paths or any prepared construction may activate.
+Setup: consume the closed `0.51.14` mutation classification, source-local
+predecessor inventory/cut fence, current safety and invalidation generations,
+current predecessor enforcement state, every source-local prepared successor
+bridge, protected emergency capacity and transactional audit/outbox.
+Goal: preserve immediate restrictive enforcement while still invalidating a
+now-stale prepared inventory cut.
+Deliverables: `RestrictiveSafety` commits in one source-local transaction even
+while the cut fence is sealed. The transaction applies the legal hold,
+quarantine, distrust, revocation, vulnerability restriction or restrictive
+plugin contribution immediately to the current predecessor top and every
+prepared successor bridge on that source; advances the safety and inventory
+invalidation generations; invalidates the exact cut/construction generations;
+charges protected emergency capacity; and writes result/audit/outbox.
+If a prepared bridge cannot accept the stronger state, the predecessor remains
+enforced and the candidate is invalidated; the restriction itself never waits.
+`DecisionNeutral` requires a typed proof that membership, routing, ownership,
+restriction meaning, safety generation and capacity are unchanged. Only
+permissive/destructive mutations may be blocked or deferred behind the fence.
+Activation rechecks the advanced invalidation generation and cannot win over
+the restrictive transaction. Restore takes checked maxima for safety/
+invalidation and never revives the prepared cut.
+Verification: every restrictive class at immediately before cut seal, after
+seal, between preparation and activation, concurrently with the guard CAS and
+after activation; bridge write failure, emergency-capacity isolation, delayed
+parent invalidation, response loss, DecisionNeutral misclassification,
+permissive mutation disguised as neutral, restore rollback and restrictive
+plugin activation pass.
+Exit criteria: no inventory fence delays a restrictive safety fact; the fact
+is enforced immediately and every stale prepared/activation authority is
+irreversibly invalidated.
+`v0.51.49 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.50` — Effect Authorization And Delivery Closure
+
+Status: planned conditionally; mandatory before `SingleEffectSettled` can
+support a terminal member CAS, capacity release or intent no-effect proof.
+Setup: consume one exact intent generation, authorization issuance registry,
+source/destination routes and status authorities, authorization tombstones,
+effect receipts, transactional outbox high-watermarks, durable parent inbox
+acknowledgements, current conflict generation/head and protected closure
+capacity.
+Goal: prove that no valid old authorization or unacknowledged delivery can
+produce a late physical effect after terminalization.
+Deliverables: implement
+`EffectDeliveryOpen → EffectAuthorizationCutSealed →
+EffectDeliveryReconciling → EffectDeliveryClosed`.
+Sealing atomically closes new authorization issuance for the exact intent and
+commits a canonical authorization identity/count/root plus issuer/outbox
+high-watermarks. Reconciliation obtains authenticated source/destination
+status receipts and classifies every exact identity as one of:
+`NeverIssued`; `IssuedExpiredOrRevokedUnconsumed` with a locally durable
+tombstone; `ConsumedWithReceipt` with exact authorization/effect receipt and
+parent inbox acknowledgement; or `UnresolvedBlocking`. Absence, timeout,
+projection state or parent-only expiry cannot prove unconsumed.
+`EffectDeliveryClosureRootV1` commits the complete identity/status root,
+source/destination status roots, tombstone root, issuer/outbox high-watermarks,
+parent inbox acknowledgement cut, authorization counts and exact current
+conflict head. `EffectDeliveryClosed` requires zero unresolved entries and
+`SingleEffectSettled`. The parent-local terminal member CAS consumes that
+current closure root and conflict generation/head in the same transaction.
+Conflict/recovery capacity remains reserved through that CAS. After closure,
+no valid authorization in the cut can be consumed.
+Verification: issuance racing seal, omitted/duplicate identity, invented
+NeverIssued, local expiry without tombstone, revoke racing consumption,
+consumed effect without receipt, receipt without inbox acknowledgement,
+outbox/inbox high-watermark rollback, source/destination outage, unresolved
+classified closed, conflict-head substitution, late valid receipt after
+closure, terminal CAS without/against stale closure and restore at every state
+pass.
+Exit criteria: terminalization consumes one complete current delivery closure
+proving every old authorization and delivery is exhausted, durably unconsumed,
+fully folded or still blocking; no valid late effect can emerge afterward.
+`v0.51.50 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.51` — Post-Closure Unauthorized Effect Incident Ownership
+
+Status: planned conditionally; mandatory before any release-member delivery
+closure or terminal result can be considered operationally recoverable.
+Setup: consume one closed delivery root and absorbing terminal member, current
+successor restriction/guard, authenticated source/destination physical status,
+incident policy and hard maximum, protected independent emergency capacity,
+current routing/ownership and security-response authority.
+Goal: handle a real unauthorized effect discovered after closure without
+rewriting terminal history or leaving new physical enforcement/ownership
+unfunded.
+Deliverables: define
+`PostClosureUnauthorizedEffectIncidentV1` with
+`Detected → CurrentGenerationFenced → ResidualOwned | SafelyRemoved →
+IncidentSettled`. Detection proves the physical effect under a source/
+destination local status authority but proves it is absent from, or invalid
+under, the consumed closure root. It immediately attaches any restrictive
+state to the current successor restriction generation, advances the safety/
+incident epoch, and charges independent emergency incident capacity.
+Resolution either proves safe physical removal or atomically transfers the
+effect/restriction to one funded current-generation residual owner. It never
+reopens, changes or derives authority from the absorbing release member and
+never spends released manifest capacity. A bounded incident manifest/root and
+conservation equation track detected, safely removed, funded residual and
+pending effects. Evidence above the policy hard maximum installs a broader
+tenant/domain restrictive incident fence and remains unresolved rather than
+dropping an effect.
+Verification: valid old authorization falsely called unauthorized, forged
+effect status, late source removal, late destination retention, two incident
+owners, route movement/ABA, capacity exhaustion, restriction not attached to
+successor, terminal member reopened, old capacity reused, unsafe removal,
+incident-root omission/overflow, restore rollback and successful independent
+settlement pass.
+Exit criteria: post-closure effects cannot rewrite closed member history, but
+every real effect is immediately safety-fenced and either proved gone or held
+under funded current-generation ownership.
+`v0.51.51 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.52` — No-Effect Intent Disposition And Replanning
+
+Status: planned conditionally; mandatory recovery for an intent whose selected
+destination/source disappears, authorization expires, or dispatch never
+produces a physical effect.
+Setup: consume one current committed intent, its `0.51.50` authorization/
+delivery cut, authorization registry/tombstones, outbox and parent inbox cuts,
+source/destination status, current member/budget/policy, cumulative intent
+generation/work charges and separated disposition/replan authority.
+Goal: abandon or replace a dead no-effect intent without reusing its identity,
+budget or uncertain remote authority.
+Deliverables: implement
+`IntentCommitted → IntentDispositionRequested → IntentDispatchFenced →
+IntentAbandoned | IntentReplanned`.
+Disposition first closes issuance and delivery for the old intent. Replan or
+abandon requires `NoEffectIntentClosureRootV1`, a strict `0.51.50` projection
+proving every authorization was NeverIssued or durably
+ExpiredOrRevokedUnconsumed, every outbox item is acknowledged as no-delivery,
+there is no effect receipt/status and no uncertain inbox or remote result.
+Any uncertainty or discovered effect enters `EffectConflictDetected` and
+cannot abandon/replan.
+`IntentAbandoned` leaves the release member Pending with the old generation
+and all cumulative charges preserved. `IntentReplanned` atomically tombstones
+the old generation and creates a predecessor-linked successor intent
+generation with new effect identity, exact current routing/object version,
+fresh bounded work/capacity charge and later new `0.51.47` authorization.
+Neither branch resets observation/retry/intent lifetime budgets or reuses an
+idempotency/effect/authorization identity. A future intent after abandonment
+also requires a new predecessor-linked generation and fresh authority.
+Verification: destination/source disappearance, authorization expiry,
+never-dispatched outbox, lost dispatch response, stale no-effect proof, receipt
+arriving during disposition, remote unknown mislabeled no-effect, replan/
+conflict race, two successor intents, old effect/idempotency reuse, budget
+reset, member terminal/version mutation, response loss and restore at every
+state pass.
+Exit criteria: a dead intent has a finite fail-closed recovery path only after
+complete no-effect proof; uncertainty enters conflict, and every successor is
+fresh, predecessor-linked and cumulatively funded.
+`v0.51.52 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.4` — Domain Retirement And Historical Compatibility Certification
 
 Status: planned.
 Setup: consume `0.30.28` retirement contracts, `0.30.29` authority/recovery
-protocol and evidence, the applicable `0.51.5–0.51.48` deployment cut lifecycle,
+protocol and evidence, the applicable `0.51.5–0.51.52` deployment cut lifecycle,
 approved exact-plan admission/succession, narrow-guard/topology handoff,
 protection-root integration, clean/non-clean terminal aggregation, residual-
 obligation lineage evolution, transition delivery cuts, mutation safety
@@ -2770,7 +2951,9 @@ reserved terminal capacity, policy-derived worst-case funding, bounded sealed
 member/transition/retry-ledger construction, partition-local effect receipts
 and parent-local folding, distributed predecessor inventory cuts, parent
 effect intents, activation-bound local effect authorization and funded
-physical-effect conflict settlement, current domain/
+physical-effect conflict settlement, immediate restrictive-safety inventory
+mutation, authorization/delivery closure, independently funded post-closure
+incident ownership and no-effect intent disposition/replanning, current domain/
 contribution generations, `0.145.3`
 lifecycle/recovery evidence,
 installed-extension state, cross-domain dependencies, outstanding durable work,
@@ -2809,7 +2992,11 @@ lifetime limit and versioned ledger head, sealed continuity genesis,
 source/destination-local effect receipts and parent expected-predecessor
 transition chain/high-watermark, predecessor inventory cut/fences/invalidation,
 parent effect-intent head, locally consumed effect-authorization tombstones,
-effect-conflict manifest/head and conservation root,
+effect-conflict manifest/head and conservation root, restrictive-safety
+emergency-capacity/invalidation/dual-bridge receipts, complete effect-delivery
+closure root and authorization census, post-closure unauthorized-effect
+incident/residual lineage, no-effect intent closure and predecessor-linked
+successor-intent/budget lineage,
 versioned member CAS/outcome/zero-pending receipt-root/capacity evidence,
 reinstall eligibility/consumption and dual release evidence, candidate-control
 retention receipts and capacity-conservation proof, cut-release cursor and
@@ -2898,6 +3085,15 @@ predecessor inventory mutation crossing a stale cut, delayed invalidation,
 remote effect without the sole intent or active authorization, release/retain
 or two-destination physical conflict treated as a parent CAS loser, incomplete
 effect discovery, unfunded residual or conflict conservation mismatch,
+restrictive legal hold/quarantine/distrust/revocation/vulnerability/plugin
+evidence blocked by the cut, neutral misclassification, prepared successor
+bridge omission, terminal member CAS without the current complete
+authorization/delivery closure and conflict head, invented never-issued or
+unconsumed authorization status, unresolved outbox/inbox acknowledged as
+closed, post-closure unauthorized effect reopening terminal history or reusing
+released funding, dead intent without disposition, uncertain delivery
+misclassified as no effect, or replanned intent reusing generation/effect/
+idempotency/authorization identity or resetting cumulative budgets,
 missing separation of duties, signed version leap, skipped/wrong
 predecessor, first dispatch/transition before continuity admission, missing or
 late-created continuity genesis, history bootstrap, terminal receipt against

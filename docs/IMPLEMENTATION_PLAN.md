@@ -8,8 +8,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 414 exact release stops: 150 base `0.x.0`
-stops, 263 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 418 exact release stops: 150 base `0.x.0`
+stops, 267 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -103,7 +103,7 @@ proves partition currency and canonical empty state, `0.51.14` owns urgent
 restrictive invalidation, `0.51.15–0.51.18` authorize/complete takeover,
 atomically fund retained candidate controls, and release its barriers,
 `0.51.19–0.51.20` archive cleanup and verify retained namespaces, and
-`0.51.21–0.51.48` evaluate reinstall, linearize activation against abort,
+`0.51.21–0.51.52` evaluate reinstall, linearize activation against abort,
 obtain source-partition admission, fund durable bridge ownership, terminate or
 supersede partial admission, decide and conditionally implement conservative
 permanent-unknown quarantine recovery, actively enforce the maximal unknown
@@ -128,12 +128,16 @@ complete immutable member/genesis roots in bounded authority-inert batches,
 bind them through a bounded guard CAS, keep source/destination effects local
 and fold their receipts through a parent inbox, define exact ceiling
 arithmetic, and place retry charges in a separate versioned non-resetting
-ledger. The final four stops source-fence one distributed predecessor
+ledger. The final eight stops source-fence one distributed predecessor
 inventory cut, select one parent effect intent, require activation-bound
-one-shot local effect authority, and keep contradictory physical effects
-nonterminal until funded conservation settles every owner. Dispatch remains
-closed until construction, inventory, authorization and continuity contracts
-are certified.
+one-shot local effect authority, keep contradictory physical effects
+nonterminal until funded conservation settles every owner, enforce restrictive
+safety immediately through the cut, close the complete authorization/delivery
+universe before terminality, own unauthorized post-closure effects as separate
+funded incidents and recover no-effect intents only with fresh predecessor-
+linked identities and cumulative budgets. Dispatch remains closed until
+construction, inventory, authorization, delivery and continuity contracts are
+certified.
 `0.145.4`
 destructively certifies
 selected retirement/reinstall profiles rather than first implementing teardown.
