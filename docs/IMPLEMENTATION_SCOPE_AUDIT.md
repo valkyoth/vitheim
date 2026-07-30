@@ -33,9 +33,9 @@ profile-decision stops. The second gap review added 31 requirement-ownership,
 domain-decomposition, integration, and discovery-profile stops. The coherence
 reviews added 50 requirement-source, dependency-feasibility, phased surface-
 ownership, domain-boundary, adapter-placement, and chronological-integration
-stops. The canonical roadmap therefore contains **403 exact stops**:
+stops. The canonical roadmap therefore contains **406 exact stops**:
 
-`150 base 0.x.0 stops + 252 companion stops + 1 production stop = 403`.
+`150 base 0.x.0 stops + 255 companion stops + 1 production stop = 406`.
 
 The existing long sections remain cumulative family ledgers because they hold
 important threat, invariant, recovery, and verification context. Their heading
@@ -91,7 +91,7 @@ and [Roadmap Authority And Recovery Completions](implementation/ROADMAP_AUTHORIT
 | Contribution safety | `0.30.24–0.30.25` | Kind-owned verification obligations and scope-separated metadata admission, then bounded absent-surface-only deferral/product gates |
 | Domain-event gate | `0.30.26` | Current event-owner backfill plus prospective emission/consumption, upcaster, and generation checks |
 | Async-contract gate | `0.30.27` | Complete `0.18.8–0.18.10` effect/message/consumer/timer/activity/poison/replay/result ownership backfill and prospective checks |
-| Domain retirement | `0.30.28–0.30.29`, `0.51.5–0.51.37`, `0.145.4` | Truthful terminals; cut/plan/guard/root; residual handoff/lineage/cuts; restrictive invalidation; takeover/release; funded retained controls; archival/retained namespace; fenced evaluation; explicit lifecycle adjacency; source-partition admission; root-bound activation preparation; canonical empty ownership/disposition; funded bridge ownership; partial-admission abort/supersession; permanent-unknown decision/quarantine; complete restriction-coverage root; enforced unknown-restriction top; terminal replacement exhaustion; bounded replacement-evaluation lineage; lowering-specific evaluation/admission; tagged top-or-lowered successor genesis; closed tagged per-partition lowered adoption through shared lifecycle/admission/ownership; sole typed final-revalidation edge over distinct guard generations; dual release; operational lowering CAS; heterogeneous version-vector/absorbing-member/pending-coalescing/terminal-reserve zero-pending predecessor reconciliation; certification |
+| Domain retirement | `0.30.28–0.30.29`, `0.51.5–0.51.40`, `0.145.4` | Truthful terminals; cut/plan/guard/root; residual handoff/lineage/cuts; restrictive invalidation; takeover/release; funded retained controls; archival/retained namespace; fenced evaluation; explicit lifecycle adjacency; source-partition admission; root-bound activation preparation; canonical empty ownership/disposition; funded bridge ownership; partial-admission abort/supersession; permanent-unknown decision/quarantine; complete restriction-coverage root; enforced unknown-restriction top; terminal replacement exhaustion; bounded replacement-evaluation lineage; lowering-specific evaluation/admission; tagged top-or-lowered successor genesis; closed tagged per-partition lowered adoption through shared lifecycle/admission/ownership; sole typed final-revalidation edge over distinct guard generations; dual release; operational lowering CAS; heterogeneous version-vector/absorbing-member/pending-coalescing/terminal-reserve reconciliation; immutable budget binding; retry-only saturation recovery; expected-predecessor transition continuity; certification |
 | Supplier boundary | `0.50.18` | Performance assessment and inert risk proposals only |
 | Tenant-surface linkage | `0.51.3–0.51.4` | Reference authoritative lifecycle IDs, then immediately certify the backfill |
 | Surface certification | `0.60.4`, `0.70.5`, `0.100.2`, `0.132.4`, `0.138.6–0.138.7` | Authorization, workflow, search, workspace, API, and transfer each certify separately |
@@ -126,6 +126,6 @@ Every other exact stop passed the current sizing review because it has one
 dominant domain/adapter/decision owner and one coherent primary test boundary.
 This is not a permanent exemption. New threat-model detail, authority changes,
 schema work, provider admission, or recovery scope triggers the small-loop rule
-again before implementation. The roadmap checker verifies all 403 headings,
+again before implementation. The roadmap checker verifies all 406 headings,
 required handoff fields, authority dispositions, and exact-commit pentest
 markers; count drift blocks release.

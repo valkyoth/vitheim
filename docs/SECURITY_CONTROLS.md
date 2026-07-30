@@ -16,7 +16,7 @@
 - `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
-- One canonical roadmap manifest accounts for all 403 exact stops and their
+- One canonical roadmap manifest accounts for all 406 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
 
@@ -88,7 +88,7 @@ epochs and mode-bound source status; `0.51.15–0.51.18` authorize/complete
 target-slot takeover, atomically transfer funded capacity for retained
 candidate controls, and reconcile every barrier release/retention receipt;
 `0.51.19` archives before deletion under truthful uncertainty; `0.51.20`
-independently authorizes exact retained-namespace safety; `0.51.21–0.51.37`
+independently authorizes exact retained-namespace safety; `0.51.21–0.51.40`
 evaluate reinstall under partition fences, enforce explicit lifecycle
 adjacency, serialize activation against abort,
 require source-local activation-permit redemption and successor-restriction
@@ -125,6 +125,14 @@ heterogeneous cross-member versions; identical pending observations coalesce
 under a separate bounded attempt budget; pending version saturation reserves
 terminal capacity; and completion requires zero pending under authenticated
 conservation.
+Each release member's checked finite budget is committed by one immutable
+tenant/manifest/member/generation-bound digest across manifests, member state,
+receipts, vectors and restore/cleanup evidence. Saturated recovery is a
+separation-of-duties retry-only lane with no terminal, budget, enforcement,
+ownership, capacity or cleanup authority. A maximum authenticated member
+record is accepted only with contiguous expected-predecessor transition proof
+or an equivalent source-authoritative status proof from its durable
+high-watermark; a signature or larger version alone grants nothing.
 No wildcard tenant or cross-tenant retirement transaction exists, and loss
 never counts as clean or grants deletion/hold release. `0.51.4` immediately
 certifies tenant surfaces; `0.139.1` iterates

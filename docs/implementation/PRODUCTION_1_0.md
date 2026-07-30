@@ -1908,7 +1908,7 @@ Verification:
   reinstall, and truthful verified-versus-loss terminal evidence from `0.145.4`,
   or remains visibly non-clean/blocked. A deferred `0.86.2` profile exposes cloud-native kinds as
   manual/generic-import-only and makes no automatic discovery claim.
-- The generated roadmap/evidence differential proves exactly 403 release
+- The generated roadmap/evidence differential proves exactly 406 release
   stops and their owners, authority reviews and pentest reports; it rejects any
   README, API discovery, UI navigation, release-note, installer, operator or
   support-matrix claim without a matching executable owner and exact evidence.

@@ -103,7 +103,7 @@ require_text "$plan" \
     'same Pending generation through an expected-version' \
     'per-member expected-version CAS'
 require_text "$plan" \
-    '`ReleaseMemberVersionBudgetV1 { pending_update_ceiling,' \
+    '`ReleaseMemberVersionBudgetV1 { initial_version, pending_update_ceiling,' \
     'bounded member version budget'
 require_text "$plan" \
     'PendingUnknown reason/evidence/observed-generation digest coalesces without' \
@@ -132,6 +132,36 @@ require_text "$plan" \
 require_text "$plan" \
     'only when pending is exactly zero' \
     'predecessor cleanup requires zero pending'
+require_text "$plan" \
+    '0.51.38` — Release-Member Version-Budget Structural Binding' \
+    'release-member budget binding stop'
+require_text "$plan" \
+    '`UnknownRestrictionLoweringReleaseMemberBudgetDigestV1`' \
+    'identity-bound member budget digest'
+require_text "$plan" \
+    'initial_version < pending_update_ceiling < reserved_terminal_version' \
+    'checked member budget ordering'
+require_text "$plan" \
+    '0.51.39` — Saturated Release-Member Retry Authority' \
+    'saturated retry authority stop'
+require_text "$plan" \
+    '`ResumeSaturatedReleaseMemberReconciliationV1`' \
+    'typed saturated retry-only command'
+require_text "$plan" \
+    'It cannot manufacture or select Released/RetainedAccepted' \
+    'retry command cannot create terminal authority'
+require_text "$plan" \
+    '0.51.40` — Release-Member Transition-Continuity Proof' \
+    'transition continuity stop'
+require_text "$plan" \
+    '`UnknownRestrictionLoweringMemberTransitionReceiptV1`' \
+    'expected-predecessor transition receipt'
+require_text "$plan" \
+    '`ReleaseMemberTransitionHighWatermarkV1 { generation, version, state_digest,' \
+    'per-member transition high-watermark'
+require_text "$plan" \
+    '`SourceAuthoritativeReleaseMemberStatusProofV1`' \
+    'source-authoritative continuity proof'
 
 if [ "$failed" -ne 0 ]; then
     exit 1
