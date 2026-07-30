@@ -257,14 +257,16 @@ and parent folds transactional, apply exact saturation arithmetic, constrain
 saturated recovery to retry-only authority with a separately versioned
 non-resetting ledger, source-fence the complete distributed predecessor
 inventory, commit one parent effect intent, locally consume one
-activation-bound authorization from a complete expected-version issuance
-ledger and reconcile every contradictory physical
+activation-bound authorization from one intent-scoped expected-version
+issuance scope plus immutable entries while atomically consuming its lifetime-
+budget reservation and outbox, and reconcile every contradictory physical
 effect under funded conservation, immediately enforce restrictive safety
 through any prepared cut, close the complete authorization/delivery universe
-before terminality, own unauthorized post-closure effects as independently
-funded create-or-join incidents and abandon or replan a no-effect intent only
-with a complete delivery closure, fresh predecessor-linked identities, an
-immutable multidimensional lifetime ledger and explicit fail-closed exhaustion,
+and unused reservation legs before terminality, require ABA-resistant physical
+status or explicit profile refusal, own unauthorized post-closure effects as
+independently funded create-or-join incidents and abandon or replan a no-effect
+intent only with a complete delivery closure, fresh predecessor-linked
+identities, stable lifetime reservations and explicit fail-closed exhaustion,
 and admit dispatch only with contiguous transitions from genesis;
 none uses a wildcard tenant or cross-tenant transaction. Plugin uninstall and
 feature disablement

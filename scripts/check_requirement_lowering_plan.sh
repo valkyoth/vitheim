@@ -13,6 +13,16 @@ require_text() {
     fi
 }
 
+reject_text() {
+    file="$1"
+    unexpected="$2"
+    label="$3"
+    if grep -Fq "$unexpected" "$file"; then
+        echo "lowering requirement plan: forbidden semantic anchor '$label' in $file" >&2
+        failed=1
+    fi
+}
+
 plan=docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md
 
 require_text "$plan" \
@@ -262,6 +272,9 @@ require_text "$plan" \
     '`Pending → ReleaseIntentCommitted { source_owner, effect_id } |' \
     'closed release or retention intent adjacency'
 require_text "$plan" \
+    'exact `IntentBudgetReservationV1` route-leg root' \
+    'initial effect intent atomically reserves lifetime route'
+require_text "$plan" \
     'does not mutate or consume the release-member version' \
     'effect intent does not spend member version'
 require_text "$plan" \
@@ -274,14 +287,23 @@ require_text "$plan" \
     '`ReleaseMemberEffectAuthorizationIssuanceLedgerV1`' \
     'authoritative effect authorization issuance ledger'
 require_text "$plan" \
+    '`ReleaseMemberEffectAuthorizationIssuanceScopeV1`' \
+    'intent-scoped authorization issuance aggregate'
+require_text "$plan" \
+    '`ReleaseMemberEffectAuthorizationIssuanceEntryV1`' \
+    'immutable uniquely keyed authorization issuance entries'
+require_text "$plan" \
     '`IssuanceOpen | IssuanceSealed`' \
     'closed authorization issuance lifecycle'
 require_text "$plan" \
-    'the head/count/root; and commits its dispatch outbox record.' \
-    'authorization issuance co-commits dispatch outbox'
+    'scope → authorization entry → intent-lifetime budget reservation → outbox.' \
+    'authorization issuance lock order'
 require_text "$plan" \
-    'identity with changed material conflicts.' \
-    'authorization issuance create-or-join conflict'
+    '`IntentBudgetReservationId` and the exact before/after lifetime-budget heads.' \
+    'authorization issuance consumes exact lifetime reservation'
+require_text "$plan" \
+    'A per-entry document plus eventual aggregate projection' \
+    'eventual-only issuance adapter refusal'
 require_text "$plan" \
     'reconstructs issuance authority from an outbox, projection or remote receipt.' \
     'restore cannot reconstruct authorization issuance'
@@ -321,9 +343,18 @@ require_text "$plan" \
 require_text "$plan" \
     '`EffectDeliveryClosureRootV1`' \
     'complete effect delivery closure root'
+reject_text "$plan" \
+    '`NeverIssued`' \
+    'undefined never-issued authorization branch'
 require_text "$plan" \
-    '`NeverIssued` is valid only for an intent-bound candidate identity' \
-    'never-issued status derives from sealed issuance universe'
+    'The sealed issuance-entry root is the only authorization universe.' \
+    'sealed issued entries are sole authorization universe'
+require_text "$plan" \
+    '`ClosedUnusedConsumed` without refund' \
+    'unused intent reservation receives terminal no-refund disposition'
+require_text "$plan" \
+    '`EffectDeliveryClosureRootV1` counts exactly every' \
+    'delivery closure exact issued-entry membership'
 require_text "$plan" \
     'terminal member CAS consumes that' \
     'terminal CAS consumes delivery closure'
@@ -339,6 +370,18 @@ require_text "$plan" \
 require_text "$plan" \
     '`PostClosurePhysicalEffectObservationLedgerV1`' \
     'post-closure observation create-or-join ledger'
+require_text "$plan" \
+    '`PhysicalEffectStatusAuthorityPortV1 = Supported { profile_id,' \
+    'closed physical effect status capability'
+require_text "$plan" \
+    '| Refused { reason }` capability' \
+    'physical effect status refusal profile'
+require_text "$plan" \
+    'is not an authoritative effect sequence.' \
+    'snapshot and polling metadata cannot prove effect identity'
+require_text "$plan" \
+    'classifies identity as unresolved' \
+    'unsupported status authority remains unresolved'
 require_text "$plan" \
     'charges independent emergency incident capacity exactly once.' \
     'post-closure incident charges capacity once'
@@ -366,6 +409,9 @@ require_text "$plan" \
 require_text "$plan" \
     '`ReleaseMemberIntentLifetimeBudgetV1`' \
     'finite intent lifetime budget'
+require_text "$plan" \
+    '`IntentBudgetReservationV1` legs with stable reservation IDs' \
+    'stable per-intent route budget reservations'
 require_text "$plan" \
     'immutable non-wrapping maxima and admitted/consumed/reserved/remaining state' \
     'intent lifetime budget dimensions and conservation'

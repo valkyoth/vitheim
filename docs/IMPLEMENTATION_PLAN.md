@@ -130,14 +130,16 @@ and fold their receipts through a parent inbox, define exact ceiling
 arithmetic, and place retry charges in a separate versioned non-resetting
 ledger. The final eight stops source-fence one distributed predecessor
 inventory cut, select one parent effect intent, require activation-bound
-one-shot local effect authority from a complete expected-version issuance
-ledger, keep contradictory physical effects
+one-shot local effect authority from one intent-scoped expected-version
+issuance scope plus immutable entries, atomically consume its stable lifetime-
+budget reservation and outbox, keep contradictory physical effects
 nonterminal until funded conservation settles every owner, enforce restrictive
 safety immediately through the cut, close the complete authorization/delivery
-universe before terminality, own unauthorized post-closure effects as separate
-create-or-join funded incidents and recover no-effect intents only with fresh
-predecessor-linked identities, an immutable multidimensional lifetime ledger
-and explicit fail-closed exhaustion. Dispatch remains closed until
+issued universe and unused reservations before terminality, require an
+ABA-resistant physical-status capability or explicit refusal, own unauthorized
+post-closure effects as create-or-join funded incidents and recover no-effect
+intents only with fresh predecessor-linked identities, stable lifetime
+reservation legs and explicit fail-closed exhaustion. Dispatch remains closed until
 construction, inventory, authorization, delivery and continuity contracts are
 certified.
 `0.145.4`

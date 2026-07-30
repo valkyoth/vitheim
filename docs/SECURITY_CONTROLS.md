@@ -138,27 +138,36 @@ retention each commit a local effect receipt, while a durable parent inbox
 folds only the selected intent through one parent-local member/head CAS.
 `0.51.45` source-fences the complete distributed predecessor inventory through
 activation; `0.51.46–0.51.47` commit one parent intent and require its closed,
-activation-bound one-shot authority to be recorded in an expected-version,
-non-wrapping issuance ledger before dispatch and consumed with the remote
-effect. Exact issuance retry joins, changed material conflicts, and restore
-cannot infer authority from an outbox or projection.
+activation-bound one-shot authority to be recorded before dispatch in one
+intent-scoped issuance aggregate: a shared expected-version scope head plus
+immutable unique entries. Issuance atomically advances the shared
+head/count/root, consumes exact intent-lifetime reservation legs and commits
+outbox work under one lock order; incapable adapters refuse the profile.
+Exact retry joins, changed material/reservation conflicts, and restore cannot
+infer authority from an outbox or projection.
 `0.51.48` keeps contradictory physical effects nonterminal until every losing
 effect is removed/transferred or durably funded and exact conservation holds.
 `0.51.49` gives every restrictive-safety mutation an immediate protected lane
 through any prepared inventory fence and atomically invalidates both the cut
 and prepared construction. `0.51.50` cuts authorization issuance, reconciles
-the complete delivery universe and requires the terminal CAS to consume its
-closure root with the current conflict head. `0.51.51` treats a truly
+the sealed issued-entry universe only, terminally consumes unused reservation
+legs without refund and requires the terminal CAS to consume its closure root
+with current budget and conflict heads. Unissued attempts are inert command
+results, not fabricated closure members. `0.51.51` treats a truly
 unauthorized post-closure effect as a separately funded current-generation
 incident/residual without reopening terminal history; stable local
 observation identities and create-or-join heads prevent duplicate/reordered
-polls from multiplying incidents, charges or owners. `0.51.52` permits a dead
+polls from multiplying incidents, charges or owners. Its closed physical-
+status port requires an ABA-resistant authority sequence and continuity
+ratchet; snapshot-only profiles refuse and remain restrictively unresolved.
+`0.51.52` permits a dead
 intent to be abandoned or replanned only from a complete no-effect closure;
 uncertainty or any observed effect enters conflict, and successor identities
 and cumulative budgets are never reused or reset. Its immutable
-multidimensional lifetime ledger is charged atomically before successor
-creation, has explicit fail-closed exhaustion, and can be widened only by a
-separate policy-authorized predecessor-linked amendment—never ordinary retry.
+multidimensional lifetime ledger creates stable route reservation legs before
+successor authority, `.47` consumes issuance legs, `.50` closes unused legs,
+and explicit exhaustion can be widened only by a separate policy-authorized
+predecessor-linked amendment—never ordinary retry.
 Saturated recovery remains
 a retry-only lane with no terminal or cleanup authority; `0.51.44` charges its
 non-resetting lifetime limit through a separate versioned ledger before outbox
