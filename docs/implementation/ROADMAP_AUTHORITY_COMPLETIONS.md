@@ -2651,7 +2651,8 @@ effect authorization.
 Setup: consume one active construction/member, current operational
 guard/restriction, inventory-cut and routing generations, exact source/
 destination candidate, policy/budget digests, parent member state/head and
-transactional outbox.
+transactional outbox, plus the `0.51.52` intent-lifetime policy and either its
+genesis material or current expected-version ledger head.
 Goal: choose exactly one intended physical terminal effect before remote
 dispatch so concurrent workers cannot independently release and retain the
 same predecessor member.
@@ -2663,7 +2664,9 @@ branch binds tenant, manifest/member/generation, active construction and
 activation receipt, operational guard/restriction, inventory cut, route/owner
 generation, expected remote object version, policy/budget digests, purpose and
 idempotency. One expected-version parent transaction commits the sole intent,
-intent head, audit and outbox. The intent is absorbing for ordinary dispatch,
+creates or charges the current `ReleaseMemberIntentLifetimeBudgetV1`, intent
+head, audit and outbox. Insufficient complete first-intent route capacity
+creates no intent or outbox work. The intent is absorbing for ordinary dispatch,
 does not mutate or consume the release-member version, and cannot itself claim
 a physical effect or terminal outcome. Replanning or abandonment requires the
 separate `0.51.52` disposition lifecycle and a current `0.51.50` no-effect
@@ -2672,8 +2675,8 @@ Any observed or uncertain effect enters `0.51.48` instead.
 Verification: two release workers, release/retain race, two retention
 destinations, stale member/guard/cut/route/object version, branch/owner/effect
 substitution, replay, response loss, intent without outbox, outbox without
-intent, member version mutation, restore rollback and ordinary duplicate join
-pass.
+intent, missing/substituted/exhausted intent-lifetime ledger, member version
+mutation, restore rollback and ordinary duplicate join pass.
 Exit criteria: every remote effect has one durable parent-selected branch and
 effect identity before dispatch, while intent alone grants no remote or
 terminal authority.
@@ -2686,9 +2689,11 @@ destination retention effect.
 Setup: consume one exact `0.51.46` intent, active construction root and
 activation receipt, current operational guard/restriction, source/destination
 routing and expected local object versions, policy/budget digests, trusted
-time/key generations and one-shot authorization issuer.
+time/key generations, one-shot authorization issuer, parent-local issuance
+ledger genesis and transactional dispatch outbox.
 Goal: ensure a remote store performs only the active, selected, current effect
-and can prove the exact authority it consumed.
+and can prove both the exact authority it consumed and the complete
+authoritative issuance history from which later delivery closure is derived.
 Deliverables: define closed
 `ReleaseMemberEffectAuthorizationV1 = Release { source_owner, effect_id, ... }
 | Retain { destination_owner, effect_id, ... }`. Both branches bind active
@@ -2697,6 +2702,18 @@ guard/restriction generation; manifest/member/generation; selected intent
 digest; exact source or destination routing/ownership generation; expected
 local enforcement/ownership version; policy/budget digests; expiry;
 signer/key generation; idempotency key; and purpose.
+Define `ReleaseMemberEffectAuthorizationIssuanceLedgerV1` keyed by tenant,
+parent member, intent generation and authorization identity, with an expected-
+version monotonic issuance head, non-wrapping issued count, canonical
+authorization identity/digest root and `IssuanceOpen | IssuanceSealed` state.
+One parent-local issuance transaction verifies the exact intent remains
+current, issuance and the `0.51.50` delivery cut remain open, and count/head
+capacity remains; appends the exact authorization identity/digest; advances
+the head/count/root; and commits its dispatch outbox record. The same identity
+and digest joins without another charge, count or outbox effect; the same
+identity with changed material conflicts. Only the `0.51.50` expected-version
+cut transaction may enter `IssuanceSealed`, after which every issue attempt
+fails structurally.
 The matching source/destination transaction verifies current local state,
 atomically consumes the one-shot authority, commits the physical effect,
 authorization tombstone, audit/outbox and `0.51.43` receipt carrying the same
@@ -2704,15 +2721,22 @@ authorization digest. Prepared, sealed-but-inactive, disposed, stale-route,
 wrong-object-version, cross-intent/branch/owner, expired/revoked/key-stale or
 replayed authority fails structurally. Response loss joins the local
 tombstone/receipt and never re-executes an ambiguous effect.
+Restore/import preserves the greatest consistent issuance/cut head, count and
+root, rejects rollback/fork or an omitted issued identity, and never
+reconstructs issuance authority from an outbox, projection or remote receipt.
 Verification: every bound-field substitution, Release used at a destination,
 Retain used at a source, inactive/disposed construction, activation receipt
 replay, old guard/restriction, route/owner movement, local ABA, expiry/
 revocation/key rotation, concurrent redemption, effect without tombstone,
 receipt with another authorization digest, crash at every local boundary and
-valid response-loss recovery pass.
+valid response-loss recovery; issuance versus cut seal, committed issuance
+without dispatch delivery, dispatch without ledger issuance, exact duplicate
+issuance, same-ID/different-digest conflict, head fork/rollback, issued-count
+overflow, restore below the cut and closure-root identity omission pass.
 Exit criteria: every physical release or retention effect atomically consumes
-one current activation- and intent-bound authority locally, and its receipt is
-non-substitutable evidence of that exact redemption.
+one current activation- and intent-bound authority locally; every authority is
+first committed in one complete non-wrapping issuance lineage; and its receipt
+is non-substitutable evidence of that exact redemption.
 `v0.51.47 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.51.48` — Physical Effect Conflict Reconciliation
@@ -2808,7 +2832,8 @@ irreversibly invalidated.
 
 Status: planned conditionally; mandatory before `SingleEffectSettled` can
 support a terminal member CAS, capacity release or intent no-effect proof.
-Setup: consume one exact intent generation, authorization issuance registry,
+Setup: consume one exact intent generation, the current
+`ReleaseMemberEffectAuthorizationIssuanceLedgerV1`,
 source/destination routes and status authorities, authorization tombstones,
 effect receipts, transactional outbox high-watermarks, durable parent inbox
 acknowledgements, current conflict generation/head and protected closure
@@ -2818,14 +2843,21 @@ produce a late physical effect after terminalization.
 Deliverables: implement
 `EffectDeliveryOpen → EffectAuthorizationCutSealed →
 EffectDeliveryReconciling → EffectDeliveryClosed`.
-Sealing atomically closes new authorization issuance for the exact intent and
-commits a canonical authorization identity/count/root plus issuer/outbox
-high-watermarks. Reconciliation obtains authenticated source/destination
+Sealing expected-version consumes the ledger's exact open issuance head,
+atomically enters `IssuanceSealed`, closes new authorization issuance for the
+exact intent and commits its canonical authorization identity/count/root plus
+issuer/outbox high-watermarks. Reconciliation obtains authenticated source/destination
 status receipts and classifies every exact identity as one of:
 `NeverIssued`; `IssuedExpiredOrRevokedUnconsumed` with a locally durable
 tombstone; `ConsumedWithReceipt` with exact authorization/effect receipt and
 parent inbox acknowledgement; or `UnresolvedBlocking`. Absence, timeout,
 projection state or parent-only expiry cannot prove unconsumed.
+`NeverIssued` is valid only for an intent-bound candidate identity present in
+the sealed dispatch-attempt/outbox candidate universe but absent from the
+sealed issuance ledger. Every identity present in that ledger is issued and
+must take one of the other three branches; an identity absent from both
+universes never had authority and cannot be invented merely to satisfy a
+count.
 `EffectDeliveryClosureRootV1` commits the complete identity/status root,
 source/destination status roots, tombstone root, issuer/outbox high-watermarks,
 parent inbox acknowledgement cut, authorization counts and exact current
@@ -2853,18 +2885,32 @@ closure or terminal result can be considered operationally recoverable.
 Setup: consume one closed delivery root and absorbing terminal member, current
 successor restriction/guard, authenticated source/destination physical status,
 incident policy and hard maximum, protected independent emergency capacity,
-current routing/ownership and security-response authority.
+current routing/ownership, authoritative local effect sequence, observation
+inbox/ledger head and security-response authority.
 Goal: handle a real unauthorized effect discovered after closure without
 rewriting terminal history or leaving new physical enforcement/ownership
 unfunded.
 Deliverables: define
 `PostClosureUnauthorizedEffectIncidentV1` with
 `Detected → CurrentGenerationFenced → ResidualOwned | SafelyRemoved →
-IncidentSettled`. Detection proves the physical effect under a source/
+IncidentSettled`. Define `PhysicalEffectObservationIdV1` over tenant,
+authoritative local owner, owner/routing generation, object identity/version,
+effect kind and monotonic local status/effect sequence, and an append-only
+`PostClosurePhysicalEffectObservationLedgerV1` with expected-version head and
+canonical observation/incident binding.
+Detection proves the physical effect under a source/
 destination local status authority but proves it is absent from, or invalid
-under, the consumed closure root. It immediately attaches any restrictive
-state to the current successor restriction generation, advances the safety/
-incident epoch, and charges independent emergency incident capacity.
+under, the consumed closure root. One create-or-join transaction appends the
+first exact observation, creates its incident, attaches any restrictive state
+to the current successor restriction generation, advances the safety/incident
+epoch, and charges independent emergency incident capacity exactly once.
+The same observation identity/digest joins the existing incident without
+advancing an epoch, charging capacity or creating another owner. The same
+identity with different content enters `PhysicalEffectObservationConflict`,
+installs the broader current-generation restrictive incident fence and grants
+no resolution authority. A genuinely new effect at the same object requires a
+new authoritative monotonic local effect sequence and observation identity;
+route movement never aliases the prior owner/generation.
 Resolution either proves safe physical removal or atomically transfers the
 effect/restriction to one funded current-generation residual owner. It never
 reopens, changes or derives authority from the absorbing release member and
@@ -2873,15 +2919,23 @@ conservation equation track detected, safely removed, funded residual and
 pending effects. Evidence above the policy hard maximum installs a broader
 tenant/domain restrictive incident fence and remains unresolved rather than
 dropping an effect.
+Residual assignment is itself expected-version create-or-join: an exact retry
+returns the first durable owner/receipt, while a competing owner conflicts and
+cannot double-charge or overwrite it. Restore/import preserves the greatest
+consistent observation, incident and owner-assignment heads and rejects
+rollback, fork or reconstructed observations.
 Verification: valid old authorization falsely called unauthorized, forged
 effect status, late source removal, late destination retention, two incident
 owners, route movement/ABA, capacity exhaustion, restriction not attached to
 successor, terminal member reopened, old capacity reused, unsafe removal,
-incident-root omission/overflow, restore rollback and successful independent
-settlement pass.
+incident-root omission/overflow, duplicate poll, reordered status, failover,
+crash after first charge, same observation ID with another digest, new effect
+at the same object, repeated residual assignment, restore rollback and
+successful independent settlement pass.
 Exit criteria: post-closure effects cannot rewrite closed member history, but
 every real effect is immediately safety-fenced and either proved gone or held
-under funded current-generation ownership.
+under funded current-generation ownership; duplicate/reordered observation
+cannot create another incident, charge or owner.
 `v0.51.51 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.51.52` — No-Effect Intent Disposition And Replanning
@@ -2892,12 +2946,22 @@ produces a physical effect.
 Setup: consume one current committed intent, its `0.51.50` authorization/
 delivery cut, authorization registry/tombstones, outbox and parent inbox cuts,
 source/destination status, current member/budget/policy, cumulative intent
-generation/work charges and separated disposition/replan authority.
+generation/work charges, intent-lifetime ledger genesis and separated
+disposition/replan authority.
 Goal: abandon or replace a dead no-effect intent without reusing its identity,
 budget or uncertain remote authority.
-Deliverables: implement
+Deliverables: define `ReleaseMemberIntentLifetimeBudgetV1`, created atomically
+with the first `0.51.46` intent and inherited by every predecessor-linked
+successor. It binds tenant/member, policy algorithm/version, ledger generation,
+immutable non-wrapping maxima and admitted/consumed/reserved/remaining state
+for intent generations, authorization issuances, dispatch attempts,
+reconciliation/status queries, work/bytes and retained evidence. Every first
+intent, abandonment-followed-by-new-intent and successor replan charges this
+same expected-version lifetime lineage; timeout, abandonment, response loss,
+conflict, restore and unused work never refund or replace a charge.
+Implement
 `IntentCommitted → IntentDispositionRequested → IntentDispatchFenced →
-IntentAbandoned | IntentReplanned`.
+IntentAbandoned | IntentReplanned | IntentReplanExhausted`.
 Disposition first closes issuance and delivery for the old intent. Replan or
 abandon requires `NoEffectIntentClosureRootV1`, a strict `0.51.50` projection
 proving every authorization was NeverIssued or durably
@@ -2909,19 +2973,35 @@ cannot abandon/replan.
 and all cumulative charges preserved. `IntentReplanned` atomically tombstones
 the old generation and creates a predecessor-linked successor intent
 generation with new effect identity, exact current routing/object version,
-fresh bounded work/capacity charge and later new `0.51.47` authorization.
+fresh bounded work/capacity charge and later new `0.51.47` authorization. That
+same transaction reserves and charges the complete successor route against
+every applicable lifetime dimension before it emits an intent or outbox work.
 Neither branch resets observation/retry/intent lifetime budgets or reuses an
 idempotency/effect/authorization identity. A future intent after abandonment
 also requires a new predecessor-linked generation and fresh authority.
+If the full successor route cannot be funded, the expected-version disposition
+enters `IntentReplanExhausted`: the member remains Pending, enforced,
+capacity-owned and incident/operations-visible; no successor identity,
+authorization or dispatch is created. Ordinary retry joins exhaustion and
+cannot widen, reset or replace the ledger. A deployment policy may expose
+either no recovery or an exact separately approved, separation-of-duties
+budget-amendment/manual-disposition authority. Any amendment appends a
+predecessor-linked ledger generation, preserves all consumed/reserved history
+and can only add explicitly approved capacity; it never rewrites a maximum or
+refunds prior work.
 Verification: destination/source disappearance, authorization expiry,
 never-dispatched outbox, lost dispatch response, stale no-effect proof, receipt
 arriving during disposition, remote unknown mislabeled no-effect, replan/
 conflict race, two successor intents, old effect/idempotency reuse, budget
-reset, member terminal/version mutation, response loss and restore at every
-state pass.
+reset, exact final permitted generation, two concurrent final replans,
+counter/work/byte overflow, restore rollback, abandonment followed by a new
+intent, lifetime-ledger substitution, ordinary retry widening exhausted
+capacity, unauthorized budget amendment, member terminal/version mutation,
+response loss and restore at every state pass.
 Exit criteria: a dead intent has a finite fail-closed recovery path only after
 complete no-effect proof; uncertainty enters conflict, and every successor is
-fresh, predecessor-linked and cumulatively funded.
+fresh, predecessor-linked and cumulatively funded; exhausted lifetime capacity
+creates no new authority and remains explicit without weakening enforcement.
 `v0.51.52 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.4` — Domain Retirement And Historical Compatibility Certification
@@ -2953,7 +3033,9 @@ and parent-local folding, distributed predecessor inventory cuts, parent
 effect intents, activation-bound local effect authorization and funded
 physical-effect conflict settlement, immediate restrictive-safety inventory
 mutation, authorization/delivery closure, independently funded post-closure
-incident ownership and no-effect intent disposition/replanning, current domain/
+incident ownership with create-or-join observation identity, complete
+authorization-issuance lineage and no-effect intent disposition/replanning
+with finite lifetime-budget exhaustion, current domain/
 contribution generations, `0.145.3`
 lifecycle/recovery evidence,
 installed-extension state, cross-domain dependencies, outstanding durable work,
@@ -2992,11 +3074,13 @@ lifetime limit and versioned ledger head, sealed continuity genesis,
 source/destination-local effect receipts and parent expected-predecessor
 transition chain/high-watermark, predecessor inventory cut/fences/invalidation,
 parent effect-intent head, locally consumed effect-authorization tombstones,
+complete authorization-issuance ledger/head/count/root and seal receipt,
 effect-conflict manifest/head and conservation root, restrictive-safety
 emergency-capacity/invalidation/dual-bridge receipts, complete effect-delivery
 closure root and authorization census, post-closure unauthorized-effect
-incident/residual lineage, no-effect intent closure and predecessor-linked
-successor-intent/budget lineage,
+observation/incident/residual create-or-join lineage, no-effect intent closure
+and predecessor-linked successor-intent plus multidimensional lifetime-budget/
+exhaustion/amendment lineage,
 versioned member CAS/outcome/zero-pending receipt-root/capacity evidence,
 reinstall eligibility/consumption and dual release evidence, candidate-control
 retention receipts and capacity-conservation proof, cut-release cursor and
@@ -3091,9 +3175,14 @@ bridge omission, terminal member CAS without the current complete
 authorization/delivery closure and conflict head, invented never-issued or
 unconsumed authorization status, unresolved outbox/inbox acknowledged as
 closed, post-closure unauthorized effect reopening terminal history or reusing
-released funding, dead intent without disposition, uncertain delivery
-misclassified as no effect, or replanned intent reusing generation/effect/
-idempotency/authorization identity or resetting cumulative budgets,
+released funding, issuance without ledger append, dispatch without issuance,
+issuance head/count rollback, overflow or identity/digest fork, duplicate/
+reordered physical observation creating another incident/charge/owner,
+same-observation changed material, residual-assignment overwrite, dead intent
+without disposition, uncertain delivery misclassified as no effect, replanned
+intent reusing generation/effect/idempotency/authorization identity, lifetime
+ledger reset/refund/substitution/overflow, concurrent last-unit replan, or
+ordinary retry widening exhausted capacity,
 missing separation of duties, signed version leap, skipped/wrong
 predecessor, first dispatch/transition before continuity admission, missing or
 late-created continuity genesis, history bootstrap, terminal receipt against

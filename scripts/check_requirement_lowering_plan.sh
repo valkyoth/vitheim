@@ -271,6 +271,21 @@ require_text "$plan" \
     '`ReleaseMemberEffectAuthorizationV1 = Release { source_owner, effect_id, ... }' \
     'closed release or retention effect authority'
 require_text "$plan" \
+    '`ReleaseMemberEffectAuthorizationIssuanceLedgerV1`' \
+    'authoritative effect authorization issuance ledger'
+require_text "$plan" \
+    '`IssuanceOpen | IssuanceSealed`' \
+    'closed authorization issuance lifecycle'
+require_text "$plan" \
+    'the head/count/root; and commits its dispatch outbox record.' \
+    'authorization issuance co-commits dispatch outbox'
+require_text "$plan" \
+    'identity with changed material conflicts.' \
+    'authorization issuance create-or-join conflict'
+require_text "$plan" \
+    'reconstructs issuance authority from an outbox, projection or remote receipt.' \
+    'restore cannot reconstruct authorization issuance'
+require_text "$plan" \
     'atomically consumes the one-shot authority, commits the physical effect,' \
     'remote effect consumes authority locally'
 require_text "$plan" \
@@ -307,6 +322,9 @@ require_text "$plan" \
     '`EffectDeliveryClosureRootV1`' \
     'complete effect delivery closure root'
 require_text "$plan" \
+    '`NeverIssued` is valid only for an intent-bound candidate identity' \
+    'never-issued status derives from sealed issuance universe'
+require_text "$plan" \
     'terminal member CAS consumes that' \
     'terminal CAS consumes delivery closure'
 require_text "$plan" \
@@ -315,6 +333,21 @@ require_text "$plan" \
 require_text "$plan" \
     '`PostClosureUnauthorizedEffectIncidentV1`' \
     'post-closure unauthorized effect incident type'
+require_text "$plan" \
+    '`PhysicalEffectObservationIdV1`' \
+    'stable post-closure physical effect observation identity'
+require_text "$plan" \
+    '`PostClosurePhysicalEffectObservationLedgerV1`' \
+    'post-closure observation create-or-join ledger'
+require_text "$plan" \
+    'charges independent emergency incident capacity exactly once.' \
+    'post-closure incident charges capacity once'
+require_text "$plan" \
+    '`PhysicalEffectObservationConflict`' \
+    'conflicting post-closure observation behavior'
+require_text "$plan" \
+    'Residual assignment is itself expected-version create-or-join' \
+    'post-closure residual assignment idempotency'
 require_text "$plan" \
     '`Detected → CurrentGenerationFenced → ResidualOwned | SafelyRemoved →' \
     'closed post-closure incident lifecycle'
@@ -330,6 +363,21 @@ require_text "$plan" \
 require_text "$plan" \
     '`NoEffectIntentClosureRootV1`' \
     'no-effect intent closure root'
+require_text "$plan" \
+    '`ReleaseMemberIntentLifetimeBudgetV1`' \
+    'finite intent lifetime budget'
+require_text "$plan" \
+    'immutable non-wrapping maxima and admitted/consumed/reserved/remaining state' \
+    'intent lifetime budget dimensions and conservation'
+require_text "$plan" \
+    'IntentAbandoned | IntentReplanned | IntentReplanExhausted`.' \
+    'explicit intent replan exhaustion state'
+require_text "$plan" \
+    'Ordinary retry joins exhaustion and' \
+    'ordinary retry cannot widen intent budget'
+require_text "$plan" \
+    'predecessor-linked ledger generation, preserves all consumed/reserved history' \
+    'separately authorized cumulative intent budget amendment'
 require_text "$plan" \
     'Any uncertainty or discovered effect enters `EffectConflictDetected`' \
     'uncertain no-effect disposition enters conflict'
