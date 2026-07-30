@@ -35,7 +35,7 @@ and which planning-only or optional profiles may remain unimplemented.
 
 | Finding | Disposition |
 | --- | --- |
-| G-01 Hosted dependency contradiction | Retain the no-third-party policy. Execute `0.38.0` as the early feasibility/no-go owner. Missing safe dependency-free technology blocks the capability and `0.398.0` Hosted production gate. |
+| G-01 Hosted dependency contradiction | Retain the owner-selected no-third-party policy. Execute `0.38.0` as a time-bounded feasibility/no-go owner, not a mandate to reimplement mature TLS, cryptography, PostgreSQL, OIDC, or hostile-input stacks. Missing safe dependency-free technology immediately marks the capability Unsupported and blocks later Hosted implementation plus the `0.398.0` production gate. |
 | G-02 425-stop serial production path | Replace serial-all-stops interpretation with the selected mandatory-profile dependency closure and the capability increments below. Optional/deferred stops do not block the selected core claim. |
 | G-03 logical Phase C/retirement monolith | Enforce the authority decomposition below. Dynamic built-in-domain retirement/reinstall is not in the default v1 profile; tenant deletion and safe plugin uninstall remain separate mandatory lifecycles. |
 | G-04 oversized milestone prose | Treat phase ledgers as context only. Before code, each owner extracts a focused protocol package and executable model. No coordinator may absorb child state machines merely to avoid another file or crate. |
@@ -47,9 +47,13 @@ and which planning-only or optional profiles may remain unimplemented.
 | G-10 unclear first topology/TCB/UI stack | Increment 0 freezes the first single-node process/TCB boundaries and the exact HTTP/TLS/identity/UI technology disposition. HA remains a later extension of an operated profile. |
 | G-11 broad product boundary | The v1 capability contract and explicit non-goals below govern API, UI, installer, documentation, and connector claims. |
 | G-12 placeholder foundation types | Existing `0.2.0` and `0.3.0` are hard gates before envelopes, durable schemas, or tenant-bearing authority code. |
-| G-13 selected closure remained prose | Make `SelectedProfileManifestV1` generation 1 an exact 425-row machine-checked artifact owned by reopened `0.1.0`; reject missing predecessors, selected-to-deferred edges, inward optional dependencies, version-order violations, and production claims without implemented owners. |
-| G-14 small-pass/model admission remained prose | Add `ImplementationWorkPackageV1`, the concrete `0.2.0` package, a closed critical-model stop set, `ExecutableModelBindingV1`, and project-owned validation before implementation begins. |
+| G-13 selected closure remained prose | Make `SelectedProfileManifestV1` generation 1 an exact 425-row machine-checked artifact owned by reopened `0.1.0`; use zero-or-more capability edges, graph-wide cycle/selection validation, claim-specific closures and work-package exact refinement rather than calling a previous-mandatory serial chain a transitive dependency graph. |
+| G-14 small-pass/model admission remained prose | Add `ImplementationWorkPackageV1`, the concrete `0.2.0` package, a reviewed minimum critical-model set, `ExecutableModelBindingV1`, and project-owned validation before implementation begins. Every entering package decides criticality with rationale; a list is never called complete merely because its existing rows have bindings. |
 | G-15 PostgreSQL/SQLite order contradicted the selected profile | Assign PostgreSQL to `0.57.0` and bounded SQLite to `0.58.0`; keep PostgreSQL mandatory and SQLite separately selected. |
+| G-16 mandatory retirement certification consumed refused implementations | Keep the advanced `0.100.0–0.101.0` and `0.156.0–0.210.0` program Unsupported. Redefine default `0.414.0` as refusal, installed/disabled-state, retained-history, tenant-deletion/plugin-uninstall separation and no-exposed-retirement-path certification. A future selected successor owns destructive retirement certification. |
+| G-17 delivery and optional-profile closure were ambiguous | Give rows explicit `required_for_claims`, allow multiple delivery slices, share search/knowledge `0.286.0–0.300.0` across both checkpoints, place `0.102.0–0.118.0` in service foundations, and make `0.424.0`/`1.0.0` depend on all promoted optional profiles. |
+| G-18 package/model checking was predominantly syntactic | Require exact package prerequisites, path roots/allowlists, base commit, test IDs and criticality rationale; validate graph agreement, registered control IDs, unique transition/test IDs, and resolvable owners once implementation begins. Reviewer judgment remains required for conceptual cohesion. |
+| G-19 stale companion-version report | The companion file is absent and stays absent. Do not recreate a second version authority from a stale untracked-file observation. |
 
 ## Selected Production-v1 Capability Contract
 
@@ -96,12 +100,16 @@ evidenced:
 Optional capability code may depend inward on stable ports. The kernel and
 mandatory first-party domains never depend on it.
 
-The exact selection, predecessor closure, delivery slice, required runtime
-profiles, successor-after-skip rule, and support boundary for every stop are in
+The exact selection, capability edges, dependency state, delivery slices,
+claim requirements, required runtime profiles, successor-after-skip rule, and
+support boundary for every stop are in
 [Selected Production Profile Manifest](SELECTED_PROFILE_MANIFEST.md) and the
 generated `docs/selected_profile_manifest_v1.txt`. This manifest is required
-before `0.2.0`; `0.398.0` revalidates it and may narrow claims, but it does not
-create the first selected closure.
+before `0.2.0`. Reviewed architectural edges begin as `DeclaredMinimum`; each
+entering work package replaces them with `PackageExact`. No production claim
+passes until every row in its graph closure is package-exact, implemented and
+evidenced. `0.398.0` revalidates and may narrow claims, but does not create the
+first selection.
 
 ## Explicit Product Boundaries
 
@@ -159,7 +167,15 @@ Complete the existing Phase A owners without expanding them:
 Fuzz, property, finite-model, and compile-fail tests must demonstrate
 determinism, boundedness, tenant typing, and invalid-ID rejection.
 
-### Increment 2 — Persistent Incident Transport Test Slice
+### Increment 2 — Service Foundations
+
+Implement `0.102.0–0.118.0` as the reusable service foundation: typed work
+components, tasks, attachment quarantine, assignment, SLA/SLO, approval,
+on-call, paging and notification behavior. These are product/application
+authorities, not generic operational-kernel internals. Each aggregate or
+lifecycle has its own model binding and cannot become a universal ticket table.
+
+### Increment 3 — Persistent Incident Transport Test Slice
 
 After PostgreSQL `0.57.0`, `0.119.0–0.121.0` prove the first persistent
 incident transport/domain slice with static, deterministic identity and policy
@@ -180,7 +196,7 @@ All Phase D/E Hosted paths before `0.225.0` remain contracts, fakes, or this
 test slice. They cannot be deployed with the fake identity profile, described
 as production authenticated, or used to claim session/revocation correctness.
 
-### Increment 3 — Production-Authenticated Incident Proof
+### Increment 4 — Production-Authenticated Incident Proof
 
 After the exact tenant, subject, session/OIDC, RBAC/ABAC, policy-lifecycle,
 redaction, and authorization-conformance owners through `0.225.0` exist, prove
@@ -212,7 +228,7 @@ and returns to its existing owner or a new successor minor; the conformance
 commit cannot implement it. Passing evidence cannot retroactively promote
 `0.119.0`.
 
-### Increment 4 — Operational Kernel
+### Increment 5 — Operational Kernel
 
 Add scheduler/timer/lease/fence/queue behavior, basic workflow, quotas and
 measured fairness, external effect intent/dispatch/reconciliation, externally
@@ -220,27 +236,30 @@ anchored integrity checkpoints, observability, failure injection, replay,
 restore, and rolling upgrade. Each authority uses a separate model and local
 owner transaction.
 
-### Increment 5 — Core Service Management
+### Increment 6 — Core Service Management
 
 Deliver the mandatory ITSM set through real policy, storage, workflow, API, and
 notification paths. Shared work-item values and read composition never become a
 universal mutable aggregate, repository, patch command, or nullable mega-table.
 
-### Increment 6 — Assets, SecOps, And Correlation
+### Increment 7 — Assets, SecOps, And Correlation
 
 Deliver the mandatory asset/service/SecOps profile with one real discovery and
 selected ingestion profiles. Graph and search remain disposable projections;
 raw facts/evidence remain immutable or governed erasable references;
 reconciliation is a pure pinned-input decision.
 
-### Increment 7 — Independent Optional Profiles
+Search and knowledge `0.286.0–0.300.0` are a shared projection/application
+closure used by both operable checkpoints, not security-only functionality.
+
+### Increment 8 — Independent Optional Profiles
 
 Pure Wasm components precede effectful connector profiles. Builders, extended
 business modules, semantic search, federation, AI, additional databases, and
 vendor packs remain separately selectable and cannot become kernel
 dependencies.
 
-### Increment 8 — Production Qualification
+### Increment 9 — Production Qualification
 
 Operate and harden the same selected minimum profile through packaging,
 startup/upgrade compatibility, HA fencing/failover, backup/restore/DR/failback,
@@ -385,7 +404,7 @@ This planning pass is complete when:
 - every critical implemented protocol has a focused package and executable
   model;
 - `SelectedProfileManifestV1` remains exact, closed, acyclic, and consistent
-  with numeric implementation order;
+  with package-exact prerequisites and claim-specific closures;
 - every entering stop has a validated `ImplementationWorkPackageV1`, and every
   critical stop has an `ExecutableModelBindingV1`;
 - numeric workload envelopes begin with the first vertical slice;

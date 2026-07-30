@@ -18,9 +18,10 @@ archival/retained-namespace safety, partition-fenced evaluation, source-
 partition activation/abort linearization and admission, funded bridge
 ownership, partial-admission abort/supersession, permanent-unknown policy and
 any selected quarantine recovery, proof-bound replacement genesis, guard
-supersession, and dual release sequence. Every
-selected profile must later
-pass `0.414.0`, and a loss terminal is never presented as clean retirement.
+supersession, and dual release sequence. Every default selected profile must
+later pass the `0.414.0` refusal/history certification. A future dynamic-
+retirement profile requires its own successor certification, and a loss
+terminal is never presented as clean retirement.
 
 ## `0.313.0` — Versioned WIT Interfaces
 Status: planned. Setup: pin Component Model/WIT sources, ABI versions, owned

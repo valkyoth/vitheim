@@ -210,8 +210,10 @@ signature, larger version or reconstructed history alone grants nothing.
 No wildcard tenant or cross-tenant retirement transaction exists, and loss
 never counts as clean or grants deletion/hold release. `0.155.0` immediately
 certifies tenant surfaces; `0.369.0` iterates
-contribution-kind obligations; and `0.414.0` destructively certifies retirement
-without first implementation. Missing obligations block the owner and release.
+contribution-kind obligations; and default `0.414.0` certifies fail-closed
+retirement refusal and retained-history compatibility. Destructive retirement
+requires a future selected successor after its complete implementation closure.
+Missing obligations block the owner and release.
 
 ## Runtime Controls Planned Before Production
 

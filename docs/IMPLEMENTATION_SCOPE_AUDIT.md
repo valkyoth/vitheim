@@ -90,7 +90,7 @@ The second review's 31 additions live in
 | Supplier decomposition | `0.142.0–0.144.0` | Contract, obligation lifecycle, then access termination |
 | Procurement decomposition | `0.145.0–0.148.0` | External-order evidence/receipt, allocation/return, entitlement, then provider-neutral reconciliation |
 | Continuity decomposition | `0.149.0` | Exercise/evidence authority separated from plan authority |
-| Cross-surface integration | `0.154.0–0.155.0`, `0.228.0–0.229.0`, `0.243.0–0.244.0`, `0.299.0–0.300.0`, `0.336.0–0.338.0`, `0.353.0–0.354.0`, `0.364.0–0.367.0`, `0.369.0`, `0.413.0–0.414.0` | Per-vocabulary extension/backfill, contribution-kind-driven differentials, then destructive lifecycle/recovery/retirement certification without first implementation |
+| Cross-surface integration | `0.154.0–0.155.0`, `0.228.0–0.229.0`, `0.243.0–0.244.0`, `0.299.0–0.300.0`, `0.336.0–0.338.0`, `0.353.0–0.354.0`, `0.364.0–0.367.0`, `0.369.0`, `0.413.0–0.414.0` | Per-vocabulary extension/backfill, contribution-kind-driven differentials, selected lifecycle/recovery certification, then default dynamic-retirement refusal/history certification without first implementation |
 | Asset-kind packs | `0.266.0–0.269.0` | Physical/compute, cloud-native, identity/network, then SaaS/data |
 | Cloud-native discovery | `0.277.0` | One exact connector profile or explicit manual/import-only defer |
 

@@ -1,0 +1,3 @@
+schema|ExecutableTestInventoryV1
+generation|1
+test_id|owner|runner|status

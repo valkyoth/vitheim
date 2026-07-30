@@ -1,0 +1,3 @@
+schema|ExecutableSymbolInventoryV1
+generation|1
+owner_ref|source_file|symbol|status

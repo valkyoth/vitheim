@@ -104,7 +104,7 @@ The largest retained ledgers are already divided as follows:
 | `0.381.0` | `0.394.0–0.396.0` | witness decision, then bootstrap, capacity transfer, operationalization |
 | `0.399.0` | `0.400.0–0.403.0` | packaging, startup, topology bootstrap, replay budgets, drains |
 | `0.406.0` | `0.407.0–0.408.0` | HA model, owner failover, then service recovery |
-| `0.410.0` | `0.411.0–0.414.0` | backup custody, restore, DR, lifecycle and retirement certification |
+| `0.410.0` | `0.411.0–0.414.0` | backup custody, restore, DR, lifecycle certification, then default dynamic-retirement refusal/history certification |
 | `0.415.0` | `0.416.0–0.417.0` | load limits, soak/fairness, then chaos/recovery |
 | `0.420.0` | `0.421.0–0.423.0` | finding intake, authority, storage/recovery, integration and final retest |
 

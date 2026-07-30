@@ -83,9 +83,14 @@ verified from the same manifest. A count mismatch is a release blocker.
 The exact production selection is
 [`SelectedProfileManifestV1`](SELECTED_PROFILE_MANIFEST.md) generation 1,
 materialized as `docs/selected_profile_manifest_v1.txt`. Its 425 rows bind
-selection state, predecessor closure, independently operable delivery slice,
+selection state, zero-or-more capability dependencies, dependency-review state,
+one-or-more independently operable delivery slices, required claims,
 executable-owner state, required profiles, retests, skip/successor behavior and
 support boundary. A `specified:` owner is not implementation evidence.
+`DeclaredMinimum` edges are planning input; each selected stop must become
+`PackageExact` from its admitted work package before production evidence can
+close. The checker rejects missing nodes, duplicate/self edges, arbitrary
+cycles, selected-to-unselected dependencies and incomplete claim closures.
 `0.398.0` revalidates this established closure and may narrow support; it cannot
 invent a production selection at the end of the program.
 
@@ -93,7 +98,12 @@ Before a selected stop enters implementation, its checked
 [`ImplementationWorkPackageV1`](IMPLEMENTATION_WORK_PACKAGES.md) and applicable
 `ExecutableModelBindingV1` must be complete. These records make entry
 admission, scope splitting and model ownership auditable without promoting
-planned code to an implemented evidence state.
+planned code to an implemented evidence state. Active package and implemented
+model-test IDs must resolve through
+`docs/implementation/executable_test_inventory_v1.txt`; prose-only test names
+are never executable evidence. Implemented model and persistence owners must
+also resolve to existing Rust files and symbols through
+`docs/implementation/executable_symbol_inventory_v1.txt`.
 
 Owner policy requires a pentest whenever an exact stop is implemented/tagged.
 The audit recommendation to weaken that per-stop requirement is not adopted.
@@ -301,9 +311,10 @@ canonical transmission-start law and make its live/unknown claim cut block
 closure, and keep staged seal work in one codec-pinned cumulative lineage.
 Dispatch admission also requires contiguous transitions from genesis;
 none uses a wildcard tenant or cross-tenant transaction. Plugin uninstall and
-feature disablement
-never imply data retirement. `0.414.0` destructively certifies all of these
-implementations and cannot first add teardown, campaign, or recovery behavior.
+feature disablement never imply data retirement. Default `0.414.0` certifies
+that dynamic built-in retirement remains refused, history stays readable, and
+those lifecycles remain separate. Destructive certification requires a future
+selected successor and cannot be smuggled into the default certifier.
 
 Typed extensions appear only after their vocabulary exists. `0.154.0–0.155.0`
 reference and immediately certify the authoritative `TenantDataSurface`

@@ -38,6 +38,10 @@ Setup: inventory each planned Hosted primitive and adapter against Rust `std`
 capabilities, including TLS, cryptography, databases, OIDC/WebAuthn/SAML,
 MIME, and the Wasm component runtime; bind its first implementation stop,
 project-owned port, safe implementation evidence, and support/defer consequence.
+Each spike has a written question, owner, small fixed time/work budget and
+binary evidence outcome. Exhaustion or absence of a credible maintained
+implementation is `Unsupported`, not authorization to begin an open-ended
+project-owned TLS, cryptography, PostgreSQL, OIDC, MIME, or Wasm replacement.
 Before affected API/schema/adapter contracts freeze, also inventory the exact
 HTTP server/client, PostgreSQL/SQLite access, browser/UI build, KMS and
 observability needs and the first single-node process/TCB boundaries.
@@ -59,6 +63,9 @@ stale `0.384.0` revalidation pass.
 Exit criteria: every affected Hosted milestone is either backed by an audited
 dependency-free project implementation or is visibly blocked/deferred; no
 roadmap text, admission record, or adapter can silently relax the dependency law.
+If any mandatory Hosted primitive is Unsupported, later affected implementation
+stops do not start and the Hosted product remains a documented no-go unless the
+owner later approves a separate explicit dependency-policy decision.
 `v0.38.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.95.0` — Stable Domain Manifest Core

@@ -10,12 +10,30 @@ All notable Vitheim changes are documented here. The format follows
 
 - Added a generated, 425-row `SelectedProfileManifestV1` that makes the
   mandatory, optional-selected, deferred, and unsupported production closure
-  executable, including predecessor, delivery-checkpoint, runtime-profile,
-  executable-owner, retest, skip/successor, and support-boundary fields.
+  executable. It now carries zero-or-more capability dependencies,
+  `DeclaredMinimum`/`PackageExact` review state, multiple delivery checkpoints,
+  required claims, runtime profiles, executable owners, retests,
+  skip/successor rules, and support boundaries; graph-wide validation rejects
+  cycles and incomplete selected or optional claim closures.
 - Added checked `ImplementationWorkPackageV1` entry certificates, the first
-  `0.2.0` work package, a closed critical-model stop set, and
-  `ExecutableModelBindingV1` records so small-pass and model-ownership rules
-  fail closed before implementation.
+  `0.2.0` work package, a reviewed critical-model minimum, expanded
+  `ExecutableModelBindingV1` records, and executable source-symbol and test
+  inventories so
+  small-pass, changed-path, exact-prerequisite, prospective criticality,
+  stable-owner, and test-resolution rules fail closed before implementation.
+- Made the zero-third-party-dependency Hosted feasibility decision at
+  `0.38.0` a fixed-budget go/no-go gate: unavailable safe primitives make the
+  affected production profile Unsupported instead of starting open-ended
+  protocol/runtime reimplementation.
+- Corrected default `0.414.0` to certify dynamic-retirement refusal,
+  installed/disabled built-in state, retained historical readability, and
+  separation from tenant deletion and plugin uninstall. Destructive
+  retirement remains an Unsupported advanced program requiring a future
+  explicitly selected successor.
+- Moved `0.102.0–0.118.0` into a distinct service-foundation increment, made
+  search/knowledge `0.286.0–0.300.0` shared by both delivery checkpoints, and
+  made the combined production closure depend explicitly on every promoted
+  optional profile.
 - Corrected production integration chronology: `0.119.0–0.121.0` is an
   undeployable static-identity PostgreSQL test slice, while `0.225.0` certifies
   the first real OIDC/policy-authenticated incident path from already

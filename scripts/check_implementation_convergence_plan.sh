@@ -37,8 +37,17 @@ require_text "$plan" \
     'SelectedProfileManifestV1' \
     'machine-readable selected closure'
 require_text "$plan" \
+    'PackageExact' \
+    'work-package exact capability graph'
+require_text "$plan" \
     'Independently Operable Delivery Checkpoints' \
     'separate service and security asset feedback slices'
+require_text "$plan" \
+    'Increment 2 — Service Foundations' \
+    'service foundation increment'
+require_text "$plan" \
+    'shared projection/application' \
+    'shared search and knowledge slice'
 require_text "$plan" \
     'PostgreSQL is the reference production backend' \
     'PostgreSQL reference profile'
@@ -109,6 +118,9 @@ require_text "$authority" \
 require_text "$authority" \
     'SealPermanentlyUnresolved' \
     'non-resetting seal exhaustion result'
+require_text "$authority" \
+    'Default-Profile Retirement Refusal And Historical Compatibility Certification' \
+    'default retirement refusal certification'
 
 require_text docs/ROADMAP_GAP_DISPOSITIONS.md \
     'Consolidated 2026-07-30 Review' \

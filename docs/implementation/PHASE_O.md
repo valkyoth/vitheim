@@ -6,21 +6,15 @@ authoritative tenant data-surface references, deferrals/product state,
 backup/restore, retention, hold, privacy, continuity, and erasure contributions
 for every selected full-suite profile; it cannot add a missing reference,
 registration, handler, or recovery behavior.
-Focused `0.414.0` then destructively certifies the independently implemented
-`0.100.0` retirement contract, `0.101.0` exact-tenant authority/recovery, and
-applicable `0.156.0–0.210.0` cut/plan/succession/guard/root, terminal
-aggregation, residual handoff/state/cuts, restrictive invalidation, target-slot
-takeover/release, funded retained-control transfer, archival/retained-namespace
-safety, partition-fenced evaluation, linearized activation/abort, source-
-partition admission, funded bridge ownership, canonical empty ownership/
-disposition, partial-admission abort/supersession, permanent-unknown policy and
-any selected quarantine recovery, proof-bound replacement genesis, guard
-supersession, and dual release across tenant
-enumeration, release races, post-cut evidence, child authority/isolation,
-pause/revocation/resume, fairness, terminal truth, authority/work drainage,
-data/hold disposition, retained history/codecs, backup/import, external
-references, plugin uninstall, and safe reinstall; it cannot first implement
-teardown, campaign, or recovery.
+Focused default-profile stop `0.414.0` certifies that the Unsupported dynamic
+built-in-domain retirement/reinstall program has no command, API, UI, worker,
+configuration, import, restore, or recovery entry path. It proves built-ins
+remain installed or disabled, retained history/codecs remain readable, and
+tenant deletion plus plugin uninstall stay separate. It does not consume or
+certify implementations from `0.100.0–0.101.0` or `0.156.0–0.210.0`.
+The detailed destructive-retirement ledger retained in the planning documents
+is future selected-profile context only; a future successor must implement and
+certify that complete closure without reusing default `0.414.0` evidence.
 
 Scope: `0.399.0–0.424.0`. Claims require operational evidence, not schedule.
 The pre-Phase-O `0.398.0` decision blocks a Hosted production claim unless

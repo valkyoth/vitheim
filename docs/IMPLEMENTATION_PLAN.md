@@ -167,9 +167,12 @@ post-fence failure without predecessor revival, consume the canonical
 transmission-start claim cut before closure, and keep staged sealing within one
 codec-pinned cumulative lineage. Dispatch remains closed until construction,
 inventory, authorization, delivery and continuity contracts are certified.
-`0.414.0`
-destructively certifies
-selected retirement/reinstall profiles rather than first implementing teardown.
+Default `0.414.0` certifies that dynamic built-in-domain retirement/reinstall
+is unavailable, built-ins remain installed or disabled, retained history stays
+readable, and tenant deletion plus plugin uninstall remain separate. It does
+not consume or certify the Unsupported advanced-retirement implementation.
+A future explicitly selected successor must implement and destructively
+certify that exact closure before making such a support claim.
 Tenant lifecycle references begin only
 after `0.153.0`, with immediate backfill certification at `0.155.0`;
 authorization follows Phase F, workflow Phase G, search Phase J, workspace its

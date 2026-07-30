@@ -8,22 +8,52 @@ stop_id|reason
 0.46.0|storage capability admission lineage and refusal
 0.66.0|migration planning activation and recovery authority
 0.73.0|durable queue claim scheduling and recovery
+0.103.0|generic task aggregate lifecycle and dependency completion authority
+0.107.0|attachment quarantine scan release and rejection lifecycle
+0.114.0|approval aggregate decision notification and separation authority
+0.115.0|on-call rotation override and handoff lifecycle
+0.116.0|paging escalation acknowledgement and receipt lifecycle
+0.117.0|notification preference quiet-hour and emergency-override authority
 0.121.0|incident lifecycle authority
+0.122.0|service-request lifecycle and fulfilment authority
+0.123.0|catalog item version activation and form-submission authority
+0.124.0|problem investigation root-cause and closure lifecycle
+0.125.0|known-error publication workaround and retirement lifecycle
+0.126.0|change proposal approval scheduling execution and rollback authority
+0.127.0|release and deployment record lifecycle
+0.128.0|major-incident command role phase and closure authority
+0.129.0|stakeholder communication approval publication and correction authority
+0.130.0|hosted status publication delivery and reconciliation lifecycle
+0.131.0|postmortem finding action and verification lifecycle
 0.152.0|tenant lifecycle and topology migration
 0.213.0|OIDC session and mapping lifecycle
 0.219.0|RBAC role assignment authority
 0.220.0|ABAC decision evaluation authority
 0.221.0|policy lifecycle bootstrap and recovery
+0.224.0|delegation break-glass grant expiry revocation and audit authority
 0.230.0|workflow intermediate representation lifecycle
+0.232.0|human-task claim completion escalation and reassignment authority
+0.233.0|timer deadline retry and terminal-exhaustion lifecycle
+0.234.0|parallel branch join cancellation and completion authority
+0.235.0|compensation scheduling execution and unresolved-outcome lifecycle
 0.239.0|workflow worker lease fencing and takeover
 0.245.0|authenticated alert ingestion admission
 0.250.0|alert deduplication evidence-preserving decision
+0.251.0|suppression maintenance-window activation expiry and evidence authority
 0.254.0|security-incident lifecycle authority
 0.255.0|vulnerability finding and remediation authority
+0.258.0|remediation campaign exception verification and closure authority
+0.261.0|evidence custody transfer integrity and disposition lifecycle
 0.263.0|asset lifecycle authority
+0.270.0|business and technical service lifecycle authority
+0.272.0|typed relationship assertion correction and retirement authority
 0.274.0|bitemporal fact correction and supersession
 0.278.0|asset reconciliation identity and target fencing
+0.281.0|derived correlation assertion review and supersession lifecycle
+0.282.0|correlation review confirmation rejection and feedback authority
+0.283.0|software entitlement allocation renewal and compliance authority
 0.287.0|search projection checkpoint and rebuild lifecycle
+0.297.0|knowledge article review publication correction and retirement lifecycle
 0.308.0|risk treatment and exception authority
 0.311.0|privacy-request case authority
 0.318.0|plugin package admission rollout and revocation

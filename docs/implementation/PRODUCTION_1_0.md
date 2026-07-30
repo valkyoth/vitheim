@@ -13,7 +13,8 @@ Any skipped old stop requires a future successor version before implementation;
 it is never backfilled into this release.
 The candidate's exact closure is `SelectedProfileManifestV1` generation 1.
 Every selected row names an implemented executable owner and immutable evidence;
-every predecessor is selected and passing; optional code remains outward-only;
+every capability dependency is selected and passing; optional code remains
+outward-only;
 and both `core-service-operations` and `security-asset-operations` checkpoints,
 plus their common production rows, pass their workload, recovery, operational,
 compatibility and pentest gates. Neither checkpoint can substitute for the
@@ -1910,23 +1911,14 @@ Verification:
   API/SDK/subscription,
   import/export/configuration, cross-surface differential, and lifecycle/
   backup/restore/erasure stops have passing evidence for every selected
-  capability. Every selected domain/module/plugin retirement has separately
-  passing immutable-plan/current-generation/separated-authority, exact-tenant
-  child and applicable authenticated deployment-membership cut lifecycle,
-  separately approved exact-cut one-shot plan/admission, CAS-installed successor
-  lineage with non-resetting cumulative budget, constrained derived child
-  authority, broad-to-narrow domain-guard transfer, authoritative post-cut
-  absence/child handoffs, joint successor/protection-root CAS, frozen structural
-  commitment, mixed retired/never-present coverage, permanent-guard takeover,
-  truthful terminal aggregation, residual handoff/state/cuts, restrictive
-  emergency invalidation, exact target-slot takeover/release, reserved
-  classified completion, archival/retained-namespace safety, partition-fenced
-  reinstall evaluation/consumption and dual release, bounded fair campaign
-  pause/revocation/resume, atomic
-  commit/crash recovery, safe fence release, work drainage, data/hold disposition,
-  retained-history codec/upcaster, backup/import, external-reference, safe-
-  reinstall, and truthful verified-versus-loss terminal evidence from `0.414.0`,
-  or remains visibly non-clean/blocked. A deferred `0.277.0` profile exposes cloud-native kinds as
+  capability. Default `0.414.0` proves dynamic built-in-domain retirement and
+  reinstall are unavailable through command, API, UI, worker, configuration,
+  import, restore, or recovery paths; built-ins remain installed or disabled;
+  retained codecs/upcasters keep history readable; and tenant deletion plus
+  plugin uninstall remain separate lifecycles. Destructive retirement evidence
+  is not a default-v1 acceptance requirement and may be claimed only by a future
+  selected successor that implements the exact advanced-retirement closure.
+  A deferred `0.277.0` profile exposes cloud-native kinds as
   manual/generic-import-only and makes no automatic discovery claim.
 - The generated roadmap/evidence differential proves exactly 425 release
   stops and their owners, authority reviews and pentest reports; it rejects any

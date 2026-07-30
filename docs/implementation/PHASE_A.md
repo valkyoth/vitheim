@@ -29,12 +29,13 @@ Deliverables:
   `Implemented`, `Conditional`, `Supported`, and `Unsupported` vocabulary,
   with executable-owner and immutable-evidence references for every claim.
 - `SelectedProfileManifestV1` generation 1 with one row for each of the 425
-  exact stops, its selection state, predecessor closure, delivery checkpoint,
+  exact stops, its selection state, zero-or-more capability dependencies,
+  dependency-review state, one-or-more delivery checkpoints, required claims,
   executable-owner state, required profiles, retests, skip/successor rule, and
   support boundary.
 - Project-owned checks for the selected-profile manifest, strict
-  `ImplementationWorkPackageV1` admission records, the closed critical-model
-  stop set, and `ExecutableModelBindingV1`.
+  `ImplementationWorkPackageV1` admission records, the reviewed critical-model
+  stop set, `ExecutableModelBindingV1`, and the executable test inventory.
 
 Verification: run all gates and core target checks; prove Cargo metadata has
 only workspace paths and both publication and incomplete readiness are denied.
@@ -43,9 +44,11 @@ wrong-parent reports, malformed/prerelease-incompatible inputs, stale SBOM
 versions/licenses/relationships, changed candidate trees, changed artifacts,
 roadmap count/owner/marker drift, and documentation that promotes a merely
 specified or conditional capability. Regenerate and compare the selected
-profile; reject missing/duplicate stops, non-increasing or unselected
-predecessors, inward optional dependencies, stale production storage order,
-unpackaged implementation status, incomplete critical-model bindings, and
+profile; reject missing/duplicate stops, missing/duplicate/self capability
+edges, arbitrary dependency cycles, selected-to-unselected dependencies,
+unpromoted optional dependencies, incomplete claim closures, stale production
+storage order, unpackaged implementation status, unresolved package paths or
+tests, incomplete critical-model bindings, and
 planned Rust owners attached to implemented stops.
 
 Exit criteria: baseline claims match evidence, the formula

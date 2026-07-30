@@ -476,8 +476,8 @@ require_text docs/implementation/ROADMAP_COHERENCE_COMPLETIONS.md \
     '0.398.0` — Minimum Hosted Production Profile Go/No-Go' \
     'hosted production feasibility gate'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.414.0` — Domain Retirement And Historical Compatibility Certification' \
-    'domain retirement certification'
+    '0.414.0` — Default-Profile Retirement Refusal And Historical Compatibility Certification' \
+    'default-profile retirement refusal certification'
 require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
     'contribution-kind/dimension/owner coverage report' \
     'contribution-kind-driven differential suite'

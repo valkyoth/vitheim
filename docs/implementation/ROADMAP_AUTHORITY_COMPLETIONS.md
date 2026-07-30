@@ -3498,10 +3498,36 @@ exhaustion has exactly one bounded truthful recovery outcome, cleanup
 preserves history and evolution cannot invalidate bounded closure.
 `v0.210.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.414.0` — Domain Retirement And Historical Compatibility Certification
+## `0.414.0` — Default-Profile Retirement Refusal And Historical Compatibility Certification
 
 Status: planned.
-Setup: consume `0.100.0` retirement contracts, `0.101.0` authority/recovery
+Setup: the default `VITHEIM-PRODUCTION-V1` profile keeps `0.100.0–0.101.0` and
+`0.156.0–0.210.0` Unsupported. Consume only selected `0.413.0` lifecycle/
+recovery evidence, current domain and contribution manifests, installed versus
+disabled built-in state, retained event/snapshot/export/backup/import history,
+tenant-deletion ownership, plugin-uninstall ownership, and product-state
+claims. Prove no command, API, UI, worker, configuration, import, or recovery
+path can invoke dynamic built-in-domain retirement or reinstall.
+
+Goal: certify fail-closed refusal, historical readability, and lifecycle
+separation without implementing or consuming the unsupported retirement
+program.
+
+Deliverables: selected-profile refusal matrix, route/command/worker absence
+report, installed/disabled built-in manifest, retained-codec/upcaster and
+history read/restore/import corpus, tenant-deletion and plugin-uninstall
+separation proof, unsupported capability discovery response, documentation/
+installer/API/UI differential, and exact certification report.
+
+Verification: attempt every dynamic-retirement/reinstall entry path, forge
+support/configuration metadata, disable a built-in and prove history remains
+readable, remove codecs/upcasters, confuse tenant deletion or plugin uninstall
+with domain retirement, restore/import unsupported active state, reuse a
+retired namespace, and advertise the future profile. Every case refuses or
+preserves history without manufacturing retirement evidence or authority.
+
+Future selected-retirement profile context: a future successor may consume
+`0.100.0` retirement contracts, `0.101.0` authority/recovery
 protocol and evidence, the applicable `0.156.0–0.210.0` deployment cut lifecycle,
 approved exact-plan admission/succession, narrow-guard/topology handoff,
 protection-root integration, clean/non-clean terminal aggregation, residual-
@@ -3540,9 +3566,9 @@ current domain/contribution generations, `0.413.0`
 lifecycle/recovery evidence,
 installed-extension state, cross-domain dependencies, outstanding durable work,
 retained event/snapshot/export/backup/import history, deferrals, and product state.
-Goal: destructively certify selected-profile domain/module/plugin retirement
+Future-profile goal: destructively certify selected-profile domain/module/plugin retirement
 and reinstall while preserving every retained historical obligation.
-Deliverables: retirement/drain exercise corpus, dependency-closure and
+Future-profile deliverables: retirement/drain exercise corpus, dependency-closure and
 outstanding-work report, proposal/approval/plan and command/effect-fence
 evidence, exact plan/cut consumption, successor lineage and derived-child
 authorization evidence, broad-to-narrow fence-transfer receipt, authoritative
@@ -3601,7 +3627,7 @@ dependency proof, campaign pause/revocation/resume, fairness and terminal-
 manifest evidence,
 data-disposition/legal-hold proof, codec/upcaster retention set, historical
 read/restore/import matrix, reinstall/rollback-floor matrix, and certification report.
-Verification: stale or unauthorized retirement plan, crash-resume divergence,
+Future-profile verification: stale or unauthorized retirement plan, crash-resume divergence,
 command reopening, forced data-loss acceptance, false authority/data evidence,
 cut-only start, plan/cut ID/generation/digest mismatch, pre-final-cut approval,
 one-shot plan double consumption, concurrent/forked successor, predecessor
@@ -3730,9 +3756,12 @@ residual/floor/history bypass, codec loss, premature deletion,
 hold/export/erasure bypass, restore/import
 failure, uninstall loss, ID reuse, unsafe downgrade, unresolved defer, false
 support, and late implementation pass.
-Exit criteria: every selected retirement either completes with closed authority,
-drained/disposed work, truthful per-dimension and per-tenant evidence, permanent
-ID tombstone, readable retained history, and safe reinstall floor, or retains
-its exact non-clean/blocking result; the certifier adds no missing retirement,
-campaign, authority, recovery, codec, lifecycle, or reconciliation behavior.
+Exit criteria: default v1 exposes no dynamic built-in-domain retirement or
+reinstall path; built-ins remain installed or disabled, retained history stays
+readable across rebuild/restore/import, tenant deletion and plugin uninstall
+remain separate, and all product surfaces truthfully report the advanced
+profile Unsupported. The certifier adds no retirement, campaign, authority,
+recovery, codec, lifecycle, or reconciliation behavior. The future-profile
+ledger above is preserved as design context and becomes normative only through
+a separately selected successor version.
 `v0.414.0 implementation stop reached. Run pentest for this exact commit.`
