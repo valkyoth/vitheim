@@ -104,16 +104,21 @@ and permanently terminal exhaustion, create exactly one proof-bound successor
 lifecycle, keep lowering evaluation/permits distinct from reinstall authority,
 use one closed top-or-pre-operational-lowered genesis tag through lifecycle
 creation, per-partition adoption and final activation so neither the restriction
-branch nor eligibility can be consumed incorrectly; preserve bridge identity
-and capacity while carrying the lowered branch through the same tagged
+branch nor eligibility can be consumed incorrectly; require closed Top/Lowered
+partition-receipt and admission-root variants with no optional authority
+members; preserve bridge identity and capacity while carrying the lowered
+branch through the same expected-generation lifecycle CAS and tagged
 admission/ownership roots; atomically consume both candidates only after
 complete admission and bridge-ownership transfer; commit-revalidate evidence,
-coverage, safety, restriction, revocation/expiry, prepared-root, bridge-owner
-and guard generations; reconcile both reinstall release families; permit
+coverage, safety, restriction, revocation/expiry and prepared-root/bridge-owner
+state plus distinct current guard-slot, non-operational candidate and expected
+successor generations; reconcile both reinstall release families; permit
 already-operational lowering only through the same fresh guard-slot CAS; and
 release the old top only through per-enforcement-point Released or
-RetainedAccepted receipts, with unknown remaining pending and terminal
-completion requiring zero pending under authenticated conservation.
+RetainedAccepted receipts committed by expected-version member CAS with
+absorbing terminals, with unknown remaining pending, parent folds using only
+maximum authenticated member versions, and terminal completion requiring zero
+pending under authenticated conservation.
 No wildcard tenant or cross-tenant retirement transaction exists, and loss
 never counts as clean or grants deletion/hold release. `0.51.4` immediately
 certifies tenant surfaces; `0.139.1` iterates

@@ -112,11 +112,14 @@ cumulative-budget replacement-evaluation lineage with permanently terminal
 exhaustion, evaluate/admit lowering under separate non-substitutable authority,
 create exactly one fresh proof-bound successor from a closed top-or-lowered
 tag, carry either branch through one tagged admission/ownership pipeline,
-adopt every prepared lowered bridge without duplication, use commit-fresh
-tagged final activation without re-consuming replacement eligibility, consume
+adopt every prepared lowered bridge without duplication through closed receipt/
+root variants and the shared lifecycle CAS, use distinct guard-slot/candidate/
+successor generations for commit-fresh tagged final activation without
+re-consuming replacement eligibility, consume
 the completely admitted successor, release both candidate-control families,
 lower an operational guard only through a commit-fresh prepared CAS, and
-release the old top only through zero-pending authenticated funded
+release the old top only through expected-version absorbing member outcomes,
+maximum-version parent folds and zero-pending authenticated funded
 reconciliation.
 `0.145.4`
 destructively certifies

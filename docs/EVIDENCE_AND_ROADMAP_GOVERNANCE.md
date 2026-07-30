@@ -238,13 +238,15 @@ restriction over a generated complete operation universe, consume replacement
 eligibility into one finite cumulative-budget evaluation lineage whose
 exhaustion is permanent, evaluate/admit lowering under separate
 non-substitutable authority, create one proof-bound fresh successor from an
-exact top-or-lowered tag, carry lowered bridges through branch-consistent
-partition admission and funded ownership without duplication, use commit-fresh
-tagged initial/replacement final activation without double consumption,
+exact top-or-lowered tag, carry lowered bridges through closed branch-
+consistent partition receipts/roots, the shared lifecycle CAS and funded
+ownership without duplication, use distinct guard-slot/candidate/successor
+generations for commit-fresh tagged initial/replacement final activation
+without double consumption,
 supersede the guard, reconcile both reinstall release families, and make the
 old top survive until a destination-admitted fully bridged fresh guard CAS plus
-zero-pending authenticated released-or-funded-retained predecessor
-reconciliation;
+expected-version, absorbing-member, maximum-version-folded, zero-pending
+authenticated released-or-funded-retained predecessor reconciliation;
 none uses a wildcard tenant or cross-tenant transaction. Plugin uninstall and
 feature disablement
 never imply data retirement. `0.145.4` destructively certifies all of these
