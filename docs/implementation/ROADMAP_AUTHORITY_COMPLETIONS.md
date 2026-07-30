@@ -1818,9 +1818,17 @@ generation, expected successor operational generation, effective-restriction
 admission tag/digest and every adoption root against the expected values
 captured by activation preparation. This is a guard-slot-local read-and-CAS
 predicate, not an earlier process-manager check and not a comparison against a
-nonexistent current operational-successor guard. Any mismatch CASes the lifecycle to
-`AdmissionRevalidationRequired` or records Blocked as applicable, with no
-guard mutation, consumed state, capacity settlement or release manifest.
+nonexistent current operational-successor guard. Every mismatch creates typed
+`FinalActivationFreshnessCauseV1` and, in that same local transaction, CASes
+the shared lifecycle exactly
+`ActivationPrepared → AdmissionRevalidationRequired`. There is no
+`ActivationPrepared → AdmissionBlocked` edge. Permanent revocation, expiry or
+denial proceeds only through the existing `0.51.25` abort/fence/disposition
+path from the revalidation state. Any Blocked diagnostic is a rebuildable
+projection derived from the lifecycle transition and cause, never independent
+authority. If the lifecycle CAS loses, the winning lifecycle state remains
+authoritative and no diagnostic can override it. A mismatch produces no guard
+mutation, consumed state, capacity settlement or release manifest.
 Only a fresh match also creates exact
 `UnknownRestrictionLoweringReleaseManifestV1` entries for every predecessor
 top enforcement point and bridge with funded `0.51.37` reconciliation
@@ -1853,8 +1861,11 @@ evidence/coverage/safety/restriction/revocation/expiry/
 prepared-root/bridge-owner/permanent-or-reinstall guard-slot/candidate-guard/
 expected-successor generation changing immediately after preparation or
 concurrently with the final CAS, derived/nonexistent current operational-guard
-generation substituted, stale commit predicate
-accepted, revalidation producing a guard mutation or release manifest,
+generation substituted, stale commit predicate accepted, freshness mismatch
+creating an independent Blocked authority, illegal
+`ActivationPrepared → AdmissionBlocked`, missing/forged typed cause,
+revalidation CAS loss ignored, permanent denial bypassing abort/disposition,
+revalidation producing a guard mutation or release manifest,
 lowered activation without atomic
 predecessor release manifest/capacity,
 replacement eligibility consumed twice, missing eligibility tombstone,
@@ -1998,15 +2009,32 @@ count; it is not inferred from a parent state named Released or Retained.
 Each manifest member has authoritative
 `UnknownRestrictionLoweringReleaseMemberV1 { generation, version, state }`
 with this closed transition relation:
-`Pending { generation, version } → Released` or
-`Pending { generation, version } → RetainedAccepted`; `Released` and
+`Pending { generation, version } → Pending { generation, version + 1 }`,
+`Pending { generation, version } → PendingObservationSaturated`,
+`Pending { generation, version } → Released | RetainedAccepted`, and
+`PendingObservationSaturated → Released | RetainedAccepted`; `Released` and
 `RetainedAccepted` are absorbing. A PendingUnknown observation may only update
 the reason/evidence on the same Pending generation through an expected-version
-CAS; it is not a third terminal edge. Every state or observation update
-supplies the exact expected member version and increments monotonically without
-wrap. Duplicate terminal responses join the durable winner. Released versus
-RetainedAccepted races have one CAS winner, and neither a delayed
-PendingUnknown nor a competing terminal response can overwrite it.
+CAS; it is not a third terminal edge. Define bounded
+`ReleaseMemberVersionBudgetV1 { pending_update_ceiling,
+reserved_terminal_version, observation_attempt_limit }`. An identical
+PendingUnknown reason/evidence/observed-generation digest coalesces without
+incrementing authoritative member version. Attempts charge a separate bounded,
+saturating observation counter that can pause ordinary retry but cannot spend
+or block the reserved terminal transition.
+A semantically new pending digest may increment only below
+`pending_update_ceiling`. At the ceiling the member enters
+nonterminal Pending substate `PendingObservationSaturated`: enforcement,
+ownership, capacity and pending parent accounting remain authoritative;
+further nonterminal observations coalesce without version change; protected
+recovery/manual reconciliation remains available. A terminal receipt CASes
+from the exact current Pending or PendingObservationSaturated version to
+`reserved_terminal_version`, so hostile response loss cannot exhaust terminal
+capacity. Budget/counter arithmetic never wraps, resets or borrows
+across members or generations. Duplicate terminal responses join the durable
+winner. Released versus RetainedAccepted races have one CAS winner, and
+neither a delayed PendingUnknown nor a competing terminal response can
+overwrite it.
 Dispatch deterministic idempotent work with bounded cursor/batch/concurrency/
 storage/retry budgets, fairness and non-borrowable recovery capacity. Each
 manifest member atomically verifies lowering/activation, predecessor and
@@ -2022,10 +2050,19 @@ terminal `UnknownRestrictionLoweringReleaseReceiptV1` outcomes.
 RetainedAccepted requires atomic destination acceptance plus current funded
 ownership and capacity evidence; timeout, rejection, response loss or an
 unverified owner can never synthesize it.
-Parent reconciliation folds only the maximum authenticated member version for
-each exact manifest identity and rejects missing, rollback, forked or mixed
-member-version checkpoints. It folds exact manifest/root/count and separate
-released, retained-accepted and pending counts into a checkpoint. It emits terminal
+Parent reconciliation emits domain-separated
+`UnknownRestrictionLoweringMemberVersionVectorRootV1`, a canonical ordered map:
+
+`member_id → { generation, maximum_authenticated_version, state_digest }`.
+
+Different members may and normally will carry heterogeneous versions. For each
+exact manifest member the parent selects one maximum authenticated record and
+rejects duplicate competing versions for that member, a version below its
+durable high-watermark, a fork at the same
+`(member_id, generation, version)`, missing/extra members, noncanonical order,
+or any checkpoint/root not committing to the exact complete version vector.
+It folds that vector root, exact manifest/root/count and separate released,
+retained-accepted and pending counts into a checkpoint. It emits terminal
 `UnknownRestrictionLoweringReleaseRootV1` and enters
 `LoweringReconciliationComplete` only when pending is exactly zero and every
 member has one non-substitutable terminal receipt. Enforce canonical non-
@@ -2039,10 +2076,12 @@ the original reservation encumbered. Late evidence can strengthen the current
 restriction or require retained predecessor enforcement; it cannot be dropped
 because activation already occurred. Original top rows, bridge ownership and
 reconciliation capacity are cleaned only after the zero-pending terminal root
-and capacity equation are durable. Restore/import preserves the maximum member
-generation/version and terminal receipt before resuming the cursor, reconciles
-both ownership ledgers, rejects a pre-terminal snapshot over a terminal
-member, and never revives a released authority or forgets a retained one.
+and capacity equation are durable. Restore/import preserves the exact
+heterogeneous version-vector root, each member's independent maximum
+generation/version, version budget and terminal receipt before resuming the
+cursor, reconciles both ownership ledgers, rejects a pre-terminal snapshot
+over a terminal member, and never revives a released authority or forgets a
+retained one.
 Verification: omitted/duplicate enforcement point or bridge, wrong manifest/
 mode/activation/predecessor/successor/routing/coverage/evidence/safety
 generation, receipt replay/substitution, response loss or rejection classified
@@ -2050,8 +2089,15 @@ RetainedAccepted, PendingUnknown classified terminal, mixed released/retained
 manifest without a complete aggregate, PendingUnknown arriving after Released,
 duplicate terminal response, Released/RetainedAccepted race, terminal receipt
 overwritten by pending or the losing terminal, restore from a pre-terminal
-member version, parent checkpoint containing mixed member versions, member
-version rollback/fork/overflow, partial tenant/network outage, stale
+member version, heterogeneous valid members such as Released v2,
+RetainedAccepted v5 and Pending v8 rejected, two versions for one member,
+version below that member's durable high-watermark, same-version state fork,
+version-vector member omission/addition/reorder/digest substitution, parent
+checkpoint not committing the exact vector, identical pending observation
+incrementing state version, attempt counter reset/wrap, pending updates spending
+the reserved terminal version, response-loss pressure at the pending ceiling,
+terminal receipt blocked after `PendingObservationSaturated`, member version
+rollback/fork/overflow, partial tenant/network outage, stale
 route, late restrictive evidence, unsafe predecessor release, unauthenticated/
 unfunded/double-funded retention, both/neither owner, capacity overflow or
 equation/count mismatch, completion or cleanup with nonzero pending,
@@ -2061,7 +2107,8 @@ pass.
 Exit criteria: every predecessor top enforcement point in the exact manifest
 is proved released or durably retained with all restrictive state and funded
 maintenance capacity; pending or uncertain work remains visibly enforced and
-encumbered.
+encumbered, and neither observation churn nor member-version exhaustion can
+prevent a later authenticated terminal transition.
 `v0.51.37 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.4` — Domain Retirement And Historical Compatibility Certification
@@ -2084,8 +2131,10 @@ tagged final guard-supersession consumption, lowering-specific evaluation and
 source admission, governed pre-operational per-partition bridge adoption and
 ownership under closed tagged receipt/root branches and the shared lifecycle
 CAS, commit-time freshness revalidation over distinct guard-slot/candidate/
-successor generations, operational activation, and absorbing versioned
-predecessor release/accepted-retention/pending reconciliation, current domain/
+successor generations through the sole typed revalidation lifecycle edge,
+operational activation, and absorbing versioned predecessor release/accepted-
+retention/pending reconciliation with heterogeneous per-member versions and
+reserved terminal capacity, current domain/
 contribution generations, `0.145.3`
 lifecycle/recovery evidence,
 installed-extension state, cross-domain dependencies, outstanding durable work,
@@ -2116,8 +2165,9 @@ lowering authorization/fence/evaluation/permit/source-admission/prepared-root/
 tagged genesis adoption, effective-restriction admission authority/root,
 closed tagged per-partition admission receipts, domain-separated partition-
 adoption root, shared lifecycle-CAS evidence, distinct guard-slot/candidate/
-expected-successor commit-freshness comparisons, release-manifest/versioned
-member CAS/outcome/zero-pending receipt-root/capacity evidence,
+expected-successor commit-freshness comparisons and typed revalidation cause,
+release-manifest/version budget/coalescing evidence, canonical member-version
+vector root, versioned member CAS/outcome/zero-pending receipt-root/capacity evidence,
 reinstall eligibility/consumption and dual release evidence, candidate-control
 retention receipts and capacity-conservation proof, cut-release cursor and
 dependency proof, campaign pause/revocation/resume, fairness and terminal-
@@ -2177,14 +2227,19 @@ owner mixing, optional authority-bearing admission member, adoption process-
 manager/lifecycle divergence, operational lowering without one fresh guard
 CAS, nonexistent operational-successor generation checked before creation,
 generation
-advance after preparation accepted at activation, revalidation mutating the
-guard or creating release work, missing/partial
+advance after preparation accepted at activation, freshness failure creating
+independent Blocked authority or bypassing typed
+`ActivationPrepared → AdmissionRevalidationRequired`, revalidation mutating
+the guard or creating release work, missing/partial
 predecessor release manifest, old top released before lowering activation or
 complete reconciliation, unfunded/double-funded predecessor retention,
 response loss or unknown status relabeled accepted retention, mixed release/
 retention aggregate completed with pending members, delayed pending overwriting
 a terminal member, competing release/retention terminals both winning, member
-version rollback or mixed-version parent fold, lowering capacity-
+version rollback, same-member competing versions or fork, heterogeneous cross-
+member versions rejected, incomplete/noncanonical member-version vector,
+identical pending churn consuming state version, observation attempt reset/
+wrap, pending saturation exhausting the reserved terminal transition, lowering capacity-
 conservation mismatch, lowering restore/rollback divergence,
 unfunded/doubly funded retained control, capacity-conservation mismatch,
 incomplete reinstall dual release,

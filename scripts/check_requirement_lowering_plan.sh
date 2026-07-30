@@ -67,8 +67,17 @@ require_text "$plan" \
     'current authorization revocation generation' \
     'lowered final activation commit-time freshness'
 require_text "$plan" \
-    'guard mutation, consumed state, capacity settlement or release manifest.' \
+    'A mismatch produces no guard' \
     'stale lowered activation fails without mutation'
+require_text "$plan" \
+    '`FinalActivationFreshnessCauseV1`' \
+    'typed final activation freshness cause'
+require_text "$plan" \
+    '`ActivationPrepared → AdmissionRevalidationRequired`' \
+    'sole final freshness lifecycle edge'
+require_text "$plan" \
+    'Any Blocked diagnostic is a rebuildable' \
+    'blocked final diagnostic is non-authoritative'
 require_text "$plan" \
     'current permanent/reinstall guard-slot generation; the non-operational' \
     'pre-operational current guard-slot generation'
@@ -88,14 +97,32 @@ require_text "$plan" \
     '`UnknownRestrictionLoweringReleaseMemberV1 { generation, version, state }`' \
     'versioned predecessor release member'
 require_text "$plan" \
-    '`Pending { generation, version } → Released`' \
+    '`Pending { generation, version } → Released | RetainedAccepted`' \
     'absorbing predecessor member transition'
 require_text "$plan" \
-    'supplies the exact expected member version' \
+    'same Pending generation through an expected-version' \
     'per-member expected-version CAS'
 require_text "$plan" \
-    'folds only the maximum authenticated member version' \
-    'maximum authenticated parent member fold'
+    '`ReleaseMemberVersionBudgetV1 { pending_update_ceiling,' \
+    'bounded member version budget'
+require_text "$plan" \
+    'PendingUnknown reason/evidence/observed-generation digest coalesces without' \
+    'identical pending observations coalesce'
+require_text "$plan" \
+    '`PendingObservationSaturated`' \
+    'pending saturation retains enforcement'
+require_text "$plan" \
+    'so hostile response loss cannot exhaust' \
+    'terminal transition capacity is reserved'
+require_text "$plan" \
+    '`UnknownRestrictionLoweringMemberVersionVectorRootV1`' \
+    'canonical member version vector root'
+require_text "$plan" \
+    'Different members may and normally will carry heterogeneous versions.' \
+    'heterogeneous member versions are valid'
+require_text "$plan" \
+    'member_id → { generation, maximum_authenticated_version, state_digest }' \
+    'canonical per-member version map'
 require_text "$plan" \
     '`PendingUnknown { reason, observed_generation }`' \
     'pending uncertainty is nonterminal'

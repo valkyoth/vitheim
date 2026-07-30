@@ -115,12 +115,14 @@ tag, carry either branch through one tagged admission/ownership pipeline,
 adopt every prepared lowered bridge without duplication through closed receipt/
 root variants and the shared lifecycle CAS, use distinct guard-slot/candidate/
 successor generations for commit-fresh tagged final activation without
-re-consuming replacement eligibility, consume
+re-consuming replacement eligibility, route every final mismatch through the
+sole typed shared-lifecycle revalidation edge, consume
 the completely admitted successor, release both candidate-control families,
 lower an operational guard only through a commit-fresh prepared CAS, and
 release the old top only through expected-version absorbing member outcomes,
-maximum-version parent folds and zero-pending authenticated funded
-reconciliation.
+canonical heterogeneous per-member version-vector folds, coalesced bounded
+pending observations with reserved terminal capacity, and zero-pending
+authenticated funded reconciliation.
 `0.145.4`
 destructively certifies
 selected retirement/reinstall profiles rather than first implementing teardown.

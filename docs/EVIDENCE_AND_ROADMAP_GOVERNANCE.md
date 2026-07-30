@@ -242,11 +242,14 @@ exact top-or-lowered tag, carry lowered bridges through closed branch-
 consistent partition receipts/roots, the shared lifecycle CAS and funded
 ownership without duplication, use distinct guard-slot/candidate/successor
 generations for commit-fresh tagged initial/replacement final activation
-without double consumption,
+without double consumption, with every mismatch entering the sole typed shared-
+lifecycle revalidation edge and no independent Blocked authority,
 supersede the guard, reconcile both reinstall release families, and make the
 old top survive until a destination-admitted fully bridged fresh guard CAS plus
-expected-version, absorbing-member, maximum-version-folded, zero-pending
-authenticated released-or-funded-retained predecessor reconciliation;
+expected-version absorbing members, an exact heterogeneous per-member version-
+vector commitment, coalesced/saturated pending observations with reserved
+terminal capacity, and zero-pending authenticated released-or-funded-retained
+predecessor reconciliation;
 none uses a wildcard tenant or cross-tenant transaction. Plugin uninstall and
 feature disablement
 never imply data retirement. `0.145.4` destructively certifies all of these
