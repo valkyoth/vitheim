@@ -1,14 +1,14 @@
 # Phase H — Alerts And Security Operations
 
-Scope: `0.71.0–0.80.0`. Sources authenticate; parsing and correlation remain bounded and explainable.
+Scope: `0.245.0–0.262.0`. Sources authenticate; parsing and correlation remain bounded and explainable.
 
-## `0.71.0` — Authenticated Alert Ingestion
-Status: planned. Setup: source identities, signatures/tokens, replay windows, schemas, quotas, tenant routing. Goal: trustworthy bounded intake. Deliverables: ingest protocol/port and receipts. Verification: spoof/replay/flood, wrong tenant, key rotation, malformed framing, backpressure pass. Exit criteria: unauthenticated alerts never enter authority. `v0.71.0 implementation stop reached. Run pentest for this exact commit.`
+## `0.245.0` — Authenticated Alert Ingestion
+Status: planned. Setup: source identities, signatures/tokens, replay windows, schemas, quotas, tenant routing. Goal: trustworthy bounded intake. Deliverables: ingest protocol/port and receipts. Verification: spoof/replay/flood, wrong tenant, key rotation, malformed framing, backpressure pass. Exit criteria: unauthenticated alerts never enter authority. `v0.245.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.71.1` — Syslog And Security-Webhook Ingestion Profiles
+## `0.246.0` — Syslog And Security-Webhook Ingestion Profiles
 
 Status: planned only for exact production profiles; unimplemented syslog/
-webhook schema families are deferred at `0.140.9`. Network/TLS/parser
+webhook schema families are deferred at `0.379.0`. Network/TLS/parser
 implementations require version-bound admission.
 
 Setup: pin only authenticated, pre-filtered, alert-bearing syslog transports/
@@ -16,7 +16,7 @@ framing/message profiles and named security-webhook schemas; source/device
 identity, mTLS/signature/token, facility/severity, hostname/app/proc/message
 IDs, structured data, timestamps/clock quality, webhook event IDs, content
 type/encoding, replay windows, ordering, acknowledgement, quotas, tenant
-routing, bounded raw-evidence retention, and `0.20.3` provenance. General-
+routing, bounded raw-evidence retention, and `0.43.0` provenance. General-
 purpose raw log collection, indexing, querying, detection-rule execution, and
 unauthenticated UDP alert authority are explicit non-goals for `1.0.0`.
 
@@ -38,12 +38,12 @@ exact alert-bearing profile/schema. Unauthenticated UDP and arbitrary raw
 syslog are rejected or quarantined as non-authoritative bounded evidence and
 cannot create alerts. Supporting raw log management or detection rules requires
 a separately designed high-volume SIEM architecture and milestone.
-`v0.71.1 implementation stop reached. Run pentest for this exact commit.`
+`v0.246.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.71.2` — STIX And TAXII Threat-Intelligence Profiles
+## `0.247.0` — STIX And TAXII Threat-Intelligence Profiles
 
 Status: planned only for intended exact STIX/TAXII production profiles;
-otherwise deferred at `0.140.9`. HTTP/TLS/JSON and signature implementations
+otherwise deferred at `0.379.0`. HTTP/TLS/JSON and signature implementations
 require admission before code begins.
 
 Setup: pin specification versions, TAXII server/API-root/collection identity,
@@ -68,9 +68,9 @@ inflation, JSON/decompression bombs, SSRF/auth leak, rate storms, and fuzz pass.
 
 Exit criteria: threat-intelligence facts retain exact source, version, marking,
 confidence, and revocation state and cannot trigger privileged actions directly.
-`v0.71.2 implementation stop reached. Run pentest for this exact commit.`
+`v0.247.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.71.3` — Threat-Intelligence Marking Enforcement
+## `0.248.0` — Threat-Intelligence Marking Enforcement
 
 Status: planned.
 
@@ -96,54 +96,54 @@ cache/index lag, revocation/reindex, and policy-version differential tests pass.
 
 Exit criteria: every surfaced or derived threat-intelligence fact carries
 effective marking obligations, and unknown/conflicting markings fail closed
-across every registered read or egress surface. `v0.71.3 implementation stop
+across every registered read or egress surface. `v0.248.0 implementation stop
 reached. Run pentest for this exact commit.`
 
-## `0.72.0` — Alert Normalization
+## `0.249.0` — Alert Normalization
 Status: planned. Setup: immutable raw evidence, canonical derived alert fields,
 versioned mappings, limits, and unknown-field policy. Goal: normalize without
 mutating source bytes or losing provenance. Deliverables: mapper/compiler,
 normalized model, and raw-to-derived digest links. Verification: parser confusion,
 smuggling, coercion, raw mutation, oversized/deep input, mapping version, fuzz
-pass. Exit criteria: normalized facts remain traceable. `v0.72.0 implementation stop reached. Run pentest for this exact commit.`
+pass. Exit criteria: normalized facts remain traceable. `v0.249.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.73.0` — Deduplication Engine
+## `0.250.0` — Deduplication Engine
 Status: planned. Setup: identity keys, windows, collision handling, immutable
 membership assertions, versioning, and budgets. Goal: reduce repeats without
 merging or deleting raw evidence. Deliverables: deterministic grouping engine
 and explanation. Verification: collision abuse, boundary windows, order
-permutations, evidence mutation/loss, cross-tenant keys, properties pass. Exit criteria: every grouping is explainable/reversible. `v0.73.0 implementation stop reached. Run pentest for this exact commit.`
+permutations, evidence mutation/loss, cross-tenant keys, properties pass. Exit criteria: every grouping is explainable/reversible. `v0.250.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.74.0` — Suppression And Maintenance Windows
+## `0.251.0` — Suppression And Maintenance Windows
 Status: planned. Setup: authority, scope, reason, schedule, expiry, caps,
 visibility, override, and immutable underlying alert evidence. Goal: controlled
 display/routing reduction without source mutation. Deliverables: suppression
 aggregate/evaluator and audit. Verification: overbroad/immortal suppression,
 evidence deletion, timezone abuse, self-approval, hidden active rules, bypass
-pass. Exit criteria: suppressed alerts remain evidenced. `v0.74.0 implementation stop reached. Run pentest for this exact commit.`
+pass. Exit criteria: suppressed alerts remain evidenced. `v0.251.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.75.0` — Topology And Temporal Correlation
-Status: planned. Setup: consume the exact `0.70.3` topology-fact/read port,
+## `0.252.0` — Topology And Temporal Correlation
+Status: planned. Setup: consume the exact `0.242.0` topology-fact/read port,
 admitted edges, time windows, confidence, scoring, traversal/work limits, and
 explanation; do not claim the Phase I service graph. Goal: group related alerts
 safely against the shared replaceable topology contract. Deliverables: pure
 correlation planner/engine and fake topology corpus. Verification: poisoning,
 graph cycles, hidden-node inference, order dependence, exhaustion, port/fake
-differential fixtures pass; real graph integration is repeated at `0.88.0`.
+differential fixtures pass; real graph integration is repeated at `0.279.0`.
 Exit criteria: correlations cite bounded evidence and use no parallel topology
 vocabulary or unimplemented later graph capability.
-`v0.75.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.252.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.76.0` — Alert-To-Incident Orchestration
-Status: planned. Setup: creation/link thresholds, policy, rate limits, idempotency, feedback-loop guards. Goal: automate cases without flooding or unauthorized links. Deliverables: orchestration workflow and audit trace. Verification: storms, duplicate creation, malicious linking, suppressed alerts, races, rollback pass. Exit criteria: every incident/link has policy evidence. `v0.76.0 implementation stop reached. Run pentest for this exact commit.`
+## `0.253.0` — Alert-To-Incident Orchestration
+Status: planned. Setup: creation/link thresholds, policy, rate limits, idempotency, feedback-loop guards. Goal: automate cases without flooding or unauthorized links. Deliverables: orchestration workflow and audit trace. Verification: storms, duplicate creation, malicious linking, suppressed alerts, races, rollback pass. Exit criteria: every incident/link has policy evidence. `v0.253.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.77.0` — Security-Incident Domain
-Status: planned. Setup: classification, containment authority, evidence visibility, roles, lifecycle, regulatory flags. Goal: typed response cases. Deliverables: aggregate, activities, workspace projections. Verification: containment escalation, evidence leaks, role takeover, closure bypass, tenant/replay pass. Exit criteria: sensitive actions require explicit capability. `v0.77.0 implementation stop reached. Run pentest for this exact commit.`
+## `0.254.0` — Security-Incident Domain
+Status: planned. Setup: classification, containment authority, evidence visibility, roles, lifecycle, regulatory flags. Goal: typed response cases. Deliverables: aggregate, activities, workspace projections. Verification: containment escalation, evidence leaks, role takeover, closure bypass, tenant/replay pass. Exit criteria: sensitive actions require explicit capability. `v0.254.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.78.0` — Vulnerability Findings And Remediation
-Status: planned. Setup: scanner/source identity, asset evidence, scoring versions, dedup, acceptance, remediation. Goal: trustworthy vulnerability cases. Deliverables: finding/remediation aggregates and importer. Verification: spoofing, score tamper, stale findings, cross-asset/tenant links, false closure, parser fuzz pass. Exit criteria: risk changes retain source and authority. `v0.78.0 implementation stop reached. Run pentest for this exact commit.`
+## `0.255.0` — Vulnerability Findings And Remediation
+Status: planned. Setup: scanner/source identity, asset evidence, scoring versions, dedup, acceptance, remediation. Goal: trustworthy vulnerability cases. Deliverables: finding/remediation aggregates and importer. Verification: spoofing, score tamper, stale findings, cross-asset/tenant links, false closure, parser fuzz pass. Exit criteria: risk changes retain source and authority. `v0.255.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.78.1` — Vulnerability Identity And Affected-Asset Assertions
+## `0.256.0` — Vulnerability Identity And Affected-Asset Assertions
 
 Status: planned.
 
@@ -151,7 +151,7 @@ Setup: distinguish advisory/vulnerability identity, vendor/scanner finding
 identity, affected asset or software instance, product/version/configuration,
 observed/business-valid/recorded times, source confidence, evidence, fix
 availability, and affected/not-affected/fixed assertions. Exact CVE/CVSS/VEX
-profiles remain versioned inputs selected by `0.140.9`, not hard-coded truth.
+profiles remain versioned inputs selected by `0.379.0`, not hard-coded truth.
 
 Goal: model vulnerability knowledge and each asset exposure without conflating a
 global advisory, scanner result, or mutable asset record.
@@ -165,9 +165,9 @@ link, stale product match, destructive deduplication, conflicting affected/VEX
 claims, reopened exposure, tenant confusion, parser fuzz, and replay pass.
 
 Exit criteria: every exposure states which asset/software is affected, according
-to which source/version/evidence and time. `v0.78.1 implementation stop reached. Run pentest for this exact commit.`
+to which source/version/evidence and time. `v0.256.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.78.2` — Exposure Prioritization And Risk Decisions
+## `0.257.0` — Exposure Prioritization And Risk Decisions
 
 Status: planned.
 
@@ -187,9 +187,9 @@ non-monotonic rules, overflow, priority starvation, unauthorized override,
 policy downgrade, order permutations, bulk recalculation, and tenant tests pass.
 
 Exit criteria: every priority and due date is reproducible from named evidence
-and a pinned policy version. `v0.78.2 implementation stop reached. Run pentest for this exact commit.`
+and a pinned policy version. `v0.257.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.78.3` — Remediation Campaigns, Exceptions, And Verification
+## `0.258.0` — Remediation Campaigns, Exceptions, And Verification
 
 Status: planned.
 
@@ -210,10 +210,10 @@ duplicate tasks, stale scan closure, false verification, immortal exception,
 change-window bypass, notification flood, race/replay, rollback, and recovery pass.
 
 Exit criteria: an exposure closes only from authorized evidence-backed
-verification or remains in an explicit expiring exception state. `v0.78.3
+verification or remains in an explicit expiring exception state. `v0.258.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.78.4` — Vulnerability Program Conformance And Reporting
+## `0.259.0` — Vulnerability Program Conformance And Reporting
 
 Status: planned.
 
@@ -233,13 +233,13 @@ asset/count inference, stale dashboard, cross-team/tenant leakage, report/formul
 injection, export bypass, source outage, rebuild, and large-inventory load pass.
 
 Exit criteria: program status distinguishes verified coverage from unknown or
-stale data and never treats absence of findings as proof of safety. `v0.78.4
+stale data and never treats absence of findings as proof of safety. `v0.259.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.78.5` — CVE, CVSS, And VEX Interchange Profiles
+## `0.260.0` — CVE, CVSS, And VEX Interchange Profiles
 
 Status: planned only for exact production profiles chosen for implementation;
-other versions/formats are deferred at `0.140.9`. Codecs, feeds, signatures,
+other versions/formats are deferred at `0.379.0`. Codecs, feeds, signatures,
 and clients require implementation admission.
 
 Setup: pin CVE record/feed/API and CVSS/VEX specification/serialization versions;
@@ -248,7 +248,7 @@ score vector/version/source/time, VEX product identity and status/justification/
 impact/action, signatures/provenance, updates/rejections, paging/checkpoints,
 licensing, quotas, and raw-record preservation.
 
-Goal: translate standardized vulnerability information into `0.78.1` source
+Goal: translate standardized vulnerability information into `0.256.0` source
 assertions without collapsing conflicting advisories, scores, product matches,
 or VEX statements into mutable truth.
 
@@ -263,9 +263,9 @@ oversized/deep records, parser differentials, fuzzing, and rebuild pass.
 
 Exit criteria: every imported vulnerability, score, and VEX status remains a
 versioned attributable assertion; local exposure and risk decisions stay
-authoritative. `v0.78.5 implementation stop reached. Run pentest for this exact commit.`
+authoritative. `v0.260.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.79.0` — Forensic Timeline, Preservation, And Evidence Custody
+## `0.261.0` — Forensic Timeline, Preservation, And Evidence Custody
 Status: planned. Setup: immutable content-addressed original bytes, tenant/case
 scope, envelope encryption, acquisition actor/tool/source/method/location, time
 claim plus clock quality/uncertainty, transfers, access/copy/transform/export,
@@ -275,9 +275,9 @@ Deliverables: evidence aggregate, timeline, custody report, and signed export
 manifest covering every derived artifact. Verification: timestamp tamper,
 substitution, custody/hold/disposition gaps, unauthorized access/export,
 derived-parent mismatch, conflicting clocks, crypto-erasure and restore pass.
-Exit criteria: evidence lineage is complete or explicitly incomplete. `v0.79.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: evidence lineage is complete or explicitly incomplete. `v0.261.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.80.0` — Integrated SecOps Workspace
+## `0.262.0` — Integrated SecOps Workspace
 Status: planned. Setup: pin current schemas/policies, source integrations,
 migrations, deterministic search-port and service-health fakes, on-call/paging/
 notification/status-publication integration, and representative attacks. Goal:
@@ -288,6 +288,6 @@ Verification: cross-source/tenant leaks, paging storms/ack races, quiet-hour/
 emergency precedence, unauthorized status publication, current authorization/
 export parity, fake-search/health contracts, load, recovery, upgrade, full
 phase pentest pass; real service-health, graph, and search integration repeats
-at `0.82.1`, `0.88.0`, and `0.100.0`. Exit criteria: SecOps scope and
+at `0.271.0`, `0.279.0`, and `0.298.0`. Exit criteria: SecOps scope and
 unavailable later-phase dependencies are truthful and not called a full SIEM.
-`v0.80.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.262.0 implementation stop reached. Run pentest for this exact commit.`

@@ -49,8 +49,8 @@ but not implemented. Production support is a separate evidence state.
 | Auditable Rust workspace | 🟢 | Rust 1.97.1, Rust 2024, strict lints, CI, security and release policy |
 | Dependency-free `no_std` foundation | 🟢 | Opaque ID storage, injected time, stable error categories, and explicit limits |
 | Multi-platform core | 🟢 | CI check targets for Linux, Windows, FreeBSD, NetBSD, macOS, Android, and iOS |
-| Command/event kernel | 🔴 | Planned for `0.7.0` through `0.10.0` |
-| Storage and projections | 🔴 | Planned for `0.11.0` through `0.30.0` |
+| Command/event kernel | 🔴 | Planned for `0.7.0` through `0.11.0` |
+| Storage and projections | 🔴 | Planned for `0.12.0` through `0.72.0` |
 | ITSM, assets, SecOps, compliance | 🔴 | Planned as separate bounded release phases |
 | Workflows, policies, search, WASM, AI | 🔴 | Planned behind deterministic and capability-limited interfaces |
 | API-first composable UI and federation | 🔴 | Planned as separate API/UI crates, governed layout blocks, and optional bilateral trust |
@@ -110,6 +110,7 @@ and licensing decision. See [Publication Policy](docs/PUBLICATION_POLICY.md).
 - [Architecture](docs/ARCHITECTURE.md)
 - [Implementation Plan — 425 exact release stops](docs/IMPLEMENTATION_PLAN.md)
 - [Implementation Convergence Plan](docs/IMPLEMENTATION_CONVERGENCE_PLAN.md)
+- [Release Granularity Standard](docs/RELEASE_GRANULARITY_STANDARD.md)
 - [Implementation Scope Audit](docs/IMPLEMENTATION_SCOPE_AUDIT.md)
 - [Release Plan](docs/RELEASE_PLAN.md)
 - [Evidence And Roadmap Governance](docs/EVIDENCE_AND_ROADMAP_GOVERNANCE.md)

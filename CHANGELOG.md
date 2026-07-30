@@ -8,20 +8,31 @@ All notable Vitheim changes are documented here. The format follows
 
 ### Added
 
+- Normalized the complete pre-production roadmap to 424 contiguous minor
+  releases, `0.1.0–0.424.0`, with one independently implementable, testable,
+  reviewable, and pentestable stop per minor. Planned patch families were
+  removed; `0.N.P` is now reserved for corrective maintenance after `0.N.0`
+  has an implementation commit.
+- Added the normative release-granularity standard, including the
+  implementation-entry work-package certificate, cumulative-ledger rules,
+  certification/decision boundaries, and mandatory split criteria when one
+  stop exposes independently shippable authority, schema, adapter, rollback,
+  or pentest work.
 - Audited all 229 existing release stops against a one-authority/one-boundary
-  small-loop rule and split 18 overloaded families into 65 focused companion
-  stops. The roadmap now has 294 independently testable and pentestable stops,
-  including separate passes for quota/atomic work/law governance, storage
-  capability/conformance/migration/import, workflow HA, production decisions,
-  packaging, HA, DR, load/chaos, and pentest remediation.
+  small-loop rule and split 18 overloaded families into 65 focused stops.
+  Subsequent gap, coherence, and authority reviews expanded the same rule to
+  the current 425-stop catalog, including separate passes for quota/atomic
+  work/law governance, storage capability/conformance/migration/import,
+  workflow HA, production decisions, packaging, HA, DR, load/chaos, and
+  pentest remediation.
 - Added normative evidence and roadmap governance: specified, implementing,
   implemented, conditional, supported, and unsupported are distinct states;
   documentation alone cannot satisfy an implementation exit; and support
   claims must bind exact executable owners and immutable evidence.
-- Corrected the canonical roadmap to 294 exact pentestable stops (150 base
-  `0.x.0`, 143 companion, and one production stop), assigned a single generated
-  manifest at reopened `0.1.0`, and included the previously under-counted
-  `0.140.11` decision in every pre-production scope.
+- Corrected the canonical roadmap to 425 exact pentestable stops (424
+  pre-production minors and one production stop), assigned a single generated
+  manifest at reopened `0.1.0`, and included every decision through `0.398.0`
+  in the pre-production scope.
 - Required focused, owner-scoped normative protocol packages before each first
   implementation while preserving the detailed phase ledgers, and narrowed
   default `1.0.0` profiles without removing experimental milestones.
@@ -647,7 +658,7 @@ All notable Vitheim changes are documented here. The format follows
   zero offline authority, plus three exhaustive authenticated-receipt variants
   with replay tombstones and durable integrity anchors.
 - Added independent dynamic placement-topology authority (`VIT-INV-060`) with
-  an artifact-authorized singleton handoff at `0.141.0`, expected-version
+  an artifact-authorized singleton handoff at `0.399.0`, expected-version
   successor manifests, monotonic member generations, fences, tombstones, and
   `VIT-LAW-008@g02` consumption before split-service deployment.
 - Defined executable `WorkloadIdentityProofProfileV1` and
@@ -669,10 +680,10 @@ All notable Vitheim changes are documented here. The format follows
   and placement generation, with non-clonable workload/continuity identity,
   binary/semantic bindings, and fresh fenced admission after clone, restore,
   replacement, or region movement.
-- Staged rollout bootstrap and proof across `0.18.3–0.30.0`, froze identity,
-  placement, activation-policy, topology, and HA decisions at `0.140.1`,
-  `0.140.2`, and `0.140.6`, and carried split-service, failover, disaster
-  recovery, pentest, and production evidence through `0.142.0–1.0.0`.
+- Staged rollout bootstrap and proof across `0.25.0–0.72.0`, froze identity,
+  placement, activation-policy, topology, and HA decisions at `0.371.0`,
+  `0.372.0`, and `0.376.0`, and carried split-service, failover, disaster
+  recovery, pentest, and production evidence through `0.404.0–1.0.0`.
 - Split global platform-law lineage (`VIT-INV-057`) from independently updated
   local catalog admission, distrust, and trusted-time ratchets
   (`VIT-INV-058`); strengthened `VIT-LAW-007` with partial-rollout,
@@ -723,13 +734,13 @@ All notable Vitheim changes are documented here. The format follows
   effective dependencies, coordinators, semantics, activation/migration/
   rollback/recovery bindings, and CI rejection of future-root or latest-view
   drift.
-- Added one checked authority disposition for every milestone after `0.18.3`,
+- Added one checked authority disposition for every milestone after `0.25.0`,
   including all pre-production option decisions and `1.0.0`; proposals must
   resolve before implementation and cannot enter Phase O or production.
 - Split transmission-start failure into `DefinitelyNotStarted`,
   `OutcomeUnknown`, and `StartClaimedReconciling`, with ordinary retransmission
   allowed only for proven pre-claim failure.
-- Added source-side evaluator-membership delivery proof at `0.18.4`: canonical
+- Added source-side evaluator-membership delivery proof at `0.26.0`: canonical
   source topology, monotonic outbox watermarks, exact inbox receipts, topology
   fencing, and visible `MembershipDeliveryBlocked` before shard completion.
 - Added declarations and full lifecycle/version/recovery governance for
@@ -744,13 +755,13 @@ All notable Vitheim changes are documented here. The format follows
   membership journals, sealed shard generations/high-watermarks, fenced moves,
   one completion receipt per shard, a final barrier, and authoritative mismatch
   reconciliation carried through storage, HA, option, and production gates.
-- Expanded `0.18.3` from a nine-row shape check into a complete declaration-
-  driven ownership and lifecycle registry through `0.18.2`, with stable
+- Expanded `0.25.0` from a nine-row shape check into a complete declaration-
+  driven ownership and lifecycle registry through `0.24.0`, with stable
   enforcement, capability, verification, recovery, and owner-fence contracts.
-- Strengthened `0.18.4` with a crash-atomic evaluator invalidation campaign,
+- Strengthened `0.26.0` with a crash-atomic evaluator invalidation campaign,
   authoritative snapshot-generation enumeration, idempotent materialization,
   concurrent credential dispositions, and terminal completeness proof.
-- Added `0.18.3–0.18.5` corrective passes for a machine-checkable stable-ID
+- Added `0.25.0–0.27.0` corrective passes for a machine-checkable stable-ID
   invariant ownership registry, bounded fair evaluator re-evaluation scheduling,
   and quorum-controlled non-circular remediation-authority bootstrap/recovery.
 - Added production option freezes and acceptance evidence for invariant storage
@@ -759,7 +770,7 @@ All notable Vitheim changes are documented here. The format follows
 - Initialized the dependency-free Rust workspace and security baseline.
 - Added private `no_std` foundation crates and the `vitheim` facade.
 - Added architecture, implementation, release, security, and tooling policy.
-- Expanded every planned milestone from `0.1.0` through `0.150.0` and `1.0.0`
+- Expanded every planned milestone from `0.1.0` through `0.424.0` and `1.0.0`
   into a version-specific implementation handoff with mechanically checked
   setup, goal, deliverables, verification, and pentest exit criteria.
 - Incorporated the roadmap gap review by reopening `0.1.0`, moving structural

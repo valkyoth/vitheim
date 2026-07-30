@@ -1,6 +1,6 @@
 # Requirement Ownership And Product Integration Completions
 
-Document status: planned companion stops introduced by the second capability-gap
+Document status: planned focused minor releases introduced by the second capability-gap
 review.
 
 These handoffs make buried requirements mechanically owned, decompose the
@@ -8,7 +8,7 @@ remaining broad product stops, and carry the full-suite domains through policy,
 workflow, search, API, UI, lifecycle, and production evidence. Each exact stop
 has one dominant owner and its own pentest boundary.
 
-## `0.18.14` — Stable Requirement Registry And Checker
+## `0.36.0` — Stable Requirement Registry And Checker
 
 Status: planned.
 Setup: define stable `VIT-REQ-*` IDs, immutable descriptions, kind, source
@@ -22,14 +22,14 @@ Verification: missing/duplicate owner, cycle, unknown stop/crate, invalid status
 unowned migration, orphan test, stale source, and supersession ambiguity pass.
 Exit criteria: the registry format and bidirectional checker are executable;
 prose location or phase membership alone never establishes ownership.
-`v0.18.14 implementation stop reached. Run pentest for this exact commit.`
+`v0.36.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.20.5` — Phase A And B Requirement Backfill
+## `0.45.0` — Phase A And B Requirement Backfill
 
 Status: planned.
 Setup: inventory every normative foundation, journal, projection, audit,
 outbox/inbox, scheduler, quota, provenance, integrity, telemetry, verification,
-failure, recovery, and evidence requirement through `0.20.4`.
+failure, recovery, and evidence requirement through `0.44.0`.
 Goal: prove the requirement registry against the implemented-to-date foundation.
 Deliverables: Phase A/B `VIT-REQ-*` entries, exact stop/crate/schema/test owners,
 predecessor graph, integration/retest links, and generated coverage report.
@@ -38,9 +38,9 @@ semantic owner, uncovered paragraph/table row, dead crate/test reference, and
 superseded requirement tests pass.
 Exit criteria: every normative Phase A/B requirement has exactly one primary
 stop and no requirement is owned merely by a cumulative ledger heading.
-`v0.20.5 implementation stop reached. Run pentest for this exact commit.`
+`v0.45.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.18` — Phase C Requirement Backfill
+## `0.90.0` — Phase C Requirement Backfill
 
 Status: planned.
 Setup: inventory each storage capability, adapter, migration/import, corruption,
@@ -48,18 +48,18 @@ cost, witness, queue, cache, transaction, recovery, budget, and refusal
 requirement across the Phase C ledger and focused scope splits.
 Goal: assign every large-ledger requirement to one exact implementation slice.
 Deliverables: Phase C `VIT-REQ-*` entries, ownership/cutover/migration/test
-metadata, companion-stop coverage matrix, and generated unassigned/overlap report.
+metadata, focused-release coverage matrix, and generated unassigned/overlap report.
 Verification: sample every ledger section and table row; inject missing,
 duplicated, contradictory, wrong-adapter, wrong-migration, and wrong-retest
 assignments and require deterministic failure.
 Exit criteria: every Phase C requirement resolves to exactly one primary stop,
 with explicit later adapter/restore/production retests where applicable.
-`v0.30.18 implementation stop reached. Run pentest for this exact commit.`
+`v0.90.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.19` — Phase D Through G Requirement Backfill
+## `0.91.0` — Phase D Through G Requirement Backfill
 
 Status: planned.
-Setup: inventory universal work, ITSM/full-suite companions, identity/policy,
+Setup: inventory universal work, ITSM/full-suite focused releases, identity/policy,
 subscriptions, workflows, notification, paging, and early-reference requirements.
 Goal: freeze ownership before the first product-domain implementation begins.
 Deliverables: Phase D–G `VIT-REQ-*` entries with aggregate/application/API/fake/
@@ -69,9 +69,9 @@ real retest, domain requirement assigned to UI, duplicated transition owner,
 and unowned side-effect/lifecycle requirement pass.
 Exit criteria: every Phase D–G requirement has one implementation owner and
 every deterministic fake names its later differential-integration owner.
-`v0.30.19 implementation stop reached. Run pentest for this exact commit.`
+`v0.91.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.20` — Phase H Through K Requirement Backfill
+## `0.92.0` — Phase H Through K Requirement Backfill
 
 Status: planned.
 Setup: inventory SecOps, vulnerability, evidence, asset/service graph,
@@ -85,9 +85,9 @@ discovery confusion, pack-as-policy, privacy surface omission, and missing
 rebuild/retention owner tests pass.
 Exit criteria: every Phase H–K requirement has exactly one primary stop and
 explicit downstream policy/search/API/UI/lifecycle evidence owners.
-`v0.30.20 implementation stop reached. Run pentest for this exact commit.`
+`v0.92.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.21` — Phase L Through Production Requirement Backfill
+## `0.93.0` — Phase L Through Production Requirement Backfill
 
 Status: planned.
 Setup: inventory plugins/connectors, federation, optional AI, UI/product
@@ -100,9 +100,9 @@ freeze, unsupported profile without refusal, acceptance without evidence owner,
 and unowned restore/pentest/documentation claim tests pass.
 Exit criteria: every normative current-roadmap requirement is registered once;
 future requirements must register before their introducing stop can exit.
-`v0.30.21 implementation stop reached. Run pentest for this exact commit.`
+`v0.93.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.22` — Early Cross-Domain References And Read Ports
+## `0.94.0` — Early Cross-Domain References And Read Ports
 
 Status: planned.
 Setup: define tenant-bound opaque `ServiceRef`, `AssetRef`, `AgreementRef`,
@@ -117,9 +117,9 @@ stale version, fake semantic drift, unbounded dependency read, and premature
 existence assumption pass.
 Exit criteria: early domains store only stable references and facts; Phase I
 owns the authoritative aggregates and must pass fake-versus-real differentials.
-`v0.30.22 implementation stop reached. Run pentest for this exact commit.`
+`v0.94.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.7` — Customer Contacts And Organization Relationships
+## `0.139.0` — Customer Contacts And Organization Relationships
 
 Status: planned.
 Setup: separate person/contact identity from user principal; define organization
@@ -132,9 +132,9 @@ Verification: contact/principal confusion, channel takeover, stale relationship,
 cross-customer disclosure, duplicate identity, and termination race pass.
 Exit criteria: contact facts influence routing and policy inputs but never grant
 session, command, or agreement authority.
-`v0.50.7 implementation stop reached. Run pentest for this exact commit.`
+`v0.139.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.8` — Customer Service Agreements And Coverage
+## `0.140.0` — Customer Service Agreements And Coverage
 
 Status: planned.
 Setup: define agreement identity, parties, service/offering references, scope,
@@ -147,9 +147,9 @@ Verification: agreement-as-authorization, retroactive amendment, overlapping
 coverage, hidden terms leak, stale approval, and termination boundary pass.
 Exit criteria: every applied commitment cites an effective approved agreement
 version and cannot authenticate or authorize a requester by itself.
-`v0.50.8 implementation stop reached. Run pentest for this exact commit.`
+`v0.140.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.9` — Service Entitlement Decisions
+## `0.141.0` — Service Entitlement Decisions
 
 Status: planned.
 Setup: define entitlement subject, agreement/offering/request references,
@@ -162,9 +162,9 @@ Verification: stale/forged agreement, subject/contact substitution, quantity/
 period bypass, hidden rule, override escalation, and request replay pass.
 Exit criteria: each request entitlement is reproducible from current typed facts,
 policy, agreement version, and evaluator version.
-`v0.50.9 implementation stop reached. Run pentest for this exact commit.`
+`v0.141.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.10` — Supplier Contract Lifecycle
+## `0.142.0` — Supplier Contract Lifecycle
 
 Status: planned.
 Setup: define contract identity, parties, approved source, effective/renewal/
@@ -177,9 +177,9 @@ Verification: party/reference substitution, silent renewal, retroactive rewrite,
 expired contract use, hidden term leakage, self-approval, and race pass.
 Exit criteria: one immutable lifecycle explains the current contract and every
 renewal, amendment, termination, and dependent action.
-`v0.50.10 implementation stop reached. Run pentest for this exact commit.`
+`v0.142.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.11` — Supplier Contractual Obligation Lifecycle
+## `0.143.0` — Supplier Contractual Obligation Lifecycle
 
 Status: planned.
 Setup: define contractual obligation identity, source contract/amendment,
@@ -192,11 +192,11 @@ Verification: contract/obligation substitution, silent deletion, retroactive
 rewrite, unit/target/period confusion, expired obligation use, hidden term,
 supersession fork, and correction deletion pass.
 Exit criteria: every current obligation derives reproducibly from one exact
-contract lineage; assessment belongs to `0.50.18` and accepted risk remains
+contract lineage; assessment belongs to `0.150.0` and accepted risk remains
 exclusively Phase K authority.
-`v0.50.11 implementation stop reached. Run pentest for this exact commit.`
+`v0.143.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.12` — Supplier Data Access And Termination
+## `0.144.0` — Supplier Data Access And Termination
 
 Status: planned.
 Setup: define approved data/system/service scope, purpose, credential/profile
@@ -209,9 +209,9 @@ Verification: contract-as-access, scope expansion, expiry/revocation race,
 credential reuse, missed system, false external deletion, and self-attestation pass.
 Exit criteria: supplier records never grant access; current policy and identity
 systems authorize it, and termination remains incomplete while evidence is missing.
-`v0.50.12 implementation stop reached. Run pentest for this exact commit.`
+`v0.144.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.13` — External Purchase-Order Evidence And Receipt
+## `0.145.0` — External Purchase-Order Evidence And Receipt
 
 Status: planned.
 Setup: consume approved requisitions and immutable externally issued order
@@ -227,9 +227,9 @@ partial-order races, local order mutation, and document leak pass.
 Exit criteria: receipts reconcile exactly to immutable external order lines;
 Vitheim never creates, amends, approves, or cancels the purchase order and
 never claims payment, accounting, or purchasing-system-of-record authority.
-`v0.50.13 implementation stop reached. Run pentest for this exact commit.`
+`v0.145.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.14` — Allocation, Return, And Asset Handoff
+## `0.146.0` — Allocation, Return, And Asset Handoff
 
 Status: planned.
 Setup: define received-item identity, custody, allocation subject/location,
@@ -242,9 +242,9 @@ Verification: double allocation, subject/location substitution, false return,
 lost-item erasure, premature asset creation, stale handoff, and tenant leak pass.
 Exit criteria: allocation owns custody work; Phase I owns assets and accepts
 only ordinary validated creation proposals with preserved provenance.
-`v0.50.14 implementation stop reached. Run pentest for this exact commit.`
+`v0.146.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.15` — Non-Software Entitlement Lifecycle
+## `0.147.0` — Non-Software Entitlement Lifecycle
 
 Status: planned.
 Setup: define entitlement kind, source contract/order, holder/scope, quantity/
@@ -257,9 +257,9 @@ Verification: source substitution, over-allocation, double consumption, expired
 use, software-kind confusion, renewal race, and hidden contract leakage pass.
 Exit criteria: every entitlement use is bounded by current source, quantity,
 scope, time, and evidence without becoming identity or payment authority.
-`v0.50.15 implementation stop reached. Run pentest for this exact commit.`
+`v0.147.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.16` — ERP Port And Procurement Reconciliation Semantics
+## `0.148.0` — ERP Port And Procurement Reconciliation Semantics
 
 Status: planned.
 Setup: define directional ownership, external IDs/versions, approved fields,
@@ -273,10 +273,10 @@ smuggling, duplicate/reordered event, response loss, currency/unit drift, and
 outbound authority escalation pass against the fake.
 Exit criteria: field ownership and reconciliation semantics are executable
 without external credentials or network access; real support belongs only to
-the later `0.118.5` exact adapter/defer decision.
-`v0.50.16 implementation stop reached. Run pentest for this exact commit.`
+the later `0.326.0` exact adapter/defer decision.
+`v0.148.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.17` — Continuity Exercises And Corrective Evidence
+## `0.149.0` — Continuity Exercises And Corrective Evidence
 
 Status: planned.
 Setup: consume an approved continuity-plan version; define scenario, objectives,
@@ -289,9 +289,9 @@ Verification: wrong/stale plan, false completion, result/evidence substitution,
 self-attestation, sensitive disclosure, missing gap/action, and rerun rewrite pass.
 Exit criteria: readiness cites current plan plus independently reviewed exercise
 evidence and open gaps; an exercise never activates a plan or asserts DR success.
-`v0.50.17 implementation stop reached. Run pentest for this exact commit.`
+`v0.149.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.60.3` — Authorization Contribution Extension And Backfill
+## `0.228.0` — Authorization Contribution Extension And Backfill
 
 Status: planned.
 Setup: after Phase F vocabulary exists, define the authorization/redaction
@@ -304,10 +304,10 @@ Verification: omitted route/item/action/field, hidden count, purpose confusion,
 policy-version drift, copied policy semantics, duplicate ownership, generation
 mismatch, false defer, and allow-by-default pass.
 Exit criteria: current domains reference authoritative interface entries;
-`0.60.4` certifies the backfill and later domains certify at `0.120.8`.
-`v0.60.3 implementation stop reached. Run pentest for this exact commit.`
+`0.229.0` certifies the backfill and later domains certify at `0.336.0`.
+`v0.228.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.70.4` — Workflow/Notification Contribution Extension And Backfill
+## `0.243.0` — Workflow/Notification Contribution Extension And Backfill
 
 Status: planned.
 Setup: after Phase G IR and notification vocabulary exists, define exact
@@ -320,13 +320,13 @@ Verification: trigger spoof/replay/storm, generic status mutation, stale
 authority, hidden-field notification, recursive loop, copied IR, generation
 mismatch, false defer, and workflow/domain drift pass.
 Exit criteria: Phase D–G manifests reference authoritative automation entries;
-`0.70.5` certifies the backfill and later domains certify at `0.120.9`.
-`v0.70.4 implementation stop reached. Run pentest for this exact commit.`
+`0.244.0` certifies the backfill and later domains certify at `0.337.0`.
+`v0.243.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.81.3` — Physical And Compute Asset-Kind Pack
+## `0.266.0` — Physical And Compute Asset-Kind Pack
 
 Status: planned.
-Setup: use the `0.81.1` registry for physical device, server, workstation,
+Setup: use the `0.264.0` registry for physical device, server, workstation,
 mobile, network appliance, virtual machine, and compute-instance descriptors,
 identity fields, lifecycle requirements, and permitted relationships.
 Goal: deliver reviewed common physical/compute kinds as data, not hard-coded branches.
@@ -336,9 +336,9 @@ Verification: serial/provider-ID collision, VM/host confusion, unsafe kind
 migration, missing disposal evidence, relationship violation, and downgrade pass.
 Exit criteria: only the reviewed pack kinds activate and each preserves the
 registry's identity, lifecycle, provenance, and compatibility law.
-`v0.81.3 implementation stop reached. Run pentest for this exact commit.`
+`v0.266.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.81.4` — Cloud, Kubernetes, And Container Asset-Kind Pack
+## `0.267.0` — Cloud, Kubernetes, And Container Asset-Kind Pack
 
 Status: planned.
 Setup: define cloud account/subscription/project, region/zone, resource, cluster,
@@ -351,9 +351,9 @@ Verification: account/region/cluster confusion, reused provider ID, image/
 instance collapse, namespace escape, stale incarnation, and kind downgrade pass.
 Exit criteria: cloud-native facts remain tenant/source/provider/incarnation
 bound; this pack alone makes no discovery-connector support claim.
-`v0.81.4 implementation stop reached. Run pentest for this exact commit.`
+`v0.267.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.81.5` — Identity, Certificate, Domain, And Network Asset-Kind Pack
+## `0.268.0` — Identity, Certificate, Domain, And Network Asset-Kind Pack
 
 Status: planned.
 Setup: define identity/service-principal reference assets, certificate/key
@@ -366,9 +366,9 @@ Verification: secret material ingestion, identity/principal authority confusion,
 certificate/domain takeover, IP/MAC reuse, stale DNS, and hidden ownership pass.
 Exit criteria: these assets are evidence and inventory only; authentication,
 DNS, PKI, and network systems remain authoritative behind explicit ports.
-`v0.81.5 implementation stop reached. Run pentest for this exact commit.`
+`v0.268.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.81.6` — SaaS And Data Asset-Kind Pack
+## `0.269.0` — SaaS And Data Asset-Kind Pack
 
 Status: planned.
 Setup: define SaaS tenant/application, data store/database, dataset/data product,
@@ -381,13 +381,13 @@ Verification: SaaS tenant confusion, dataset identity collision, classification
 downgrade, false lineage, residency/retention mismatch, and owner disclosure pass.
 Exit criteria: supported kinds retain source and governance facts while external
 SaaS/data platforms remain authoritative and discovery support stays explicit.
-`v0.81.6 implementation stop reached. Run pentest for this exact commit.`
+`v0.269.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.86.2` — Representative Cloud-Native Discovery Profile
+## `0.277.0` — Representative Cloud-Native Discovery Profile
 
 Status: conditional planned milestone; select one exact cloud or Kubernetes
 API/version/profile demanded by an intended deployment, otherwise record it
-deferred and keep `0.81.4` kinds manual/generic-import-only for `1.0.0`.
+deferred and keep `0.267.0` kinds manual/generic-import-only for `1.0.0`.
 Setup: bind workload identity, endpoint/account/cluster, permissions, resource
 kinds, pagination/watch/delta semantics, checkpoints, incarnation, deletion
 claims, quotas, raw evidence, reconciliation, and version-bound implementation.
@@ -400,9 +400,9 @@ resource-version/UID reuse, forged deletion, stale resurrection, permission/
 credential leak, parser bomb, throttling, full resync, and drift pass.
 Exit criteria: only the exact passing profile is supported; otherwise UI/API/
 documentation clearly state manual/generic-import-only cloud-native inventory.
-`v0.86.2 implementation stop reached. Run pentest for this exact commit.`
+`v0.277.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.100.1` — Search/History Contribution Extension And Backfill
+## `0.299.0` — Search/History Contribution Extension And Backfill
 
 Status: planned.
 Setup: after Phase J document/projection vocabulary exists, define exact
@@ -415,13 +415,13 @@ Verification: missing/duplicate document, hidden field/count/facet, stale
 revocation, copied deletion/retention semantics, rebuild-owner mismatch,
 generation downgrade, false defer, and query-complexity pass.
 Exit criteria: Phase D–J manifests reference authoritative search/history
-entries; `0.100.2` certifies the backfill and `0.120.10` certifies later domains.
-`v0.100.1 implementation stop reached. Run pentest for this exact commit.`
+entries; `0.300.0` certifies the backfill and `0.338.0` certifies later domains.
+`v0.299.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.132.3` — Workspace Contribution Extension And Backfill
+## `0.353.0` — Workspace Contribution Extension And Backfill
 
 Status: planned.
-Setup: after `0.132.1–0.132.2`, define exact `WorkspaceContributionId`, block/
+Setup: after `0.351.0–0.352.0`, define exact `WorkspaceContributionId`, block/
 profile, command/read, empty/error, and support-state references; backfill all
 earlier selected domains.
 Goal: link declarative workspaces to authoritative blocks and application services.
@@ -431,13 +431,13 @@ Verification: hidden route/block/action, field/count leak, profile-based
 privilege, copied command/policy semantics, query storm, unsupported feature,
 generation mismatch, false defer, XSS, and UI/API differential pass.
 Exit criteria: selected domain manifests reference authoritative workspace
-entries; `0.132.4` alone composes and certifies them.
-`v0.132.3 implementation stop reached. Run pentest for this exact commit.`
+entries; `0.354.0` alone composes and certifies them.
+`v0.353.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.138.4` — External API Contribution Extension And Backfill
+## `0.364.0` — External API Contribution Extension And Backfill
 
 Status: planned.
-Setup: after `0.138.0`, define exact `ExternalApiResourceId`, route, command/
+Setup: after `0.360.0`, define exact `ExternalApiResourceId`, route, command/
 query/error, pagination/consistency, event/subscription, and compatibility-
 fixture references; backfill selected domains.
 Goal: link domains to authoritative API entries without copying external schemas.
@@ -447,13 +447,13 @@ Verification: mass assignment, resource/type confusion, cursor/gap forgery,
 reconnect downgrade, hidden field, copied schema, generation mismatch, false
 defer, SDK/API differential, and undocumented UI action pass.
 Exit criteria: selected manifests reference authoritative API entries;
-`0.138.6` alone assembles/freezes the API and SDK.
-`v0.138.4 implementation stop reached. Run pentest for this exact commit.`
+`0.366.0` alone assembles/freezes the API and SDK.
+`v0.364.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.138.5` — Transfer/Configuration Contribution Extension And Backfill
+## `0.365.0` — Transfer/Configuration Contribution Extension And Backfill
 
 Status: planned.
-Setup: after `0.138.2–0.138.3`, define exact `TransferCodecId` and configuration
+Setup: after `0.362.0–0.363.0`, define exact `TransferCodecId` and configuration
 schema, relationship/reference, workflow/policy binding, secret-reference,
 environment-overlay, migration, activation/rollback, and round-trip references;
 backfill selected domains.
@@ -464,10 +464,10 @@ Verification: hidden field/secret export, mass assignment, stale reference,
 kind/schema downgrade, copied codec semantics, generation mismatch, false
 defer, partial activation, erased-data resurrection, and differential pass.
 Exit criteria: selected manifests reference authoritative transfer/config
-entries; `0.138.7` alone composes and certifies them.
-`v0.138.5 implementation stop reached. Run pentest for this exact commit.`
+entries; `0.367.0` alone composes and certifies them.
+`v0.365.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.139.1` — Full-Suite Cross-Surface Differential Suite
+## `0.369.0` — Full-Suite Cross-Surface Differential Suite
 
 Status: planned.
 Setup: derive cases jointly from the requirement registry, current
@@ -494,12 +494,12 @@ Exit criteria: no registered full-suite requirement, active manifest
 contribution/kind dimension, or authorization interface lacks its generated
 required comparison; adding a contribution kind expands the suite without
 editing a hard-coded surface list.
-`v0.139.1 implementation stop reached. Run pentest for this exact commit.`
+`v0.369.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.145.3` — Full-Suite Lifecycle And Recovery Certification
+## `0.413.0` — Full-Suite Lifecycle And Recovery Certification
 
 Status: planned.
-Setup: consume `0.51.3–0.51.4` exact authoritative tenant-surface references
+Setup: consume `0.154.0–0.155.0` exact authoritative tenant-surface references
 and immediate certification, current `DomainManifest`/contribution generations,
 deferrals, product state, backup/restore codecs, rebuild/recovery order,
 retention/hold/erasure handlers, export class, external-copy disposition,
@@ -516,4 +516,4 @@ divergence pass.
 Exit criteria: selected profiles restore or erase with complete evidence; no
 reference, registration, lifecycle handler, or recovery behavior is first added
 here, and missing state leaves the owning capability unready rather than guessed.
-`v0.145.3 implementation stop reached. Run pentest for this exact commit.`
+`v0.413.0 implementation stop reached. Run pentest for this exact commit.`

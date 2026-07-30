@@ -1,6 +1,6 @@
 # Phase B — Journal And Projection Mechanics
 
-Scope: `0.11.0–0.20.0`. Pure semantic contracts and project-owned in-memory
+Scope: `0.12.0–0.40.0`. Pure semantic contracts and project-owned in-memory
 implementations establish ordering, replay, idempotency, and integrity.
 Every atomic bundle advances at most one authoritative aggregate stream.
 “Effects” in this phase means local durable events, receipts, audit facts,
@@ -414,7 +414,7 @@ provider profile declares its independent recovery channel and residual risk;
 if none exists, the rotation enters `ManualInterventionRequired` without
 break-glass reuse of the quarantined credential. `VIT-INV-005` is its canonical
 authority record; the bootstrap and loss-recovery ceremony is completed at
-`0.18.5`.
+`0.27.0`.
 
 Credential operations use one explicit `ProviderCredentialOperationProfile`.
 `NonExportableSigning`, `NonExportableMtls`, and equivalent HSM-backed profiles
@@ -443,7 +443,7 @@ request.
 
 The opaque permit type has a sealed constructor, implements neither `Clone` nor
 serialization, is consumed by value by the provider-write operation, and
-best-effort zeroizes its memory on drop under the `0.28.3` process-memory
+best-effort zeroizes its memory on drop under the `0.65.0` process-memory
 assurance profile. It is returned exactly once inside the claiming executor;
 durable state stores only its digest and claim status. The digest is audit and
 reconciliation evidence, never sufficient authorization. Every later call,
@@ -747,7 +747,7 @@ resolution use expected-version/fencing rules, retain both facts, and
 deterministically reopen or supersede only the operational workflow; provider
 evidence is never overwritten by an assessment.
 
-## `0.11.0` — Semantic Event-Journal Interface
+## `0.12.0` — Semantic Event-Journal Interface
 
 Status: planned.
 
@@ -766,9 +766,9 @@ Verification: omitted tenant, empty/oversized batch, wrong expected version,
 partial success, ordering ambiguity, and capability-negotiation tests pass.
 
 Exit criteria: no compliant adapter can reinterpret atomicity or isolation.
-`v0.11.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.12.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.12.0` — Deterministic In-Memory Journal
+## `0.13.0` — Deterministic In-Memory Journal
 
 Status: planned.
 
@@ -784,13 +784,13 @@ Verification: cross-stream/tenant isolation, stable ordering, bounded reads,
 atomic rollback, restart snapshots, and randomized operation sequences pass.
 
 Exit criteria: the adapter is a deterministic oracle, not a production claim.
-`v0.12.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.13.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.13.0` — Expected-Version Concurrency
+## `0.14.0` — Expected-Version Concurrency
 
 Status: planned.
-<!-- vitheim-invariant VIT-INV-013 0.13.0 -->
-<!-- vitheim-invariant VIT-INV-015 0.13.0 -->
+<!-- vitheim-invariant VIT-INV-013 0.14.0 -->
+<!-- vitheim-invariant VIT-INV-015 0.14.0 -->
 
 Setup: define absent/exact/any version policy, conflict evidence, retry limits,
 and command/idempotency interaction.
@@ -806,9 +806,9 @@ Verification: two-writer interleavings, replayed commands, stale snapshots,
 failed-retry nonmutation, and model-checked linearization cases pass.
 
 Exit criteria: exactly one conflicting append wins with complete evidence.
-`v0.13.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.14.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.14.0` — Snapshots And Validation
+## `0.15.0` — Snapshots And Validation
 
 Status: planned.
 
@@ -825,9 +825,9 @@ Verification: stale, future, forged, truncated, cross-stream/tenant, corrupted,
 oversized, and schema-incompatible snapshots all fail safely.
 
 Exit criteria: rejecting a snapshot always falls back to bounded event replay.
-`v0.14.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.15.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.15.0` — Projection Engine And Checkpoints
+## `0.16.0` — Projection Engine And Checkpoints
 
 Status: planned.
 
@@ -844,12 +844,12 @@ Verification: duplicates, gaps, reorder, crash windows, corrupt checkpoints,
 rebuild equivalence, tenant isolation, and bounded batch tests pass.
 
 Exit criteria: projections can be erased and recreated exactly from authority.
-`v0.15.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.16.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.15.1` — Security Audit Envelope And Durable Intent
+## `0.17.0` — Security Audit Envelope And Durable Intent
 
 Status: planned.
-<!-- vitheim-invariant VIT-INV-014 0.15.1 -->
+<!-- vitheim-invariant VIT-INV-014 0.17.0 -->
 
 Setup: define canonical bounded security-audit facts and authoritative intents
 before transactional mutation exists. Separate successful domain-event facts
@@ -857,7 +857,7 @@ from attempted/authorized/denied/rejected security actions; bind tenant, actor,
 remote actor assertions, authentication assurance, purpose, policy/version,
 resource/action/field class, command/request digest, result, correlation/
 causation, time, classification, and idempotency. Define the mandatory-audit
-action registry and safe metadata rules from `0.8.1`.
+action registry and safe metadata rules from `0.9.0`.
 
 Goal: make required audit evidence part of the commit protocol rather than a
 best-effort write to a later sink.
@@ -873,20 +873,20 @@ property tests, and fuzzing pass.
 
 Exit criteria: every operation classified as mandatory-audit has a bounded
 authoritative audit intent that can commit atomically with its outcome.
-`v0.15.1 implementation stop reached. Run pentest for this exact commit.`
+`v0.17.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.16.0` — Transactional Outbox Model
+## `0.18.0` — Transactional Outbox Model
 
 Status: planned.
-<!-- vitheim-law VIT-LAW-001 0.16.0 -->
-<!-- vitheim-invariant VIT-INV-016 0.16.0 -->
-<!-- vitheim-invariant VIT-INV-019 0.16.0 -->
-<!-- vitheim-invariant VIT-INV-021 0.16.0 -->
-<!-- vitheim-invariant VIT-INV-022 0.16.0 -->
-<!-- vitheim-invariant VIT-INV-023 0.16.0 -->
+<!-- vitheim-law VIT-LAW-001 0.18.0 -->
+<!-- vitheim-invariant VIT-INV-016 0.18.0 -->
+<!-- vitheim-invariant VIT-INV-019 0.18.0 -->
+<!-- vitheim-invariant VIT-INV-021 0.18.0 -->
+<!-- vitheim-invariant VIT-INV-022 0.18.0 -->
+<!-- vitheim-invariant VIT-INV-023 0.18.0 -->
 
 Setup: bind exact-version CAS, consecutive events, stream head, request-digest
-receipt, authoritative `0.15.1` audit intent, outbox entries, integrity links,
+receipt, authoritative `0.17.0` audit intent, outbox entries, integrity links,
 authority-owned uniqueness indexes, destination, payload version, attempt
 policy, stable external `EffectId`/request digest, and one database transaction.
 Each effect intent records its capability declaration, initial
@@ -906,7 +906,7 @@ Denied/rejected commands atomically
 commit their idempotent outcome plus audit fact but no domain events, stream
 advance, business outbox, or state effect.
 Outbox routing contains protected references rather than pre-rendered sensitive
-bodies and cannot copy fields forbidden by the `0.8.1` lifecycle.
+bodies and cannot copy fields forbidden by the `0.9.0` lifecycle.
 
 Goal: prevent committed business facts from losing required asynchronous work
 or mandatory audit evidence.
@@ -940,13 +940,13 @@ audit intent, no rejected mutation produces business state or effects, and
 transport acknowledgement is never represented as a known provider outcome.
 No effect can exist without a complete immutable commit-time authorization
 binding, typed execution authority, and explicit freshness profile.
-`v0.16.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.18.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.16.1` — Atomic Command Commit Bundle
+## `0.19.0` — Atomic Command Commit Bundle
 
 Status: planned.
-<!-- vitheim-law VIT-LAW-005 0.16.1 -->
-<!-- vitheim-invariant VIT-INV-012 0.16.1 -->
+<!-- vitheim-law VIT-LAW-005 0.19.0 -->
+<!-- vitheim-invariant VIT-INV-012 0.19.0 -->
 
 Setup: freeze one project-owned `AtomicCommandCommitBundle` containing tenant
 and aggregate stream, exact expected stream version, consecutive domain events,
@@ -955,7 +955,7 @@ integrity/commit digest, and authority-owned uniqueness claims. Define
 successful, denied, rejected, and no-op variants without optional omission of
 mandatory fields. Bind the canonical audit-intent and receipt digests into the
 commitment. Quota reservation semantics are deliberately not frozen before
-`0.18.1`; `0.18.2` adds the typed consumed reservation to the final work-commit
+`0.23.0`; `0.24.0` adds the typed consumed reservation to the final work-commit
 family.
 
 Goal: give command handling one indivisible correctness contract rather than a
@@ -977,12 +977,12 @@ canonicalization, model, and property cases pass.
 Exit criteria: an adapter can either commit the complete negotiated bundle
 atomically or report the capability unsupported; it cannot claim success with
 a weakened subset. Consumer, timer, activity, and poison transitions are not
-claimed by this command variant. `v0.16.1 implementation stop reached. Run pentest for this exact commit.`
+claimed by this command variant. `v0.19.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.17.0` — Inbox And Idempotent Consumers
+## `0.20.0` — Inbox And Idempotent Consumers
 
 Status: planned.
-<!-- vitheim-invariant VIT-INV-017 0.17.0 -->
+<!-- vitheim-invariant VIT-INV-017 0.20.0 -->
 
 Setup: define message identity, source/destination scope, receipt lifetime,
 effect transaction boundary, duplicate response, and replay audit.
@@ -1001,9 +1001,9 @@ outcome; the same ID with a different digest is a conflict without side effects.
 Exit criteria: retries cannot repeat the local protected commit or hide
 duplicates; possible remote duplication remains governed by the external-effect
 outcome contract.
-`v0.17.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.20.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.17.1` — Atomic Consumer Commit Bundle
+## `0.21.0` — Atomic Consumer Commit Bundle
 
 Status: planned.
 
@@ -1036,12 +1036,12 @@ Exit criteria: a consumer either commits its receipt and complete emitted
 effect bundle once or commits neither; redelivery returns the bound prior
 outcome and cannot repeat the local protected commit. Remote execution may
 still be duplicated and must use the stable effect identity and reconciliation
-contract. `v0.17.1 implementation stop reached. Run pentest for this exact commit.`
+contract. `v0.21.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.18.0` — Leases, Timers, And Scheduler Primitives
+## `0.22.0` — Leases, Timers, And Scheduler Primitives
 
 Status: planned.
-<!-- vitheim-invariant VIT-INV-018 0.18.0 -->
+<!-- vitheim-invariant VIT-INV-018 0.22.0 -->
 
 Setup: specify logical/host time boundary, lease token/fencing, renewal/expiry,
 timer identity, retry/backoff limits, jitter injection, and quotas.
@@ -1055,27 +1055,27 @@ Verification: clock jumps, lease loss, stale holder, concurrent acquisition,
 retry storms, overflow, cancellation, and model interleavings pass.
 
 Exit criteria: expired or unfenced workers cannot commit protected work.
-`v0.18.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.22.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.18.1` — Quota Vocabulary And Ledger Schema
+## `0.23.0` — Quota Vocabulary And Ledger Schema
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.18.1`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.23.0`
 implements quota vocabulary and the durable ledger only; admission and
-settlement/recovery are exact stops `0.18.6–0.18.7`.
-<!-- vitheim-invariant VIT-INV-007 0.18.1 -->
-<!-- vitheim-invariant VIT-INV-024 0.18.1 -->
-<!-- vitheim-invariant VIT-INV-025 0.18.1 -->
-<!-- vitheim-invariant VIT-INV-026 0.18.1 -->
-<!-- vitheim-invariant VIT-INV-029 0.18.1 -->
-<!-- vitheim-invariant VIT-INV-030 0.18.1 -->
-<!-- vitheim-invariant VIT-INV-031 0.18.1 -->
-<!-- vitheim-invariant VIT-INV-043 0.18.1 -->
-<!-- vitheim-invariant VIT-INV-044 0.18.1 -->
-<!-- vitheim-invariant VIT-INV-045 0.18.1 -->
-<!-- vitheim-law VIT-LAW-002 0.18.1 -->
-<!-- vitheim-law VIT-LAW-003 0.18.1 -->
+settlement/recovery are exact stops `0.28.0–0.29.0`.
+<!-- vitheim-invariant VIT-INV-007 0.23.0 -->
+<!-- vitheim-invariant VIT-INV-024 0.23.0 -->
+<!-- vitheim-invariant VIT-INV-025 0.23.0 -->
+<!-- vitheim-invariant VIT-INV-026 0.23.0 -->
+<!-- vitheim-invariant VIT-INV-029 0.23.0 -->
+<!-- vitheim-invariant VIT-INV-030 0.23.0 -->
+<!-- vitheim-invariant VIT-INV-031 0.23.0 -->
+<!-- vitheim-invariant VIT-INV-043 0.23.0 -->
+<!-- vitheim-invariant VIT-INV-044 0.23.0 -->
+<!-- vitheim-invariant VIT-INV-045 0.23.0 -->
+<!-- vitheim-law VIT-LAW-002 0.23.0 -->
+<!-- vitheim-law VIT-LAW-003 0.23.0 -->
 
 Setup: define tenant/resource quota identity, opaque `QuotaReservationId`,
 reservation digest, `QuotaClaimSetId`, opaque `QuotaClaimSetToken`, canonical
@@ -1169,7 +1169,7 @@ delivery is at least once and late settlement retains original transfer lineage.
 Partition reconciliation/security-cleanup capacity by tenant/work class with
 ceilings, global fair-share/starvation bounds, and a strictly scoped emergency
 reserve. The bounded claim-set representation is finalized into work bundles
-only at `0.18.2`, after these semantics exist.
+only at `0.24.0`, after these semantics exist.
 
 Goal: make resource limits durable correctness controls rather than process-local
 counters.
@@ -1302,36 +1302,36 @@ capacity. Every delayed transfer transition rechecks current
 local authority; and
 exhausted or abusive tenants cannot block fair bounded reconciliation or
 security cleanup.
-`v0.18.1 implementation stop reached. Run pentest for this exact commit.`
+`v0.23.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.18.2` — Atomic Work Discriminated Bundle Schema
+## `0.24.0` — Atomic Work Discriminated Bundle Schema
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.18.2`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.24.0`
 freezes the discriminated bundle schema only; command/consumer,
-timer/activity, poison, and adapter certification are `0.18.8–0.18.10`.
-<!-- vitheim-invariant VIT-INV-001 0.18.2 -->
-<!-- vitheim-invariant VIT-INV-002 0.18.2 -->
-<!-- vitheim-invariant VIT-INV-003 0.18.2 -->
-<!-- vitheim-invariant VIT-INV-004 0.18.2 -->
-<!-- vitheim-invariant VIT-INV-005 0.18.2 -->
-<!-- vitheim-invariant VIT-INV-006 0.18.2 -->
-<!-- vitheim-invariant VIT-INV-053 0.18.2 -->
-<!-- vitheim-invariant VIT-INV-054 0.18.2 -->
-<!-- vitheim-invariant VIT-INV-055 0.18.2 -->
-<!-- vitheim-law VIT-LAW-006 0.18.2 -->
-<!-- vitheim-invariant VIT-INV-020 0.18.2 -->
-<!-- vitheim-invariant VIT-INV-028 0.18.2 -->
+timer/activity, poison, and adapter certification are `0.30.0–0.32.0`.
+<!-- vitheim-invariant VIT-INV-001 0.24.0 -->
+<!-- vitheim-invariant VIT-INV-002 0.24.0 -->
+<!-- vitheim-invariant VIT-INV-003 0.24.0 -->
+<!-- vitheim-invariant VIT-INV-004 0.24.0 -->
+<!-- vitheim-invariant VIT-INV-005 0.24.0 -->
+<!-- vitheim-invariant VIT-INV-006 0.24.0 -->
+<!-- vitheim-invariant VIT-INV-053 0.24.0 -->
+<!-- vitheim-invariant VIT-INV-054 0.24.0 -->
+<!-- vitheim-invariant VIT-INV-055 0.24.0 -->
+<!-- vitheim-law VIT-LAW-006 0.24.0 -->
+<!-- vitheim-invariant VIT-INV-020 0.24.0 -->
+<!-- vitheim-invariant VIT-INV-028 0.24.0 -->
 
 Setup: finalize a discriminated `AtomicWorkCommitBundle` family for command
-(`0.16.1`), consumer (`0.17.1`), scheduled timer, workflow activity completion,
+(`0.19.0`), consumer (`0.21.0`), scheduled timer, workflow activity completion,
 and poison/dead-letter transitions. Every applicable variant binds tenant,
 work/message/timer/activity identity and input digest, current fencing token,
 at most one authoritative aggregate stream and its exact expected version,
 events, command/inbox/timer/activity receipt,
 mandatory audit intent, outbox, integrity commitment, uniqueness claims, and
-the exact pre-reserved `0.18.1` quota claim-set token/digest and applicable per-
+the exact pre-reserved `0.23.0` quota claim-set token/digest and applicable per-
 claim transitions. Quota records remain co-transactional local authority, not
 additional aggregate streams; a bundle never reacquires set members. Every
 dispatch variant binds and atomically validates its bounded
@@ -1850,24 +1850,24 @@ under the conservative intersection as blocked/reconciling. Upgrade, downgrade,
 rollback, failover, and restore cannot lower the admitted platform minimum or
 release capacity. Delayed transfer transitions recheck current local authority
 and fail conservatively.
-`v0.18.2 implementation stop reached. Run pentest for this exact commit.`
+`v0.24.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.18.3` — Stable Invariant And Law Declaration Registry
+## `0.25.0` — Stable Invariant And Law Declaration Registry
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.18.3`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.25.0`
 introduces stable declaration IDs and parsing only; ownership/lifecycle, law
-manifests/admission, and semantic conformance are `0.18.11–0.18.13`.
-<!-- vitheim-invariant VIT-INV-057 0.18.3 -->
-<!-- vitheim-invariant VIT-INV-058 0.18.3 -->
-<!-- vitheim-invariant VIT-INV-059 0.18.3 -->
-<!-- vitheim-law VIT-LAW-007 0.18.3 -->
-<!-- vitheim-law VIT-LAW-008 0.18.3 -->
+manifests/admission, and semantic conformance are `0.33.0–0.35.0`.
+<!-- vitheim-invariant VIT-INV-057 0.25.0 -->
+<!-- vitheim-invariant VIT-INV-058 0.25.0 -->
+<!-- vitheim-invariant VIT-INV-059 0.25.0 -->
+<!-- vitheim-law VIT-LAW-007 0.25.0 -->
+<!-- vitheim-law VIT-LAW-008 0.25.0 -->
 
 Setup: adopt `docs/INVARIANT_OWNERSHIP.md` as the canonical registry for every
 authority-bearing invariant and formally backfill all authority declared from
-`0.1.0` through `0.18.2`, including structural tenant scope, tenant-bound event
+`0.1.0` through `0.24.0`, including structural tenant scope, tenant-bound event
 authority, schema/event-schema activation, sensitive-payload lifecycle, pure
 aggregate state, one-stream bundles, expected-version heads, audit intent, command
 receipts, outbox/inbox atomicity, lease fencing, execution-grant lineage and
@@ -1923,17 +1923,17 @@ version/predecessor, mixed-version rule, activation fence, migration/rollback,
 dependency/recovery contracts, and content digest. The planning checker
 recomputes the domain-separated length-prefixed SHA-256 digest; runtime
 implementation is blocked until its exact digest implementation passes the
-`0.18.3` admission review. In-memory persistence, export, restore, and golden
+`0.25.0` admission review. In-memory persistence, export, restore, and golden
 fixtures verify canonical byte/digest stability. The latest ownership view must
 normalize to the latest resolved semantics and manifest digest.
 
 Treat `docs/LAW_MANIFEST_ADMISSIONS.md` only as a planning superset. Implement
 the milestone-scoped `LawManifestAdmissionSetV1` payload and envelope from
 `docs/LAW_ACTIVE_CATALOGS.md`; the initial active catalog activates at
-`0.18.3`, contains complete effective ancestry, excludes every future tuple,
-and remains applicable until its explicit `0.18.4` successor is activated.
+`0.25.0`, contains complete effective ancestry, excludes every future tuple,
+and remains applicable until its explicit `0.26.0` successor is activated.
 There is no maximum-version field. The checker enumerates every implementation
-milestone from `0.18.3` through `1.0.0` and proves that the greatest
+milestone from `0.25.0` through `1.0.0` and proves that the greatest
 not-greater activation floor selects exactly one planned catalog.
 
 `VIT-INV-057` gives `PlatformLawCatalogLineage` exactly one authority owner.
@@ -1956,7 +1956,7 @@ advance placement generation, fence the predecessor, and require fresh
 identity plus a new verified rollout receipt. Neither owner may update the
 other's row.
 Define the closed `WorkloadIdentityProofProfileV1` and
-`CatalogReceiptAuthenticationV1` contracts now; `0.140.1` selects the
+`CatalogReceiptAuthenticationV1` contracts now; `0.371.0` selects the
 production mechanism. The identity contract binds issuer, subject, audience,
 owner key, public-key thumbprint, attestation policy/version, issue/expiry/
 revocation, and either a non-exportable hardware-attested key or a key-bound
@@ -2013,7 +2013,7 @@ global and local rows from artifact provenance. The same artifact contains
 `CompiledStaticPlacementTopologyV1`: exactly one immutable generation-one
 deployment/region/service-role/enforcement-partition placement. Dynamic join,
 leave, move, replacement, split/merge, role change, and autoscaling identity
-reuse are unsupported and fail closed until the one-time `0.141.0`
+reuse are unsupported and fail closed until the one-time `0.399.0`
 `VIT-INV-060` handoff. Rollout may consume the compiled topology but cannot
 mutate it. The artifact also seeds the empty
 `VIT-INV-059` rollout root and compiled `VIT-LAW-008@g01` realization; only
@@ -2068,7 +2068,7 @@ reconciles competing candidates to one winner and permanent loser tombstones
 and cannot infer completion. It separately reconciles external action-claim
 issuance against co-transactional local consumption tombstones and never
 reissues typed-uncertain work. A future `FencedQuorum`
-profile is unsupported unless `0.140.6` proves every unprepared placement is
+profile is unsupported unless `0.376.0` proves every unprepared placement is
 durably fenced before activation.
 
 Each active envelope serializes exactly `CompiledCatalog` or `SignedCatalog`
@@ -2093,11 +2093,11 @@ matches exact build scope. Once an activation milestone leaves planned status,
 the repository gate invokes this tool; arbitrary text containing expected field
 names cannot satisfy it. Every law-effective milestone creates the next
 immutable catalog in the checked schedule.
-Checkpoint and backup binding is completed at `0.19.0` and `0.145.0`; exact
+Checkpoint and backup binding is completed at `0.39.0` and `0.410.0`; exact
 profile, time source, and maximum uncertainty are frozen before production at
-`0.140.1`, separate global/rollout/future-topology/local storage at `0.140.2`,
+`0.371.0`, separate global/rollout/future-topology/local storage at `0.372.0`,
 and HA rollout policy, topology evolution, revocation propagation, time loss,
-and recovery at `0.140.6`. `0.141.0` introduces the independently owned dynamic
+and recovery at `0.376.0`. `0.399.0` introduces the independently owned dynamic
 topology root and `VIT-LAW-008@g02` before any split-service deployment. It
 first activates and converges the epoch-13 catalog under generation 1/static
 authority. Only after every required local owner admits generation 2 may the
@@ -2114,7 +2114,7 @@ model/fault contracts; unknown, unsupported, or manifest-mismatched IDs fail sta
 restore. In particular, every `VIT-LAW-006` realization preserves
 `DefinitelyNotStarted`, `OutcomeUnknown`, and `StartClaimedReconciling` as
 distinct typed states. Each row has P/N/M/F contracts. The realization gate is
-the later of its effective milestone and `0.18.3`; as soon as that gate leaves
+the later of its effective milestone and `0.25.0`; as soon as that gate leaves
 planned status, CI requires the Rust transition/recovery files, closed enum and
 dispatch-table entry, typed symbols, and every concrete test ID to exist.
 
@@ -2134,7 +2134,7 @@ normalization alternatives, embedded Markdown pipes, control characters, and
 noncanonical cell whitespace before digest calculation.
 
 Adopt `docs/AUTHORITY_REVIEWS.md` as the complete post-bootstrap milestone
-review registry. Every milestone after `0.18.3`, including option decisions and
+review registry. Every milestone after `0.25.0`, including option decisions and
 `1.0.0`, has exactly one disposition: exact new declarations, exact existing
 roots/laws extended, reviewed `none`, or a stable conservative proposal. A
 proposal is planning evidence only and must resolve before that milestone
@@ -2216,7 +2216,7 @@ unverified predecessor/digest/signature, untrusted or rollback-prone bounded-
 window time, unknown semantic realizations, and ancestry omission. Later
 milestones must declare and
 register new invariants and the corresponding law generation in the same
-commit. The authority-review checker rejects any post-`0.18.3` milestone
+commit. The authority-review checker rejects any post-`0.25.0` milestone
 without exactly one resolved or explicitly proposed disposition.
 It rejects unresolved proposals for any non-planned milestone, bare or unknown
 law references, stale generations, and future-generation conformance claims.
@@ -2244,11 +2244,11 @@ normalization alternative, embedded pipe, or irregular cell spaces; recompute
 a modified manifest digest while leaving it absent from the trusted catalog;
 forge, roll back, truncate, or substitute a catalog; omit one ancestor tuple or
 semantic realization; trust the planning superset directly; place a reviewed
-future tuple in the `0.18.3` active catalog; omit or mutate any payload/envelope
+future tuple in the `0.25.0` active catalog; omit or mutate any payload/envelope
 scope, validity, signer, root-epoch, revocation, successor, or predecessor field;
 serialize a combined profile; race activation/supersession/revocation/emergency
 distrust; let global and local catalog state share an authority row; leave
-`0.19.0`, `0.30.2`, or any milestone without exactly one applicable catalog;
+`0.39.0`, `0.74.0`, or any milestone without exactly one applicable catalog;
 submit field-shaped text instead of canonical bytes; alter either digest,
 tuple ancestry, actual predecessor, compiled digest, signature/root, or build
 scope; admit a bounded window with excessive uncertainty, unavailable time,
@@ -2272,7 +2272,7 @@ cursor, tombstone, quota state, or recovery fact from the generated manifest;
 and prove the repository gate fails each mutation. Review phase declaration
 markers systematically so the backfill cannot be reduced to a favored subset.
 
-Exit criteria: every authority-bearing invariant declared through `0.18.5` has
+Exit criteria: every authority-bearing invariant declared through `0.27.0` has
 one machine-checked ownership row, one lifecycle row, and resolvable stable
 contract IDs; every composite law has a contiguous historically accurate
 content-bound manifest chain and every later milestone has exactly one authority
@@ -2291,17 +2291,17 @@ semantic ID resolves exhaustively to code/recovery/P-N-M-F tests; every
 generation claim proves its admitted predecessor closure; bounded validity
 cannot be extended by time failure or restore; and future planning tuples
 remain inert.
-`v0.18.3 implementation stop reached. Run pentest for this exact commit.`
+`v0.25.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.18.4` — Bounded Evaluator Re-evaluation Scheduler
+## `0.26.0` — Bounded Evaluator Re-evaluation Scheduler
 
 Status: planned.
-<!-- vitheim-invariant VIT-INV-008 0.18.4 -->
-<!-- vitheim-invariant VIT-INV-027 0.18.4 -->
-<!-- vitheim-invariant VIT-INV-046 0.18.4 -->
-<!-- vitheim-invariant VIT-INV-047 0.18.4 -->
-<!-- vitheim-invariant VIT-INV-056 0.18.4 -->
-<!-- vitheim-law VIT-LAW-004 0.18.4 -->
+<!-- vitheim-invariant VIT-INV-008 0.26.0 -->
+<!-- vitheim-invariant VIT-INV-027 0.26.0 -->
+<!-- vitheim-invariant VIT-INV-046 0.26.0 -->
+<!-- vitheim-invariant VIT-INV-047 0.26.0 -->
+<!-- vitheim-invariant VIT-INV-056 0.26.0 -->
+<!-- vitheim-law VIT-LAW-004 0.26.0 -->
 
 Catalog checkpoint: generate `VIT-LAWCAT-ACTIVE-e002-v1` with the shared Rust
 verifier, bind its predecessor to the first artifact's recomputed envelope
@@ -2320,7 +2320,7 @@ coordinators, and require exactly one authorized winner while the loser becomes
 permanently `Superseded` before authorization; reject every late losing receipt
 and authorization. Because the bootstrap topology is static, join, leave,
 replacement, region move, and topology mutation requests fail closed here;
-dynamic versions are exercised after `VIT-INV-060` at `0.141.0`. Race every
+dynamic versions are exercised after `VIT-INV-060` at `0.399.0`. Race every
 boundary with global/local/rollout failover and restore. Test unreachable
 placements, stale local catalog/distrust/time/fence state, cloned owner
 identity, forged receipt digest or transport transcript, binary/semantic
@@ -2332,7 +2332,7 @@ the exact current identity-bound admission remains unready for affected
 dispatch and transmission start; platform version and copied storage confer no
 authority.
 
-Setup: implement `VIT-INV-008` on the `0.18.0–0.18.2` lease, quota, fence, and
+Setup: implement `VIT-INV-008` on the `0.22.0–0.24.0` lease, quota, fence, and
 atomic-work contracts. Evaluator activation, supersession, suspension, ordinary
 revocation, or emergency revocation creates stable, idempotent jobs partitioned
 by tenant, provider, and provider account. Each job binds credential-capability
@@ -2476,12 +2476,12 @@ bounded, durable, fair,
 restart-safe re-evaluation or visible escalation under the current generation,
 and no crash, partition move, late mutation, or index defect can permanently
 omit work.
-`v0.18.4 implementation stop reached. Run pentest for this exact commit.`
+`v0.26.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.18.5` — Remediation Authority Bootstrap And Recovery
+## `0.27.0` — Remediation Authority Bootstrap And Recovery
 
 Status: planned.
-<!-- vitheim-invariant VIT-INV-009 0.18.5 -->
+<!-- vitheim-invariant VIT-INV-009 0.27.0 -->
 
 Setup: complete `VIT-INV-005` and `VIT-INV-009` with a root-of-trust ceremony
 that never depends on the credential being provisioned or recovered. The first
@@ -2532,15 +2532,15 @@ provider behavior all fail closed or reach bounded visible escalation.
 Exit criteria: each supported provider has either a tested, quorum-controlled,
 non-circular recovery root with the required independent channels or an
 explicitly accepted manual-only limitation; no authority can approve or recover
-its own compromise. `v0.18.5 implementation stop reached. Run pentest for this exact commit.`
+its own compromise. `v0.27.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.19.0` — Integrity Chains And Signed-Checkpoint Interface
+## `0.39.0` — Integrity Chains And Signed-Checkpoint Interface
 
 Status: planned; blocked until this milestone approves an implementation-
 admission record for every hash, signing, KMS, and timestamp implementation.
 
 Setup: bind tenant, partition, stream, sequence, event/schema IDs, payload digest,
-the `0.18.2` work-variant/audit-intent/receipt/commit digests, predecessor, and
+the `0.24.0` work-variant/audit-intent/receipt/commit digests, predecessor, and
 key ID, plus active law-catalog ID, epoch, payload/envelope digests, exact
 profile, activation floor, predecessor digest, exact scope, validity window and
 maximum uncertainty, signer/root epoch, revocation/successor policy, global
@@ -2583,9 +2583,9 @@ high-watermark; verification must reject or preserve typed uncertainty without
 reissue.
 
 Exit criteria: tamper evidence is deterministic without inventing cryptography.
-`v0.19.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.39.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.20.0` — Replay, Verification, And Rebuild CLI
+## `0.40.0` — Replay, Verification, And Rebuild CLI
 
 Status: planned.
 
@@ -2601,13 +2601,13 @@ Verification: corrupt/huge streams, interruption/resume, wrong tenant, unsafe
 repair attempts, report injection, rebuild equivalence, and operator UX pass.
 
 Exit criteria: verification cannot mutate state and repair never runs implicitly.
-`v0.20.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.40.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.20.1` — Security Audit Projection, Access Receipts, And Journal
+## `0.41.0` — Security Audit Projection, Access Receipts, And Journal
 
 Status: planned.
 
-Setup: project authoritative `0.15.1` intents into a separately queryable,
+Setup: project authoritative `0.17.0` intents into a separately queryable,
 integrity-anchored audit journal; cover command rejection, authorization denial,
 sensitive reads/searches/exports/downloads, administration, plugin calls, AI
 context, and federation. For protected reads/downloads, durably record the
@@ -2632,10 +2632,10 @@ leakage, cross-tenant reads, replay, truncation, retention, and anchors pass.
 
 Exit criteria: every mandatory security action is durably auditable or fails
 closed. Audit evidence never changes the aggregate decision, but required audit
-authority is a prerequisite for committing or releasing the protected outcome. `v0.20.1
+authority is a prerequisite for committing or releasing the protected outcome. `v0.41.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.20.2` — Hosted Telemetry Semantics And Instrumentation Contract
+## `0.42.0` — Hosted Telemetry Semantics And Instrumentation Contract
 
 Status: planned.
 
@@ -2661,9 +2661,9 @@ readiness lies, and telemetry-disabled semantic equivalence pass.
 
 Exit criteria: every later hosted milestone instruments the same bounded
 tenant-safe contract, and telemetry failure cannot grant authority or corrupt
-domain correctness. `v0.20.2 implementation stop reached. Run pentest for this exact commit.`
+domain correctness. `v0.42.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.20.3` — Shared Provenance And Temporal-Fact Primitives
+## `0.43.0` — Shared Provenance And Temporal-Fact Primitives
 
 Status: planned.
 
@@ -2691,4 +2691,4 @@ round trips, property tests, and cross-domain differential fixtures pass.
 Exit criteria: later domains may add typed fact payloads and domain rules, but
 cannot redefine provenance identities, correction semantics, confidence
 authority, or the four-clock model.
-`v0.20.3 implementation stop reached. Run pentest for this exact commit.`
+`v0.43.0 implementation stop reached. Run pentest for this exact commit.`

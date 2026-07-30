@@ -1,14 +1,14 @@
 # Phase O — Production Hardening
 
-After `0.51.4` immediately certifies the Phase D/E tenant-surface backfill,
-focused stop `0.145.3` destructively certifies current manifest generations,
+After `0.155.0` immediately certifies the Phase D/E tenant-surface backfill,
+focused stop `0.413.0` destructively certifies current manifest generations,
 authoritative tenant data-surface references, deferrals/product state,
 backup/restore, retention, hold, privacy, continuity, and erasure contributions
 for every selected full-suite profile; it cannot add a missing reference,
 registration, handler, or recovery behavior.
-Focused `0.145.4` then destructively certifies the independently implemented
-`0.30.28` retirement contract, `0.30.29` exact-tenant authority/recovery, and
-applicable `0.51.5–0.51.59` cut/plan/succession/guard/root, terminal
+Focused `0.414.0` then destructively certifies the independently implemented
+`0.100.0` retirement contract, `0.101.0` exact-tenant authority/recovery, and
+applicable `0.156.0–0.210.0` cut/plan/succession/guard/root, terminal
 aggregation, residual handoff/state/cuts, restrictive invalidation, target-slot
 takeover/release, funded retained-control transfer, archival/retained-namespace
 safety, partition-fenced evaluation, linearized activation/abort, source-
@@ -22,8 +22,8 @@ data/hold disposition, retained history/codecs, backup/import, external
 references, plugin uninstall, and safe reinstall; it cannot first implement
 teardown, campaign, or recovery.
 
-Scope: `0.141.0–0.150.0`. Claims require operational evidence, not schedule.
-The pre-Phase-O `0.140.28` decision blocks a Hosted production claim unless
+Scope: `0.399.0–0.424.0`. Claims require operational evidence, not schedule.
+The pre-Phase-O `0.398.0` decision blocks a Hosted production claim unless
 every mandatory zero-dependency baseline capability is Supported.
 Before any Phase O milestone starts, resolve its one
 `docs/AUTHORITY_REVIEWS.md` disposition and every prerequisite option-decision
@@ -577,14 +577,14 @@ external pentest and RC evidence must exercise stale predecessor transactions,
 guard-unaware binaries, competing successors, bootstrap replay/revocation/
 cancellation/rollback/restore/failover and archive failure at every boundary.
 
-## `0.141.0` — Single-Node Production Packaging
+## `0.399.0` — Single-Node Production Packaging
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.141.0`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.399.0`
 implements package/install layout only; startup compatibility, topology
-bootstrap, replay/rate budgets, and capacity drains are `0.141.1–0.141.4`.
-<!-- vitheim-invariant VIT-INV-060 0.141.0 -->
-<!-- vitheim-invariant VIT-INV-061 0.141.0 -->
+bootstrap, replay/rate budgets, and capacity drains are `0.400.0–0.403.0`.
+<!-- vitheim-invariant VIT-INV-060 0.399.0 -->
+<!-- vitheim-invariant VIT-INV-061 0.399.0 -->
 
 Setup: supported OS/arch, packages/images, users/paths,
 permissions, secure defaults, upgrades, compiled
@@ -600,7 +600,7 @@ provider/language compatibility, never-reused epoch and reevaluation state;
 quarantine investigation/remediation/verification/resolution, fresh capability
 generation and old-work tombstones; and the independent remediation profile/
 credential lineage/audit/epoch/cleanup quota or manual-only limitation.
-Persist the `0.18.4` evaluator-job generations, tenant/provider/account queue
+Persist the `0.26.0` evaluator-job generations, tenant/provider/account queue
 partitions, durable cursors, attempts, leases, priority, freshness/refetch,
 fair-share/provider-rate/cleanup-lane accounting, and escalation; also persist
 the atomic invalidation-campaign root, canonical capability-owner source/
@@ -612,7 +612,7 @@ per-shard scan cursors and single receipts, final membership barrier,
 materialization/dispositions, capability-owner mismatch proof, successor
 tombstones, and stuck state. Projection/search state is
 rebuildable and cannot certify completeness. Persist the
-`0.18.5` remediation ceremony manifest, channel/KMS bindings, quorum receipts,
+`0.27.0` remediation ceremony manifest, channel/KMS bindings, quorum receipts,
 compromise/loss/recovery epoch, expiry, exercise evidence, and manual-only
 limitation. Package a declaration-derived report proving every applicable stable
 invariant ID has exactly one ownership/lifecycle row and explicit semantic
@@ -651,7 +651,7 @@ before issuance denies; a change after issuance blocks new grants but cannot
 retroactively revoke the exact issued grant before its short fixed expiry.
 The authenticated receipt binds mutation class, `issued_at`, `commit_before`,
 maximum time uncertainty, trusted-time profile/epoch, and issuer continuity
-identity. The `0.140.1` protocol ceilings are five minutes for initialization,
+identity. The `0.371.0` protocol ceilings are five minutes for initialization,
 two minutes for handoff commit or any dynamic successor, and the lesser of the
 class ceiling and sixty seconds for break-glass. Issuance fails closed without
 an admitted conservative trusted-time interval and continuity or above either
@@ -1194,10 +1194,10 @@ documented profile is operable securely and no package change can start below or
 lower the durable admitted platform-floor ratchet; no split deployment starts
 without exactly one current `VIT-INV-060` owner, one independent
 `VIT-INV-061` issuer, and verified
-`VIT-LAW-007@g02` and `VIT-LAW-008@g02`. `v0.141.0 implementation stop
+`VIT-LAW-007@g02` and `VIT-LAW-008@g02`. `v0.399.0 implementation stop
 reached. Run pentest for this exact commit.`
 
-## `0.142.0` — Split Service Deployments
+## `0.404.0` — Split Service Deployments
 Status: planned. Migration/import focus: RPC preserves immutable OriginalTotal,
 monotonic Released, exact settled legs, cleanup lane/turn/backlog/maxima and
 first-terminal authorization outcome plus deletion observations,
@@ -1376,9 +1376,9 @@ split mode preserves modular semantics, moves only
 instructions/status across services, and routes every ambiguous claimed start
 to reconciliation; executor compromise remains bounded to the admitted provider
 execution profile.
-`v0.142.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.404.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.142.1` — Production Telemetry Exporters And Graceful Drain
+## `0.405.0` — Production Telemetry Exporters And Graceful Drain
 
 Status: planned; each exporter is blocked until its protocol/client/TLS,
 maintenance, license, and admission record is approved.
@@ -1388,7 +1388,7 @@ bounded metric labels, trace propagation, audit separation, lag/saturation/
 quota/readiness signals, exporter identity, buffering/drop/backpressure policy,
 failure isolation, shutdown drain, and secret prohibition.
 Implement only exporter/collector profiles conforming to the established
-`0.20.2` instrumentation schemas and failure semantics; this milestone cannot
+`0.42.0` instrumentation schemas and failure semantics; this milestone cannot
 invent incompatible per-service telemetry conventions.
 
 Goal: connect the already-instrumented platform to production collectors and
@@ -1403,15 +1403,15 @@ trace spoofing, log injection, exporter outage/backpressure, disk/buffer fill,
 recursive telemetry, shutdown loss, readiness lies, and failover tests pass.
 
 Exit criteria: every selected production profile exposes bounded operational
-signals and has an explicit telemetry-loss policy. `v0.142.1 implementation stop
+signals and has an explicit telemetry-loss policy. `v0.405.0 implementation stop
 reached. Run pentest for this exact commit.`
 
-## `0.143.0` — HA Lease And Fencing Model
+## `0.406.0` — HA Lease And Fencing Model
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.143.0`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.406.0`
 implements the lease/fencing model only; owner-specific storage/control-plane
-failover and service partition/recovery are `0.143.1–0.143.2`.
+failover and service partition/recovery are `0.407.0–0.408.0`.
 Migration/import focus: model immutable-total/monotonic-release
 leg settlement, adversarial foreground-versus-cleanup scheduling/backlog
 thresholds, unknown-deletion reconciliation/retention races, whole-member
@@ -1426,7 +1426,7 @@ progress within its foreground-grant bound, capped backlog and one stable
 first-terminal result; neither unsafe credit nor permanent foreground deadlock
 is reachable.
 Setup: quorum/authority, fencing, health, failover, partition
-policy, reconciliation, every `0.18.2` atomic work variant, delayed-effect
+policy, reconciliation, every `0.24.0` atomic work variant, delayed-effect
 authorization freshness/bindings, typed execution-authority redemption, bounded
 multi-kind quota claim settlement/exact-set linearization, one-owner grant
 lineages, co-located redemption guards, local quota partitions/hierarchical
@@ -1732,12 +1732,12 @@ authority/active-generation successor/prepared-cancellation-recovery semantics/
 total typed-key migration,
 duplicate through deadlock retry, duplicate a refund, or starve fair
 bounded recovery.
-`v0.143.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.406.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.144.0` — Regional Placement And Residency
+## `0.409.0` — Regional Placement And Residency
 Status: planned. Setup: tenant authoritative region, one authoritative write
 region per transaction domain, allowed read/DR replicas, fenced failover,
-policy labels, failover approval, encryption/keys, and every `0.51.2`
+policy labels, failover approval, encryption/keys, and every `0.153.0`
 registered surface including external copies. A regional move is a typed
 `VIT-INV-060` complete topology successor: it increments topology/member
 placement generations, tombstones the old regional placement, emits its fence,
@@ -1762,14 +1762,14 @@ omits a regional parent or uses stale membership, unsafe partial multi-parent
 rollout, unregistered surface, failover bypass, and policy changes pass.
 Exit criteria: placement violations, unsupported active/active writes, or
 incomplete surface mapping fail closed.
-`v0.144.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.409.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.145.0` — Backup Format And Custody
+## `0.410.0` — Backup Format And Custody
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.145.0`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.410.0`
 implements backup format and custody only; restore/readiness and full
-DR/failback/retention/erasure are `0.145.1–0.145.2`.
+DR/failback/retention/erasure are `0.411.0–0.412.0`.
 Migration/import focus: restore original/released/settled-leg
 history, cleanup scheduler counters/claimant/backlog/maxima and stored terminal
 authorization outcomes, reconciliation budgets, retention pool/authority and
@@ -1913,7 +1913,7 @@ candidate can only resume cleanup; an activated result requires the exact
 barrier and complete matching owner generations. Missing or conflicting
 candidate/receipt/barrier/owner state, an obsolete job fence, or any attempt to
 reconstruct activation from staged rows keeps the deployment unready. Every
-`0.18.2` atomic work variant and denial-only
+`0.24.0` atomic work variant and denial-only
 audit-chain integrity, external anchors, registered tenant-surface disposition,
 typed external-copy evidence-strength honesty, measurement rollup manifests,
 rollup checkpoint inclusion and substitution-expiry gates, mandatory deletion
@@ -2044,14 +2044,14 @@ mutation authorization, lower its consumer trusted-time/continuity ratchet, or
 erase its expiry tombstone. It cannot downgrade the deadline-CAS mechanism,
 convert reconciliation into retry authority, or let a previously absent
 transaction commit.
-`v0.145.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.410.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.146.0` — Load Harness And Capacity Ceilings
+## `0.415.0` — Load Harness And Capacity Ceilings
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.146.0`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.415.0`
 implements the load harness and ceilings only; soak/fairness and
-chaos/recovery-capacity certification are `0.146.1–0.146.2`.
+chaos/recovery-capacity certification are `0.416.0–0.417.0`.
 Migration/import focus: fuzz equation/leg/scheduler/outcome
 codecs, counters, thresholds, unfair backend locks, every crash boundary and
 changed retry plus lost credentials/keys, inconsistent deletion, late evidence,
@@ -2065,7 +2065,7 @@ Rollback, duplicate/fractional legs, starvation, unknown-as-deleted, head/
 delete split, transfer-before-reserve, Unknown refund, Commit/GC dual winner
 and malformed terminal material fail closed inside hard entry/byte/work/time/
 backlog ceilings.
-Setup: representative workloads, SLOs, durable `0.18.1` quota
+Setup: representative workloads, SLOs, durable `0.23.0` quota
 profiles, separate Vitheim-telemetry and customer-measurement capacity models,
 paging/status provider limits, bounded claim-set sizes, every `QuotaKind` and
 settlement boundary, per-kind hold/refund/release/settle/write-off semantics,
@@ -2286,10 +2286,10 @@ response; activate concurrently; fail over after preparation; and restore
 prepared or allegedly active state. Every owner plus barrier/job result/audit/
 outbox becomes visible in one local commit or none does, and unsupported
 non-co-located activation is refused before staging.
-`v0.146.0
+`v0.415.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.147.0` — Final Security And Supply-Chain Hardening
+## `0.418.0` — Final Security And Supply-Chain Hardening
 Status: planned. Migration/import focus: independently audit prior role
 separation plus cleanup admission fairness/backlog, immutable-total and
 monotonic-release custody, exact leg attribution and first-terminal result
@@ -2304,7 +2304,7 @@ FinalizeGc exclusion. Every retained/refunded unit and scheduler turn must be
 attributable.
 Setup: complete threat model, dependency/tool/action inventory,
 semantic SBOM, reproducibility, full key generation/storage/use/rotation/revocation/
-recovery/destruction lifecycle, `0.28.3` in-process memory assurance, crash/
+recovery/destruction lifecycle, `0.65.0` in-process memory assurance, crash/
 core-dump/swap profile, sealed transmission-permit construction/consumption/drop
 assurance, executor isolation, provenance and secret scanning. Goal: close build
 and runtime supply-chain paths. Deliverables: audits, a generated capability-
@@ -2408,9 +2408,9 @@ staging reader, cleanup worker or recovery path may make dormant or partial
 state authoritative.
 Exit criteria: every trusted input is pinned/accounted and no documentation,
 API, UI, installer or support-matrix claim exceeds its evidence state.
-`v0.147.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.418.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.148.0` — Compatibility Freeze
+## `0.419.0` — Compatibility Freeze
 Status: planned. Migration/import focus: reject every legacy encoding that
 uses a mutable current workspace total or lacks OriginalTotal, Released,
 settled legs, cleanup scheduler/backlog/maxima or closed first-terminal
@@ -2517,15 +2517,15 @@ introduce a non-co-located selector under an existing profile.
 Exit criteria: supported combinations are exact and no compatible version path
 can lower the durable platform floor, reactivate a superseded rollout, or
 broaden executor credential/network authority.
-`v0.148.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.419.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.149.0` — External Pentest Finding Intake
+## `0.420.0` — External Pentest Finding Intake
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.149.0`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.420.0`
 owns finding intake, severity, dependency, and remediation ownership only;
 authority/tenant, storage/recovery, and external-boundary remediation waves are
-`0.149.1–0.149.3`.
+`0.421.0–0.423.0`.
 Migration/import focus: attack original/released rollback,
 fractional/double leg settlement and split parent credit; cleanup starvation,
 backlog exhaustion and priority bypass; and terminal revocation retry/conflict
@@ -2828,9 +2828,9 @@ result or nothing, delayed authority cannot cross a tombstone, live coordinator
 state cannot be replaced, prepared/history state stays non-authoritative,
 terminal state stays fenced, and no remote selector fallback exists.
 Exit criteria: all critical/high findings are fixed and retested.
-`v0.149.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.420.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.150.0` — Final Production-Readiness Candidate
+## `0.424.0` — Final Production-Readiness Candidate
 Status: planned. Setup: candidate from remediated freeze; exact install/upgrade/
 restore/rollback/failover artifacts and evidence, selected trusted-executor
 deployment and provider execution profiles, active rollout generation/
@@ -2898,4 +2898,4 @@ Exit criteria:
 no known blocking gap remains; every shipped claim is `Supported` for an exact
 profile, while every conditional, experimental, disabled, or excluded
 combination is explicit and fails closed.
-`v0.150.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.424.0 implementation stop reached. Run pentest for this exact commit.`

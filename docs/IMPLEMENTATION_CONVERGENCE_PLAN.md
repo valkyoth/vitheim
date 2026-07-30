@@ -35,14 +35,14 @@ and which planning-only or optional profiles may remain unimplemented.
 
 | Finding | Disposition |
 | --- | --- |
-| G-01 Hosted dependency contradiction | Retain the no-third-party policy. Execute `0.18.16` as the early feasibility/no-go owner. Missing safe dependency-free technology blocks the capability and `0.140.28` Hosted production gate. |
+| G-01 Hosted dependency contradiction | Retain the no-third-party policy. Execute `0.38.0` as the early feasibility/no-go owner. Missing safe dependency-free technology blocks the capability and `0.398.0` Hosted production gate. |
 | G-02 425-stop serial production path | Replace serial-all-stops interpretation with the selected mandatory-profile dependency closure and the capability increments below. Optional/deferred stops do not block the selected core claim. |
 | G-03 logical Phase C/retirement monolith | Enforce the authority decomposition below. Dynamic built-in-domain retirement/reinstall is not in the default v1 profile; tenant deletion and safe plugin uninstall remain separate mandatory lifecycles. |
 | G-04 oversized milestone prose | Treat phase ledgers as context only. Before code, each owner extracts a focused protocol package and executable model. No coordinator may absorb child state machines merely to avoid another file or crate. |
 | G-05 late persistent authenticated slice | Make the persistent authenticated incident slice the first Hosted architecture proof. Its integration campaign runs before broad adapter/domain implementation, while support remains gated by each owning stop. |
 | G-06 premature five-store/migration scope | PostgreSQL is the reference production backend; SQLite is a bounded local/single-node profile. MySQL, MongoDB, SurrealDB, and online arbitrary-backend migration remain experimental/deferred unless separately promoted by evidence. |
-| G-07 late technology choices | The Increment 0 dossier and bounded spikes complete before affected Hosted API, schema, or adapter contracts freeze. Final `0.140.x` decisions revalidate; they do not make the first selection. |
-| G-08 prose-only protocols | Retain `0.20.4` and `0.22.4`; every critical later state machine must register an executable finite model and adapter correspondence before its own exit. |
+| G-07 late technology choices | The Increment 0 dossier and bounded spikes complete before affected Hosted API, schema, or adapter contracts freeze. Final `0.371.0–0.398.0` decisions revalidate; they do not make the first selection. |
+| G-08 prose-only protocols | Retain `0.44.0` and `0.56.0`; every critical later state machine must register an executable finite model and adapter correspondence before its own exit. |
 | G-09 qualitative performance/recovery | Every implemented deployment profile carries a versioned quantitative workload envelope from the first vertical slice onward. “Bounded” without numeric values is not passing evidence. |
 | G-10 unclear first topology/TCB/UI stack | Increment 0 freezes the first single-node process/TCB boundaries and the exact HTTP/TLS/identity/UI technology disposition. HA remains a later extension of an operated profile. |
 | G-11 broad product boundary | The v1 capability contract and explicit non-goals below govern API, UI, installer, documentation, and connector claims. |
@@ -119,7 +119,7 @@ the existing exact stop.
 
 Complete before affected Hosted contracts freeze:
 
-- execute the `0.18.16` dependency-free feasibility matrix;
+- execute the `0.38.0` dependency-free feasibility matrix;
 - disposition exact PostgreSQL and SQLite access, HTTP client/server and TLS,
   OIDC/JWK/JWT and WebAuthn, cryptography/randomness, MIME/content handling,
   Wasm Component runtime, browser/UI build, KMS, and observability needs as
@@ -234,7 +234,7 @@ machine.
 
 For the default v1 profile, built-in domain schemas remain installed and may be
 disabled. Dynamic built-in-domain retirement/reinstall and its advanced
-`0.51.5–0.51.59` profile remain Unsupported. Tenant deletion still follows its
+`0.156.0–0.210.0` profile remain Unsupported. Tenant deletion still follows its
 mandatory lifecycle. Plugin uninstall removes an installation but does not
 claim domain/data retirement.
 
@@ -307,13 +307,13 @@ profile are refused before allocation or partial writes.
 
 The consolidated review items are acceptance changes in existing owners:
 
-1. `0.51.54`/`0.51.58` use one atomic Open/Sealed transmission-claim admission
+1. `0.205.0`/`0.209.0` use one atomic Open/Sealed transmission-claim admission
    cut; sealing cannot race claim creation.
-2. `0.51.56` reports a successor operational only after its local activation
+2. `0.207.0` reports a successor operational only after its local activation
    has committed and an authenticated applied receipt is folded.
-3. `0.51.57` requires authenticated local and Vitheim permanent fencing of a
+3. `0.208.0` requires authenticated local and Vitheim permanent fencing of a
    failed successor before a replacement can claim single-issuer continuity.
-4. `0.51.59` gives preparation exhaustion a non-resetting explicit terminal/
+4. `0.210.0` gives preparation exhaustion a non-resetting explicit terminal/
    recovery outcome; ordinary retry cannot manufacture another lineage.
 
 They do not create more versions. If dynamic domain/status retirement is not

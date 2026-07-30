@@ -13,7 +13,7 @@
   installers and operator output must expose conditional and unsupported scope
   without silent fallback. Missing or stale evidence moves readiness toward
   refusal.
-- `0.140.28` blocks a Hosted production claim unless mandatory dependency-free
+- `0.398.0` blocks a Hosted production claim unless mandatory dependency-free
   transport/crypto, storage, identity/session, hostile-input, packaging,
   operations, and recovery profiles are all Supported with exact evidence.
 - One canonical roadmap manifest accounts for all 425 exact stops and their
@@ -61,43 +61,43 @@ Tests must prove both acceptance and rejection. A rejected operation must not
 partially mutate state, consume authority, expose hidden fields, or omit an
 audit decision.
 
-From `0.30.23`, every domain owns one checked identity/application/event
+From `0.95.0`, every domain owns one checked identity/application/event
 manifest with exact aggregate/stream, command, event, compatibility/upcaster,
 read, and applicable consumer references; later typed extensions reference,
 never copy, authoritative policy, tenant-surface, workflow, search, workspace,
-API, and transfer registry entries. `0.30.24` enforces namespace, dependency,
+API, and transfer registry entries. `0.96.0` enforces namespace, dependency,
 generation, compatibility, rollback, mixed-node, atomic metadata admission,
 scope separation, contribution-kind registry/lifecycle/test/certification
 obligations, and no-authority-from-declaration rules. Metadata admission cannot
 enable a feature, plugin, consumer, license, entitlement, or authorization.
-`0.30.25` makes absent-surface-only deferrals exact, expiring, retested, and
+`0.97.0` makes absent-surface-only deferrals exact, expiring, retested, and
 product-state visible; existing schema, storage, routing, derived data, effects,
 or messages cannot defer their structural controls.
-`0.30.26` backfills current event ownership/evolution. `0.30.27` consumes the
-complete `0.18.8–0.18.10` family and gates effects/messages/consumers/timers/
-activities/poison/replay/quarantine/results. `0.30.28` requires permanent-ID,
+`0.98.0` backfills current event ownership/evolution. `0.99.0` consumes the
+complete `0.30.0–0.32.0` family and gates effects/messages/consumers/timers/
+activities/poison/replay/quarantine/results. `0.100.0` requires permanent-ID,
 fenced, drained, history-preserving retirement with orthogonal evidence and
-distinct verified/loss/blocking terminals. `0.30.29` governs exact tenant-child
-proposal authority and recovery; `0.51.5` owns authenticated deployment
-membership cuts, topology reconciliation, and safe fence release; `0.51.6`
+distinct verified/loss/blocking terminals. `0.101.0` governs exact tenant-child
+proposal authority and recovery; `0.156.0` owns authenticated deployment
+membership cuts, topology reconciliation, and safe fence release; `0.157.0`
 owns separated approval, exact-cut plan consumption, atomic campaign admission,
-and constrained child-authority derivation; `0.51.7` owns successor-plan CAS,
+and constrained child-authority derivation; `0.158.0` owns successor-plan CAS,
 allowed deltas, cumulative budgets, predecessor fencing, and resume authority;
-`0.51.8` owns narrow domain guarding, authoritative post-cut absence/child
-handoffs, and broad-fence transfer; `0.51.9` owns the joint successor/
-protection-root CAS and ancestor-receipt validity; `0.51.10` owns bounded fair
-isolated-child dispatch and truthful terminal aggregation; `0.51.11` owns
+`0.159.0` owns narrow domain guarding, authoritative post-cut absence/child
+handoffs, and broad-fence transfer; `0.160.0` owns the joint successor/
+protection-root CAS and ancestor-receipt validity; `0.161.0` owns bounded fair
+isolated-child dispatch and truthful terminal aggregation; `0.162.0` owns
 tenant-local residual-obligation handoff, authenticated receipt reconciliation,
-and retained tenant fences; `0.51.12` separates immutable residual membership
-from authenticated predecessor-linked mutable state; `0.51.13` owns exact
+and retained tenant fences; `0.163.0` separates immutable residual membership
+from authenticated predecessor-linked mutable state; `0.164.0` owns exact
 restore-safe partition delivery cuts so a folded parent head cannot hide local
-state and defines absorbing consumption/canonical empty state; `0.51.14` owns
+state and defines absorbing consumption/canonical empty state; `0.165.0` owns
 closed mutation classification, emergency restrictive invalidation, safety
-epochs and mode-bound source status; `0.51.15–0.51.18` authorize/complete
+epochs and mode-bound source status; `0.166.0–0.169.0` authorize/complete
 target-slot takeover, atomically transfer funded capacity for retained
 candidate controls, and reconcile every barrier release/retention receipt;
-`0.51.19` archives before deletion under truthful uncertainty; `0.51.20`
-independently authorizes exact retained-namespace safety; `0.51.21–0.51.59`
+`0.170.0` archives before deletion under truthful uncertainty; `0.171.0`
+independently authorizes exact retained-namespace safety; `0.172.0–0.210.0`
 evaluate reinstall under partition fences, enforce explicit lifecycle
 adjacency, serialize activation against abort,
 require source-local activation-permit redemption and successor-restriction
@@ -134,19 +134,19 @@ heterogeneous cross-member versions; identical pending observations coalesce
 under a separate bounded attempt budget; pending version saturation reserves
 terminal capacity; and completion requires zero pending under authenticated
 conservation.
-`0.51.41` derives every finite budget from governed per-class bounds and cost
+`0.192.0` derives every finite budget from governed per-class bounds and cost
 units and funds the checked worst authorized work without borrowing.
-`0.51.42` constructs immutable manifest members, transition and retry-ledger
+`0.193.0` constructs immutable manifest members, transition and retry-ledger
 geneses in authority-inert bounded batches, seals their exact root, and leaves
 the guard-slot transaction only a bounded root recheck/binding; inactive roots
 are safely disposed under retained funding. Pending advances only below its
 ceiling, enters saturation exactly at the ceiling and jumps from valid
 Pending/saturation directly to the reserved terminal version.
-`0.51.43` forbids cross-store transactions: source release and destination
+`0.194.0` forbids cross-store transactions: source release and destination
 retention each commit a local effect receipt, while a durable parent inbox
 folds only the selected intent through one parent-local member/head CAS.
-`0.51.45` source-fences the complete distributed predecessor inventory through
-activation; `0.51.46–0.51.47` commit one parent intent and require its closed,
+`0.196.0` source-fences the complete distributed predecessor inventory through
+activation; `0.197.0–0.198.0` commit one parent intent and require its closed,
 activation-bound one-shot authority to be recorded before dispatch in one
 intent-scoped issuance aggregate: a shared expected-version scope head plus
 immutable unique entries. Issuance atomically advances the shared
@@ -154,15 +154,15 @@ head/count/root, consumes exact intent-lifetime reservation legs and commits
 outbox work under one lock order; incapable adapters refuse the profile.
 Exact retry joins, changed material/reservation conflicts, and restore cannot
 infer authority from an outbox or projection.
-`0.51.48` keeps contradictory physical effects nonterminal until every losing
+`0.199.0` keeps contradictory physical effects nonterminal until every losing
 effect is removed/transferred or durably funded and exact conservation holds.
-`0.51.49` gives every restrictive-safety mutation an immediate protected lane
+`0.200.0` gives every restrictive-safety mutation an immediate protected lane
 through any prepared inventory fence and atomically invalidates both the cut
-and prepared construction. `0.51.50` cuts authorization issuance, reconciles
+and prepared construction. `0.201.0` cuts authorization issuance, reconciles
 the sealed issued-entry universe only, terminally consumes unused reservation
 legs without refund and requires the terminal CAS to consume its closure root
 with current budget and conflict heads. Unissued attempts are inert command
-results, not fabricated closure members. `0.51.51` treats a truly
+results, not fabricated closure members. `0.202.0` treats a truly
 unauthorized post-closure effect as a separately funded current-generation
 incident/residual without reopening terminal history; stable local
 observation identities and create-or-join heads prevent duplicate/reordered
@@ -171,43 +171,43 @@ status port requires an ABA-resistant authority sequence and continuity
 ratchet; snapshot-only profiles refuse and remain restrictively unresolved.
 Manual evidence may add custody/annotations or funded residual ownership but
 cannot invent identity/absence, authorize safe removal or lower that fence.
-`0.51.52` permits a dead
+`0.203.0` permits a dead
 intent to be abandoned or replanned only from a complete no-effect closure;
 uncertainty or any observed effect enters conflict, and successor identities
 and cumulative budgets are never reused or reset. Its immutable
 multidimensional lifetime ledger creates stable route reservation legs before
-successor authority, `.47` consumes issuance legs, `.50` closes unused legs,
+successor authority, `0.198.0` consumes issuance legs, `0.201.0` closes unused legs,
 and explicit exhaustion can be widened only by a separate policy-authorized
 predecessor-linked amendment—never ordinary retry.
-`0.51.53` replaces a supported status authority only through independently
+`0.204.0` replaces a supported status authority only through independently
 approved predecessor-final/successor-genesis receipts, one continuity head and
 a dual-source fence; prepared or uncertain handoff grants no authority.
-`0.51.54` prepays one immutable per-authorization send allowance, charges a
+`0.205.0` prepays one immutable per-authorization send allowance, charges a
 non-wrapping attempt head and creates the canonical `VIT-LAW-006` start claim
 before each I/O permit; failover, response loss,
-route movement and restore cannot refund or reset it. `0.51.55` admits an
+route movement and restore cannot refund or reset it. `0.206.0` admits an
 intent/replan only when its worst-case closure bundle fits the active backend;
 staged dispositions are authority-inert and one bounded final CAS alone
 publishes complete issuance/budget/dispatch/conflict closure.
-`0.51.56` installs the predecessor fence, dormant successor admission and
+`0.207.0` installs the predecessor fence, dormant successor admission and
 successor activation through separately authenticated local atomic receipts.
-`0.51.57` keeps the predecessor and failed successor tombstoned while one fresh
+`0.208.0` keeps the predecessor and failed successor tombstoned while one fresh
 bounded post-fence replacement either activates or becomes permanently
-refused. `0.51.58` makes every live or unknown/reconciling transmission claim
+refused. `0.209.0` makes every live or unknown/reconciling transmission claim
 block closure until authenticated reconciliation settles its possible effect.
-`0.51.59` limits stale seal preparation through one cumulative lineage and
+`0.210.0` limits stale seal preparation through one cumulative lineage and
 pins codec, schema, size algorithm and backend profile through final publish;
 cleanup requires checkpoint/archive coverage.
 Saturated recovery remains
-a retry-only lane with no terminal or cleanup authority; `0.51.44` charges its
+a retry-only lane with no terminal or cleanup authority; `0.195.0` charges its
 non-resetting lifetime limit through a separate versioned ledger before outbox
 work and binds that head into restore and terminal evidence. Dispatch remains
 closed until continuity from sealed construction genesis is admitted; a
 signature, larger version or reconstructed history alone grants nothing.
 No wildcard tenant or cross-tenant retirement transaction exists, and loss
-never counts as clean or grants deletion/hold release. `0.51.4` immediately
-certifies tenant surfaces; `0.139.1` iterates
-contribution-kind obligations; and `0.145.4` destructively certifies retirement
+never counts as clean or grants deletion/hold release. `0.155.0` immediately
+certifies tenant surfaces; `0.369.0` iterates
+contribution-kind obligations; and `0.414.0` destructively certifies retirement
 without first implementation. Missing obligations block the owner and release.
 
 ## Runtime Controls Planned Before Production

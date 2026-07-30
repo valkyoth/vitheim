@@ -10,8 +10,8 @@ verification, and exact-commit pentest stop. A milestone may be split before
 implementation if one review pass becomes too broad; later work may never be
 pulled into an earlier tag merely for convenience.
 
-The canonical roadmap contains 425 exact release stops: 150 base `0.x.0`
-stops, 274 companion stops, and one `1.0.0` stop. Only the limited `0.1.0`
+The canonical roadmap contains 425 exact release stops: 424 contiguous
+pre-production minor releases (`0.1.0–0.424.0`) and one `1.0.0` stop. Only the limited `0.1.0`
 repository/N0 scaffold is currently executable, and its release status remains
 reopened. Every other capability is `Specified` until its versioned executable
 owner and evidence gates pass. The authoritative claim vocabulary, cardinality
@@ -24,10 +24,10 @@ Specified, deferred, Conditional, or Unsupported and cannot broaden release
 claims. A skipped old stop cannot be backfilled later under its old release
 identity; future implementation receives a successor version.
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) applies the
-small-loop rule to every stop, assigns 65 decomposition companions to the 18
+small-loop rule to every stop, assigns 65 focused successor releases to the 18
 families that exceeded it, and records 109 later focused capability,
 requirement-ownership, decomposition, integration, discovery, and coherence
-companions.
+releases.
 
 ## Universal Setup
 
@@ -55,15 +55,15 @@ If that policy ever changes, N0/N1 still remain absolutely dependency-free,
 Hosted code may use only exact reviewed allowlisted dependencies behind
 project-owned ports, and third-party types can never cross inward-facing APIs.
 The
-`0.140.x` decisions revalidate and freeze production support from those records;
+`0.371.0–0.398.0` decisions revalidate and freeze production support from those records;
 they are never the first technology selection.
-`0.18.16` makes the selected owner-policy option operational before affected
+`0.38.0` makes the selected owner-policy option operational before affected
 Hosted work: repository-wide zero dependencies remain binding, so each
 capability is backed by an audited dependency-free project implementation or
 remains explicitly unsupported/deferred. It grants no exception. Any future
 policy amendment requires its own owner-approved exact roadmap decision before
-adapter work, while `0.140.14` remains final revalidation rather than first
-resolution. `0.140.28` is the mandatory Hosted production go/no-go: if safe
+adapter work, while `0.384.0` remains final revalidation rather than first
+resolution. `0.398.0` is the mandatory Hosted production go/no-go: if safe
 dependency-free TLS/crypto, storage, identity/session, hostile-input handling,
 packaging, operations, and recovery evidence is incomplete, a Hosted `1.0.0`
 claim remains blocked rather than silently shrinking its meaning.
@@ -71,7 +71,7 @@ Before affected Hosted contracts freeze, the same early feasibility dossier
 records the first single-node process/TCB topology and exact PostgreSQL,
 SQLite, HTTP/TLS, OIDC/WebAuthn, cryptography, MIME, Wasm, UI-build, KMS, and
 observability technology disposition as safely project-owned or Unsupported.
-Late `0.140.x` stops revalidate selected evidence; they never make the first
+Late `0.371.0–0.398.0` stops revalidate selected evidence; they never make the first
 technology or topology choice.
 Every user-facing capability is API-first: API contract/application/transport
 crates remain separate from UI composition/rendering crates, and the first-
@@ -80,11 +80,11 @@ Every domain milestone delivers its headless application commands, policy-
 filtered reads, and project-owned internal DTOs before its UI or external
 adapter can exit. External API/SDK stops expose and freeze those contracts; they
 never introduce the domain application service for the first time.
-From `0.30.23`, each domain has one stable `DomainManifest` keyed by dedicated
+From `0.95.0`, each domain has one stable `DomainManifest` keyed by dedicated
 `DomainId`, owning crate, requirement set, exact aggregate/stream, command,
 event, compatibility/upcaster-owner, application-read, and applicable
 projector/process-manager references, classifications, and typed extension
-references. It never embeds another registry's semantics. `0.30.24` resolves
+references. It never embeds another registry's semantics. `0.96.0` resolves
 references to exact authoritative IDs and atomically admits complete compatible
 metadata generations while keeping compiled catalog, deployment profile, tenant
 feature, and signed plugin-installation scopes separate; metadata admission
@@ -92,32 +92,32 @@ never enables runtime availability or authority. Every contribution kind owns
 its registry/lifecycle binding, certification owner, generated tests, and
 canonical/schema, fuzz, budget, concurrency/replay, evidence, migration,
 failure/recovery and timing/count/metadata-leakage dimensions; omission fails,
-while inapplicability requires a reviewed typed `NotApplicable`. `0.30.25`
+while inapplicability requires a reviewed typed `NotApplicable`. `0.97.0`
 governs bounded deferrals and product-state effects, but code/data/routing/
 schema that already exists can
 never defer structural ownership, policy, lifecycle, deletion/rebuild, or
-reconciliation registration. `0.30.26` backfills current domain-event ownership
-and installs a prospective compatibility gate; `0.30.27` does the same for
+reconciliation registration. `0.98.0` backfills current domain-event ownership
+and installs a prospective compatibility gate; `0.99.0` does the same for
 outbox effects, messages/consumers, timers/activities, poison/dead-letter,
 replay/quarantine, result/reconciliation, and compensation contracts after the
-complete `0.18.8–0.18.10` realization family. `0.30.28` defines permanent-ID,
+complete `0.30.0–0.32.0` realization family. `0.100.0` defines permanent-ID,
 fenced, dependency-draining, history-preserving domain retirement at
 introduction with orthogonal authority/work/data/history evidence and distinct
-verified/loss/blocking terminals. `0.30.29` separately owns exact tenant-child
+verified/loss/blocking terminals. `0.101.0` separately owns exact tenant-child
 retirement proposal authority, atomic audit/outbox commitment, cancellation and
-crash recovery. After authoritative tenant lifecycle exists, `0.51.5` freezes
-and safely releases one authenticated deployment membership cut, `0.51.6`
-admits one separately approved exact-cut plan, `0.51.7` fences successor-plan
-lineage and resume authority, `0.51.8` transfers broad topology fencing to a
-narrow domain guard with authoritative post-cut handoffs, `0.51.9` joins the
-successor head to one canonical protection root, `0.51.10` aggregates every
-terminal child honestly, `0.51.11` transfers non-clean obligations through
-tenant-local handoffs, `0.51.12` owns residual state evolution, `0.51.13`
-proves partition currency and canonical empty state, `0.51.14` owns urgent
-restrictive invalidation, `0.51.15–0.51.18` authorize/complete takeover,
+crash recovery. After authoritative tenant lifecycle exists, `0.156.0` freezes
+and safely releases one authenticated deployment membership cut, `0.157.0`
+admits one separately approved exact-cut plan, `0.158.0` fences successor-plan
+lineage and resume authority, `0.159.0` transfers broad topology fencing to a
+narrow domain guard with authoritative post-cut handoffs, `0.160.0` joins the
+successor head to one canonical protection root, `0.161.0` aggregates every
+terminal child honestly, `0.162.0` transfers non-clean obligations through
+tenant-local handoffs, `0.163.0` owns residual state evolution, `0.164.0`
+proves partition currency and canonical empty state, `0.165.0` owns urgent
+restrictive invalidation, `0.166.0–0.169.0` authorize/complete takeover,
 atomically fund retained candidate controls, and release its barriers,
-`0.51.19–0.51.20` archive cleanup and verify retained namespaces, and
-`0.51.21–0.51.59` evaluate reinstall, linearize activation against abort,
+`0.170.0–0.171.0` archive cleanup and verify retained namespaces, and
+`0.172.0–0.210.0` evaluate reinstall, linearize activation against abort,
 obtain source-partition admission, fund durable bridge ownership, terminate or
 supersede partial admission, decide and conditionally implement conservative
 permanent-unknown quarantine recovery, actively enforce the maximal unknown
@@ -162,11 +162,11 @@ post-fence failure without predecessor revival, consume the canonical
 transmission-start claim cut before closure, and keep staged sealing within one
 codec-pinned cumulative lineage. Dispatch remains closed until construction,
 inventory, authorization, delivery and continuity contracts are certified.
-`0.145.4`
+`0.414.0`
 destructively certifies
 selected retirement/reinstall profiles rather than first implementing teardown.
 Tenant lifecycle references begin only
-after `0.51.2`, with immediate backfill certification at `0.51.4`;
+after `0.153.0`, with immediate backfill certification at `0.155.0`;
 authorization follows Phase F, workflow Phase G, search Phase J, workspace its
 block vocabulary, and API/transfer their Phase N contracts. Each surface stop
 defines and backfills its typed extension, then a separate stop certifies it.
@@ -180,22 +180,22 @@ planes. All fact-bearing domains reuse the shared N1 provenance, correction,
 confidence, and four-clock vocabulary rather than creating local substitutes.
 Semantic index storage and embedding generation are independently replaceable
 and independently admitted.
-From `0.18.14`, every normative functional, security, operational, migration,
+From `0.36.0`, every normative functional, security, operational, migration,
 support, and verification requirement also has one stable `VIT-REQ-*` entry
 with exactly one primary implementation stop, predecessors, producing and
 consuming crates, schema/migration owner, primary test owner, later integration/
 retest stops, lifecycle, and planned/implemented/superseded/deferred status.
-`0.20.5` and `0.30.18–0.30.21` backfill the complete current roadmap before
+`0.45.0` and `0.90.0–0.93.0` backfill the complete current roadmap before
 Phase D begins. Thereafter a requirement cannot exit its introducing stop until
 the bidirectional registry checker proves it is neither omitted nor multiply
 owned. Requirement ownership complements invariant/law authority ownership; it
 does not create a second authority or allow prose to override either registry.
-`0.18.15` then makes source coverage prospective: each normative block has a
+`0.37.0` then makes source coverage prospective: each normative block has a
 stable adjacent marker or structured-manifest origin, canonical content digest,
 and supersession lineage. The checker detects newly added normative language,
 not merely drift in registry rows it already knows.
 Authority-bearing invariants are indexed by stable IDs in
-[Invariant Ownership Registry](INVARIANT_OWNERSHIP.md). From `0.18.3` onward,
+[Invariant Ownership Registry](INVARIANT_OWNERSHIP.md). From `0.25.0` onward,
 every invariant must have an introducing milestone declaration, exactly one
 ownership row, one lifecycle/supersession row, an owner-maintained guard,
 transaction placement, and stable enforcement/capability/test/recovery/fence
@@ -244,8 +244,8 @@ immutable topology/placement manifests, irreversible `ActivationAuthorized`
 with atomic authorization receipt/outbox and pinned generation, closed
 converge/complete/block/revoke/abandon/supersede states, transactional delivery,
 and authenticated identity/fence-bound receipts without a distributed
-transaction. `0.18.3` permits only the compiled immutable single-placement
-topology. At `0.141.0`, epoch 13 activates/converges under generation 1/static
+transaction. `0.25.0` permits only the compiled immutable single-placement
+topology. At `0.399.0`, epoch 13 activates/converges under generation 1/static
 authority; after every local generation-2 admission, generation 2 initializes/
 verifies the exact dormant singleton and commits the handoff that makes
 independent `VIT-INV-060` current. The two topology sources are never co-
@@ -255,7 +255,7 @@ rollout completion or missing fence delivery. Every topology handoff/mutation
 uses a short immutable authorization independently issued by `VIT-INV-061`
 after current authority/quorum validation; changes before issuance deny and
 changes after issuance block new grants while the exact grant remains usable
-only until fixed `commit_before`. `0.140.1` freezes concrete class ceilings
+only until fixed `commit_before`. `0.371.0` freezes concrete class ceilings
 (five minutes for initialization, two minutes for commit/dynamic successors,
 and at most sixty seconds for break-glass) and a shared conservative trusted-
 time vocabulary. The authenticated grant carries issued-at/deadline,
@@ -264,10 +264,10 @@ fail closed on unavailable or discontinuous time. VIT-INV-060 ratchets its own
 trusted lower bound/continuity and consumes only when its interval proves the
 CAS will commit before expiry through a backend-enforced
 `DeadlineConditionalTopologyCasV1`, so rollback, suspend, restore, failover, or
-clock disagreement cannot lengthen authority. `0.21.0` freezes canonical
+clock disagreement cannot lengthen authority. `0.46.0` freezes canonical
 `TopologyMutationAuthorizationReceiptV1` storage and the deadline-CAS port;
-`0.22.0–0.27.0` prove every backend pause/failover outcome; `0.29.0–0.30.0`
-prevent migration/export field loss; and `0.140.2` admits only a concrete
+`0.52.0–0.61.0` prove every backend pause/failover outcome; `0.66.0–0.72.0`
+prevent migration/export field loss; and `0.372.0` admits only a concrete
 commit-time predicate or hard no-late-commit fence. Client timeouts are never
 deadline authority. The same versions freeze and prove bounded authorization
 anti-replay. Separate non-borrowable `Normal`, `Recovery`, and `BreakGlass`
@@ -337,7 +337,7 @@ exact settled and remaining leg sets, and conservative original-bucket
 balances. Missing fields deny. Singular-head state was never an admitted
 Vitheim schema and is quarantined before authority mutation; the current
 roadmap provides no split migration or genesis inference.
-Every `0.29.0–0.30.0` migration/import uses one durable
+Every `0.66.0–0.72.0` migration/import uses one durable
 `MigrationImportWorkBudgetV1` bound to its job/material, tenant/deployment,
 source/destination, schema/manifest, authenticated initiator, immutable budget
 profile and fenced owner. Operation-wide byte/object/cryptographic-work/
@@ -688,7 +688,7 @@ One shared anchor sequence makes that fence dominate all earlier pointer
 anchors; restore obtains both greatest anchors. The fence has no generic clear
 or recursive automatic replacement. The old
 archive is never a fallback. The Phase C milestone runs the full replacement
-adversarial/cross-backend/DAG/reference suite; `0.140.11` repeats and freezes
+adversarial/cross-backend/DAG/reference suite; `0.381.0` repeats and freezes
 it. Every pointer query first obtains an externally registered
 RegisteredUnresolved intent and a fully escrowed `R_first` evidence route.
 Registry terminal states and a sealed exact-set zero-unresolved completeness
@@ -1011,7 +1011,7 @@ profile-discriminated receipt and local workload proof with its CAS—there is n
 cross-owner atomic transaction. Challenge/sequence/expiry-bound topology
 receipts and local observation ratchets prevent signed-old replay. Rollout
 consumes topology receipts and cannot create
-membership or fences. `0.140.1` selects a hardware-attested identity or an
+membership or fences. `0.371.0` selects a hardware-attested identity or an
 orchestrator-attested lease with a closed action-authority scope: bounded
 reusable freshness for readiness, authenticated owner protocol for control/
 safety withdrawal, and externally owned online single-use claims for mutations,
@@ -1036,11 +1036,11 @@ create authority. A reference to `VIT-LAW-NNN@gNN` claims the complete
 predecessor closure `g01..gNN`, and conformance evidence enumerates and admits
 every tuple and realization in that closure. Every realization binds
 positive/negative/model/fault contracts. Once the later of its effective
-milestone and `0.18.3` leaves planned status, CI requires its Rust
+milestone and `0.25.0` leaves planned status, CI requires its Rust
 transition/recovery files, closed enum/dispatch entry, typed symbols, and
 concrete test IDs.
 The [Milestone Authority Reviews](AUTHORITY_REVIEWS.md) registry gives every
-milestone after `0.18.3` exactly one `declares`, `extends`, `none`, or
+milestone after `0.25.0` exactly one `declares`, `extends`, `none`, or
 conservative `proposed` disposition. Before implementation begins, `proposed`
 must resolve to exact stable declarations, exact extended roots/laws, or a
 reviewed non-authority reason; no milestone, option decision, release
@@ -1050,19 +1050,19 @@ proposal only while that milestone’s own status is planned. Law extensions use
 milestone, so conformance cannot claim a future generation. That shorthand is
 an ancestry-closure assertion, never permission to omit predecessor manifests,
 admission tuples, semantic realizations, or their evidence.
-Before `0.51.2`, every milestone that creates or changes tenant-bearing durable,
+Before `0.153.0`, every milestone that creates or changes tenant-bearing durable,
 cached, indexed, backed-up, or external-copy state must supply the neutral
-`0.8.1` lifecycle descriptor and inventory fixture without depending outward on
-Phase F. `0.51.2` backfills and validates every earlier surface; its generated
+`0.9.0` lifecycle descriptor and inventory fixture without depending outward on
+Phase F. `0.153.0` backfills and validates every earlier surface; its generated
 `TenantDataSurface` compile/registration gate then applies prospectively to
-`0.51.2` and every later milestone. This lifecycle registry remains separate
+`0.153.0` and every later milestone. This lifecycle registry remains separate
 from authority-interface registration. Every asynchronous state effect must use
-the applicable `0.18.2` command/consumer/timer/activity/poison atomic variant;
+the applicable `0.24.0` command/consumer/timer/activity/poison atomic variant;
 best-effort receipts are forbidden. Each bundle advances no more than one
 authoritative aggregate stream and includes only local durable effects;
 provider/network work begins from committed intent and returns in a later
 bundle under explicitly at-least-once semantics. Each external-effect
-capability follows the `0.16.0–0.18.2` contract with distinct execution state,
+capability follows the `0.18.0–0.24.0` contract with distinct execution state,
 remote outcome, resolution source/evidence, operational-resolution workflow,
 and compensation state. Manual assessment never becomes verified provider
 truth; unknown privileged or non-compensable work is never retried blindly.
@@ -1225,7 +1225,7 @@ Tenant/work-class
 partitioning, fair share, ceilings, starvation bounds, and a scoped emergency
 reserve protect reconciliation/security cleanup from tenant exhaustion and
 monopolization without admitting new tenant work.
-External-copy lifecycle evidence uses the typed `0.51.2` strength model and may
+External-copy lifecycle evidence uses the typed `0.153.0` strength model and may
 never promote an attestation, unconfirmed request, or unverifiable disclosed
 plaintext to local deletion proof or controlled-key erasure. Rollup-substitution
 expiry requires its full authority proof, but a controlling mandatory erasure,
@@ -1243,7 +1243,7 @@ target checks, tool freshness, SBOM and license review, CI, CodeQL default
 setup, docs/release-note review, threat-model and unsafe/dependency deltas,
 authorization and tenant-isolation matrices, changed-parser fuzzing, changed-
 invariant property tests, and migration/restore evidence where applicable.
-`0.58.0–0.60.0` backfill every authority-bearing interface implemented through
+`0.223.0–0.225.0` backfill every authority-bearing interface implemented through
 Phase F. Every later milestone that adds one must register its tenant, subject,
 action, resource, fields, purpose, obligations, audit behavior, and negative
 cases in that conformance registry before exit. External effects additionally
@@ -1270,37 +1270,39 @@ compensation/recovery-capacity behavior.
 At each implementation stop: record the exact evidence state and support scope;
 do not tag, publish, or begin the next milestone.
 Pentest the exact commit, fix every blocking finding, rerun all gates, obtain a
-permanent `Status: PASS` report, and run the versioned readiness gate. Patch
-and companion versions contain corrections, one pre-declared focused
-parent-family completion slice, or one explicitly planned bounded capability
-within the current phase family. They introduce no unrelated scope and follow
-the same process.
+permanent `Status: PASS` report, and run the versioned readiness gate. Every
+planned `0.N.0` release contains one pre-declared focused implementation,
+decision, adapter, or certification slice. Patch versions are created only for
+corrective maintenance after a minor implementation commit, preserve that
+minor's authority/support envelope, introduce no unrelated scope, and follow
+the same exact-commit review process. See
+[Release Granularity Standard](RELEASE_GRANULARITY_STANDARD.md).
 
 ## Phase Documents
 
-- [Phase A — Pure Foundation (`0.1.0–0.10.0`)](implementation/PHASE_A.md)
-- [Phase B — Journal And Projections (`0.11.0–0.20.3`, including corrective `0.18.3–0.18.5` passes)](implementation/PHASE_B.md)
-- [Phase C — Storage Portability (`0.21.0–0.30.0`)](implementation/PHASE_C.md)
-- [Phase D — Universal Work (`0.31.0–0.40.0`)](implementation/PHASE_D.md)
-- [Phase E — IT Service Management (`0.41.0–0.50.0`)](implementation/PHASE_E.md)
-- [Phase F — Identity, Tenancy, And Policy (`0.51.0–0.60.0`)](implementation/PHASE_F.md)
-- [Phase G — Durable Workflows (`0.61.0–0.70.0`)](implementation/PHASE_G.md)
-- [Phase H — Security Operations (`0.71.0–0.80.0`)](implementation/PHASE_H.md)
-- [Phase I — Assets And Services (`0.81.0–0.90.0`)](implementation/PHASE_I.md)
-- [Phase J — Search And Knowledge (`0.91.0–0.100.0`)](implementation/PHASE_J.md)
-- [Phase K — Compliance And Risk (`0.101.0–0.110.0`)](implementation/PHASE_K.md)
-- [Phase L — WASM And Integrations (`0.111.0–0.120.0`)](implementation/PHASE_L.md)
-- [Organization Federation (`0.120.1–0.120.5`)](implementation/FEDERATION.md)
-- [Phase M — Optional AI (`0.121.0–0.130.0`)](implementation/PHASE_M.md)
-- [Phase N — Product Experience (`0.131.0–0.140.0`)](implementation/PHASE_N.md)
-- [Pre-Production Option Decisions (`0.140.1–0.140.11`)](implementation/OPTION_DECISIONS.md)
-- [Foundation And Storage Scope Splits (`0.18.6–0.30.16`)](implementation/SCOPE_SPLITS_FOUNDATION_STORAGE.md)
-- [Product And Production Scope Splits (`0.70.1–0.149.3`)](implementation/SCOPE_SPLITS_PRODUCT_PRODUCTION.md)
-- [Focused Product Capability Completions (`0.20.4–0.140.27`)](implementation/PRODUCT_CAPABILITY_COMPLETIONS.md)
-- [Requirement Ownership And Product Integration Completions (`0.18.14–0.145.3`)](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md)
-- [Roadmap Coherence Completions (`0.18.15–0.140.28`)](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
-- [Roadmap Authority And Recovery Completions (`0.30.29–0.145.4`)](implementation/ROADMAP_AUTHORITY_COMPLETIONS.md)
-- [Phase O — Production Hardening (`0.141.0–0.150.0`)](implementation/PHASE_O.md)
+- [Phase A — Pure Foundation (`0.1.0–0.11.0`)](implementation/PHASE_A.md)
+- [Phase B — Journal And Projections (`0.12.0–0.43.0`, including corrective `0.25.0–0.27.0` passes)](implementation/PHASE_B.md)
+- [Phase C — Storage Portability (`0.46.0–0.72.0`)](implementation/PHASE_C.md)
+- [Phase D — Universal Work (`0.102.0–0.119.0`)](implementation/PHASE_D.md)
+- [Phase E — IT Service Management (`0.121.0–0.132.0`)](implementation/PHASE_E.md)
+- [Phase F — Identity, Tenancy, And Policy (`0.151.0–0.225.0`)](implementation/PHASE_F.md)
+- [Phase G — Durable Workflows (`0.230.0–0.239.0`)](implementation/PHASE_G.md)
+- [Phase H — Security Operations (`0.245.0–0.262.0`)](implementation/PHASE_H.md)
+- [Phase I — Assets And Services (`0.263.0–0.285.0`)](implementation/PHASE_I.md)
+- [Phase J — Search And Knowledge (`0.286.0–0.298.0`)](implementation/PHASE_J.md)
+- [Phase K — Compliance And Risk (`0.301.0–0.310.0`)](implementation/PHASE_K.md)
+- [Phase L — WASM And Integrations (`0.313.0–0.328.0`)](implementation/PHASE_L.md)
+- [Organization Federation (`0.329.0–0.333.0`)](implementation/FEDERATION.md)
+- [Phase M — Optional AI (`0.339.0–0.348.0`)](implementation/PHASE_M.md)
+- [Phase N — Product Experience (`0.349.0–0.370.0`)](implementation/PHASE_N.md)
+- [Pre-Production Option Decisions (`0.371.0–0.381.0`)](implementation/OPTION_DECISIONS.md)
+- [Foundation And Storage Scope Splits (`0.28.0–0.88.0`)](implementation/SCOPE_SPLITS_FOUNDATION_STORAGE.md)
+- [Product And Production Scope Splits (`0.240.0–0.423.0`)](implementation/SCOPE_SPLITS_PRODUCT_PRODUCTION.md)
+- [Focused Product Capability Completions (`0.44.0–0.397.0`)](implementation/PRODUCT_CAPABILITY_COMPLETIONS.md)
+- [Requirement Ownership And Product Integration Completions (`0.36.0–0.413.0`)](implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md)
+- [Roadmap Coherence Completions (`0.37.0–0.398.0`)](implementation/ROADMAP_COHERENCE_COMPLETIONS.md)
+- [Roadmap Authority And Recovery Completions (`0.101.0–0.414.0`)](implementation/ROADMAP_AUTHORITY_COMPLETIONS.md)
+- [Phase O — Production Hardening (`0.399.0–0.424.0`)](implementation/PHASE_O.md)
 - [`1.0.0` — Production Acceptance](implementation/PRODUCTION_1_0.md)
 
 The integration decisions and sequencing changes resulting from the roadmap

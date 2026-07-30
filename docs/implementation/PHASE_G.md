@@ -1,22 +1,22 @@
 # Phase G — Durable Workflows
 
-Scope: `0.61.0–0.70.0`. Definitions compile to deterministic IR; hosted effects
-return as events. After workflow HA, `0.70.3` freezes the minimal shared typed
+Scope: `0.230.0–0.239.0`. Definitions compile to deterministic IR; hosted effects
+return as events. After workflow HA, `0.242.0` freezes the minimal shared typed
 topology contract consumed by SecOps before the full Phase I graph exists, and
-`0.70.4` defines/backfills workflow/notification references, `0.70.5`
-certifies Phase D–G, and `0.120.9` certifies later domains.
+`0.243.0` defines/backfills workflow/notification references, `0.244.0`
+certifies Phase D–G, and `0.337.0` certifies later domains.
 
-## `0.61.0` — Workflow IR
-Status: planned. Setup: version node/opcode schemas, graph validity, types, capabilities, and budgets. Goal: canonical hidden-free workflows. Deliverables: IR, validator, codec, disassembler. Verification: malformed graphs, unknown opcodes, cycles, depth/instruction bombs, canonical round trips pass. Exit criteria: invalid IR cannot activate. `v0.61.0 implementation stop reached. Run pentest for this exact commit.`
+## `0.230.0` — Workflow IR
+Status: planned. Setup: version node/opcode schemas, graph validity, types, capabilities, and budgets. Goal: canonical hidden-free workflows. Deliverables: IR, validator, codec, disassembler. Verification: malformed graphs, unknown opcodes, cycles, depth/instruction bombs, canonical round trips pass. Exit criteria: invalid IR cannot activate. `v0.230.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.62.0` — Deterministic Interpreter
-Status: planned. Setup: define state, step budget, yielded effects, replay inputs, and failure. Goal: pure durable execution. Deliverables: interpreter, traces, reference fixtures. Verification: infinite loops, nondeterministic ordering, exhaustion, replay divergence, malformed state, and model tests pass. Exit criteria: equal histories yield equal effects. `v0.62.0 implementation stop reached. Run pentest for this exact commit.`
+## `0.231.0` — Deterministic Interpreter
+Status: planned. Setup: define state, step budget, yielded effects, replay inputs, and failure. Goal: pure durable execution. Deliverables: interpreter, traces, reference fixtures. Verification: infinite loops, nondeterministic ordering, exhaustion, replay divergence, malformed state, and model tests pass. Exit criteria: equal histories yield equal effects. `v0.231.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.63.0` — Human Tasks And Approvals
+## `0.232.0` — Human Tasks And Approvals
 Status: planned. Setup: bind task actor eligibility, claim, completion schema,
 approval separation, expiry, approval decision identity/version, quorum, and
 assurance. A designated approval node may authorize an `ApprovedExecutionGrant`
-through the `0.18.2` inline issuance or dedicated issuance-intent command only
+through the `0.24.0` inline issuance or dedicated issuance-intent command only
 when it binds the
 exact effect/request/target and target version, tenant, purpose, not-before/
 expiry, attempts, policy version, revocation conditions, and separation of
@@ -46,11 +46,11 @@ revocation before delayed issuance, duplicate generation, successor fork,
 guard omission or stale projection, hidden fields, and tenant isolation pass.
 Exit criteria: human decisions require current authority when made; later work
 uses only an exact independently redeemable grant, never an offline human
-identity. `v0.63.0 implementation stop reached. Run pentest for this exact commit.`
+identity. `v0.232.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.64.0` — Timers, Deadlines, And Retries
+## `0.233.0` — Timers, Deadlines, And Retries
 Status: planned. Setup: define logical deadlines, scheduled IDs, retry/backoff,
-jitter input, cancellation, quotas, and specialize the `0.18.2` atomic timer
+jitter input, cancellation, quotas, and specialize the `0.24.0` atomic timer
 dispatch and later result variants without weakening their fence/receipt/local-
 effect boundaries. A scheduled item binds its execution-authority reference,
 not-before/expiry, attempt ceiling and redemption-guard reference, effect/
@@ -161,14 +161,14 @@ execution remains independently authorized, bounded between redemption and
 transmission start, and explicitly at least once only where its outcome contract
 permits it. Timers cannot preserve revoked profile/credential authority or move
 bearer material outside the hardened broker/executor TCB.
-`v0.64.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.233.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.65.0` — Parallel Branches And Joins
-Status: planned. Setup: define branch identity, join policy, failure/cancel propagation, ordering, and bounds. Goal: deterministic concurrency semantics. Deliverables: fork/join IR and interpreter support. Verification: premature/duplicate join, late events, branch leaks, cancellation, permutations, and state-model pass. Exit criteria: scheduling order cannot change result. `v0.65.0 implementation stop reached. Run pentest for this exact commit.`
+## `0.234.0` — Parallel Branches And Joins
+Status: planned. Setup: define branch identity, join policy, failure/cancel propagation, ordering, and bounds. Goal: deterministic concurrency semantics. Deliverables: fork/join IR and interpreter support. Verification: premature/duplicate join, late events, branch leaks, cancellation, permutations, and state-model pass. Exit criteria: scheduling order cannot change result. `v0.234.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.66.0` — Compensation Mechanics
+## `0.235.0` — Compensation Mechanics
 Status: planned. Setup: define compensable effects, stack/order, idempotency,
-retry horizon, manual intervention, and evidence against the separate `0.18.2`
+retry horizon, manual intervention, and evidence against the separate `0.24.0`
 execution, remote-outcome, resolution-evidence, and operational-workflow types.
 Reconcile an `EffectExecutionState::OutcomeUnknown` original before deciding
 whether compensation is applicable. Compensation has its own
@@ -194,12 +194,12 @@ Exit criteria: incomplete rollback or uncertain provider state is explicit,
 never hidden, overwritten, or converted into assumed provider success; every
 compensation remains linked, independently authorized, independently quota-
 accounted, reconcilable, and visible to operators.
-`v0.66.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.235.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.67.0` — Signals And Subworkflows
-Status: planned. Setup: bind signal tenant/instance/type/version, subscriptions, recursion depth, correlation, and authorization. Goal: safe composition and external wakeups. Deliverables: signal/subworkflow IR and routing. Verification: spoofing, cross-tenant routing, replay, recursion exhaustion, orphan signals, version mismatch pass. Exit criteria: signals cannot escape scoped authority. `v0.67.0 implementation stop reached. Run pentest for this exact commit.`
+## `0.236.0` — Signals And Subworkflows
+Status: planned. Setup: bind signal tenant/instance/type/version, subscriptions, recursion depth, correlation, and authorization. Goal: safe composition and external wakeups. Deliverables: signal/subworkflow IR and routing. Verification: spoofing, cross-tenant routing, replay, recursion exhaustion, orphan signals, version mismatch pass. Exit criteria: signals cannot escape scoped authority. `v0.236.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.68.0` — Workflow Versioning And Migration
+## `0.237.0` — Workflow Versioning And Migration
 Status: planned. Setup: pin running versions; define history size/work limits,
 checkpoints, continue-as-new, archive/replay, activity heartbeats, orphan/late
 completion handling, node mapping, preconditions, dry run, approval, and rollback.
@@ -209,19 +209,19 @@ archiver, checkpoint format, and continuation protocol. Verification: removed/
 renamed nodes, unsafe state mapping, unbounded history, checkpoint corruption,
 orphan/late activity, interruption, downgrade, mixed versions, replay pass.
 Exit criteria: instances never migrate implicitly or accumulate unbounded active
-history. `v0.68.0 implementation stop reached. Run pentest for this exact commit.`
+history. `v0.237.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.69.0` — Visual And Config-As-Code Compiler
-Status: planned. Setup: one canonical source model, round-trip policy, provenance, signing, and no hidden flags. Goal: equivalent visual/text authoring. Deliverables: compiler, decompiler, simulator integration, review diff. Verification: hidden behavior, injection, privilege generation, round-trip drift, huge graphs, signature substitution pass. Exit criteria: generated IR is fully reviewable. `v0.69.0 implementation stop reached. Run pentest for this exact commit.`
+## `0.238.0` — Visual And Config-As-Code Compiler
+Status: planned. Setup: one canonical source model, round-trip policy, provenance, signing, and no hidden flags. Goal: equivalent visual/text authoring. Deliverables: compiler, decompiler, simulator integration, review diff. Verification: hidden behavior, injection, privilege generation, round-trip drift, huge graphs, signature substitution pass. Exit criteria: generated IR is fully reviewable. `v0.238.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.70.0` — Workflow Worker Lease And Fencing
+## `0.239.0` — Workflow Worker Lease And Fencing
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.70.0`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.239.0`
 implements the worker lease/fence only; takeover/recovery and real cross-domain
-HA certification are `0.70.1–0.70.2`.
+HA certification are `0.240.0–0.241.0`.
 Setup: define leases/fencing, activity idempotency, specialize
-the `0.18.2` activity/poison variants, `0.30.1` queue semantics, poison policy,
+the `0.24.0` activity/poison variants, `0.73.0` queue semantics, poison policy,
 drain, failover, commit-and-dispatch authorization freshness, all three typed
 execution authorities, immutable effect bindings, bounded multi-kind quota
 claim-set token linearization, grant-lineage ownership/process management, fair
@@ -248,9 +248,9 @@ ownership, quarantine-resolution/new-generation/tombstone ownership, independent
 remediation-authority lineage/isolation/manual-only state, credential-operation/bearer-broker TCB
 placement, cancellation-recovery
 successor semantics,
-and `0.51.2`
+and `0.153.0`
 tenant-data-surface registry entries, Phase E workflow contract fixtures, and
-`0.39.1–0.39.3` on-call/
+`0.115.0–0.117.0` on-call/
 paging/notification process-manager scenarios. Goal: durable multi-worker
 execution. Deliverables: hosted worker orchestration, authorization cases,
 external-effect reconciler/manual queue, ITSM and response-delivery integration
@@ -442,4 +442,4 @@ transitions recheck current local authority. Eligible refunds occur exactly once
 administrative write-off remains distinct, compensation is separately
 accounted, fair recovery remains available under hostile tenant exhaustion, and
 every workflow interface/data surface is registered.
-`v0.70.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.239.0 implementation stop reached. Run pentest for this exact commit.`

@@ -162,7 +162,7 @@ expect_law_failure "a leading-zero generation"
 sed -i 's/| VIT-LAW-001 | 1 |/| VIT-LAW-001 | 1x |/' "$generations"
 expect_law_failure "a malformed generation"
 
-sed -i 's/`0.16.0`/`00.16.0`/g' "$generations"
+sed -i 's/`0.18.0`/`00.18.0`/g' "$generations"
 expect_law_failure "noncanonical SemVer"
 
 sed -i 's/-g01-v1/-g01-v01/g' "$generations"
@@ -458,7 +458,7 @@ sed -i '/^| 2 | VIT-LAWCAT-ACTIVE-/d' "$active_catalogs"
 expect_active_catalog_failure "a skipped catalog successor"
 
 sed -i \
-    '/^| 2 | VIT-LAWCAT-ACTIVE-/s/`0.18.4`/`0.18.3`/' \
+    '/^| 2 | VIT-LAWCAT-ACTIVE-/s/`0.26.0`/`0.25.0`/' \
     "$active_catalogs"
 expect_active_catalog_failure "an overlapping catalog activation floor"
 
@@ -466,7 +466,7 @@ implementation_copy="$tmp_dir/implementation"
 mkdir "$implementation_copy"
 cp docs/implementation/*.md "$implementation_copy/"
 sed -i \
-    '/^## `0.18.3`/,/^## `0.18.4`/s/^Status: planned/Status: implemented/' \
+    '/^## `0.25.0`/,/^## `0.26.0`/s/^Status: planned/Status: implemented/' \
     "$implementation_copy/PHASE_B.md"
 if scripts/check_law_semantic_realizations.sh \
     "$generations" "$realizations" "$implementation_copy" >/dev/null 2>&1; then

@@ -1,47 +1,47 @@
 # Phase E — IT Service Management
 
-Scope: `0.41.0–0.50.0`. Typed domains compose the work foundation. Every domain
+Scope: `0.121.0–0.132.0`. Typed domains compose the work foundation. Every domain
 owns sealed transition commands/events and rejects invalid transitions without
 domain events, business receipts, outbox work, notifications, or state effects.
-The separate `0.20.1` security-audit sink and idempotent rejection receipt may
+The separate `0.41.0` security-audit sink and idempotent rejection receipt may
 record the attempt without changing the aggregate. No generic status setter or
-cross-domain patch command is permitted. `0.50.1–0.50.17` then extend the suite
+cross-domain patch command is permitted. `0.133.0–0.149.0` then extend the suite
 through separately scoped portfolio, customer/contact/agreement/entitlement,
 supplier/contract/assessment/access, procurement, capacity, and continuity
 domains defined in the two focused completion documents. Every service/asset/
-agreement link uses the `0.30.22` reference and read-port contract.
+agreement link uses the `0.94.0` reference and read-port contract.
 
-## `0.41.0` — Incident Management
+## `0.121.0` — Incident Management
 Status: planned. Setup: freeze incident lifecycle, impact/urgency, service impact,
 major flag, assignment, resolution, and reopen rules as typed transition commands
 with explicit preconditions and rejection results. Goal: production-shaped
 incident decisions. Deliverables: aggregate, sealed commands/events, projections,
 audit, and no-side-effect rejection fixtures.
 Verification: unauthorized assignment/closure, invalid resolution, severity abuse,
-reopen races, tenant and replay tests pass. Exit criteria: incident invariants hold. `v0.41.0 implementation stop reached. Run pentest for this exact commit.`
+reopen races, tenant and replay tests pass. Exit criteria: incident invariants hold. `v0.121.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.42.0` — Service-Request Management
+## `0.122.0` — Service-Request Management
 Status: planned. Setup: define requester/beneficiary, entitlement, requested items,
 fulfillment tasks, cancellation, and sensitive answers. Goal: safe request fulfillment.
 Deliverables: request aggregate, fulfillment orchestration, views. Verification:
 entitlement bypass, answer leakage, duplicate fulfillment, cancellation races,
-and tenant tests pass. Exit criteria: fulfillment requires authorized immutable input. `v0.42.0 implementation stop reached. Run pentest for this exact commit.`
+and tenant tests pass. Exit criteria: fulfillment requires authorized immutable input. `v0.122.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.43.0` — Service Catalog And Forms
+## `0.123.0` — Service Catalog And Forms
 Status: planned. Setup: define catalog/version, offering, audience, schema, price
 facts, publication, and retirement. Goal: declarative safe request intake.
 Deliverables: catalog aggregates, form compiler, entitlement/price snapshots.
 Verification: schema/UI injection, price tamper, hidden field, stale version,
-oversized forms, and publication tests pass. Exit criteria: submitted requests bind the approved catalog version. `v0.43.0 implementation stop reached. Run pentest for this exact commit.`
+oversized forms, and publication tests pass. Exit criteria: submitted requests bind the approved catalog version. `v0.123.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.44.0` — Problem Management
+## `0.124.0` — Problem Management
 Status: planned. Setup: define problem lifecycle, incident evidence, cause,
 workaround links, and resolution. Goal: investigate recurring causes without leaking incidents.
 Deliverables: problem aggregate, relationship rules, trend projection. Verification:
 unauthorized linkage/read, false cause, relationship cycles, replay and isolation pass.
-Exit criteria: conclusions retain evidence and access policy. `v0.44.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: conclusions retain evidence and access policy. `v0.124.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.45.0` — Known Errors And Workarounds
+## `0.125.0` — Known Errors And Workarounds
 Status: planned. Setup: define draft/review/publish/retire, audience, risk warnings,
 expiry, problem provenance, and a deterministic search-discovery port/fake;
 Phase J search is not yet an implementation dependency. Goal: publish reviewed
@@ -49,9 +49,9 @@ operational advice. Deliverables: known-error aggregate, approval workflow,
 contextual suggestion contract, and fake search fixtures.
 Verification: unauthorized/stale publication, unsafe markup, hidden linkage,
 expiry bypass, fake-port visibility pass; real search differential repeats at
-`0.100.0`. Exit criteria: unreviewed advice cannot surface as trusted. `v0.45.0 implementation stop reached. Run pentest for this exact commit.`
+`0.298.0`. Exit criteria: unreviewed advice cannot surface as trusted. `v0.125.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.46.0` — Change Management
+## `0.126.0` — Change Management
 Status: planned. Setup: freeze risk, plans, window, affected-topology port/fake,
 conflicts, approval, implementation, validation, backout, and emergency rules;
 Phase I graph is not yet an implementation dependency. An approval command for
@@ -63,7 +63,7 @@ revocation conditions. A worker later authenticates as itself and redeems that
 grant; it never adopts an offline approver's identity. Human session expiry
 alone does not revoke the grant, while target drift, explicit revocation,
 tenant suspension, attempt/expiry exhaustion, approver eligibility loss, or
-authorization-policy drift follows the fail-closed `0.18.2` rules and requires
+authorization-policy drift follows the fail-closed `0.24.0` rules and requires
 a successor approval/revalidation grant. Each change type declares grant
 ownership. If the change aggregate owns the lineage, approval and grant issuance
 are events in that one stream. Otherwise approval commits an immutable receipt
@@ -90,28 +90,28 @@ dispatch, crash/reorder/duplicate approval-to-grant issuance, revocation before
 delayed issuance, duplicate grant identity, successor/predecessor fork,
 missing/stale/non-co-located redemption guard, emergency abuse, fake topology
 differential, and replay pass; real graph
-integration repeats at `0.88.0`.
+integration repeats at `0.279.0`.
 Exit criteria: execution needs an exact valid approved plan and redeemable
 authority; no worker relies on an approving human remaining logged in.
 Inline ownership advances only the change stream; dedicated ownership uses an
 immutable receipt and outbox continuation, never a hidden two-stream commit.
-`v0.46.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.126.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.47.0` — Release And Deployment Records
+## `0.127.0` — Release And Deployment Records
 Status: planned. Setup: define release contents, environment, artifact identity,
 deployment evidence, status sources, and rollback link. Goal: trustworthy deployment history.
 Deliverables: release/deployment aggregates and evidence projections. Verification:
 forged artifact/status, unauthorized environment linkage, duplicate deployment,
-and custody tests pass. Exit criteria: deployment claims require verifiable evidence. `v0.47.0 implementation stop reached. Run pentest for this exact commit.`
+and custody tests pass. Exit criteria: deployment claims require verifiable evidence. `v0.127.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.48.0` — Major-Incident Command Process
+## `0.128.0` — Major-Incident Command Process
 Status: planned. Setup: define declaration authority, roles, timeline, communications,
 decisions, handoffs, and closure. Goal: coordinate crises without role takeover.
 Deliverables: command process aggregate, role workspace, bounded notification plan.
 Verification: unauthorized declaration/role claim, flood, stale handoff, hidden
-timeline, and failure recovery pass. Exit criteria: every crisis action is attributable. `v0.48.0 implementation stop reached. Run pentest for this exact commit.`
+timeline, and failure recovery pass. Exit criteria: every crisis action is attributable. `v0.128.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.48.1` — Stakeholder Communications And Status Publishing
+## `0.129.0` — Stakeholder Communications And Status Publishing
 
 Status: planned.
 
@@ -136,9 +136,9 @@ notification flood, provider outage/retry, cache/CDN staleness, and DAST pass.
 
 Exit criteria: every published statement identifies its approved audience,
 source facts, reviewer, version, time, and correction history without revealing
-unauthorized incident data. `v0.48.1 implementation stop reached. Run pentest for this exact commit.`
+unauthorized incident data. `v0.129.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.48.2` — Hosted Status Publication And Reconciliation
+## `0.130.0` — Hosted Status Publication And Reconciliation
 
 Status: planned. The built-in hosted status API is the default production
 candidate; any external publication channel remains blocked until its exact
@@ -149,14 +149,14 @@ origins; immutable publication version, component/audience mapping, approval
 receipt, conditional write/idempotency, cache policy, subscription delivery,
 correction/retraction, authenticated channel receipt, retry/reconciliation,
 outage/degraded behavior, custom-domain/TLS, rate limits, and anti-enumeration.
-Any external channel mutation uses the `0.18.2`
+Any external channel mutation uses the `0.24.0`
 `RemoteTargetConcurrencyProfile`: exact provider/account/resource and strong
 validator are immutable, precondition failure is typed non-acceptance, workers
 never refresh automatically, and response loss remains unknown. A reviewed
 unconditional channel names one exact `RemoteMutationException`; publication
 claims its co-located guard attempt at dispatch, and revocation, expiry,
 provider-capability change, or attempt exhaustion denies. It cannot imply local
-target fencing. Every external publication receipt also carries the `0.18.2`
+target fencing. Every external publication receipt also carries the `0.24.0`
 bounded transmission window and exact audience/provider/account/request
 binding; publication rechecks current fences at its single-use start claim,
 binds the exact executor instance and lease generation, and transmits only
@@ -203,12 +203,12 @@ and owns authorization serialization, redirects, TLS, claim, and socket; bearer
 bytes may exist briefly only there and never in the publication worker, queue,
 log, diagnostic, crash record, or durable state.
 
-Goal: turn the `0.48.1` publication port and fake into a supported hosted status
+Goal: turn the `0.129.0` publication port and fake into a supported hosted status
 surface without exposing the private incident or service-health authority.
 
 Deliverables: policy-filtered built-in status API and read projection, static/
 cache representation with explicit freshness, authenticated administration
-transport, publication reconciler, subscription integration through `0.39.4`,
+transport, publication reconciler, subscription integration through `0.118.0`,
 optional admitted channel adapter, capability/health probes, DAST corpus,
 deployment guide, and outage runbook; include rotation-guard/orphan-inventory/
 credential-count evidence and semantic evaluator/corpus/quarantine evidence for
@@ -254,23 +254,23 @@ versus-hosted differential tests pass.
 
 Exit criteria: at least the selected built-in hosted profile publishes and
 corrects status with reproducible approval/source/receipt history; external
-channels are supported only when independently evidenced. `v0.48.2
+channels are supported only when independently evidenced. `v0.130.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.49.0` — Postmortems And Corrective Actions
+## `0.131.0` — Postmortems And Corrective Actions
 Status: planned. Setup: define sensitive draft, contributors, evidence, review,
 publication audience, lessons, and linked tasks. Goal: durable learning without blame leakage.
 Deliverables: postmortem aggregate, timeline import, corrective-action tracking.
 Verification: unauthorized publish/delete, identity redaction, evidence tamper,
-action orphaning, and export tests pass. Exit criteria: published reports retain review and provenance. `v0.49.0 implementation stop reached. Run pentest for this exact commit.`
+action orphaning, and export tests pass. Exit criteria: published reports retain review and provenance. `v0.131.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.0` — Integrated ITSM Beta
+## `0.132.0` — Integrated ITSM Beta
 Status: planned. Setup: pin all ITSM schemas/APIs, upgrade path, permissions, and
 representative scenarios. Goal: prove coherent end-to-end ITSM behavior.
 Deliverables: integrated workspace, migrations, deterministic workflow/search
 port fakes, fixtures, and operator/admin docs; no Phase G/J implementation claim.
 Verification: cross-module authorization, fake-port orchestration/search
 contracts, upgrade/rollback, load, recovery, and full phase pentest pass. Real
-workflow and search integration is repeated at `0.70.0` and `0.100.0`.
+workflow and search integration is repeated at `0.239.0` and `0.298.0`.
 Exit criteria: beta claims and unavailable later-phase integrations are exact.
-`v0.50.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.132.0 implementation stop reached. Run pentest for this exact commit.`

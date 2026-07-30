@@ -11,13 +11,13 @@ is not a serial support requirement: unselected stops remain explicitly
 Specified/deferred/Conditional/Unsupported and cannot broaden this candidate.
 Any skipped old stop requires a future successor version before implementation;
 it is never backfilled into this release.
-The decisions in `0.140.1–0.140.28` are frozen, their selected profiles have
+The decisions in `0.371.0–0.398.0` are frozen, their selected profiles have
 passed Phase O, and unsupported alternatives are excluded from release claims.
 The generated evidence manifest contains no `Specified` or `Implementing`
 state for a shipped claim. Every `Conditional` entry is excluded from the
 default support promise or names the exact separately passing profile; every
 unsupported or disabled combination is discoverable and fails closed.
-Every post-`0.18.3` milestone authority disposition is resolved to exact
+Every post-`0.25.0` milestone authority disposition is resolved to exact
 declarations, exact existing roots/laws, or reviewed `none`; zero
 `VIT-PAUTH-*` proposals remain. Every effective composite-law generation and
 its exact dependency timing, coordinator, semantics, activation/migration/
@@ -1457,7 +1457,7 @@ Deliverables:
   names unsupported options.
 - Default storage claims are limited to evidenced in-memory semantics, SQLite
   single-node, and PostgreSQL HA profiles. MySQL, MongoDB, and SurrealDB remain
-  experimental unless `0.140.2` explicitly promoted their independently
+  experimental unless `0.372.0` explicitly promoted their independently
   passing exact profiles. Optional AI, federation, semantic search, and vendor
   connectors remain disabled unless separately selected and evidenced.
 
@@ -1485,7 +1485,7 @@ Verification:
   commit together or none; dormant state never authorizes, terminal candidates
   never revive and unsupported selector topologies refuse before staging.
 - Crash-point proof that protected commands cannot commit without authoritative
-  audit intent; every applicable `0.18.2` command/consumer/timer/activity/
+  audit intent; every applicable `0.24.0` command/consumer/timer/activity/
   poison bundle component is atomic and integrity linked; fence and quota
   consumption share the effect transaction. Each bundle advances at most one
   authoritative aggregate stream and contains local durable effects only;
@@ -1808,7 +1808,7 @@ Verification:
   linkable checkpoint metadata. A non-authoritative rollup remains only when
   independently permitted; otherwise only allowed non-sensitive tombstone/
   authority-loss evidence remains. Affected history is unknown either way.
-  Registry evidence also proves `0.51.2` backfilled every earlier surface and
+  Registry evidence also proves `0.153.0` backfilled every earlier surface and
   mechanically gated every surface introduced thereafter without an outward
   dependency from foundation/domain crates.
 - Workload authentication uses the selected external-issuer OAuth resource-
@@ -1820,7 +1820,7 @@ Verification:
 - Reproducible builds, clean install/upgrade/rollback/failover, load/soak/chaos,
   secure defaults, accessibility, localization, and disaster-recovery exercises.
 - Decision-record conformance proves each shipped artifact and deployment
-  matches the reviewed `0.140.1–0.140.28` choices without silent fallback.
+  matches the reviewed `0.371.0–0.398.0` choices without silent fallback.
 - The generated `docs/INVARIANT_OWNERSHIP.md` conformance report covers every
   selected production storage/deployment profile. Coverage is derived
   bidirectionally from introducing phase declarations. Every applicable stable
@@ -1867,7 +1867,7 @@ Verification:
   cites its earlier implementation admission, conformance corpus, pentest, and
   operational owner; missing profiles and unselected SCIM/STIX/SIEM/CMDB
   directions are explicitly unsupported.
-- The `0.140.27` full-suite matrix independently evaluates service portfolio,
+- The `0.397.0` full-suite matrix independently evaluates service portfolio,
   customer agreements, supplier/contracts, procurement/non-software
   entitlements, capacity/demand, continuity, real-time subscriptions, extended
   asset kinds and any selected cloud-native discovery profile, privacy cases,
@@ -1877,7 +1877,7 @@ Verification:
   conditional evidence leaves that capability unavailable or named
   conditional; it never weakens the supported core ITSM/SecOps/asset/risk
   profile or becomes supported merely because its milestone was planned.
-- The `0.140.28` minimum Hosted matrix passes every mandatory transport/crypto,
+- The `0.398.0` minimum Hosted matrix passes every mandatory transport/crypto,
   storage, identity/session, hostile-input, packaging, operations, and recovery
   row under the repository-wide zero-dependency rule. Any missing row blocks
   this Hosted production release and its installer/API/UI/documentation claims.
@@ -1918,8 +1918,8 @@ Verification:
   pause/revocation/resume, atomic
   commit/crash recovery, safe fence release, work drainage, data/hold disposition,
   retained-history codec/upcaster, backup/import, external-reference, safe-
-  reinstall, and truthful verified-versus-loss terminal evidence from `0.145.4`,
-  or remains visibly non-clean/blocked. A deferred `0.86.2` profile exposes cloud-native kinds as
+  reinstall, and truthful verified-versus-loss terminal evidence from `0.414.0`,
+  or remains visibly non-clean/blocked. A deferred `0.277.0` profile exposes cloud-native kinds as
   manual/generic-import-only and makes no automatic discovery claim.
 - The generated roadmap/evidence differential proves exactly 425 release
   stops and their owners, authority reviews and pentest reports; it rejects any

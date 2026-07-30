@@ -57,7 +57,7 @@ or its required evidence is unavailable, the stop remains `Specified`,
 
 The roadmap contains exactly **425 independently pentestable release stops**:
 
-`150 base 0.x.0 stops + 274 companion stops + 1 production stop = 425`.
+`424 pre-production minor stops + 1 production stop = 425`.
 
 This is the architectural/evidence superset, not a serial mandate that all 424
 pre-production capabilities become Supported before `1.0.0`. The
@@ -67,16 +67,15 @@ profile's complete transitive dependency/evidence closure plus any optional
 profile explicitly selected for the candidate. Unselected entries remain
 discoverably non-shipping and cannot satisfy or broaden a core claim.
 
-The public `.0` skeleton still contains 151 base stops when `1.0.0` is
-included. “151 base stops” and “425 exact release stops” describe different
-views and must always be qualified. The phrases “151 phases,” “225
-milestones,” “228 exact stops,” and the superseded “229 exact stops” are not
-valid current repository descriptions.
+Every planned pre-production stop is one `0.N.0` release in the contiguous
+`0.1.0–0.424.0` sequence. Patch versions are unplanned corrective maintenance,
+not capability containers. See
+[Release Granularity Standard](RELEASE_GRANULARITY_STANDARD.md).
 
 `scripts/check_implementation_plan.sh` is the current machine-checked stop
-manifest: it enumerates every companion version, requires every base version,
-and requires 425 exact-commit pentest markers. Reopened `0.1.0` must replace
-that embedded list with, or generate it from, one canonical machine-readable
+manifest: it requires every contiguous pre-production minor release plus
+`1.0.0` and 425 exact-commit pentest markers. Reopened `0.1.0` must replace that
+embedded sequence with, or generate it from, one canonical machine-readable
 roadmap manifest. The README, release plan, release notes, phase index,
 authority-review coverage and checker expectations must be generated or
 verified from the same manifest. A count mismatch is a release blocker.
@@ -95,7 +94,7 @@ is admitted at its first consuming milestone. Its admission record binds the
 normative snapshot, options/features, source/license, implementation version,
 trust boundary, known-answer and negative corpus, fuzz/interoperability
 evidence, replacement boundary, maintenance owner and unsupported
-combinations. `0.140.1–0.140.28` revalidate and freeze already evidenced
+combinations. `0.371.0–0.398.0` revalidate and freeze already evidenced
 choices; they cannot be the first selection or retroactively legitimize code.
 
 The current no-third-party-Cargo rule remains binding. The audit proposal to
@@ -144,7 +143,7 @@ must name:
 New normative protocol files should remain below 500 physical lines and split
 by responsibility before approaching 400 lines. Splitting cannot create
 multiple authorities or duplicate normative prose. The invariant/law registry
-introduced at `0.18.3` owns the generated cross-reference index and rejects an
+introduced at `0.25.0` owns the generated cross-reference index and rejects an
 implemented protocol with missing, duplicated or contradictory owners,
 states, transactions, recovery paths or conformance manifests.
 
@@ -157,14 +156,14 @@ is forbidden.
 
 Invariant and law registries cover authority-bearing guarantees but do not own
 every functional, operational, migration, support, or integration requirement.
-`0.18.14` therefore introduces a separate stable `VIT-REQ-*` registry and
+`0.36.0` therefore introduces a separate stable `VIT-REQ-*` registry and
 bidirectional checker. Each entry binds one immutable description and source,
 exactly one primary implementation stop, predecessors, producing/consuming
 crates, schema/migration owner, primary test/conformance owner, later
 integration/retest stops, and planned/implemented/superseded/deferred lifecycle.
 
-`0.20.5` backfills Phases A/B; `0.30.18` backfills Phase C; and
-`0.30.19–0.30.21` backfill Phases D through production before Phase D begins.
+`0.45.0` backfills Phases A/B; `0.90.0` backfills Phase C; and
+`0.91.0–0.93.0` backfill Phases D through production before Phase D begins.
 Every later introducing stop registers new requirements before exit. Generated
 views prove source-to-registry and registry-to-source coverage, one primary
 owner, valid predecessors/crates/tests, and live integration/retest ownership.
@@ -172,7 +171,7 @@ A cumulative ledger heading is context, not ownership; a requirement entry is
 coordination metadata, not an authority source and cannot override a
 `VIT-INV-*` or `VIT-LAW-*` owner.
 
-At `0.18.15`, source discovery becomes prospective. Every in-scope normative
+At `0.37.0`, source discovery becomes prospective. Every in-scope normative
 block has an adjacent `<!-- vitheim-requirement VIT-REQ-NNNN -->` marker or a
 stable structured-manifest origin; the registry records that immutable anchor,
 canonical text digest, primary owner, integration/retest owners, and symmetric
@@ -184,19 +183,19 @@ need bounded typed exceptions rather than an unchecked ignore list.
 
 ## Domain Manifests And Surface Contributions
 
-`0.30.23` introduces a small `DomainManifest`, keyed by dedicated stable
+`0.95.0` introduces a small `DomainManifest`, keyed by dedicated stable
 `DomainId`, owning crate/layer, one-or-more requirement links, classifications,
 exact aggregate/stream, command, event, compatibility/upcaster-owner,
 application-read, and applicable projector/process-manager references, and
 typed extension references. These resolve to the authoritative event and
 consumer registries rather than copying definitions. A domain is not a
 requirement, and the manifest is an index rather than another universal
-metadata authority. `0.30.26` separately checks command emission, event
+metadata authority. `0.98.0` separately checks command emission, event
 ownership/evolution, consumer declarations, and generation compatibility for
 current applicable owners, then installs the same prospective exit gate for
 every later domain rather than declaring future coverage.
 
-`0.30.24` defines the reference envelope and kind catalog. Each reference binds
+`0.96.0` defines the reference envelope and kind catalog. Each reference binds
 an authoritative registry/profile, entry ID, schema version, generation/digest,
 compatibility, dependencies, supersession, and rollback floor. One complete
 compatible metadata generation is admitted atomically. First-party compiled
@@ -216,31 +215,31 @@ partial admission, and plugin attempts to grant authority fail closed. A
 reference never grants authorization, exposes a command, or overrides policy
 or lifecycle semantics.
 
-`0.30.27` extends the prospective ownership gate across durable asynchronous
-contracts only after the full `0.18.8–0.18.10` realization family: effect kind
+`0.99.0` extends the prospective ownership gate across durable asynchronous
+contracts only after the full `0.30.0–0.32.0` realization family: effect kind
 versus execution identity, message/consumer and timer/activity kinds, poison/
 dead-letter policy, replay authorization, quarantine/disposition, retry horizon,
 terminal/manual resolution, result/reconciliation, and compensation owners.
-`0.30.28` gives every domain an introduction-time retirement lifecycle with
+`0.100.0` gives every domain an introduction-time retirement lifecycle with
 permanent `DomainId` tombstone, command/effect fencing, dependency/work drainage,
 data disposition, historical codec/upcaster preservation, reinstall floors,
 orthogonal authority/work/data/history evidence, and distinct verified/loss/
-blocking terminals. Only `RetiredVerified` is clean. `0.30.29` defines a closed
+blocking terminals. Only `RetiredVerified` is clean. `0.101.0` defines a closed
 tenant-versus-deployment scope but executes only exact tenant children with
 immutable proposal authority, generation/version checks, separation of duties,
-atomic audit/outbox commitment, cancellation and crash recovery. Once `0.51.1`
-owns tenant lifecycle/topology, `0.51.5` freezes and safely releases an
-authenticated membership cut, `0.51.6` atomically consumes separately approved
-exact-cut authority into one admitted parent, `0.51.7` governs successor-plan
-lineage and resume authority, `0.51.8` transfers broad topology fencing to a
-narrow guard with authenticated post-cut absence/child handoffs, `0.51.9`
-jointly roots protection state and successor CAS, `0.51.10` aggregates clean/
-non-clean terminals, `0.51.11–0.51.13` own tenant-local residual handoff,
-lineage and delivery cuts, `0.51.14` owns mutation classification/emergency
-invalidation, `0.51.15–0.51.18` authorize/complete takeover, fund retained
-candidate controls, and reconcile barrier release; `0.51.19–0.51.20` own
+atomic audit/outbox commitment, cancellation and crash recovery. Once `0.152.0`
+owns tenant lifecycle/topology, `0.156.0` freezes and safely releases an
+authenticated membership cut, `0.157.0` atomically consumes separately approved
+exact-cut authority into one admitted parent, `0.158.0` governs successor-plan
+lineage and resume authority, `0.159.0` transfers broad topology fencing to a
+narrow guard with authenticated post-cut absence/child handoffs, `0.160.0`
+jointly roots protection state and successor CAS, `0.161.0` aggregates clean/
+non-clean terminals, `0.162.0–0.164.0` own tenant-local residual handoff,
+lineage and delivery cuts, `0.165.0` owns mutation classification/emergency
+invalidation, `0.166.0–0.169.0` authorize/complete takeover, fund retained
+candidate controls, and reconcile barrier release; `0.170.0–0.171.0` own
 archival cleanup and independently verified retained namespaces; and
-`0.51.21–0.51.59` evaluate reinstall, serialize activation against abort,
+`0.172.0–0.210.0` evaluate reinstall, serialize activation against abort,
 redeem source-partition permits, fund every successor-restriction bridge,
 reconcile and supersede partial admission, decide and conditionally implement
 permanent-unknown quarantine recovery, actively enforce the maximal unknown
@@ -288,24 +287,24 @@ closure, and keep staged seal work in one codec-pinned cumulative lineage.
 Dispatch admission also requires contiguous transitions from genesis;
 none uses a wildcard tenant or cross-tenant transaction. Plugin uninstall and
 feature disablement
-never imply data retirement. `0.145.4` destructively certifies all of these
+never imply data retirement. `0.414.0` destructively certifies all of these
 implementations and cannot first add teardown, campaign, or recovery behavior.
 
-Typed extensions appear only after their vocabulary exists. `0.51.3–0.51.4`
+Typed extensions appear only after their vocabulary exists. `0.154.0–0.155.0`
 reference and immediately certify the authoritative `TenantDataSurface`
-registry; `0.60.3–0.60.4` own
-authorization extension/backfill/certification; `0.70.4–0.70.5` workflow and
-notification; `0.100.1–0.100.2` search/history; `0.132.3–0.132.4` workspace;
-and `0.138.4–0.138.7` external API and transfer/configuration. Later domains
-register prospectively, while `0.120.8–0.120.10` certify their applicable
+registry; `0.228.0–0.229.0` own
+authorization extension/backfill/certification; `0.243.0–0.244.0` workflow and
+notification; `0.299.0–0.300.0` search/history; `0.353.0–0.354.0` workspace;
+and `0.364.0–0.367.0` external API and transfer/configuration. Later domains
+register prospectively, while `0.336.0–0.338.0` certify their applicable
 authorization, automation, and search references from current manifest
-generations, exact authoritative IDs, deferrals, and product state. `0.139.1`
+generations, exact authoritative IDs, deferrals, and product state. `0.369.0`
 generates differentials jointly from requirements, manifests/contributions,
 and authorization interfaces by iterating every active contribution kind and
-its declared dimensions rather than a fixed surface list. `0.145.3` consumes the same model for destructive
+its declared dimensions rather than a fixed surface list. `0.413.0` consumes the same model for destructive
 full-suite lifecycle/recovery certification and cannot create a reference or handler.
 
-`0.30.25` makes a defer an explicit lifecycle record with implementation
+`0.97.0` makes a defer an explicit lifecycle record with implementation
 milestone, prerequisite, responsible crate, retest owner, product-state effect,
 review/expiry, and closure evidence. No Supported capability, RC, or `1.0.0`
 profile can retain an unresolved required defer. Deferral is valid only while a

@@ -1,6 +1,6 @@
 # Law Manifest Admission Set
 
-Status: normative planning-superset registry introduced by `0.18.3`
+Status: normative planning-superset registry introduced by `0.25.0`
 
 This file is the append-only planning superset of every reviewed
 `(LawId, Generation, Digest)` tuple, including future generations. It is input
@@ -101,7 +101,7 @@ Planning catalog revision: `1`
 
 Trust profile: `planning-superset-not-runtime-v1`
 
-Planning catalog digest: `sha256:3fc8d1a2041738740b76be6bb77633c4c9a9d819ce483dceb28c97fa6860724d`
+Planning catalog digest: `sha256:42fe3b005cf939eb8c02c2136a8f3fde69ef98390e2751ac8b1886a530c204d9`
 
 The planning-catalog digest uses the length-prefixed encoding defined by
 `docs/LAW_GENERATION_MANIFEST.md`. Encode, in order, the ASCII format literal
@@ -113,67 +113,67 @@ Markdown presentation are excluded.
 
 | Law generation | Admitted manifest digest |
 | --- | --- |
-| VIT-LAW-001@g01 | sha256:0ad9616ca703dc198a287bda26d3bd35c8a034f523acc0c140c1ebc077d2d146 |
-| VIT-LAW-001@g02 | sha256:0e4c701e6b7560612307560e4e0666c204b66f7f54b62920a3f0fd9591a821ab |
-| VIT-LAW-001@g03 | sha256:cb7c34c47e2b79152340f2ba9dfbc4daf88a2638c868b4cd59e4232a294d90e7 |
-| VIT-LAW-001@g04 | sha256:ecd7fc555f864c2fd81c61bb54cf10bf394bf1544964b9b2a3afb8d141fff661 |
-| VIT-LAW-001@g05 | sha256:cc60d70e52de33e47dde7a9ee6be88e061854b66a28668eb10d2ef60a530d790 |
-| VIT-LAW-001@g06 | sha256:4f7b90238a1ffefb7718b0e3a5720261cfecda0123fb611b84b1292b67bdc9b2 |
-| VIT-LAW-001@g07 | sha256:d5feb56b64f28b1cd812cd3555671a87b48b021c99f603944801702e921f7f2d |
-| VIT-LAW-001@g08 | sha256:3b720d6c8dc7a1c639cbf4cf622697d9be368a148b133b97c55b9e3d23a9283d |
-| VIT-LAW-001@g09 | sha256:6f3da855ad6550cc094d9b9195318fb89f354a3a10ee264a9efe7e8967b6cb67 |
-| VIT-LAW-001@g10 | sha256:08dfe5d2a62cd36cb5bebee746d1b5f44b17501c4e53904e56f718c00f491a4e |
-| VIT-LAW-001@g11 | sha256:854f8cbfd9fdb56c6e0593b9944c383623dcf4d7061f62b722f34852eeae97c3 |
-| VIT-LAW-002@g01 | sha256:45f96a24e22d94a2a52f033b8c177155361cb87412071f9d6a83faf3492e2c5b |
-| VIT-LAW-003@g01 | sha256:d7676f2d86177a47be071e9498622ef3f2aca8612c7f364a677b2c67677fe808 |
-| VIT-LAW-004@g01 | sha256:c7793caa65dd0f76405c5f75d191ee8d7da30e2bd3db6f654a9af4e1a789851a |
-| VIT-LAW-005@g01 | sha256:ebaadc7e8ef5c78c59ac009704c61849e8042379fd3dbdc27a1296d90e13dc8a |
-| VIT-LAW-005@g02 | sha256:c4ec5a568579a9ab9ce12c2a0359997f72f6eb6fadc93e9dcb60be04f4ffc91c |
-| VIT-LAW-005@g03 | sha256:3c9b7bb272112ba60d472330e5d60f6717c482a7518bf5d41d47e019079d2e5c |
-| VIT-LAW-005@g04 | sha256:f859a7ddc5b2181b741e7d502ae2c948a0c57cc74d81110ed9823d792b707c09 |
-| VIT-LAW-006@g01 | sha256:f03bf8c7d8adf1b03eb9191f64ef55b1f953c454031ae5385ed6bae05e1b35ce |
-| VIT-LAW-006@g02 | sha256:29ba7b2d7dc05b1f24f08d80052693445ddfe8ff56e1d75ea3525ca15454ad5b |
-| VIT-LAW-006@g03 | sha256:6ba5fe08f4725ee7cd7363aa9b838ffbd0f937fa1bde062aaf7b612023bae78f |
-| VIT-LAW-006@g04 | sha256:445bfcda3cc24d9af0c3366d120708c5e5bac8bc8ac689897d777d7745ff9d79 |
-| VIT-LAW-006@g05 | sha256:67c4870fd7a49d2b2e197bdd8162ee6771da5d036b0ddff201ff496aa974b111 |
-| VIT-LAW-006@g06 | sha256:a052d0ad1933024ceaa84422126f31a64e5e2542e4f07c0caee7e7a75f802a29 |
-| VIT-LAW-006@g07 | sha256:9eac643e5e3f43838b666ac4021f01c066a80dd2a11204a41ad43842a8993071 |
-| VIT-LAW-006@g08 | sha256:1831ab3a258cc5cc6cbc50a579cae326973bd4406749c6cb3ed9e665be27e095 |
-| VIT-LAW-006@g09 | sha256:44b4e01d4de263d630fbf5ea97e52fcfa1a06f0d63056ba4a9af0aeb2e0cc12f |
-| VIT-LAW-006@g10 | sha256:54280761c256d867005a953f5c2f46d6e0d0ed018ac4b3ad47326d859f47d338 |
-| VIT-LAW-007@g01 | sha256:d36ba8b53e831437107f1f78610dfa889ccdfdd9288a58f90b01affb4caee5d7 |
-| VIT-LAW-007@g02 | sha256:ab2dcb2593e25d58ec06dbd4f6add9789cdef308281efa9876241295ec2148b2 |
-| VIT-LAW-008@g01 | sha256:108df80613c6b4fc288a343ae04a81c90f6d3a403a1ea3c01d0c230cac5052e3 |
-| VIT-LAW-008@g02 | sha256:169c7f61d14749ca8b0a7536ea8a8e52333a3e80958c61f1282679d0706be622 |
-| VIT-LAW-009@g01 | sha256:d920dabcacd0161a076a66ace5403af42cf01f2cb0ac45c5ddd7a47d9b27dc7a |
-| VIT-LAW-009@g02 | sha256:3ce9a456fc45cc1c4284826c860d38bd28b88b4919b6592551e09faa085c5dd8 |
-| VIT-LAW-009@g03 | sha256:acfb97b46d7014285f02bdf482d991f49bbf5b067afe339140f5dfcfd4a4b1ee |
-| VIT-LAW-009@g04 | sha256:f372fe5a91fdaf78101cabee420c15489fecfa827d0bae0d05388e908fc4e863 |
-| VIT-LAW-009@g05 | sha256:1573afabc71f7782990aa9ff1cb8f5d7efb2d8d09eef987e87b7db9217cc6571 |
-| VIT-LAW-009@g06 | sha256:77a61709e49c182d9598ff5940b4423d7d3d2bb878ad1d75479ca7180cefb8d2 |
-| VIT-LAW-009@g07 | sha256:36359791e94b54bd29288b34ba93a5ca367c9136e31810fe163b9ebc8978a92f |
-| VIT-LAW-009@g08 | sha256:8ecf897625aeb499aa81b32498c75e2fd65892331c9c7a6bcb5dbce630ac1f10 |
-| VIT-LAW-009@g09 | sha256:f3306c06b159b35425f5fef7baea9ef5840735d66804619f9846eb81806fde7b |
-| VIT-LAW-009@g10 | sha256:4842f26e4ac36d5a15f5b1eeb311cdd54eb4add038169e00d7a34a975702d531 |
-| VIT-LAW-009@g11 | sha256:49b66ec00e9f0389c5125fd01ce9bbfb2b4a72dfef9f7729ec9965ad8e6d8417 |
+| VIT-LAW-001@g01 | sha256:f78a752e19ceb2533525957dfe5f6e81a41a576b7890b930e20093a0796a12a5 |
+| VIT-LAW-001@g02 | sha256:214af6583900f4589316445c27b00501cf6385fe4faf2dfde71129d05a560135 |
+| VIT-LAW-001@g03 | sha256:0ffb3edb95857e5be276adc92097c19e2be6e1d6a30e2bbfd311b231fe43444b |
+| VIT-LAW-001@g04 | sha256:16e020a00706cfc927d79676c68e932ec1d7453966574d8cf3bd401fe60a15d2 |
+| VIT-LAW-001@g05 | sha256:11b1400ff675a7e98a89d8e13ea1f3fbef9a4a65f9694d6d76481d748f1a0feb |
+| VIT-LAW-001@g06 | sha256:621a752fbfada4bc067b752ae1120d0e2ce1b79b4b77ed2a42a9967e565c0c30 |
+| VIT-LAW-001@g07 | sha256:f36cdbb735bbe2f16a4eb07d93255aa71cc10c9c74a3593133bfed47d328063d |
+| VIT-LAW-001@g08 | sha256:220af8abc4fc5cebe416bf0cc0318569927f4c71df4a8e5da4627433beb1578f |
+| VIT-LAW-001@g09 | sha256:c31cff807553394f103b581544e6a8c50c42f626c8b2850bc729126100cc962d |
+| VIT-LAW-001@g10 | sha256:8a601dd42aaa4fa5c07e095b08b8440afb80f6a2c0efc1fe83ca4bb27b057834 |
+| VIT-LAW-001@g11 | sha256:9d508a97fe2657418b14eda5a6cdad230ddba5ebb9e9d73b9a6d58ec81e4439a |
+| VIT-LAW-002@g01 | sha256:11cac943a1ab25897611afa0c765b890bee88925ddebd7fb93ad1b8ec934b08c |
+| VIT-LAW-003@g01 | sha256:6cfa3db5dab5350d23fef107810ea2e6765f685ad92ab26b79677a07d84c12c5 |
+| VIT-LAW-004@g01 | sha256:5b871e407e715593221c383b92f4aacb84c4ae8319cad61de4492ff0c24f4d5b |
+| VIT-LAW-005@g01 | sha256:f2a133dcac387c262b633fc24587b0a7511077a3eb2248ea653c2de774bf5bd3 |
+| VIT-LAW-005@g02 | sha256:fe9c32a9c67b29ef4629a1687c8b468af2c758377f89bb58a17080ced00c42e6 |
+| VIT-LAW-005@g03 | sha256:b6784396cf4d68ae06413e24b713e4e5078f002f3075fe6e4db061d419e5762e |
+| VIT-LAW-005@g04 | sha256:1a79abfc03b2425782c654750ca84588eb52df9510e25386042ab786da86457a |
+| VIT-LAW-006@g01 | sha256:5a0de3d727241be6475ad663e07d34e601d2afd6c039516fe1d828c40a7d72c0 |
+| VIT-LAW-006@g02 | sha256:cf57fe07293296582288bec8a025360bc20c17a3e735396a3368f73ac2c580ab |
+| VIT-LAW-006@g03 | sha256:73e7eedb3fac5145ebb40b579a1ef925167d792923d39ae9a0d9ff8596ec0a6b |
+| VIT-LAW-006@g04 | sha256:32221d8bb5637b342f7f11b14e714ac2e5400ac4920b33223aec99a1e3537cf4 |
+| VIT-LAW-006@g05 | sha256:24d6264f268db0c209d130f5fad2d2f8c21b81a415330df235f0c1dacc564700 |
+| VIT-LAW-006@g06 | sha256:dfa476052b1102613ed6458eb2a8c0cb9e665381bedc9aff62d67aebd698ddf2 |
+| VIT-LAW-006@g07 | sha256:5e092c8394ba05af6be61678e888ec364e90dc55236cfdda108c157b00d764e5 |
+| VIT-LAW-006@g08 | sha256:0a50d8744eac016b5a8632c951d449893329916fb1009dab246c556f897b5d96 |
+| VIT-LAW-006@g09 | sha256:cc096495e635a754501dfcea819ff12cf3c99a84526523cb8662cc0374131874 |
+| VIT-LAW-006@g10 | sha256:40871ba6c5605b877fb03e650f83784c7b5b36803536789f1647d7b5f4384eb5 |
+| VIT-LAW-007@g01 | sha256:553eb76c886092676b1df83f31c59529120e9150333490a5f85b4c37cb971771 |
+| VIT-LAW-007@g02 | sha256:6f3e4ad65ecd88ee6ebadc59d5c544965cc7e6a5e49276cd63fbf3be3ebb5055 |
+| VIT-LAW-008@g01 | sha256:4249d47d61ee308e6ff759971254ed473416abea0483813224048bdf2c43c37e |
+| VIT-LAW-008@g02 | sha256:178ed4f5137401c476c0afd784c9b00574174dde750a9e3947b976a1b446e4b6 |
+| VIT-LAW-009@g01 | sha256:400dd34bb3d442ac575a3d824a31c0de351f1a9ac3121df0b4328c450013bbc1 |
+| VIT-LAW-009@g02 | sha256:267f77d87d9014b339086cd134edc2411ddcf02efceeda9c4c551cf937983b6a |
+| VIT-LAW-009@g03 | sha256:b74809e3ac40c6b259f03f4c08b7cf9155a6800ca4d79e32528c75e4ccbc0f40 |
+| VIT-LAW-009@g04 | sha256:5ef46185fb99fd911c7f0f31c1fc69fdb6f2a0a603734e1f64eef05c0f6e9d53 |
+| VIT-LAW-009@g05 | sha256:d90b3491469e0543580ec27b39ebe0c13f78f47731976a4c1a3f0cda9e6c305c |
+| VIT-LAW-009@g06 | sha256:6282acd6206416daa1db88237fa22e32d835fe3103598bbc205f59b28eb69cd7 |
+| VIT-LAW-009@g07 | sha256:67af910130d6d65c1dc97c1fa07d40c92cd47ab55690aa14e9b7e57f6dc7ae85 |
+| VIT-LAW-009@g08 | sha256:6475ce5a2c3b932540e1e5a84597e98b18dbedd870fdba625f83ae052ce71ea8 |
+| VIT-LAW-009@g09 | sha256:339035230dead6167287a4a54b0a89df731b9b2ccba4dfafcb41464488771e17 |
+| VIT-LAW-009@g10 | sha256:f3f4ba81ce3b2e713b5ae1553b43def5003fe00db21ca9063a47d2745b07de20 |
+| VIT-LAW-009@g11 | sha256:d4a4df92e980eaf5b41f358d13adc716fe5f4647fae9622fba6f8e22ce9a848d |
 
-`0.18.3` implements planning-superset validation and generation of the first
+`0.25.0` implements planning-superset validation and generation of the first
 active activation-floor catalog. Each later law-effective milestone generates
 one immutable explicit successor containing complete effective ancestry and no
 planned future tuple; between those floors the previously activated catalog
 remains applicable. The first catalog embeds `VIT-LAW-008@g01`, the compiled
 static singleton topology, and its empty serialized rollout root without self-
-admission. `0.18.4` proves the first predecessor transition and competing-
+admission. `0.26.0` proves the first predecessor transition and competing-
 candidate recovery through the durable process manager, including irreversible
 authorization state/receipt/outbox pinning, both authenticated cross-owner
-receipts, and external-issuer/local-consumption action-claim recovery. `0.19.0` binds that bundle, the verified
+receipts, and external-issuer/local-consumption action-claim recovery. `0.39.0` binds that bundle, the verified
 envelope, immutable placement manifest, receipts, and exact local identities/
-ratchets into signed checkpoints. `0.21.0–0.22.0` negotiate and conform catalog
+ratchets into signed checkpoints. `0.46.0–0.52.0` negotiate and conform catalog
 global/rollout/local ownership, trusted-time ratchets, persistence, and
-admission; `0.29.0–0.30.0`
-preserve them through migration, export, and import. `0.140.1`, `0.140.2`, and
-`0.140.6` freeze exact cryptographic/time, storage, and deployment profiles.
-`0.141.0` activates/converges epoch 13 under generation 1, requires every local
+admission; `0.66.0–0.72.0`
+preserve them through migration, export, and import. `0.371.0`, `0.372.0`, and
+`0.376.0` freeze exact cryptographic/time, storage, and deployment profiles.
+`0.399.0` activates/converges epoch 13 under generation 1, requires every local
 generation-2 admission, and only then lets generation 2 initialize/verify the
 exact dormant singleton and commit the one-time handoff to independent
 `VIT-INV-060` topology authority.

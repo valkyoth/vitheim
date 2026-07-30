@@ -1,38 +1,38 @@
 # Phase F — Identity, Tenancy, And Policy
 
-Scope: `0.51.0–0.60.0`. Authentication supplies facts; policy grants authority.
-After the complete policy conformance suite, `0.60.1–0.60.2` add the separately
+Scope: `0.151.0–0.225.0`. Authentication supplies facts; policy grants authority.
+After the complete policy conformance suite, `0.226.0–0.227.0` add the separately
 scoped policy-bound read-subscription contract and hosted delivery runtime;
-`0.51.3–0.51.4` reference and immediately certify authoritative tenant-data
-surfaces; `0.51.5` freezes and safely releases an authenticated deployment
-tenant-membership cut, `0.51.6` separately approves and atomically admits one
-exact-cut retirement plan, `0.51.7` fences successor-plan lineage and resume
-authority, `0.51.8` transfers broad topology fencing to a narrow domain guard
-with authoritative post-cut handoffs, `0.51.9` roots successor/protection state,
-`0.51.10` aggregates bounded fair child terminals, `0.51.11` transfers non-clean
-residual obligations tenant-locally, `0.51.12` governs residual membership/state
-lineage, `0.51.13` seals/consumes partition delivery, `0.51.14` owns restrictive
-emergency invalidation, `0.51.15–0.51.18` authorize/complete takeover, fund
-retained controls and release its barriers, `0.51.19–0.51.20` archive/verify
-retained cleanup, and `0.51.21–0.51.59` evaluate, linearize activation/abort,
+`0.154.0–0.155.0` reference and immediately certify authoritative tenant-data
+surfaces; `0.156.0` freezes and safely releases an authenticated deployment
+tenant-membership cut, `0.157.0` separately approves and atomically admits one
+exact-cut retirement plan, `0.158.0` fences successor-plan lineage and resume
+authority, `0.159.0` transfers broad topology fencing to a narrow domain guard
+with authoritative post-cut handoffs, `0.160.0` roots successor/protection state,
+`0.161.0` aggregates bounded fair child terminals, `0.162.0` transfers non-clean
+residual obligations tenant-locally, `0.163.0` governs residual membership/state
+lineage, `0.164.0` seals/consumes partition delivery, `0.165.0` owns restrictive
+emergency invalidation, `0.166.0–0.169.0` authorize/complete takeover, fund
+retained controls and release its barriers, `0.170.0–0.171.0` archive/verify
+retained cleanup, and `0.172.0–0.210.0` evaluate, linearize activation/abort,
 source-admit, fund bridge ownership, dispose failed admission, decide and
 conditionally quarantine permanent unknown, create its proof-bound replacement
 successor, and consume reinstall before releasing both control families;
-`0.60.3` defines/backfills authoritative-interface references and installs the
-prospective gate; `0.60.4` certifies them, while `0.120.8` certifies later domains.
+`0.228.0` defines/backfills authoritative-interface references and installs the
+prospective gate; `0.229.0` certifies them, while `0.336.0` certifies later domains.
 
-## `0.51.0` — Formal Cross-Surface Tenant Assurance
+## `0.151.0` — Formal Cross-Surface Tenant Assurance
 Status: planned. Setup: audit the structural tenant model already required since
 `0.2.0` across storage/cache/index/queue/blob/log/metric/export/backup and admin
 boundaries. Goal: formally demonstrate, not introduce, tenant isolation.
 Deliverables: proof inventory, partition contracts, adversarial twin-tenant harness.
 Verification: confused IDs, omitted filters, cache keys, jobs, exports, backups,
-and timing/count inference pass. Exit criteria: every interface proves isolation. `v0.51.0 implementation stop reached. Run pentest for this exact commit.`
+and timing/count inference pass. Exit criteria: every interface proves isolation. `v0.151.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.1` — Tenant Lifecycle And Topology Migration
+## `0.152.0` — Tenant Lifecycle And Topology Migration
 
 Status: planned.
-<!-- vitheim-invariant VIT-INV-036 0.51.1 -->
+<!-- vitheim-invariant VIT-INV-036 0.152.0 -->
 
 Setup: define provision, activate, suspend, resume, export, legal hold, close,
 delete, key destroy, identifier non-reuse, backup/index/cache cleanup, residency/
@@ -49,8 +49,8 @@ administrator scripts or scattered storage flags.
 
 Deliverables: tenant-lifecycle commands/events and enforcement epoch, process
 manager, cleanup proof ledger, migration plan/checkpoints, hold/erasure conflict
-policy, initial neutral `0.8.1` data-surface inventory consumed later by
-`0.51.2`, and runbook.
+policy, initial neutral `0.9.0` data-surface inventory consumed later by
+`0.153.0`, and runbook.
 
 Verification: ID reuse, suspend bypass, partial provisioning/deletion, held
 tenant deletion, stale cache/index/backup/blob, key destruction order, topology
@@ -60,10 +60,10 @@ admin, cross-tenant migration, and restore tests pass.
 Exit criteria: tenant closure either has policy-acceptable accurately typed
 disposition evidence for every then-known surface or remains visibly incomplete
 and recoverable; external uncertainty is not labeled verified deletion.
-`v0.51.1 implementation stop
+`v0.152.0 implementation stop
 reached. Run pentest for this exact commit.`
 
-## `0.51.2` — Tenant Data-Surface Lifecycle Registry
+## `0.153.0` — Tenant Data-Surface Lifecycle Registry
 
 Status: planned.
 
@@ -73,8 +73,8 @@ tenant key, data classes and accountable owner, authoritative/derived/external
 status, export behavior, retention and legal-hold behavior, erasure/deletion
 semantics, backup/restore handling, residency/replication, key ownership and
 destruction, rebuild capability, tenant-topology migration, and cleanup proof.
-Consume the neutral `0.8.1` N1 descriptor schema and backfill every surface
-created in `0.1.0–0.51.1`; earlier crates never import Phase F solely to
+Consume the neutral `0.9.0` N1 descriptor schema and backfill every surface
+created in `0.1.0–0.152.0`; earlier crates never import Phase F solely to
 register themselves. This milestone validates the complete backfill, then
 activates the generated compile/registration gate prospectively for itself and
 all later milestones.
@@ -104,7 +104,7 @@ Goal: make tenant lifecycle coverage mechanically complete as the platform adds
 new storage and external-copy paths.
 
 Deliverables: generated `TenantDataSurface` descriptor registry, compile/
-registration gate, pre-`0.51.2` descriptor backfill importer/report,
+registration gate, pre-`0.153.0` descriptor backfill importer/report,
 dependency-direction check, lifecycle-operation and retention-precedence
 planner, related-surface disposition graph, per-surface disposition receipts,
 non-sensitive tombstone validator, completeness report, closure blocker, and
@@ -120,7 +120,7 @@ data class, false derived/rebuild claim, export/hold/erasure conflict, stale
 backup/index/cache/external copy, residency mismatch, wrong key destruction,
 topology migration omission, cleanup-receipt forgery, restore resurrection, and
 late registration tests pass. Missing earlier-surface backfill, an earlier crate
-depending outward on Phase F, post-`0.51.2` registration bypass, rollup proof
+depending outward on Phase F, post-`0.153.0` registration bypass, rollup proof
 blocking mandatory deletion, historical authority surviving deletion without
 proof, rollup retention inherited from deleted raw data, omitted manifest/
 result/cache/export/linkable-checkpoint decision, sensitive tombstone, partial
@@ -139,11 +139,11 @@ permit, but cannot relabel it verified deletion or cryptographic erasure.
 Neither rollup authority nor availability history may override a mandatory
 deletion obligation, and no derived surface may inherit another surface's
 retention decision.
-`v0.51.2 implementation stop reached. Run pentest for this exact commit.`
+`v0.153.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.52.0` — Subjects And Service Principals
-<!-- vitheim-invariant VIT-INV-037 0.52.0 -->
-<!-- vitheim-invariant VIT-INV-048 0.52.0 -->
+## `0.211.0` — Subjects And Service Principals
+<!-- vitheim-invariant VIT-INV-037 0.211.0 -->
+<!-- vitheim-invariant VIT-INV-048 0.211.0 -->
 Status: planned. Setup: define human/service/device identities, issuer binding,
 lifecycle, credential facts, and impersonation prohibition. Define an
 external-identity-link aggregate keyed only by compound issuer plus immutable
@@ -169,11 +169,11 @@ stale/disabled identity, spoofing, and audit pass.
 Exit criteria: actor origin and lifecycle are explicit, and every external link
 is immutable-keyed, reviewable, reversible where permitted, and provenance
 complete.
-`v0.52.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.211.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.52.1` — OAuth Resource-Server Workload Authentication
+## `0.212.0` — OAuth Resource-Server Workload Authentication
 
-<!-- vitheim-invariant VIT-INV-050 0.52.1 -->
+<!-- vitheim-invariant VIT-INV-050 0.212.0 -->
 Status: planned as an OAuth resource-server profile; blocked until the exact
 token-validation/mTLS/TLS implementations and external-issuer conformance
 profile are admitted. Vitheim does not operate an OAuth authorization server or
@@ -211,7 +211,7 @@ prevent the first use of a stolen bearer token.
 Vitheim stores public validation material and external identity mappings, never
 client private credentials. Token issuance, client registration secrets, token
 exchange, delegation, impersonation, refresh tokens, and local OAuth grants are
-out of scope. Local agent enrollment remains the separate `0.119.0` device/
+out of scope. Local agent enrollment remains the separate `0.327.0` device/
 workload credential protocol. Email, display name, certificate subject, DNS
 name, client name, or external account name is never stable principal identity.
 
@@ -247,11 +247,11 @@ secret is silently enabled. Every privileged workload token is cryptographically
 sender constrained under the selected profile; any admitted bearer token is
 visibly lower assurance and restricted by policy. Privileged dispatch requires
 an authoritative local revocation epoch; a bounded-stale-only issuer profile is
-unsupported for that action class. `v0.52.1
+unsupported for that action class. `v0.212.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.53.0` — OIDC Integration
-<!-- vitheim-invariant VIT-INV-038 0.53.0 -->
+## `0.213.0` — OIDC Integration
+<!-- vitheim-invariant VIT-INV-038 0.213.0 -->
 Status: planned; blocked until this milestone admits an audited OIDC/client/TLS
 implementation and exact conformance profile. Setup: pin an exact
 OIDC conformance profile covering discovery, issuer/JWKS rotation, exact redirect
@@ -264,10 +264,10 @@ versions unable to validate the session root deny interactive dispatch/start.
 Goal: strong hosted authentication without granting authorization. Deliverables:
 OIDC identity adapter and session lifecycle. Verification: token/key/algorithm
 confusion, replay, fixation, mix-up, redirect, rotation, logout and revocation pass.
-Exit criteria: invalid or stale authentication fails closed. `v0.53.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: invalid or stale authentication fails closed. `v0.213.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.53.1` — WebAuthn Profile And Credential Lifecycle
-<!-- vitheim-invariant VIT-INV-049 0.53.1 -->
+## `0.214.0` — WebAuthn Profile And Credential Lifecycle
+<!-- vitheim-invariant VIT-INV-049 0.214.0 -->
 Status: planned; blocked until this milestone admits an audited WebAuthn
 implementation. Setup: pin the exact WebAuthn specification/profile, RP ID,
 origins, single-use challenges, user presence/verification, attestation,
@@ -280,10 +280,10 @@ Goal: review WebAuthn independently from OIDC rather than over-bundle protocols.
 Deliverables: credential ceremonies/lifecycle, conformance fixtures, and recovery
 runbook. Verification: origin/RP confusion, challenge replay, cloned counters,
 backup-state transitions, account enumeration, recovery and downgrade pass.
-Exit criteria: unsupported authenticators or states fail closed. `v0.53.1
+Exit criteria: unsupported authenticators or states fail closed. `v0.214.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.53.2` — Distributed Session Store
+## `0.215.0` — Distributed Session Store
 
 Status: planned; blocked until its exact hosted client/TLS/server profile and
 implementation-admission record are approved.
@@ -307,12 +307,12 @@ clock shift, logout/revocation racing dispatch, epoch rollback/reuse, store
 outage, cleanup, and restore tests pass.
 
 Exit criteria: every supported HA node observes revocation within the documented
-fail-closed bound. `v0.53.2 implementation stop reached. Run pentest for this exact commit.`
+fail-closed bound. `v0.215.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.53.3` — SAML Identity Profile And Adapter
+## `0.216.0` — SAML Identity Profile And Adapter
 
 Status: planned only for an intended production SAML profile; otherwise it is
-explicitly deferred at `0.140.9`. Implementation is blocked until exact SAML/
+explicitly deferred at `0.379.0`. Implementation is blocked until exact SAML/
 XML signature/encryption/client dependencies, conformance profile, maintenance,
 licenses, unsafe/native code, and cryptographic review are admitted.
 
@@ -335,10 +335,10 @@ mix-up, assertion/request replay, RelayState injection, clock abuse, metadata
 rollback, tenant/IdP confusion, account linking, logout, and fuzzing pass.
 
 Exit criteria: only the exact admitted SAML profile authenticates, supplies
-versioned identity facts, and never grants authorization. `v0.53.3
+versioned identity facts, and never grants authorization. `v0.216.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.54.0` — Directory And Group Synchronization
+## `0.217.0` — Directory And Group Synchronization
 Status: planned. Setup: define source authority, external IDs, delta/full sync,
 deletion, conflict, quarantine, and privilege review. Activated group changes
 increment the affected local authorization-fact epoch in the same transaction.
@@ -347,25 +347,25 @@ Deliverables: sync port, reconciliation, staged activation/epoch transition,
 and audit report.
 Verification: group takeover, stale privilege, deletion/recreation, replayed delta,
 oversized sync, group-change-versus-dispatch race, epoch reuse, and tenant tests
-pass. Exit criteria: source changes cannot silently escalate rights. `v0.54.0 implementation stop reached. Run pentest for this exact commit.`
+pass. Exit criteria: source changes cannot silently escalate rights. `v0.217.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.54.1` — SCIM Provisioning Profile And Adapter
+## `0.218.0` — SCIM Provisioning Profile And Adapter
 
 Status: planned only for an intended production SCIM profile; otherwise it is
-explicitly deferred at `0.140.9`. Hosted HTTP/TLS/client implementation requires
+explicitly deferred at `0.379.0`. Hosted HTTP/TLS/client implementation requires
 its own admission record.
 
 Setup: choose exactly one direction before implementation. The default
 candidate is an inbound Vitheim SCIM service that receives provisioning facts;
 an outbound SCIM client is a distinct alternative, not additional implicit
-scope. Pin exact SCIM specification/profile, base URL and tenant, `0.52.1`
+scope. Pin exact SCIM specification/profile, base URL and tenant, `0.212.0`
 workload identity, user/group resource schemas and extensions, external IDs,
 ETags, filters, sorting/pagination, PATCH/bulk support policy, active/deleted
 states, delta/full reconciliation, rate limits, retry/idempotency, and error
 privacy.
 
 Goal: implement standards-based directory provisioning through the guarded
-`0.54.0` synchronization lifecycle rather than direct role mutation.
+`0.217.0` synchronization lifecycle rather than direct role mutation.
 
 Deliverables: one SCIM server or client profile as selected, bounded codec/
 filter parser, mapping and quarantine rules, cursor/reconciliation state,
@@ -378,13 +378,13 @@ delete/recreate, stale ETag, pagination/bulk bombs, replay, partial batch,
 schema-extension drift, and parser fuzzing pass.
 
 Exit criteria: SCIM changes remain staged external identity/group facts and
-cannot silently create Vitheim roles or capabilities. `v0.54.1 implementation
+cannot silently create Vitheim roles or capabilities. `v0.218.0 implementation
 stop reached. Run pentest for this exact commit.`
 
-## `0.55.0` — RBAC Engine
-<!-- vitheim-invariant VIT-INV-040 0.55.0 -->
-<!-- vitheim-invariant VIT-INV-051 0.55.0 -->
-<!-- vitheim-invariant VIT-INV-052 0.55.0 -->
+## `0.219.0` — RBAC Engine
+<!-- vitheim-invariant VIT-INV-040 0.219.0 -->
+<!-- vitheim-invariant VIT-INV-051 0.219.0 -->
+<!-- vitheim-invariant VIT-INV-052 0.219.0 -->
 Status: planned. Setup: define platform, tenant, workspace, shared-space, and
 resource role/capability scopes; custom role templates, inheritance,
 separation-of-duties, explicit deny precedence, assignment provenance, expiry,
@@ -404,11 +404,11 @@ scope confusion, dashboard/action
 discovery leaks, shared-space escalation, stale/expired roles, unsafe custom
 roles, definition/assignment/group-change-versus-evaluation or dispatch races,
 raw SCIM fact promotion, epoch reuse, and property tests pass.
-Exit criteria: every permit cites the exact role path. `v0.55.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: every permit cites the exact role path. `v0.219.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.56.0` — ABAC Engine
+## `0.220.0` — ABAC Engine
 Status: planned. Setup: define one policy decision request containing tenant,
-<!-- vitheim-invariant VIT-INV-042 0.56.0 -->
+<!-- vitheim-invariant VIT-INV-042 0.220.0 -->
 subject, authentication assurance/sender-constraint/proof identity, action,
 resource, field set, purpose, environment and policy version;
 define typed fact provenance/freshness, operators, missing/unknown behavior,
@@ -418,9 +418,9 @@ recorded activation fences; predecessor-only nodes deny ABAC-dependent work.
 Deliverables: policy model/evaluator/compiler and `Deny`, `Permit`, or
 `PermitWithObligations` explanation—never a context-free boolean. Verification:
 missing/type-confused/stale facts, expression bombs, precedence, nondeterminism,
-and differential tests pass. Exit criteria: unknown facts never imply permit. `v0.56.0 implementation stop reached. Run pentest for this exact commit.`
+and differential tests pass. Exit criteria: unknown facts never imply permit. `v0.220.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.56.1` — Policy Lifecycle, Bootstrap, And Recovery
+## `0.221.0` — Policy Lifecycle, Bootstrap, And Recovery
 
 Status: planned.
 
@@ -443,11 +443,11 @@ concurrent activation, activation/rollback-versus-dispatch, epoch reuse, and
 policy-cache invalidation pass.
 
 Exit criteria: active policy always identifies a reviewed version and a tested
-least-authority recovery path. `v0.56.1 implementation stop reached. Run pentest for this exact commit.`
+least-authority recovery path. `v0.221.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.57.0` — Relationship-Based Authorization
+## `0.222.0` — Relationship-Based Authorization
 Status: planned. Setup: define admitted edge types, direction, depth/work bounds,
-<!-- vitheim-invariant VIT-INV-041 0.57.0 -->
+<!-- vitheim-invariant VIT-INV-041 0.222.0 -->
 security labels, freshness, explanation paths, and monotonic relationship-fact
 epochs updated with authoritative edge changes. Goal: authorize ownership/
 delegation graphs safely.
@@ -456,9 +456,9 @@ without the relationship-root contract deny relationship-dependent work.
 Deliverables: graph policy operator, enforcement epoch, and bounded path proof.
 Verification: forged
 edges, malicious cycles, hidden-node inference, path explosion, stale ownership,
-edge-change-versus-dispatch races, epoch reuse, and tenant tests pass. Exit criteria: permits include a visible bounded proof. `v0.57.0 implementation stop reached. Run pentest for this exact commit.`
+edge-change-versus-dispatch races, epoch reuse, and tenant tests pass. Exit criteria: permits include a visible bounded proof. `v0.222.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.58.0` — Field Redaction, Obligations, And Enforcement Registry
+## `0.223.0` — Field Redaction, Obligations, And Enforcement Registry
 Status: planned. Setup: classify fields, derived values, snippets, counts, caches,
 exports, and obligation enforcement points; generate an authority-interface
 registry from routes, commands, reads, exporters, notifications, workflows,
@@ -621,11 +621,11 @@ revocation pass.
 Exit criteria: hidden data cannot reappear downstream, and no external effect
 can bypass its declared commit/grant/redemption/dispatch/transmission-start
 authorization gates.
-`v0.58.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.223.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.59.0` — Delegation And Break-Glass Access
+## `0.224.0` — Delegation And Break-Glass Access
 Status: planned. Setup: require delegation to be a non-amplifying subset with
-<!-- vitheim-invariant VIT-INV-039 0.59.0 -->
+<!-- vitheim-invariant VIT-INV-039 0.224.0 -->
 tenant/resource scope, expiry, revocation and redelegation policy; break glass
 requires strong reauthentication, independent approval where feasible, dedicated
 short session, reason, notifications, live monitoring, and immutable usage.
@@ -652,10 +652,10 @@ amplification, delegation epoch rollback/reuse, worker confused deputy, and
 revocation tests pass. Exit criteria:
 every exception is bounded and visible, and no delayed effect outlives its
 selected execution authority or declared revocation conditions.
-`v0.59.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.224.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.60.0` — Authorization Conformance Suite
-Status: planned. Setup: enumerate every human and `0.52.1` workload command/
+## `0.225.0` — Authorization Conformance Suite
+Status: planned. Setup: enumerate every human and `0.212.0` workload command/
 read/field/search/export/blob/notification/admin/ingest interface currently
 implemented and every declared future interface schema from the generated
 registry; include token audiences, credential/policy versions, external-effect
@@ -822,4 +822,4 @@ transfer steps prove current local authority. Prepared cancellation creates one
 complete recovery successor with conservative parents, idempotent restore-safe
 receipts, no independent release, current-state/authority rechecks, and deadline
 escalation.
-`v0.60.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.225.0 implementation stop reached. Run pentest for this exact commit.`

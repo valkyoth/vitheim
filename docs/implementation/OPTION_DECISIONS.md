@@ -1,11 +1,11 @@
 # Pre-Production Profile Freeze Decisions
 
-Scope: primary decisions `0.140.1–0.140.11`; focused refinements
-`0.140.12–0.140.26` live in
+Scope: primary decisions `0.371.0–0.381.0`; focused refinements
+`0.382.0–0.396.0` live in
 [Product And Production Scope Splits](SCOPE_SPLITS_PRODUCT_PRODUCTION.md), and
-the independent full-suite support/defer decision `0.140.27` lives in
+the independent full-suite support/defer decision `0.397.0` lives in
 [Focused Product Capability Completions](PRODUCT_CAPABILITY_COMPLETIONS.md),
-and the minimum Hosted production go/no-go `0.140.28` lives in
+and the minimum Hosted production go/no-go `0.398.0` lives in
 [Roadmap Coherence Completions](ROADMAP_COHERENCE_COMPLETIONS.md).
 Together these evidence-producing releases revalidate and
 freeze production profiles from version-bound implementation-admission records
@@ -19,13 +19,13 @@ work begins. A decision that changes authority names the exact existing
 generation; it cannot hide an
 authority change inside a topology, dependency, or support-profile choice.
 
-## `0.140.1` — Cryptographic Primitive And Signature Decision
+## `0.371.0` — Cryptographic Primitive And Signature Decision
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.140.1`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.371.0`
 freezes cryptographic primitives and signature profiles only; transport/time,
-KMS/key lifecycle, and build/dependency evidence are `0.140.12–0.140.14`.
+KMS/key lifecycle, and build/dependency evidence are `0.382.0–0.384.0`.
 Migration/import decision: freeze the permanent-quarantine revocation intent
 preimage, target-scoped non-wrapping sequence, issuer/signing-key continuity,
 covering time/uncertainty fields and exact shared logical/physical workspace
@@ -165,7 +165,7 @@ class, principal label, untrusted routing header, or mutable service
 configuration cannot promote a caller. Rotation/revocation advances the lane
 mapping generation/fence, restore merges the greatest externally evidenced
 state, and ambiguous or stale mapping denies. The storage/accounting decision
-at `0.140.2` must enforce non-borrowable lane capacity and exact authorized-
+at `0.372.0` must enforce non-borrowable lane capacity and exact authorized-
 class equality without changing this identity decision.
 Select VIT-INV-061 as the sole authoritative mapping-lineage owner. Proposal,
 activation, promotion, rotation, revocation and recovery use stable mapping
@@ -247,7 +247,7 @@ audit/epochs/egress/security-cleanup quota, rotation/takeover-only redemption,
 and no derivation from quarantine or business-operation authority. If the
 provider has no independent path, freeze an explicit manual-intervention-only
 limitation and outage consequence.
-Freeze its `0.18.5` root-of-trust profile separately: first-admission evidence,
+Freeze its `0.27.0` root-of-trust profile separately: first-admission evidence,
 required requestor/approver/executor/risk-owner separation and quorum, whether
 two independently administered provider recovery channels exist, KMS/secret/
 identity failure-domain independence, offline/manual recovery that does not
@@ -485,16 +485,16 @@ predecessor fence. Replay, competing-successor substitution, cancellation-
 authority substitution, stale generation or changed canonical material returns
 the stored per-action result or typed conflict without mutation.
 Exit criteria: Phase O has one approved, replaceable crypto/key profile.
-`v0.140.1 implementation stop reached. Run pentest for this exact commit.`
+`v0.371.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.2` — Default Storage And Tenancy Candidate Decision
+## `0.372.0` — Default Storage And Tenancy Candidate Decision
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.140.2`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.372.0`
 selects the default storage/tenancy support matrix only; isolation,
 transactions, migration, recovery, experimental promotion, and final support
-truth are `0.140.15–0.140.20`.
+truth are `0.385.0–0.390.0`.
 Migration/import decision: freeze all four parent aggregate/membership rows,
 workspace parent transfer/inverse transactions, exact-cut checkpoint, bounded
 cleanup against the old stable Closed fence, settlement checkpoint and
@@ -2110,7 +2110,7 @@ successor, independent parent restore, duplicated/lost recovery receipt, missing
 current-state/authority recovery check or deadline escalation, incomplete/lossy/overflowing safety-floor key migration,
 unit/period/kind/lane/region/settlement-policy substitution, missing transition epoch,
 advertised active/active authoritative writes, backup/export, and fail-closed
-capability evidence is reviewed. Also inject every `0.22.0` lock/time/CAS/
+capability evidence is reviewed. Also inject every `0.52.0` lock/time/CAS/
 commit/timeout/response-loss/failover pause into each selected backend and
 reject omitted receipt/time fields, ratchet or tombstone reset, mechanism
 downgrade, uncertain-late commit, non-lossy migration failure, and downgrade
@@ -2211,9 +2211,9 @@ Missing barrier/receipt/owner state fails closed, and every topology outside
 the selected co-located profile is rejected before staging.
 Exit criteria: weaker isolation, unavailable co-location, and any topology that
 requires a distributed work transaction are rejected, not relabeled supported.
-`v0.140.2 implementation stop reached. Run pentest for this exact commit.`
+`v0.372.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.3` — Identity And Session Profile Decision
+## `0.373.0` — Identity And Session Profile Decision
 
 Status: planned.
 Migration/import decision: freeze distinct permanent-quarantine issuer,
@@ -2223,7 +2223,7 @@ allocator/verifier. Cleanup identity for an old campaign cannot act as the
 current selector, slot or new campaign; foreground workers cannot bypass or
 reset a cleanup turn, contention budget or backlog threshold.
 Setup: compare exact OIDC conformance profiles/providers, WebAuthn level and
-attestation/counter policy, session stores, recovery, logout, and the `0.52.1`
+attestation/counter policy, session stores, recovery, logout, and the `0.212.0`
 machine-to-machine profiles. Review `private_key_jwt`/mTLS choice, workload
 token lifetime/audience/proof, exact sender-constraint profile, privileged
 workload requirements, any restricted-bearer action matrix, external issuer/
@@ -2330,10 +2330,10 @@ after receipt but before start claim, concurrent replicas sharing credentials,
 worker-instance collision/remap, stale lease generation, takeover/restart, key
 rotation, enumeration, and degraded-provider behavior are independently
 reviewed.
-Exit criteria: production auth never falls back to the `0.40.0` test profile.
-`v0.140.3 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: production auth never falls back to the `0.119.0` test profile.
+`v0.373.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.4` — Plugin Runtime And Isolation Decision
+## `0.374.0` — Plugin Runtime And Isolation Decision
 
 Status: planned.
 Setup: compare Component Model runtimes, supported WIT/WASI level, process or
@@ -2460,9 +2460,9 @@ old-work revival, remediation capability exposure to guest code, derivation
 from quarantine, business-operation use, circular dependency, sole-key
 quarantine, outage/response loss, and no-independent-path automation.
 Exit criteria: cryptography is not claimed to enforce resource isolation.
-`v0.140.4 implementation stop reached. Run pentest for this exact commit.`
+`v0.374.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.5` — Privacy, Retention, Evidence, And Residency Decision
+## `0.375.0` — Privacy, Retention, Evidence, And Residency Decision
 
 Status: planned.
 Migration/import decision: retain workspace parent transfers, exact-cut proof,
@@ -2474,7 +2474,7 @@ credit/cut, revive authority, starve terminal cleanup or partially refund
 quarantine.
 Setup: classify records, metadata, evidence blobs, audit, backups, indexes,
 legal holds, erasure duties, residency, and conflicting jurisdictional rules;
-review the complete `0.51.2` tenant data-surface registry including customer
+review the complete `0.153.0` tenant data-surface registry including customer
 measurements/rollups, paging/status receipts, vectors/embeddings, plugin state,
 AI artifacts, federation projections, and connector checkpoints. Freeze an
 explicit precedence matrix distinguishing legal hold, mandatory erasure,
@@ -2521,7 +2521,7 @@ detailed actor/approval/change/incident fields remain in policy-governed audit/
 archive records. Deletion cannot make authorization reusable, erase required
 SoD evidence inside its guaranteed audit horizon, break the activation chain,
 or turn prior active state into unknown authority.
-Retain the `0.140.2` replay-admission/compaction scheduler contract as
+Retain the `0.372.0` replay-admission/compaction scheduler contract as
 security-relevant lifecycle state: finite per-scope quanta, bounded
 caller-independent yield/backoff, protected non-borrowable Recovery capacity,
 and a rule that admission cannot pin compaction past replay-permanence bounds.
@@ -2607,15 +2607,15 @@ Mandatory deletion proceeds even when doing so makes historical results
 unknown, with independently evaluated disposition evidence for every related
 surface and immutable non-sensitive evidence of the precedence decision and
 authority loss.
-`v0.140.5 implementation stop reached. Run pentest for this exact commit.`
+`v0.375.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.6` — Deployment Shape Decision
+## `0.376.0` — Deployment Shape Decision
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.140.6`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.376.0`
 selects deployment shapes only; HA/failover, regional/DR, and operational
-authority/recovery are `0.140.21–0.140.23`.
+authority/recovery are `0.391.0–0.393.0`.
 Migration/import decision: failover and restore resume the exact workspace
 parent member/transfer, logical+physical cut, old cleanup fence, settlement
 checkpoint, original/released/leg history, cleanup turn/contention/backlog and
@@ -2674,7 +2674,7 @@ The HA profile also resolves every declaration-derived invariant owner,
 transaction domain, stable contract ID, lifecycle/supersession fence, mixed-
 version rule, recovery field, and rollback floor. Only local credential
 activation is atomic; remote create/revoke is explicitly asynchronous.
-For topology authorization, preserve the exact `0.140.1` class ceilings and
+For topology authorization, preserve the exact `0.371.0` class ceilings and
 authenticated issued-at/deadline/uncertainty/time-profile/issuer-continuity
 fields across every service and region. Freeze independent issuer and consumer
 trusted-time adapters, maximum commit slack, local lower-bound/profile-epoch/
@@ -2709,7 +2709,7 @@ checkpoint linkage; exact checkpoint/deletion settled-leg tombstones; remaining
 unsettled legs; and conservative original-bucket balances. Omitting or
 defaulting either head, linkage, trigger, settled-leg, remaining-leg or balance
 fails decoding and admission. Singular-head input is never accepted: no
-Vitheim release admitted that schema, `0.29.0` defines no split migration, and
+Vitheim release admitted that schema, `0.66.0` defines no split migration, and
 preflight quarantines it before authority mutation while retaining conservative
 capacity and an unready destination. A future genuine compatibility need
 requires a separately versioned source-specific decision and security review.
@@ -2797,7 +2797,7 @@ Fenced as conflict, misclassify a different valid operation as
 changed material, skip reread after CAS loss, clean before terminal checkpoint, or
 replace the selected local transaction with a
 remote selector.
-Preserve the `0.140.2` atomic issuance bundle, layered deployment/issuer/
+Preserve the `0.372.0` atomic issuance bundle, layered deployment/issuer/
 `TopologyAuthorizationIngressWorkBudgetV1`, non-borrowable ingress-lane
 resource partitions/global ceiling, stage-one presentation-charge evidence/
 sequence/closed irreversible disposition/result link/continuity/checkpoint and
@@ -3094,9 +3094,9 @@ duplicate settlement.
 Exit criteria: every `1.0.0` deployment claim maps to a Phase O test profile;
 all ten option-decision authority reviews are resolved and no proposed
 authority candidate can enter Phase O.
-`v0.140.6 implementation stop reached. Run pentest for this exact commit.`
+`v0.376.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.7` — API, SDK, And Publication Decision
+## `0.377.0` — API, SDK, And Publication Decision
 
 Status: planned.
 Setup: inventory external API/ABI consumers, compatibility duration, SDK scope,
@@ -3107,14 +3107,14 @@ separately scoped MIT OR Apache-2.0 SDK allowlist with release controls.
 Verification: mass-assignment/auth/version tests and registry takeover/token/
 provenance/license review cover every selected publication path.
 Exit criteria: all platform crates remain `publish = false`; only an explicitly
-named SDK exception may change. `v0.140.7 implementation stop reached. Run pentest for this exact commit.`
+named SDK exception may change. `v0.377.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.8` — AI Production Enablement Decision
+## `0.378.0` — AI Production Enablement Decision
 
 Status: planned.
 Setup: compare disabled, advisory-only, and provider/model-specific profiles by
 purpose, tenant, classification, residency, retention, evaluation, contracts,
-and passing `0.98.1` hosted semantic-index plus `0.98.2` embedding-generator
+and passing `0.295.0` hosted semantic-index plus `0.296.0` embedding-generator
 evidence where similarity is enabled.
 Goal: decide whether AI is disabled or supported in a bounded `1.0.0` profile.
 Deliverables: approved purposes/providers/models, no-fallback rules, broker
@@ -3123,16 +3123,16 @@ Verification: prompt injection, retrieval/citation leakage, provider drift,
 cache/index partition, semantic adapter deletion/rebuild/outage, proposal non-
 execution, disable, and incident exercises pass.
 Exit criteria: absence of sufficient evidence selects disabled-by-default.
-`v0.140.8 implementation stop reached. Run pentest for this exact commit.`
+`v0.378.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.9` — Interchange Profile Freeze Decision
+## `0.379.0` — Interchange Profile Freeze Decision
 
 Status: planned.
 Setup: inventory implemented and requested identity, vulnerability, SBOM,
 threat-intelligence, logging, webhook, discovery, and document interchange
 profiles plus their exact specification versions, extensions, codecs, vendor
 connector profiles (including selected Microsoft Defender/Sentinel, Tenable,
-any `0.86.1` CMDB API, and any `0.86.2` cloud-native discovery API), licenses,
+any `0.276.0` CMDB API, and any `0.277.0` cloud-native discovery API), licenses,
 trust and update models. Explicitly decide
 inbound versus outbound SCIM, threat-intelligence ingestion versus STIX/TAXII
 publication, and whether raw log management or detection-rule authoring/testing
@@ -3149,7 +3149,7 @@ compatibility wording. Every profile without complete earlier implementation
 and pentest evidence is explicitly deferred. The default `1.0.0` boundary
 defers general raw-log storage/query, detection-rule authoring/execution,
 outbound STIX/TAXII publication, the unselected SCIM direction, and an
-unimplemented CMDB connector. An unimplemented or deferred `0.86.2` makes
+unimplemented CMDB connector. An unimplemented or deferred `0.277.0` makes
 cloud/Kubernetes/container kinds manual/generic-import-only and forbids any
 automatic discovery claim. If a post-`1.0.0` SIEM option is ever approved,
 it must be a separate bounded context and capacity architecture for security
@@ -3163,13 +3163,13 @@ downgrade, signature/source spoofing, round trips, lossiness, bombs, tenant/
 policy/marking mapping, directional-role confusion, high-volume capacity
 assumptions, and source-drift review pass for every selected profile.
 Exit criteria: `1.0.0` names only exact independently evidenced interchange
-profiles; generic family claims are forbidden. `v0.140.9 implementation stop
+profiles; generic family claims are forbidden. `v0.379.0 implementation stop
 reached. Run pentest for this exact commit.`
 
-## `0.140.10` — Federation Production Enablement Decision
+## `0.380.0` — Federation Production Enablement Decision
 
 Status: planned.
-Setup: review `0.120.1–0.120.5` evidence for disabled, bilateral shared-space,
+Setup: review `0.329.0–0.333.0` evidence for disabled, bilateral shared-space,
 federated work exchange, and managed-service profiles; exact protocol/API/
 schema versions; trust/transport; legal/controller-processor responsibilities;
 residency/retention; scale; support; incident; revocation; and interoperability.
@@ -3184,16 +3184,16 @@ partitions/replay, protocol downgrade, provider delegation abuse, revocation,
 offboarding, restore, erasure/hold/residency conflict, and incident exercises.
 Exit criteria: federation remains disabled by default; only exact profiles with
 complete bilateral evidence may enter Phase O and `1.0.0` support claims.
-`v0.140.10 implementation stop reached. Run pentest for this exact commit.`
+`v0.380.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.11` — Witness-Authority Retirement Freeze Decision
+## `0.381.0` — Witness-Authority Retirement Freeze Decision
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.140.11`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.381.0`
 freezes authority retirement only; replacement bootstrap, capacity
 transfer/quarantine, and checkpoint/replay operationalization are
-`0.140.24–0.140.26`.
+`0.394.0–0.396.0`.
 Setup: review the implemented contradictory-evidence fence, permanently
 retained proposal and both signed receipts, authority/key/distrust history,
 four-member capacity state, active reservation/settlement history, authority
@@ -3204,7 +3204,7 @@ plus the dedicated exact-set recovery checkpoint/publication/replay/restore
 lifecycle, staggered `C_n/H_n/P_n` dependency graph, typed checkpoint/pointer-
 query/restore commands, exact orphan-reference proof and independently
 witnessed current-pointer predecessor chain from
-`0.29.0–0.30.0`. Review the already passing Phase C replacement adversarial
+`0.66.0–0.72.0`. Review the already passing Phase C replacement adversarial
 corpus; this decision repeats/freezes it and is not its first execution.
 Also review the pinned recovery-genesis root/provenance lineage and offline
 signing/import ceremony; independent rollback-resistant pointer-observation
@@ -3526,4 +3526,4 @@ Exit criteria: unresolved evidence custody, authority retirement, safe
 capacity transfer or replacement bootstrap keeps witness archival unavailable
 for production. The selected profile requires an external pentest with zero
 unresolved critical/high findings.
-`v0.140.11 implementation stop reached. Run pentest for this exact commit.`
+`v0.381.0 implementation stop reached. Run pentest for this exact commit.`

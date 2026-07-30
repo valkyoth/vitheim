@@ -120,7 +120,7 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
     expected="VIT-LST-${suffix}-P, VIT-LST-${suffix}-N, VIT-LST-${suffix}-M, VIT-LST-${suffix}-F"
     [ "$tests" = "$expected" ] ||
         fail "$semantic must bind its exact P/N/M/F contracts"
-    [ "$gate" = "realization gate is later of effective and \`0.18.3\`; then implementation and P/N/M/F tests required" ] ||
+    [ "$gate" = "realization gate is later of effective and \`0.25.0\`; then implementation and P/N/M/F tests required" ] ||
         fail "$semantic has a noncanonical resolution gate"
 
     case "$reference" in
@@ -177,7 +177,7 @@ while IFS='|' read -r semantic reference effective rust_path transitions tests r
             return parts[1] * 1000000 + parts[2] * 1000 + parts[3]
         }
         BEGIN {
-            if (value(effective) < value("0.18.3")) print "0.18.3"
+            if (value(effective) < value("0.25.0")) print "0.25.0"
             else print effective
         }
     ')

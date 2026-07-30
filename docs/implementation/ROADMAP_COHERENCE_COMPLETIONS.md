@@ -8,10 +8,10 @@ weakening the existing owners. They do not authorize third-party Cargo code,
 move domain authority into an integration layer, or let a future-facing fake
 count as implemented integration.
 
-## `0.18.15` — Requirement Source Anchors And Drift Enforcement
+## `0.37.0` — Requirement Source Anchors And Drift Enforcement
 
 Status: planned.
-Setup: extend the `0.18.14` requirement schema with a stable source anchor,
+Setup: extend the `0.36.0` requirement schema with a stable source anchor,
 adjacent `vitheim-requirement` marker or structured-manifest origin, canonical
 text digest, primary owner, integration/retest owners, and symmetric
 supersession lineage; define bounded explicit exceptions for templates and
@@ -28,9 +28,9 @@ example false positive, and bounded-work failure pass.
 Exit criteria: every in-scope normative block resolves bidirectionally to one
 stable requirement lineage and exact source digest, or to one reviewed,
 machine-checkable non-normative exception.
-`v0.18.15 implementation stop reached. Run pentest for this exact commit.`
+`v0.37.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.18.16` — Hosted Feasibility And Dependency-Law Decision
+## `0.38.0` — Hosted Feasibility And Dependency-Law Decision
 
 Status: planned; owner policy selects repository-wide dependency-free or
 unsupported/deferred as the binding outcome.
@@ -55,13 +55,13 @@ Verification: hidden transitive/native dependency, improvised crypto/protocol,
 adapter work preceding its decision, admission-record-as-exception, unsupported
 feature advertised as active, first API/schema freeze without a technology
 disposition, topology/TCB first chosen in Phase O, N0/N1 contamination, and
-stale `0.140.14` revalidation pass.
+stale `0.384.0` revalidation pass.
 Exit criteria: every affected Hosted milestone is either backed by an audited
 dependency-free project implementation or is visibly blocked/deferred; no
 roadmap text, admission record, or adapter can silently relax the dependency law.
-`v0.18.16 implementation stop reached. Run pentest for this exact commit.`
+`v0.38.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.23` — Stable Domain Manifest Core
+## `0.95.0` — Stable Domain Manifest Core
 
 Status: planned.
 Setup: define stable `DomainId`, owning crate/layer, one-or-more `VIT-REQ-*`
@@ -83,9 +83,9 @@ work-budget pass.
 Exit criteria: every introduced domain has one stable manifest and requirement
 set; the core contains identifiers and references only and grants no command,
 authorization, data exposure, lifecycle decision, or surface semantics.
-`v0.30.23 implementation stop reached. Run pentest for this exact commit.`
+`v0.95.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.24` — Contribution Reference And Generation Safety
+## `0.96.0` — Contribution Reference And Generation Safety
 
 Status: planned.
 Setup: define registered `ContributionKindId`, authoritative registry/profile,
@@ -123,9 +123,9 @@ admission never enables a tenant feature, installs a plugin, grants a license
 or authorization, exposes commands, overrides lifecycle policy, or changes the
 referenced authority. Runtime availability remains a separate tenant-, policy-,
 entitlement-, license-, and installation-filtered decision.
-`v0.30.24 implementation stop reached. Run pentest for this exact commit.`
+`v0.96.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.25` — Contribution Deferral And Product-State Gates
+## `0.97.0` — Contribution Deferral And Product-State Gates
 
 Status: planned.
 Setup: define required/not-applicable/deferred contribution states with exact
@@ -149,13 +149,13 @@ are complete, no structural artifact exists, and its product state reflects the
 gap; existing code, data, routing, or schema is registered regardless of
 advertised support, and no Supported capability, RC, or `1.0.0` profile has an
 unresolved required contribution.
-`v0.30.25 implementation stop reached. Run pentest for this exact commit.`
+`v0.97.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.26` — Domain Event Ownership And Compatibility Gate
+## `0.98.0` — Domain Event Ownership And Compatibility Gate
 
 Status: planned.
-Setup: consume `0.30.23` manifests, the authoritative `0.8.0` event-schema
-registry, `0.14.0` compatibility/upcaster ownership, registered projector/
+Setup: consume `0.95.0` manifests, the authoritative `0.8.0` event-schema
+registry, `0.15.0` compatibility/upcaster ownership, registered projector/
 process-manager identities, current applicable foundation/control aggregates,
 deferrals, and product state.
 Goal: backfill current ownership and install a prospective domain-exit gate
@@ -173,14 +173,14 @@ Exit criteria: every current applicable emission/consumer resolves to the exact
 authoritative event lineage and compatible generation, and no later domain can
 exit until the same checks pass at its introducing stop; missing behavior
 blocks its owner and is never added here.
-`v0.30.26 implementation stop reached. Run pentest for this exact commit.`
+`v0.98.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.27` — Asynchronous Contract Ownership And Compatibility Gate
+## `0.99.0` — Asynchronous Contract Ownership And Compatibility Gate
 
 Status: planned.
-Setup: consume the authoritative async family through `0.18.10`: `0.16.x–0.18.2`
-schemas plus command/consumer realization at `0.18.8`, timer/activity realization
-at `0.18.9`, and poison/dead-letter plus adapter certification at `0.18.10`.
+Setup: consume the authoritative async family through `0.32.0`: `0.18.0–0.24.0`
+schemas plus command/consumer realization at `0.30.0`, timer/activity realization
+at `0.31.0`, and poison/dead-letter plus adapter certification at `0.32.0`.
 Distinguish stable `EffectKindId` capability/request schema from immutable
 execution `EffectId`, and register exact `MessageSchemaId`, `ConsumerId`,
 `TimerKindId`, `ActivityKindId`, result/reconciliation and compensation-effect-
@@ -205,9 +205,9 @@ kind/schema/consumer/policy/replay/disposition/horizon/terminal/result owners
 and compatible generations, and no later domain exits without the same proof;
 the gate creates no effect, message, consumer, timer, activity, reconciliation,
 or compensation behavior.
-`v0.30.27 implementation stop reached. Run pentest for this exact commit.`
+`v0.99.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.28` — Domain Retirement Contract And Prospective Gate
+## `0.100.0` — Domain Retirement Contract And Prospective Gate
 
 Status: planned.
 Setup: extend the domain registry with `Active → DeprecationAnnounced →
@@ -228,7 +228,7 @@ Deliverables: `DomainRetirementStateV1`, orthogonal evidence dimensions and
 terminal-claim projection, transition/recovery vocabulary, immutable ID
 tombstone, dependency/outstanding-work manifest, quiescence/fence contract,
 historical-codec/data-disposition obligations, rollback/reinstall rules, and
-prospective gate. `0.30.29` separately implements proposal authority and recovery.
+prospective gate. `0.101.0` separately implements proposal authority and recovery.
 Verification: `DomainId` reuse, retirement with incoming references, command/
 effect admitted after fence, undrained workflow/API/search/notification edge,
 pending inbox/outbox/timer/activity loss, codec/upcaster removal with retained
@@ -244,12 +244,12 @@ backup/import, or external-reference obligations remain unresolved, and this
 contract alone does not authorize or execute retirement. Only
 `RetiredVerified` satisfies a clean-retirement claim; every degraded,
 unavailable, blocked, quarantined, unresolved, or loss fact remains permanently visible.
-`v0.30.28 implementation stop reached. Run pentest for this exact commit.`
+`v0.100.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.50.18` — Supplier Performance Assessment And Risk Proposals
+## `0.150.0` — Supplier Performance Assessment And Risk Proposals
 
 Status: planned.
-Setup: consume immutable contractual obligations from `0.50.11`; define
+Setup: consume immutable contractual obligations from `0.143.0`; define
 assessment identity/period, method/version, assessor independence, evidence
 references, measurements, explained score, finding, correction, review
 schedule, and inert `RiskProposal` output.
@@ -263,12 +263,12 @@ parallel treatment/exception, stale evidence, and correction deletion pass.
 Exit criteria: every assessment is reproducible from exact obligation,
 evidence, method, assessor, period, and correction history; only Phase K can
 accept risk, create treatment, or authorize an exception or waiver.
-`v0.50.18 implementation stop reached. Run pentest for this exact commit.`
+`v0.150.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.3` — Tenant-Surface Reference Extension And Backfill
+## `0.154.0` — Tenant-Surface Reference Extension And Backfill
 
 Status: planned.
-Setup: consume the authoritative `0.51.2` `TenantDataSurface` registry and
+Setup: consume the authoritative `0.153.0` `TenantDataSurface` registry and
 reference, never duplicate, its IDs for aggregates, blobs/attachments, audit/
 evidence, subscriptions, reports, telemetry, federation/external replicas,
 caches, queues, inbox/outbox, search, configuration, and other tenant-bearing state.
@@ -279,18 +279,18 @@ Verification: copied retention/hold/backup/erasure fields, dangling/wrong-
 tenant ID, duplicate owner, missing derived/external surface, semantic/version
 disagreement, recovery-order cycle, and late surface bypass pass.
 Exit criteria: domain manifests contain only exact `TenantDataSurfaceId`
-references; `0.51.2` remains the sole lifecycle metadata authority and every
+references; `0.153.0` remains the sole lifecycle metadata authority and every
 later tenant-bearing surface registers and links at introduction.
-`v0.51.3 implementation stop reached. Run pentest for this exact commit.`
+`v0.154.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.4` — Tenant-Surface Contribution Certification
+## `0.155.0` — Tenant-Surface Contribution Certification
 
 Status: planned.
-Setup: consume `0.51.3` references, the authoritative `0.51.2`
+Setup: consume `0.154.0` references, the authoritative `0.153.0`
 `TenantDataSurface` registry, current domain/contribution generations,
 deferrals, product state, tenant-key rules, and recovery dependencies.
 Goal: certify the Phase D/E backfill immediately while leaving destructive
-full-suite restore, erasure, and closure certification to `0.145.3`.
+full-suite restore, erasure, and closure certification to `0.413.0`.
 Deliverables: generated domain/surface/lifecycle completeness matrix,
 reference-registry and tenant-key differentials, recovery-order graph, negative
 corpus, and certification report.
@@ -301,13 +301,13 @@ defer, false support, and late registration/handler pass.
 Exit criteria: every current tenant-bearing surface references the exact
 authoritative registry entry with acyclic recovery order and truthful product
 state; the certifier adds no registration, lifecycle field, or handler.
-`v0.51.4 implementation stop reached. Run pentest for this exact commit.`
+`v0.155.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.60.4` — Authorization Contribution Certification
+## `0.229.0` — Authorization Contribution Certification
 
 Status: planned.
 Setup: consume the authorization/redaction extension and Phase D–F backfill
-from `0.60.3`, the authoritative policy interface registry, current domain
+from `0.228.0`, the authoritative policy interface registry, current domain
 generations, deferrals, and product states.
 Goal: certify authorization contribution completeness separately from defining
 or backfilling those references.
@@ -318,12 +318,12 @@ generation, allow-by-default, unresolved required defer, false support, and
 late implementation in the certifier pass.
 Exit criteria: every current domain reference resolves to authoritative policy
 metadata and passes; missing behavior blocks the owner and is never added here.
-`v0.60.4 implementation stop reached. Run pentest for this exact commit.`
+`v0.229.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.70.5` — Workflow And Notification Contribution Certification
+## `0.244.0` — Workflow And Notification Contribution Certification
 
 Status: planned.
-Setup: consume the workflow/notification extension and backfill from `0.70.4`,
+Setup: consume the workflow/notification extension and backfill from `0.243.0`,
 authoritative IR/command/event/notification registries, current generations,
 deferrals, and support state.
 Goal: certify automation references without moving lifecycle or mappings into
@@ -335,13 +335,13 @@ mutation, stale authority, hidden-field notification, recursive loop,
 generation mismatch, unresolved defer, and late implementation pass.
 Exit criteria: referenced automation invokes only authoritative ordinary
 commands and reauthorizes at dispatch; the certifier adds no mapping.
-`v0.70.5 implementation stop reached. Run pentest for this exact commit.`
+`v0.244.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.100.2` — Search And History Contribution Certification
+## `0.300.0` — Search And History Contribution Certification
 
 Status: planned.
 Setup: consume the search/history extension and Phase D–J backfill from
-`0.100.1`, authoritative document schemas, deletion/redaction/rebuild owners,
+`0.299.0`, authoritative document schemas, deletion/redaction/rebuild owners,
 current generations, deferrals, and support state.
 Goal: certify discoverability without making the manifest or certifier a search authority.
 Deliverables: document/facet/history completeness matrix, rebuild orchestration
@@ -351,15 +351,15 @@ deletion, stale revocation, rebuild divergence, generation mismatch, unresolved
 defer, query exhaustion, and late implementation pass.
 Exit criteria: every referenced mapping is domain-owned and policy equivalent;
 missing behavior blocks the domain and is not implemented here.
-`v0.100.2 implementation stop reached. Run pentest for this exact commit.`
+`v0.300.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.118.5` — ERP Connector Adapter Profile
+## `0.326.0` — ERP Connector Adapter Profile
 
 Status: conditional planned milestone; implement one exact demanded ERP profile
 or record it unsupported/deferred.
-Setup: consume the `0.50.16` project-owned port and reconciliation semantics,
-`0.52.1` workload identity, Phase F policy/redaction, credential handles,
-egress allowlists, and `0.117.0` connector testkit; bind one provider/API
+Setup: consume the `0.148.0` project-owned port and reconciliation semantics,
+`0.212.0` workload identity, Phase F policy/redaction, credential handles,
+egress allowlists, and `0.320.0` connector testkit; bind one provider/API
 version, account/tenant, field ownership, conditional mutation, cursor,
 idempotency, response ambiguity, and provider-effect reconciliation profile.
 Goal: implement a real ERP boundary only after identity and connector security
@@ -371,16 +371,16 @@ Verification: principal/account/tenant substitution, secret exposure, SSRF,
 field smuggling, stale overwrite, duplicate/reordered event, response loss,
 currency/unit drift, unconditional mutation downgrade, and cursor rollback pass.
 Exit criteria: only the exact passing provider profile is supported; otherwise
-the `0.50.16` port and deterministic fake remain usable without a production
+the `0.148.0` port and deterministic fake remain usable without a production
 ERP claim.
-`v0.118.5 implementation stop reached. Run pentest for this exact commit.`
+`v0.326.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.120.8` — Late-Domain Authorization Contribution Certification
+## `0.336.0` — Late-Domain Authorization Contribution Certification
 
 Status: planned.
 Setup: consume current `DomainManifest` generations and exact authoritative
 authorization/redaction contribution IDs for privacy, inbound mail, audit
-export, federation, plugin/connector, and other post-`0.60.4` domains, together
+export, federation, plugin/connector, and other post-`0.229.0` domains, together
 with generation compatibility, deferrals, and product state.
 Goal: certify late-domain policy and redaction coverage without pretending
 those domains existed during Phase F.
@@ -394,9 +394,9 @@ presented as supported, and allow-by-default pass.
 Exit criteria: every applicable late-domain reference resolves and passes;
 the certifier adds no interface, policy/redaction case, or registration, and
 missing behavior blocks its owning capability.
-`v0.120.8 implementation stop reached. Run pentest for this exact commit.`
+`v0.336.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.120.9` — Late-Domain Workflow And Notification Contribution Certification
+## `0.337.0` — Late-Domain Workflow And Notification Contribution Certification
 
 Status: planned.
 Setup: consume current `DomainManifest` generations and exact authoritative
@@ -414,9 +414,9 @@ loop, false not-applicable, unresolved defer, and unsupported action pass.
 Exit criteria: late-domain automation invokes only exact authoritative
 ordinary commands and reauthorizes notifications at dispatch; the certifier
 adds no trigger, action, mapping, or notification rule.
-`v0.120.9 implementation stop reached. Run pentest for this exact commit.`
+`v0.337.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.120.10` — Late-Domain Search And History Contribution Certification
+## `0.338.0` — Late-Domain Search And History Contribution Certification
 
 Status: planned.
 Setup: consume current `DomainManifest` generations and exact authoritative
@@ -435,12 +435,12 @@ supported, and query-complexity exhaustion pass.
 Exit criteria: every applicable reference resolves and current application
 reads and search remain policy-equivalent; the certifier adds no document,
 mapping, facet, deletion behavior, or rebuild hook.
-`v0.120.10 implementation stop reached. Run pentest for this exact commit.`
+`v0.338.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.132.4` — Workspace Contribution Composition And Certification
+## `0.354.0` — Workspace Contribution Composition And Certification
 
 Status: planned.
-Setup: consume the workspace extension/backfill from `0.132.3`, authoritative
+Setup: consume the workspace extension/backfill from `0.353.0`, authoritative
 block/profile registries, current contribution generations, deferrals, and support state.
 Goal: compose full-suite workspaces without implementing domain blocks here.
 Deliverables: navigation/composition manifests, role/purpose layouts, small/
@@ -450,12 +450,12 @@ profile privilege, query storm, XSS, generation mismatch, unresolved defer,
 unsupported feature, and late implementation pass.
 Exit criteria: composition adds no domain command, DTO, field, block, or
 privilege; incomplete domain contributions fail closed.
-`v0.132.4 implementation stop reached. Run pentest for this exact commit.`
+`v0.354.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.138.6` — External API And SDK Contribution Certification
+## `0.366.0` — External API And SDK Contribution Certification
 
 Status: planned.
-Setup: consume the API extension/backfill from `0.138.4`, authoritative API v1
+Setup: consume the API extension/backfill from `0.364.0`, authoritative API v1
 schemas, existing application services, current generations, deferrals,
 subscription contracts, and support state.
 Goal: assemble and freeze the supported API/SDK without implementing mappings here.
@@ -466,13 +466,13 @@ assignment, cursor/consistency mismatch, hidden field, generation downgrade,
 unresolved defer, SDK drift, and late implementation pass.
 Exit criteria: every external mapping resolves to authoritative application and
 API entries; the certifier creates no service, DTO, route, or error mapping.
-`v0.138.6 implementation stop reached. Run pentest for this exact commit.`
+`v0.366.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.138.7` — Transfer And Configuration Contribution Certification
+## `0.367.0` — Transfer And Configuration Contribution Certification
 
 Status: planned.
 Setup: consume the typed transfer/configuration extension and backfill from
-`0.138.5`, authoritative import/export/config registries, current generations,
+`0.365.0`, authoritative import/export/config registries, current generations,
 deferrals, secret-reference/environment-overlay rules, and support state.
 Goal: certify cross-domain transfer without a generic record fallback.
 Deliverables: composed transfer manifest, staging/orchestration matrix, dry-run
@@ -482,12 +482,12 @@ reference, partial activation, erased-data resurrection, generation downgrade,
 unresolved defer, generic fallback, and late implementation pass.
 Exit criteria: every transfer is authoritative-registry-referenced, typed,
 staged, policy-filtered, and separately activated; the certifier adds no codec.
-`v0.138.7 implementation stop reached. Run pentest for this exact commit.`
+`v0.367.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.140.28` — Minimum Hosted Production Profile Go/No-Go
+## `0.398.0` — Minimum Hosted Production Profile Go/No-Go
 
 Status: planned; failure blocks a Hosted `1.0.0` production claim.
-Setup: consume `0.18.16` feasibility outcomes and frozen transport/crypto/KMS,
+Setup: consume `0.38.0` feasibility outcomes and frozen transport/crypto/KMS,
 storage, identity/session, hostile-input, packaging, operational, recovery, and
 exact-commit evidence; consume the selected mandatory ITSM/SecOps/asset/workflow
 core and its versioned quantitative workload envelope, and distinguish it from
@@ -504,4 +504,4 @@ confusion, hidden installer path, documentation drift, and gate bypass pass.
 Exit criteria: `1.0.0` proceeds as a Hosted production product only if every
 mandatory baseline capability is Supported with exact evidence; otherwise the
 Hosted release and claim remain blocked regardless of schedule.
-`v0.140.28 implementation stop reached. Run pentest for this exact commit.`
+`v0.398.0 implementation stop reached. Run pentest for this exact commit.`

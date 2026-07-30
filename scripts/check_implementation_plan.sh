@@ -3,7 +3,7 @@ set -eu
 
 failed=0
 
-for minor in $(seq 1 150); do
+for minor in $(seq 1 424); do
     version="0.$minor.0"
     count="$(grep -R -l "^## \`$version\`" docs/implementation | wc -l)"
     if [ "$count" -ne 1 ]; then
@@ -18,15 +18,14 @@ if [ "$production_count" -ne 1 ]; then
     failed=1
 fi
 
-extra_versions="$(cat scripts/implementation_companion_versions.txt)"
-
-for version in $extra_versions; do
-    count="$(grep -R -l "^## \`$version\`" docs/implementation | wc -l)"
-    if [ "$count" -ne 1 ]; then
-        echo "implementation plan: expected one heading for $version, found $count" >&2
-        failed=1
-    fi
-done
+planned_patch_count="$(
+    grep -R -E -o '^## `0\.[0-9]+\.[1-9][0-9]*`' docs/implementation |
+        wc -l
+)"
+if [ "$planned_patch_count" -ne 0 ]; then
+    echo "implementation plan: planned patch-version headings are forbidden" >&2
+    failed=1
+fi
 
 for field in Status Setup Goal Deliverables Verification 'Exit criteria'; do
     count="$(grep -R -o "$field:" docs/implementation | wc -l)"
@@ -58,6 +57,9 @@ require_text() {
 
 require_text docs/implementation/PHASE_B.md \
     '`EffectExecutionState`:' 'effect execution state'
+require_text docs/RELEASE_GRANULARITY_STANDARD.md \
+    '424 independently implementable pre-production minor releases' \
+    'one planned minor release per exact stop'
 require_text docs/implementation/PHASE_B.md \
     '`RemoteOutcome`:' 'remote outcome'
 require_text docs/implementation/PHASE_B.md \
@@ -180,7 +182,7 @@ require_text docs/implementation/PHASE_B.md \
     'Credential operations use one explicit `ProviderCredentialOperationProfile`.' \
     'explicit bearer versus non-exportable credential profile'
 require_text docs/implementation/PHASE_B.md \
-    '## `0.18.3` — Stable Invariant And Law Declaration Registry' \
+    '## `0.25.0` — Stable Invariant And Law Declaration Registry' \
     'invariant ownership corrective milestone'
 require_text docs/implementation/PHASE_B.md \
     'formally backfill all authority declared from' \
@@ -255,25 +257,25 @@ require_text docs/LAW_ACTIVE_CATALOGS.md \
     '`WorkloadSignedReceipt`' \
     'closed catalog receipt authentication variants'
 require_text docs/implementation/PHASE_B.md \
-    '<!-- vitheim-invariant VIT-INV-057 0.18.3 -->' \
+    '<!-- vitheim-invariant VIT-INV-057 0.25.0 -->' \
     'owned global active law catalog lineage'
 require_text docs/implementation/PHASE_B.md \
-    '<!-- vitheim-invariant VIT-INV-058 0.18.3 -->' \
+    '<!-- vitheim-invariant VIT-INV-058 0.25.0 -->' \
     'independently owned local catalog admission ratchet'
 require_text docs/implementation/PHASE_B.md \
-    '<!-- vitheim-invariant VIT-INV-059 0.18.3 -->' \
+    '<!-- vitheim-invariant VIT-INV-059 0.25.0 -->' \
     'durable catalog rollout process-manager owner'
 require_text docs/implementation/PHASE_B.md \
-    '<!-- vitheim-law VIT-LAW-007 0.18.3 -->' \
+    '<!-- vitheim-law VIT-LAW-007 0.25.0 -->' \
     'catalog admission composite law'
 require_text docs/implementation/PHASE_B.md \
-    '<!-- vitheim-law VIT-LAW-008 0.18.3 -->' \
+    '<!-- vitheim-law VIT-LAW-008 0.25.0 -->' \
     'catalog rollout composite law'
 require_text docs/implementation/PHASE_O.md \
-    '<!-- vitheim-invariant VIT-INV-060 0.141.0 -->' \
+    '<!-- vitheim-invariant VIT-INV-060 0.399.0 -->' \
     'independent dynamic placement topology owner'
 require_text docs/implementation/PHASE_O.md \
-    '<!-- vitheim-invariant VIT-INV-061 0.141.0 -->' \
+    '<!-- vitheim-invariant VIT-INV-061 0.399.0 -->' \
     'independent topology-authorization issuer'
 require_text docs/implementation/OPTION_DECISIONS.md \
     '`TrustedTopologyAuthorizationTime` capability' \
@@ -291,7 +293,7 @@ require_text docs/AUTHORITY_REVIEWS.md \
     '# Milestone Authority Reviews' \
     'post-bootstrap milestone authority dispositions'
 require_text docs/implementation/PHASE_B.md \
-    '## `0.18.4` — Bounded Evaluator Re-evaluation Scheduler' \
+    '## `0.26.0` — Bounded Evaluator Re-evaluation Scheduler' \
     'bounded evaluator reevaluation milestone'
 require_text docs/implementation/PHASE_B.md \
     'soon as status no longer contains `planned`' \
@@ -432,7 +434,7 @@ require_text docs/implementation/PHASE_B.md \
     '`EvaluatorInvalidationCampaignRoot`' \
     'durable evaluator invalidation campaign root'
 require_text docs/implementation/PHASE_B.md \
-    '## `0.18.5` — Remediation Authority Bootstrap And Recovery' \
+    '## `0.27.0` — Remediation Authority Bootstrap And Recovery' \
     'remediation root-of-trust milestone'
 require_text docs/implementation/PHASE_B.md \
     'The root also owns a monotonic `ActiveRolloutGeneration`' \

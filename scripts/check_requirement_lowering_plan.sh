@@ -53,7 +53,7 @@ require_text "$plan" \
     'No authority-bearing member is optional' \
     'final restriction authority has no optional member'
 require_text "$plan" \
-    '0.51.33` — Pre-Operational Lowering Admission And Ownership Adoption' \
+    '0.184.0` — Pre-Operational Lowering Admission And Ownership Adoption' \
     'pre-operational lowered bridge adoption'
 require_text "$plan" \
     '`AdoptPreOperationalLoweringPartitionV1`' \
@@ -143,7 +143,7 @@ require_text "$plan" \
     'only when pending is exactly zero' \
     'predecessor cleanup requires zero pending'
 require_text "$plan" \
-    '0.51.38` — Release-Member Prepared-Construction Certification' \
+    '0.189.0` — Release-Member Prepared-Construction Certification' \
     'release-member construction certification stop'
 require_text "$plan" \
     '`UnknownRestrictionLoweringReleaseMemberBudgetDigestV1`' \
@@ -152,7 +152,7 @@ require_text "$plan" \
     'initial_version < pending_update_ceiling < reserved_terminal_version' \
     'checked member budget ordering'
 require_text "$plan" \
-    '0.51.39` — Saturated Release-Member Retry Authority' \
+    '0.190.0` — Saturated Release-Member Retry Authority' \
     'saturated retry authority stop'
 require_text "$plan" \
     '`ResumeSaturatedReleaseMemberReconciliationV1`' \
@@ -161,7 +161,7 @@ require_text "$plan" \
     'It cannot manufacture or select Released/RetainedAccepted' \
     'retry command cannot create terminal authority'
 require_text "$plan" \
-    '0.51.40` — Release-Member Transition-Continuity Proof' \
+    '0.191.0` — Release-Member Transition-Continuity Proof' \
     'transition continuity stop'
 require_text "$plan" \
     '`UnknownRestrictionLoweringMemberTransitionReceiptV1`' \
@@ -206,13 +206,13 @@ require_text "$plan" \
     'Retry-budget replenishment or count reset is unsupported through `1.0.0`.' \
     'no retry lifetime budget reset'
 require_text "$plan" \
-    'operational `0.51.37` dispatch or member transition' \
+    'operational `0.188.0` dispatch or member transition' \
     'continuity admission precedes first dispatch'
 require_text "$plan" \
     'There is no one-time event-journal, signed-checkpoint or inferred-history' \
     'no post-hoc transition history bootstrap'
 require_text "$plan" \
-    '0.51.41` — Release-Member Budget Policy And Worst-Case Funding' \
+    '0.192.0` — Release-Member Budget Policy And Worst-Case Funding' \
     'release-member policy and funding stop'
 require_text "$plan" \
     '`ReleaseMemberBudgetPolicyV1`' \
@@ -221,16 +221,16 @@ require_text "$plan" \
     'facts but no numeric limits.' \
     'caller cannot select member limits'
 require_text "$plan" \
-    '0.51.42` — Bounded Release-Member Construction Lifecycle' \
+    '0.193.0` — Bounded Release-Member Construction Lifecycle' \
     'bounded release-member construction stop'
 require_text "$plan" \
     '`Preparing → ConstructionSealed → Activated | Disposed`' \
     'closed bounded construction lifecycle'
 require_text "$plan" \
-    'The final `0.51.34`/`0.51.36` guard-slot CAS performs bounded work only' \
+    'The final `0.185.0`/`0.187.0` guard-slot CAS performs bounded work only' \
     'bounded final guard-slot activation'
 require_text "$plan" \
-    '0.51.43` — Partition-Local Release Effects And Parent Folding' \
+    '0.194.0` — Partition-Local Release Effects And Parent Folding' \
     'partition-local effect and parent fold stop'
 require_text "$plan" \
     '`PredecessorReleaseEffectReceiptV1`' \
@@ -242,7 +242,7 @@ require_text "$plan" \
     'No transaction spans stores.' \
     'cross-store transactions forbidden'
 require_text "$plan" \
-    '0.51.44` — Saturated-Retry Ledger Continuity' \
+    '0.195.0` — Saturated-Retry Ledger Continuity' \
     'saturated retry ledger continuity stop'
 require_text "$plan" \
     '`SaturatedRetryBudgetLedgerV1 { member_id, member_generation, budget_digest,' \
@@ -251,7 +251,7 @@ require_text "$plan" \
     'The release member remains' \
     'retry charge does not mutate saturated member'
 require_text "$plan" \
-    '0.51.45` — Distributed Predecessor Enforcement Inventory Cut' \
+    '0.196.0` — Distributed Predecessor Enforcement Inventory Cut' \
     'distributed predecessor inventory cut stop'
 require_text "$plan" \
     '`PredecessorEnforcementInventoryCutV1`' \
@@ -263,7 +263,7 @@ require_text "$plan" \
     'invalidation projection is never sufficient authority to activate.' \
     'delayed invalidation cannot prove activation freshness'
 require_text "$plan" \
-    '0.51.46` — Parent-Local Release Effect Intent' \
+    '0.197.0` — Parent-Local Release Effect Intent' \
     'parent-local effect intent stop'
 require_text "$plan" \
     '`ReleaseMemberEffectIntentV1`' \
@@ -278,7 +278,7 @@ require_text "$plan" \
     'does not mutate or consume the release-member version' \
     'effect intent does not spend member version'
 require_text "$plan" \
-    '0.51.47` — Activation-Bound Remote Effect Authorization' \
+    '0.198.0` — Activation-Bound Remote Effect Authorization' \
     'activation-bound remote effect authority stop'
 require_text "$plan" \
     '`ReleaseMemberEffectAuthorizationV1 = Release { source_owner, effect_id, ... }' \
@@ -311,7 +311,7 @@ require_text "$plan" \
     'atomically consumes the one-shot authority, commits the physical effect,' \
     'remote effect consumes authority locally'
 require_text "$plan" \
-    '0.51.48` — Physical Effect Conflict Reconciliation' \
+    '0.199.0` — Physical Effect Conflict Reconciliation' \
     'physical effect conflict reconciliation stop'
 require_text "$plan" \
     '`EffectConflictDetected → EffectConflictReconciling → SingleEffectSettled`' \
@@ -323,7 +323,7 @@ require_text "$plan" \
     'a member becomes terminal only after every physical effect is' \
     'no terminal member with unsettled physical effects'
 require_text "$plan" \
-    '0.51.49` — Restrictive-Safety Inventory Mutation Lane' \
+    '0.200.0` — Restrictive-Safety Inventory Mutation Lane' \
     'restrictive safety inventory mutation lane'
 require_text "$plan" \
     '`RestrictiveSafety` commits in one source-local transaction even' \
@@ -335,7 +335,7 @@ require_text "$plan" \
     '`DecisionNeutral` requires a typed proof' \
     'neutral inventory mutation requires proof'
 require_text "$plan" \
-    '0.51.50` — Effect Authorization And Delivery Closure' \
+    '0.201.0` — Effect Authorization And Delivery Closure' \
     'effect authorization and delivery closure stop'
 require_text "$plan" \
     '`EffectDeliveryOpen → EffectAuthorizationCutSealed →' \
@@ -359,7 +359,7 @@ require_text "$plan" \
     'CAS consumes that current closure root' \
     'terminal CAS consumes delivery closure'
 require_text "$plan" \
-    '0.51.51` — Post-Closure Unauthorized Effect Incident Ownership' \
+    '0.202.0` — Post-Closure Unauthorized Effect Incident Ownership' \
     'post-closure unauthorized effect incident stop'
 require_text "$plan" \
     '`PostClosureUnauthorizedEffectIncidentV1`' \
@@ -398,7 +398,7 @@ require_text "$plan" \
     'reopens, changes or derives authority from the absorbing release member' \
     'post-closure incident cannot reopen terminal history'
 require_text "$plan" \
-    '0.51.52` — No-Effect Intent Disposition And Replanning' \
+    '0.203.0` — No-Effect Intent Disposition And Replanning' \
     'no-effect intent disposition stop'
 require_text "$plan" \
     '`IntentCommitted → IntentDispositionRequested → IntentDispatchFenced →' \
@@ -437,7 +437,7 @@ require_text "$plan" \
     'cannot manufacture an effect identity/sequence, prove historical absence,' \
     'manual evidence cannot manufacture authority or absence'
 require_text "$plan" \
-    '0.51.53` — Physical-Status Authority Continuity Succession' \
+    '0.204.0` — Physical-Status Authority Continuity Succession' \
     'physical status authority continuity succession stop'
 require_text "$plan" \
     '`PhysicalEffectStatusAuthorityContinuityV1`' \
@@ -449,7 +449,7 @@ require_text "$plan" \
     'handoff fence prevents predecessor and successor from both issuing current' \
     'status authority predecessor successor exclusion'
 require_text "$plan" \
-    '0.51.54` — Authorization Dispatch-Attempt Ledger' \
+    '0.205.0` — Authorization Dispatch-Attempt Ledger' \
     'authorization dispatch attempt accounting stop'
 require_text "$plan" \
     '`AuthorizationDispatchAttemptLedgerV1`' \
@@ -461,7 +461,7 @@ require_text "$plan" \
     'sealed non-`Clone`, non-serializable process-local permit.' \
     'dispatch charge uses canonical non-transferable permit custody'
 require_text "$plan" \
-    '0.51.55` — Bounded Delivery-Seal Construction And Backend Admission' \
+    '0.206.0` — Bounded Delivery-Seal Construction And Backend Admission' \
     'bounded delivery seal construction stop'
 require_text "$plan" \
     '`EffectDeliverySealAtomicityProfileV1`' \

@@ -1,17 +1,17 @@
 # Phase L — WASM And Integrations
 
-Scope: `0.111.0–0.120.0`. Components receive capabilities, never direct storage.
-Focused companions `0.118.3–0.118.4` own inbound service-desk mail, while
-`0.120.6–0.120.7` own signed security-audit export and hosted delivery; neither
+Scope: `0.313.0–0.328.0`. Components receive capabilities, never direct storage.
+Focused releases `0.324.0–0.325.0` own inbound service-desk mail, while
+`0.334.0–0.335.0` own signed security-audit export and hosted delivery; neither
 is hidden inside the generic connector milestone.
-`0.118.5` owns the first real ERP adapter/defer decision after workload
-identity and connector infrastructure. `0.120.8–0.120.10` separately certify
+`0.326.0` owns the first real ERP adapter/defer decision after workload
+identity and connector infrastructure. `0.336.0–0.338.0` separately certify
 late-domain authorization, automation, and search/history contributions from
 current manifests, exact authoritative IDs, deferrals, and product state.
 Plugin uninstall removes an admitted installation only; it neither retires its
-domain nor deletes tenant data. Any such retirement follows the `0.30.28`
-contract and `0.30.29` exact-tenant authority/recovery protocol; deployment
-scope additionally requires the `0.51.5–0.51.59` cut, plan/succession, guard/
+domain nor deletes tenant data. Any such retirement follows the `0.100.0`
+contract and `0.101.0` exact-tenant authority/recovery protocol; deployment
+scope additionally requires the `0.156.0–0.210.0` cut, plan/succession, guard/
 root, terminal aggregation, residual handoff/state/delivery cuts, restrictive
 invalidation, takeover/release, funded retained-control transfer,
 archival/retained-namespace safety, partition-fenced evaluation, source-
@@ -20,18 +20,18 @@ ownership, partial-admission abort/supersession, permanent-unknown policy and
 any selected quarantine recovery, proof-bound replacement genesis, guard
 supersession, and dual release sequence. Every
 selected profile must later
-pass `0.145.4`, and a loss terminal is never presented as clean retirement.
+pass `0.414.0`, and a loss terminal is never presented as clean retirement.
 
-## `0.111.0` — Versioned WIT Interfaces
+## `0.313.0` — Versioned WIT Interfaces
 Status: planned. Setup: pin Component Model/WIT sources, ABI versions, owned
 types, compatibility and limits; default worlds import no WASI filesystem,
 environment, clock, randomness, sockets, or processes. Goal: stable least-
 authority extension contracts. Deliverables: WIT worlds/packages/bindings and
 test fixtures. Verification: malformed components, forbidden imports, ABI/
 version/type confusion, oversized values pass. Exit criteria: unknown ABI or
-ambient import fails closed. `v0.111.0 implementation stop reached. Run pentest for this exact commit.`
+ambient import fails closed. `v0.313.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.112.0` — Deterministic Component Execution
+## `0.314.0` — Deterministic Component Execution
 Status: planned; blocked until this milestone admits the exact audited Component
 Model runtime/version, maintenance, license, unsafe/native code, and isolation
 profile. Setup: fuel, memory, imports, deterministic clock/random inputs, output,
@@ -39,9 +39,9 @@ cancellation, and version-bound admission record. Goal: sandboxed pure
 extensions. Deliverables: runtime port/adapter, admission evidence, and
 determinism harness. Verification: fuel/memory bypass, nondeterminism, traps,
 covert imports, escape tests pass. Exit criteria: pure components have no
-ambient authority. `v0.112.0 implementation stop reached. Run pentest for this exact commit.`
+ambient authority. `v0.314.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.113.0` — Effectful Component Execution
+## `0.315.0` — Effectful Component Execution
 Status: planned. Setup: capability calls, stable `EffectId`/request digest,
 commit-time authorization, immutable tenant/initiator/delegation/capability/
 target/purpose/request/policy/assurance bindings, declared authorization
@@ -50,7 +50,7 @@ authority, current redemption where required, provider idempotency-
 key scope/retention, status-query and reconciliation support, retry/replay
 horizon, typed `RemoteTargetConcurrencyProfile` for provider mutations,
 immutable validator/provider/account/resource binding, compensation, privilege/non-compensability, bounded typed quota-claim
-settlement, and audit. Each capability maps exactly onto the `0.18.2`
+settlement, and audit. Each capability maps exactly onto the `0.24.0`
 execution state, remote outcome, resolution source/evidence, operational
 resolution workflow, and separate compensation state; plugins cannot select a
 stronger capability, synthesize provider evidence, close a privileged manual
@@ -172,9 +172,9 @@ disposition, per-kind quota state, and compensation remain independently
 attributable. A compromised executor is bounded to its admitted provider
 execution profile and cannot obtain platform-wide keys, general writes,
 unclaimed credentials, or arbitrary network reach.
-`v0.113.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.315.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.114.0` — Capability And Secret Handles
+## `0.316.0` — Capability And Secret Handles
 Status: planned. Setup: manifests bind plugin digest, tenant, instance, action,
 target, expiry, nonce, and policy version; opaque authenticated handles recheck
 all bindings/current policy at redemption. External KMS/secret service retains
@@ -212,7 +212,7 @@ authorization serialization, redirects, TLS, claim, and socket; temporary bearer
 bytes stay inside that broker TCB and its memory-canary boundary.
 Define plugins as stateless by default; any state capability is explicitly
 tenant/plugin/instance namespaced, schema-versioned, quota-bound, exportable,
-erasable, migratable, and registered in `0.51.2`. Goal: least-authority plugins. Deliverables:
+erasable, migratable, and registered in `0.153.0`. Goal: least-authority plugins. Deliverables:
 manifest/evaluator, non-extractable secret-operation broker, authenticated HTTP/
 signing/token/certificate host operations, provider-execution-profile evaluator,
 scoped-handle redemption receipts, and optional plugin-state port.
@@ -242,22 +242,22 @@ plaintext credentials never enter guest
 memory through any supported plugin API; exceptions are separate hosted
 products and cannot inherit this plugin-security claim; no supported profile
 turns a credential broker or executor into a general secret, database, or
-network authority. `v0.114.0
+network authority. `v0.316.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.115.0` — Resource Metering
+## `0.317.0` — Resource Metering
 Status: planned. Setup: per-plugin/tenant instructions and host-call work,
 linear memory, tables, stack, instances, concurrency, output/log, wall time,
 network bytes, epoch interruption, and OS process CPU/memory limits. Goal: resist
 plugin denial of service. Deliverables: meters, cancellation and quota evidence.
 Verification: guest/host limit bypass, amplification, slow output, connection
 storms, accounting overflow and OS containment pass. Exit criteria: exhaustion
-isolates the plugin. `v0.115.0 implementation stop reached. Run pentest for this exact commit.`
+isolates the plugin. `v0.317.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.116.0` — Signed Plugin Registry And Rollout
-Status: planned. Setup: package digest/signature, trust roots, compatibility, approval, staged rollout, rollback, revocation. Goal: controlled plugin lifecycle. Deliverables: registry aggregate and rollout engine. Verification: substitution, downgrade, malicious update, signer rotation, rollback/revocation pass. Exit criteria: install/activate are distinct approved actions. `v0.116.0 implementation stop reached. Run pentest for this exact commit.`
+## `0.318.0` — Signed Plugin Registry And Rollout
+Status: planned. Setup: package digest/signature, trust roots, compatibility, approval, staged rollout, rollback, revocation. Goal: controlled plugin lifecycle. Deliverables: registry aggregate and rollout engine. Verification: substitution, downgrade, malicious update, signer rotation, rollback/revocation pass. Exit criteria: install/activate are distinct approved actions. `v0.318.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.116.1` — Governed Plugin Catalog And Storefront
+## `0.319.0` — Governed Plugin Catalog And Storefront
 
 Status: planned.
 
@@ -292,10 +292,10 @@ mirror rollback, and tenant visibility leaks pass.
 
 Exit criteria: only a separately approved signed package can move from catalog
 discovery to installed state, and activation still requires explicit current
-capability approval. `v0.116.1 implementation stop reached. Run pentest for this exact commit.`
+capability approval. `v0.319.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.117.0` — Connector SDK And Testkit
-Status: planned. Setup: `0.52.1` service-principal identity and mandatory
+## `0.320.0` — Connector SDK And Testkit
+Status: planned. Setup: `0.212.0` service-principal identity and mandatory
 sender-constrained workload tokens for privileged connector operations,
 connector capabilities, non-extractable auth handles, cursor/idempotency,
 schemas, rate/backoff, host-brokered authenticated operations, and test
@@ -354,25 +354,25 @@ Exit criteria:
 connectors pass conformance before
 activation and cannot request plaintext credentials, arbitrary provider
 operations, unrestricted shared credentials, or general network proxying.
-`v0.117.0 implementation
+`v0.320.0 implementation
 stop reached. Run pentest for this exact commit.`
 
-## `0.118.0` — Mail, Webhook, And Collaboration Connectors
+## `0.321.0` — Mail, Webhook, And Collaboration Connectors
 Status: planned. Setup: sender verification, signed webhooks, deny-by-default
 egress proxy, resolved-address validation, redirect and DNS-rebinding policy,
 TLS identity, tenant allowlists, byte budgets, headers, action links, replay and
 quotas. Goal: common secure integrations. Deliverables: connectors and recipes.
 Verification: SSRF, header/HTML injection, spoofing, replay, redirect/DNS
 rebinding, TLS confusion and notification abuse pass. Exit criteria: remote
-input has no implicit command authority. `v0.118.0 implementation stop reached. Run pentest for this exact commit.`
+input has no implicit command authority. `v0.321.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.118.1` — Microsoft Defender And Sentinel Connector Pack
+## `0.322.0` — Microsoft Defender And Sentinel Connector Pack
 
 Status: planned; blocked until exact Microsoft Defender XDR/Microsoft Sentinel
 API profiles, authentication flow, client/TLS implementation, permissions,
 licensing, maintenance, and rate-limit semantics are admitted.
 
-Setup: bind one `0.52.1` connector service principal and audience to each
+Setup: bind one `0.212.0` connector service principal and audience to each
 provider tenant/workspace; map alert/incident/entity/vulnerability IDs, delta
 cursors and webhooks, raw evidence retention, schema versions, paging,
 throttling/backoff, deletion/update claims, asset/identity links, severity/
@@ -394,15 +394,15 @@ action escalation, cross-tenant data, and parser fuzz pass.
 
 Exit criteria: every imported Microsoft fact retains provider provenance and
 cannot create/close/mutate local authority except through configured ordinary
-commands. `v0.118.1 implementation stop reached. Run pentest for this exact commit.`
+commands. `v0.322.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.118.2` — Tenable Vulnerability Connector Pack
+## `0.323.0` — Tenable Vulnerability Connector Pack
 
 Status: planned; blocked until exact Tenable product/API profiles,
 authentication, client/TLS implementation, permissions, licensing, maintenance,
 export/job, pagination, and rate-limit semantics are admitted.
 
-Setup: bind one `0.52.1` connector service principal and audience to each
+Setup: bind one `0.212.0` connector service principal and audience to each
 source tenant/container; map asset and agent identity, network/cloud
 identifiers, plugin/finding identity, severity and scoring versions, first/
 last seen/fixed/reopened state, evidence, scan coverage, cursor/export
@@ -423,10 +423,10 @@ rate-limit storms, cross-tenant links, parser fuzz, and rebuild pass.
 
 Exit criteria: Tenable findings remain versioned source assertions linked to
 the correct assets; local priority, exception, remediation, and closure rules
-remain authoritative. `v0.118.2 implementation stop reached. Run pentest for this exact commit.`
+remain authoritative. `v0.323.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.119.0` — Outbound-Only Integration Agent
-Status: planned. Setup: stable device plus `0.52.1` service-principal identity,
+## `0.327.0` — Outbound-Only Integration Agent
+Status: planned. Setup: stable device plus `0.212.0` service-principal identity,
 separate local enrollment challenge, device key attestation/profile,
 short-lived sender-constrained device/workload credential, audience-bound mTLS,
 capability policy, encrypted spool, update, revoke, compromise response, and no
@@ -496,14 +496,14 @@ the broker TCB, caller-owned claim/socket, and memory-canary failure.
 Exit criteria: agent
 compromise is bounded and revocable without making Vitheim a general OAuth
 issuer, credential oracle, database writer, or network proxy.
-`v0.119.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.327.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.120.0` — Plugin Compatibility And Isolation Suite
+## `0.328.0` — Plugin Compatibility And Isolation Suite
 Status: planned. Setup: ABI/runtime/version matrix, tenants, concurrent plugins,
 failures, upgrades, and mandatory authority/tenant registry entries for every
 host call/state surface. Goal: prove isolation and compatibility. Deliverables:
 adversarial suite, authorization cases, and evidence matrix. Verification:
 cross-plugin/tenant state, resource starvation, handle confusion, unregistered
 interface, upgrade/rollback, sandbox escapes pass. Exit criteria: every supported
-profile and authority-bearing interface has evidence. `v0.120.0 implementation
+profile and authority-bearing interface has evidence. `v0.328.0 implementation
 stop reached. Run pentest for this exact commit.`

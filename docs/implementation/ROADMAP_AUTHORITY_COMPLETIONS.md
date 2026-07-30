@@ -7,17 +7,17 @@ deliberately separate from the declarative domain-retirement contract. It does
 not weaken the lifecycle, drainage, history, disposition, or certification
 obligations owned elsewhere.
 
-Forward references inside `0.51.34–0.51.59` are mandatory feature gates. The
+Forward references inside `0.185.0–0.210.0` are mandatory feature gates. The
 earlier-numbered implementation slices must use the final declared schemas and
 remain operationally disabled until every referenced construction, policy,
 locality and continuity stop has passed its exact-commit gate. No intermediate
 release may create a legacy/unbound manifest, perform predecessor cleanup, or
 claim support merely because its lower-numbered slice exists.
 
-## `0.30.29` — Domain Retirement Authority And Crash Recovery
+## `0.101.0` — Domain Retirement Authority And Crash Recovery
 
 Status: planned.
-Setup: consume the `0.30.28` lifecycle and prospective contract; define typed
+Setup: consume the `0.100.0` lifecycle and prospective contract; define typed
 `DomainRetirementScopeV1` as exactly `TenantDomainData { deployment_id,
 tenant_id, domain_id }` or `DeploymentDomain { deployment_id, domain_id,
 membership_snapshot }`, never an optional/wildcard tenant. Define
@@ -25,7 +25,7 @@ membership_snapshot }`, never an optional/wildcard tenant. Define
 contribution generations, expected retirement-state version, idempotency
 identity, current authorization, separated proposer/approver/destructive
 approver identities, and approval expiry. This stop executes only the exact
-tenant child; deployment scope requires `0.51.5–0.51.59`.
+tenant child; deployment scope requires `0.156.0–0.210.0`.
 Goal: execute and recover retirement transitions without stale authority,
 partial commitment, silent command reopening, or data-loss acceptance becoming
 completion authority.
@@ -44,19 +44,19 @@ one child or cross-tenant transaction; and restore of an earlier state pass.
 Exit criteria: every retry joins the same immutable plan and resumes only from
 its durable fenced state; cancellation is possible only before fencing, later
 recovery requires current separated authority, and completion records only an
-exact `0.30.28` terminal. `RetiredVerified` alone is clean;
+exact `0.100.0` terminal. `RetiredVerified` alone is clean;
 `RetiredWithIrrecoverableLoss`, `RetirementBlocked`, and `EvidenceUnavailable`
 remain permanent non-clean outcomes in audit, support state, restore/import,
 risk, and administration. Recording loss grants no deletion or hold-release
 authority and erases no residual obligation.
-`v0.30.29 implementation stop reached. Run pentest for this exact commit.`
+`v0.101.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.5` — Deployment Tenant-Membership Retirement Cut
+## `0.156.0` — Deployment Tenant-Membership Retirement Cut
 
 Status: planned.
-Setup: consume the authoritative `0.51.1` tenant lifecycle/topology and
+Setup: consume the authoritative `0.152.0` tenant lifecycle/topology and
 an authorized `DeploymentRetirementMembershipCutRequestV1` binding exact
-deployment/domain; produce the membership snapshot required by the `0.30.29`
+deployment/domain; produce the membership snapshot required by the `0.101.0`
 deployment scope. Reuse the sealed-generation, delivery-barrier, fenced-move,
 durable-cursor, and reconciliation laws established for bounded campaigns
 rather than treating a projection as membership authority.
@@ -92,12 +92,12 @@ visible reconciliation blocker. It grants no tenant retirement authority;
 broad-fence release occurs exactly once only after protection transfers or all
 dependencies close, final cut release waits for campaign dependencies to close,
 and an expired/released cut can never become valid after restore.
-`v0.51.5 implementation stop reached. Run pentest for this exact commit.`
+`v0.156.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.6` — Deployment Retirement Plan Approval And Campaign Admission
+## `0.157.0` — Deployment Retirement Plan Approval And Campaign Admission
 
 Status: planned.
-Setup: consume one current sealed `0.51.5` cut and `0.30.29`
+Setup: consume one current sealed `0.156.0` cut and `0.101.0`
 `DomainRetirementProposalV1`; construct an immutable deployment retirement plan
 binding exact cut ID/generation/digest, deployment/domain, manifest/contribution
 generations, one canonical effective deployment-domain registered-surface
@@ -138,14 +138,14 @@ sealed cut to exactly one admitted parent campaign or makes no admission;
 retries return that durable result. The admitted parent may derive only exact
 member authorizations under the approved template, and the cut alone grants no
 retirement or child-dispatch authority. Its frozen structural commitment
-remains authoritative for only that deployment/domain until `0.51.16`
+remains authoritative for only that deployment/domain until `0.167.0`
 transfers protection permanently.
-`v0.51.6 implementation stop reached. Run pentest for this exact commit.`
+`v0.157.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.7` — Deployment Retirement Plan Succession And Resume Authority
+## `0.158.0` — Deployment Retirement Plan Succession And Resume Authority
 
 Status: planned.
-Setup: consume one admitted `0.51.6` campaign/plan/cut lineage, its durable
+Setup: consume one admitted `0.157.0` campaign/plan/cut lineage, its durable
 cursor, possibly empty completed/already-fenced child receipt commitments,
 cumulative budgets, reserved recovery capacity, current revocation/expiry
 state, and separated approval rules.
@@ -168,8 +168,8 @@ Already-fenced children may use reserved recovery/finalization capacity after
 revocation, but may acquire no new destructive scope; only the current plan
 generation may authorize new dispatch.
 Manifest, contribution, registered-surface, cut, membership, campaign, receipt,
-cursor, and guard scope are never allowed deltas. Once `0.51.8` begins guard
-installation, successor installation remains fail-closed until `0.51.9` adds
+cursor, and guard scope are never allowed deltas. Once `0.159.0` begins guard
+installation, successor installation remains fail-closed until `0.160.0` adds
 the joint protection-root CAS.
 Verification: concurrent/conflicting successors, stale predecessor digest/head
 CAS, response loss before or after installation, restore to an older head,
@@ -179,19 +179,19 @@ two live dispatch generations, expiry or authority widening disguised as
 renewal, unapproved budget increase, budget reset/wrap, recovery-reserve
 reallocation, and already-fenced recovery acquiring new scope pass.
 Successor activation over any existing guard/journal state without the
-`0.51.9` joint CAS also fails.
+`0.160.0` joint CAS also fails.
 Exit criteria: the campaign has exactly one current dispatch-authorizing plan
 generation and a permanent predecessor tombstone chain; succession preserves
 its identity, cut, membership, cursor, receipts, encumbrances, and cumulative
 consumption, while retries and restore cannot fork, revive, widen, or recharge
 the lineage.
-`v0.51.7 implementation stop reached. Run pentest for this exact commit.`
+`v0.158.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.8` — Post-Cut Domain Guard And Topology Handoff
+## `0.159.0` — Post-Cut Domain Guard And Topology Handoff
 
 Status: planned.
-Setup: consume one admitted `0.51.6` campaign/cut, authoritative `0.51.1`
-tenant topology generations, the `0.51.2` tenant-data-surface registry, current
+Setup: consume one admitted `0.157.0` campaign/cut, authoritative `0.152.0`
+tenant topology generations, the `0.153.0` tenant-data-surface registry, current
 domain manifest/contribution generations, every in-flight around-cut topology
 handoff, and the cut's reserved release capacity.
 Goal: replace campaign-long deployment-wide topology fencing with a narrower
@@ -231,12 +231,12 @@ disposition, the narrow guard is durably current before the broad fence releases
 once, unrelated topology work continues during a blocked/paused campaign, and
 each post-cut tenant is covered by an exact child handoff or authoritative
 absence receipt until permanent domain retirement takes over.
-`v0.51.8 implementation stop reached. Run pentest for this exact commit.`
+`v0.159.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.9` — Campaign Protection Root And Successor Integration
+## `0.160.0` — Campaign Protection Root And Successor Integration
 
 Status: planned.
-Setup: consume the `0.51.7` plan head/ancestor/tombstone protocol and `0.51.8`
+Setup: consume the `0.158.0` plan head/ancestor/tombstone protocol and `0.159.0`
 domain guard, transfer receipt, post-cut journal, absence/child-handoff receipt
 accumulator, high-watermarks, fold cursor, final barrier, topology blockers, and
 frozen structural commitment.
@@ -264,15 +264,15 @@ Exit criteria: there is one authenticated plan/protection-root pair; no
 successor can omit or rewind guard, journal, receipt, barrier, topology, blocker,
 or structural state, while correctly scoped ancestor-issued coverage evidence
 remains valid and immutable.
-`v0.51.9 implementation stop reached. Run pentest for this exact commit.`
+`v0.160.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.10` — Deployment-Wide Domain Retirement Reconciliation
+## `0.161.0` — Deployment-Wide Domain Retirement Reconciliation
 
 Status: planned.
-Setup: consume one admitted `0.51.6` parent/plan/cut, `0.51.7` plan-succession
-and resume authority, `0.51.8` narrow guard/post-cut handoff protocol, the
-`0.51.9` current plan/protection-root pair, the derived-child authorization
-template, `0.30.29` exact tenant-child authority/recovery, `0.30.28` evidence
+Setup: consume one admitted `0.157.0` parent/plan/cut, `0.158.0` plan-succession
+and resume authority, `0.159.0` narrow guard/post-cut handoff protocol, the
+`0.160.0` current plan/protection-root pair, the derived-child authorization
+template, `0.101.0` exact tenant-child authority/recovery, `0.100.0` evidence
 dimensions and terminals, tenant-specific legal-hold/disposition policy, and
 durable quota/fairness/recovery-capacity contracts.
 Goal: retire one domain across a deployment through isolated tenant children
@@ -283,14 +283,14 @@ batch/concurrency/storage/work budgets, protected recovery lane and fairness,
 one idempotent child identity/result receipt per member, tenant-specific hold/
 disposition decision, late-member reconciliation, terminal result manifest,
 blocked-member report, and restore/restart protocol. Consume the
-`Planned → Admitted` admission edge from `0.51.6`, then define
+`Planned → Admitted` admission edge from `0.157.0`, then define
 `Admitted → GuardReady → Dispatching → Reconciling →
 ReadyForPermanentGuardClean | PendingResidualObligationHandoff |
 BlockedNonterminal`, with `Paused` before terminal aggregation.
 True cancellation exists only before the first child fence. Thereafter cancel
 pauses/blocks, completed children never roll back, revocation stops new
 dispatch, resume requires current parent authority or the installed current
-`0.51.7` successor, and paused state retains cut, guard, budgets, receipts, and
+`0.158.0` successor, and paused state retains cut, guard, budgets, receipts, and
 blockers.
 Verification: tenant omitted from membership, tenant created/moved across the
 cut, tenant close/delete without explicit result, post-cut tenant lacking an
@@ -313,7 +313,7 @@ structural commitment are bound. Classify it `Clean` only when every cut member
 is `RetiredVerified`, every post-cut tenant is `RetiredVerified` or
 `NeverPresentVerified(PostCutDomainAbsenceReceiptV1)`, and no non-clean
 disposition exists. `NeverPresentVerified` is coverage evidence, never a new
-`0.30.28` terminal. A manifest containing `RetiredWithIrrecoverableLoss`,
+`0.100.0` terminal. A manifest containing `RetiredWithIrrecoverableLoss`,
 terminal `RetirementBlocked`, or `EvidenceUnavailable` is truthfully
 `NonClean` and enters `PendingResidualObligationHandoff`; actually nonterminal,
 unowned, quarantined, or still-reconciling work enters `BlockedNonterminal`.
@@ -323,12 +323,12 @@ Exit criteria: one immutable complete terminal manifest reaches
 `ReadyForPermanentGuardClean` or `PendingResidualObligationHandoff`; anything
 nonterminal or without an owner remains visibly blocked. Neither branch claims
 final completion before its later permanent-guard path.
-`v0.51.10 implementation stop reached. Run pentest for this exact commit.`
+`v0.161.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.11` — Non-Clean Residual Retirement Obligation Handoff
+## `0.162.0` — Non-Clean Residual Retirement Obligation Handoff
 
 Status: planned.
-Setup: consume a `0.51.10` `NonClean`
+Setup: consume a `0.161.0` `NonClean`
 `CampaignRetirementTerminalManifestV1`, exact tenant/domain surface ownership,
 custody/hold/history/evidence/residual-work state, required tenant retirement
 fences, and pre-reserved obligation-transfer/finalization capacity.
@@ -368,12 +368,12 @@ Exit criteria: every non-clean terminal dimension is immutably represented and
 has exactly one tenant-local owner-acceptance receipt under the complete parent
 manifest/accumulator before the final ready CAS; required tenant fences and
 residual obligations remain until their own independently verified terminals.
-`v0.51.11 implementation stop reached. Run pentest for this exact commit.`
+`v0.162.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.12` — Residual Retirement Obligation Lineage Evolution
+## `0.163.0` — Residual Retirement Obligation Lineage Evolution
 
 Status: planned.
-Setup: consume one complete `0.51.11`
+Setup: consume one complete `0.162.0`
 `ResidualRetirementObligationManifestV1`, its tenant-local acceptance receipts,
 current obligation owners/fences, and the authorization/recovery policies for
 evidence, hold, custody, history, and residual-work transitions.
@@ -406,14 +406,14 @@ pass.
 Exit criteria: one immutable membership root and one authenticated
 predecessor-linked latest-acknowledged state head describe the residual lineage;
 legitimate evolution preserves lineage identity while every fork, rollback,
-membership change, or unowned discovery fails closed. Only `0.51.13` may turn
+membership change, or unowned discovery fails closed. Only `0.164.0` may turn
 that observed head into a current-at-cut claim.
-`v0.51.12 implementation stop reached. Run pentest for this exact commit.`
+`v0.163.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.13` — Residual Transition Delivery Cut
+## `0.164.0` — Residual Transition Delivery Cut
 
 Status: planned.
-Setup: consume the `0.51.11` residual handoff manifest, `0.51.12` immutable
+Setup: consume the `0.162.0` residual handoff manifest, `0.163.0` immutable
 membership/latest-acknowledged state lineage, and the authoritative residual-
 owner partition manifest with exact routing and generations. For clean
 retirement define one typed `CanonicalEmptyResidualStateV1` tuple containing
@@ -442,7 +442,7 @@ source sequence through it as delivered or explicitly superseded by an
 authenticated successor, installs a durable candidate barrier generation, and
 commits receipt/audit/outbox/result. The bounded parent process manager
 deduplicates receipts and seals only after every partition and sequence is
-proven. Except for the `0.51.14` `RestrictiveSafety` emergency path, a later
+proven. Except for the `0.165.0` `RestrictiveSafety` emergency path, a later
 tenant transition either remains blocked by the barrier or waits for a parent
 CAS that first marks the cut invalid and issues exact partition release
 authority; only then may the local transition commit under a successor
@@ -472,12 +472,12 @@ through its local barrier is folded or explicitly superseded, and remains
 valid only while all barrier generations do. Consumption irreversibly records
 its purpose and release work; otherwise the visible state is blocked/invalidated
 and no candidate may proceed.
-`v0.51.13 implementation stop reached. Run pentest for this exact commit.`
+`v0.164.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.14` — Residual Mutation Safety Classification And Emergency Invalidation
+## `0.165.0` — Residual Mutation Safety Classification And Emergency Invalidation
 
 Status: planned.
-Setup: consume the `0.51.12` residual transition vocabulary, `0.51.13`
+Setup: consume the `0.163.0` residual transition vocabulary, `0.164.0`
 delivery-cut barriers, every command capable of changing residual owner/fence/
 hold/custody/history/evidence/work semantics, and independently reserved
 emergency mutation capacity.
@@ -514,7 +514,7 @@ partition rejects candidate activation unless the exact safety epoch still
 matches, so a restrictive mutation racing a collected receipt wins locally.
 The permit mode is closed: `EvidenceOnlyDenyTakeover` is never redeemed because
 the permanent takeover is deny-only and preserves every later restriction;
-`RedeemForPermissiveReinstall` must be consumed source-locally by `0.51.23`.
+`RedeemForPermissiveReinstall` must be consumed source-locally by `0.174.0`.
 Mode substitution or treating signed evidence as remote atomic admission fails
 closed.
 Verification: caller-controlled class, unregistered command, weakening labeled
@@ -527,16 +527,16 @@ guard ignoring the restriction pass.
 Exit criteria: urgent monotonic restriction always commits locally and
 irreversibly defeats stale candidate authority, neutral changes are proven
 semantically irrelevant, and every other mutation waits or revalidates.
-`v0.51.14 implementation stop reached. Run pentest for this exact commit.`
+`v0.165.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.15` — Permanent Guard Takeover Authorization
+## `0.166.0` — Permanent Guard Takeover Authorization
 
 Status: planned.
-Setup: consume a current `0.51.9` plan/protection-root pair, a `0.51.10`
-terminal manifest in `ReadyForPermanentGuardClean` or a `0.51.11` residual
-manifest plus `0.51.12` membership/state lineage in
-`ReadyForPermanentGuardNonClean`, one current sealed `0.51.13`
-`ResidualTransitionDeliveryCutV1`, the `0.51.14` mutation classifier/status
+Setup: consume a current `0.160.0` plan/protection-root pair, a `0.161.0`
+terminal manifest in `ReadyForPermanentGuardClean` or a `0.162.0` residual
+manifest plus `0.163.0` membership/state lineage in
+`ReadyForPermanentGuardNonClean`, one current sealed `0.164.0`
+`ResidualTransitionDeliveryCutV1`, the `0.165.0` mutation classifier/status
 contract, the target
 `DeploymentDomainGuardSlotVersionV1`, proposed permanent-guard bytes, campaign
 final topology high-watermark, broader registry evidence, expected campaign
@@ -553,7 +553,7 @@ target guard-slot version, final topology high-watermark, permanent-guard
 digest, broader registry evidence, expected state/version, issuer/key
 generation, approver quorum/separation, expiry, and idempotency identity. Define
 issue, revoke, expire, rotate/distrust, consume, result, audit, and response-loss
-semantics; only `0.51.16` may consume it
+semantics; only `0.167.0` may consume it
 atomically with guard installation. Plan authority
 revocation or expiry before takeover requires this fresh independent approval;
 authorization by a predecessor plan generation is invalid. Unrelated tenant
@@ -575,16 +575,16 @@ Exit criteria: exactly one current separated authorization covers every byte
 and sealed residual cut consumed by permanent takeover, or the campaign remains
 guarded and visibly blocked; no observed-only parent head, admission-time
 authority, or stale plan fills the gap.
-`v0.51.15 implementation stop reached. Run pentest for this exact commit.`
+`v0.166.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.16` — Permanent Guard Takeover And Campaign Completion
+## `0.167.0` — Permanent Guard Takeover And Campaign Completion
 
 Status: planned.
-Setup: consume the current `0.51.9` plan/protection-root pair, `0.51.8` active
-campaign guard/final barrier, a clean `0.51.10` terminal manifest or non-clean
-`0.51.11`/`0.51.12` residual membership/state pair, the still-valid sealed
-`0.51.13` delivery cut, a complete fresh `0.51.14`
-partition-candidate status root, one current `0.51.15` exact takeover
+Setup: consume the current `0.160.0` plan/protection-root pair, `0.159.0` active
+campaign guard/final barrier, a clean `0.161.0` terminal manifest or non-clean
+`0.162.0`/`0.163.0` residual membership/state pair, the still-valid sealed
+`0.164.0` delivery cut, a complete fresh `0.165.0`
+partition-candidate status root, one current `0.166.0` exact takeover
 authorization, the target
 `DeploymentDomainGuardSlotVersionV1`, campaign final topology high-watermark,
 broader registry evidence, the effective deployment-domain structural
@@ -600,7 +600,7 @@ PermanentGuardInstalling → PermanentGuardActive →
 (CampaignCompletedClean | CampaignCompletedNonClean) }`,
 where the braced guard-release acknowledgement and parent terminal transition
 are one local atomic edge. Guard installation
-atomically consumes the exact `0.51.15` authorization; validates the fresh
+atomically consumes the exact `0.166.0` authorization; validates the fresh
 partition-status root; binds deployment/domain/campaign/cut, final topology
 high-watermark, effective structural commitment, terminal manifest, residual
 membership/cut-state evidence, current protection root and target guard-slot
@@ -620,7 +620,7 @@ local atomic transaction committing final
 `DeploymentDomainRetirementManifestV1`, `CampaignCompletedClean | NonClean`,
 `ReinstallEligibilityV1`, result/audit/outbox, campaign-guard release
 acknowledgement, mandatory cleanup schedule/checkpoint, the still-current
-`0.51.13` cut transition to absorbing `ConsumedByTakeover`, and exact
+`0.164.0` cut transition to absorbing `ConsumedByTakeover`, and exact
 `TakeoverBarrierReleaseManifestV1` root/count, reserved bounded release/
 reconciliation capacity and outbox. Only after that
 transaction is durable may terminalization capacity release. Cross-owner/
@@ -629,7 +629,7 @@ state under the cleanup lane; crash, retry, or quota pressure cannot strand it.
 Cut/structural pin/campaign execution resources may release through that
 checkpoint, while residual obligation resources and tenant-specific fences
 remain with successor owners. No campaign hot row, cleanup lane, occupied
-storage, or deletion capacity releases before `0.51.18`; only its verified
+storage, or deletion capacity releases before `0.169.0`; only its verified
 `CampaignCleanupComplete` result authorizes deletion-related release, while
 permanent retention remains charged. Final `DeploymentDomainRetirementManifestV1` preserves `Clean` or `NonClean`
 classification exactly and binds terminal/residual/transfer evidence; later
@@ -661,13 +661,13 @@ acknowledgement and cleanup checkpoint before terminalization reserve releases;
 non-clean obligations/fences survive, remote cleanup cannot be starved, no
 protection gap exists, eligibility appears only in that atomic completion, and
 the consumed cut has durable bounded release work before any barrier may move.
-`v0.51.16 implementation stop reached. Run pentest for this exact commit.`
+`v0.167.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.17` — Candidate-Control Retention Capacity Transfer
+## `0.168.0` — Candidate-Control Retention Capacity Transfer
 
 Status: planned.
-Setup: consume the `0.51.13` consumed-candidate control identity/generation,
-`0.51.16` release reservation, successor-owner/routing registry, capacity
+Setup: consume the `0.164.0` consumed-candidate control identity/generation,
+`0.167.0` release reservation, successor-owner/routing registry, capacity
 profiles, physical provisioning evidence, and the exact restriction requiring
 retention.
 Goal: prevent a release process from settling its capacity while a retained
@@ -702,14 +702,14 @@ and later release without current ownership pass.
 Exit criteria: every retained candidate control has exactly one successor owner
 and atomically accepted funded maintenance capacity, or its complete original
 reservation remains pending and cannot settle.
-`v0.51.17 implementation stop reached. Run pentest for this exact commit.`
+`v0.168.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.18` — Takeover Delivery-Barrier Release Reconciliation
+## `0.169.0` — Takeover Delivery-Barrier Release Reconciliation
 
 Status: planned.
-Setup: consume one `0.51.16` completed campaign, its absorbing
+Setup: consume one `0.167.0` completed campaign, its absorbing
 `ConsumedByTakeover` cut, exact `TakeoverBarrierReleaseManifestV1`, protected
-release/reconciliation capacity, the `0.51.17` retention/capacity contract,
+release/reconciliation capacity, the `0.168.0` retention/capacity contract,
 parent outbox/inbox, and authoritative partition routing.
 Goal: release every takeover delivery barrier after permanent protection is
 durable without losing residual restrictions, stranding partitions, or
@@ -720,9 +720,9 @@ TakeoverBarriersReleased | TakeoverBarriersRetained`. Dispatch deterministic
 idempotent release work under bounded cursor/batch/concurrency/storage/retry
 budgets and fairness. Each partition atomically verifies cut/purpose/barrier/
 safety epoch, releases only the exact consumed-candidate barrier while
-preserving every `0.51.14` restrictive transition, and commits one authenticated
+preserving every `0.165.0` restrictive transition, and commits one authenticated
 release receipt plus result/audit/outbox. A barrier that must survive transfers
-only through one current `0.51.17` `CandidateControlRetentionReceiptV1`; the
+only through one current `0.168.0` `CandidateControlRetentionReceiptV1`; the
 original reservation remains in the reconciliation-pending term until funded
 successor acceptance is folded. Parent inbox deduplication folds the exact
 manifest/root/count and capacity-conservation proof, then checkpoints recovery.
@@ -738,12 +738,12 @@ barrier, and consumed-cut revival pass.
 Exit criteria: every barrier in the immutable takeover release manifest is
 proved released or truthfully retained by one successor owner before cut-
 control state becomes archive-eligible; residual safety restrictions remain.
-`v0.51.18 implementation stop reached. Run pentest for this exact commit.`
+`v0.169.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.19` — Campaign Retirement Archive And Cleanup Reconciliation
+## `0.170.0` — Campaign Retirement Archive And Cleanup Reconciliation
 
 Status: planned.
-Setup: consume one completed `0.51.16` campaign, complete `0.51.18` takeover
+Setup: consume one completed `0.167.0` campaign, complete `0.169.0` takeover
 barrier-release/retention root, immutable cleanup lineage and pre-reserved
 cleanup lane, every campaign/control/partition hot-state owner, archive
 destination/profile, retained-history laws, and deletion authority.
@@ -785,12 +785,12 @@ Exit criteria: every hot-state owner has an authenticated replayable archive
 checkpoint and locally atomic archive-head/delete result, or its rows remain
 truthfully retained/uncertain and capacity stays assigned; no missing evidence
 can become cleanup completion.
-`v0.51.19 implementation stop reached. Run pentest for this exact commit.`
+`v0.170.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.20` — Retained Campaign Namespace Safety Authorization
+## `0.171.0` — Retained Campaign Namespace Safety Authorization
 
 Status: planned.
-Setup: consume one `0.51.19` `PermanentlyRetained` cleanup result, exact archive
+Setup: consume one `0.170.0` `PermanentlyRetained` cleanup result, exact archive
 checkpoint/replay head, retained hot/object state inventory, outstanding
 deletion machinery, proposed reinstall target namespace/generation, current
 restore/import applicability, and independent verifier trust policy.
@@ -818,21 +818,21 @@ duplicate/replay across campaign/backend/target, and delayed delete pass.
 Exit criteria: one current independently verified receipt proves every retained
 artifact and destructive mechanism is target-disjoint/fenced for one exact
 reinstall generation, or retained cleanup remains visibly ineligible.
-`v0.51.20 implementation stop reached. Run pentest for this exact commit.`
+`v0.171.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.21` — Partition-Fenced Reinstall Evaluation
+## `0.172.0` — Partition-Fenced Reinstall Evaluation
 
 Status: planned.
-Setup: for initial genesis consume one current `0.51.16`
+Setup: for initial genesis consume one current `0.167.0`
 `ReinstallEligibilityV1`; for post-quarantine genesis consume only the exact
-`0.51.30` replacement-evaluation reservation binding
+`0.181.0` replacement-evaluation reservation binding
 `UnknownAdmissionReplacementEligibilityV1`, complete quarantine root, terminal
 predecessor lifecycle, new epochs/floors and fresh identities. Both paths also
-consume the final retirement manifest/permanent guard, `0.51.19` cleanup
-completion or current `0.51.20`
-retained-namespace receipt, `0.51.12` residual membership/state lineage or the
-exact `0.51.13` canonical-empty residual tuple, a fresh purpose-bound `0.51.13`
-sealed delivery cut, `0.51.14` mutation/status contract, reinstall plan/target
+consume the final retirement manifest/permanent guard, `0.170.0` cleanup
+completion or current `0.171.0`
+retained-namespace receipt, `0.163.0` residual membership/state lineage or the
+exact `0.164.0` canonical-empty residual tuple, a fresh purpose-bound `0.164.0`
+sealed delivery cut, `0.165.0` mutation/status contract, reinstall plan/target
 generation, and the authoritative residual-owner partition manifest.
 Goal: evaluate every current residual obligation without a logically global
 lock, stale parent fold, or tenant-local mutation racing the decision.
@@ -852,7 +852,7 @@ The clean canonical-empty path deterministically emits domain-separated
 zero-member `ReinstallEvaluationRootV1` and partition-fence root/count without
 creating synthetic obligations, partitions, or receipts; missing non-clean
 state never equals those values.
-`RestrictiveSafety` mutations follow `0.51.14`: they bypass the evaluation
+`RestrictiveSafety` mutations follow `0.165.0`: they bypass the evaluation
 fence through emergency capacity, advance the local safety epoch/invalidation
 generation, remain binding on successor guards, and force revalidation.
 Proven `DecisionNeutral` mutations preserve the candidate; every
@@ -860,15 +860,15 @@ Proven `DecisionNeutral` mutations preserve the candidate; every
 abort first performs a parent CAS to `RevalidationRequired` and issues exact
 partition fence-release authority. No delayed invalidation outbox may leave the
 parent eligible. The evaluation binds one
-`PartitionCandidateStatusReceiptV1` per real partition. `0.51.23` must actively
+`PartitionCandidateStatusReceiptV1` per real partition. `0.174.0` must actively
 redeem each reinstall-mode permit; a parent signature alone is insufficient.
 For a quarantine replacement, the residual owner and
-`UnknownRestrictionTopV1` from `0.51.29` are mandatory members of every
+`UnknownRestrictionTopV1` from `0.180.0` are mandatory members of every
 evaluation/status root; the ordinary canonical-empty path is structurally
-invalid while that owner exists. Fences remain active until `0.51.34`
+invalid while that owner exists. Fences remain active until `0.185.0`
 atomically consumes the admitted and
-bridge-ownership roots, `0.51.25` proves every failed candidate artifact
-disposed, or an enabled `0.51.27` catastrophe path permanently quarantines the
+bridge-ownership roots, `0.176.0` proves every failed candidate artifact
+disposed, or an enabled `0.178.0` catastrophe path permanently quarantines the
 unknown generation before bounded fence release. No cross-tenant transaction
 exists.
 Verification: omitted/duplicate partition or obligation, membership/cut/local
@@ -885,15 +885,15 @@ Exit criteria: one complete authenticated evaluation root represents every
 partition under still-active durable fences and a current sealed delivery cut,
 or the exact clean zero-member roots do; otherwise the candidate is visibly
 revalidation-required/blocked and cannot be consumed.
-`v0.51.21 implementation stop reached. Run pentest for this exact commit.`
+`v0.172.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.22` — Reinstall Admission Candidate Lifecycle Linearization
+## `0.173.0` — Reinstall Admission Candidate Lifecycle Linearization
 
 Status: planned.
-Setup: consume one current `0.51.21` evaluation identity/root and bind its
-genesis authority. Initial genesis consumes `0.51.16` eligibility. For a
-quarantine replacement, `0.51.32` invokes this lifecycle contract with the
-exact `0.51.30` current evaluation receipt/reservation and atomically produces
+Setup: consume one current `0.172.0` evaluation identity/root and bind its
+genesis authority. Initial genesis consumes `0.167.0` eligibility. For a
+quarantine replacement, `0.183.0` invokes this lifecycle contract with the
+exact `0.181.0` current evaluation receipt/reservation and atomically produces
 the lifecycle plus its replacement-genesis receipt. Also consume the exact non-operational
 successor candidate/guard digest, target generation, active partition-fence
 root, candidate expiry, and the local permanent-guard slot that will later
@@ -927,9 +927,9 @@ process-manager state is a lifecycle edge:
 candidate-lifecycle states; they cannot bypass the table. `AdmissionQuarantined`
 is unreachable directly from `AdmissionAbortFenced`.
 Every transition is a generation-checked CAS in the same local transaction
-domain used by the permanent/reinstall guard slot. `0.51.23` admission results,
-`0.51.25` abort initiation, an enabled `0.51.27` catastrophe fence, and the
-`0.51.34` operational transition all consume the same expected lifecycle
+domain used by the permanent/reinstall guard slot. `0.174.0` admission results,
+`0.176.0` abort initiation, an enabled `0.178.0` catastrophe fence, and the
+`0.185.0` operational transition all consume the same expected lifecycle
 generation. Final acceptance versus abort and prepared activation versus abort
 therefore have one winner. Once `AdmissionAbortFenced` or
 `AdmissionQuarantined` wins, any late `Accepted` result is disposition evidence
@@ -951,13 +951,13 @@ ordinary enablement bypass pass.
 Exit criteria: exactly one candidate-lifecycle record serializes every
 admission, abort/quarantine and operational outcome; no two terminal meanings
 can commit, and late evidence can only reconcile the winning generation.
-`v0.51.22 implementation stop reached. Run pentest for this exact commit.`
+`v0.173.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.23` — Reinstall Partition Activation Admission
+## `0.174.0` — Reinstall Partition Activation Admission
 
 Status: planned.
-Setup: consume one `0.51.21` `ReinstallEligibleCurrent` evaluation, its current
-`0.51.22` candidate lifecycle in `ActivationProposedNonOperational`, exact
+Setup: consume one `0.172.0` `ReinstallEligibleCurrent` evaluation, its current
+`0.173.0` candidate lifecycle in `ActivationProposedNonOperational`, exact
 non-operational successor guard/candidate bytes, every active evaluation fence,
 fresh `RedeemForPermissiveReinstall` permit identity/safety epoch, target
 generation, authoritative partition manifest/routing, and protected admission/
@@ -968,7 +968,7 @@ Goal: prove every source partition still admits the exact permissive successor
 before that guard can become operational.
 Deliverables:
 `ActivationProposedNonOperational → PartitionAdmissionPending →
-PartitionAdmissionComplete`; only `0.51.34` may transition to `Operational`.
+PartitionAdmissionComplete`; only `0.185.0` may transition to `Operational`.
 For a quarantine replacement, define closed
 `EffectiveRestrictionAdmissionAuthorityV1`:
 `TopRestrictionAdmission { coverage_root, top_root, top_permit }` or
@@ -978,7 +978,7 @@ successor_restriction_root, lifecycle_admission_permit }`.
 Both branches bind the same candidate/lifecycle, reservation, partition
 manifest, coverage/evidence/safety generations and authority digest and are
 not substitutable. The lowered variant is constructible only through
-`0.51.32–0.51.33`; before then the top variant is the only quarantine-
+`0.183.0–0.184.0`; before then the top variant is the only quarantine-
 replacement admission authority.
 For every quarantine-replacement partition define closed
 `EffectiveRestrictionPartitionAdmissionReceiptV1`:
@@ -999,7 +999,7 @@ it cannot revive the predecessor candidate. For `TopRestrictionAdmission`,
 that bridge must also install and continuously enforce
 `UnknownRestrictionTopV1`; ownership or capacity evidence without that runtime
 enforcement is not acceptance. For `PreOperationalLoweredAdmission`,
-`0.51.33` owns the typed per-partition adoption command and the same admission
+`0.184.0` owns the typed per-partition adoption command and the same admission
 root can fold a partition only after its lifecycle-bound adoption receipt is
 current and Accepted.
 Immediate and response-loss results enter the same authenticated inbox/
@@ -1012,7 +1012,7 @@ rejection irreversibly denies this candidate and enters
 `AdmissionRevalidationRequired`. Unknown remains live
 `PartitionAdmissionPending` work under authoritative status reconciliation:
 timeout is neither rejection nor absence. No failed or incomplete candidate
-may become operational or yield a complete admission root. `0.51.25` owns
+may become operational or yield a complete admission root. `0.176.0` owns
 abort/supersession and is the only path that disposes partially consumed
 permits and installed bridges. The canonical clean zero-member path produces a
 domain-separated empty admission root without requests or synthetic
@@ -1035,22 +1035,22 @@ restore/import, and early operational guard pass.
 Exit criteria: every real partition has durably redeemed the exact permit and
 accepted one non-operational successor with a restrictive-state bridge, or the
 candidate remains non-operational and visibly pending, revalidation-required,
-or irreversibly blocked for `0.51.25` disposition; the clean path has one typed
+or irreversibly blocked for `0.176.0` disposition; the clean path has one typed
 zero-member admission root.
-`v0.51.23 implementation stop reached. Run pentest for this exact commit.`
+`v0.174.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.24` — Successor-Restriction Bridge Ownership And Capacity Transfer
+## `0.175.0` — Successor-Restriction Bridge Ownership And Capacity Transfer
 
 Status: planned.
-Setup: consume one exact `0.51.23` admission manifest in pending, complete,
+Setup: consume one exact `0.174.0` admission manifest in pending, complete,
 blocked, or revalidation-required state; every accepted successor-restriction
 bridge and permit tombstone; source admission reservation; proposed operational
 guard owner or residual owner; authoritative source/successor routing; capacity
-profiles; physical provisioning evidence; and the current `0.51.22` lifecycle
+profiles; physical provisioning evidence; and the current `0.173.0` lifecycle
 generation. For quarantine replacement, also consume the same exact
-`EffectiveRestrictionAdmissionAuthorityV1` tag/digest accepted by `0.51.23`
+`EffectiveRestrictionAdmissionAuthorityV1` tag/digest accepted by `0.174.0`
 and prove each bridge enforces the selected restriction. The top branch binds
-the exact `0.51.29` root/permit; the lowered branch binds the exact `0.51.33`
+the exact `0.180.0` root/permit; the lowered branch binds the exact `0.184.0`
 complete lifecycle-adoption root and preserves each prepared bridge identity,
 owner transfer and capacity receipt.
 Goal: give every durable bridge exactly one funded long-lived owner on both
@@ -1070,11 +1070,11 @@ ResidualTransferComplete | BridgeReleased`. Destination acceptance atomically
 installs ownership, routing, restriction lineage and provisioned capacity.
 Response loss or an unknown/rejected acceptance keeps the source reservation
 encumbered. `OperationalTransferPrepared` requires one complete current
-`0.51.23` admission root; a pending, blocked or revalidation-required admission
+`0.174.0` admission root; a pending, blocked or revalidation-required admission
 may transfer only toward its residual disposition. An operational transfer
-remains conditional on the exact `0.51.34` activation identity; it carries no
+remains conditional on the exact `0.185.0` activation identity; it carries no
 candidate-activation authority and the source reservation cannot settle before
-that result. An abort transfer becomes releasable only after `0.51.25` has
+that result. An abort transfer becomes releasable only after `0.176.0` has
 removed all candidate meaning while preserving its restrictive state. Enforce
 canonical, non-wrapping:
 
@@ -1137,17 +1137,17 @@ or has one atomically accepting destination owner with complete enforcement,
 recovery and checkpoint capacity; a successful candidate is
 `ActivationPrepared` only through the root-bound typed CAS, and no pending or
 unknown disposition releases capacity or candidate safety state.
-`v0.51.24 implementation stop reached. Run pentest for this exact commit.`
+`v0.175.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.25` — Reinstall Admission Abort And Supersession
+## `0.176.0` — Reinstall Admission Abort And Supersession
 
 Status: planned.
-Setup: consume one non-operational `0.51.23` admission and its current `0.51.22`
+Setup: consume one non-operational `0.174.0` admission and its current `0.173.0`
 lifecycle in `PartitionAdmissionPending | PartitionAdmissionComplete |
 AdmissionBlocked | AdmissionRevalidationRequired | ActivationPrepared`, or a
 separately authorized candidate abandonment/expiry; its immutable partition
 manifest, accepted/rejected/unknown receipts, one-shot permit/tombstone
-inventory, installed bridge inventory, active evaluation fences, the `0.51.24`
+inventory, installed bridge inventory, active evaluation fences, the `0.175.0`
 bridge-ownership contract, protected abort/reconciliation capacity, and
 proposed successor candidate identity if any.
 Goal: terminate a partially admitted candidate without reviving permits,
@@ -1156,22 +1156,22 @@ to compete.
 Deliverables:
 `PartitionAdmissionPending | PartitionAdmissionComplete | AdmissionBlocked |
 AdmissionRevalidationRequired | ActivationPrepared →
-AdmissionAbortRequested → AdmissionAbortFenced` are the initial `0.51.22`
+AdmissionAbortRequested → AdmissionAbortFenced` are the initial `0.173.0`
 lifecycle edges. Separately, the abort process manager follows
 `AdmissionAbortDispatching → AdmissionAbortReconciling →
 AdmissionAbortWorkComplete`. Only after the complete disposition root is
 durable does it CAS `AdmissionAbortFenced → AdmissionAborted`; a later
 successor-binding transaction alone may CAS
-`AdmissionAborted → AdmissionSuperseded`. Abort initiation and `0.51.34`
-activation use the shared `0.51.22` lifecycle-generation CAS; only the winner
-may proceed. `0.51.30` replacement evaluation can begin only from the terminal
+`AdmissionAborted → AdmissionSuperseded`. Abort initiation and `0.185.0`
+activation use the shared `0.173.0` lifecycle-generation CAS; only the winner
+may proceed. `0.181.0` replacement evaluation can begin only from the terminal
 `AdmissionQuarantined` predecessor and its one-shot eligibility. Durable
 rejection enters the blocked branch irreversibly; expiry, evidence invalidation
 or authorized abandonment cannot relabel rejection or unknown as absence. An
 unknown result remains live and is queried through the same authenticated
 status/reconciliation path until its exact permit and bridge outcome is known;
 permanent unknown keeps abort incomplete and blocks a new candidate unless the
-separately selected `0.51.27` catastrophe protocol completes. An accepted
+separately selected `0.178.0` catastrophe protocol completes. An accepted
 response committed after `AdmissionAbortFenced` is disposition work, never
 admission completion.
 Dispatch deterministic idempotent `DisposeReinstallAdmissionCandidateV1` work
@@ -1180,7 +1180,7 @@ non-borrowable recovery capacity. Each source partition atomically tombstones
 the consumed or unused permit for this candidate; removes all activation
 meaning from an accepted bridge; preserves and transfers its current
 restrictive safety state plus funded capacity to the residual owner under
-`0.51.24`; and returns one authenticated
+`0.175.0`; and returns one authenticated
 `ReinstallAdmissionDispositionReceiptV1` with result/audit/outbox. Consumed
 permits can never be regenerated for the same candidate.
 The parent folds one current receipt per partition into
@@ -1216,12 +1216,12 @@ Exit criteria: the candidate is either still visibly pending on an exact
 unknown outcome, or every partition artifact is durably tombstoned, released,
 or transferred with restrictive state and funded capacity before a different
 candidate can start; no aborted or superseded candidate can become operational.
-`v0.51.25 implementation stop reached. Run pentest for this exact commit.`
+`v0.176.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.26` — Permanent-Unknown Admission Recovery Policy Decision
+## `0.177.0` — Permanent-Unknown Admission Recovery Policy Decision
 
 Status: planned decision; safe default is terminal unavailable.
-Setup: consume the complete `0.51.22–0.51.25` lifecycle, admission, bridge-
+Setup: consume the complete `0.173.0–0.176.0` lifecycle, admission, bridge-
 ownership and abort contracts; permanent-unknown failure analysis; selected
 deployment/recovery profiles; partition-loss, routing, key, lease, restore,
 rollback, capacity and late-evidence guarantees; product availability claims;
@@ -1240,7 +1240,7 @@ handling, expiry/review generation, support state and rollback prohibition.
 `TerminalUnavailable` is the default and keeps the candidate, reinstall and
 replacement path visibly blocked forever; documentation, API/UI and operations
 must report it without a hidden manual override. `QuarantineRecoveryEnabled`
-authorizes only implementation and validation of `0.51.27`; the decision record
+authorizes only implementation and validation of `0.178.0`; the decision record
 does not quarantine state or create replacement authority. A profile lacking
 any mandatory proof must select `TerminalUnavailable`.
 Verification: ambiguous/dual selection, missing profile/scope/evidence/
@@ -1253,14 +1253,14 @@ Exit criteria: every selected production profile has one explicit current
 fail-closed permanent-unknown policy; recovery remains terminal unavailable
 unless the exact independently governed quarantine profile is selected, and
 selection alone grants no state transition.
-`v0.51.26 implementation stop reached. Run pentest for this exact commit.`
+`v0.177.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.27` — Quarantined Unknown-Admission Catastrophe Recovery
+## `0.178.0` — Quarantined Unknown-Admission Catastrophe Recovery
 
-Status: planned conditionally; explicitly unsupported when `0.51.26` selects
+Status: planned conditionally; explicitly unsupported when `0.177.0` selects
 `TerminalUnavailable`.
 Setup: consume one current `QuarantineRecoveryEnabled` policy, a
-`0.51.25` abort reconciliation blocked solely by permanent unknown, exact
+`0.176.0` abort reconciliation blocked solely by permanent unknown, exact
 candidate/lifecycle/partition/permit/bridge/capacity inventories, independently
 approved catastrophe request, irrecoverable partition-loss evidence, current
 epoch/routing/key/lease authorities, restore/rollback floors, protected
@@ -1274,7 +1274,7 @@ UnknownAdmissionQuarantineFencing → UnknownAdmissionQuarantineReconciling →
 UnknownAdmissionQuarantineRootDurable |
 UnknownAdmissionQuarantineBlocked`. These are process-manager states. The
 independent approval binds all evidence and performs the first shared
-`0.51.22` generation CAS from `AdmissionAbortFenced` to the irreversible
+`0.173.0` generation CAS from `AdmissionAbortFenced` to the irreversible
 intermediate `AdmissionQuarantineFenced`. Deterministic bounded work
 permanently advances candidate, evaluation, routing and partition epochs;
 denies old-candidate activation at every surviving authority; invalidates old
@@ -1294,7 +1294,7 @@ point fenced and every lost artifact conservatively owned may create
 `UnknownAdmissionReplacementEligibilityV1`. Only after that root and
 eligibility are durable does a final guard-slot CAS advance
 `AdmissionQuarantineFenced → AdmissionQuarantined`; response loss joins the
-same result. `0.51.30` exclusively consumes the eligibility into the bounded
+same result. `0.181.0` exclusively consumes the eligibility into the bounded
 replacement-evaluation lineage.
 Any missing fence, uncertain authority, insufficient capacity or rollback-floor
 failure remains terminal unavailable.
@@ -1315,14 +1315,14 @@ one independently approved irreversible quarantine root permanently denies the
 unknown old generation, conservatively retains all possible safety state and
 capacity, and permits only a fresh-identity reevaluation; unknown is never
 converted into success, rejection, absence or clean release.
-`v0.51.27 implementation stop reached. Run pentest for this exact commit.`
+`v0.178.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.28` — Unknown-Restriction Enforcement Scope Coverage
+## `0.179.0` — Unknown-Restriction Enforcement Scope Coverage
 
 Status: planned conditionally; required by every `QuarantineRecoveryEnabled`
 profile and Unsupported when no complete enforcement scope can be proved.
-Setup: consume the selected `0.51.26` recovery policy/profile, exact
-`0.51.27` quarantine scope and residual identity set, current domain manifests,
+Setup: consume the selected `0.177.0` recovery policy/profile, exact
+`0.178.0` quarantine scope and residual identity set, current domain manifests,
 command/handler and effect registries, workflow/automation action registries,
 plugin/Wasm capability manifests, administrative/emergency-operation
 registries, adapter-mutation contracts, active contribution-kind registry,
@@ -1367,18 +1367,18 @@ Exit criteria: one reproducible current root proves the exact enforcement
 universe used by all quarantine-replacement authorities, or a typed whole-
 tenant/domain top applies; otherwise quarantine recovery is visibly
 Unsupported and creates no replacement authority.
-`v0.51.28 implementation stop reached. Run pentest for this exact commit.`
+`v0.179.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.29` — Conservative Unknown-Restriction Enforcement
+## `0.180.0` — Conservative Unknown-Restriction Enforcement
 
 Status: planned conditionally; required by every `QuarantineRecoveryEnabled`
 profile and Unsupported when quarantine recovery is Unsupported.
-Setup: consume one terminal `0.51.27` quarantine root/lifecycle, its
+Setup: consume one terminal `0.178.0` quarantine root/lifecycle, its
 `QuarantinedUnknownAdmissionResidualV1` owner and funded capacity, every
 possibly lost permit/bridge/restriction identity, current residual membership/
-state lineage and partition-manifest contracts from `0.51.11–0.51.14`, the
-exact current `0.51.28` coverage root or whole-tenant/domain fallback, and the
-evaluation/admission/bridge contracts from `0.51.21–0.51.24`.
+state lineage and partition-manifest contracts from `0.162.0–0.165.0`, the
+exact current `0.179.0` coverage root or whole-tenant/domain fallback, and the
+evaluation/admission/bridge contracts from `0.172.0–0.175.0`.
 Goal: make unknown restrictive state maximally enforced throughout replacement
 evaluation and admission rather than merely capacity-owned.
 Deliverables: typed `UnknownRestrictionTopV1` as the maximal element of the
@@ -1391,20 +1391,20 @@ generation, restore floor, late-evidence head and exact coverage-root identity/
 generation/derivation algorithm.
 Create `QuarantinedUnknownRestrictionRootV1` as a mandatory member of the
 authoritative residual lineage and replacement partition manifest, never a
-side record. Every fresh `0.51.21` membership/evaluation/status root includes
+side record. Every fresh `0.172.0` membership/evaluation/status root includes
 the residual owner, top restriction and current coverage root; presence of
 these members makes the ordinary canonical zero-member path invalid. The
 funded residual root
 authorizes exactly one target/lifecycle/safety-epoch-bound
 `QuarantinedUnknownRestrictionAdmissionPermitV1`, issued only inside the
-`0.51.32` successor-genesis transaction once the exact lifecycle identity
-exists. `0.51.23` must redeem that permit and install a bridge that enforces
-`UnknownRestrictionTopV1`; `0.51.24` must include that bridge in its ownership/
+`0.183.0` successor-genesis transaction once the exact lifecycle identity
+exists. `0.174.0` must redeem that permit and install a bridge that enforces
+`UnknownRestrictionTopV1`; `0.175.0` must include that bridge in its ownership/
 capacity root before activation can prepare.
 Late evidence appends under the quarantine evidence head and can confirm or
 strengthen lineage but never automatically lower or remove the top
 restriction. Any lowering is `PermissiveOrDestructive` and may occur only
-through the dedicated `0.51.31–0.51.59` evaluation, tagged adoption or
+through the dedicated `0.182.0–0.210.0` evaluation, tagged adoption or
 operational activation, and predecessor reconciliation protocols; evidence,
 evaluation, a permit, bridge or ownership record alone grants no lowering.
 Uncertainty keeps the top. Ownership or capacity without installed evaluation/
@@ -1416,25 +1416,25 @@ ownership without enforcement, top restriction omitted from evaluation/status
 root, coverage-root/generation/algorithm substitution, new operation without
 coverage invalidation, ordinary permit substituted, missing/unfunded successor
 bridge, late evidence automatically lowering restriction, stale evidence head,
-lowering outside `0.51.31–0.51.59`, restore/import losing the top member, and
+lowering outside `0.182.0–0.210.0`, restore/import losing the top member, and
 replacement eligibility from structurally incomplete roots pass.
 Exit criteria: every possible unknown restriction is a funded, authoritative
 and actively enforced maximal residual over one complete current coverage scope
 through evaluation, admission and the successor bridge; omission, smaller-root
 substitution or evidence uncertainty cannot produce replacement eligibility,
 activation preparation or lowering.
-`v0.51.29 implementation stop reached. Run pentest for this exact commit.`
+`v0.180.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.30` — Quarantine Replacement Evaluation Lineage
+## `0.181.0` — Quarantine Replacement Evaluation Lineage
 
-Status: planned conditionally; unavailable unless `0.51.27–0.51.29` are
+Status: planned conditionally; unavailable unless `0.178.0–0.180.0` are
 complete for the selected profile.
 Setup: consume one exact unconsumed
 `UnknownAdmissionReplacementEligibilityV1`, complete current quarantine and
 unknown-restriction roots, terminal predecessor lifecycle generation, selected
 recovery policy/profile, advanced routing/safety/key/lease epochs, restore/
 rollback floors, fresh evaluation identity source, protected cumulative work/
-storage/reconciliation capacity, and the `0.51.21` evaluation contract.
+storage/reconciliation capacity, and the `0.172.0` evaluation contract.
 Goal: allow bounded replacement reevaluation after transient invalidation
 without reusing eligibility, resetting budgets, accepting late receipts, or
 stranding an ambiguous reservation.
@@ -1448,9 +1448,9 @@ ReplacementEvaluationRevalidationRequired | ReplacementEvaluationBlocked |
 ReplacementEvaluationTerminalUnavailable`.
 `BeginQuarantineReplacementEvaluationV1` atomically consumes eligibility once
 into guard-slot `QuarantineReplacementGenesisReservationV1` and starts the
-first fresh `0.51.21` generation. Each generation applies every partition
+first fresh `0.172.0` generation. Each generation applies every partition
 fence, mutation, canonical-empty, fairness and recovery rule plus mandatory
-`0.51.28` coverage-root and `0.51.29 UnknownRestrictionTopV1` membership. A
+`0.179.0` coverage-root and `0.180.0 UnknownRestrictionTopV1` membership. A
 revalidation CAS records the
 new safety cause, then bounded deterministic work releases or truthfully
 retains every old evaluation fence with funded capacity before authorizing one
@@ -1467,7 +1467,7 @@ plan; any future recovery mechanism requires its own separately versioned
 authority protocol and cannot reinterpret this state. A complete current
 evaluation emits
 `QuarantineReplacementEvaluationCurrentReceiptV1` binding the lineage and
-reservation for `0.51.32`. Restore/import preserve the eligibility tombstone,
+reservation for `0.183.0`. Restore/import preserve the eligibility tombstone,
 generation chain, budgets, fence dispositions and terminal state.
 Verification: eligibility/quarantine/restriction/profile/predecessor/target/
 epoch/floor substitution, crash versus revalidation, repeated restrictive
@@ -1477,20 +1477,20 @@ capacity, retry/budget reset or overflow, response loss, concurrent generations,
 restore between every evaluation generation, exhaustion reopened, terminal-
 unavailable bypass, repeated successor attempt, forged recovery grant,
 concurrent recovery grants, old receipt/fence survival, lifetime-charge reset,
-and ordinary `0.51.16` evaluation authority substitution pass.
+and ordinary `0.167.0` evaluation authority substitution pass.
 Exit criteria: one consumed eligibility owns one finite predecessor-linked
 evaluation lineage and cumulative budget; it yields one current receipt for
 successor genesis or a truthful blocked/terminal-unavailable result, with no
 stale receipt, fence or retry able to cross generations.
-`v0.51.30 implementation stop reached. Run pentest for this exact commit.`
+`v0.181.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.31` — Unknown-Restriction Lowering Evaluation And Source Admission
+## `0.182.0` — Unknown-Restriction Lowering Evaluation And Source Admission
 
 Status: planned conditionally; Unsupported unless a selected quarantine
 recovery profile can prove every authority, coverage, evidence and funded
 enforcement requirement below. Lowering remains optional.
-Setup: consume one current `0.51.28` `UnknownRestrictionCoverageRootV1`, exact
-`0.51.29` top restriction/root and evidence head, proposed strictly narrower
+Setup: consume one current `0.179.0` `UnknownRestrictionCoverageRootV1`, exact
+`0.180.0` top restriction/root and evidence head, proposed strictly narrower
 restriction generation/root, complete scope and partition manifest, selected
 `PreOperationalReservation | OperationalGuard` mode and exact mode authority,
 current safety/routing generations, protected evaluation/admission/bridge/
@@ -1518,15 +1518,15 @@ UnknownRestrictionLoweringBridgePrepared |
 UnknownRestrictionLoweringBlocked`.
 `BeginUnknownRestrictionLoweringEvaluationV1` consumes the authorization once,
 advances the safety generation and installs a mode-specific guard-slot fence.
-Pre-operational mode fences the exact current `0.51.30` replacement reservation
+Pre-operational mode fences the exact current `0.181.0` replacement reservation
 before successor lifecycle creation. Operational mode fences only the
 restriction sub-generation of the exact operational guard; unrelated guard
 authority remains unchanged. Neither fence lowers the effective top.
 Reuse only the bounded partition-fencing, mutation, fairness, recovery and
-receipt-validation engine specified by `0.51.21`. Produce a domain-separated
+receipt-validation engine specified by `0.172.0`. Produce a domain-separated
 `UnknownRestrictionLoweringEvaluationRootV1`; it is never
-`ReinstallEligibleCurrent`, cannot consume `0.51.16` eligibility or
-`0.51.30` replacement eligibility/reservation as evaluation genesis or spend
+`ReinstallEligibleCurrent`, cannot consume `0.167.0` eligibility or
+`0.181.0` replacement eligibility/reservation as evaluation genesis or spend
 its lifecycle-creation condition, and cannot authorize reinstall genesis or
 operational transition. The root binds the new evidence/coverage/safety
 generations, proposed restriction, exact candidate/guard, partitions and
@@ -1562,11 +1562,11 @@ Exit criteria: one proposed lower restriction reaches a completely evaluated,
 source-admitted and funded prepared root under a still-enforced predecessor
 top, or lowering remains visibly blocked; this stop grants neither lifecycle
 genesis nor operational lowering.
-`v0.51.31 implementation stop reached. Run pentest for this exact commit.`
+`v0.182.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.32` — Quarantine Replacement Successor Lifecycle Genesis
+## `0.183.0` — Quarantine Replacement Successor Lifecycle Genesis
 
-Status: planned conditionally; unavailable without one current `0.51.30`
+Status: planned conditionally; unavailable without one current `0.181.0`
 evaluation-lineage receipt.
 Setup: consume one `QuarantineReplacementEvaluationCurrentReceiptV1`, complete
 current replacement evaluation/status roots, eligibility tombstone and genesis
@@ -1576,7 +1576,7 @@ permit identities for the top branch or the exact prepared candidate plus
 fresh lifecycle-admission permit identity for the lowered branch, fresh top-
 branch bridge identities or exact lowered-branch prepared bridge identities,
 one exact effective-restriction genesis authority, the permanent-guard slot,
-and the `0.51.22` lifecycle contract.
+and the `0.173.0` lifecycle contract.
 Goal: create exactly one fresh successor lifecycle from the current replacement
 evaluation without re-consuming eligibility, bypassing quarantine lineage, or
 losing a prepared pre-operational lowering.
@@ -1601,7 +1601,7 @@ creates exactly one `ReinstallAdmissionCandidateLifecycleV1` at
 `QuarantineReplacementGenesisReceiptV1` and a one-shot final-activation
 condition binding the exact authority tag/digest.
  For `TopRestrictionGenesis`, the transaction issues the exact lifecycle-bound
-`0.51.29` `QuarantinedUnknownRestrictionAdmissionPermitV1` from the funded
+`0.180.0` `QuarantinedUnknownRestrictionAdmissionPermitV1` from the funded
 residual-root authority. For `PreOperationalLoweredGenesis`, it consumes the
 prepared root's one-shot genesis-adoption condition, atomically adopts the
 successor restriction and prepared bridge root into a lifecycle-bound pending
@@ -1610,9 +1610,9 @@ adoption, and executes
 admission permit and partition-scoped one-shot adoption conditions without
 reviving or reusing any lowering permit. It emits
 `PreOperationalLoweringAdoptionReceiptV1`. This root-level receipt does not
-claim that any source partition has rebound its bridge; `0.51.33` must
-complete that work through `0.51.23–0.51.24`. The predecessor top remains
-effective at existing runtime enforcement points until `0.51.34` makes the
+claim that any source partition has rebound its bridge; `0.184.0` must
+complete that work through `0.174.0–0.175.0`. The predecessor top remains
+effective at existing runtime enforcement points until `0.185.0` makes the
 successor operational and creates deferred predecessor cleanup. Neither
 branch consumes replacement eligibility again.
 The new lifecycle inherits exactly the selected coverage/restriction root and
@@ -1638,20 +1638,20 @@ Exit criteria: exactly one fresh lifecycle and genesis receipt consume the
 current finite evaluation lineage and one exact effective-restriction branch
 while eligibility remains permanently tombstoned; missing, replayed or
 cross-branch authority leaves the product terminal unavailable.
-`v0.51.32 implementation stop reached. Run pentest for this exact commit.`
+`v0.183.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.33` — Pre-Operational Lowering Admission And Ownership Adoption
+## `0.184.0` — Pre-Operational Lowering Admission And Ownership Adoption
 
-Status: planned conditionally; required only when `0.51.32` selected
+Status: planned conditionally; required only when `0.183.0` selected
 `PreOperationalLoweredGenesis`.
-Setup: consume the exact `0.51.32`
+Setup: consume the exact `0.183.0`
 `PreOperationalLoweringAdoptionReceiptV1`, the lifecycle in
 `ActivationProposedNonOperational`, the matching
 `EffectiveRestrictionAdmissionAuthorityV1::PreOperationalLoweredAdmission`,
-current `0.51.31` lowering evaluation/prepared roots and authorization
+current `0.182.0` lowering evaluation/prepared roots and authorization
 tombstone, every prepared partition bridge and one-shot lifecycle adoption
 condition, source and successor routing, current evidence/coverage/safety
-generations, physical capacity evidence, and the `0.51.23–0.51.24` admission
+generations, physical capacity evidence, and the `0.174.0–0.175.0` admission
 and ownership contracts.
 Goal: carry the lowered genesis branch through the same partition admission
 and funded bridge-ownership pipeline required by final activation, without
@@ -1663,7 +1663,7 @@ PreOperationalLoweringAdmissionComplete |
 PreOperationalLoweringAdmissionBlocked |
 PreOperationalLoweringAdmissionRevalidationRequired`.
 These are non-authoritative process-manager states and must be derivable from
-the `0.51.22` lifecycle plus durable receipts. Starting adoption uses the same
+the `0.173.0` lifecycle plus durable receipts. Starting adoption uses the same
 expected lifecycle generation as abort and quarantine and CASes
 `ActivationProposedNonOperational → PartitionAdmissionPending`; a lost CAS
 dispatches no adoption work. The process manager cannot report or preserve a
@@ -1688,7 +1688,7 @@ receipt, newer evidence/coverage/safety state, changed routing or restrictive
 mutation CASes the current allowed pending/complete state to
 `AdmissionRevalidationRequired`. Completing the exact fold CASes
 `PartitionAdmissionPending → PartitionAdmissionComplete`. Every transition
-uses the same `0.51.22` expected generation as abort, expiry and quarantine;
+uses the same `0.173.0` expected generation as abort, expiry and quarantine;
 if another transition wins, the receipt becomes disposition evidence and
 cannot advance the process-manager state. The predecessor top and prepared
 bridge remain enforced and funded throughout failure or revalidation.
@@ -1699,7 +1699,7 @@ adoption generation, maximum receipt generations/versions, canonical digest
 and complete-fold proof. Missing, duplicate, Unknown, Rejected, stale, mixed-
 generation or cross-tag members cannot produce this root. The closed Lowered
 `EffectiveRestrictionPartitionAdmissionReceiptV1` values and this root then
-fold through `0.51.23` into `ReinstallPartitionAdmissionRootV1`. `0.51.24`
+fold through `0.174.0` into `ReinstallPartitionAdmissionRootV1`. `0.175.0`
 then transfers long-lived
 ownership of those same bridge identities and capacity, using the same
 `PreOperationalLoweredAdmission` tag/digest, into its complete operational-
@@ -1708,10 +1708,10 @@ transfer-prepared ownership root. It emits the Lowered branch of
 receipt, `PreOperationalLoweringPartitionAdoptionRootV1`, standard admission
 root, bridge-ownership/capacity root, manifest/count and non-wrapping
 conservation. The top branch reaches the closed Top variant through its
-ordinary `0.51.23–0.51.24` path; a root containing mixed top/lowered receipts,
+ordinary `0.174.0–0.175.0` path; a root containing mixed top/lowered receipts,
 owners or bridges is invalid.
-Abort, expiry or quarantine wins through the shared `0.51.22` lifecycle CAS
-and `0.51.25` disposition. Late Accepted results after that fence are only
+Abort, expiry or quarantine wins through the shared `0.173.0` lifecycle CAS
+and `0.176.0` disposition. Late Accepted results after that fence are only
 disposition evidence. Restore/import preserve the adoption cursor,
 conditions/tombstones, receipts, exact bridge identities, both ownership
 ledgers, capacity conservation and maximum generations.
@@ -1733,27 +1733,27 @@ Exit criteria: every prepared lowered bridge is source-accepted, rebound once
 to the exact lifecycle and held by one funded owner under complete standard
 admission/ownership roots, or the lifecycle remains visibly pending, blocked
 or revalidation-required while the predecessor top remains authoritative.
-`v0.51.33 implementation stop reached. Run pentest for this exact commit.`
+`v0.184.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.34` — Reinstall Guard Supersession Consumption
+## `0.185.0` — Reinstall Guard Supersession Consumption
 
 Status: planned; operational activation remains disabled until mandatory
-`0.51.38`, `0.51.41–0.51.42` construction/policy and `0.51.45` distributed
-inventory-cut plus `0.51.49` restrictive-safety mutation gates pass.
-Setup: consume one `0.51.21` `ReinstallEligibleCurrent` evaluation root with
-all real partition fences active, its current `0.51.22` lifecycle generation in
+`0.189.0`, `0.192.0–0.193.0` construction/policy and `0.196.0` distributed
+inventory-cut plus `0.200.0` restrictive-safety mutation gates pass.
+Setup: consume one `0.172.0` `ReinstallEligibleCurrent` evaluation root with
+all real partition fences active, its current `0.173.0` lifecycle generation in
 `ActivationPrepared`, its current purpose-bound sealed delivery cut,
-one complete fresh `0.51.14` partition-status root, either one current initial
-`0.51.16` eligibility or the exact `0.51.30–0.51.32` replacement lineage plus
-the `0.51.33` partition-adoption lineage when the lowered branch was selected,
+one complete fresh `0.165.0` partition-status root, either one current initial
+`0.167.0` eligibility or the exact `0.181.0–0.183.0` replacement lineage plus
+the `0.184.0` partition-adoption lineage when the lowered branch was selected,
 eligibility tombstone, genesis receipt and final-activation condition, final
-manifest/permanent-guard transfer receipt, `0.51.19`
-cleanup-complete or current `0.51.20` retained-namespace receipt, one complete
-current `0.51.23` `ReinstallPartitionAdmissionRootV1` with successor bridges,
-one complete `0.51.24` operational-transfer-prepared bridge ownership/capacity
-root, and for a replacement one current `0.51.28` coverage root and effective
-`0.51.32` `EffectiveRestrictionGenesisAuthorityV1` branch plus the exact
-`0.51.24` `EffectiveRestrictionAdmissionRootV1`; the initial branch instead
+manifest/permanent-guard transfer receipt, `0.170.0`
+cleanup-complete or current `0.171.0` retained-namespace receipt, one complete
+current `0.174.0` `ReinstallPartitionAdmissionRootV1` with successor bridges,
+one complete `0.175.0` operational-transfer-prepared bridge ownership/capacity
+root, and for a replacement one current `0.179.0` coverage root and effective
+`0.183.0` `EffectiveRestrictionGenesisAuthorityV1` branch plus the exact
+`0.175.0` `EffectiveRestrictionAdmissionRootV1`; the initial branch instead
 binds a typed `NotApplicableInitialGenesis` coverage/restriction/admission
 disposition. The lowered branch also supplies the activation-preparation
 snapshot of evidence/coverage/safety/restriction, authorization revocation/
@@ -1762,11 +1762,11 @@ current permanent/reinstall guard-slot generation; the non-operational
 candidate guard digest/generation; and the expected successor operational
 generation to be created. No current operational-successor guard is assumed
 to exist before this commit. Also
-consume proof no `0.51.25` blocked/abort/supersession state or `0.51.27`
+consume proof no `0.176.0` blocked/abort/supersession state or `0.178.0`
 quarantine applies to the current candidate, and for a replacement the terminal
 predecessor lifecycle/quarantine root and advanced floors,
 reinstall/rollback floor, historical compatibility set, and separately
-approved reinstall proposal from the `0.30.28` lifecycle.
+approved reinstall proposal from the `0.100.0` lifecycle.
 Goal: supersede permanent protection exactly once only after the independently
 partitioned current-state evaluation and source-side activation admission are
 complete, remain fenced, and bind the exact successor.
@@ -1798,9 +1798,9 @@ No authority-bearing member is optional; both nested tags/digests must match
 each other, the genesis receipt and final-activation condition.
 The branches are not substitutable. One local transaction matches the exact
 tag and generation-CASes the shared lifecycle from `ActivationPrepared` to
-`Operational`. `InitialGenesis` consumes the current `0.51.16` eligibility.
+`Operational`. `InitialGenesis` consumes the current `0.167.0` eligibility.
 `QuarantineReplacementGenesis` verifies that eligibility was already consumed
-and tombstoned, verifies the complete `0.51.32` genesis receipt and the same
+and tombstoned, verifies the complete `0.183.0` genesis receipt and the same
 effective-restriction tag/digest, and consumes
 only its one-shot final-activation condition; it never consumes replacement
 eligibility again. Both branches consume the current evaluation and approval,
@@ -1816,7 +1816,7 @@ every preaccepted bridge-ownership transfer so the operational reinstall guard
 owns the bridge root and funded capacity, keeps every tenant-local residual
 obligation/fence and successor restriction bridge authoritative, and commits
 result/audit/outbox. The original admission reservation settles only after this
-durable result is folded under `0.51.24` conservation. Any later obligation
+durable result is folded under `0.175.0` conservation. Any later obligation
 transfer remains tenant-local and cannot weaken that guard.
 If `PreOperationalLoweredGenesis` is selected, the same operational-transition
 transaction first compares the current authorization revocation generation
@@ -1832,7 +1832,7 @@ nonexistent current operational-successor guard. Every mismatch creates typed
 the shared lifecycle exactly
 `ActivationPrepared → AdmissionRevalidationRequired`. There is no
 `ActivationPrepared → AdmissionBlocked` edge. Permanent revocation, expiry or
-denial proceeds only through the existing `0.51.25` abort/fence/disposition
+denial proceeds only through the existing `0.176.0` abort/fence/disposition
 path from the revalidation state. Any Blocked diagnostic is a rebuildable
 projection derived from the lifecycle transition and cause, never independent
 authority. If the lifecycle CAS loses, the winning lifecycle state remains
@@ -1840,9 +1840,9 @@ authoritative and no diagnostic can override it. A mismatch produces no guard
 mutation, consumed state, capacity settlement or release manifest.
 Only a fresh match may consume one immutable
 `ReleaseMemberConstructionPreparedRootV1` that has reached
-`ConstructionSealed` under the mandatory `0.51.41–0.51.42` policy and bounded
+`ConstructionSealed` under the mandatory `0.192.0–0.193.0` policy and bounded
 construction protocol. The root fixes the exact predecessor inventory
-generation/root and `0.51.45` `PredecessorEnforcementInventoryCutV1`,
+generation/root and `0.196.0` `PredecessorEnforcementInventoryCutV1`,
 immutable `UnknownRestrictionLoweringReleaseManifestV1`,
 policy-derived member budgets/digests, parent-local initial Pending
 `ReleaseReconciliationMemberV1` records, transition genesis/high-watermarks,
@@ -1859,7 +1859,7 @@ capacity settlement; there is no later manifest extension. A losing or
 abandoned prepared bundle enters the funded `Disposed` protocol rather than
 silently releasing uncertain capacity. The old top remains enforced until the
 operational CAS is durable, then remains owned/funded pending that manifest's
-release or retention result. `0.51.35` reinstall-control release work cannot
+release or retention result. `0.186.0` reinstall-control release work cannot
 grant authority or delete replacement state. Any invalid cut,
 evaluation, partition fence, admission/bridge/ownership/capacity root, cleanup
 proof, retained namespace proof, or abort/supersession state makes no guard
@@ -1909,14 +1909,14 @@ archive-safe cleanup state, current sealed cut and complete still-fenced
 evaluation under separate current authority; both candidates become absorbing
 and the completely admitted successor becomes operational with durable release
 work, or permanent denial and every obligation/fence remain unchanged.
-`v0.51.34 implementation stop reached. Run pentest for this exact commit.`
+`v0.185.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.35` — Reinstall Barrier And Evaluation-Fence Release Reconciliation
+## `0.186.0` — Reinstall Barrier And Evaluation-Fence Release Reconciliation
 
 Status: planned.
-Setup: consume one successful `0.51.34` reinstall, its absorbing
+Setup: consume one successful `0.185.0` reinstall, its absorbing
 `ConsumedByReinstall` cut/`Consumed` evaluation, exact
-`ReinstallBarrierReleaseManifestV1`, the `0.51.17` retention/capacity contract,
+`ReinstallBarrierReleaseManifestV1`, the `0.168.0` retention/capacity contract,
 reserved reconciliation capacity, and authoritative owner-partition routing.
 Goal: remove every obsolete delivery barrier and evaluation fence without
 weakening retained restrictions or leaving old candidate state able to block
@@ -1949,15 +1949,15 @@ Exit criteria: every obsolete control in the exact reinstall release manifest
 is proved released or durably retained under a successor owner, restrictive
 state remains enforced, and neither consumed candidate can block or authorize
 future work.
-`v0.51.35 implementation stop reached. Run pentest for this exact commit.`
+`v0.186.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.36` — Operational Unknown-Restriction Lowering Activation
+## `0.187.0` — Operational Unknown-Restriction Lowering Activation
 
 Status: planned conditionally; unavailable without one current operational-mode
-`0.51.31` lowering prepared root and one exact `0.51.34` operational reinstall
-guard; operational activation remains disabled until mandatory `0.51.38` and
-`0.51.41–0.51.42` construction/policy and `0.51.45` distributed inventory-cut
-plus `0.51.49` restrictive-safety mutation gates pass.
+`0.182.0` lowering prepared root and one exact `0.185.0` operational reinstall
+guard; operational activation remains disabled until mandatory `0.189.0` and
+`0.192.0–0.193.0` construction/policy and `0.196.0` distributed inventory-cut
+plus `0.200.0` restrictive-safety mutation gates pass.
 Setup: consume the destination-admitted lowering authorization tombstone,
 current `UnknownRestrictionLoweringEvaluationRootV1`,
 `UnknownRestrictionLoweringBridgePreparedRootV1`, exact predecessor top/
@@ -1988,7 +1988,7 @@ restriction generation/root and bridge-ownership root, preserves all
 unrelated guard, tenant-local residual and capacity conditions, emits
 `OperationalUnknownRestrictionLoweringReceiptV1`, and consumes the exact
 `ConstructionSealed` `ReleaseMemberConstructionPreparedRootV1` built under
-`0.51.41–0.51.42` against one current `0.51.45` inventory cut. The bounded
+`0.192.0–0.193.0` against one current `0.196.0` inventory cut. The bounded
 guard-slot CAS rechecks the predecessor inventory-cut digest, parent
 invalidation and policy/prepared/capacity generations, marks the prepared
 root `Activated`, binds its digest into the guard, and emits only root-level
@@ -2026,22 +2026,22 @@ Exit criteria: one current operational guard atomically adopts the completely
 evaluated, admitted and funded successor restriction and creates complete
 funded predecessor cleanup, or the old top remains the effective restriction
 with no guard mutation.
-`v0.51.36 implementation stop reached. Run pentest for this exact commit.`
+`v0.187.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.37` — Unknown-Restriction Predecessor Release Reconciliation
+## `0.188.0` — Unknown-Restriction Predecessor Release Reconciliation
 
 Status: planned conditionally; required after either a pre-operational lowered
-branch becomes operational at `0.51.34` or operational lowering activates at
-`0.51.36`. This stop owns the core reconciliation state machine. Its records
+branch becomes operational at `0.185.0` or operational lowering activates at
+`0.187.0`. This stop owns the core reconciliation state machine. Its records
 remain dispatch-disabled and cannot make their first operational member
-transition or authorize predecessor cleanup until mandatory `0.51.38`,
-`0.51.40`, and `0.51.41–0.51.59` construction, policy, inventory, locality,
+transition or authorize predecessor cleanup until mandatory `0.189.0`,
+`0.191.0`, and `0.192.0–0.210.0` construction, policy, inventory, locality,
 intent, effect-authorization, conflict, delivery-closure, post-closure
 incident, intent-disposition and retry-ledger admissions are complete;
-`0.51.39` exclusively governs saturated-member retry issuance.
+`0.190.0` exclusively governs saturated-member retry issuance.
 Setup: consume one exact `UnknownRestrictionLoweringReleaseManifestV1`, the
 corresponding `PreOperationalLoweringAdoptionReceiptV1` plus successful
-`0.51.34` transition or `OperationalUnknownRestrictionLoweringReceiptV1`,
+`0.185.0` transition or `OperationalUnknownRestrictionLoweringReceiptV1`,
 the activated sealed construction root with its policy-derived member
 budget/digest, parent-local initial Pending
 `ReleaseReconciliationMemberV1`, `ReleaseMemberTransitionGenesisV1`, initial
@@ -2049,7 +2049,7 @@ budget/digest, parent-local initial Pending
 `SaturatedRetryBudgetLedgerV1` genesis,
 predecessor enforcement-point/bridge inventory, current successor restriction/
 bridge owner, source and destination routing, physical provisioning evidence,
-the `0.51.24` ownership-transfer contract, reserved reconciliation capacity,
+the `0.175.0` ownership-transfer contract, reserved reconciliation capacity,
 and current coverage/evidence/safety generations.
 Goal: release each obsolete predecessor-top enforcement point only when proved
 safe, otherwise retain it under one funded successor owner without losing late
@@ -2081,8 +2081,8 @@ may only update the reason/evidence on the same Pending generation through an
 expected-version CAS; it is not a third terminal edge. Define bounded
 `ReleaseMemberVersionBudgetV1 { initial_version, pending_update_ceiling,
 reserved_terminal_version, observation_attempt_limit,
-saturated_retry_limit }`, derived by `0.51.41`, sealed by `0.51.42` and bound
-by `0.51.34` or `0.51.36`, never created by this reconciler. An identical
+saturated_retry_limit }`, derived by `0.192.0`, sealed by `0.193.0` and bound
+by `0.185.0` or `0.187.0`, never created by this reconciler. An identical
 PendingUnknown reason/evidence/observed-generation digest coalesces without
 incrementing authoritative member version. Attempts charge a separate bounded,
 saturating observation counter that can pause ordinary retry but cannot spend
@@ -2092,15 +2092,15 @@ uses the two branches above. Reaching the ceiling creates
 `PendingObservationSaturated` at exactly the ceiling: enforcement, ownership,
 capacity and pending parent accounting remain authoritative;
 further nonterminal observations coalesce without version change. This stop
-defines no manual mutation or override command: until `0.51.39`, saturation
+defines no manual mutation or override command: until `0.190.0`, saturation
 remains pending and enforced. A terminal receipt CASes
 from the exact current Pending below the ceiling or
 PendingObservationSaturated at the ceiling directly to
 `reserved_terminal_version`, so hostile response loss cannot exhaust terminal
-capacity, but only after the exact `0.51.46` parent intent won, the matching
-`0.51.47` local effect authorization was consumed, and `0.51.48` proves no
+capacity, but only after the exact `0.197.0` parent intent won, the matching
+`0.198.0` local effect authorization was consumed, and `0.199.0` proves no
 unsettled contradictory physical effect. The same parent-local terminal CAS
-must consume the current `0.51.50` `EffectDeliveryClosureRootV1` and exact
+must consume the current `0.201.0` `EffectDeliveryClosureRootV1` and exact
 conflict generation/head. The intent is a separate parent-local one-winner
 record and does not consume member version. Any unresolved authorization,
 delivery or contradictory receipt keeps the member nonterminal.
@@ -2125,7 +2125,7 @@ successor restriction/bridge generations, routing, coverage, evidence and
 safety epoch. It atomically removes only the obsolete predecessor enforcement
 point and creates `PredecessorReleaseEffectReceiptV1` with that physical
 effect. A destination owner instead atomically accepts the exact enforcement
-point, restrictive state and funded capacity under `0.51.24` and creates
+point, restrictive state and funded capacity under `0.175.0` and creates
 `PredecessorRetentionAcceptanceReceiptV1`. These source/destination receipts
 enter the parent durable inbox; the parent authenticates and deduplicates them,
 then advances its reconciliation member and transition head in one
@@ -2155,7 +2155,7 @@ rejects duplicate competing versions for that member, a version below its
 durable high-watermark, a fork at the same
 `(member_id, generation, version)`, missing/extra members, noncanonical order,
 or any checkpoint/root not committing to the exact complete version vector.
-Authentication alone is not transition continuity: before `0.51.40` admits
+Authentication alone is not transition continuity: before `0.191.0` admits
 the expected-predecessor chain or parent-authoritative status-proof contract,
 the vector cannot authorize operational cleanup.
 It folds that vector root, exact manifest/root/count and separate released,
@@ -2220,18 +2220,18 @@ is proved released or durably retained with all restrictive state and funded
 maintenance capacity; pending or uncertain work remains visibly enforced and
 encumbered, and neither observation churn nor member-version exhaustion can
 prevent a later authenticated terminal transition.
-`v0.51.37 implementation stop reached. Run pentest for this exact commit.`
+`v0.188.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.38` — Release-Member Prepared-Construction Certification
+## `0.189.0` — Release-Member Prepared-Construction Certification
 
-Status: planned conditionally; required immediately after the `0.51.37` core
+Status: planned conditionally; required immediately after the `0.188.0` core
 state-machine implementation and before its dispatch gate can open.
 Setup: consume the exact `ConstructionSealed`
-`ReleaseMemberConstructionPreparedRootV1` built in bounded `0.51.42` batches,
-its immutable `0.51.45` inventory-cut and policy roots, complete member inventory, member
+`ReleaseMemberConstructionPreparedRootV1` built in bounded `0.193.0` batches,
+its immutable `0.196.0` inventory-cut and policy roots, complete member inventory, member
 budgets/digests, parent-local initial Pending records, transition and
 saturated-retry-ledger geneses/high-watermarks, non-borrowable capacity and
-batch receipts, plus its `0.51.34` or `0.51.36` activation binding, canonical
+batch receipts, plus its `0.185.0` or `0.187.0` activation binding, canonical
 serialization/hash domains, checked arithmetic and restore/import schema.
 Goal: certify that every manifest was born with an immutable,
 non-substitutable finite member budget and continuity genesis; never retrofit
@@ -2257,7 +2257,7 @@ and immutable construction audit chain, and that activation consumed and
 bound that exact root in one bounded guard-slot transaction.
 This stop never edits the manifest, attaches a digest or initializes a member.
 `UnknownRestrictionLoweringReleaseManifestV1` has only the bound meaning
-defined at `0.51.34`/`0.51.36`; an unbound encoding is invalid, not a legacy
+defined at `0.185.0`/`0.187.0`; an unbound encoding is invalid, not a legacy
 V1. Because no earlier schema is deployed, prototype/unbound records are
 rejected on restore/import. Supporting any real legacy form would require a
 separately planned V2 and fail-closed supersession protocol; none is authorized
@@ -2282,14 +2282,14 @@ parent-local member, budget digest, transition genesis and retry-ledger genesis
 were prepared and sealed completely before the bounded activation binding;
 missing or changed construction evidence retains the predecessor and leaves
 dispatch closed.
-`v0.51.38 implementation stop reached. Run pentest for this exact commit.`
+`v0.189.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.39` — Saturated Release-Member Retry Authority
+## `0.190.0` — Saturated Release-Member Retry Authority
 
-Status: planned conditionally; required after `0.51.38` and dispatch-disabled
-until `0.51.44` certifies the retry ledger, before any operator or automation
+Status: planned conditionally; required after `0.189.0` and dispatch-disabled
+until `0.195.0` certifies the retry ledger, before any operator or automation
 may retry a `PendingObservationSaturated` member.
-Setup: consume one exact saturated `0.51.37` member, its immutable `0.51.38`
+Setup: consume one exact saturated `0.188.0` member, its immutable `0.189.0`
 budget digest, current tenant/manifest/member/generation/version/state digest,
 saturation reason and evidence, current authorization/policy generations,
 trusted time, funded non-borrowable recovery capacity, scheduler fairness,
@@ -2357,17 +2357,17 @@ Exit criteria: saturated reconciliation has one auditable, bounded,
 separation-of-duties retry lane that can gather evidence or redeliver work but
 can never change authority or outcome by itself and can issue at most the
 immutable, non-resetting member lifetime retry limit.
-`v0.51.39 implementation stop reached. Run pentest for this exact commit.`
+`v0.190.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.40` — Release-Member Transition-Continuity Proof
+## `0.191.0` — Release-Member Transition-Continuity Proof
 
-Status: planned conditionally; required after `0.51.38` and before the first
-operational `0.51.37` dispatch or member transition, not merely before parent
+Status: planned conditionally; required after `0.189.0` and before the first
+operational `0.188.0` dispatch or member transition, not merely before parent
 fold or cleanup.
 Setup: consume each exact immutable manifest/member/budget digest and the
 `ReleaseMemberTransitionGenesisV1` plus initial
-`ReleaseMemberTransitionHighWatermarkV1` sealed by `0.51.42` and bound into
-the `0.51.34` or `0.51.36` activation, the allowed `0.51.37` parent-local
+`ReleaseMemberTransitionHighWatermarkV1` sealed by `0.193.0` and bound into
+the `0.185.0` or `0.187.0` activation, the allowed `0.188.0` parent-local
 transition relation and receipt writer,
 authenticated source/destination terminal transactions, canonical vector/root,
 restore/import floor, and signer/owner trust state.
@@ -2376,7 +2376,7 @@ construction and every later maximum member record is connected by authorized
 expected-version transitions, not merely signed with a larger version.
 Deliverables: certify that every member has exactly one construction-time
 genesis/high-watermark matching its initial Pending record, budget digest,
-sealed construction identity and activation binding. Admit the `0.51.37`
+sealed construction identity and activation binding. Admit the `0.188.0`
 dispatch gate only when the parent-local transition path atomically writes
 `UnknownRestrictionLoweringMemberTransitionReceiptV1` with exact
 `manifest_id`, `member_id`, generation, expected predecessor version,
@@ -2388,7 +2388,7 @@ its ceiling or PendingObservationSaturated at its ceiling from a
 `PredecessorReleaseEffectReceiptV1` or
 `PredecessorRetentionAcceptanceReceiptV1` created atomically with the
 source/destination effect, consuming the exact selected-intent
-`ReleaseMemberEffectAuthorizationV1`, and with no unsettled `0.51.48`
+`ReleaseMemberEffectAuthorizationV1`, and with no unsettled `0.199.0`
 conflict. No cross-store transaction is part of continuity.
 The parent maintains for each member a durable
 `ReleaseMemberTransitionHighWatermarkV1 { generation, version, state_digest,
@@ -2427,12 +2427,12 @@ Exit criteria: every member maximum and terminal aggregate is rooted in one
 non-forking authorized expected-version history from its durable high-
 watermark beginning at immutable manifest construction; no dispatch,
 transition, completion or cleanup is possible before that continuity gate.
-`v0.51.40 implementation stop reached. Run pentest for this exact commit.`
+`v0.191.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.41` — Release-Member Budget Policy And Worst-Case Funding
+## `0.192.0` — Release-Member Budget Policy And Worst-Case Funding
 
 Status: planned conditionally; mandatory before sealing or activating any
-`0.51.34`/`0.51.36` release construction.
+`0.185.0`/`0.187.0` release construction.
 Setup: consume the exact predecessor inventory root and member classes,
 current security/reliability governance generation, cost model, checked
 arithmetic profile, capacity owner and protected recovery reservation.
@@ -2467,13 +2467,13 @@ preparation/activation, restore rollback and valid boundary derivations pass.
 Exit criteria: every member budget is reproducibly derived from one current
 policy and every authorized observation, retry, terminalization and inactive-
 bundle disposition has non-borrowable capacity before construction can seal.
-`v0.51.41 implementation stop reached. Run pentest for this exact commit.`
+`v0.192.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.42` — Bounded Release-Member Construction Lifecycle
+## `0.193.0` — Bounded Release-Member Construction Lifecycle
 
-Status: planned conditionally; mandatory before `0.51.38` certification or any
-`0.51.34`/`0.51.36` activation binding.
-Setup: consume one exact `0.51.45`
+Status: planned conditionally; mandatory before `0.189.0` certification or any
+`0.185.0`/`0.187.0` activation binding.
+Setup: consume one exact `0.196.0`
 `PredecessorEnforcementInventoryCutV1`, current
 `ReleaseMemberBudgetPolicyV1`, deterministic budgets, parent-local storage,
 bounded batch/cursor limits, funded active/disposition/conflict capacity, and
@@ -2491,7 +2491,7 @@ exact fixed inventory-cut digest/invalidation generation, contiguous complete
 batch index, canonical member root, all budget/genesis roots and worst-case
 capacity equation, then emits
 immutable `ReleaseMemberConstructionPreparedRootV1`.
-The final `0.51.34`/`0.51.36` guard-slot CAS performs bounded work only:
+The final `0.185.0`/`0.187.0` guard-slot CAS performs bounded work only:
 recheck exact inventory-cut/invalidation/policy/prepared/capacity generations, consume the
 sealed root, mark it `Activated`, bind its digest into the guard, and emit
 root-level audit/outbox. If another activation wins, expiry/revocation occurs,
@@ -2509,13 +2509,13 @@ unsafe capacity release and authority from Preparing pass.
 Exit criteria: construction scales by bounded resumable batches, a bounded CAS
 activates exactly one complete sealed root, and every inactive root is safely
 disposed or remains visibly funded without gaining operational authority.
-`v0.51.42 implementation stop reached. Run pentest for this exact commit.`
+`v0.193.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.43` — Partition-Local Release Effects And Parent Folding
+## `0.194.0` — Partition-Local Release Effects And Parent Folding
 
 Status: planned conditionally; locality substrate required before the first
-operational `0.51.37` dispatch, while remote effect dispatch remains disabled
-until `0.51.46–0.51.59` pass.
+operational `0.188.0` dispatch, while remote effect dispatch remains disabled
+until `0.197.0–0.210.0` pass.
 Setup: consume one activated construction root, parent-local members and
 transition heads, source/destination routing epochs, durable parent inbox,
 source enforcement authority, destination retention ownership/capacity
@@ -2537,7 +2537,7 @@ deduplicates and retains receipts; one parent-local expected-version
 transaction consumes a valid receipt, advances
 `ReleaseReconciliationMemberV1`, its transition receipt/head, audit and
 outbox only when it matches the sole parent intent. A contradictory terminal
-receipt is a real physical effect: it atomically enters `0.51.48`
+receipt is a real physical effect: it atomically enters `0.199.0`
 `EffectConflictDetected`, keeps the member nonterminal and reserves every
 observed owner/capacity entry until complete conflict settlement. It is
 security evidence and reconciliation work, never a losing fact discarded by
@@ -2557,11 +2557,11 @@ source- or destination-local atomic effect receipt and one contiguous
 parent-local fold matching one selected intent and consumed authorization;
 uncertainty or contradictory physical effects remain nonterminal and funded,
 and no cross-store atomicity is assumed.
-`v0.51.43 implementation stop reached. Run pentest for this exact commit.`
+`v0.194.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.44` — Saturated-Retry Ledger Continuity
+## `0.195.0` — Saturated-Retry Ledger Continuity
 
-Status: planned conditionally; mandatory before opening the `0.51.39` retry
+Status: planned conditionally; mandatory before opening the `0.190.0` retry
 dispatch gate or accepting terminal reconciliation evidence for a member that
 has saturated.
 Setup: consume the sealed retry-ledger genesis, member/budget/policy digests,
@@ -2572,7 +2572,7 @@ creating an unversioned count outside continuity protection.
 Deliverables: define
 `SaturatedRetryBudgetLedgerV1 { member_id, member_generation, budget_digest,
 ledger_version, claim_count, transition_head }`. Its zero-count/version-zero
-genesis is sealed with construction. Each accepted `0.51.39` claim
+genesis is sealed with construction. Each accepted `0.190.0` claim
 expected-version-CASes the ledger, checked-increments version and count, writes
 `SaturatedRetryBudgetTransitionReceiptV1`, advances its head, and creates the
 claim/audit/outbox in one parent-local transaction. The release member remains
@@ -2593,9 +2593,9 @@ unauthorized reset/replenishment and valid exhaustion pass.
 Exit criteria: every lifetime retry charge has its own contiguous versioned
 history, saturated member identity stays immutable, and restore or terminal
 folding cannot forget, fork or refund consumed retry authority.
-`v0.51.44 implementation stop reached. Run pentest for this exact commit.`
+`v0.195.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.45` — Distributed Predecessor Enforcement Inventory Cut
+## `0.196.0` — Distributed Predecessor Enforcement Inventory Cut
 
 Status: planned conditionally; mandatory before sealing or activating any
 predecessor release construction.
@@ -2611,9 +2611,9 @@ high-watermarks, routing/ownership generations, predecessor restriction,
 canonical manifest-membership root, source fence receipts, parent invalidation
 generation and cut digest. Each source installs a local
 `PredecessorInventoryCutFenceV1` before issuing its receipt. While sealed but
-not activated, classify every mutation through the closed `0.51.14`
+not activated, classify every mutation through the closed `0.165.0`
 classification. `RestrictiveSafety` never waits for the inventory fence:
-under `0.51.49` it commits and becomes enforced immediately from protected
+under `0.200.0` it commits and becomes enforced immediately from protected
 emergency capacity, atomically advances the safety/inventory invalidation
 generation, invalidates the prepared cut, and attaches the restriction to the
 current predecessor top plus every prepared successor bridge. Proven
@@ -2642,16 +2642,16 @@ plugin at every boundary pass.
 Exit criteria: every activated manifest is rooted in one source-fenced
 distributed inventory cut; pre-activation mutation invalidates or rebuilds it,
 and post-activation restrictive state can enter only the successor generation.
-`v0.51.45 implementation stop reached. Run pentest for this exact commit.`
+`v0.196.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.46` — Parent-Local Release Effect Intent
+## `0.197.0` — Parent-Local Release Effect Intent
 
-Status: planned conditionally; mandatory before `0.51.47` can issue any remote
+Status: planned conditionally; mandatory before `0.198.0` can issue any remote
 effect authorization.
 Setup: consume one active construction/member, current operational
 guard/restriction, inventory-cut and routing generations, exact source/
 destination candidate, policy/budget digests, parent member state/head and
-transactional outbox, plus the `0.51.52` intent-lifetime policy and either its
+transactional outbox, plus the `0.203.0` intent-lifetime policy and either its
 genesis material or current expected-version ledger head.
 Goal: choose exactly one intended physical terminal effect before remote
 dispatch so concurrent workers cannot independently release and retain the
@@ -2666,14 +2666,14 @@ generation, expected remote object version, policy/budget digests, purpose and
 idempotency. One expected-version parent transaction commits the sole intent,
 creates or charges the current `ReleaseMemberIntentLifetimeBudgetV1`, intent
 head, exact `IntentBudgetReservationV1` route-leg root, audit and outbox.
-The same transaction consumes a passing current `0.51.55` worst-case seal-
+The same transaction consumes a passing current `0.206.0` worst-case seal-
 bundle preflight. Insufficient route capacity or backend fit
 creates no intent or outbox work. The intent is absorbing for ordinary dispatch,
 does not mutate or consume the release-member version, and cannot itself claim
 a physical effect or terminal outcome. Replanning or abandonment requires the
-separate `0.51.52` disposition lifecycle and a current `0.51.50` no-effect
+separate `0.203.0` disposition lifecycle and a current `0.201.0` no-effect
 delivery-closure proof; no worker may overwrite or switch an intent in place.
-Any observed or uncertain effect enters `0.51.48` instead.
+Any observed or uncertain effect enters `0.199.0` instead.
 Verification: two release workers, release/retain race, two retention
 destinations, stale member/guard/cut/route/object version, branch/owner/effect
 substitution, replay, response loss, intent without outbox, outbox without
@@ -2683,13 +2683,13 @@ ordinary duplicate join pass.
 Exit criteria: every remote effect has one durable parent-selected branch and
 effect identity before dispatch, while intent alone grants no remote or
 terminal authority.
-`v0.51.46 implementation stop reached. Run pentest for this exact commit.`
+`v0.197.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.47` — Activation-Bound Remote Effect Authorization
+## `0.198.0` — Activation-Bound Remote Effect Authorization
 
 Status: planned conditionally; mandatory before the first source release or
 destination retention effect.
-Setup: consume one exact `0.51.46` intent, active construction root and
+Setup: consume one exact `0.197.0` intent, active construction root and
 activation receipt, current operational guard/restriction, source/destination
 routing and expected local object versions, policy/budget digests, trusted
 time/key generations, one-shot authorization issuer, parent-local issuance
@@ -2722,14 +2722,14 @@ verifies the exact intent and scope remain current/open, uniquely inserts the
 exact authorization entry, expected-version advances the one shared
 head/count/root, atomically moves its exact authorization/dispatch reservation
 legs from `Reserved` to `Consumed`, and commits dispatch result/outbox work.
-The consumed dispatch leg prepays the complete immutable `0.51.54` per-
+The consumed dispatch leg prepays the complete immutable `0.205.0` per-
 authorization attempt allowance; the outbox cannot transmit until that ledger
 has been created and charged.
 The entry and result bind `IntentLifetimeBudgetGeneration`,
 `IntentBudgetReservationId` and the exact before/after lifetime-budget heads.
 The same identity/digest joins without another ledger advance, budget
 consumption, charge or outbox effect; changed identity/material cannot reuse a
-reservation and conflicts. Only the `0.51.50` transaction may lock and advance
+reservation and conflicts. Only the `0.201.0` transaction may lock and advance
 that same scope row into `IssuanceSealed`; issuance and sealing from one
 expected scope version cannot both win.
 Each transactional storage adapter must prove tenant-scoped unique entry
@@ -2738,7 +2738,7 @@ atomic commit. A per-entry document plus eventual aggregate projection, or a
 backend unable to atomically advance the shared scope, refuses this capability.
 The matching source/destination transaction verifies current local state,
 atomically consumes the one-shot authority, commits the physical effect,
-authorization tombstone, audit/outbox and `0.51.43` receipt carrying the same
+authorization tombstone, audit/outbox and `0.194.0` receipt carrying the same
 authorization digest. Prepared, sealed-but-inactive, disposed, stale-route,
 wrong-object-version, cross-intent/branch/owner, expired/revoked/key-stale or
 replayed authority fails structurally. Response loss joins the local
@@ -2764,9 +2764,9 @@ Exit criteria: every physical release or retention effect atomically consumes
 one current activation- and intent-bound authority locally; every authority is
 first committed in one complete non-wrapping issuance lineage; and its receipt
 is non-substitutable evidence of that exact redemption.
-`v0.51.47 implementation stop reached. Run pentest for this exact commit.`
+`v0.198.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.48` — Physical Effect Conflict Reconciliation
+## `0.199.0` — Physical Effect Conflict Reconciliation
 
 Status: planned conditionally; mandatory before any member with contradictory
 physical-effect evidence can become terminal or release capacity.
@@ -2782,7 +2782,7 @@ Detection atomically fences terminal member folding, creates an immutable
 `ReleaseMemberEffectConflictManifestV1` over every observed source removal and
 destination retention owner, preserves original reservations and charges the
 protected conflict reserve. Bounded authenticated discovery closes the
-supported owner/routing universe. Before `0.51.50` closes delivery, late
+supported owner/routing universe. Before `0.201.0` closes delivery, late
 receipts append through a predecessor-linked conflict generation and reopen
 conflict settlement. `SingleEffectSettled` alone cannot terminalize the member
 or release conflict/recovery capacity.
@@ -2802,7 +2802,7 @@ nonterminal, enforced and incident-visible. Restore binds the conflict
 manifest/head and conservation root. After delivery closure and the absorbing
 member terminal, no valid old authorization can still create an effect;
 genuinely unauthorized post-closure effects enter the separately funded
-`0.51.51` current-generation incident/residual path and never rewrite or
+`0.202.0` current-generation incident/residual path and never rewrite or
 silently reopen terminal member history.
 Verification: source removed plus destination retained, two destinations
 retained, contradictory unauthorized receipt, parent outage, receipt response
@@ -2817,13 +2817,13 @@ Exit criteria: a member becomes terminal only after every physical effect is
 accounted for, one selected effect supplies terminal authority, every extra
 restriction has funded ownership or is proved gone, and conservation is
 durable; member terminality still waits for the separate delivery closure.
-`v0.51.48 implementation stop reached. Run pentest for this exact commit.`
+`v0.199.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.49` — Restrictive-Safety Inventory Mutation Lane
+## `0.200.0` — Restrictive-Safety Inventory Mutation Lane
 
-Status: planned conditionally; mandatory before any `0.51.45` inventory fence
+Status: planned conditionally; mandatory before any `0.196.0` inventory fence
 may block ordinary mutation paths or any prepared construction may activate.
-Setup: consume the closed `0.51.14` mutation classification, source-local
+Setup: consume the closed `0.165.0` mutation classification, source-local
 predecessor inventory/cut fence, current safety and invalidation generations,
 current predecessor enforcement state, every source-local prepared successor
 bridge, protected emergency capacity and transactional audit/outbox.
@@ -2853,18 +2853,18 @@ plugin activation pass.
 Exit criteria: no inventory fence delays a restrictive safety fact; the fact
 is enforced immediately and every stale prepared/activation authority is
 irreversibly invalidated.
-`v0.51.49 implementation stop reached. Run pentest for this exact commit.`
+`v0.200.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.50` — Effect Authorization And Delivery Closure
+## `0.201.0` — Effect Authorization And Delivery Closure
 
 Status: planned conditionally; mandatory before `SingleEffectSettled` can
 support a terminal member CAS, capacity release or intent no-effect proof.
 Setup: consume one exact intent generation, the current
 `ReleaseMemberEffectAuthorizationIssuanceScopeV1`, complete immutable
 issuance-entry set/root, current intent-lifetime budget head/reservations,
-every current `0.51.54` dispatch-attempt head/disposition and a passing
-`0.51.55` seal-bundle/profile construction, every canonical transmission-start
-claim/result and the `0.51.58` closure-interlock certification,
+every current `0.205.0` dispatch-attempt head/disposition and a passing
+`0.206.0` seal-bundle/profile construction, every canonical transmission-start
+claim/result and the `0.209.0` closure-interlock certification,
 source/destination routes and status authorities, authorization tombstones,
 effect receipts, transactional outbox high-watermarks, durable parent inbox
 acknowledgements, current conflict generation/head and protected closure
@@ -2874,7 +2874,7 @@ produce a late physical effect after terminalization.
 Deliverables: implement
 `EffectDeliveryOpen → EffectAuthorizationCutSealed →
 EffectDeliveryReconciling → EffectDeliveryClosed`.
-Sealing uses the `0.51.55` bounded final publish, locks the issuance scope and
+Sealing uses the `0.206.0` bounded final publish, locks the issuance scope and
 current lifetime-budget/dispatch heads, consumes the
 exact open scope version, atomically enters `IssuanceSealed`, closes issuance
 for the intent, terminally moves every unused authorization/dispatch
@@ -2904,7 +2904,7 @@ transmission permit and no `OutcomeUnknown` or `StartClaimedReconciling` start
 claim. Authorization or permit expiry after a committed start claim is not
 no-effect evidence. Closure instead requires authenticated definitely-no-effect
 evidence, the exact effect receipt, or conservative unresolved reconciliation
-under `0.51.58`, plus `SingleEffectSettled`. The parent-local terminal member
+under `0.209.0`, plus `SingleEffectSettled`. The parent-local terminal member
 CAS consumes that current closure root and conflict generation/head in the same
 transaction.
 Conflict/recovery capacity remains reserved through that CAS. After closure,
@@ -2924,9 +2924,9 @@ closure and restore at every state pass.
 Exit criteria: terminalization consumes one complete current delivery closure
 proving every old authorization and delivery is exhausted, durably unconsumed,
 fully folded or still blocking; no valid late effect can emerge afterward.
-`v0.51.50 implementation stop reached. Run pentest for this exact commit.`
+`v0.201.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.51` — Post-Closure Unauthorized Effect Incident Ownership
+## `0.202.0` — Post-Closure Unauthorized Effect Incident Ownership
 
 Status: planned conditionally; mandatory before any release-member delivery
 closure or terminal result can be considered operationally recoverable.
@@ -3017,17 +3017,17 @@ cannot create another incident, charge or owner, and a profile without
 ABA-resistant status authority remains explicitly unresolved rather than
 manufacturing identity; manual evidence cannot lower that uncertainty.
 Legitimate replacement of a supported status authority proceeds only through
-the authenticated, fenced continuity handoff in `0.51.53`; every other
+the authenticated, fenced continuity handoff in `0.204.0`; every other
 continuity-identity change is `Refused` and retains the restrictive unresolved
 state.
-`v0.51.51 implementation stop reached. Run pentest for this exact commit.`
+`v0.202.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.52` — No-Effect Intent Disposition And Replanning
+## `0.203.0` — No-Effect Intent Disposition And Replanning
 
 Status: planned conditionally; mandatory recovery for an intent whose selected
 destination/source disappears, authorization expires, or dispatch never
 produces a physical effect.
-Setup: consume one current committed intent, its `0.51.50` authorization/
+Setup: consume one current committed intent, its `0.201.0` authorization/
 delivery cut, authorization registry/tombstones, outbox and parent inbox cuts,
 source/destination status, current member/budget/policy, cumulative intent
 generation/work charges, intent-lifetime ledger genesis and separated
@@ -3035,7 +3035,7 @@ disposition/replan authority.
 Goal: abandon or replace a dead no-effect intent without reusing its identity,
 budget or uncertain remote authority.
 Deliverables: define `ReleaseMemberIntentLifetimeBudgetV1`, created atomically
-with the first `0.51.46` intent and inherited by every predecessor-linked
+with the first `0.197.0` intent and inherited by every predecessor-linked
 successor. It binds tenant/member, policy algorithm/version, ledger generation,
 immutable non-wrapping maxima and admitted/consumed/reserved/remaining state
 for intent generations, authorization issuances, dispatch attempts,
@@ -3048,14 +3048,14 @@ Each accepted intent generation atomically creates exact
 authorization issuances, dispatch attempts, reconciliation/status queries,
 work/bytes and retained evidence. Reservations bind the lifetime-budget
 generation and successor intent; they cannot be transferred across identity
-or material. `0.51.47` consumes the exact authorization/dispatch legs when it
-issues, while `0.51.50` gives every still-unused leg one non-refunding
+or material. `0.198.0` consumes the exact authorization/dispatch legs when it
+issues, while `0.201.0` gives every still-unused leg one non-refunding
 `ClosedUnusedConsumed` terminal disposition and commits the final budget head.
 Implement
 `IntentCommitted → IntentDispositionRequested → IntentDispatchFenced →
 IntentAbandoned | IntentReplanned | IntentReplanExhausted`.
 Disposition first closes issuance and delivery for the old intent. Replan or
-abandon requires `NoEffectIntentClosureRootV1`, a strict `0.51.50` projection
+abandon requires `NoEffectIntentClosureRootV1`, a strict `0.201.0` projection
 proving every issued authorization is durably
 `IssuedExpiredOrRevokedUnconsumed`, every outbox item is acknowledged as
 no-delivery, every unused reservation has its sealed non-refunding terminal
@@ -3068,10 +3068,10 @@ cannot abandon/replan.
 and all cumulative charges preserved. `IntentReplanned` atomically tombstones
 the old generation and creates a predecessor-linked successor intent
 generation with new effect identity, exact current routing/object version,
-fresh bounded work/capacity charge and later new `0.51.47` authorization. That
+fresh bounded work/capacity charge and later new `0.198.0` authorization. That
 same transaction reserves and charges the complete successor route against
 every applicable lifetime dimension and persists its stable reservation IDs
-before it emits an intent or outbox work. It also passes the `0.51.55`
+before it emits an intent or outbox work. It also passes the `0.206.0`
 worst-case seal-bundle preflight under the current backend profile before any
 successor identity or reservation is created.
 Neither branch resets observation/retry/intent lifetime budgets or reuses an
@@ -3102,15 +3102,15 @@ Exit criteria: a dead intent has a finite fail-closed recovery path only after
 complete no-effect proof; uncertainty enters conflict, and every successor is
 fresh, predecessor-linked and cumulatively funded; exhausted lifetime capacity
 creates no new authority and remains explicit without weakening enforcement.
-`v0.51.52 implementation stop reached. Run pentest for this exact commit.`
+`v0.203.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.53` — Physical-Status Authority Continuity Succession
+## `0.204.0` — Physical-Status Authority Continuity Succession
 
 Status: planned conditionally; mandatory before any supported physical-status
 authority profile may change database, connector, region, key/authority or
-source continuity identity; remote handoff remains disabled until `0.51.56`
-and post-fence recovery until `0.51.57`.
-Setup: consume one current `0.51.51`
+source continuity identity; remote handoff remains disabled until `0.207.0`
+and post-fence recovery until `0.208.0`.
+Setup: consume one current `0.202.0`
 `PhysicalEffectStatusAuthorityPortV1::Supported` profile, tenant/owner scope,
 greatest sequence/continuity ratchets, current routing and restriction/incident
 epochs, source retirement/migration proposal, exact successor profile and
@@ -3124,7 +3124,7 @@ predecessor identity/digest, one expected-version current head and
 SuccessorActivationPending → SuccessorActive`, with `Aborted` allowed only
 before `HandoffFenced`. Preparation and activation-pending state are
 non-authoritative. The fenced/activation-pending/active edges are schema-only
-until `0.51.56` supplies authenticated local fence, admission, activation and
+until `0.207.0` supplies authenticated local fence, admission, activation and
 activation-applied receipts.
 The predecessor emits an authenticated final sequence/root receipt; the
 successor emits a genesis receipt binding that final root and a baseline not
@@ -3138,7 +3138,7 @@ routing, restriction/incident epochs and expiry.
 The first expected-version handoff CAS consumes the approval/fence/admission
 receipts, permanently tombstones predecessor issuance and advances the head to
 `SuccessorActivationPending` with audit/outbox/result. The successor is not
-reported operational and cannot issue until `0.51.56` proves its local
+reported operational and cannot issue until `0.207.0` proves its local
 activation was applied. Only a later Vitheim fold of that exact authenticated
 applied receipt advances the current head/ratchets to `SuccessorActive`.
 Response loss joins either stable result. Before fencing, the predecessor
@@ -3146,7 +3146,7 @@ alone remains supported when still valid; after fencing, the profile is
 `Refused` until exact successor activation completes. Restore/import requires
 the greatest handoff/current head and cannot resurrect a predecessor or derive
 authority from prepared or activation-pending state. Once fenced, a failed
-successor can only be replaced or permanently refused through `0.51.57`; the
+successor can only be replaced or permanently refused through `0.208.0`; the
 predecessor never reactivates.
 Verification: old/new source race, delayed predecessor receipt, two successors,
 self/stale approval, receipt/profile/scope substitution, aborted preparation,
@@ -3161,11 +3161,11 @@ current continuity head and authenticated predecessor-to-successor handoff;
 successor activity is reported only after the exact local activation-applied
 receipt is folded; unexpected change, uncertainty or incomplete handoff
 remains refused and restrictively unresolved.
-`v0.51.53 implementation stop reached. Run pentest for this exact commit.`
+`v0.204.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.54` — Authorization Dispatch-Attempt Ledger
+## `0.205.0` — Authorization Dispatch-Attempt Ledger
 
-Status: planned conditionally; mandatory before a `0.51.47` issuance outbox
+Status: planned conditionally; mandatory before a `0.198.0` issuance outbox
 item may perform its first or later transmission.
 Setup: consume one current issuance scope/entry, its exact intent-lifetime
 authorization/dispatch reservation, immutable route/object and continuity
@@ -3203,10 +3203,10 @@ exact retry joins the durable attempt/result, and two publishers or failover
 cannot share one count. At the ceiling, no permit/send occurs and the item
 enters protected reconciliation. Route movement requires a current compatible
 continuity-bound successor disposition; it cannot reset ceiling/head.
-`0.51.50` sealing forbids new reservation/outbox identities, terminally
+`0.201.0` sealing forbids new reservation/outbox identities, terminally
 disposes unused prepaid quantity under the no-refund rule, and binds every
 final dispatch attempt head/state, current start claim/result and reservation
-disposition into `EffectDeliveryClosureRootV1`. The `0.51.58` interlock forbids
+disposition into `EffectDeliveryClosureRootV1`. The `0.209.0` interlock forbids
 closure around live or unknown/reconciling claims. Restore/import preserves maxima and rejects
 counter/head rollback, wrap, replenishment or continuity substitution.
 Verification: claim-CAS/permit-delivery/socket-write/return-to-control races,
@@ -3220,13 +3220,13 @@ Exit criteria: every possible transmission consumes one durable prepaid
 attempt and one canonical start claim before I/O; exhaustion sends nothing and
 enters reconciliation; retry, failover, route change, seal and restore cannot
 reset or exceed the immutable allowance or close around live/unknown authority.
-`v0.51.54 implementation stop reached. Run pentest for this exact commit.`
+`v0.205.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.55` — Bounded Delivery-Seal Construction And Backend Admission
+## `0.206.0` — Bounded Delivery-Seal Construction And Backend Admission
 
-Status: planned conditionally; mandatory before `0.51.46` admits an intent,
-`0.51.52` admits a replan or `0.51.50` seals delivery on any storage profile;
-staged implementations additionally require `0.51.59`.
+Status: planned conditionally; mandatory before `0.197.0` admits an intent,
+`0.203.0` admits a replan or `0.201.0` seals delivery on any storage profile;
+staged implementations additionally require `0.210.0`.
 Setup: consume the active backend atomicity/conformance profile, intent policy
 and worst-case lifetime reservations, issuance/dispatch schemas, closure
 result/audit/outbox/root/terminalization schemas, canonical codec limits and
@@ -3239,7 +3239,7 @@ work/time and supported final-CAS primitive. Define canonical
 `EffectDeliverySealBundleV1` maxima for reservation-leg cardinality and encoded
 size, including issuance entries, final dispatch heads, reservation
 dispositions, closure result, audit, outbox, roots and terminal evidence.
-`0.51.46` first-intent admission and every `0.51.52` replan preflight the
+`0.197.0` first-intent admission and every `0.203.0` replan preflight the
 complete worst-case bundle under the current profile before creating identity,
 reservation or outbox work; maximum-plus-one or arithmetic/encoding uncertainty
 rejects without write.
@@ -3248,7 +3248,7 @@ set. If staged preparation is required, define
 `SealBundlePreparing → SealBundlePrepared → SealBundlePublished |
 SealBundleDiscarded`. Prepared per-leg dispositions are immutable authority-
 inert proposals: they neither seal issuance nor change budget/closure state.
-They remain disabled until `0.51.59` binds one cumulative preparation lineage,
+They remain disabled until `0.210.0` binds one cumulative preparation lineage,
 cleanup reserve and codec/schema/profile generation.
 One final bounded local CAS verifies the complete exact prepared root plus
 current issuance, lifetime-budget, dispatch-attempt, conflict and backend-
@@ -3270,11 +3270,11 @@ Exit criteria: each admitted intent carries evidence that its worst-case seal
 bundle fits its supported backend profile; staging grants no authority, and
 exactly one bounded final CAS can publish complete issuance/budget/dispatch
 closure or leave it visibly unsealed.
-`v0.51.55 implementation stop reached. Run pentest for this exact commit.`
+`v0.206.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.56` — Physical-Status Remote Fence And Successor Admission
+## `0.207.0` — Physical-Status Remote Fence And Successor Admission
 
-Status: planned conditionally; mandatory before `0.51.53` may enter
+Status: planned conditionally; mandatory before `0.204.0` may enter
 `HandoffFenced` or activate a successor backed by an independent database,
 connector, region or authority.
 Setup: consume one prepared continuity handoff, current predecessor/successor
@@ -3294,7 +3294,7 @@ conflicts and cannot advance again.
 Define `AdmitPhysicalStatusSuccessorGenesis`. One successor-local CAS binds the
 authenticated predecessor root/fence receipt into a dormant admission row and
 returns `PhysicalStatusSuccessorAdmissionReceiptV1`. Dormant admission cannot
-issue authoritative status. The `0.51.53` final CAS consumes both local
+issue authoritative status. The `0.204.0` final CAS consumes both local
 receipts and the exact approval, advances the current continuity head to
 `SuccessorActivationPending`, tombstones predecessor and losing successors,
 and emits a
@@ -3302,7 +3302,7 @@ and emits a
 CAS must consume that exact receipt, durably enable issuance and return an
 authenticated `PhysicalStatusSuccessorActivationAppliedReceiptV1`. Only a
 later Vitheim expected-version fold of that exact applied receipt advances
-`0.51.53` to `SuccessorActive` and permits the successor to be reported
+`0.204.0` to `SuccessorActive` and permits the successor to be reported
 operational. A command-status query returns the stable applied receipt after
 response loss; absence, ambiguity or authentication failure remains
 activation-pending and refused.
@@ -3325,12 +3325,12 @@ Exit criteria: predecessor fence, dormant successor admission and successor
 activation/application/final fold are distinct authenticated local atomic
 transitions; no remote side can issue or be reported current between them, and
 uncertainty grants no authority.
-`v0.51.56 implementation stop reached. Run pentest for this exact commit.`
+`v0.207.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.57` — Post-Fence Status-Successor Recovery
+## `0.208.0` — Post-Fence Status-Successor Recovery
 
 Status: planned conditionally; mandatory before operational use of a
-`0.51.56` handoff fence when successor loss or permanent admission failure is
+`0.207.0` handoff fence when successor loss or permanent admission failure is
 within the supported recovery profile.
 Setup: consume one authenticated predecessor final root/fence receipt,
 `HandoffFenced` continuity head, failed successor generation/admission state,
@@ -3359,7 +3359,7 @@ root/fence receipt and allocates fresh continuity generation/identity,
 approval, dormant genesis, capacity, immutable attempt/work budget and
 idempotency namespace. It cannot lower the predecessor high-watermark, refund
 work or reuse failed material.
-Replacement preparation and activation reuse the `0.51.56` dormant-admission
+Replacement preparation and activation reuse the `0.207.0` dormant-admission
 and authenticated activation receipts. Separation-of-duties recovery authority
 binds the exact failed and replacement generations, cause, current routing/
 restriction/incident/distrust epochs and expiry. Emergency distrust or
@@ -3382,12 +3382,12 @@ Exit criteria: every post-fence failure either activates one fresh authenticated
 replacement or remains permanently refused; predecessor and failed successor
 authority are proven irreversibly fenced before replacement admission, and all
 work remains cumulatively bounded.
-`v0.51.57 implementation stop reached. Run pentest for this exact commit.`
+`v0.208.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.58` — Transmission-Claim Closure Interlock And Conformance
+## `0.209.0` — Transmission-Claim Closure Interlock And Conformance
 
-Status: planned conditionally; mandatory before a `0.51.54` release-effect
-publisher may transmit or `0.51.50` may publish `EffectDeliveryClosed`.
+Status: planned conditionally; mandatory before a `0.205.0` release-effect
+publisher may transmit or `0.201.0` may publish `EffectDeliveryClosed`.
 Setup: consume the active `VIT-LAW-006` semantic realization, one
 `AuthorizationDispatchAttemptV1`, canonical start-claim row/result, trusted
 executor/socket ownership proof, authorization/effect/outbox heads,
@@ -3420,7 +3420,7 @@ creation does not prove absence.
 authenticated provider/authority result proves definitely no effect, the exact
 effect receipt is folded, or the conservative conflict path owns the unresolved
 effect. The closure root consumes the complete claim cut and final attempt
-heads in the same bounded `0.51.55`/`0.51.59` publication.
+heads in the same bounded `0.206.0`/`0.210.0` publication.
 Credential revocation, lease loss, executor crash and failover strengthen the
 claim state but never turn ambiguity into definitely-not-started. Restore
 retains greatest claim/result cuts and never reconstructs permit material.
@@ -3434,11 +3434,11 @@ Exit criteria: release-effect dispatch has exactly one platform transmission
 boundary and one atomic open/sealed claim-admission cut; delivery closure is
 impossible while any admitted claim may still produce or conceal a physical
 effect.
-`v0.51.58 implementation stop reached. Run pentest for this exact commit.`
+`v0.209.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.59` — Delivery-Seal Preparation Lineage And Codec Pinning
+## `0.210.0` — Delivery-Seal Preparation Lineage And Codec Pinning
 
-Status: planned conditionally; mandatory for any `0.51.55` backend profile
+Status: planned conditionally; mandatory for any `0.206.0` backend profile
 that stages seal-bundle preparation or permits codec/schema/profile evolution
 while admitted intents remain open.
 Setup: consume one admitted intent and bundle-size proof, current issuance/
@@ -3496,13 +3496,13 @@ Exit criteria: each intent has one finite preparation lineage and one pinned,
 replayable admission encoding contract; stale work is terminally accountable,
 exhaustion has exactly one bounded truthful recovery outcome, cleanup
 preserves history and evolution cannot invalidate bounded closure.
-`v0.51.59 implementation stop reached. Run pentest for this exact commit.`
+`v0.210.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.145.4` — Domain Retirement And Historical Compatibility Certification
+## `0.414.0` — Domain Retirement And Historical Compatibility Certification
 
 Status: planned.
-Setup: consume `0.30.28` retirement contracts, `0.30.29` authority/recovery
-protocol and evidence, the applicable `0.51.5–0.51.59` deployment cut lifecycle,
+Setup: consume `0.100.0` retirement contracts, `0.101.0` authority/recovery
+protocol and evidence, the applicable `0.156.0–0.210.0` deployment cut lifecycle,
 approved exact-plan admission/succession, narrow-guard/topology handoff,
 protection-root integration, clean/non-clean terminal aggregation, residual-
 obligation lineage evolution, transition delivery cuts, mutation safety
@@ -3536,7 +3536,7 @@ continuity succession, prepaid dispatch-attempt accounting and bounded
 backend-admitted delivery-seal construction, authenticated remote status-fence/
 admission receipts, irreversible post-fence recovery, canonical transmission-
 claim closure interlock and bounded codec-pinned seal-preparation lineage,
-current domain/contribution generations, `0.145.3`
+current domain/contribution generations, `0.413.0`
 lifecycle/recovery evidence,
 installed-extension state, cross-domain dependencies, outstanding durable work,
 retained event/snapshot/export/backup/import history, deferrals, and product state.
@@ -3735,4 +3735,4 @@ drained/disposed work, truthful per-dimension and per-tenant evidence, permanent
 ID tombstone, readable retained history, and safe reinstall floor, or retains
 its exact non-clean/blocking result; the certifier adds no missing retirement,
 campaign, authority, recovery, codec, lifecycle, or reconciliation behavior.
-`v0.145.4 implementation stop reached. Run pentest for this exact commit.`
+`v0.414.0 implementation stop reached. Run pentest for this exact commit.`

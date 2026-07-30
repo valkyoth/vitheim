@@ -16,8 +16,8 @@ awk '
         if (version == "1.0.0") return 1
         split(version, parts, ".")
         if ((parts[1] + 0) != 0) return (parts[1] + 0) > 0
-        if ((parts[2] + 0) > 18) return 1
-        return (parts[2] + 0) == 18 && (parts[3] + 0) > 3
+        if ((parts[2] + 0) > 25) return 1
+        return (parts[2] + 0) == 25 && (parts[3] + 0) > 0
     }
     function emit(candidate, context, gate) {
         if (!have || !eligible(version)) return
@@ -74,9 +74,9 @@ awk '
     printf '%s\n' \
         '# Milestone Authority Reviews' \
         '' \
-        'Status: normative planning registry introduced by `0.18.3`' \
+        'Status: normative planning registry introduced by `0.25.0`' \
         '' \
-        'Every implementation milestone after `0.18.3` has exactly one' \
+        'Every implementation milestone after `0.25.0` has exactly one' \
         'authority disposition. `declares` resolves existing invariant/law' \
         'markers. `proposed` is a conservative authority-review candidate:' \
         'before that milestone starts, it must be split into exact `VIT-INV-*`/' \

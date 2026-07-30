@@ -29,7 +29,7 @@ FILENAME == generations &&
     effective = bare($4)
     generation_effective[law, generation] = effective
     if (generation > latest_generation[law]) latest_generation[law] = generation
-    if (version_compare(effective, "0.18.3") >= 0) {
+    if (version_compare(effective, "0.25.0") >= 0) {
         required_schedule[effective] = 1
     }
     next
@@ -60,7 +60,7 @@ FILENAME == catalogs &&
     }
     if (epoch == 1) {
         if (predecessor != "none") fail("first catalog has a predecessor")
-        if (floor != "0.18.3") fail("first catalog must activate at 0.18.3")
+        if (floor != "0.25.0") fail("first catalog must activate at 0.25.0")
     } else {
         expected_predecessor = sprintf("VIT-LAWCAT-ACTIVE-e%03d-envelope-v1",
                                        epoch - 1)
@@ -168,7 +168,7 @@ END {
 # Enumerate the actual implementation ladder. Under the one-active-global-lineage
 # rule, a catalog applies from its floor until the next catalog is activated.
 # This proves every milestone has exactly one planned catalog, including versions
-# such as 0.19.0 and 0.30.2 that do not themselves change a law generation.
+# such as 0.39.0 and 0.74.0 that do not themselves change a law generation.
 LC_ALL=C awk -F'|' '
 FNR == NR {
     floor[++catalog_count] = $3
@@ -178,7 +178,7 @@ FNR == NR {
     version = $0
     sub(/^[^`]*`/, "", version)
     sub(/`.*/, "", version)
-    if (version_compare(version, "0.18.3") < 0) next
+    if (version_compare(version, "0.25.0") < 0) next
     if (milestone_seen[version]++) {
         fail("duplicate implementation milestone " version)
         next
@@ -209,7 +209,7 @@ function fail(message) {
     failed = 1
 }
 END {
-    if (!milestone_count) fail("no implementation milestones at or after 0.18.3")
+    if (!milestone_count) fail("no implementation milestones at or after 0.25.0")
     if (!milestone_seen["1.0.0"]) fail("production milestone is not covered")
     exit failed
 }

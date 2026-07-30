@@ -1,10 +1,10 @@
 # Phase C — Storage Portability
 
-Scope: `0.21.0–0.30.0`. Domain code sees semantic ports only. Each hosted
+Scope: `0.46.0–0.72.0`. Domain code sees semantic ports only. Each hosted
 adapter requires an independently approved implementation-admission record
 before code begins. The default `1.0.0` target is in-memory for semantics,
 SQLite for single-node, and PostgreSQL for HA; MySQL, MongoDB, and SurrealDB are
-experimental unless `0.140.2` promotes an evidenced profile.
+experimental unless `0.372.0` promotes an evidenced profile.
 The selected core production path implements PostgreSQL first and treats
 SQLite as a separately bounded local/single-node profile. Online arbitrary-
 backend migration is Unsupported by default; v1 portability requires
@@ -15,16 +15,16 @@ Migration job progress, import staging, activation, integrity, evidence
 custody, capacity, external witness and corruption recovery remain distinct
 authorities. This cumulative phase ledger does not authorize one combined
 state machine, repository, transaction, or crate for them.
-After portability work, focused `0.30.23–0.30.25` stops define the stable
+After portability work, focused `0.95.0–0.97.0` stops define the stable
 domain/application/event reference manifest, scope-separated contribution
-metadata admission, and deferral gates; `0.30.26` separately checks event
+metadata admission, and deferral gates; `0.98.0` separately checks event
 ownership, emission/consumption, upcaster ownership, and generation
 compatibility for current applicable owners, then installs the prospective
-domain-exit gate without defining missing behavior. `0.30.27` consumes the
-complete `0.18.8–0.18.10` realizations for the parallel effect/message/consumer/
-timer/activity/poison/replay/quarantine/result ownership gate. `0.30.28` defines
+domain-exit gate without defining missing behavior. `0.99.0` consumes the
+complete `0.30.0–0.32.0` realizations for the parallel effect/message/consumer/
+timer/activity/poison/replay/quarantine/result ownership gate. `0.100.0` defines
 the permanent-ID, fenced, drained, history-preserving retirement contract with
-orthogonal evidence and truthful verified/loss terminals. `0.30.29` separately
+orthogonal evidence and truthful verified/loss terminals. `0.101.0` separately
 owns exact tenant-child authority, atomic commitment, cancellation and crash
 recovery. Deployment-wide cut lifecycle, exact-plan admission/succession,
 narrow-guard topology handoff, joint protection roots, mixed coverage,
@@ -34,14 +34,14 @@ archival/retained-namespace safety, partition-fenced evaluation, source-local
 activation/abort linearization, activation admission, funded bridge ownership,
 partial-admission abort/supersession, permanent-unknown policy/quarantine,
 proof-bound replacement genesis, guard supersession and dual release wait for
-`0.51.5–0.51.59` after
+`0.156.0–0.210.0` after
 authoritative tenant lifecycle exists.
 That deployment-wide dynamic built-in-domain retirement/reinstall profile is
 not selected for the default v1 core. Built-in schemas remain installed and may
 be disabled; tenant deletion and plugin uninstall retain their separate
 mandatory lifecycles. The advanced profile remains Unsupported unless a future
 candidate explicitly selects and evidences its complete transitive closure.
-Every database profile must implement every applicable negotiated `0.18.2`
+Every database profile must implement every applicable negotiated `0.24.0`
 `AtomicWorkCommitBundle` variant and every other mandatory semantic port claimed
 for that profile, or fail startup capability negotiation. No adapter may
 emulate a missing atomic component with a later best-effort write. A claimed
@@ -126,13 +126,13 @@ idempotent restore-safe receipts, conservative parents, no independent restore,
 current-state/authority rechecks, and deadline escalation. Each delayed transfer transition
 rechecks current local tenant/principal/policy epochs.
 
-## `0.21.0` — Storage Capability Vocabulary And Report
+## `0.46.0` — Storage Capability Vocabulary And Report
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.21.0`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.46.0`
 defines the capability vocabulary and report schema only; admission, probing,
-lineage, recovery, and refusal are `0.21.1–0.21.5`.
+lineage, recovery, and refusal are `0.47.0–0.51.0`.
 
 Setup: derive mandatory invariant capabilities from every declaration-resolved
 ownership/lifecycle row in `docs/INVARIANT_OWNERSHIP.md`, then classify
@@ -1283,15 +1283,15 @@ an unbounded, oversized, over-depth, cyclic, partial, or non-canonical range
 manifest/chunk proof.
 
 Exit criteria: correctness never depends on an unverified optional capability.
-`v0.21.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.46.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.22.0` — Storage Conformance Harness And Fixtures
+## `0.52.0` — Storage Conformance Harness And Fixtures
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.22.0`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.52.0`
 builds the harness and fixture contract only; atomic destruction, twin-tenant,
-and HA/migration certification are `0.22.1–0.22.3`.
+and HA/migration certification are `0.53.0–0.55.0`.
 
 Setup: derive tests from every semantic port and every applicable stable
 invariant declaration, `VIT-ENF-*` enforcement contract, `VIT-TST-*`
@@ -1304,7 +1304,7 @@ digest rather than only the latest law view. Expand every cited `@gNN` into
 authority disposition cites
 exactly `VIT-LAW-001@g02`, `VIT-LAW-002@g01`, `VIT-LAW-003@g01`,
 `VIT-LAW-004@g01`, `VIT-LAW-005@g04`, `VIT-LAW-006@g01`, and
-`VIT-LAW-007@g01`, and `VIT-LAW-008@g01`; later Phase F generations are not valid `0.22.0`
+`VIT-LAW-007@g01`, and `VIT-LAW-008@g01`; later Phase F generations are not valid `0.52.0`
 conformance claims. Define
 fault injection, concurrency
 schedule, adversarial twin tenants with colliding local IDs, connection-session
@@ -1367,7 +1367,7 @@ without consuming normal capacity or delaying revocation/recovery. During
 checkpoint/archive outage and compaction saturation, the reserve bypasses only
 normal capacity exhaustion—missing anti-replay/uniqueness proof still denies;
 and destructive reference
-adapters that each omit or split one `0.18.2` command/consumer/timer/activity/
+adapters that each omit or split one `0.24.0` command/consumer/timer/activity/
 poison bundle component: inbound or work receipt, events/head, fence validation,
 audit intent, outbox, commitment, uniqueness claim, bounded quota claim-set/
 per-kind transition, timer dispatch/result receipt, activity completion, or
@@ -1755,9 +1755,9 @@ resume-cursor crashes; each case rejects or remains sparse within the frozen
 resource budget.
 
 Exit criteria: an adapter cannot claim support by skipping or weakening tests.
-`v0.22.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.52.0 implementation stop reached. Run pentest for this exact commit.`
 
-Every `0.23.0`–`0.27.0` database adapter must map
+Every `0.57.0`–`0.61.0` database adapter must map
 `TopologyAuthorizationPresentationChargeLedgerCapacityDrainReplayAdmissionGuardV1`
 to an evidenced writer-authoritative isolation and locking profile. Its
 capability probe must prove head-first/key-second locking, exact head re-read,
@@ -1804,7 +1804,7 @@ semantics and both distinct CAS boundaries must report `VIT-CAP-061`
 unsupported and refuse the feature; an emulation that narrows the guarantee is
 not parity.
 
-Every `0.23.0–0.27.0` database milestone also owns a version-bound
+Every `0.57.0–0.61.0` database milestone also owns a version-bound
 `CommitCutRecordedTimePortV1` conformance profile. DomainAggregateTarget is a
 separate capability: it is enabled only when the exact adapter/server/topology
 proves native authenticated commit time/sequence, a backend-enforced commit-
@@ -1820,7 +1820,7 @@ runtime generation fencing must pass before activation; a legacy trace,
 reversed common subsequence, hidden acquisition or backend retry that changes
 the trace refuses the affected capability.
 
-## `0.23.0` — SQLite Adapter
+## `0.57.0` — SQLite Adapter
 
 Status: planned; blocked until this milestone approves the exact SQLite driver,
 bundling/native-code policy, maintenance, license, and file-encryption strategy.
@@ -1862,7 +1862,7 @@ through proof state.
 
 Verification: injection, locking, crash rollback, symlink/permission attacks,
 tenant isolation, interrupted migration, restore, every omitted/reset receipt/
-time/profile/continuity/tombstone field, every `0.22.0` deadline-CAS pause
+time/profile/continuity/tombstone field, every `0.52.0` deadline-CAS pause
 point, timeout with attempted late commit, replay-horizon/quota/checkpoint/
 archive/compaction crash and concurrent-replay cases, bounded file growth under
 maximum admitted issuance, sparse-gap/late-presentation range cases, normal-
@@ -1877,9 +1877,9 @@ transition, terminal irreversibility, checkpoint-before-compaction, and atomic
 charge-ledger saturation.
 
 Exit criteria: no HA claim and all single-node semantics are evidenced.
-`v0.23.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.57.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.24.0` — PostgreSQL Reference Adapter
+## `0.58.0` — PostgreSQL Reference Adapter
 
 Status: planned; blocked until this milestone approves the exact PostgreSQL
 driver, TLS stack/profile, pool, maintenance, license, and native-code policy.
@@ -1900,7 +1900,7 @@ insufficient.
 
 Goal: establish the deepest-tested reference production backend.
 
-Deliverables: complete `0.18.2` atomic work-bundle variants plus journal, projection,
+Deliverables: complete `0.24.0` atomic work-bundle variants plus journal, projection,
 audit authority, rejection receipt, outbox, inbox, lease/scheduler, durable
 quota with all-or-none canonical claim-set reservation/exact-token consumption,
 co-located hierarchical capacity-lease accounting, grant-lineage ownership/
@@ -2029,7 +2029,7 @@ cancelled/prepared recovery, blocked-parent successor recovery, composite lock-o
 cross-partition rejection, tenant bypass, pool exhaustion, migration rollback,
 restore, every omitted/reset authorization receipt/time/profile/continuity/
 expiry-tombstone field, every lock/time/CAS/commit/timeout/response-loss/
-failover pause from `0.22.0`, attempted post-deadline commit, quota and
+failover pause from `0.52.0`, attempted post-deadline commit, quota and
 checkpoint races, compaction crash/failover/key rotation/concurrent replay,
 archive loss, sparse consumer gaps/late presentation, normal exhaustion with
 reserved break-glass success, break-glass flood isolation, bounded growth under
@@ -2044,9 +2044,9 @@ conformance, and bounded range-chunk decode/verification exhaustion, and
 conformance pass.
 
 Exit criteria: production claims match tested deployment profiles only.
-`v0.24.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.58.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.25.0` — MySQL Adapter
+## `0.59.0` — MySQL Adapter
 
 Status: planned experimental; blocked until a concrete requirement and
 implementation-admission record approve the exact driver/TLS profile.
@@ -2093,9 +2093,9 @@ principal/authority sub-limits, and bounded chunked manifest decoding and
 verification.
 
 Exit criteria: no backend-specific behavior leaks into domain correctness.
-`v0.25.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.59.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.26.0` — MongoDB Adapter
+## `0.60.0` — MongoDB Adapter
 
 Status: planned experimental; blocked until a concrete requirement and
 implementation-admission record approve the exact driver/TLS profile.
@@ -2137,9 +2137,9 @@ cyclic manifest-chunk rejection, and
 conformance pass.
 
 Exit criteria: document flexibility never weakens mandatory journal semantics.
-`v0.26.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.60.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.27.0` — SurrealDB Adapter
+## `0.61.0` — SurrealDB Adapter
 
 Status: planned experimental; blocked until a concrete requirement and
 implementation-admission record approve the exact client/TLS profile.
@@ -2179,9 +2179,9 @@ authentication semantics, and
 bounded chunk/proof verification.
 
 Exit criteria: optional graph behavior is replaceable and policy equivalent.
-`v0.27.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.61.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.28.0` — Blob-Store API And Filesystem Adapter
+## `0.62.0` — Blob-Store API And Filesystem Adapter
 
 Status: planned; encryption work is blocked until this milestone approves its
 hash/encryption implementation admission.
@@ -2199,9 +2199,9 @@ Verification: traversal, absolute paths, symlink/hardlink races, digest mismatch
 partial writes, quota exhaustion, tenant confusion, and restore pass.
 
 Exit criteria: callers never control storage paths and content is verified.
-`v0.28.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.62.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.28.1` — S3-Compatible Object-Storage Adapter
+## `0.63.0` — S3-Compatible Object-Storage Adapter
 
 Status: planned; blocked until the exact client, TLS stack/profile, signing
 scheme, maintenance, license, and native-code admission record is approved.
@@ -2209,7 +2209,7 @@ scheme, maintenance, license, and native-code admission record is approved.
 Setup: bind tenant/object namespace, immutable digest identity, multipart upload,
 conditional publish, encryption metadata, retention/legal hold, versioning,
 deletion verification, credentials, endpoints, redirects, cancellation, quotas,
-backup/restore, and eventual-consistency limits to the `0.28.0` port.
+backup/restore, and eventual-consistency limits to the `0.62.0` port.
 
 Goal: provide HA-capable object storage without leaking S3 wire/client types
 into inner crates.
@@ -2222,9 +2222,9 @@ TLS downgrade, multipart races, stale versions, retention bypass, credential
 leakage, partial delete, restore, and object-store conformance pass.
 
 Exit criteria: multi-node blob claims use a tested immutable object profile, not
-the local filesystem adapter. `v0.28.1 implementation stop reached. Run pentest for this exact commit.`
+the local filesystem adapter. `v0.63.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.28.2` — KMS And Secret-Provider Adapters
+## `0.64.0` — KMS And Secret-Provider Adapters
 
 Status: planned; blocked until exact KMS/secret clients, authentication, TLS,
 cryptographic profiles, maintenance, licenses, and failure semantics are admitted.
@@ -2292,9 +2292,9 @@ dependency/cross-tenant substitution/outage/response loss/count exhaustion, and
 false automatic recovery without an independent provider path. All fail closed.
 
 Exit criteria: no production encryption/signing path depends on filesystem keys
-or plaintext configuration secrets. `v0.28.2 implementation stop reached. Run pentest for this exact commit.`
+or plaintext configuration secrets. `v0.64.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.28.3` — In-Process Secret Handling
+## `0.65.0` — In-Process Secret Handling
 
 Status: planned; any zeroization or locked-memory implementation is blocked
 until its exact implementation, platform behavior, maintenance, license,
@@ -2333,24 +2333,24 @@ linear memory, or durable configuration through a supported API. Integrations
 requiring plaintext run only as separately isolated hosted profiles and are not
 ordinary Wasm plugins. Bearer material is confined to the admitted hardened
 broker/executor TCB for the shortest practical lifetime and cannot enter a
-general connector process. `v0.28.3
+general connector process. `v0.65.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.29.0` — Migration Registry And Immutable Planner
+## `0.66.0` — Migration Registry And Immutable Planner
 
-<!-- vitheim-invariant VIT-INV-062 0.29.0 -->
-<!-- vitheim-law VIT-LAW-009 0.29.0 -->
+<!-- vitheim-invariant VIT-INV-062 0.66.0 -->
+<!-- vitheim-law VIT-LAW-009 0.66.0 -->
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.29.0`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.66.0`
 implements the immutable migration registry and planner only; execution,
-fencing, activation, recovery, and disposition are `0.29.1–0.29.5`.
+fencing, activation, recovery, and disposition are `0.67.0–0.71.0`.
 
 Setup: define immutable migration identity/hash, ordering, preconditions,
 forward/rollback steps, leases, checkpoints, signatures, operator approval, and
 an explicit ban on rewriting original event bytes; event evolution uses the
-`0.8.0` registry and pure `0.14.0` upcasters. Treat
+`0.8.0` registry and pure `0.15.0` upcasters. Treat
 `PlatformSafetyFloorAdmission` as monotonic security state: a migration may
 raise a typed-key high-watermark through a governed capacity plan, but schema
 rollback, binary downgrade, interruption, and restore cannot lower or omit it.
@@ -2393,7 +2393,7 @@ as empty genesis even when it claims no settlements. Omission or defaulting of
 any tuple member likewise denies. If a real external compatibility population
 is discovered later, a new milestone must admit its exact source schema,
 evidence, quarantine and idempotent application contract after security review;
-`0.29.0` cannot improvise one. Migration between checkpoint settlement and
+`0.66.0` cannot improvise one. Migration between checkpoint settlement and
 physical deletion cannot settle, reopen or reclassify either leg set.
 
 Freeze project-owned `MigrationImportWorkBudgetV1` for every migration and
@@ -3042,7 +3042,7 @@ one fenced coordinator generation and canonical result.
 
 This milestone also registers the VIT-LAW-009
 `MigrationImportRegistryHistoryV1`/`AppendMigrationImportRegistryHistory`
-semantic contract before cross-backend interchange consumes it at `0.30.0`.
+semantic contract before cross-backend interchange consumes it at `0.72.0`.
 Local conformance proves authenticated scope/provenance/original terminal
 result/manifests, archive sequence/predecessor/idempotency, bounded work and
 protected cleanup, nonterminal manual recovery with independently authorized
@@ -3261,16 +3261,16 @@ win, cumulative counters never decrease, and hold-weakened waiver/abandonment
 writes nothing.
 
 Exit criteria: interrupted migrations cannot leave unclassified partial state.
-`v0.29.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.66.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.0` — Cross-Backend Manifest And Preflight
+## `0.72.0` — Cross-Backend Manifest And Preflight
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.30.0`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.72.0`
 freezes the canonical manifest and preflight verifier only; export/import,
 activation, history, recovery, corruption, re-cost, witness replacement, and
-settlement are `0.30.3–0.30.14`.
+settlement are `0.75.0–0.86.0`.
 
 Setup: freeze canonical export version, tenant scope, event/blob manifests,
 integrity checkpoints, planning-superset provenance, separate `VIT-INV-057`
@@ -3312,14 +3312,14 @@ report, resumable checkpoints, source/destination mapping, and explicit
 manifest/admission/semantic-realization closure. The importer reuses the exact
 `MigrationImportWorkBudgetV1` job, operation-key uniqueness, monotonic counters,
 precharged reservations, typed exhaustion, bounded quarantine and cleanup
-lifecycle from `0.29.0`; export enumeration, transfer and destination staging
+lifecycle from `0.66.0`; export enumeration, transfer and destination staging
 are charged to that same operation rather than separate resettable budgets.
 It also reuses the exact `MigrationImportJobLifecycleV1`,
 `MigrationImportAdmissionCandidateV1`, trusted-code-derived
 `MigrationImportOwnerManifestV1`, owner-held authenticated preparation
 receipts, independent `MigrationImportActivationAuthorizationV1` and its closed
 consumption lifecycle, and `MigrationImportActivationBarrierV1` from
-`0.29.0`. VIT-INV-062 rederives the exact owner set from exported and local
+`0.66.0`. VIT-INV-062 rederives the exact owner set from exported and local
 schema manifests, migration-plan digest, the currently admitted destination
 VIT-LAW-009 tuple/manifest and its authenticated dependency closure;
 exported/importer-supplied owner selection or a separate invariant catalog is
@@ -3350,7 +3350,7 @@ authorization ID, candidate or barrier collisions return typed
 replace or resume either lineage. Cyclic self-import and source/destination
 aliasing deny.
 
-The `0.29.0` `MigrationImportRegistryHistoryV1` contract canonically binds
+The `0.66.0` `MigrationImportRegistryHistoryV1` contract canonically binds
 history ID and idempotency;
 archival namespace, tenant/deployment and classification/retention policy;
 source coordinator generation/fence, original job/operation/candidate/barrier,
@@ -7417,7 +7417,7 @@ belong to that one tenant/stream-kind/aggregate-ID stream. ControlOwnerTarget
 may mutate only the named invariant owner's closed transaction. A
 CanonicalNoAggregateTarget has no domain event descriptor. Cross-aggregate or
 aggregate-plus-control work is rejected before claim acquisition and
-decomposed through the Phase B `0.11.0` versioned process-manager decision plus
+decomposed through the Phase B `0.12.0` versioned process-manager decision plus
 transactional outbox; the recovery claim layer is not an exception to the
 one-aggregate-stream-per-transaction law.
 For a genuinely empty domain stream, expected version zero pairs with the
@@ -7568,7 +7568,7 @@ receipts, commit attestations, signer requests, audit/status/result rows,
 logs/traces/errors, checkpoints, archives and exports contain only the opaque
 reference, bounded lifecycle metadata and digests—never classified plaintext
 or an embedded ciphertext copy. Finalization either reuses the exact immutable
-reference, performs a co-located Phase A `0.8.1` custody transfer in the local
+reference, performs a co-located Phase A `0.9.0` custody transfer in the local
 transaction, or consumes an authenticated precommitted external-transfer
 receipt in that transaction. It never assumes a distributed payload-store/
 journal transaction; unknown external transfer remains non-authoritative and
@@ -9591,7 +9591,7 @@ and its separate archive disposition.
 
 Migrating the VIT-INV-062 schema itself never uses a migration candidate.
 Cross-backend work reuses the exact independently authorized, budgeted, closed
-`MigrationImportCoordinatorBootstrapV1` protocol from `0.29.0`, including the
+`MigrationImportCoordinatorBootstrapV1` protocol from `0.66.0`, including the
 active coordinator generation/fence, predecessor checkpoint, dormant local
 successor verification, canonical result/conflict and response-loss recovery.
 Imported source rows cannot seed the successor, and a backend unable to prove
@@ -10011,8 +10011,8 @@ their respective `3 + 2q - e`, `3 + 2q + 2s - e`,
 `4 + 2q + 2s - e`, `3 + 2q + 2s - e` and
 `3 + 2q + 2s` equations, exactly `q` and `s` reservations consumed, and no
 route/result/conflict aliasing.
-At `0.29.0`, run the replacement-recovery adversarial suite rather than
-deferring its first execution to the `0.140.11` freeze. Race identical and
+At `0.66.0`, run the replacement-recovery adversarial suite rather than
+deferring its first execution to the `0.381.0` freeze. Race identical and
 different bootstrap IDs/material at every expected replacement-head version
 and prove one Staged/pending/Operational winner plus durable bounded loser
 dispositions. Create one signed `P_0` at initial bootstrap and prove exactly
@@ -10352,7 +10352,7 @@ falls back to the old-lineage archive.
 Run the same vectors across every storage profile: a conforming single-backend
 optimization proves one local transaction over the complete logical
 outbox/inbox set, while cross-backend profiles reconcile signed receipts and
-must pass without a distributed transaction. `0.140.11` repeats this exact
+must pass without a distributed transaction. `0.381.0` repeats this exact
 suite against the frozen production profile and may strengthen it, but cannot
 be the first implementation or test of replacement recovery.
 Make deletion unknown, forge verification, substitute chunks/epochs, and prove
@@ -10404,20 +10404,20 @@ winner mapping/CAS/settlement identity and prove no loser releases or aliases
 the winning charge.
 
 Exit criteria: successful import proves complete semantic and integrity parity.
-`v0.30.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.72.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.1` — Durable Queue Record And Semantic Port
+## `0.73.0` — Durable Queue Record And Semantic Port
 
 Status: planned.
 Scope note: this retained family ledger is decomposed by
-[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.30.1`
+[Implementation Scope Audit](../IMPLEMENTATION_SCOPE_AUDIT.md). `0.73.0`
 implements the queue record and semantic port only; claims/scheduling and
-recovery/conformance are `0.30.15–0.30.16`.
+recovery/conformance are `0.87.0–0.88.0`.
 
 Setup: define queue/topic identity, tenant scope, ordered/unordered semantics,
 enqueue transaction, visibility lease/fencing, retry/backoff, dead-letter,
 priority/fairness, payload references, cancellation, drain, quotas, and exact
-mapping to the `0.18.2` consumer/timer/activity/poison atomic variants.
+mapping to the `0.24.0` consumer/timer/activity/poison atomic variants.
 Queue delivery/acknowledgement is distinct from external-effect acceptance and
 outcome. Preserve stable `EffectId`, request digest, attempt evidence,
 idempotency/replay horizon, and each typed execution, remote-outcome,
@@ -10617,7 +10617,7 @@ reserve misuse, partition/failover, drain/restart, and model/conformance tests
 pass.
 
 Exit criteria: HA work dispatch has documented at-least-once delivery and
-idempotent local-commit semantics, preserves the `0.18.2` external-effect
+idempotent local-commit semantics, preserves the `0.24.0` external-effect
 authorization, resolution, and quota contracts without collapsing their typed
 dimensions, redeems durable grants without impersonation, preserves per-kind
 settlement and single-stream grant ownership, claims attempts through a
@@ -10651,9 +10651,9 @@ conservative parents, idempotent restore-safe receipts, and deadline escalation;
 rechecks delayed-transition authority; retries composite deadlocks without
 identity drift, keeps fair recovery available under hostile tenant exhaustion,
 and has no process-local queue dependency.
-`v0.30.1 implementation stop reached. Run pentest for this exact commit.`
+`v0.73.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.30.2` — Cache Semantics And Hosted Adapter
+## `0.74.0` — Cache Semantics And Hosted Adapter
 
 Status: planned; hosted implementation is blocked until its exact client/TLS/
 server profile and admission record are approved.
@@ -10673,4 +10673,4 @@ retention leak, poisoning, stampede, eviction, outage, serialization ambiguity,
 oversized values, and fallback-equivalence tests pass.
 
 Exit criteria: disabling or losing a cache changes performance only and never
-security or correctness. `v0.30.2 implementation stop reached. Run pentest for this exact commit.`
+security or correctness. `v0.74.0 implementation stop reached. Run pentest for this exact commit.`

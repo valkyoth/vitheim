@@ -1,13 +1,13 @@
 # Organization Federation
 
-Scope: `0.120.1–0.120.5`. Federation connects independently administered
+Scope: `0.329.0–0.333.0`. Federation connects independently administered
 Vitheim deployments without merging tenants, identities, policy roots, event
 streams, encryption domains, or administrator authority. It is optional and
 disabled by default. Federation domain/protocol/host crates depend inward on
 stable IDs, commands, policy, audit, evidence, and transport ports; no kernel,
 first-party domain, API, UI, plugin, connector, or AI crate depends on federation.
 
-## `0.120.1` — Organization Identity, Trust, And Connection Enrollment
+## `0.329.0` — Organization Identity, Trust, And Connection Enrollment
 
 Status: planned; hosted transport and identity implementations require
 version-bound admission before code begins.
@@ -27,7 +27,7 @@ instances before any resource can be discovered or shared.
 Deliverables: federation-connection aggregate, signed invitation/acceptance
 handshake, mutually authenticated transport port, trust-bundle rotation,
 capability negotiation, remote-actor assertion validator, connection health,
-`0.15.1` audit integration, and administrator runbook.
+`0.17.0` audit integration, and administrator runbook.
 
 Verification: organization/endpoint impersonation, invitation theft/replay,
 unknown/downgraded protocol, TLS/key substitution, rotation race, confused
@@ -37,9 +37,9 @@ enumeration, and connection-flood tests pass.
 
 Exit criteria: both organizations can prove the exact peer, protocol, keys,
 purpose, and approved empty capability set; enrollment alone shares nothing.
-`v0.120.1 implementation stop reached. Run pentest for this exact commit.`
+`v0.329.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.120.2` — Federated Shared Spaces And Resource Projections
+## `0.330.0` — Federated Shared Spaces And Resource Projections
 
 Status: planned.
 
@@ -61,7 +61,7 @@ authorized by its source organization.
 Deliverables: shared-space aggregate, remote-resource reference/projection,
 policy-filtered publication/subscription ports, participant/field/action
 manifests, authorization-intersection evaluator/explanation, source-of-truth
-indicators, consistency/lag markers, UI/API views, `0.51.2` lifecycle entries
+indicators, consistency/lag markers, UI/API views, `0.153.0` lifecycle entries
 for every remote projection/cache/external copy, and lifecycle runbook.
 
 Verification: hidden field/count/attachment leakage, resource substitution,
@@ -72,9 +72,9 @@ changes, export bypass, and offline peer tests pass.
 
 Exit criteria: a shared space reveals only explicitly projected resources and
 actions, and every displayed value names its owning organization and freshness.
-`v0.120.2 implementation stop reached. Run pentest for this exact commit.`
+`v0.330.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.120.3` — Federated Work Exchange And Synchronization
+## `0.331.0` — Federated Work Exchange And Synchronization
 
 Status: planned.
 
@@ -107,9 +107,9 @@ fuzz tests pass.
 
 Exit criteria: remote work changes occur only when the owning organization
 accepts an authorized typed proposal, and both sides can reconcile the complete
-causal history. `v0.120.3 implementation stop reached. Run pentest for this exact commit.`
+causal history. `v0.331.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.120.4` — Managed-Service Asset And Security Delegation
+## `0.332.0` — Managed-Service Asset And Security Delegation
 
 Status: planned.
 
@@ -119,7 +119,7 @@ reads/actions, fields, evidence, approval, expiry, subdelegation prohibition,
 break glass, vulnerability/alert/incident links, change windows, and liability/
 responsibility statements. Every provider proposal carries the signed remote
 organization/workload/subject/authentication/delegation/purpose assertion from
-`0.120.1`; effective authority uses the `0.120.2` intersection. Asset ownership
+`0.329.0`; effective authority uses the `0.330.0` intersection. Asset ownership
 never transfers implicitly.
 
 Goal: support a company managing another company's assets, vulnerabilities,
@@ -138,9 +138,9 @@ emergency abuse, provider compromise, revocation during work, and export pass.
 
 Exit criteria: every provider action cites the customer-approved agreement,
 purpose, resource scope, role path, current policy, and owning-customer decision
-where required. `v0.120.4 implementation stop reached. Run pentest for this exact commit.`
+where required. `v0.332.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.120.5` — Federation Conformance, Revocation, And Recovery
+## `0.333.0` — Federation Conformance, Revocation, And Recovery
 
 Status: planned.
 
@@ -152,7 +152,7 @@ Distinguish capability revocation and future-sync termination from local cache/
 projection deletion, contractual disposition duty, peer deletion attestation,
 cryptographic erasure under controlled keys, and the unverifiable possibility
 that a previously authorized peer retained plaintext. Map these to the exact
-`0.51.2` disposition-evidence strengths and never label them all “data
+`0.153.0` disposition-evidence strengths and never label them all “data
 revocation.” A peer attestation remains provider/peer-attested evidence, not
 locally verified deletion.
 
@@ -161,7 +161,7 @@ deployments and can be completely disconnected without corrupting local truth.
 
 Deliverables: multi-instance adversarial harness, generated authorization
 registry cases, protocol compatibility corpus, failure/recovery simulator,
-complete `0.51.2` federation-surface inventory, revocation and
+complete `0.153.0` federation-surface inventory, revocation and
 data-disposition verifier, inter-organization audit report, support matrix,
 retained-copy limitation statement, and joint incident/offboarding runbooks.
 
@@ -179,4 +179,4 @@ effect within documented bounds, preserves attributable required history, and
 leaves each organization's authoritative state independently operable. It makes
 no false technical claim that a peer erased plaintext previously disclosed
 under valid authorization.
-`v0.120.5 implementation stop reached. Run pentest for this exact commit.`
+`v0.333.0 implementation stop reached. Run pentest for this exact commit.`

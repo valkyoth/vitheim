@@ -1,6 +1,6 @@
 # Active Law Catalogs
 
-Status: normative runtime-catalog plan introduced by `0.18.3`
+Status: normative runtime-catalog plan introduced by `0.25.0`
 
 The planning superset in `docs/LAW_MANIFEST_ADMISSIONS.md` is never admitted
 directly. `VIT-INV-057` owns the single global
@@ -8,7 +8,7 @@ directly. `VIT-INV-057` owns the single global
 that lineage into exact enforcement-partition placement generations and retain
 monotonic catalog, distrust, identity-fence, and validity-time ratchets.
 `VIT-INV-059` separately owns durable multi-partition rollout coordination.
-From `0.141.0`, `VIT-INV-060` independently owns the current dynamic placement
+From `0.399.0`, `VIT-INV-060` independently owns the current dynamic placement
 topology generation; rollout consumes its fenced snapshot and never becomes a
 topology writer.
 None of these transaction domains may update another's authority row.
@@ -20,7 +20,7 @@ activates its successor; there is no maximum-platform-version field and a
 platform version alone cannot silently supersede a catalog. At any
 implementation milestone, the applicable planned catalog is the catalog with
 the greatest activation floor not greater than that milestone. The checked
-schedule proves exactly one such catalog for every milestone from `0.18.3`
+schedule proves exactly one such catalog for every milestone from `0.25.0`
 through `1.0.0`.
 
 Activation requires global expected-version CAS, a strictly increasing epoch,
@@ -171,7 +171,7 @@ database content.
 `TrustedCatalogTime` capability returning a conservative
 `[earliest, latest]` interval, uncertainty, continuity/boot identity, and
 rollback/suspend evidence. The platform ceiling for uncertainty is frozen at
-`0.140.1`; an envelope may select an equal or tighter bound. Admission and
+`0.371.0`; an envelope may select an equal or tighter bound. Admission and
 every readiness, dispatch, and transmission-start recheck require:
 
 ```text
@@ -242,7 +242,7 @@ policy/version, issuance and expiry, revocation epoch, and the active
 workload-identity fence. It defines issuance, renewal, rotation, simultaneous-
 use detection, replacement, restore, and compromise recovery.
 
-The selectable mechanisms at `0.140.1` are:
+The selectable mechanisms at `0.371.0` are:
 
 1. `HardwareAttestedKey`: the identity key is non-exportable and its current
    attestation binds the complete catalog-owner key and measured workload; or
@@ -258,7 +258,7 @@ The selectable mechanisms at `0.140.1` are:
    abort/reconciliation. Duplicate renewal or simultaneous use immediately
    fences the affected incarnation and denies new claims.
 
-The action-authority scope is closed and is frozen at `0.140.1`:
+The action-authority scope is closed and is frozen at `0.371.0`:
 
 | Operation | Required online authority | Atomicity and result |
 | --- | --- | --- |
@@ -277,7 +277,7 @@ The action-authority scope is closed and is frozen at `0.140.1`:
 lease generation/fence, boot/continuity ID, placement generation, current
 topology challenge/receipt sequence and topology generation, catalog
 epoch/digest, revocation epoch, issued-at, expiry, maximum uncertainty, and
-the maximum age frozen at `0.140.1`. It is reusable only for read-only
+the maximum age frozen at `0.371.0`. It is reusable only for read-only
 readiness observations within that bound. It cannot authorize receipt
 creation, admission, topology mutation, dispatch, or transmission start.
 
@@ -347,7 +347,7 @@ challenge uniqueness, replay tombstone, and integrity anchor.
 
 ## Placement Topology Authority
 
-`0.18.3` bootstraps only
+`0.25.0` bootstraps only
 `CompiledStaticPlacementTopologyV1`: an immutable, reviewed artifact containing
 exactly one deployment/region/service-role/enforcement-partition placement at
 generation one. It supports no dynamic join, leave, move, replacement,
@@ -355,7 +355,7 @@ split/merge, autoscaling identity reuse, or topology mutation. Any such request
 before the governed handoff fails closed; the rollout root may snapshot this
 artifact but cannot edit or supersede it.
 
-`0.141.0` performs a staged, non-circular artifact-authorized handoff to
+`0.399.0` performs a staged, non-circular artifact-authorized handoff to
 `VIT-INV-060 PlacementTopologyGenerationState` before split-service or HA
 deployment. One
 `PlacementTopologyGenerationRow` per deployment owns expected-version CAS over
@@ -427,7 +427,7 @@ share one transaction.
 Authorization time reuses the conservative interval vocabulary defined in
 “Trustworthy Bounded-Window Time” through domain-separated
 `TrustedTopologyAuthorizationTime`. The immutable protocol ceilings frozen at
-`0.140.1` are five minutes for `InitializeTopologyAuthorityHandoff`, two minutes
+`0.371.0` are five minutes for `InitializeTopologyAuthorityHandoff`, two minutes
 for `CommitTopologyAuthorityHandoff`, two minutes for every dynamic
 join/leave/move/replace/service-role/split/merge successor, and the lesser of
 the applicable class ceiling and sixty seconds for break-glass. Issuance
@@ -915,15 +915,15 @@ wrong-nonce, expired, excessive-uncertainty, or signer/fence-stale receipts
 fail even when cryptographically valid. Readiness binds those fields into
 `OnlineWorkloadFreshnessProofV1`; dispatch and transmission start obtain a
 fresh response or operate only inside the maximum currentness window frozen at
-`0.140.1`. Unavailability or mismatch blocks even
+`0.371.0`. Unavailability or mismatch blocks even
 when the latest catalog rollout is already complete and an old placement's
 fence message was suppressed; no new catalog rollout is needed to make that
 stale placement unsafe.
 
 ## Durable Distributed Rollout
 
-`0.18.3` introduces `VIT-INV-059`/`VIT-LAW-008` and the durable
-`LawCatalogRolloutRootRow`; `0.18.4` uses it for the first real successor.
+`0.25.0` introduces `VIT-INV-059`/`VIT-LAW-008` and the durable
+`LawCatalogRolloutRootRow`; `0.26.0` uses it for the first real successor.
 `LawCatalogRolloutId` is globally unique. Each catalog lineage also owns a
 monotonic `ActiveRolloutGeneration`. Candidate creation uses expected-version
 CAS to claim the next generation, so at most one rollout for that lineage is
@@ -1012,9 +1012,9 @@ transaction:
 8. the root reaches `Completed` only after every policy-required current
    placement receipt is present and freshly revalidated.
 
-`0.18.3–0.140.6` supports `AllRequired`: every placement in the sealed current
+`0.25.0–0.376.0` supports `AllRequired`: every placement in the sealed current
 manifest must prepare and converge. A `FencedQuorum` profile is unsupported
-unless `0.140.6` explicitly selects it after proving that every unprepared
+unless `0.376.0` explicitly selects it after proving that every unprepared
 placement is durably fenced before global activation and cannot regain
 readiness from cached state. A numeric quorum without that fencing is invalid.
 
@@ -1063,7 +1063,7 @@ revocation, and coordinator failover before/after authorization/outbox commit.
 
 ## Project-Owned Artifact Verification
 
-`0.18.3` implements one `no_std` verification core used by startup, restore,
+`0.25.0` implements one `no_std` verification core used by startup, restore,
 import, local admission, and the hosted
 `vitheim-law-catalog-verify` release tool. The release tool must decode the
 binary artifact through the canonical Rust codec and call that same core; CI
@@ -1105,7 +1105,7 @@ establishes the initial global owner row, the static single-placement topology,
 and each local admission row. Mutable
 state cannot self-admit the law that validates it. The same bootstrap seeds the
 empty rollout root and compiled `VIT-LAW-008@g01` realization, so the first
-`0.18.4` successor is governed without circular self-admission. After that
+`0.26.0` successor is governed without circular self-admission. After that
 seed, every activation, trust-profile transition, rollout, local admission, and
 emergency distrust follows `VIT-INV-057`/`VIT-INV-058`/`VIT-INV-059` and
 `VIT-LAW-007`/`VIT-LAW-008`; a transition to `SignedCatalog` additionally
@@ -1123,41 +1123,41 @@ when the activation milestone leaves planned status.
 
 | Epoch | Catalog ID | Activation floor | Profile | Predecessor envelope contract | Required law frontiers | Canonical artifact |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | VIT-LAWCAT-ACTIVE-e001-v1 | `0.18.3` | CompiledCatalog | none | VIT-LAW-001@g02, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-005@g04, VIT-LAW-006@g01, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e001-v1.catalog` |
-| 2 | VIT-LAWCAT-ACTIVE-e002-v1 | `0.18.4` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e001-envelope-v1 | VIT-LAW-001@g02, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g01, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e002-v1.catalog` |
-| 3 | VIT-LAWCAT-ACTIVE-e003-v1 | `0.29.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e002-envelope-v1 | VIT-LAW-001@g02, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g01, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e003-v1.catalog` |
-| 4 | VIT-LAWCAT-ACTIVE-e004-v1 | `0.51.1` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e003-envelope-v1 | VIT-LAW-001@g03, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g02, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g02 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e004-v1.catalog` |
-| 5 | VIT-LAWCAT-ACTIVE-e005-v1 | `0.52.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e004-envelope-v1 | VIT-LAW-001@g04, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g03, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g03 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e005-v1.catalog` |
-| 6 | VIT-LAWCAT-ACTIVE-e006-v1 | `0.52.1` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e005-envelope-v1 | VIT-LAW-001@g05, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g04, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g04 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e006-v1.catalog` |
-| 7 | VIT-LAWCAT-ACTIVE-e007-v1 | `0.53.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e006-envelope-v1 | VIT-LAW-001@g06, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g05, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g05 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e007-v1.catalog` |
-| 8 | VIT-LAWCAT-ACTIVE-e008-v1 | `0.53.1` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e007-envelope-v1 | VIT-LAW-001@g07, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g06, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g06 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e008-v1.catalog` |
-| 9 | VIT-LAWCAT-ACTIVE-e009-v1 | `0.55.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e008-envelope-v1 | VIT-LAW-001@g08, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g07, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g07 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e009-v1.catalog` |
-| 10 | VIT-LAWCAT-ACTIVE-e010-v1 | `0.56.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e009-envelope-v1 | VIT-LAW-001@g09, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g08, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g08 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e010-v1.catalog` |
-| 11 | VIT-LAWCAT-ACTIVE-e011-v1 | `0.57.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e010-envelope-v1 | VIT-LAW-001@g10, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g09, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g09 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e011-v1.catalog` |
-| 12 | VIT-LAWCAT-ACTIVE-e012-v1 | `0.59.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e011-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g10 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e012-v1.catalog` |
-| 13 | VIT-LAWCAT-ACTIVE-e013-v1 | `0.141.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e012-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g02, VIT-LAW-008@g02, VIT-LAW-009@g11 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e013-v1.catalog` |
+| 1 | VIT-LAWCAT-ACTIVE-e001-v1 | `0.25.0` | CompiledCatalog | none | VIT-LAW-001@g02, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-005@g04, VIT-LAW-006@g01, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e001-v1.catalog` |
+| 2 | VIT-LAWCAT-ACTIVE-e002-v1 | `0.26.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e001-envelope-v1 | VIT-LAW-001@g02, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g01, VIT-LAW-007@g01, VIT-LAW-008@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e002-v1.catalog` |
+| 3 | VIT-LAWCAT-ACTIVE-e003-v1 | `0.66.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e002-envelope-v1 | VIT-LAW-001@g02, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g01, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g01 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e003-v1.catalog` |
+| 4 | VIT-LAWCAT-ACTIVE-e004-v1 | `0.152.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e003-envelope-v1 | VIT-LAW-001@g03, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g02, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g02 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e004-v1.catalog` |
+| 5 | VIT-LAWCAT-ACTIVE-e005-v1 | `0.211.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e004-envelope-v1 | VIT-LAW-001@g04, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g03, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g03 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e005-v1.catalog` |
+| 6 | VIT-LAWCAT-ACTIVE-e006-v1 | `0.212.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e005-envelope-v1 | VIT-LAW-001@g05, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g04, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g04 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e006-v1.catalog` |
+| 7 | VIT-LAWCAT-ACTIVE-e007-v1 | `0.213.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e006-envelope-v1 | VIT-LAW-001@g06, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g05, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g05 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e007-v1.catalog` |
+| 8 | VIT-LAWCAT-ACTIVE-e008-v1 | `0.214.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e007-envelope-v1 | VIT-LAW-001@g07, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g06, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g06 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e008-v1.catalog` |
+| 9 | VIT-LAWCAT-ACTIVE-e009-v1 | `0.219.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e008-envelope-v1 | VIT-LAW-001@g08, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g07, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g07 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e009-v1.catalog` |
+| 10 | VIT-LAWCAT-ACTIVE-e010-v1 | `0.220.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e009-envelope-v1 | VIT-LAW-001@g09, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g08, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g08 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e010-v1.catalog` |
+| 11 | VIT-LAWCAT-ACTIVE-e011-v1 | `0.222.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e010-envelope-v1 | VIT-LAW-001@g10, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g09, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g09 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e011-v1.catalog` |
+| 12 | VIT-LAWCAT-ACTIVE-e012-v1 | `0.224.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e011-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g01, VIT-LAW-008@g01, VIT-LAW-009@g10 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e012-v1.catalog` |
+| 13 | VIT-LAWCAT-ACTIVE-e013-v1 | `0.399.0` | CompiledCatalog | VIT-LAWCAT-ACTIVE-e012-envelope-v1 | VIT-LAW-001@g11, VIT-LAW-002@g01, VIT-LAW-003@g01, VIT-LAW-004@g01, VIT-LAW-005@g04, VIT-LAW-006@g10, VIT-LAW-007@g02, VIT-LAW-008@g02, VIT-LAW-009@g11 | `release/law-catalogs/VIT-LAWCAT-ACTIVE-e013-v1.catalog` |
 
-`0.18.3` delivers the canonical codec, shared verification core, CLI, first
+`0.25.0` delivers the canonical codec, shared verification core, CLI, first
 compiled artifact, exact local owner identity, split global/rollout/local
 owners, durable process manager, authenticated authorization/result receipts,
 external action-claim authority port plus local atomic consumption, and
-trusted-time interface. `0.18.4` verifies the first actual predecessor
+trusted-time interface. `0.26.0` verifies the first actual predecessor
 transition through every rollout/control-receipt/claim state and crash boundary.
-`0.19.0` binds verified envelope digests, rollout/control receipts/replay
+`0.39.0` binds verified envelope digests, rollout/control receipts/replay
 tombstones, claim high-watermarks/outcomes, and local identity/ratchets into
 checkpoints.
-`0.21.0–0.22.0` negotiate and destructively conform storage without making it a
-trust root. `0.29.0–0.30.0` prove migration/import with the real verifier.
-Epoch 3 activates `VIT-LAW-009@g01` at `0.29.0`; every later epoch carries the
+`0.46.0–0.52.0` negotiate and destructively conform storage without making it a
+trust root. `0.66.0–0.72.0` prove migration/import with the real verifier.
+Epoch 3 activates `VIT-LAW-009@g01` at `0.66.0`; every later epoch carries the
 matching VIT-LAW-009 successor generation so trusted owner-manifest derivation
 cannot silently omit a newly effective invariant owner.
-`0.140.1` freezes compiled versus signed profile, signature suite/root ceremony,
+`0.371.0` freezes compiled versus signed profile, signature suite/root ceremony,
 time source, maximum uncertainty, workload-identity/claim proof, receipt
-authentication, and sender/verifier MAC roles. `0.140.2` freezes separate
+authentication, and sender/verifier MAC roles. `0.372.0` freezes separate
 global, rollout-root, future topology, external-issuer evidence, and local
-consumption placement. `0.140.6` freezes `AllRequired` or a fully fenced quorum,
+consumption placement. `0.376.0` freezes `AllRequired` or a fully fenced quorum,
 topology evolution, distribution, failover, revocation, claim uncertainty, time
-loss, and recovery. `0.141.0` hands the compiled static topology to
+loss, and recovery. `0.399.0` hands the compiled static topology to
 `VIT-INV-060` without circular authority: epoch 13 is activated and converged
 under `VIT-LAW-008@g01`; only then does locally admitted generation 2 authorize
 initialization, exact verification, and the one-time handoff CAS. Epoch 13 also
@@ -1167,8 +1167,8 @@ topology mutation requires a bounded VIT-INV-061-issued authorization distinct
 from workload authentication; VIT-INV-060 cannot issue it and consumes it
 without claiming external-epoch atomicity. Challenge/sequence/expiry receipt
 fields and local observation ratchets make “current topology” replay safe.
-`0.142.0–0.143.0` prove split service
-and HA behavior. `0.145.0` proves backup/restore cannot clone a local
+`0.404.0–0.406.0` prove split service
+and HA behavior. `0.410.0` proves backup/restore cannot clone a local
 owner, invent a receipt, resurrect topology, or roll back catalog/validity
 state. Phase O and
 `1.0.0` require zero unresolved rollout receipts, identity clones, coverage

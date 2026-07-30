@@ -1,10 +1,10 @@
 # Phase D — Universal Work Platform
 
-Scope: `0.31.0–0.40.0`. Every mutation is a command; reads consume the minimal
-deny-by-default policy/redaction contract introduced at `0.30.17` and are later
+Scope: `0.102.0–0.119.0`. Every mutation is a command; reads consume the minimal
+deny-by-default policy/redaction contract introduced at `0.89.0` and are later
 proved against the full Phase F policy engine.
 
-## `0.31.0` — Shared Work-Item Components
+## `0.102.0` — Shared Work-Item Components
 Status: planned.
 Setup: freeze domain-specific identity, lifecycle, ownership, timing, labels,
 relationships, collaboration, compliance, and namespaced/versioned custom-field
@@ -15,27 +15,27 @@ public `WorkItemId`, generic patch/setter/status command, or polymorphic write p
 Verification: compile-fail domain ID/command/event/stream mixing, cross-type
 confusion, invalid composition, protected custom-field namespaces, field budget,
 tenant, round-trip, and property tests pass.
-Exit criteria: domain types retain independent invariants. `v0.31.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: domain types retain independent invariants. `v0.102.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.32.0` — Generic Task Aggregate
+## `0.103.0` — Generic Task Aggregate
 Status: planned.
 Setup: define task states, assignee, checklist, dependencies, due time, and completion authority.
 Goal: provide reusable auditable work execution.
 Deliverables: task commands/events/aggregate and projections.
 Verification: unauthorized completion, dependency bypass/cycles, stale version,
 replay, time edge, and state-machine tests pass.
-Exit criteria: task transitions are deterministic and authorized. `v0.32.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: task transitions are deterministic and authorized. `v0.103.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.33.0` — Configurable Lifecycle State Machines
+## `0.104.0` — Configurable Lifecycle State Machines
 Status: planned.
 Setup: bound states, transitions, guards, terminal states, versions, and migration.
 Goal: permit configuration without executable scripts.
 Deliverables: validated state-machine model, interpreter, simulator, and diagnostics.
 Verification: illegal/unreachable states, cycles, guard ambiguity, instruction
 exhaustion, version migration, and differential simulation pass.
-Exit criteria: invalid definitions cannot activate. `v0.33.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: invalid definitions cannot activate. `v0.104.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.34.0` — Assignment Groups And Ownership
+## `0.105.0` — Assignment Groups And Ownership
 Status: planned.
 Setup: define group/member facts and version, eligibility proof, assignment
 authority, queues, delegation scope, policy decision/version, and history;
@@ -44,9 +44,9 @@ Goal: route work without privilege escalation.
 Deliverables: ownership commands/events, candidate policy facts, and audit explanations.
 Verification: forged/stale membership, cross-tenant groups, unauthorized transfer,
 empty group, races, and replay pass.
-Exit criteria: every assignment explains actor and policy. `v0.34.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: every assignment explains actor and policy. `v0.105.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.35.0` — Comments, Mentions, Watchers, And Activity
+## `0.106.0` — Comments, Mentions, Watchers, And Activity
 Status: planned.
 Setup: define bounded content, visibility labels, immutable edits, mention
 resolution, and notification intent; dispatch reauthorizes current recipient and
@@ -55,9 +55,9 @@ Goal: enable collaboration without content or permission leaks.
 Deliverables: collaboration events, safe rendering contract, watchers, and activity projection.
 Verification: stored injection, hidden-field mention, notification amplification,
 Unicode/size limits, edit history, and tenant tests pass.
-Exit criteria: collaboration preserves visibility everywhere. `v0.35.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: collaboration preserves visibility everywhere. `v0.106.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.36.0` — Attachment Quarantine Lifecycle
+## `0.107.0` — Attachment Quarantine Lifecycle
 Status: planned.
 Setup: bind staged blobs, content claims, scanning result, scanner engine/
 signature/version, scan time, verdict expiry/reevaluation policy, quarantine,
@@ -66,9 +66,9 @@ Goal: prevent untrusted files becoming trusted attachments implicitly.
 Deliverables: attachment aggregate, scanner port, safe disposition, and audit evidence.
 Verification: archive bombs, type mismatch, malicious names, replayed verdicts,
 unauthorized download, deletion, and quota tests pass.
-Exit criteria: only policy-approved verified blobs become downloadable. `v0.36.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: only policy-approved verified blobs become downloadable. `v0.107.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.36.1` — Malware-Scanner Adapter And Isolation
+## `0.108.0` — Malware-Scanner Adapter And Isolation
 
 Status: planned; blocked until the exact scanner/service, update source,
 protocol/client, maintenance, license, and sandbox admission record is approved.
@@ -78,7 +78,7 @@ engine/signature/version attestation, timeouts, archive/decompression budgets,
 network policy, result authentication, update/rollback, reevaluation, quarantine
 retention, and outage behavior.
 
-Goal: turn the `0.36.0` scanner port into an isolated production-capable verdict
+Goal: turn the `0.107.0` scanner port into an isolated production-capable verdict
 source without treating a scanner result as permanent truth.
 
 Deliverables: scanner adapter/worker, authenticated verdict envelope, update and
@@ -89,32 +89,32 @@ replayed verdict, archive bomb, parser crash, timeout, worker escape, network
 egress, result tamper, outage, and re-scan tests pass.
 
 Exit criteria: no attachment becomes downloadable from an unauthenticated,
-stale, or unbounded scan. `v0.36.1 implementation stop reached. Run pentest for this exact commit.`
+stale, or unbounded scan. `v0.108.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.37.0` — Priority, Severity, And Impact Models
+## `0.109.0` — Priority, Severity, And Impact Models
 Status: planned.
 Setup: define bounded scales, derivation inputs, override authority, versions, and explanation.
 Goal: make prioritization deterministic and resistant to manipulation.
 Deliverables: typed scales, calculation policy, override events, and rationale model.
 Verification: min/max/overflow, missing facts, forged override, version drift,
 monotonicity properties, and replay pass.
-Exit criteria: priority changes are explainable and auditable. `v0.37.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: priority changes are explainable and auditable. `v0.109.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.38.0` — Calendars, Targets, And SLA Calculations
+## `0.110.0` — Calendars, Targets, And SLA Calculations
 Status: planned.
 Setup: define timezone/version sources, schedules, holidays, pauses, target rules, and calculation budgets.
 Goal: calculate service targets reproducibly.
 Deliverables: calendar model, pure elapsed-time engine, SLA events, and explanation trace.
 Verification: DST, leap/boundary times, overlapping holidays, pause abuse,
 overflow, long-span exhaustion, and known vectors pass.
-Exit criteria: identical pinned calendars yield identical results. `v0.38.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: identical pinned calendars yield identical results. `v0.110.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.38.1` — SLI, SLO, And Error-Budget Models
+## `0.111.0` — SLI, SLO, And Error-Budget Models
 
 Status: planned.
 
 Setup: distinguish internal service-level indicators/objectives and error
-budgets from customer-facing SLA commitments. Reuse the `0.20.3` observation,
+budgets from customer-facing SLA commitments. Reuse the `0.43.0` observation,
 provenance, four-clock, correction/supersession, and policy-bound confidence
 primitives. Define indicator identity/unit/direction, good/valid event criteria,
 rolling/calendar windows, objective versions, missing-data policy, burn-rate
@@ -133,28 +133,28 @@ historical rewrite, duplicate/out-of-order samples, exclusion abuse, overflow,
 clock/DST boundaries, policy downgrade, long-range exhaustion, and properties pass.
 
 Exit criteria: every SLO/error-budget result cites its exact observations,
-corrections, window, exclusions, and objective version. `v0.38.1 implementation
+corrections, window, exclusions, and objective version. `v0.111.0 implementation
 stop reached. Run pentest for this exact commit.`
 
-## `0.38.2` — Customer-Service Measurement Plane
+## `0.112.0` — Customer-Service Measurement Plane
 
 Status: planned as an authenticated-source contract, storage adapter, and
 internal integration slice; production activation is additionally blocked
-until `0.52.1` workload authentication and `0.60.0` authorization conformance
+until `0.212.0` workload authentication and `0.225.0` authorization conformance
 pass. The hosted storage and transport implementation is blocked until its
 exact database/client/TLS/profile admission is approved.
 
 Setup: keep customer-service observations structurally separate from Vitheim's
-own `0.20.2` operational telemetry. Define an authenticated tenant-scoped
+own `0.42.0` operational telemetry. Define an authenticated tenant-scoped
 health/SLI observation API, source/workload identity, schema/unit/version,
-idempotency and deduplication, `0.20.3` temporal provenance, late-arrival
+idempotency and deduplication, `0.43.0` temporal provenance, late-arrival
 watermarks, correction/supersession, append-only storage, retention,
 downsampling, query windows, quotas, partitions, backpressure, deletion/hold,
-and replay/rebuild behavior. Until `0.38.3`, downsampled data is a disposable
+and replay/rebuild behavior. Until `0.113.0`, downsampled data is a disposable
 performance projection and cannot support an authoritative SLO result after
 its raw observations expire.
 
-Goal: give `0.38.1` calculations and later service health one supported
+Goal: give `0.111.0` calculations and later service health one supported
 production measurement path without misusing logs, metrics, or traces emitted
 to operate Vitheim itself.
 
@@ -171,15 +171,15 @@ and memory-versus-hosted differential tests pass.
 
 Exit criteria: the storage and authenticated-source contract produces durable
 customer observations with reproducible correction, retention, watermark, and
-aggregation history; `0.20.2` telemetry is never accepted as a shortcut. It
-remains non-production until the real `0.52.1`/`0.60.0` identity and policy
-integration is retested by `0.82.1`.
-`v0.38.2 implementation stop reached. Run pentest for this exact commit.`
+aggregation history; `0.42.0` telemetry is never accepted as a shortcut. It
+remains non-production until the real `0.212.0`/`0.225.0` identity and policy
+integration is retested by `0.271.0`.
+`v0.112.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.38.3` — Measurement Retention And Authoritative Rollups
+## `0.113.0` — Measurement Retention And Authoritative Rollups
 
 Status: planned; production rollup-substitution expiry remains disabled until
-the exact production backup/restore profile repeats this gate at `0.145.0`.
+the exact production backup/restore profile repeats this gate at `0.410.0`.
 Mandatory disposition obligations are never disabled by a missing rollup proof.
 
 Setup: subject to the controlling legal/contractual deletion and retention-
@@ -196,7 +196,7 @@ retention/hold policy, correction/supersession identity, late-data recalculation
 behavior, and the exact SLO window classes allowed to consume it.
 Rollup-substitution expiry is a gated transition: the rollup and source
 manifest must be committed, their integrity chain verified, their commitment
-included in a retrievable externally retained `0.19.0` signed checkpoint, and
+included in a retrievable externally retained `0.39.0` signed checkpoint, and
 the then-current adapter restore fixture must have successfully restored and
 reverified that rollup/manifest/checkpoint class.
 Distinguish two deletion paths. Discretionary or policy-driven substitution of
@@ -204,7 +204,7 @@ raw observations with a rollup is blocked by checkpoint lag, anchor loss, or
 missing restore evidence and retains raw data only while retention policy
 permits. Legally mandatory erasure, maximum-retention expiry, or tenant-closure
 deletion takes precedence and proceeds even when rollup proof is incomplete.
-Every related derived surface receives an independent `0.51.2` disposition
+Every related derived surface receives an independent `0.153.0` disposition
 decision: rollup payload, source manifest, derived SLO/error-budget result,
 projection/cache, export, and linkable checkpoint metadata. No surface inherits
 permission to survive merely because another is retained. A rollup may remain
@@ -215,7 +215,7 @@ allowed non-sensitive tombstone and authority-loss fact. Historical windows
 become `Unknown`/`Unavailable` whether the non-authoritative rollup is retained
 or erased. The immutable disposition fact records the controlling obligation,
 per-surface decisions/evidence, missing proof, affected windows, actor/policy,
-and authority loss. `0.145.0` repeats the substitution proof for every selected
+and authority loss. `0.410.0` repeats the substitution proof for every selected
 production backup/restore profile before production jobs may replace raw data
 with rollups.
 
@@ -256,9 +256,9 @@ and restore testing under the selected profile. Mandatory deletion overrides
 preservation; every raw and derived surface is disposed independently, the loss
 is recorded without prohibited sensitive/linkable content, and unsupported
 historical results are explicitly unknown.
-`v0.38.3 implementation stop reached. Run pentest for this exact commit.`
+`v0.113.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.39.0` — Approval And Notification Foundations
+## `0.114.0` — Approval And Notification Foundations
 Status: planned.
 Setup: define approver eligibility, separation of duties, quorum, expiry, immutable decisions, and delivery intents.
 Goal: prevent self-approval and duplicated notification effects.
@@ -267,9 +267,9 @@ field references and render-time policy context rather than pre-rendered
 sensitive bodies, templates, and idempotent routing port.
 Verification: self/stale/duplicate approval, quorum races, expiry, template injection,
 delivery replay, and hidden-field tests pass.
-Exit criteria: approvals and deliveries remain attributable. `v0.39.0 implementation stop reached. Run pentest for this exact commit.`
+Exit criteria: approvals and deliveries remain attributable. `v0.114.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.39.1` — On-Call Rotations, Overrides, And Handoffs
+## `0.115.0` — On-Call Rotations, Overrides, And Handoffs
 
 Status: planned.
 
@@ -289,10 +289,10 @@ overlap ambiguity, DST/timezone/leap boundaries, expired delegation, identity
 recreation, privacy leakage, huge schedules, replay, and property tests pass.
 
 Exit criteria: effective on-call responsibility is reproducible and distinct
-from permission to perform the response action. `v0.39.1 implementation stop
+from permission to perform the response action. `v0.115.0 implementation stop
 reached. Run pentest for this exact commit.`
 
-## `0.39.2` — Paging Escalation, Acknowledgement, And Receipts
+## `0.116.0` — Paging Escalation, Acknowledgement, And Receipts
 
 Status: planned.
 
@@ -313,10 +313,10 @@ provider outage, retry storms, cancellation races, tenant confusion, and clock
 boundaries pass.
 
 Exit criteria: every escalation step and stop decision is attributable,
-idempotent, bounded, and linked to current on-call and policy facts. `v0.39.2
+idempotent, bounded, and linked to current on-call and policy facts. `v0.116.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.39.3` — Notification Preferences, Quiet Hours, And Emergency Overrides
+## `0.117.0` — Notification Preferences, Quiet Hours, And Emergency Overrides
 
 Status: planned.
 
@@ -339,9 +339,9 @@ policy/renderer differential tests pass.
 
 Exit criteria: each delivery or suppression explains the current preference,
 mandatory policy, quiet-hours decision, and any bounded emergency override.
-`v0.39.3 implementation stop reached. Run pentest for this exact commit.`
+`v0.117.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.39.4` — Hosted Paging And Notification Delivery
+## `0.118.0` — Hosted Paging And Notification Delivery
 
 Status: planned; blocked until at least one exact production delivery provider,
 client/TLS/authentication profile, receipt semantics, maintenance, license, and
@@ -351,7 +351,7 @@ Setup: bind tenant, delivery intent, recipient endpoint, channel, provider
 account, idempotency key, expiry, payload classification, provider message ID,
 authenticated receipt, retry/backoff/reconciliation, cancellation, rate limits,
 credential rotation, outage/degraded policy, and regional/privacy constraints
-to `0.39.0–0.39.3`. Provider acknowledgement never substitutes for an
+to `0.114.0–0.117.0`. Provider acknowledgement never substitutes for an
 authorized human acknowledgement.
 
 Goal: own at least one production paging channel and notification-delivery path
@@ -370,10 +370,10 @@ load, and disaster exercises pass.
 
 Exit criteria: every claimed production page has a bounded attempt history and
 authenticated provider disposition, while unknown delivery remains unknown and
-triggers the documented escalation/reconciliation policy. `v0.39.4
+triggers the documented escalation/reconciliation policy. `v0.118.0
 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.40.0` — Authenticated API And Service-Desk UI
+## `0.119.0` — Authenticated API And Service-Desk UI
 Status: planned; internal test slice only until Phase F identity passes.
 Setup: define static/fake test authentication facts, CSRF/origin policy, command
 endpoints with exact expected-version/ETag behavior, externally returned
@@ -385,9 +385,9 @@ Verification: IDOR, CSRF, XSS, fixation, enumeration, body/rate exhaustion,
 field leakage, stale ETag, read-your-write token misuse, logout/revocation, and
 DAST pass.
 Exit criteria: the UI has no direct mutation bypass and cannot be deployed with
-the test identity profile as production. `v0.40.0 implementation stop reached. Run pentest for this exact commit.`
+the test identity profile as production. `v0.119.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.40.1` — API-First Application And UI Crate Boundary
+## `0.120.0` — API-First Application And UI Crate Boundary
 
 Status: planned.
 
@@ -412,4 +412,4 @@ error equivalence, CSRF/origin behavior, and API-disabled UI failure pass.
 
 Exit criteria: removing the UI leaves a complete supported application API, and
 the UI cannot perform any action unavailable to an equivalently authorized API
-client. `v0.40.1 implementation stop reached. Run pentest for this exact commit.`
+client. `v0.120.0 implementation stop reached. Run pentest for this exact commit.`

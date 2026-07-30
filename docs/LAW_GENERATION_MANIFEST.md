@@ -1,6 +1,6 @@
 # Law Generation Manifest
 
-Status: normative planning schema introduced by `0.18.3`
+Status: normative planning schema introduced by `0.25.0`
 
 `LawGenerationManifestV1` is the machine-readable security contract for one
 composite-law generation. The Markdown table in
@@ -61,9 +61,9 @@ identifier. Digest self-consistency is not authority: the exact
 `(LawId, Generation, Digest)` must also occur in the trusted
 [Law Manifest Admission Set](LAW_MANIFEST_ADMISSIONS.md) planning superset and
 the exact generation must be effective, realized, and present in a
-milestone-scoped [Active Law Catalog](LAW_ACTIVE_CATALOGS.md). The `0.18.3`
+milestone-scoped [Active Law Catalog](LAW_ACTIVE_CATALOGS.md). The `0.25.0`
 implementation-admission record must approve the digest implementation before
-production code uses it; `0.140.1` revalidates that choice. Planning SHA-256
+production code uses it; `0.371.0` revalidates that choice. Planning SHA-256
 verification does not authorize a casual first-party cryptographic
 implementation.
 
@@ -95,7 +95,7 @@ released meaning requires a successor generation, not an in-place edit.
 
 ## Versioned Realization
 
-- `0.18.3`: implement the `no_std`/N1 manifest type, canonical codec, digest
+- `0.25.0`: implement the `no_std`/N1 manifest type, canonical codec, digest
   verification, strict field/parser and composite-structure checks, global
   `VIT-INV-057` catalog lineage, separate `VIT-INV-058` local
   identity/catalog/distrust/trusted-time ratchets, `VIT-INV-059` durable
@@ -108,24 +108,24 @@ released meaning requires a successor generation, not an in-place edit.
   selection, fully bound payload/envelope, one runtime/CLI cryptographic
   verifier, closed stage-aware P/N/M/F semantic-realization registry, and
   in-memory round-trip/golden fixtures.
-- `0.19.0`: signed checkpoints bind the active admission-catalog identity,
+- `0.39.0`: signed checkpoints bind the active admission-catalog identity,
   epoch, digest, and trust profile.
-- `0.21.0`: storage capability negotiation declares manifest, digest,
+- `0.46.0`: storage capability negotiation declares manifest, digest,
   admission-catalog, and semantic-realization support.
-- `0.22.0`: destructive adapter conformance persists, reads, and rejects
+- `0.52.0`: destructive adapter conformance persists, reads, and rejects
   altered or self-consistent-but-untrusted manifests for the complete
-  predecessor closure effective by `0.22.0`.
-- `0.29.0`: migration and recovery preserve predecessor manifests and verify
+  predecessor closure effective by `0.52.0`.
+- `0.66.0`: migration and recovery preserve predecessor manifests and verify
   the successor and trusted admission catalog before activation.
-- `0.30.0`: export/import binds and verifies the full catalog and generation
+- `0.72.0`: export/import binds and verifies the full catalog and generation
   ancestry; it never infers or silently upgrades law authority.
-- `0.51.1–0.59.0`: each identity/authorization expansion activates its exact
+- `0.152.0–0.224.0`: each identity/authorization expansion activates its exact
   generation-qualified manifests.
-- `0.140.1–0.140.6`: freeze digest, storage, identity, deployment, HA, and
+- `0.371.0–0.376.0`: freeze digest, storage, identity, deployment, HA, and
   recovery profiles.
-- `0.141.0`: hand the compiled singleton to independent
+- `0.399.0`: hand the compiled singleton to independent
   `VIT-INV-060` topology authority and activate `VIT-LAW-008@g02`, whose
   rollout manifests consume authenticated current-topology receipts.
-- `0.141.0–1.0.0`: restore, failover, compatibility, release evidence, and
+- `0.399.0–1.0.0`: restore, failover, compatibility, release evidence, and
   pentest reports prove manifest/digest continuity with no future-generation
   claim.

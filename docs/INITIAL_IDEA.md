@@ -2243,176 +2243,176 @@ Version	Deliverable	Primary pentest target
 0.6.0	Deterministic bounded codec	Malformed bytes, truncation and decoder differential tests
 0.7.0	Command envelope	Spoofed actor, duplicate command and missing tenant
 0.8.0	Event envelope	Metadata confusion and schema-version abuse
-0.9.0	Pure aggregate decide/evolve framework	Invalid transitions and replay determinism
-0.10.0	In-memory incident CLI vertical slice	End-to-end state and authorization assumptions
+0.10.0	Pure aggregate decide/evolve framework	Invalid transitions and replay determinism
+0.11.0	In-memory incident CLI vertical slice	End-to-end state and authorization assumptions
 Phase B — Journal and projection mechanics
 Version	Deliverable	Primary pentest target
-0.11.0	Semantic event-journal interface	Contract ambiguity and partial append behavior
-0.12.0	In-memory journal adapter	Ordering and stream-isolation failures
-0.13.0	Expected-version concurrency	Lost updates and duplicate event creation
-0.14.0	Snapshots and snapshot validation	Stale or poisoned snapshots
-0.15.0	Projection engine and checkpoints	Skipped, duplicated and reordered events
-0.16.0	Transactional outbox model	Event committed without message or inverse
-0.17.0	Inbox and idempotent consumer model	Replay and duplicate side effects
-0.18.0	Leases, timers and scheduler primitives	Double ownership and expired lease use
-0.19.0	Integrity chains and signed checkpoint interface	Event deletion, reordering and substitution
-0.20.0	Replay, verification and projection rebuild CLI	Corrupt streams and resource-exhaustion replay
+0.12.0	Semantic event-journal interface	Contract ambiguity and partial append behavior
+0.13.0	In-memory journal adapter	Ordering and stream-isolation failures
+0.14.0	Expected-version concurrency	Lost updates and duplicate event creation
+0.15.0	Snapshots and snapshot validation	Stale or poisoned snapshots
+0.16.0	Projection engine and checkpoints	Skipped, duplicated and reordered events
+0.18.0	Transactional outbox model	Event committed without message or inverse
+0.20.0	Inbox and idempotent consumer model	Replay and duplicate side effects
+0.22.0	Leases, timers and scheduler primitives	Double ownership and expired lease use
+0.39.0	Integrity chains and signed checkpoint interface	Event deletion, reordering and substitution
+0.40.0	Replay, verification and projection rebuild CLI	Corrupt streams and resource-exhaustion replay
 Phase C — Storage portability
 Version	Deliverable	Primary pentest target
-0.21.0	Storage capability negotiation	False capability claims and unsafe fallback
-0.22.0	Storage conformance testkit	Test bypass and backend-specific divergence
-0.23.0	SQLite adapter	Locking, rollback and local-file permissions
-0.24.0	PostgreSQL adapter	Transaction, authentication and tenant partitioning
-0.25.0	MySQL adapter	Isolation-level and encoding differences
-0.26.0	MongoDB adapter	Transaction boundaries and query injection
-0.27.0	SurrealDB adapter	Namespace, graph and query isolation
-0.28.0	Blob-store API and filesystem adapter	Path traversal, symlinks and content mismatch
-0.29.0	Migration registry and resumable migrations	Interrupted and malicious migrations
-0.30.0	Cross-backend export and import	Record substitution, truncation and integrity loss
+0.46.0	Storage capability negotiation	False capability claims and unsafe fallback
+0.52.0	Storage conformance testkit	Test bypass and backend-specific divergence
+0.57.0	SQLite adapter	Locking, rollback and local-file permissions
+0.58.0	PostgreSQL adapter	Transaction, authentication and tenant partitioning
+0.59.0	MySQL adapter	Isolation-level and encoding differences
+0.60.0	MongoDB adapter	Transaction boundaries and query injection
+0.61.0	SurrealDB adapter	Namespace, graph and query isolation
+0.62.0	Blob-store API and filesystem adapter	Path traversal, symlinks and content mismatch
+0.66.0	Migration registry and resumable migrations	Interrupted and malicious migrations
+0.72.0	Cross-backend export and import	Record substitution, truncation and integrity loss
 Phase D — Universal work platform
 Version	Deliverable	Primary pentest target
-0.31.0	Shared work-item components	Cross-type field confusion
-0.32.0	Generic task aggregate	Unauthorized completion and dependency bypass
-0.33.0	Configurable lifecycle state machines	Illegal transition and transition-loop abuse
-0.34.0	Assignment groups and ownership	Assignment privilege escalation
-0.35.0	Comments, mentions, watchers and activity	Stored content injection and notification abuse
-0.36.0	Attachments and quarantine lifecycle	Malware, archive bombs and content-type confusion
-0.37.0	Priority, severity and impact models	Priority manipulation and integer boundary errors
-0.38.0	Calendars, targets and SLA calculations	Time-zone, holiday and clock-boundary errors
-0.39.0	Approval and notification foundations	Self-approval and delivery replay
-0.40.0	First authenticated API and service-desk UI	IDOR, CSRF, XSS and field leakage
+0.102.0	Shared work-item components	Cross-type field confusion
+0.103.0	Generic task aggregate	Unauthorized completion and dependency bypass
+0.104.0	Configurable lifecycle state machines	Illegal transition and transition-loop abuse
+0.105.0	Assignment groups and ownership	Assignment privilege escalation
+0.106.0	Comments, mentions, watchers and activity	Stored content injection and notification abuse
+0.107.0	Attachments and quarantine lifecycle	Malware, archive bombs and content-type confusion
+0.109.0	Priority, severity and impact models	Priority manipulation and integer boundary errors
+0.110.0	Calendars, targets and SLA calculations	Time-zone, holiday and clock-boundary errors
+0.114.0	Approval and notification foundations	Self-approval and delivery replay
+0.119.0	First authenticated API and service-desk UI	IDOR, CSRF, XSS and field leakage
 Phase E — IT service management
 Version	Deliverable	Primary pentest target
-0.41.0	Incident management	Unauthorized assignment, resolution and closure
-0.42.0	Service-request management	Catalog input abuse and fulfillment bypass
-0.43.0	Service catalog and request forms	Schema injection and price or entitlement manipulation
-0.44.0	Problem management	Cross-incident data exposure
-0.45.0	Known errors and workarounds	Unsafe workaround publication
-0.46.0	Change management	Approval bypass and schedule manipulation
-0.47.0	Release and deployment records	False deployment status and unauthorized linkage
-0.48.0	Major-incident command process	Role takeover and notification flooding
-0.49.0	Postmortem and corrective actions	Sensitive-data publication and action deletion
-0.50.0	Integrated ITSM beta	Cross-module authorization and workflow chaining
+0.121.0	Incident management	Unauthorized assignment, resolution and closure
+0.122.0	Service-request management	Catalog input abuse and fulfillment bypass
+0.123.0	Service catalog and request forms	Schema injection and price or entitlement manipulation
+0.124.0	Problem management	Cross-incident data exposure
+0.125.0	Known errors and workarounds	Unsafe workaround publication
+0.126.0	Change management	Approval bypass and schedule manipulation
+0.127.0	Release and deployment records	False deployment status and unauthorized linkage
+0.128.0	Major-incident command process	Role takeover and notification flooding
+0.131.0	Postmortem and corrective actions	Sensitive-data publication and action deletion
+0.132.0	Integrated ITSM beta	Cross-module authorization and workflow chaining
 Phase F — Identity, tenancy and policy
 Version	Deliverable	Primary pentest target
-0.51.0	Formal tenant isolation model	Cross-tenant reads, writes, caches and indexes
-0.52.0	Subjects, identities and service principals	Identity confusion and impersonation
-0.53.0	Hosted OIDC and WebAuthn integration	Token validation and session fixation
-0.54.0	Directory and group synchronization	Group takeover and stale privilege
-0.55.0	RBAC engine	Role escalation and inherited-role cycles
-0.56.0	ABAC engine	Missing attributes and fail-open decisions
-0.57.0	Relationship-based authorization	Malicious graph paths and ownership spoofing
-0.58.0	Field redaction and policy obligations	Hidden-field leaks through API, search and exports
-0.59.0	Delegation and break-glass access	Unbounded scope and non-expiring privilege
-0.60.0	Authorization conformance suite	Full command/read/export permission matrix
+0.151.0	Formal tenant isolation model	Cross-tenant reads, writes, caches and indexes
+0.211.0	Subjects, identities and service principals	Identity confusion and impersonation
+0.213.0	Hosted OIDC and WebAuthn integration	Token validation and session fixation
+0.217.0	Directory and group synchronization	Group takeover and stale privilege
+0.219.0	RBAC engine	Role escalation and inherited-role cycles
+0.220.0	ABAC engine	Missing attributes and fail-open decisions
+0.222.0	Relationship-based authorization	Malicious graph paths and ownership spoofing
+0.223.0	Field redaction and policy obligations	Hidden-field leaks through API, search and exports
+0.224.0	Delegation and break-glass access	Unbounded scope and non-expiring privilege
+0.225.0	Authorization conformance suite	Full command/read/export permission matrix
 Phase G — Durable workflows
 Version	Deliverable	Primary pentest target
-0.61.0	Workflow intermediate representation	Invalid graphs and malicious instruction counts
-0.62.0	Deterministic workflow interpreter	Infinite loops and nondeterministic replay
-0.63.0	Human tasks and approvals	Task theft and self-approval
-0.64.0	Timers, deadlines and retries	Retry storms and time manipulation
-0.65.0	Parallel branches and joins	Premature joins and duplicate completion
-0.66.0	Compensation mechanics	Double compensation and incomplete rollback
-0.67.0	Signals and subworkflows	Signal spoofing and recursion exhaustion
-0.68.0	Workflow versioning and migration	State corruption during upgrades
-0.69.0	Visual and configuration-as-code compiler	Hidden behavior and unsafe generated workflows
-0.70.0	HA workflow workers	Duplicate activity execution and lease loss
+0.230.0	Workflow intermediate representation	Invalid graphs and malicious instruction counts
+0.231.0	Deterministic workflow interpreter	Infinite loops and nondeterministic replay
+0.232.0	Human tasks and approvals	Task theft and self-approval
+0.233.0	Timers, deadlines and retries	Retry storms and time manipulation
+0.234.0	Parallel branches and joins	Premature joins and duplicate completion
+0.235.0	Compensation mechanics	Double compensation and incomplete rollback
+0.236.0	Signals and subworkflows	Signal spoofing and recursion exhaustion
+0.237.0	Workflow versioning and migration	State corruption during upgrades
+0.238.0	Visual and configuration-as-code compiler	Hidden behavior and unsafe generated workflows
+0.239.0	HA workflow workers	Duplicate activity execution and lease loss
 Phase H — Alerts and security operations
 Version	Deliverable	Primary pentest target
-0.71.0	Authenticated alert-ingestion protocol	Spoofed sources and ingestion flooding
-0.72.0	Alert normalization	Parser confusion and field smuggling
-0.73.0	Deduplication engine	Collision attacks and evidence loss
-0.74.0	Suppression and maintenance windows	Malicious suppression of real alerts
-0.75.0	Topology and temporal correlation	Correlation poisoning and unbounded graph traversal
-0.76.0	Alert-to-incident orchestration	Incident flooding and unauthorized linking
-0.77.0	Security-incident domain	Evidence access and containment privilege
-0.78.0	Vulnerability findings and remediation cases	Finding spoofing and risk-score manipulation
-0.79.0	Forensic timeline and evidence custody	Timestamp tampering and custody gaps
-0.80.0	Integrated SecOps workspace	Cross-source, cross-tenant and export leakage
+0.245.0	Authenticated alert-ingestion protocol	Spoofed sources and ingestion flooding
+0.249.0	Alert normalization	Parser confusion and field smuggling
+0.250.0	Deduplication engine	Collision attacks and evidence loss
+0.251.0	Suppression and maintenance windows	Malicious suppression of real alerts
+0.252.0	Topology and temporal correlation	Correlation poisoning and unbounded graph traversal
+0.253.0	Alert-to-incident orchestration	Incident flooding and unauthorized linking
+0.254.0	Security-incident domain	Evidence access and containment privilege
+0.255.0	Vulnerability findings and remediation cases	Finding spoofing and risk-score manipulation
+0.261.0	Forensic timeline and evidence custody	Timestamp tampering and custody gaps
+0.262.0	Integrated SecOps workspace	Cross-source, cross-tenant and export leakage
 Phase I — Assets, configuration and services
 Version	Deliverable	Primary pentest target
-0.81.0	Asset lifecycle	Unauthorized ownership and disposal changes
-0.82.0	Business and technical services	Service-owner privilege escalation
-0.83.0	Typed relationship graph	Malicious cycles and unauthorized edges
-0.84.0	Provenance and confidence	Source impersonation and confidence inflation
-0.85.0	Bitemporal facts	Historical rewrite and invalid time intervals
-0.86.0	Discovery and import interface	Poisoned discovery sources and oversized imports
-0.87.0	Reconciliation engine	Source-priority abuse and destructive merges
-0.88.0	Dependency impact analysis	Traversal exhaustion and hidden-node inference
-0.89.0	Software and license inventory	Forged inventory and entitlement leakage
-0.90.0	Interactive service map	Graph authorization and browser rendering abuse
+0.263.0	Asset lifecycle	Unauthorized ownership and disposal changes
+0.270.0	Business and technical services	Service-owner privilege escalation
+0.272.0	Typed relationship graph	Malicious cycles and unauthorized edges
+0.273.0	Provenance and confidence	Source impersonation and confidence inflation
+0.274.0	Bitemporal facts	Historical rewrite and invalid time intervals
+0.275.0	Discovery and import interface	Poisoned discovery sources and oversized imports
+0.278.0	Reconciliation engine	Source-priority abuse and destructive merges
+0.279.0	Dependency impact analysis	Traversal exhaustion and hidden-node inference
+0.283.0	Software and license inventory	Forged inventory and entitlement leakage
+0.285.0	Interactive service map	Graph authorization and browser rendering abuse
 Phase J — Search and knowledge
 Version	Deliverable	Primary pentest target
-0.91.0	Canonical query AST	Query complexity and parser abuse
-0.92.0	Search projection pipeline	Stale permissions and indexing duplication
-0.93.0	Lexical full-text search	Query injection and document-size exhaustion
-0.94.0	Facets, queues and saved views	Unauthorized counts and shared-view leakage
-0.95.0	Permission-aware indexing	Field, snippet and cache leakage
-0.96.0	Temporal and event-history search	Historical access bypass
-0.97.0	Relationship and impact search	Graph-path disclosure
-0.98.0	Semantic-index interface	Embedding leakage and cross-tenant similarity
-0.99.0	Knowledge articles and runbooks	Unsafe content, poisoning and publication bypass
-0.100.0	Unified search conformance suite	Search/API authorization equivalence
+0.286.0	Canonical query AST	Query complexity and parser abuse
+0.287.0	Search projection pipeline	Stale permissions and indexing duplication
+0.288.0	Lexical full-text search	Query injection and document-size exhaustion
+0.290.0	Facets, queues and saved views	Unauthorized counts and shared-view leakage
+0.291.0	Permission-aware indexing	Field, snippet and cache leakage
+0.292.0	Temporal and event-history search	Historical access bypass
+0.293.0	Relationship and impact search	Graph-path disclosure
+0.294.0	Semantic-index interface	Embedding leakage and cross-tenant similarity
+0.297.0	Knowledge articles and runbooks	Unsafe content, poisoning and publication bypass
+0.298.0	Unified search conformance suite	Search/API authorization equivalence
 Phase K — Compliance and risk
 Version	Deliverable	Primary pentest target
-0.101.0	Signed framework-pack format	Package substitution and downgrade
-0.102.0	Requirement and control graph	Malicious mappings and graph cycles
-0.103.0	Evidence requirements and lineage	Forged evidence and detached provenance
-0.104.0	NIST CSF versioned pack	Pack activation and mapping integrity
-0.105.0	DORA versioned pack	Applicability and mandatory-evidence bypass
-0.106.0	Versioned ITIL practice packs	Workflow overlay conflicts and licensing metadata
-0.107.0	Licensed/custom standards importer	Untrusted package content and mapping escalation
-0.108.0	Risk, treatment and exception workflows	Self-accepted risk and non-expiring exceptions
-0.109.0	Control testing, findings and reporting	Falsified tests and report data leakage
-0.110.0	Pack impact and conflict simulator	Incorrect precedence and simulation divergence
+0.301.0	Signed framework-pack format	Package substitution and downgrade
+0.302.0	Requirement and control graph	Malicious mappings and graph cycles
+0.303.0	Evidence requirements and lineage	Forged evidence and detached provenance
+0.304.0	NIST CSF versioned pack	Pack activation and mapping integrity
+0.305.0	DORA versioned pack	Applicability and mandatory-evidence bypass
+0.306.0	Versioned ITIL practice packs	Workflow overlay conflicts and licensing metadata
+0.307.0	Licensed/custom standards importer	Untrusted package content and mapping escalation
+0.308.0	Risk, treatment and exception workflows	Self-accepted risk and non-expiring exceptions
+0.309.0	Control testing, findings and reporting	Falsified tests and report data leakage
+0.310.0	Pack impact and conflict simulator	Incorrect precedence and simulation divergence
 Phase L — WASM and integrations
 Version	Deliverable	Primary pentest target
-0.111.0	Versioned WIT plugin interfaces	ABI confusion and malformed components
-0.112.0	Deterministic component execution	Fuel bypass and nondeterminism
-0.113.0	Effectful component execution	Unauthorized host calls
-0.114.0	Capability and secret-handle model	Capability escalation and secret extraction
-0.115.0	Memory, CPU, network and output metering	Resource-limit bypass
-0.116.0	Signed plugin registry and rollout	Signature downgrade and malicious update
-0.117.0	Connector SDK and testkit	SSRF, replay and connector impersonation
-0.118.0	Email, webhook and collaboration connectors	Header injection, spoofing and action-link abuse
-0.119.0	Outbound-only integration agent	Agent takeover and offline-spool extraction
-0.120.0	Plugin compatibility and isolation suite	Cross-plugin and cross-tenant interference
+0.313.0	Versioned WIT plugin interfaces	ABI confusion and malformed components
+0.314.0	Deterministic component execution	Fuel bypass and nondeterminism
+0.315.0	Effectful component execution	Unauthorized host calls
+0.316.0	Capability and secret-handle model	Capability escalation and secret extraction
+0.317.0	Memory, CPU, network and output metering	Resource-limit bypass
+0.318.0	Signed plugin registry and rollout	Signature downgrade and malicious update
+0.320.0	Connector SDK and testkit	SSRF, replay and connector impersonation
+0.321.0	Email, webhook and collaboration connectors	Header injection, spoofing and action-link abuse
+0.327.0	Outbound-only integration agent	Agent takeover and offline-spool extraction
+0.328.0	Plugin compatibility and isolation suite	Cross-plugin and cross-tenant interference
 Phase M — AI capabilities
 Version	Deliverable	Primary pentest target
-0.121.0	AI provider interface	Provider impersonation and unsafe fallback
-0.122.0	Classification, redaction and residency gateway	Sensitive-field leakage
-0.123.0	Model, prompt and purpose registry	Prompt substitution and unapproved models
-0.124.0	Timeline and record summarization	Prompt injection and fabricated citations
-0.125.0	Similarity and duplicate suggestions	Cross-tenant retrieval and poisoning
-0.126.0	Triage and next-action suggestions	Manipulated assignment and unsafe advice
-0.127.0	Natural-language search compiler	Authorization bypass through generated queries
-0.128.0	Restricted AI command proposals	Command escalation and approval bypass
-0.129.0	Evaluation, provenance and reviewer feedback	Evaluation tampering and hidden model changes
-0.130.0	AI governance and NIST AI RMF pack	Policy gaps and unsafe autonomous modes
+0.339.0	AI provider interface	Provider impersonation and unsafe fallback
+0.340.0	Classification, redaction and residency gateway	Sensitive-field leakage
+0.341.0	Model, prompt and purpose registry	Prompt substitution and unapproved models
+0.342.0	Timeline and record summarization	Prompt injection and fabricated citations
+0.343.0	Similarity and duplicate suggestions	Cross-tenant retrieval and poisoning
+0.344.0	Triage and next-action suggestions	Manipulated assignment and unsafe advice
+0.345.0	Natural-language search compiler	Authorization bypass through generated queries
+0.346.0	Restricted AI command proposals	Command escalation and approval bypass
+0.347.0	Evaluation, provenance and reviewer feedback	Evaluation tampering and hidden model changes
+0.348.0	AI governance and NIST AI RMF pack	Policy gaps and unsafe autonomous modes
 Phase N — Complete product experience
 Version	Deliverable	Primary pentest target
-0.131.0	Unified shell and command palette	Unauthorized action discovery
-0.132.0	Role-specific operational workspaces	Workspace field leakage
-0.133.0	Schema and form builder	Malicious schemas and stored UI injection
-0.134.0	Workflow and policy builder	Generated privilege escalation
-0.135.0	Dashboards and bounded report builder	Expensive queries and aggregate leakage
-0.136.0	Request portal and generic case management	External-user isolation and enumeration
-0.137.0	Configuration-as-code and signed change sets	Configuration substitution and rollback abuse
-0.138.0	Stable API, SDKs, import and export	Mass assignment and export-policy bypass
-0.139.0	Accessibility, localization and mobile layouts	Localization injection and client-state leakage
-0.140.0	Operator and tenant administration console	Administrative privilege boundaries
+0.349.0	Unified shell and command palette	Unauthorized action discovery
+0.350.0	Role-specific operational workspaces	Workspace field leakage
+0.355.0	Schema and form builder	Malicious schemas and stored UI injection
+0.356.0	Workflow and policy builder	Generated privilege escalation
+0.357.0	Dashboards and bounded report builder	Expensive queries and aggregate leakage
+0.358.0	Request portal and generic case management	External-user isolation and enumeration
+0.359.0	Configuration-as-code and signed change sets	Configuration substitution and rollback abuse
+0.360.0	Stable API, SDKs, import and export	Mass assignment and export-policy bypass
+0.368.0	Accessibility, localization and mobile layouts	Localization injection and client-state leakage
+0.370.0	Operator and tenant administration console	Administrative privilege boundaries
 Phase O — Production hardening
 Version	Deliverable	Primary pentest target
-0.141.0	Single-node production packaging	File permissions, defaults and secret exposure
-0.142.0	Split API, worker, ingest and index deployments	Service identity and network authorization
-0.143.0	HA leases, failover and partition handling	Split brain and duplicate processing
-0.144.0	Regional placement and data-residency enforcement	Cross-region data leakage
-0.145.0	Backup, restore and disaster-recovery tooling	Backup substitution and incomplete restore
-0.146.0	Performance, load, soak and chaos certification	Resource exhaustion and cascading failure
-0.147.0	Final security and supply-chain hardening	Artifact, dependency and build compromise
-0.148.0	API, event, plugin and pack compatibility freeze	Downgrade and version-confusion attacks
-0.149.0	Release candidate and external pentest remediation	Full platform attack-path testing
-0.150.0	Final production-readiness candidate	Clean-install, upgrade, restore and rollback validation
+0.399.0	Single-node production packaging	File permissions, defaults and secret exposure
+0.404.0	Split API, worker, ingest and index deployments	Service identity and network authorization
+0.406.0	HA leases, failover and partition handling	Split brain and duplicate processing
+0.409.0	Regional placement and data-residency enforcement	Cross-region data leakage
+0.410.0	Backup, restore and disaster-recovery tooling	Backup substitution and incomplete restore
+0.415.0	Performance, load, soak and chaos certification	Resource exhaustion and cascading failure
+0.418.0	Final security and supply-chain hardening	Artifact, dependency and build compromise
+0.419.0	API, event, plugin and pack compatibility freeze	Downgrade and version-confusion attacks
+0.420.0	Release candidate and external pentest remediation	Full platform attack-path testing
+0.424.0	Final production-readiness candidate	Clean-install, upgrade, restore and rollback validation
 1.0.0 — Production release
 
 1.0.0 is released only when all acceptance criteria below are satisfied.

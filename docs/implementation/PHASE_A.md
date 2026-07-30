@@ -1,6 +1,6 @@
 # Phase A — Pure Foundation
 
-Scope: `0.1.0–0.10.0`. N0/N1 only except the final demonstration CLI. No I/O,
+Scope: `0.1.0–0.11.0`. N0/N1 only except the final demonstration CLI. No I/O,
 ambient clock/randomness, external Cargo code, or production claims enter the
 domain crates.
 
@@ -21,8 +21,8 @@ Deliverables:
   evidence cryptographically binding candidate tree, toolchain, SBOM, and any
   artifacts through a signed detached attestation or constrained evidence-only
   child commit whose reviewed parent and allowed tree delta are verified.
-- One machine-readable roadmap manifest that generates or verifies all 150 base
-  `0.x.0` stops, 274 companion stops, the `1.0.0` stop, their owners and exact
+- One machine-readable roadmap manifest that generates or verifies all 424
+  contiguous pre-production minor stops, the `1.0.0` stop, their owners and exact
   pentest markers. README, release-plan, release-notes, phase-index, authority-
   review and checker counts must agree on 425 exact stops.
 - An evidence-status manifest using the normative `Specified`, `Implementing`,
@@ -38,7 +38,7 @@ roadmap count/owner/marker drift, and documentation that promotes a merely
 specified or conditional capability.
 
 Exit criteria: baseline claims match evidence, the formula
-`150 + 274 + 1 = 425` is machine-derived, and no release gate is bypassed.
+`424 + 1 = 425` is machine-derived, and no release gate is bypassed.
 `v0.1.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.2.0` — Typed IDs, Time, And Stable Errors
@@ -192,10 +192,10 @@ metadata exhaustion, tamper, ordering properties, and round trips pass.
 Exit criteria: facts are immutable, attributable, ordered, and tenant-bound.
 `v0.8.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.8.1` — Sensitive Payload Lifecycle
+## `0.9.0` — Sensitive Payload Lifecycle
 
 Status: planned.
-<!-- vitheim-invariant VIT-INV-034 0.8.1 -->
+<!-- vitheim-invariant VIT-INV-034 0.9.0 -->
 
 Setup: separate immutable event metadata from encrypted or externally erasable
 sensitive payloads; define classification, retention, tombstone, crypto-erasure,
@@ -242,14 +242,14 @@ rebuild-after-erasure, descriptor incompatibility, and forbidden
 outward Phase F dependency tests pass.
 
 Exit criteria: erasure can remove recoverable plaintext without rewriting event
-authority or hiding that a classified payload existed, and pre-`0.51.2` crates
+authority or hiding that a classified payload existed, and pre-`0.153.0` crates
 can describe lifecycle surfaces through an inward foundation contract.
-`v0.8.1 implementation stop reached. Run pentest for this exact commit.`
+`v0.9.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.9.0` — Pure Aggregate Framework
+## `0.10.0` — Pure Aggregate Framework
 
 Status: planned.
-<!-- vitheim-invariant VIT-INV-035 0.9.0 -->
+<!-- vitheim-invariant VIT-INV-035 0.10.0 -->
 
 Setup: define pure decide/evolve contracts, rejection semantics, state version,
 event-batch bounds, replay limits, and corruption behavior.
@@ -264,9 +264,9 @@ Verification: decide-twice, prefix replay, invalid sequences, version mismatch,
 rejection-no-mutation, exhaustion, model, and fuzz sequence tests pass.
 
 Exit criteria: equal inputs yield equal outputs and replay is bounded.
-`v0.9.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.10.0 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.10.0` — In-Memory Incident Vertical Slice
+## `0.11.0` — In-Memory Incident Vertical Slice
 
 Status: planned.
 
@@ -284,4 +284,4 @@ rebuild equivalence, exhaustion, golden scenarios, and sequence fuzzing pass.
 Twin tenants deliberately reuse local IDs to prove scope is structural.
 
 Exit criteria: the vertical slice is deterministic and truthfully in-memory.
-`v0.10.0 implementation stop reached. Run pentest for this exact commit.`
+`v0.11.0 implementation stop reached. Run pentest for this exact commit.`

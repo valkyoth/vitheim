@@ -23,7 +23,7 @@ require_text \
     'no `OutcomeUnknown` or `StartClaimedReconciling` start' \
     'delivery closure blocks ambiguous transmission claims'
 require_text \
-    '0.51.56` — Physical-Status Remote Fence And Successor Admission' \
+    '0.207.0` — Physical-Status Remote Fence And Successor Admission' \
     'remote physical status handoff stop'
 require_text \
     '`PhysicalStatusPredecessorFenceReceiptV1`' \
@@ -38,7 +38,7 @@ require_text \
     'the stable command/receipt status and never reissues a fence, admission or' \
     'remote handoff response loss reconciliation'
 require_text \
-    '0.51.57` — Post-Fence Status-Successor Recovery' \
+    '0.208.0` — Post-Fence Status-Successor Recovery' \
     'post fence successor recovery stop'
 require_text \
     '`HandoffFenced → HandoffRecoveryRequired →' \
@@ -47,7 +47,7 @@ require_text \
     'status is `Refused` and the coarse' \
     'post fence recovery stays refused'
 require_text \
-    '0.51.58` — Transmission-Claim Closure Interlock And Conformance' \
+    '0.209.0` — Transmission-Claim Closure Interlock And Conformance' \
     'transmission claim closure interlock stop'
 require_text \
     '`EffectDeliveryTransmissionClaimCutV1`' \
@@ -56,7 +56,7 @@ require_text \
     'authorization expiry after claim' \
     'claim expiry is not no effect proof'
 require_text \
-    '0.51.59` — Delivery-Seal Preparation Lineage And Codec Pinning' \
+    '0.210.0` — Delivery-Seal Preparation Lineage And Codec Pinning' \
     'seal preparation lineage stop'
 require_text \
     '`EffectDeliverySealPreparationLineageV1`' \
