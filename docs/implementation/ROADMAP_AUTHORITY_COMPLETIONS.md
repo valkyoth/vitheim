@@ -1832,10 +1832,31 @@ mutation, consumed state, capacity settlement or release manifest.
 Only a fresh match also creates exact
 `UnknownRestrictionLoweringReleaseManifestV1` entries for every predecessor
 top enforcement point and bridge with funded `0.51.37` reconciliation
-capacity; omission aborts the entire transition. The old top remains enforced
-until the operational CAS is durable, then remains owned/funded pending that
-manifest's release or retention result. `0.51.35` reinstall-control release
-work cannot grant authority or delete replacement state. Any invalid cut,
+capacity. Before constructing that immutable manifest, the transaction uses
+checked arithmetic to construct each exact member's
+`ReleaseMemberVersionBudgetV1 { initial_version, pending_update_ceiling,
+reserved_terminal_version, observation_attempt_limit,
+saturated_retry_limit }`, satisfying
+`initial_version < pending_update_ceiling < reserved_terminal_version
+<= RELEASE_MEMBER_VERSION_MAX`, `observation_attempt_limit > 0`, and
+`saturated_retry_limit > 0`. It derives one domain-separated
+`UnknownRestrictionLoweringReleaseMemberBudgetDigestV1` over tenant, manifest,
+member, generation and canonical budget, and includes each digest in the
+manifest from its first and only creation.
+In that same activation transaction, every manifest member is initialized at
+its exact `initial_version` in Pending state with
+`saturated_retry_claim_count = 0`, and
+one `ReleaseMemberTransitionGenesisV1` plus
+`ReleaseMemberTransitionHighWatermarkV1` commits the initial version/state
+digest, budget digest and genesis transition-head digest. Manifest, budgets,
+digests, initial members, genesis/high-watermark records, funded cleanup
+capacity and audit/outbox are one all-or-nothing bundle. Missing, invalid,
+unrepresentable or partially persisted budget/genesis material aborts the
+entire activation with no manifest, guard mutation or capacity settlement;
+there is no later manifest extension. The old top remains enforced until the
+operational CAS is durable, then remains owned/funded pending that manifest's
+release or retention result. `0.51.35` reinstall-control release work cannot
+grant authority or delete replacement state. Any invalid cut,
 evaluation, partition fence, admission/bridge/ownership/capacity root, cleanup
 proof, retained namespace proof, or abort/supersession state makes no guard
 change. Response-loss retries join the durable result. Ordinary enablement
@@ -1866,8 +1887,11 @@ creating an independent Blocked authority, illegal
 `ActivationPrepared → AdmissionBlocked`, missing/forged typed cause,
 revalidation CAS loss ignored, permanent denial bypassing abort/disposition,
 revalidation producing a guard mutation or release manifest,
-lowered activation without atomic
-predecessor release manifest/capacity,
+lowered activation without atomic predecessor release manifest/capacity/
+budget/digest/member/transition-genesis bundle, invalid budget ordering or
+zero limit, budget/digest construction failure that still activates,
+retroactive manifest extension, missing or mismatched initial member/
+high-watermark/transition head,
 replacement eligibility consumed twice, missing eligibility tombstone,
 incomplete/replayed genesis receipt, final-activation condition replay,
 restore after eligibility consumption but before operational activation,
@@ -1957,8 +1981,17 @@ generation/root and bridge-ownership root, preserves all unrelated guard,
 tenant-local residual and capacity conditions, emits
 `OperationalUnknownRestrictionLoweringReceiptV1`, and atomically creates
 `UnknownRestrictionLoweringReleaseManifestV1` entries plus funded `0.51.37`
-capacity for every predecessor top enforcement point and bridge. Omission or
-partial creation aborts the entire CAS. The old top remains effective until
+capacity for every predecessor top enforcement point and bridge. It uses the
+exact checked budget/digest/initial-member/transition-genesis construction
+contract established at `0.51.34`: every immutable manifest entry contains
+its member-bound budget digest from first creation, and the same transaction
+creates its Pending member at `initial_version`,
+`saturated_retry_claim_count = 0`,
+`ReleaseMemberTransitionGenesisV1` and initial
+`ReleaseMemberTransitionHighWatermarkV1`. Omission, invalid arithmetic,
+construction failure or partial creation of any manifest, budget, digest,
+member, genesis/high-watermark, capacity, audit or outbox record aborts the
+entire CAS; none can be attached later. The old top remains effective until
 the CAS is durable and remains owned/funded pending manifest reconciliation;
 the activation result itself cannot call it released. Response-loss retries
 join the same receipt.
@@ -1976,7 +2009,9 @@ generation changing immediately after preparation or concurrently with the
 CAS, stale commit predicate accepted, revalidation producing a guard mutation
 or release manifest, activation before
 complete bridge ownership/capacity, two CAS winners, unrelated guard field or
-residual loss, missing/partial release manifest or capacity, old-top release in
+residual loss, missing/partial release manifest, budget/digest/member/
+transition-genesis bundle or capacity, invalid budget still activating,
+retroactive manifest extension, old-top release in
 the activation transaction, response loss, restrictive mutation at every
 edge, rollback, restore before/after CAS, mixed-version disagreement, and
 ordinary admin/emergency override pass.
@@ -1991,12 +2026,16 @@ with no guard mutation.
 Status: planned conditionally; required after either a pre-operational lowered
 branch becomes operational at `0.51.34` or operational lowering activates at
 `0.51.36`. This stop owns the core reconciliation state machine. Its records
-cannot authorize operational predecessor cleanup until the mandatory
-`0.51.38` budget binding and `0.51.40` transition-continuity checks are
+remain dispatch-disabled and cannot make their first operational member
+transition or authorize predecessor cleanup until mandatory `0.51.38`
+construction certification and `0.51.40` transition-continuity admission are
 complete; `0.51.39` exclusively governs saturated-member retry.
 Setup: consume one exact `UnknownRestrictionLoweringReleaseManifestV1`, the
 corresponding `PreOperationalLoweringAdoptionReceiptV1` plus successful
 `0.51.34` transition or `OperationalUnknownRestrictionLoweringReceiptV1`,
+the complete same-transaction member budget/digest/initial Pending member/
+`ReleaseMemberTransitionGenesisV1`/initial
+`ReleaseMemberTransitionHighWatermarkV1` bundle,
 predecessor enforcement-point/bridge inventory, current successor restriction/
 bridge owner, source and destination routing, physical provisioning evidence,
 the `0.51.24` ownership-transfer contract, reserved reconciliation capacity,
@@ -2012,33 +2051,55 @@ count; it is not inferred from a parent state named Released or Retained.
 Each manifest member has authoritative
 `UnknownRestrictionLoweringReleaseMemberV1 { generation, version, state }`
 with this closed transition relation:
-`Pending { generation, version } → Pending { generation, version + 1 }`,
-`Pending { generation, version } → PendingObservationSaturated`,
-`Pending { generation, version } → Released | RetainedAccepted`, and
-`PendingObservationSaturated → Released | RetainedAccepted`; `Released` and
-`RetainedAccepted` are absorbing. A PendingUnknown observation may only update
-the reason/evidence on the same Pending generation through an expected-version
-CAS; it is not a third terminal edge. Define bounded
+`Pending(v) → Pending(checked(v + 1))` only when
+`checked(v + 1) < pending_update_ceiling`;
+`Pending(v) → PendingObservationSaturated {
+version: pending_update_ceiling }` only when
+`checked(v + 1) == pending_update_ceiling`;
+`Pending(v) → Terminal { state: Released | RetainedAccepted,
+version: reserved_terminal_version }` for any valid
+`initial_version <= v < pending_update_ceiling`; and
+`PendingObservationSaturated { version: pending_update_ceiling } →
+Terminal { state: Released | RetainedAccepted,
+version: reserved_terminal_version }`.
+`Released` and `RetainedAccepted` are absorbing. A normal
+`Pending(version = pending_update_ceiling)`, any nonterminal version between
+the ceiling and reserved terminal version, same-version state mutation, or
+unchecked increment is structurally impossible. A PendingUnknown observation
+may only update the reason/evidence on the same Pending generation through an
+expected-version CAS; it is not a third terminal edge. Define bounded
 `ReleaseMemberVersionBudgetV1 { initial_version, pending_update_ceiling,
-reserved_terminal_version, observation_attempt_limit }`. An identical
+reserved_terminal_version, observation_attempt_limit,
+saturated_retry_limit }`, constructed and digested atomically by `0.51.34` or
+`0.51.36`, never by this reconciler. An identical
 PendingUnknown reason/evidence/observed-generation digest coalesces without
 incrementing authoritative member version. Attempts charge a separate bounded,
 saturating observation counter that can pause ordinary retry but cannot spend
 or block the reserved terminal transition.
-A semantically new pending digest may increment only below
-`pending_update_ceiling`. At the ceiling the member enters
-nonterminal Pending substate `PendingObservationSaturated`: enforcement,
-ownership, capacity and pending parent accounting remain authoritative;
+A semantically new pending digest calculates `checked(v + 1)` exactly once and
+uses the two branches above. Reaching the ceiling creates
+`PendingObservationSaturated` at exactly the ceiling: enforcement, ownership,
+capacity and pending parent accounting remain authoritative;
 further nonterminal observations coalesce without version change. This stop
 defines no manual mutation or override command: until `0.51.39`, saturation
 remains pending and enforced. A terminal receipt CASes
-from the exact current Pending or PendingObservationSaturated version to
+from the exact current Pending below the ceiling or
+PendingObservationSaturated at the ceiling directly to
 `reserved_terminal_version`, so hostile response loss cannot exhaust terminal
 capacity. Budget/counter arithmetic never wraps, resets or borrows
 across members or generations. Duplicate terminal responses join the durable
 winner. Released versus RetainedAccepted races have one CAS winner, and
 neither a delayed PendingUnknown nor a competing terminal response can
 overwrite it.
+From the first nonterminal or terminal member transition, the same
+authoritative member-owner transaction must emit
+`UnknownRestrictionLoweringMemberTransitionReceiptV1` binding exact manifest,
+member, generation, expected predecessor version/state digest, new
+version/state digest, version-budget digest, operation/result identity and
+predecessor transition-head digest. It atomically advances the
+`ReleaseMemberTransitionHighWatermarkV1`, member record, receipt, transition
+head, audit and outbox. There is no receipt-free transition, and no later
+history bootstrap can synthesize one.
 Dispatch deterministic idempotent work with bounded cursor/batch/concurrency/
 storage/retry budgets, fairness and non-borrowable recovery capacity. Each
 manifest member atomically verifies lowering/activation, predecessor and
@@ -2057,7 +2118,8 @@ unverified owner can never synthesize it.
 Parent reconciliation emits domain-separated
 `UnknownRestrictionLoweringMemberVersionVectorRootV1`, a canonical ordered map:
 
-`member_id → { generation, maximum_authenticated_version, state_digest }`.
+`member_id → { generation, maximum_authenticated_version, state_digest,
+budget_digest, transition_head_digest }`.
 
 Different members may and normally will carry heterogeneous versions. For each
 exact manifest member the parent selects one maximum authenticated record and
@@ -2103,7 +2165,12 @@ version-vector member omission/addition/reorder/digest substitution, parent
 checkpoint not committing the exact vector, identical pending observation
 incrementing state version, attempt counter reset/wrap, pending updates spending
 the reserved terminal version, response-loss pressure at the pending ceiling,
-terminal receipt blocked after `PendingObservationSaturated`, member version
+boundary transitions at ceiling minus two, ceiling minus one, the ceiling and
+immediately below the reserved terminal version, normal Pending at the
+ceiling, same-version saturation, saturation above the ceiling, terminal
+receipt blocked after `PendingObservationSaturated`, first transition without
+a transition receipt/high-watermark advance, later bootstrap of missing
+history, member version
 rollback/fork/overflow, partial tenant/network outage, stale
 route, late restrictive evidence, unsafe predecessor release, unauthenticated/
 unfunded/double-funded retention, both/neither owner, capacity overflow or
@@ -2118,52 +2185,60 @@ encumbered, and neither observation churn nor member-version exhaustion can
 prevent a later authenticated terminal transition.
 `v0.51.37 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.38` — Release-Member Version-Budget Structural Binding
+## `0.51.38` — Release-Member Budget Construction Certification
 
-Status: planned conditionally; required immediately after `0.51.37` and before
-any operational lowering-release dispatch, terminal fold, cleanup or
-production use.
-Setup: consume the exact `0.51.34` or `0.51.36`
-`UnknownRestrictionLoweringReleaseManifestV1`, its complete member inventory,
-the `0.51.37` member schema and canonical serialization/hash domains, checked
-version arithmetic, restore/import schema, and current tenant/manifest/member
-identities and generations.
-Goal: make each member's finite version and observation budget an immutable,
-non-substitutable part of every authority-bearing reconciliation artifact.
-Deliverables: validate at construction, with checked arithmetic:
+Status: planned conditionally; required immediately after the `0.51.37` core
+state-machine implementation and before its dispatch gate can open.
+Setup: consume the exact all-or-nothing construction bundle emitted inside one
+`0.51.34` or `0.51.36` activation transaction: immutable
+`UnknownRestrictionLoweringReleaseManifestV1`, complete member inventory,
+member budgets/digests, initial Pending records, transition genesis/
+high-watermarks, funded capacity and audit/outbox, plus canonical
+serialization/hash domains, checked version arithmetic and restore/import
+schema.
+Goal: certify that every manifest was born with an immutable,
+non-substitutable finite member budget and continuity genesis; never retrofit
+authority onto an already-created manifest.
+Deliverables: revalidate the construction invariants:
 
 `initial_version < pending_update_ceiling < reserved_terminal_version
 <= RELEASE_MEMBER_VERSION_MAX`
 
-and `observation_attempt_limit > 0`. Invalid or unrepresentable values fail
-closed before dispatch and keep predecessor enforcement, ownership, capacity
-and pending accounting intact. Define domain-separated
-`UnknownRestrictionLoweringReleaseMemberBudgetDigestV1` over the exact tenant,
-manifest, member, generation and canonical
-`ReleaseMemberVersionBudgetV1`; the identity binding makes a byte-identical
-numeric budget for another member non-reusable.
-Bind that digest immutably into
-`UnknownRestrictionLoweringReleaseManifestV1`, each
-`UnknownRestrictionLoweringReleaseMemberV1`, every pending-observation and
-terminal transition receipt, each
-`UnknownRestrictionLoweringMemberVersionVectorRootV1` entry and root, and every
-checkpoint, snapshot, restore/import floor and cleanup proof. Manifest
-construction assigns exactly one digest to each exact member before work
-dispatch. No transition, retry, fold, restore or import may create, infer,
-default, reset, widen or replace it; saturation does not change it. Existing
-records missing the exact digest are incompatible and remain blocked rather
-than receiving a guessed default.
-Verification: equal/boundary/reversed budget values, zero attempt limit,
-checked-arithmetic overflow, noncanonical encoding, missing/duplicate member
-budget, manifest/member/receipt/vector/checkpoint digest omission, budget
-substitution, reset or widening, cross-tenant/manifest/member/generation reuse,
+with `observation_attempt_limit > 0` and `saturated_retry_limit > 0`. Verify
+each domain-separated
+`UnknownRestrictionLoweringReleaseMemberBudgetDigestV1` commits the exact
+tenant, manifest, member, generation and canonical
+`ReleaseMemberVersionBudgetV1`, so a byte-identical numeric budget for another
+member is non-reusable. Verify the immutable manifest, initial
+`UnknownRestrictionLoweringReleaseMemberV1`, transition genesis/high-watermark,
+funding and every construction receipt commit the same digest and exact member
+set, and every initial member has `saturated_retry_claim_count = 0`.
+Emit `ReleaseMemberConstructionBundleReceiptV1` only after proving all records
+share one activation transaction identity, manifest root, exact complete
+member set, budget/genesis roots, capacity equation and audit/outbox commit.
+This stop never edits the manifest, attaches a digest or initializes a member.
+`UnknownRestrictionLoweringReleaseManifestV1` has only the bound meaning
+defined at `0.51.34`/`0.51.36`; an unbound encoding is invalid, not a legacy
+V1. Because no earlier schema is deployed, prototype/unbound records are
+rejected on restore/import. Supporting any real legacy form would require a
+separately planned V2 and fail-closed supersession protocol; none is authorized
+here.
+All later pending/terminal receipts, vector entries/roots, checkpoints,
+snapshots, restore/import floors and cleanup proofs must carry the certified
+digest and construction receipt. No transition, retry, fold, restore or import
+may infer, default, reset, widen or replace it; saturation does not change it.
+Verification: equal/boundary/reversed budget values, zero observation or
+saturated-retry limit, checked-arithmetic overflow, noncanonical encoding,
+missing/duplicate member budget, manifest/member/genesis/high-watermark/
+capacity/receipt root omission, transaction-identity mismatch, retroactive
+digest attachment, unbound V1 acceptance, implicit V2 conversion, budget
+substitution/reset/widening, cross-tenant/manifest/member/generation reuse,
 budget change before/after saturation, restore/import defaulting, stale schema,
-terminal transition under another digest, cleanup with an unbound member, and
-ordinary valid heterogeneous member budgets pass.
-Exit criteria: every release member and every artifact that can observe,
-transition, fold, restore or clean it commits one immutable identity-bound
-valid budget digest; missing or changed binding retains the predecessor and
-cannot advance reconciliation.
+terminal transition under another digest, cleanup without the construction
+receipt, and ordinary valid heterogeneous member budgets pass.
+Exit criteria: one receipt proves each immutable V1 manifest, funded member,
+budget digest and continuity genesis were created together; missing or changed
+construction evidence retains the predecessor and leaves dispatch closed.
 `v0.51.38 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.51.39` — Saturated Release-Member Retry Authority
@@ -2174,9 +2249,11 @@ Setup: consume one exact saturated `0.51.37` member, its immutable `0.51.38`
 budget digest, current tenant/manifest/member/generation/version/state digest,
 saturation reason and evidence, current authorization/policy generations,
 trusted time, funded non-borrowable recovery capacity, scheduler fairness,
-audit and transactional outbox.
+the immutable member-bound `saturated_retry_limit`, current
+`saturated_retry_claim_count`, audit and transactional outbox.
 Goal: permit a separately governed retry of an authoritative query or delivery
-attempt without creating a second terminal-outcome or budget authority.
+attempt without creating a second terminal-outcome or budget authority, and
+without permitting unbounded unique retry claims over the member lifetime.
 Deliverables: define one-shot
 `ResumeSaturatedReleaseMemberReconciliationV1` bound to exact tenant, manifest,
 member, generation, current version/state digest, budget digest, saturation
@@ -2184,9 +2261,13 @@ reason, requested retry kind, authorization generation, expiry, idempotency
 key, requester and distinct approver. Enforce separation of duties, least
 privilege, current policy/revocation/expiry, bounded issuance/rate/concurrency,
 fairness and funded recovery capacity. Its local transaction creates only an
-expected-state retry claim, audit event and outbox work; replay joins the same
-claim and stale, expired, revoked, mismatched or duplicate authority cannot
-dispatch.
+expected-state retry claim, audit event and outbox work. Before outbox creation
+it locks the exact member/budget digest, requires
+`saturated_retry_claim_count < saturated_retry_limit`, checked-increments the
+claim count exactly once and commits the charged count with the claim/outbox.
+Accepted claim issuance consumes lifetime budget even if delivery or response
+is later unknown; replay joins the same charged claim, while stale, expired,
+revoked, mismatched or duplicate authority cannot dispatch or charge twice.
 The command may only re-run the same authoritative status query or delivery
 attempt. It cannot manufacture or select Released/RetainedAccepted, mutate or
 replace any state/version/attempt budget, remove predecessor enforcement,
@@ -2199,43 +2280,58 @@ uses the ordinary member CAS.
 Emit typed retry-claim/result/audit/outbox evidence binding the command,
 attempt and observed result without treating the retry result as a transition
 receipt. Restore/import preserves consumed retry idempotency and never replays
-an uncertain external attempt blindly.
+an uncertain external attempt blindly. It also preserves the maximum durable
+claim count and rejects rollback, reset, re-costing or a count above its bound
+limit. Exhaustion leaves the member saturated, enforced, funded, pending and
+visibly unavailable for further retry; it never implies terminal completion.
+Retry-budget replenishment or count reset is unsupported through `1.0.0`.
+Any future replenishment requires its own separately planned versioned
+succession authority with predecessor count high-watermark and cumulative
+limit; no command in this stop can mint it.
 Verification: self-approval, wrong role/tenant/manifest/member/generation/
 version/state/budget/reason/retry kind, stale policy, expiry/revocation,
 idempotency replay, concurrent commands, capacity/rate exhaustion, starvation,
-response loss, restore between claim and result, retry minting a terminal,
+response loss, restore between claim and result, distinct idempotency keys
+exceeding the lifetime limit, claim-count lost update/rollback/reset/overflow,
+accepted claim not charged before outbox, rejected/unaccepted claim charged,
+response loss refunding the charge, exhaustion reopening after restore, unauthorized
+replenishment/succession, retry minting a terminal,
 choosing release versus retention, resetting a counter, removing enforcement,
 forging ownership/capacity, bypassing evidence/routing/safety, parent
 completion from retry evidence, and valid retry followed by an independently
 authenticated ordinary terminal transaction pass.
 Exit criteria: saturated reconciliation has one auditable, bounded,
 separation-of-duties retry lane that can gather evidence or redeliver work but
-can never change authority, outcome or budget by itself.
+can never change authority or outcome by itself and can issue at most the
+immutable, non-resetting member lifetime retry limit.
 `v0.51.39 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.51.40` — Release-Member Transition-Continuity Proof
 
-Status: planned conditionally; required after `0.51.38` and before any
-`0.51.37` maximum member record, zero-pending root or cleanup proof is
-operationally admissible.
-Setup: consume each exact manifest member and immutable budget digest, its
-durable generation/version/state high-watermark, allowed `0.51.37` transition
-relation, authenticated source/destination terminal transactions, canonical
-vector/root, restore/import floor, and signer/owner trust state.
-Goal: prove that every accepted maximum member record is connected to its
-durable predecessor by authorized expected-version transitions, not merely
-signed with a larger version.
-Deliverables: define
-`UnknownRestrictionLoweringMemberTransitionReceiptV1` binding exact
+Status: planned conditionally; required after `0.51.38` and before the first
+operational `0.51.37` dispatch or member transition, not merely before parent
+fold or cleanup.
+Setup: consume each exact immutable manifest/member/budget digest and the
+`ReleaseMemberTransitionGenesisV1` plus initial
+`ReleaseMemberTransitionHighWatermarkV1` created atomically by `0.51.34` or
+`0.51.36`, the allowed `0.51.37` transition relation and receipt writer,
+authenticated source/destination terminal transactions, canonical vector/root,
+restore/import floor, and signer/owner trust state.
+Goal: admit reconciliation only when continuity begins at manifest
+construction and every later maximum member record is connected by authorized
+expected-version transitions, not merely signed with a larger version.
+Deliverables: certify that every member has exactly one construction-time
+genesis/high-watermark matching its initial Pending record, budget digest and
+manifest transaction identity. Admit the `0.51.37` dispatch gate only when the
+member-owner transition path atomically writes
+`UnknownRestrictionLoweringMemberTransitionReceiptV1` with exact
 `manifest_id`, `member_id`, generation, expected predecessor version,
 predecessor state digest, new version, new state digest, version-budget digest,
-operation/result identity and predecessor transition-head digest. The
-authoritative member-owner transaction verifies the expected predecessor,
-allowed edge, current budget and terminal provenance, then atomically commits
-the new member record, receipt, transition head, audit and outbox. Terminal
-receipts remain valid only when issued against the exact current Pending or
-PendingObservationSaturated record by the `0.51.37` source-release or atomic
-destination-acceptance authority.
+operation/result identity and predecessor transition-head digest, and advances
+the member plus high-watermark in the same transaction. Terminal receipts
+remain valid only when issued against the exact current Pending below its
+ceiling or PendingObservationSaturated at its ceiling by the `0.51.37`
+source-release or atomic destination-acceptance authority.
 The parent maintains for each member a durable
 `ReleaseMemberTransitionHighWatermarkV1 { generation, version, state_digest,
 budget_digest, transition_head_digest }`. It accepts a candidate maximum only
@@ -2247,6 +2343,10 @@ insufficient. Receipt-chain forks, same-signer equivocation, skipped
 predecessors, illegal edges, version leaps and budget changes are durable
 security failures and cannot be resolved by choosing the numerically largest
 record.
+There is no one-time event-journal, signed-checkpoint or inferred-history
+bootstrap path. A missing genesis or any transition that occurred without its
+co-transactional receipt leaves the member enforced and inadmissible; later
+evidence cannot rewrite history to open the gate.
 The canonical member-version vector and terminal reconciliation root commit
 each accepted transition-head digest. Restore/import preserves the exact
 high-watermark and chain head, rejects rollback/forks/unproven maxima, and
@@ -2259,10 +2359,14 @@ Pending/terminal edge, budget-digest substitution, operation/result
 substitution, missing/reordered chain member, forged status proof, stale
 high-watermark, same-signer and cross-signer forks, vector/root omitting the
 transition head, restore/import rollback, bounded-range boundary, duplicate
-receipt join, and valid heterogeneous contiguous member chains pass.
+receipt join, first dispatch before continuity admission, first transition
+without construction-time genesis, receipt written after rather than with the
+member CAS, event-journal/signed-checkpoint history bootstrap, and valid
+heterogeneous contiguous member chains pass.
 Exit criteria: every member maximum and terminal aggregate is rooted in one
 non-forking authorized expected-version history from its durable high-
-watermark; authentication without continuity grants no completion or cleanup.
+watermark beginning at immutable manifest construction; no dispatch,
+transition, completion or cleanup is possible before that continuity gate.
 `v0.51.40 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.4` — Domain Retirement And Historical Compatibility Certification
@@ -2288,7 +2392,8 @@ CAS, commit-time freshness revalidation over distinct guard-slot/candidate/
 successor generations through the sole typed revalidation lifecycle edge,
 operational activation, and absorbing versioned predecessor release/accepted-
 retention/pending reconciliation with heterogeneous per-member versions and
-reserved terminal capacity, current domain/
+reserved terminal capacity plus activation-time budget/digest/member/
+continuity-genesis construction, current domain/
 contribution generations, `0.145.3`
 lifecycle/recovery evidence,
 installed-extension state, cross-domain dependencies, outstanding durable work,
@@ -2321,8 +2426,10 @@ closed tagged per-partition admission receipts, domain-separated partition-
 adoption root, shared lifecycle-CAS evidence, distinct guard-slot/candidate/
 expected-successor commit-freshness comparisons and typed revalidation cause,
 release-manifest/version budget/coalescing evidence, canonical member-version
-vector root, identity-bound budget-digest lineage, saturated retry-only
-authority, expected-predecessor transition-continuity chain/high-watermark,
+vector root, same-transaction construction-bundle receipt and identity-bound
+budget-digest lineage, saturated retry-only authority with immutable lifetime
+claim limit/count, construction-time continuity genesis and expected-
+predecessor transition chain/high-watermark,
 versioned member CAS/outcome/zero-pending receipt-root/capacity evidence,
 reinstall eligibility/consumption and dual release evidence, candidate-control
 retention receipts and capacity-conservation proof, cut-release cursor and
@@ -2397,10 +2504,16 @@ member versions rejected, incomplete/noncanonical member-version vector,
 identical pending churn consuming state version, observation attempt reset/
 wrap, pending saturation exhausting the reserved terminal transition, budget
 omission/substitution/reset/widening or cross-member reuse, invalid budget
-ordering, saturation retry manufacturing a terminal or resetting state,
-missing separation of duties, signed version leap, skipped/wrong predecessor,
-terminal receipt against the wrong pending version, transition-head omission,
-source-status-proof forgery, same-signer equivocation, lowering capacity-
+ordering, retroactive budget attachment to an immutable manifest, partial
+budget/member/genesis construction that still activates, normal Pending at the
+ceiling, same-version or above-ceiling saturation, boundary errors at ceiling
+minus two/minus one/ceiling/reserved terminal, saturation retry manufacturing
+a terminal or resetting state/count, distinct retry keys exceeding the lifetime
+limit, missing separation of duties, signed version leap, skipped/wrong
+predecessor, first dispatch/transition before continuity admission, missing or
+late-created continuity genesis, history bootstrap, terminal receipt against
+the wrong pending version, transition-head omission, source-status-proof
+forgery, same-signer equivocation, lowering capacity-
 conservation mismatch, lowering restore/rollback divergence,
 unfunded/doubly funded retained control, capacity-conservation mismatch,
 incomplete reinstall dual release,

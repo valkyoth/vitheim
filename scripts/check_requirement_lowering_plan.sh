@@ -97,10 +97,10 @@ require_text "$plan" \
     '`UnknownRestrictionLoweringReleaseMemberV1 { generation, version, state }`' \
     'versioned predecessor release member'
 require_text "$plan" \
-    '`Pending { generation, version } → Released | RetainedAccepted`' \
+    '`Pending(v) → Terminal { state: Released | RetainedAccepted,' \
     'absorbing predecessor member transition'
 require_text "$plan" \
-    'same Pending generation through an expected-version' \
+    'expected-version CAS; it is not a third terminal edge.' \
     'per-member expected-version CAS'
 require_text "$plan" \
     '`ReleaseMemberVersionBudgetV1 { initial_version, pending_update_ceiling,' \
@@ -121,7 +121,7 @@ require_text "$plan" \
     'Different members may and normally will carry heterogeneous versions.' \
     'heterogeneous member versions are valid'
 require_text "$plan" \
-    'member_id → { generation, maximum_authenticated_version, state_digest }' \
+    'member_id → { generation, maximum_authenticated_version, state_digest,' \
     'canonical per-member version map'
 require_text "$plan" \
     '`PendingUnknown { reason, observed_generation }`' \
@@ -133,8 +133,8 @@ require_text "$plan" \
     'only when pending is exactly zero' \
     'predecessor cleanup requires zero pending'
 require_text "$plan" \
-    '0.51.38` — Release-Member Version-Budget Structural Binding' \
-    'release-member budget binding stop'
+    '0.51.38` — Release-Member Budget Construction Certification' \
+    'release-member construction certification stop'
 require_text "$plan" \
     '`UnknownRestrictionLoweringReleaseMemberBudgetDigestV1`' \
     'identity-bound member budget digest'
@@ -162,6 +162,45 @@ require_text "$plan" \
 require_text "$plan" \
     '`SourceAuthoritativeReleaseMemberStatusProofV1`' \
     'source-authoritative continuity proof'
+require_text "$plan" \
+    '`ReleaseMemberTransitionGenesisV1` plus' \
+    'activation-time transition genesis'
+require_text "$plan" \
+    'capacity and audit/outbox are one all-or-nothing bundle.' \
+    'all-or-nothing activation construction bundle'
+require_text "$plan" \
+    'there is no later manifest extension.' \
+    'immutable manifest is never retrofitted'
+require_text "$plan" \
+    'checked(v + 1) < pending_update_ceiling' \
+    'below-ceiling pending arithmetic'
+require_text "$plan" \
+    'checked(v + 1) == pending_update_ceiling' \
+    'exact saturation arithmetic'
+require_text "$plan" \
+    '`Pending(version = pending_update_ceiling)`' \
+    'normal pending at ceiling is impossible'
+require_text "$plan" \
+    'From the first nonterminal or terminal member transition' \
+    'continuity receipt begins at first transition'
+require_text "$plan" \
+    '`ReleaseMemberConstructionBundleReceiptV1`' \
+    'construction bundle certification receipt'
+require_text "$plan" \
+    'an unbound encoding is invalid, not a legacy' \
+    'unbound V1 is rejected'
+require_text "$plan" \
+    '`saturated_retry_claim_count < saturated_retry_limit`' \
+    'lifetime retry count charged below immutable limit'
+require_text "$plan" \
+    'Retry-budget replenishment or count reset is unsupported through `1.0.0`.' \
+    'no retry lifetime budget reset'
+require_text "$plan" \
+    'operational `0.51.37` dispatch or member transition' \
+    'continuity admission precedes first dispatch'
+require_text "$plan" \
+    'There is no one-time event-journal, signed-checkpoint or inferred-history' \
+    'no post-hoc transition history bootstrap'
 
 if [ "$failed" -ne 0 ]; then
     exit 1

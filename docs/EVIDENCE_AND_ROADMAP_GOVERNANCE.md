@@ -250,7 +250,11 @@ expected-version absorbing members, an exact heterogeneous per-member version-
 vector commitment, coalesced/saturated pending observations with reserved
 terminal capacity, and zero-pending authenticated released-or-funded-retained
 predecessor reconciliation, then bind each member budget immutably, constrain
-saturated recovery to retry-only authority and prove contiguous transitions;
+each manifest to same-transaction budget/member/continuity-genesis
+construction, certify without retroactive mutation, apply exact saturation
+arithmetic, constrain saturated recovery to retry-only authority with a
+non-resetting lifetime count, and admit dispatch only with contiguous
+transitions from genesis;
 none uses a wildcard tenant or cross-tenant transaction. Plugin uninstall and
 feature disablement
 never imply data retirement. `0.145.4` destructively certifies all of these

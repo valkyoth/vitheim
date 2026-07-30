@@ -123,9 +123,12 @@ release the old top only through expected-version absorbing member outcomes,
 canonical heterogeneous per-member version-vector folds, coalesced bounded
 pending observations with reserved terminal capacity, and zero-pending
 authenticated funded reconciliation. The final release-member refinements bind
-one immutable valid budget digest through every artifact, constrain saturated
-recovery to a separation-of-duties retry-only command, and require contiguous
-expected-predecessor transition proof before accepting a maximum member record.
+one immutable valid budget digest and continuity genesis at manifest creation,
+certify that all-or-nothing construction without retrofitting V1, define exact
+ceiling arithmetic, constrain saturated recovery to a separation-of-duties
+retry-only command with a non-resetting lifetime claim count, and keep dispatch
+closed until contiguous expected-predecessor receipts are guaranteed from the
+first member transition.
 `0.145.4`
 destructively certifies
 selected retirement/reinstall profiles rather than first implementing teardown.
