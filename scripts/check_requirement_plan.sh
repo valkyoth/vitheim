@@ -398,7 +398,7 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`PreOperationalLoweringAdoptionReceiptV1`' \
     'pre-operational lowering adoption receipt'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.33` — Reinstall Guard Supersession Consumption' \
+    '0.51.34` — Reinstall Guard Supersession Consumption' \
     'final guard supersession consumption'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallGenesisAuthorityV1`' \
@@ -413,7 +413,7 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ReinstallBarrierReleaseManifestV1`' \
     'dual reinstall control release manifest'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.34` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
+    '0.51.35` — Reinstall Barrier And Evaluation-Fence Release Reconciliation' \
     'reinstall control release reconciliation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`UnknownRestrictionLoweringAuthorizationV1`' \
@@ -422,7 +422,7 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`UnknownRestrictionLoweringBridgePreparedRootV1`' \
     'complete restriction-lowering bridge root'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.35` — Operational Unknown-Restriction Lowering Activation' \
+    '0.51.36` — Operational Unknown-Restriction Lowering Activation' \
     'operational unknown-restriction lowering activation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`ActivateUnknownRestrictionLoweringV1`' \
@@ -434,7 +434,7 @@ require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`UnknownRestrictionLoweringReleaseManifestV1`' \
     'predecessor top release manifest'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
-    '0.51.36` — Unknown-Restriction Predecessor Release Reconciliation' \
+    '0.51.37` — Unknown-Restriction Predecessor Release Reconciliation' \
     'predecessor restriction release reconciliation'
 require_text docs/implementation/ROADMAP_AUTHORITY_COMPLETIONS.md \
     '`UnknownRestrictionLoweringReleaseReceiptV1' \
@@ -487,6 +487,8 @@ require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
 require_text docs/implementation/REQUIREMENT_AND_INTEGRATION_COMPLETIONS.md \
     'Vitheim never creates, amends, approves, or cancels the purchase order' \
     'external purchase-order evidence boundary'
+
+sh scripts/check_requirement_lowering_plan.sh
 
 if [ "$failed" -ne 0 ]; then
     exit 1

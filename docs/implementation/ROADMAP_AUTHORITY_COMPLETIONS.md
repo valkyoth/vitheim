@@ -18,7 +18,7 @@ membership_snapshot }`, never an optional/wildcard tenant. Define
 contribution generations, expected retirement-state version, idempotency
 identity, current authorization, separated proposer/approver/destructive
 approver identities, and approval expiry. This stop executes only the exact
-tenant child; deployment scope requires `0.51.5–0.51.36`.
+tenant child; deployment scope requires `0.51.5–0.51.37`.
 Goal: execute and recover retirement transitions without stale authority,
 partial commitment, silent command reopening, or data-loss acceptance becoming
 completion authority.
@@ -858,7 +858,7 @@ redeem each reinstall-mode permit; a parent signature alone is insufficient.
 For a quarantine replacement, the residual owner and
 `UnknownRestrictionTopV1` from `0.51.29` are mandatory members of every
 evaluation/status root; the ordinary canonical-empty path is structurally
-invalid while that owner exists. Fences remain active until `0.51.33`
+invalid while that owner exists. Fences remain active until `0.51.34`
 atomically consumes the admitted and
 bridge-ownership roots, `0.51.25` proves every failed candidate artifact
 disposed, or an enabled `0.51.27` catastrophe path permanently quarantines the
@@ -922,7 +922,7 @@ is unreachable directly from `AdmissionAbortFenced`.
 Every transition is a generation-checked CAS in the same local transaction
 domain used by the permanent/reinstall guard slot. `0.51.23` admission results,
 `0.51.25` abort initiation, an enabled `0.51.27` catastrophe fence, and the
-`0.51.33` operational transition all consume the same expected lifecycle
+`0.51.34` operational transition all consume the same expected lifecycle
 generation. Final acceptance versus abort and prepared activation versus abort
 therefore have one winner. Once `AdmissionAbortFenced` or
 `AdmissionQuarantined` wins, any late `Accepted` result is disposition evidence
@@ -954,14 +954,25 @@ Setup: consume one `0.51.21` `ReinstallEligibleCurrent` evaluation, its current
 non-operational successor guard/candidate bytes, every active evaluation fence,
 fresh `RedeemForPermissiveReinstall` permit identity/safety epoch, target
 generation, authoritative partition manifest/routing, and protected admission/
-reconciliation capacity. A quarantine replacement additionally consumes the
-exact `0.51.29` `QuarantinedUnknownRestrictionAdmissionPermitV1` and its
-authoritative top-restriction root; an ordinary permit cannot substitute.
+reconciliation capacity. A quarantine replacement additionally consumes one
+exact `EffectiveRestrictionAdmissionAuthorityV1`; ordinary, top and lowered
+permits cannot substitute for one another.
 Goal: prove every source partition still admits the exact permissive successor
 before that guard can become operational.
 Deliverables:
 `ActivationProposedNonOperational → PartitionAdmissionPending →
-PartitionAdmissionComplete`; only `0.51.33` may transition to `Operational`.
+PartitionAdmissionComplete`; only `0.51.34` may transition to `Operational`.
+For a quarantine replacement, define closed
+`EffectiveRestrictionAdmissionAuthorityV1`:
+`TopRestrictionAdmission { coverage_root, top_root, top_permit }` or
+`PreOperationalLoweredAdmission { adoption_receipt,
+lowering_evaluation_root, lowering_prepared_root,
+successor_restriction_root, lifecycle_admission_permit }`.
+Both branches bind the same candidate/lifecycle, reservation, partition
+manifest, coverage/evidence/safety generations and authority digest and are
+not substitutable. The lowered variant is constructible only through
+`0.51.32–0.51.33`; before then the top variant is the only quarantine-
+replacement admission authority.
 Dispatch deterministic `AdmitReinstallCandidateActivationV1` requests under
 bounded cursor/batch/concurrency/storage/retry budgets, fairness and recovery
 capacity. Each partition atomically checks candidate/evaluation fence/safety
@@ -970,10 +981,13 @@ permit, and installs a durable successor-restriction bridge before returning
 `PartitionActivationAdmissionReceiptV1 { Accepted | Rejected | Unknown }` with
 result/audit/outbox. The bridge makes every later `RestrictiveSafety` mutation
 bind automatically to both current enforcement and the exact successor guard;
-it cannot revive the predecessor candidate. For a quarantine replacement that
-bridge must also install and continuously enforce `UnknownRestrictionTopV1`;
-ownership or capacity evidence without that runtime enforcement is not
-acceptance.
+it cannot revive the predecessor candidate. For `TopRestrictionAdmission`,
+that bridge must also install and continuously enforce
+`UnknownRestrictionTopV1`; ownership or capacity evidence without that runtime
+enforcement is not acceptance. For `PreOperationalLoweredAdmission`,
+`0.51.33` owns the typed per-partition adoption command and the same admission
+root can fold a partition only after its lifecycle-bound adoption receipt is
+current and Accepted.
 Immediate and response-loss results enter the same authenticated inbox/
 reconciliation path. The parent emits `ReinstallPartitionAdmissionRootV1` only
 after one current `Accepted` receipt per partition and exact manifest/root/count
@@ -991,8 +1005,10 @@ the active evaluation fences.
 Verification: status signature treated as admission, missing/duplicate permit,
 candidate/evaluation/fence/safety-epoch/target substitution, restrictive
 mutation before/during/after acceptance, successor bridge omission, permit
-redeem/restrictive race, replacement permit/top-root omission or substitution,
-capacity ownership without top-restriction enforcement, rejected/unknown
+redeem/restrictive race, effective-restriction tag/member/digest substitution,
+replacement permit/top-root omission or substitution, stale/missing lowered
+adoption receipt, simultaneous top/lowered authority, capacity ownership
+without selected-restriction enforcement, rejected/unknown
 result, tenant/network outage,
 immediate-versus-lost response divergence, receipt replay/reorder/substitution,
 partial fold, lifecycle-generation CAS loss, late result after abort fence,
@@ -1013,9 +1029,12 @@ blocked, or revalidation-required state; every accepted successor-restriction
 bridge and permit tombstone; source admission reservation; proposed operational
 guard owner or residual owner; authoritative source/successor routing; capacity
 profiles; physical provisioning evidence; and the current `0.51.22` lifecycle
-generation. For quarantine replacement, also consume the exact `0.51.29`
-unknown-restriction root/permit and prove each bridge enforces its
-`UnknownRestrictionTopV1`.
+generation. For quarantine replacement, also consume the same exact
+`EffectiveRestrictionAdmissionAuthorityV1` tag/digest accepted by `0.51.23`
+and prove each bridge enforces the selected restriction. The top branch binds
+the exact `0.51.29` root/permit; the lowered branch binds the exact `0.51.33`
+complete lifecycle-adoption root and preserves each prepared bridge identity,
+owner transfer and capacity receipt.
 Goal: give every durable bridge exactly one funded long-lived owner on both
 successful activation and failed-admission disposition.
 Deliverables: `SuccessorRestrictionBridgeOwnershipReceiptV1` binding exact
@@ -1035,7 +1054,7 @@ Response loss or an unknown/rejected acceptance keeps the source reservation
 encumbered. `OperationalTransferPrepared` requires one complete current
 `0.51.23` admission root; a pending, blocked or revalidation-required admission
 may transfer only toward its residual disposition. An operational transfer
-remains conditional on the exact `0.51.33` activation identity; it carries no
+remains conditional on the exact `0.51.34` activation identity; it carries no
 candidate-activation authority and the source reservation cannot settle before
 that result. An abort transfer becomes releasable only after `0.51.25` has
 removed all candidate meaning while preserving its restrictive state. Enforce
@@ -1053,7 +1072,14 @@ that root.
 A bridge, grant or capacity unit cannot fund two candidates, owners,
 generations or dispositions. Parent reconciliation folds exact manifest/root/
 count and conservation evidence before any original admission capacity
-settles. For a complete admission, only after that root and the complete
+settles. For a quarantine replacement, a complete ownership fold also emits
+`EffectiveRestrictionAdmissionRootV1`, binding the exact
+`EffectiveRestrictionAdmissionAuthorityV1` tag/digest, candidate/lifecycle,
+current evidence/coverage/safety generations, standard admission root,
+bridge-ownership/capacity root, optional lowered partition-adoption root,
+manifest/count and non-wrapping conservation. Missing is distinct from the
+ordinary initial-reinstall NotApplicable disposition. For a complete
+admission, only after that root and the complete
 operational-transfer-prepared ownership/capacity root are durable, the parent
 issues typed `PrepareReinstallCandidateActivationV1` binding exact activation
 identity, candidate/lifecycle generation, admission root, ownership/capacity
@@ -1073,11 +1099,14 @@ operational preparation without a complete current admission root, aborted
 disposition before candidate authority removal, response loss,
 successor outage, accounting overflow/rounding, parent-root rollback,
 settlement while pending, missing-versus-empty ownership root, nonzero count or
-capacity in the zero root, admission/ownership/activation identity or lifecycle
+capacity in the zero root, effective-restriction admission root missing or
+mixing branches, admission/ownership/activation identity or lifecycle
 substitution, preparation before either root, preparation versus abort/expiry/
 revalidation/quarantine, preparation response loss, restore at every transfer
-edge, quarantine replacement bridge missing the top restriction, top-root/
-permit substitution, capacity ownership without installed enforcement, and
+edge, effective-restriction tag/digest substitution, quarantine replacement
+bridge missing the selected restriction, top-root/permit or lowered adoption/
+prepared-root substitution, bridge duplication during adoption, simultaneous
+top/lowered owner, capacity ownership without installed enforcement, and
 later restrictive mutation pass.
 Exit criteria: every installed bridge remains funded by its source reservation
 or has one atomically accepting destination owner with complete enforcement,
@@ -1109,7 +1138,7 @@ lifecycle edges. Separately, the abort process manager follows
 AdmissionAbortWorkComplete`. Only after the complete disposition root is
 durable does it CAS `AdmissionAbortFenced → AdmissionAborted`; a later
 successor-binding transaction alone may CAS
-`AdmissionAborted → AdmissionSuperseded`. Abort initiation and `0.51.33`
+`AdmissionAborted → AdmissionSuperseded`. Abort initiation and `0.51.34`
 activation use the shared `0.51.22` lifecycle-generation CAS; only the winner
 may proceed. `0.51.30` replacement evaluation can begin only from the terminal
 `AdmissionQuarantined` predecessor and its one-shot eligibility. Durable
@@ -1351,7 +1380,7 @@ capacity root before activation can prepare.
 Late evidence appends under the quarantine evidence head and can confirm or
 strengthen lineage but never automatically lower or remove the top
 restriction. Any lowering is `PermissiveOrDestructive` and may occur only
-through the dedicated `0.51.31–0.51.36` evaluation, tagged adoption or
+through the dedicated `0.51.31–0.51.37` evaluation, tagged adoption or
 operational activation, and predecessor reconciliation protocols; evidence,
 evaluation, a permit, bridge or ownership record alone grants no lowering.
 Uncertainty keeps the top. Ownership or capacity without installed evaluation/
@@ -1363,7 +1392,7 @@ ownership without enforcement, top restriction omitted from evaluation/status
 root, coverage-root/generation/algorithm substitution, new operation without
 coverage invalidation, ordinary permit substituted, missing/unfunded successor
 bridge, late evidence automatically lowering restriction, stale evidence head,
-lowering outside `0.51.31–0.51.36`, restore/import losing the top member, and
+lowering outside `0.51.31–0.51.37`, restore/import losing the top member, and
 replacement eligibility from structurally incomplete roots pass.
 Exit criteria: every possible unknown restriction is a funded, authoritative
 and actively enforced maximal residual over one complete current coverage scope
@@ -1547,17 +1576,21 @@ creates exactly one `ReinstallAdmissionCandidateLifecycleV1` at
 `ActivationProposedNonOperational`, plus
 `QuarantineReplacementGenesisReceiptV1` and a one-shot final-activation
 condition binding the exact authority tag/digest.
-For `TopRestrictionGenesis`, the transaction issues the exact lifecycle-bound
+ For `TopRestrictionGenesis`, the transaction issues the exact lifecycle-bound
 `0.51.29` `QuarantinedUnknownRestrictionAdmissionPermitV1` from the funded
 residual-root authority. For `PreOperationalLoweredGenesis`, it consumes the
-prepared root's one-shot adoption condition, atomically adopts the successor
-restriction/bridges into the lifecycle, and executes
+prepared root's one-shot genesis-adoption condition, atomically adopts the
+successor restriction and prepared bridge root into a lifecycle-bound pending
+adoption, and executes
 `RebindPreOperationalLoweringAdmissionV1` to issue the exact lifecycle-bound
-admission permit without reviving or reusing any lowering permit. It emits
-`PreOperationalLoweringAdoptionReceiptV1`. The predecessor top remains
-effective at existing runtime enforcement points until `0.51.33` makes the
-successor operational and creates deferred predecessor cleanup. Neither branch
-consumes replacement eligibility again.
+admission permit and partition-scoped one-shot adoption conditions without
+reviving or reusing any lowering permit. It emits
+`PreOperationalLoweringAdoptionReceiptV1`. This root-level receipt does not
+claim that any source partition has rebound its bridge; `0.51.33` must
+complete that work through `0.51.23–0.51.24`. The predecessor top remains
+effective at existing runtime enforcement points until `0.51.34` makes the
+successor operational and creates deferred predecessor cleanup. Neither
+branch consumes replacement eligibility again.
 The new lifecycle inherits exactly the selected coverage/restriction root and
 funded bridges. Missing, stale, replayed, wrong-profile, cross-candidate or
 cross-tenant lineage/reservation/lowering authority creates no lifecycle.
@@ -1583,23 +1616,99 @@ while eligibility remains permanently tombstoned; missing, replayed or
 cross-branch authority leaves the product terminal unavailable.
 `v0.51.32 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.33` — Reinstall Guard Supersession Consumption
+## `0.51.33` — Pre-Operational Lowering Admission And Ownership Adoption
+
+Status: planned conditionally; required only when `0.51.32` selected
+`PreOperationalLoweredGenesis`.
+Setup: consume the exact `0.51.32`
+`PreOperationalLoweringAdoptionReceiptV1`, the lifecycle in
+`ActivationProposedNonOperational`, the matching
+`EffectiveRestrictionAdmissionAuthorityV1::PreOperationalLoweredAdmission`,
+current `0.51.31` lowering evaluation/prepared roots and authorization
+tombstone, every prepared partition bridge and one-shot lifecycle adoption
+condition, source and successor routing, current evidence/coverage/safety
+generations, physical capacity evidence, and the `0.51.23–0.51.24` admission
+and ownership contracts.
+Goal: carry the lowered genesis branch through the same partition admission
+and funded bridge-ownership pipeline required by final activation, without
+creating a second bridge, capacity reservation or simultaneous top owner.
+Deliverables:
+`PreOperationalLoweringAdoptionPending →
+PreOperationalLoweringAdoptionReconciling →
+PreOperationalLoweringAdmissionComplete |
+PreOperationalLoweringAdmissionBlocked |
+PreOperationalLoweringAdmissionRevalidationRequired`.
+Dispatch deterministic `AdoptPreOperationalLoweringPartitionV1` work with
+bounded cursor/batch/concurrency/storage/retry budgets, fairness and protected
+recovery capacity. Each source partition atomically verifies the exact
+candidate/lifecycle, adoption receipt, lowering evaluation/prepared root,
+successor restriction, bridge identity/owner/capacity, routing and current
+evidence/coverage/safety generations; consumes its partition-scoped lifecycle
+adoption condition; and rebinds the existing pre-lifecycle bridge to the exact
+lifecycle. Rebinding preserves the bridge identity, installed restriction,
+physical capacity and source reservation. It creates no replacement bridge,
+duplicate capacity or authority to remove the predecessor top.
+Return authenticated
+`PreOperationalLoweringPartitionAdoptionReceiptV1 { Accepted | Rejected |
+Unknown }` with result/audit/outbox. Response loss and Unknown remain live
+pending work and cannot fold as acceptance. Rejection enters Blocked. A stale
+adoption receipt, newer evidence/coverage/safety state, changed routing or
+restrictive mutation enters RevalidationRequired while the predecessor top
+and prepared bridge remain enforced and funded.
+One current Accepted receipt per exact partition folds through `0.51.23` into
+`ReinstallPartitionAdmissionRootV1`. `0.51.24` then transfers long-lived
+ownership of those same bridge identities and capacity, using the same
+`PreOperationalLoweredAdmission` tag/digest, into its complete operational-
+transfer-prepared ownership root. It emits
+`EffectiveRestrictionAdmissionRootV1` binding the admission-authority tag/
+digest, genesis-adoption receipt, partition-adoption root, standard admission
+root, bridge-ownership/capacity root, manifest/count and non-wrapping
+conservation. The top branch reaches the same typed root through its ordinary
+`0.51.23–0.51.24` path; a root containing mixed top/lowered receipts, owners
+or bridges is invalid.
+Abort, expiry or quarantine wins through the shared `0.51.22` lifecycle CAS
+and `0.51.25` disposition. Late Accepted results after that fence are only
+disposition evidence. Restore/import preserve the adoption cursor,
+conditions/tombstones, receipts, exact bridge identities, both ownership
+ledgers, capacity conservation and maximum generations.
+Verification: missing/forged/stale genesis-adoption receipt, top/lowered tag
+or member substitution, cross-candidate/lifecycle/partition receipt, partial
+adoption, response loss, Unknown treated Accepted, rejection revival,
+adoption-condition replay, bridge replacement or duplication, capacity
+re-reservation, both/neither source and lifecycle owner, simultaneous
+top/lowered enforcement owner, stale routing, restrictive evidence/coverage/
+safety change before/during/after adoption, admission-root fold before every
+Accepted receipt, ownership transfer before complete admission, abort/expiry/
+quarantine race, late acceptance, rollback, restore at every transition and
+mixed-version disagreement pass.
+Exit criteria: every prepared lowered bridge is source-accepted, rebound once
+to the exact lifecycle and held by one funded owner under complete standard
+admission/ownership roots, or the lifecycle remains visibly pending, blocked
+or revalidation-required while the predecessor top remains authoritative.
+`v0.51.33 implementation stop reached. Run pentest for this exact commit.`
+
+## `0.51.34` — Reinstall Guard Supersession Consumption
 
 Status: planned.
 Setup: consume one `0.51.21` `ReinstallEligibleCurrent` evaluation root with
 all real partition fences active, its current `0.51.22` lifecycle generation in
 `ActivationPrepared`, its current purpose-bound sealed delivery cut,
 one complete fresh `0.51.14` partition-status root, either one current initial
-`0.51.16` eligibility or the exact `0.51.30–0.51.32` replacement lineage,
+`0.51.16` eligibility or the exact `0.51.30–0.51.32` replacement lineage plus
+the `0.51.33` partition-adoption lineage when the lowered branch was selected,
 eligibility tombstone, genesis receipt and final-activation condition, final
 manifest/permanent-guard transfer receipt, `0.51.19`
 cleanup-complete or current `0.51.20` retained-namespace receipt, one complete
 current `0.51.23` `ReinstallPartitionAdmissionRootV1` with successor bridges,
 one complete `0.51.24` operational-transfer-prepared bridge ownership/capacity
 root, and for a replacement one current `0.51.28` coverage root and effective
-`0.51.32` `EffectiveRestrictionGenesisAuthorityV1` branch; the initial branch
-instead binds a typed `NotApplicableInitialGenesis` coverage/restriction
-disposition. Also
+`0.51.32` `EffectiveRestrictionGenesisAuthorityV1` branch plus the exact
+`0.51.24` `EffectiveRestrictionAdmissionRootV1`; the initial branch instead
+binds a typed `NotApplicableInitialGenesis` coverage/restriction/admission
+disposition. The lowered branch also supplies the activation-preparation
+snapshot of evidence/coverage/safety/restriction, authorization revocation/
+expiry, lowering evaluation/prepared, bridge-ownership and operational-guard
+generations for commit-time comparison. Also
 consume proof no `0.51.25` blocked/abort/supersession state or `0.51.27`
 quarantine applies to the current candidate, and for a replacement the terminal
 predecessor lifecycle/quarantine root and advanced floors,
@@ -1625,7 +1734,8 @@ QuarantineReplacementEvaluationCurrentReceiptV1,
 QuarantineReplacementGenesisReceiptV1, final_activation_condition,
 predecessor_lifecycle, quarantine_root, unknown_restriction_root,
 effective_restriction_genesis_authority,
-preoperational_lowering_adoption_receipt_if_selected }`.
+effective_restriction_admission_root,
+preoperational_lowering_adoption_receipt_and_partition_root_if_selected }`.
 The branches are not substitutable. One local transaction matches the exact
 tag and generation-CASes the shared lifecycle from `ActivationPrepared` to
 `Operational`. `InitialGenesis` consumes the current `0.51.16` eligibility.
@@ -1649,12 +1759,21 @@ result/audit/outbox. The original admission reservation settles only after this
 durable result is folded under `0.51.24` conservation. Any later obligation
 transfer remains tenant-local and cannot weaken that guard.
 If `PreOperationalLoweredGenesis` is selected, the same operational-transition
-transaction also creates exact
+transaction first compares the current authorization revocation generation
+and expiry, evidence/coverage/safety/restriction generations, lowering
+evaluation/prepared and bridge-ownership generations, operational guard
+generation, effective-restriction admission tag/digest and every adoption
+root against the expected values captured by activation preparation. This is
+a guard-slot-local read-and-CAS predicate, not an earlier process-manager
+check. Any mismatch CASes the lifecycle to
+`AdmissionRevalidationRequired` or records Blocked as applicable, with no
+guard mutation, consumed state, capacity settlement or release manifest.
+Only a fresh match also creates exact
 `UnknownRestrictionLoweringReleaseManifestV1` entries for every predecessor
-top enforcement point and bridge with funded `0.51.36` reconciliation
+top enforcement point and bridge with funded `0.51.37` reconciliation
 capacity; omission aborts the entire transition. The old top remains enforced
 until the operational CAS is durable, then remains owned/funded pending that
-manifest's release or retention result. `0.51.34` reinstall-control release
+manifest's release or retention result. `0.51.35` reinstall-control release
 work cannot grant authority or delete replacement state. Any invalid cut,
 evaluation, partition fence, admission/bridge/ownership/capacity root, cleanup
 proof, retained namespace proof, or abort/supersession state makes no guard
@@ -1675,7 +1794,12 @@ generation mismatch, late acceptance after abort fence, initial/replacement
 genesis-authority substitution, missing/stale predecessor quarantine root or
 floor, replacement branch substituted into initial genesis or conversely,
 top/lowered effective-restriction branch substitution, missing/stale
-pre-operational adoption receipt, lowered activation without atomic
+pre-operational adoption or partition-adoption receipt, mixed admission-
+authority tag/root, evidence/coverage/safety/restriction/revocation/expiry/
+prepared-root/bridge-owner/guard generation changing immediately after
+preparation or concurrently with the final CAS, stale commit predicate
+accepted, revalidation producing a guard mutation or release manifest,
+lowered activation without atomic
 predecessor release manifest/capacity,
 replacement eligibility consumed twice, missing eligibility tombstone,
 incomplete/replayed genesis receipt, final-activation condition replay,
@@ -1689,12 +1813,12 @@ archive-safe cleanup state, current sealed cut and complete still-fenced
 evaluation under separate current authority; both candidates become absorbing
 and the completely admitted successor becomes operational with durable release
 work, or permanent denial and every obligation/fence remain unchanged.
-`v0.51.33 implementation stop reached. Run pentest for this exact commit.`
+`v0.51.34 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.34` — Reinstall Barrier And Evaluation-Fence Release Reconciliation
+## `0.51.35` — Reinstall Barrier And Evaluation-Fence Release Reconciliation
 
 Status: planned.
-Setup: consume one successful `0.51.33` reinstall, its absorbing
+Setup: consume one successful `0.51.34` reinstall, its absorbing
 `ConsumedByReinstall` cut/`Consumed` evaluation, exact
 `ReinstallBarrierReleaseManifestV1`, the `0.51.17` retention/capacity contract,
 reserved reconciliation capacity, and authoritative owner-partition routing.
@@ -1729,12 +1853,12 @@ Exit criteria: every obsolete control in the exact reinstall release manifest
 is proved released or durably retained under a successor owner, restrictive
 state remains enforced, and neither consumed candidate can block or authorize
 future work.
-`v0.51.34 implementation stop reached. Run pentest for this exact commit.`
+`v0.51.35 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.35` — Operational Unknown-Restriction Lowering Activation
+## `0.51.36` — Operational Unknown-Restriction Lowering Activation
 
 Status: planned conditionally; unavailable without one current operational-mode
-`0.51.31` lowering prepared root and one exact `0.51.33` operational reinstall
+`0.51.31` lowering prepared root and one exact `0.51.34` operational reinstall
 guard.
 Setup: consume the destination-admitted lowering authorization tombstone,
 current `UnknownRestrictionLoweringEvaluationRootV1`,
@@ -1748,17 +1872,24 @@ other guard condition and the funded predecessor top.
 Deliverables:
 `UnknownRestrictionLoweringBridgePrepared →
 UnknownRestrictionLoweringActivationPrepared →
-UnknownRestrictionLoweringActivated | UnknownRestrictionLoweringBlocked`.
+UnknownRestrictionLoweringActivated | UnknownRestrictionLoweringBlocked |
+UnknownRestrictionLoweringRevalidationRequired`.
 `PrepareOperationalUnknownRestrictionLoweringV1` verifies the exact
 operational-mode prepared root, all current authorities, physical capacity and
 guard generation and reserves one activation identity. Expiry, revocation,
 newer evidence/coverage/safety state or any root mismatch blocks preparation.
 One `ActivateUnknownRestrictionLoweringV1` guard-slot transaction consumes the
-prepared root and activation identity, replaces only the restriction
+prepared root and activation identity and, inside the same local transaction,
+compares current evidence, coverage, safety and restriction generations;
+authorization revocation generation and expiry; lowering evaluation/prepared
+and bridge-ownership generations; and expected operational guard generation
+against the preparation record. A mismatch records Blocked or
+RevalidationRequired as applicable with no guard mutation, activation receipt,
+capacity settlement or release manifest. Only a fresh match replaces the restriction
 generation/root and bridge-ownership root, preserves all unrelated guard,
 tenant-local residual and capacity conditions, emits
 `OperationalUnknownRestrictionLoweringReceiptV1`, and atomically creates
-`UnknownRestrictionLoweringReleaseManifestV1` entries plus funded `0.51.36`
+`UnknownRestrictionLoweringReleaseManifestV1` entries plus funded `0.51.37`
 capacity for every predecessor top enforcement point and bridge. Omission or
 partial creation aborts the entire CAS. The old top remains effective until
 the CAS is durable and remains owned/funded pending manifest reconciliation;
@@ -1772,7 +1903,11 @@ manifest and both capacity owners.
 Verification: non-operational prepared root, authorization/evaluation/prepared/
 top/coverage/evidence/restriction/bridge/guard/epoch/activation substitution,
 stale or incomplete partition receipt, preparation after expiry/revocation/
-new evidence, activation without one-shot consumption, activation before
+new evidence, activation without one-shot consumption, evidence/coverage/
+safety/restriction/revocation/expiry/prepared-root/bridge-owner/guard
+generation changing immediately after preparation or concurrently with the
+CAS, stale commit predicate accepted, revalidation producing a guard mutation
+or release manifest, activation before
 complete bridge ownership/capacity, two CAS winners, unrelated guard field or
 residual loss, missing/partial release manifest or capacity, old-top release in
 the activation transaction, response loss, restrictive mutation at every
@@ -1782,16 +1917,16 @@ Exit criteria: one current operational guard atomically adopts the completely
 evaluated, admitted and funded successor restriction and creates complete
 funded predecessor cleanup, or the old top remains the effective restriction
 with no guard mutation.
-`v0.51.35 implementation stop reached. Run pentest for this exact commit.`
+`v0.51.36 implementation stop reached. Run pentest for this exact commit.`
 
-## `0.51.36` — Unknown-Restriction Predecessor Release Reconciliation
+## `0.51.37` — Unknown-Restriction Predecessor Release Reconciliation
 
 Status: planned conditionally; required after either a pre-operational lowered
-branch becomes operational at `0.51.33` or operational lowering activates at
-`0.51.35`.
+branch becomes operational at `0.51.34` or operational lowering activates at
+`0.51.36`.
 Setup: consume one exact `UnknownRestrictionLoweringReleaseManifestV1`, the
 corresponding `PreOperationalLoweringAdoptionReceiptV1` plus successful
-`0.51.33` transition or `OperationalUnknownRestrictionLoweringReceiptV1`,
+`0.51.34` transition or `OperationalUnknownRestrictionLoweringReceiptV1`,
 predecessor enforcement-point/bridge inventory, current successor restriction/
 bridge owner, source and destination routing, physical provisioning evidence,
 the `0.51.24` ownership-transfer contract, reserved reconciliation capacity,
@@ -1801,49 +1936,64 @@ safe, otherwise retain it under one funded successor owner without losing late
 restrictive evidence.
 Deliverables:
 `LoweringReleaseDispatching → LoweringReleaseReconciling →
-LoweringPredecessorReleased | LoweringPredecessorRetained`.
+LoweringReconciliationComplete`. This terminal aggregate permits any safe mix
+of released and accepted-retained members but requires an exact zero pending
+count; it is not inferred from a parent state named Released or Retained.
 Dispatch deterministic idempotent work with bounded cursor/batch/concurrency/
 storage/retry budgets, fairness and non-borrowable recovery capacity. Each
 manifest member atomically verifies lowering/activation, predecessor and
 successor restriction/bridge generations, routing, coverage, evidence and
 safety epoch; then either removes only the obsolete predecessor enforcement
 point or transfers it and all newly discovered restrictive state to a funded
-successor owner under `0.51.24`. It returns one authenticated
-`UnknownRestrictionLoweringReleaseReceiptV1 { Released | Retained }` with
-result/audit/outbox and physical-capacity evidence.
-Parent reconciliation folds the exact manifest/root/count into
-`UnknownRestrictionLoweringReleaseRootV1` and enforces canonical non-wrapping:
+successor owner under `0.51.24`. It records one authenticated
+`UnknownRestrictionLoweringReleaseMemberOutcomeV1`:
+`Released`, `RetainedAccepted { owner, capacity_receipt }`, or
+`PendingUnknown { reason, observed_generation }`, with result/audit/outbox and
+physical-capacity evidence where known. Only Released and RetainedAccepted are
+terminal `UnknownRestrictionLoweringReleaseReceiptV1` outcomes.
+RetainedAccepted requires atomic destination acceptance plus current funded
+ownership and capacity evidence; timeout, rejection, response loss or an
+unverified owner can never synthesize it.
+Parent reconciliation folds exact manifest/root/count and separate released,
+retained-accepted and pending counts into a checkpoint. It emits terminal
+`UnknownRestrictionLoweringReleaseRootV1` and enters
+`LoweringReconciliationComplete` only when pending is exactly zero and every
+member has one non-substitutable terminal receipt. Enforce canonical non-
+wrapping:
 
 `old top reservation = verified released + funded successor-retained + pending`.
 
 Unknown, rejection, response loss, stale routing, newer evidence, missing
-physical capacity or conservation mismatch remains pending/retained and keeps
+physical capacity or conservation mismatch remains `PendingUnknown` and keeps
 the original reservation encumbered. Late evidence can strengthen the current
 restriction or require retained predecessor enforcement; it cannot be dropped
 because activation already occurred. Original top rows, bridge ownership and
-reconciliation capacity are cleaned only after the complete receipt/root and
-capacity equation are durable. Restore/import resumes the cursor, reconciles
+reconciliation capacity are cleaned only after the zero-pending terminal root
+and capacity equation are durable. Restore/import resumes the cursor, reconciles
 both ownership ledgers and never revives a released authority or forgets a
 retained one.
 Verification: omitted/duplicate enforcement point or bridge, wrong manifest/
 mode/activation/predecessor/successor/routing/coverage/evidence/safety
-generation, receipt replay/substitution, response loss, partial tenant/network
-outage, stale route, late restrictive evidence, unsafe predecessor release,
+generation, receipt replay/substitution, response loss or rejection classified
+RetainedAccepted, PendingUnknown classified terminal, mixed released/retained
+manifest without a complete aggregate, partial tenant/network outage, stale
+route, late restrictive evidence, unsafe predecessor release, unauthenticated/
 unfunded/double-funded retention, both/neither owner, capacity overflow or
-equation mismatch, premature top-row/capacity cleanup, cursor/root rollback,
-starvation, restore with split ownership or missing pending work, and released
-predecessor revival pass.
+equation/count mismatch, completion or cleanup with nonzero pending,
+premature top-row/capacity cleanup, cursor/root rollback, starvation, restore
+with split ownership or missing pending work, and released predecessor revival
+pass.
 Exit criteria: every predecessor top enforcement point in the exact manifest
 is proved released or durably retained with all restrictive state and funded
 maintenance capacity; pending or uncertain work remains visibly enforced and
 encumbered.
-`v0.51.36 implementation stop reached. Run pentest for this exact commit.`
+`v0.51.37 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.145.4` — Domain Retirement And Historical Compatibility Certification
 
 Status: planned.
 Setup: consume `0.30.28` retirement contracts, `0.30.29` authority/recovery
-protocol and evidence, the applicable `0.51.5–0.51.36` deployment cut lifecycle,
+protocol and evidence, the applicable `0.51.5–0.51.37` deployment cut lifecycle,
 approved exact-plan admission/succession, narrow-guard/topology handoff,
 protection-root integration, clean/non-clean terminal aggregation, residual-
 obligation lineage evolution, transition delivery cuts, mutation safety
@@ -1856,8 +2006,9 @@ abort/supersession, permanent-unknown policy and any selected catastrophe-
 quarantine profile, actively enforced conservative unknown restriction,
 bounded quarantine-replacement evaluation lineage and successor genesis,
 tagged final guard-supersession consumption, lowering-specific evaluation and
-source admission, governed pre-operational adoption and operational activation,
-and funded predecessor release/retention reconciliation, current domain/
+source admission, governed pre-operational per-partition bridge adoption and
+ownership, commit-time freshness revalidation, operational activation, and
+funded predecessor release/accepted-retention/pending reconciliation, current domain/
 contribution generations, `0.145.3`
 lifecycle/recovery evidence,
 installed-extension state, cross-domain dependencies, outstanding durable work,
@@ -1885,7 +2036,9 @@ replacement evaluation generation/budget/fence-disposition lineage, genesis
 reservation/current receipt/successor-lifecycle receipt, tagged initial-or-
 replacement final-activation authority, coverage-root and top-restriction
 lowering authorization/fence/evaluation/permit/source-admission/prepared-root/
-tagged-adoption/activation/release-manifest/receipt-root/capacity evidence,
+tagged genesis adoption, effective-restriction admission authority/root,
+per-partition adoption receipts, activation commit-freshness comparisons,
+release-manifest/member-outcome/zero-pending receipt-root/capacity evidence,
 reinstall eligibility/consumption and dual release evidence, candidate-control
 retention receipts and capacity-conservation proof, cut-release cursor and
 dependency proof, campaign pause/revocation/resume, fairness and terminal-
@@ -1940,10 +2093,15 @@ evaluation fence, incomplete/forged enforcement coverage, late plugin/domain/
 action activation without coverage invalidation, lowering without destination-
 transfer, lowering/reinstall evaluation-root or permit substitution, top/
 pre-operational-lowered genesis-tag substitution, lifecycle admission-permit
-misbinding, operational lowering without one guard CAS, missing/partial
+misbinding, partial/duplicate bridge adoption, top/lowered admission tag or
+owner mixing, operational lowering without one fresh guard CAS, generation
+advance after preparation accepted at activation, revalidation mutating the
+guard or creating release work, missing/partial
 predecessor release manifest, old top released before lowering activation or
 complete reconciliation, unfunded/double-funded predecessor retention,
-lowering capacity-conservation mismatch, lowering restore/rollback divergence,
+response loss or unknown status relabeled accepted retention, mixed release/
+retention aggregate completed with pending members, lowering capacity-
+conservation mismatch, lowering restore/rollback divergence,
 unfunded/doubly funded retained control, capacity-conservation mismatch,
 incomplete reinstall dual release,
 cleanup-pending reinstall, completion with blocked/unresolved child or unfolded
