@@ -11,7 +11,7 @@ is not a serial support requirement: unselected stops remain explicitly
 Specified/deferred/Conditional/Unsupported and cannot broaden this candidate.
 Any skipped old stop requires a future successor version before implementation;
 it is never backfilled into this release.
-The candidate's exact closure is `SelectedProfileManifestV1` generation 1.
+The candidate's exact closure is `SelectedProfileManifestV1` generation 2.
 Every selected row names an implemented executable owner and immutable evidence;
 every capability dependency is selected and passing; optional code remains
 outward-only;

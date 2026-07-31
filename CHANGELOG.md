@@ -15,12 +15,22 @@ All notable Vitheim changes are documented here. The format follows
   required claims, runtime profiles, executable owners, retests,
   skip/successor rules, and support boundaries; graph-wide validation rejects
   cycles and incomplete selected or optional claim closures.
+- Advanced `SelectedProfileManifestV1` to generation 2, preserving
+  independently generated minimum dependencies beside PackageExact edges.
+  Exact work packages cannot remove a reviewed edge without an approved
+  dependency-supersession security record, and all prerequisites must remain
+  numerically earlier than their owner stop.
 - Added checked `ImplementationWorkPackageV1` entry certificates, the first
   `0.2.0` work package, a reviewed critical-model minimum, expanded
   `ExecutableModelBindingV1` records, and executable source-symbol and test
   inventories so
   small-pass, changed-path, exact-prerequisite, prospective criticality,
   stable-owner, and test-resolution rules fail closed before implementation.
+- Advanced `ExecutableTestInventoryV1` to generation 2 and added executable
+  test-evidence bindings plus negative planning-policy fixtures. Registered
+  tests now resolve through the symbol inventory and a project-owned exact-ID
+  list/run protocol; implemented tests bind and verify source, runner,
+  toolchain, candidate commit, result, and evidence digests.
 - Made the zero-third-party-dependency Hosted feasibility decision at
   `0.38.0` a fixed-budget go/no-go gate: unavailable safe primitives make the
   affected production profile Unsupported instead of starting open-ended

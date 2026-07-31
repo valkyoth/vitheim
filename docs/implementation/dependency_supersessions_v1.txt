@@ -1,0 +1,3 @@
+schema|DependencySupersessionV1
+generation|1
+dependent_stop|removed_dependency|reason|affected_control_ids|replacement_owner|security_reviewer|record_generation|record_digest|negative_test_ids|integration_test_ids|status

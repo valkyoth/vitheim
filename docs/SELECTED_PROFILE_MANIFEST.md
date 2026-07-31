@@ -3,15 +3,21 @@
 Status: normative implementation-selection and closure policy
 
 `docs/selected_profile_manifest_v1.txt` is the canonical
-`SelectedProfileManifestV1` for `VITHEIM-PRODUCTION-V1` generation 1. It turns
+`SelectedProfileManifestV1` for `VITHEIM-PRODUCTION-V1` generation 2. It turns
 the 425-stop planning superset into a machine-checked production selection and
 versioned capability-dependency graph before foundation implementation
 proceeds.
 
+Generation 2 succeeds the generation-1 selected graph without changing any
+stop's selection or product scope. It adds independently retained minimum
+edges and non-weakening refinement/order enforcement. Generation 1 remains
+historical evidence and cannot be used for new implementation admission.
+
 Every exact stop has one row containing:
 
 - `Mandatory`, `OptionalSelected`, `Deferred`, or `Unsupported`;
-- zero or more capability dependencies and their `DeclaredMinimum` or
+- zero or more independently generated `declared_minimum_dependencies`;
+- the effective `capability_dependencies` and their `DeclaredMinimum` or
   `PackageExact` state;
 - convergence increment, one or more independently operable delivery slices,
   and exact claims that require the row;
@@ -22,12 +28,18 @@ Every exact stop has one row containing:
 - its support-claim boundary; and
 - dependency direction plus the selection reason.
 
-`DeclaredMinimum` edges are the reviewed architectural prerequisites available
-before implementation entry; they are not falsely called package-exact.
-`ImplementationWorkPackageV1` replaces them with the stop's exact comma-
-separated prerequisites and `PackageExact`. A stop cannot enter implementation
-until that exact edge set is selected, acyclic, and agrees with the package.
-Production cannot pass while any selected row remains `DeclaredMinimum`.
+`DeclaredMinimum` edges are independently generated reviewed architectural
+prerequisites available before implementation entry; they are not falsely
+called package-exact. `ImplementationWorkPackageV1` supplies the effective,
+comma-separated `PackageExact` set without replacing the recorded minimum.
+Every minimum edge must remain exact. Removing one requires an approved
+`DependencySupersessionV1` record naming the edge, reason, affected
+requirement/invariant/model IDs, replacement owner, security reviewer,
+generation/digest, and negative/integration evidence. Editing a package alone
+cannot weaken the graph. A stop cannot enter implementation until its exact
+edge set is selected, numerically earlier, acyclic, and agrees with the
+package. Production cannot pass while any selected row remains
+`DeclaredMinimum`.
 
 `specified:` owners are planning references, not executable evidence. A
 validated work package replaces that default with its normalized status and
@@ -67,7 +79,8 @@ alone cannot bypass their implementation and evidence.
 `scripts/check_selected_profile_manifest.sh` regenerates the manifest from the
 canonical implementation headings and work packages, verifies exact
 cardinality, resolves every multi-edge dependency, performs graph-wide cycle
-detection, prevents selected-to-deferred dependencies, checks optional
-promotion and claim closure, enforces outward-only optional code, compares
-package-exact prerequisites, and preserves PostgreSQL-first plus advanced-
-retirement refusal.
+detection, rejects same-version/future prerequisites, prevents
+selected-to-deferred dependencies, checks optional promotion and claim
+closure, enforces outward-only optional code, proves PackageExact is a
+non-weakening refinement or has an approved supersession, compares package
+prerequisites, and preserves PostgreSQL-first plus advanced-retirement refusal.

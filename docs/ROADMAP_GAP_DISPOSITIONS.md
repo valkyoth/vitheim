@@ -6,9 +6,9 @@ This record explains how the reviewed gap analysis strengthened the existing
 roadmap. It is not a substitute for the version handoffs and does not copy the
 analysis wholesale.
 
-## Consolidated 2026-07-30 Review
+## Consolidated Reviews Through 2026-07-31
 
-The consolidated working analysis was reviewed in full and removed after
+Each consolidated working analysis was reviewed in full and removed after
 incorporation as requested. The
 [Implementation Convergence Plan](IMPLEMENTATION_CONVERGENCE_PLAN.md) records
 the normative execution response. The following dispositions preserve its
@@ -42,6 +42,10 @@ expansion:
 | G23 | `OptionalSelected` did not state which production claims required it. | Bind SQLite, cloud-native kinds/discovery and SBOM ingestion to exact claims and real capability edges. Make `0.424.0` and `1.0.0` depend on every promoted optional row, so selection cannot be bypassed by the mandatory-only chain. |
 | G24 | Objective work-package facts were not enforced. | Add exact prerequisites, existing path roots, changed-path allowlists, admission-base commit, stable test IDs, criticality and rationale. At implementation status, reject out-of-allowlist diffs, planned test IDs and unresolved ownership while preserving human review for conceptual cohesion. |
 | G25 | The new analysis again reported an obsolete untracked companion file. | Verify the path is absent, record the finding as stale, and keep active tooling tied only to the canonical contiguous-minor manifest. |
+| G26 | PackageExact prerequisites were circularly compared with a manifest generated from the same package and could erase reviewed edges. | At reopened `0.1.0`, advance `SelectedProfileManifestV1` to generation 2 and add an independently generated `declared_minimum_dependencies` column. Require each PackageExact set to retain every minimum edge. The only removal path is an approved `DependencySupersessionV1` binding the edge, reason, affected requirement/invariant/model IDs, replacement owner, security reviewer, generation/digest, and negative/integration tests. |
+| G27 | Acyclic dependency graphs could still point from an earlier release to the same or a future release. | Restore numeric order as an additional invariant: every capability prerequisite is strictly earlier than its dependent stop. Later integration belongs in `integration_retest_owners` or a successor minor, never a future edge. Negative policy fixtures prove rejection. |
+| G28 | Test registrations checked syntax but did not resolve or execute their owner/runner. | At reopened `0.1.0`, require each test owner in `ExecutableSymbolInventoryV1`, a safe executable project-owned runner supporting exact ID list/run operations, actual execution in the implementation gate, and `ExecutableTestEvidenceV1` bindings for source/runner/toolchain/candidate/result/evidence digests at Implemented. |
+| G29 | The 2026-07-31 analysis again reported `scripts/implementation_companion_versions.txt`. | Verify the path is absent. No file is deleted or recreated; one contiguous-minor manifest remains the sole version authority. |
 
 | Gap | Disposition and version context |
 | --- | --- |

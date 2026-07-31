@@ -28,14 +28,15 @@ Deliverables:
 - An evidence-status manifest using the normative `Specified`, `Implementing`,
   `Implemented`, `Conditional`, `Supported`, and `Unsupported` vocabulary,
   with executable-owner and immutable-evidence references for every claim.
-- `SelectedProfileManifestV1` generation 1 with one row for each of the 425
-  exact stops, its selection state, zero-or-more capability dependencies,
-  dependency-review state, one-or-more delivery checkpoints, required claims,
-  executable-owner state, required profiles, retests, skip/successor rule, and
-  support boundary.
+- `SelectedProfileManifestV1` generation 2 with one row for each of the 425
+  exact stops, its selection state, independently retained declared-minimum
+  dependencies, effective capability dependencies, dependency-review state,
+  one-or-more delivery checkpoints, required claims, executable-owner state,
+  required profiles, retests, skip/successor rule, and support boundary.
 - Project-owned checks for the selected-profile manifest, strict
   `ImplementationWorkPackageV1` admission records, the reviewed critical-model
-  stop set, `ExecutableModelBindingV1`, and the executable test inventory.
+  stop set, `ExecutableModelBindingV1`, dependency-supersession records, and
+  executable symbol/test/evidence inventories.
 
 Verification: run all gates and core target checks; prove Cargo metadata has
 only workspace paths and both publication and incomplete readiness are denied.
@@ -46,9 +47,11 @@ roadmap count/owner/marker drift, and documentation that promotes a merely
 specified or conditional capability. Regenerate and compare the selected
 profile; reject missing/duplicate stops, missing/duplicate/self capability
 edges, arbitrary dependency cycles, selected-to-unselected dependencies,
-unpromoted optional dependencies, incomplete claim closures, stale production
-storage order, unpackaged implementation status, unresolved package paths or
-tests, incomplete critical-model bindings, and
+same/future-version prerequisites, PackageExact removal of a declared minimum
+without approved security supersession, unpromoted optional dependencies,
+incomplete claim closures, stale production storage order, unpackaged
+implementation status, unresolved package paths, owners, runners or tests,
+unbound test evidence, incomplete critical-model bindings, and
 planned Rust owners attached to implemented stops.
 
 Exit criteria: baseline claims match evidence, the formula

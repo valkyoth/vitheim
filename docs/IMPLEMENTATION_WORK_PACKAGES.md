@@ -12,8 +12,14 @@ third-party parser.
 
 `docs/implementation/executable_test_inventory_v1.txt` is the corresponding
 `ExecutableTestInventoryV1`. Each implemented test ID resolves to one exact
-workspace symbol, one project-owned runner invocation, and `implemented`
-status. A planned identifier belongs in a work package or model binding with a
+workspace symbol and one executable project-owned script runner. The runner
+must list the exact stable ID through `--list-test-ids` and execute only that
+registration through `--run-test-id ID`; it may wrap Cargo test or nextest,
+but an unchecked Cargo target string is not a registration. `registered`
+permits implementation work; `implemented` additionally requires an
+`ExecutableTestEvidenceV1` row binding passed result, source and runner
+digests, exact Rust toolchain, candidate commit, and evidence artifact/digest.
+A planned identifier belongs in a work package or model binding with a
 `planned:` marker, not in this inventory.
 `docs/implementation/executable_symbol_inventory_v1.txt` likewise binds each
 implemented model or persistence owner reference to an existing Rust source
@@ -47,14 +53,19 @@ whose plan status is `implementing`, `implemented`, `awaiting pentest`, or
 The selected-profile generator consumes each package's status and
 `crates_and_files` value as that stop's executable-owner reference and consumes
 its exact comma-separated `prerequisites` as `PackageExact` dependency edges.
-Updating a package therefore updates the generated graph and makes stale
-planning-owner or dependency claims detectable.
+The independently generated `declared_minimum_dependencies` remain visible.
+PackageExact must be their superset unless every removed edge has one approved
+`DependencySupersessionV1` security record. Updating a package therefore
+cannot silently erase reviewed architecture.
 
 At `planned`, a package may use `planned:` test IDs and the sentinel
 `not-set-until-implementing`. Before `implementing`, it freezes an existing
 base commit, exact relative path roots/globs, and registered executable test
 IDs. The checker compares the stop's graph edges, verifies path roots, and, for
 an active implementation package, rejects changed paths outside the allowlist.
+After `implementing`, every package test must be implemented with immutable
+evidence. Registered runners are resolved, list-checked, and executed by the
+implementation gate.
 Conceptual cohesion and excluded-neighbor absence remain explicit review
 questions; the checker does not pretend text proves them.
 
@@ -85,10 +96,13 @@ binding file. Removing a stop or marking a critical transition noncritical
 requires an explicit security review and successor record; it cannot be done
 merely to satisfy the checker.
 
-`scripts/check_implementation_work_packages.sh` validates all four schemas,
-required package coverage, reviewed critical-model coverage, exact stop
+`scripts/check_implementation_work_packages.sh` and
+`scripts/check_executable_test_inventory.sh` validate the package, model,
+symbol, test-registration, and test-evidence schemas, required package
+coverage, reviewed critical-model coverage, exact stop
 existence, uniqueness, control-ID existence, transition/test-ID uniqueness,
 planned-owner honesty, package criticality, exact dependency agreement, path
 roots/allowlists, stable identifier shapes, source-file/symbol registration,
-and test inventory. Implemented symbol and test resolution becomes mandatory
-when a binding leaves `planned`.
+runner existence/executability/listing, actual test execution, and immutable
+evidence bindings. Implemented symbol and test evidence becomes mandatory when
+a binding leaves `planned`.

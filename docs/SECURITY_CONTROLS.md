@@ -19,6 +19,14 @@
 - One canonical roadmap manifest accounts for all 425 exact stops and their
   owners, evidence, authority review and pentest markers. Count or claim drift
   is a release-blocking integrity failure.
+- PackageExact capability dependencies retain an independently generated
+  declared minimum. Silent edge removal and same/future-version prerequisites
+  fail; an actual removal requires a separately approved, digest-bound
+  security supersession with affected controls and negative/integration tests.
+- An executable-test claim resolves to a registered Rust source symbol and a
+  project-owned runner that lists and executes the exact stable ID.
+  Implemented status additionally binds passing evidence to source, runner,
+  Rust toolchain, candidate commit and evidence-artifact digests.
 - The roadmap is a planning superset. `1.0.0` consumes only the complete
   transitive closure of the selected mandatory core and explicitly selected
   optional profiles; every unselected stop remains visibly non-shipping and

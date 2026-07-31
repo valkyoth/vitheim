@@ -478,6 +478,7 @@ fi
 
 scripts/check_selected_profile_manifest.sh
 scripts/check_implementation_work_packages.sh
+scripts/test_planning_policy_guards.sh
 scripts/check_invariant_ownership.sh
 scripts/check_law_generations.sh
 scripts/check_authority_reviews.sh

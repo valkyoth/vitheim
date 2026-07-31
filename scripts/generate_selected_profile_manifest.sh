@@ -3,9 +3,10 @@ set -eu
 
 catalog="$(mktemp /tmp/vitheim-selected-profile-catalog.XXXXXX)"
 owners="$(mktemp /tmp/vitheim-selected-profile-owners.XXXXXX)"
+packages_dir="${VITHEIM_WORK_PACKAGES_DIR:-docs/implementation/work_packages}"
 trap 'rm -f "$catalog" "$owners"' EXIT
 
-for package in docs/implementation/work_packages/*.work-package; do
+for package in "$packages_dir"/*.work-package; do
     awk -F '=' '
     $1 == "stop_id" { stop = $2 }
     $1 == "status" { status = $2 }
@@ -214,9 +215,9 @@ BEGIN {
     close(owner_file)
     print "schema|SelectedProfileManifestV1"
     print "profile_id|VITHEIM-PRODUCTION-V1"
-    print "generation|1"
+    print "generation|2"
     print "default_evidence_state|Specified"
-    print "stop_id|selection|capability_dependencies|dependency_state|increment|delivery_slices|required_for_claims|capability|executable_owner|integration_retest_owners|required_storage_profile|required_identity_profile|required_runtime_profile|successor_after_skip|support_boundary|dependency_class|reason"
+    print "stop_id|selection|declared_minimum_dependencies|capability_dependencies|dependency_state|increment|delivery_slices|required_for_claims|capability|executable_owner|integration_retest_owners|required_storage_profile|required_identity_profile|required_runtime_profile|successor_after_skip|support_boundary|dependency_class|reason"
 }
 {
     count++
@@ -232,6 +233,7 @@ END {
         n = minor(v)
         selected = selection[i] == "Mandatory" ||
             selection[i] == "OptionalSelected"
+        declared_dependencies = dependencies_for(n, selection[i])
         dependencies = v in package_dependencies ?
             package_dependencies[v] : dependencies_for(n, selection[i])
         dependency_state = v in package_dependencies ?
@@ -257,7 +259,8 @@ END {
             "specified:" document[i] "#" v
         retest = v == "0.424.0" || v == "1.0.0" ? "self" :
             (selected ? v ",0.424.0" : "future-successor-required")
-        print v "|" selection[i] "|" dependencies "|" dependency_state "|" \
+        print v "|" selection[i] "|" declared_dependencies "|" \
+            dependencies "|" dependency_state "|" \
             increment_for(n, selection[i]) "|" \
             delivery_for(n, selection[i]) "|" claims_for(n, selection[i]) "|" \
             title[i] "|" owner "|" retest "|" \

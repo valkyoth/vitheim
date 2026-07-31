@@ -47,13 +47,17 @@ and which planning-only or optional profiles may remain unimplemented.
 | G-10 unclear first topology/TCB/UI stack | Increment 0 freezes the first single-node process/TCB boundaries and the exact HTTP/TLS/identity/UI technology disposition. HA remains a later extension of an operated profile. |
 | G-11 broad product boundary | The v1 capability contract and explicit non-goals below govern API, UI, installer, documentation, and connector claims. |
 | G-12 placeholder foundation types | Existing `0.2.0` and `0.3.0` are hard gates before envelopes, durable schemas, or tenant-bearing authority code. |
-| G-13 selected closure remained prose | Make `SelectedProfileManifestV1` generation 1 an exact 425-row machine-checked artifact owned by reopened `0.1.0`; use zero-or-more capability edges, graph-wide cycle/selection validation, claim-specific closures and work-package exact refinement rather than calling a previous-mandatory serial chain a transitive dependency graph. |
+| G-13 selected closure remained prose | Make `SelectedProfileManifestV1` an exact 425-row machine-checked artifact owned by reopened `0.1.0`; use zero-or-more capability edges, graph-wide cycle/selection validation, claim-specific closures and work-package exact refinement rather than calling a previous-mandatory serial chain a transitive dependency graph. Generation 2 is the current non-weakening successor. |
 | G-14 small-pass/model admission remained prose | Add `ImplementationWorkPackageV1`, the concrete `0.2.0` package, a reviewed minimum critical-model set, `ExecutableModelBindingV1`, and project-owned validation before implementation begins. Every entering package decides criticality with rationale; a list is never called complete merely because its existing rows have bindings. |
 | G-15 PostgreSQL/SQLite order contradicted the selected profile | Assign PostgreSQL to `0.57.0` and bounded SQLite to `0.58.0`; keep PostgreSQL mandatory and SQLite separately selected. |
 | G-16 mandatory retirement certification consumed refused implementations | Keep the advanced `0.100.0–0.101.0` and `0.156.0–0.210.0` program Unsupported. Redefine default `0.414.0` as refusal, installed/disabled-state, retained-history, tenant-deletion/plugin-uninstall separation and no-exposed-retirement-path certification. A future selected successor owns destructive retirement certification. |
 | G-17 delivery and optional-profile closure were ambiguous | Give rows explicit `required_for_claims`, allow multiple delivery slices, share search/knowledge `0.286.0–0.300.0` across both checkpoints, place `0.102.0–0.118.0` in service foundations, and make `0.424.0`/`1.0.0` depend on all promoted optional profiles. |
 | G-18 package/model checking was predominantly syntactic | Require exact package prerequisites, path roots/allowlists, base commit, test IDs and criticality rationale; validate graph agreement, registered control IDs, unique transition/test IDs, and resolvable owners once implementation begins. Reviewer judgment remains required for conceptual cohesion. |
 | G-19 stale companion-version report | The companion file is absent and stays absent. Do not recreate a second version authority from a stale untracked-file observation. |
+| G-20 PackageExact could silently weaken the reviewed minimum | Preserve `declared_minimum_dependencies` independently beside effective package edges. PackageExact is a superset unless an approved `DependencySupersessionV1` binds the removed edge, affected controls, replacement, reviewer, digest and tests. |
+| G-21 acyclic dependencies could point to future implementation stops | Retain graph-wide cycle detection and also reject every same-version or numerically later prerequisite. Later integration is a retest owner or successor stop, never time-travel in an earlier work package. |
+| G-22 registered tests were syntactic rather than executable | Resolve every test through the symbol inventory and an executable project-owned list/run script. `ExecutableTestEvidenceV1` binds implemented source, runner, toolchain, candidate commit, result and evidence digests, and the implementation gate runs the registered test. |
+| G-23 repeated stale companion-file report | The reported path is absent in the reviewed workspace. Preserve that absence and the one canonical contiguous-minor authority; no deletion or new version is needed. |
 
 ## Selected Production-v1 Capability Contract
 
@@ -105,11 +109,13 @@ claim requirements, required runtime profiles, successor-after-skip rule, and
 support boundary for every stop are in
 [Selected Production Profile Manifest](SELECTED_PROFILE_MANIFEST.md) and the
 generated `docs/selected_profile_manifest_v1.txt`. This manifest is required
-before `0.2.0`. Reviewed architectural edges begin as `DeclaredMinimum`; each
-entering work package replaces them with `PackageExact`. No production claim
-passes until every row in its graph closure is package-exact, implemented and
-evidenced. `0.398.0` revalidates and may narrow claims, but does not create the
-first selection.
+before `0.2.0`. Reviewed architectural edges begin as an independently retained
+`DeclaredMinimum`; each entering work package supplies `PackageExact` as a
+non-weakening refinement. Removing a minimum requires a separate approved
+dependency-supersession security record. Every dependency must be numerically
+earlier than its owner stop. No production claim passes until every row in its
+graph closure is package-exact, implemented and evidenced. `0.398.0`
+revalidates and may narrow claims, but does not create the first selection.
 
 ## Explicit Product Boundaries
 
@@ -404,9 +410,11 @@ This planning pass is complete when:
 - every critical implemented protocol has a focused package and executable
   model;
 - `SelectedProfileManifestV1` remains exact, closed, acyclic, and consistent
-  with package-exact prerequisites and claim-specific closures;
+  with numerically ordered, non-weakening PackageExact prerequisites and
+  claim-specific closures;
 - every entering stop has a validated `ImplementationWorkPackageV1`, and every
-  critical stop has an `ExecutableModelBindingV1`;
+  critical stop has an `ExecutableModelBindingV1`; every implemented test
+  resolves, executes and binds exact immutable evidence;
 - numeric workload envelopes begin with the first vertical slice;
 - optional and out-of-scope capabilities are discoverably refused; and
 - the four late-protocol corrections are enforced by their existing owners.

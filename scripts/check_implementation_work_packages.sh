@@ -19,43 +19,9 @@ fail() {
     failed=1
 }
 
-awk -F '|' '
-NR == 1 {
-    if ($0 != "schema|ExecutableTestInventoryV1") fail("wrong test inventory schema")
-    next
-}
-NR == 2 {
-    if ($0 != "generation|1") fail("wrong test inventory generation")
-    next
-}
-NR == 3 {
-    if ($0 != "test_id|owner|runner|status") fail("wrong test inventory header")
-    next
-}
-{
-    if (NF != 4) {
-        fail("test inventory row has wrong field count")
-        next
-    }
-    if ($1 !~ /^VIT-(TST-[A-Z0-9-]+|MT-[0-9][0-9][0-9]-[PNMFR])$/) {
-        fail("malformed executable test ID " $1)
-    }
-    if (seen[$1]++) fail("duplicate executable test ID " $1)
-    if ($2 !~ /^crates\/[^#]+#[A-Za-z0-9_:]+$/) {
-        fail($1 " lacks a resolvable workspace owner")
-    }
-    if ($3 !~ /^(cargo-test|cargo-nextest|script):[A-Za-z0-9_./:-]+$/) {
-        fail($1 " has a malformed runner")
-    }
-    if ($4 != "implemented") fail($1 " is not implemented")
-    print $1
-}
-END { exit failed }
-function fail(message) {
-    print "implementation work packages: " message > "/dev/stderr"
-    failed = 1
-}
-' "$test_inventory" > "$registered_tests" || failed=1
+scripts/check_executable_test_inventory.sh
+awk -F '|' 'NR > 3 { print $1 "|" $4 }' \
+    "$test_inventory" > "$registered_tests"
 
 awk -F '|' '
 NR == 1 {
@@ -165,7 +131,7 @@ validate_package() {
         grep -Eq '^(none|(0\.[1-9][0-9]*\.0|1\.0\.0)(,(0\.[1-9][0-9]*\.0|1\.0\.0))*)$' ||
         fail "$package has malformed capability prerequisites"
     manifest_dependencies="$(awk -F '|' -v stop="$stop" '
-        $1 == stop { print $3 }
+        $1 == stop { print $4 }
     ' docs/selected_profile_manifest_v1.txt)"
     [ "$manifest_dependencies" = "$prerequisites" ] ||
         fail "$package prerequisites differ from selected-profile graph"
@@ -215,8 +181,15 @@ validate_package() {
         old_ifs="$IFS"
         IFS=,
         for test_id in $test_ids; do
-            grep -Fxq "$test_id" "$registered_tests" ||
+            test_status="$(awk -F '|' -v wanted="$test_id" '
+                $1 == wanted { print $2 }
+            ' "$registered_tests")"
+            [ -n "$test_status" ] ||
                 fail "$package references unregistered executable test $test_id"
+            if [ "$status" != "implementing" ] &&
+                [ "$test_status" != "implemented" ]; then
+                fail "$package release status requires implemented test evidence for $test_id"
+            fi
         done
         IFS="$old_ifs"
         if ! git diff --name-only "$base_commit"..HEAD |
@@ -315,7 +288,10 @@ BEGIN {
     close(critical_file)
     while ((getline control < control_file) > 0) known_control[control] = 1
     close(control_file)
-    while ((getline test < test_file) > 0) registered_test[test] = 1
+    while ((getline test_row < test_file) > 0) {
+        split(test_row, test_parts, "|")
+        registered_test[test_parts[1]] = test_parts[2]
+    }
     close(test_file)
     while ((getline owner_row < symbol_file) > 0) {
         split(owner_row, owner_parts, "|")
@@ -395,8 +371,8 @@ NR == 3 { next }
         for (field = 7; field <= 11; field++) {
             test_count = split($field, tests, ",")
             for (i = 1; i <= test_count; i++) {
-                if (!registered_test[tests[i]]) {
-                    fail(stop " references unregistered executable test " tests[i])
+                if (registered_test[tests[i]] != "implemented") {
+                    fail(stop " lacks implemented executable-test evidence " tests[i])
                 }
             }
         }

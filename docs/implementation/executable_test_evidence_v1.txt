@@ -1,0 +1,3 @@
+schema|ExecutableTestEvidenceV1
+generation|1
+test_id|source_digest|runner_digest|toolchain|candidate_commit|result|evidence_path|evidence_digest

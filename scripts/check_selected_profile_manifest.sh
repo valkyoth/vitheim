@@ -1,9 +1,11 @@
 #!/usr/bin/env sh
 set -eu
 
-manifest="docs/selected_profile_manifest_v1.txt"
+manifest="${VITHEIM_SELECTED_MANIFEST:-docs/selected_profile_manifest_v1.txt}"
+supersessions="${VITHEIM_DEPENDENCY_SUPERSESSIONS:-docs/implementation/dependency_supersessions_v1.txt}"
 generated="$(mktemp /tmp/vitheim-selected-profile-manifest.XXXXXX)"
-trap 'rm -f "$generated"' EXIT
+approved_supersessions="$(mktemp /tmp/vitheim-dependency-supersessions.XXXXXX)"
+trap 'rm -f "$generated" "$approved_supersessions"' EXIT
 
 scripts/generate_selected_profile_manifest.sh > "$generated"
 if ! cmp -s "$manifest" "$generated"; then
@@ -12,9 +14,75 @@ if ! cmp -s "$manifest" "$generated"; then
     exit 1
 fi
 
+scripts/check_dependency_supersessions.sh
+
 awk -F '|' '
+NR == 1 {
+    if ($0 != "schema|DependencySupersessionV1") fail("wrong supersession schema")
+    next
+}
+NR == 2 {
+    if ($0 != "generation|1") fail("wrong supersession generation")
+    next
+}
+NR == 3 {
+    if ($0 != "dependent_stop|removed_dependency|reason|affected_control_ids|replacement_owner|security_reviewer|record_generation|record_digest|negative_test_ids|integration_test_ids|status") {
+        fail("wrong supersession header")
+    }
+    next
+}
+{
+    if (NF != 11) {
+        fail("supersession row has wrong field count")
+        next
+    }
+    if ($1 !~ /^(0\.[1-9][0-9]*\.0|1\.0\.0)$/ ||
+        $2 !~ /^(0\.[1-9][0-9]*\.0|1\.0\.0)$/ || $1 == $2) {
+        fail("supersession has malformed stop IDs")
+    }
+    if ($3 == "" || $3 == "none") fail("supersession lacks a reason")
+    count = split($4, controls, ",")
+    for (i = 1; i <= count; i++) {
+        if (controls[i] !~ /^VIT-(REQ|INV|LAW)-[0-9][0-9][0-9]$/ &&
+            controls[i] !~ /^VIT-MODEL-[0-9][0-9][0-9]$/) {
+            fail("supersession has malformed affected control " controls[i])
+        }
+    }
+    if ($5 !~ /^(none|0\.[1-9][0-9]*\.0|1\.0\.0)$/) {
+        fail("supersession has malformed replacement owner")
+    }
+    if ($6 !~ /^VIT-SECURITY-REVIEWER:[A-Za-z0-9_.@-]+$/) {
+        fail("supersession lacks an exact security reviewer")
+    }
+    if ($7 !~ /^[1-9][0-9]*$/ ||
+        $8 !~ /^sha256:[0-9a-f]+$/ || length($8) != 71) {
+        fail("supersession has malformed generation or digest")
+    }
+    if ($9 !~ /^VIT-TST-[A-Z0-9-]+(,VIT-TST-[A-Z0-9-]+)*$/ ||
+        $10 !~ /^VIT-TST-[A-Z0-9-]+(,VIT-TST-[A-Z0-9-]+)*$/) {
+        fail("supersession lacks exact negative/integration tests")
+    }
+    if ($11 != "approved") fail("supersession is not approved")
+    key = $1 SUBSEP $2
+    if (seen[key]++) fail("duplicate supersession " $1 " -> " $2)
+    print $1 "|" $2 "|" $5
+}
+END { exit failed }
+function fail(message) {
+    print "selected profile: " message > "/dev/stderr"
+    failed = 1
+}
+' "$supersessions" > "$approved_supersessions"
+
+awk -F '|' -v supersession_file="$approved_supersessions" '
 BEGIN {
     failed = 0
+    while ((getline supersession_row < supersession_file) > 0) {
+        split(supersession_row, supersession_parts, "|")
+        approved_supersession[supersession_parts[1] SUBSEP supersession_parts[2]] = 1
+        supersession_replacement[supersession_parts[1] SUBSEP supersession_parts[2]] = supersession_parts[3]
+    }
+    close(supersession_file)
 }
 NR == 1 {
     if ($0 != "schema|SelectedProfileManifestV1") fail("wrong schema")
@@ -25,7 +93,7 @@ NR == 2 {
     next
 }
 NR == 3 {
-    if ($0 != "generation|1") fail("wrong generation")
+    if ($0 != "generation|2") fail("wrong generation")
     next
 }
 NR == 4 {
@@ -35,48 +103,55 @@ NR == 4 {
     next
 }
 NR == 5 {
-    if (NF != 17 || $1 != "stop_id" || $2 != "selection" ||
-        $3 != "capability_dependencies" ||
-        $7 != "required_for_claims") {
+    if (NF != 18 || $1 != "stop_id" || $2 != "selection" ||
+        $3 != "declared_minimum_dependencies" ||
+        $4 != "capability_dependencies" ||
+        $8 != "required_for_claims") {
         fail("wrong column schema")
     }
     next
 }
 {
-    if (NF != 17) {
+    if (NF != 18) {
         fail("row " NR " has " NF " fields")
         next
     }
     stop = $1
     state = $2
-    dependencies = $3
-    dependency_state = $4
-    increment = $5
-    delivery = $6
-    claims = $7
-    owner = $9
-    retests = $10
-    successor = $14
-    boundary = $15
-    dependency = $16
+    declared_dependencies = $3
+    dependencies = $4
+    dependency_state = $5
+    increment = $6
+    delivery = $7
+    claims = $8
+    owner = $10
+    retests = $11
+    successor = $15
+    boundary = $16
+    dependency = $17
 
     if (seen[stop]++) fail("duplicate stop " stop)
     if (state !~ /^(Mandatory|OptionalSelected|Deferred|Unsupported)$/) {
         fail(stop " has invalid selection")
     }
     selected[stop] = state == "Mandatory" || state == "OptionalSelected"
+    declared_dependencies_of[stop] = declared_dependencies
     dependencies_of[stop] = dependencies
     dependency_state_of[stop] = dependency_state
     state_of[stop] = state
     claims_of[stop] = claims
     delivery_of[stop] = delivery
     increment_of[stop] = increment
-    retests_of[stop] = $10
-    storage_of[stop] = $11
-    identity_of[stop] = $12
-    runtime_of[stop] = $13
+    retests_of[stop] = $11
+    storage_of[stop] = $12
+    identity_of[stop] = $13
+    runtime_of[stop] = $14
     if (dependency_state !~ /^(DeclaredMinimum|PackageExact)$/) {
         fail(stop " has invalid dependency state")
+    }
+    if (dependency_state == "DeclaredMinimum" &&
+        declared_dependencies != dependencies) {
+        fail(stop " changes a declared minimum without PackageExact")
     }
     if (claims != "none") {
         claim_count = split(claims, row_claims, ",")
@@ -139,7 +214,31 @@ END {
     if (!seen["1.0.0"]) fail("missing 1.0.0")
     if (row_count != 425) fail("expected 425 rows, found " row_count)
     for (stop in dependencies_of) {
+        declared_dependencies = declared_dependencies_of[stop]
         dependencies = dependencies_of[stop]
+        if (declared_dependencies != "none") {
+            declared_count = split(declared_dependencies, declared_parts, ",")
+            delete local_declared
+            for (declared_index = 1;
+                 declared_index <= declared_count;
+                 declared_index++) {
+                declared_dependency = declared_parts[declared_index]
+                if (local_declared[declared_dependency]++) {
+                    fail(stop " repeats declared minimum " declared_dependency)
+                }
+                if (!seen[declared_dependency]) {
+                    fail(stop " has missing declared minimum " declared_dependency)
+                } else if (declared_dependency == stop) {
+                    fail(stop " declares itself as a minimum")
+                } else if (version_value(declared_dependency) >= version_value(stop)) {
+                    fail(stop " declares same or future minimum " declared_dependency)
+                }
+                if (!list_has(dependencies, declared_dependency) &&
+                    !approved_supersession[stop SUBSEP declared_dependency]) {
+                    fail(stop " PackageExact removes declared minimum without approved supersession " declared_dependency)
+                }
+            }
+        }
         if (dependencies == "none") continue
         count = split(dependencies, parts, ",")
         delete local_dependency
@@ -151,6 +250,8 @@ END {
                 fail(stop " has missing dependency " prerequisite)
             } else if (prerequisite == stop) {
                 fail(stop " depends on itself")
+            } else if (version_value(prerequisite) >= version_value(stop)) {
+                fail(stop " depends on same or future stop " prerequisite)
             } else {
                 edge[prerequisite SUBSEP stop] = 1
                 indegree[stop]++
@@ -243,7 +344,39 @@ END {
         }
     }
     if (state_of["1.0.0"] != "Mandatory") fail("1.0.0 is not mandatory")
+    for (supersession_key in approved_supersession) {
+        split(supersession_key, supersession_ends, SUBSEP)
+        dependent = supersession_ends[1]
+        removed_dependency = supersession_ends[2]
+        if (!seen[dependent] || !seen[removed_dependency]) {
+            fail("supersession references missing manifest stop")
+        } else if (dependency_state_of[dependent] != "PackageExact") {
+            fail("supersession applies without PackageExact dependency state")
+        } else if (!list_has(declared_dependencies_of[dependent],
+                             removed_dependency)) {
+            fail("supersession does not remove a declared minimum")
+        } else if (list_has(dependencies_of[dependent],
+                            removed_dependency)) {
+            fail("supersession is stale because dependency remains exact")
+        } else if (supersession_replacement[supersession_key] != "none" &&
+                   !list_has(dependencies_of[dependent],
+                             supersession_replacement[supersession_key])) {
+            fail("supersession replacement owner is absent from exact dependencies")
+        }
+    }
     exit failed
+}
+function version_value(version, parts) {
+    split(version, parts, ".")
+    return parts[1] * 1000000 + parts[2] * 1000 + parts[3]
+}
+function list_has(values, wanted, parts, count, i) {
+    if (values == "none") return 0
+    count = split(values, parts, ",")
+    for (i = 1; i <= count; i++) {
+        if (parts[i] == wanted) return 1
+    }
+    return 0
 }
 function has_claim(claims, claim, parts, count, i) {
     count = split(claims, parts, ",")

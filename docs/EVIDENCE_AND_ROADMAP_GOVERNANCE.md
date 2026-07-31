@@ -81,16 +81,19 @@ authority-review coverage and checker expectations must be generated or
 verified from the same manifest. A count mismatch is a release blocker.
 
 The exact production selection is
-[`SelectedProfileManifestV1`](SELECTED_PROFILE_MANIFEST.md) generation 1,
+[`SelectedProfileManifestV1`](SELECTED_PROFILE_MANIFEST.md) generation 2,
 materialized as `docs/selected_profile_manifest_v1.txt`. Its 425 rows bind
 selection state, zero-or-more capability dependencies, dependency-review state,
 one-or-more independently operable delivery slices, required claims,
 executable-owner state, required profiles, retests, skip/successor behavior and
 support boundary. A `specified:` owner is not implementation evidence.
-`DeclaredMinimum` edges are planning input; each selected stop must become
-`PackageExact` from its admitted work package before production evidence can
-close. The checker rejects missing nodes, duplicate/self edges, arbitrary
-cycles, selected-to-unselected dependencies and incomplete claim closures.
+`DeclaredMinimum` edges are independently generated planning input; each
+selected stop must become `PackageExact` from its admitted work package before
+production evidence can close. Exact edges may add dependencies but cannot
+remove a minimum without a separate approved dependency-supersession record.
+The checker rejects missing nodes, duplicate/self edges, same-version or
+future-version dependencies, arbitrary cycles, selected-to-unselected
+dependencies and incomplete claim closures.
 `0.398.0` revalidates this established closure and may narrow support; it cannot
 invent a production selection at the end of the program.
 
@@ -103,7 +106,10 @@ model-test IDs must resolve through
 `docs/implementation/executable_test_inventory_v1.txt`; prose-only test names
 are never executable evidence. Implemented model and persistence owners must
 also resolve to existing Rust files and symbols through
-`docs/implementation/executable_symbol_inventory_v1.txt`.
+`docs/implementation/executable_symbol_inventory_v1.txt`. Test registration
+resolves through that same inventory, an executable project-owned list/run
+protocol, and—at Implemented—immutable source/runner/toolchain/commit/result
+evidence.
 
 Owner policy requires a pentest whenever an exact stop is implemented/tagged.
 The audit recommendation to weaken that per-stop requirement is not adopted.

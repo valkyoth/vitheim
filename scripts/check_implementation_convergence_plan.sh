@@ -40,6 +40,15 @@ require_text "$plan" \
     'PackageExact' \
     'work-package exact capability graph'
 require_text "$plan" \
+    'DependencySupersessionV1' \
+    'non-weakening dependency refinement'
+require_text "$plan" \
+    'same-version or numerically later prerequisite' \
+    'numeric dependency order'
+require_text "$plan" \
+    'ExecutableTestEvidenceV1' \
+    'executable test evidence'
+require_text "$plan" \
     'Independently Operable Delivery Checkpoints' \
     'separate service and security asset feedback slices'
 require_text "$plan" \
@@ -123,7 +132,7 @@ require_text "$authority" \
     'default retirement refusal certification'
 
 require_text docs/ROADMAP_GAP_DISPOSITIONS.md \
-    'Consolidated 2026-07-30 Review' \
+    'Consolidated Reviews Through 2026-07-31' \
     'consolidated finding dispositions'
 
 if [ "$failed" -ne 0 ]; then
