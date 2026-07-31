@@ -39,12 +39,15 @@ Required keys are:
 - stable `test_ids`.
 
 `docs/implementation/work_package_closure_v1.txt` is the
-`WorkPackageClosureV1` pre-entry differential. Each registered stop binds a
-minimum package generation, required crate/file owners, every path needed for
-status/registration/runner/evidence transitions, exact planned test IDs,
-verification tokens, and its bounded authority owner. The closure is
-independent of the package it checks: package prose cannot erase a milestone
-deliverable or omit the machinery needed to prove it.
+`WorkPackageClosureV1` generation 2 pre-entry differential. Every package has
+exactly one closure row and every closure row has exactly one package. Each row
+binds the exact package generation, normalized crate/file-owner set,
+changed-path set, planned-test-ID set, verification-token set, and bounded
+authority owner. Order is irrelevant, but additions, omissions, substitutions,
+duplicates, generation drift, orphan packages, and orphan rows all fail. The
+closure is independent of the package it checks: package prose cannot erase a
+milestone deliverable, silently widen its scope, or omit the machinery needed
+to prove it.
 
 Authority, primary boundary, schema/migration, and external-boundary fields are
 single-valued. `none` is a value, not omission. A package with two
@@ -98,11 +101,12 @@ separate:
    implementation commit has its scoped security assessment and every finding
    is resolved or explicitly blocking.
 
-The closure also admits only the exact workspace version/lock/toolchain,
+The closure requires only the exact workspace version/lock/toolchain,
 README, SBOM, `scripts/release_0_2_gate.sh`, release-note and
 `security/pentest/v0.2.0.md` paths needed to turn that implementation into a
 truthful exact-version candidate. These release artifacts cannot be smuggled
-through a broad repository glob.
+through a broad repository glob, and undeclared paths cannot be appended to the
+package without advancing the independently reviewed closure contract.
 
 The next stop does not receive an implementation package merely because
 `0.2.0` is compiling. It waits for this sequence to close, which keeps the

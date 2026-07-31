@@ -42,6 +42,16 @@ transition/evidence boundary, while
 owners. No release, production selection, Hosted decision, or evidence state
 changes.
 
+The latest closure-correctness review matched
+`dea43ff740a17fda274d56d489dff8694688bd80` and analysis digest
+`sha256:b31e8427669caae4a4051b20953788ad2415be515a69ab19536aaad89b1639da`.
+Its single material finding reproduced: the closure checker enforced only a
+required subset and package-generation floor, and it did not reject packages
+without rows. Reopened `0.1.0` therefore advances the same
+`WorkPackageClosureV1` control to generation 2 with exact normalized equality
+and bidirectional package/row coverage. The `0.2.0` product boundary remains
+unchanged; this is a planning-admission correction, not another release.
+
 | ID | Finding | Integrated disposition |
 | --- | --- | --- |
 | G01 | A production Hosted profile is infeasible until its foundational capabilities have safe implementations. | Retain the owner-mandated repository-wide no-third-party-Cargo rule. `0.38.0` runs small fixed-budget feasibility questions and decides every required capability as an audited project-owned implementation or `Unsupported`; it is not authorization for open-ended protocol replacement. A mandatory failure stops affected Hosted work, and `0.398.0` blocks Hosted `1.0.0` rather than granting an exception. |
@@ -75,6 +85,7 @@ changes.
 | G29 | The 2026-07-31 analysis again reported `scripts/implementation_companion_versions.txt`. | Verify the path is absent. No file is deleted or recreated; one contiguous-minor manifest remains the sole version authority. |
 | G30 | The planned `0.2.0` changed-path allowlist excluded the Phase A status, owner/test/evidence inventories, runner, evidence artifact, and other paths required by its handoff. | Advance the existing package to generation 2 and admit exact source, workspace version/lock/toolchain/SBOM, status, manifest, inventory, test/release runner, evidence/pentest, threat/security, README, release-note and changelog paths. Add `WorkPackageClosureV1` plus mutations that independently remove the status, symbol/test/evidence registries, runner, and evidence path and must fail before implementation entry. |
 | G31 | `0.2.0` promised IDs, time and errors but admitted only `vitheim-id` and ID tests. | Retain one coherent `0.2.0` primitive boundary; add `vitheim-time`, `vitheim-error`, the thin `vitheim` facade, thirteen exact ID/time/error/facade test intentions, matching verification owners, and a bounded foundation owner. A second mutation fixture removes the time crate and must fail. |
+| G32 | `WorkPackageClosureV1` treated its crate/path/test/verification fields as minimum subsets, accepted a package generation above the reviewed row, and checked closure→package but not package→closure. | At reopened `0.1.0`, advance the closure control to generation 2 and require exact normalized set equality, exact package-generation equality, and exactly one counterpart in both directions. Extend the dedicated mutation suite with extra crate, exact-path, glob, test, substituted-test and verification-owner cases, generation drift, and package-only/row-only orphans. Keep `0.2.0` and all later product versions unchanged. |
 
 | Gap | Disposition and version context |
 | --- | --- |

@@ -44,8 +44,12 @@ All notable Vitheim changes are documented here. The format follows
   time/durations and stable errors share one explicit three-primitive-crate
   boundary with a thin facade, complete transition/evidence allowlist, bounded
   foundation owner and thirteen planned test IDs. Added
-  `WorkPackageClosureV1` plus negative missing-path and missing-crate fixtures
-  to block an internally impossible handoff.
+  `WorkPackageClosureV1` to block an internally impossible handoff.
+- Advanced `WorkPackageClosureV1` to generation 2 and made package closure
+  exact and bidirectional. Normalized crate, path, test and verification sets
+  plus package generation must match; negative fixtures reject omissions,
+  undeclared additions, substitutions, generation drift, and package-only or
+  closure-only orphans.
 - Made the zero-third-party-dependency Hosted feasibility decision at
   `0.38.0` a fixed-budget go/no-go gate: unavailable safe primitives make the
   affected production profile Unsupported instead of starting open-ended

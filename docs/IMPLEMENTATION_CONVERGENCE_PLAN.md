@@ -69,6 +69,7 @@ and which planning-only or optional profiles may remain unimplemented.
 | G-23 repeated stale companion-file report | The reported path is absent in the reviewed workspace. Preserve that absence and the one canonical contiguous-minor authority; no deletion or new version is needed. |
 | G-24 `0.2.0` could not change the files required by its own handoff | Advance its planned package to generation 2 and admit exact ID/time/error sources, workspace version/lock/toolchain/SBOM truth, Phase A/package status, selected manifest, symbol/test/evidence registries, exact test/release runners, bounded evidence and pentest artifacts, threat/security records, README, release notes and changelog. `WorkPackageClosureV1` rejects an omitted transition path before entry. |
 | G-25 `0.2.0` package ownership covered only IDs while the milestone promised time and errors | Keep one coherent existing `0.2.0` foundation-primitives release, but require all three primitive `no_std` crates, their thin `vitheim` facade and thirteen exact ID/time/error/facade test intentions. Replace the unrelated future `VIT-INV-001` reference with the bounded `phase-a-foundation-primitives` owner. The closure checker rejects a missing crate, test family, verification owner, or authority owner. |
+| G-26 work-package closure accepted undeclared additions, generation-ahead packages and orphan packages/rows | Correct the reopened `0.1.0` admission control rather than add a product version. Advance `WorkPackageClosureV1` to generation 2: package generation is equal, normalized crate/path/test/verification sets are exact, authority is equal, and the package↔closure relation is one-to-one in both directions. Negative fixtures independently add crates, exact paths, globs, tests and verification owners, substitute a test, drift generation and create both orphan directions. |
 
 ## Current Execution Handoff
 
@@ -84,8 +85,10 @@ foundation-primitives boundary formed by `crates/vitheim-id`,
 `crates/vitheim` facade, plus its exact admitted
 version, status, registry, runner, evidence, pentest, security and release-note
 paths.
-`WorkPackageClosureV1` generation 1 binds that minimum independently from the
-package. Before the package becomes `implemented`, all thirteen registered test
+`WorkPackageClosureV1` generation 2 binds that exact scope independently from
+the package. Its normalized sets and generation must be equal, and neither a
+package nor closure row may exist without exactly one counterpart. Before the
+package becomes `implemented`, all thirteen registered test
 IDs must execute through `scripts/run_0_2_0_tests.sh` and carry candidate-,
 source-, runner-, toolchain-, result-, and artifact-digest evidence. The exact
 implementation commit then receives the version-specific pentest; only after

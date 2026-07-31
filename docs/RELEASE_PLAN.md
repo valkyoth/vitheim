@@ -74,6 +74,10 @@ prerequisite, migration, rollback/refusal, or security-assessment boundary.
 Reopened `0.1.0` also requires each plan review to bind the actual current
 commit and workspace inventory; findings asserted against a stale snapshot
 must reproduce before they can change any release handoff or support claim.
+Its generation-2 work-package closure gate requires exact normalized package
+generation, crate, path, test, verification and authority agreement and a
+one-to-one package/closure-row relation. This prevents both silent scope
+omission and silent scope expansion without inventing a new product version.
 
 ## Scope Sizing And Focused Minor Releases
 

@@ -36,7 +36,10 @@ Deliverables:
 - Project-owned checks for the selected-profile manifest, strict
   `ImplementationWorkPackageV1` admission records, the reviewed critical-model
   stop set, `ExecutableModelBindingV1`, dependency-supersession records, and
-  executable symbol/test/evidence inventories.
+  executable symbol/test/evidence inventories. `WorkPackageClosureV1`
+  generation 2 must bind every package and closure row bidirectionally with
+  exact normalized generation, crate, path, test, verification and authority
+  equality.
 - Plan-review provenance that records the review's stated revision, actual
   reconciliation commit and workspace inventory, current/stale/mixed
   classification, reproduced findings, and version disposition.
@@ -57,7 +60,9 @@ implementation status, unresolved package paths, owners, runners or tests,
 unbound test evidence, incomplete critical-model bindings, and
 planned Rust owners attached to implemented stops. Reject a review-driven plan
 change when its stated commit or file inventory is stale and the finding is not
-reproduced against the actual reconciliation tree.
+reproduced against the actual reconciliation tree. Closure mutations adding or
+removing a crate, exact path, path glob, test, verification owner, or changing
+the package generation must fail; package-only and row-only orphans must fail.
 
 Exit criteria: baseline claims match evidence, the formula
 `424 + 1 = 425` is machine-derived, and no release gate is bypassed.
@@ -77,10 +82,11 @@ units, arithmetic rules, and non-sensitive error taxonomy.
 Package generation 2 owns one foundation-primitives unit spanning exactly
 `vitheim-id`, `vitheim-time`, and `vitheim-error`, plus their thin `vitheim`
 facade integration surface. Its independent
-`WorkPackageClosureV1` row binds every status, registry, runner, evidence,
-security and release-note path needed to complete this handoff. This is an
-in-place `0.2.0` correction, not a new release or a claim that the three
-crates are already complete.
+`WorkPackageClosureV1` row binds the exact status, registry, runner, evidence,
+security and release-note path set needed to complete this handoff. No
+unreviewed extra crate, path, test or verification owner may ride the package.
+This is an in-place `0.2.0` correction, not a new release or a claim that the
+three crates are already complete.
 
 Goal: prevent identifier confusion and remove ambient time/error details from
 deterministic decisions.
@@ -106,7 +112,8 @@ zero/min/max/overflow, crate-layer negative fixtures, redaction, property, and
 parser fuzz tests pass. The work-package checker must reject changed paths
 outside the admitted boundary, unresolved owners/runners, planned IDs after
 entry, missing ID/time/error ownership or test families, omitted transition
-artifacts, or implemented status without immutable passing evidence.
+artifacts, added unreviewed scope, package/closure generation drift, orphan
+package records, or implemented status without immutable passing evidence.
 
 Exit criteria: no core API creates IDs randomly, reads time, or leaks host
 errors. The exact implementation commit—not the planning baseline—enters the

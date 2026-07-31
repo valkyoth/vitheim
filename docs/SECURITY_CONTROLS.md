@@ -31,10 +31,12 @@
   records the actual commit and workspace inventory, classifies revision
   mismatch, and requires every stale finding to reproduce before it can change
   roadmap, dependency, evidence, or support authority.
-- `WorkPackageClosureV1` independently binds the minimum code owners,
-  transition/evidence paths, tests, verification families and bounded authority
-  needed to satisfy a milestone. `0.2.0` cannot enter implementation without
-  complete ID/time/error ownership or while its own proof paths are excluded.
+- `WorkPackageClosureV1` generation 2 bidirectionally binds every package to
+  exact normalized generation, code-owner, transition/evidence-path, test and
+  verification sets plus its bounded authority. Missing, extra, substituted or
+  duplicate scope and orphan packages/rows fail. `0.2.0` cannot enter
+  implementation without complete ID/time/error ownership, while excluding
+  its own proof paths, or after silently admitting unrelated work.
 - The roadmap is a planning superset. `1.0.0` consumes only the complete
   transitive closure of the selected mandatory core and explicitly selected
   optional profiles; every unselected stop remains visibly non-shipping and

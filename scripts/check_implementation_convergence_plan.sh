@@ -52,6 +52,9 @@ require_text "$plan" \
     'WorkPackageClosureV1' \
     'work-package milestone closure'
 require_text "$plan" \
+    'normalized crate/path/test/verification sets are exact' \
+    'exact bidirectional work-package closure'
+require_text "$plan" \
     '`crates/vitheim-time`' \
     '0.2.0 time ownership'
 require_text "$plan" \
