@@ -192,7 +192,7 @@ exact-commit pentest.
 | Version | Goal and deliverable | Release-specific verification / pentest target |
 | --- | --- | --- |
 | `0.1.0` | Workspace, architecture laws, threat-model format, CI, private crates, evidence-status manifest, canonical 425-stop roadmap manifest, non-weakening `SelectedProfileManifestV1`, dependency-supersession/work-package/model gates, executable test registration/evidence, and release baseline | Repository trust, CI permissions, action pins, source/publication policy, roadmap/selection/dependency/order/owner/model/test-evidence drift, fail-closed release gate |
-| `0.2.0` | Typed IDs, injected time primitives, and stable error codes | Domain confusion, malformed IDs, canonical forms, time overflow, diagnostic leakage |
+| `0.2.0` | One foundation-primitives package covering typed IDs, injected checked time/duration primitives, and stable non-sensitive errors across `vitheim-id`, `vitheim-time`, and `vitheim-error`, exposed through the thin `vitheim` facade | Package-closure/path-owner differential; domain confusion, malformed IDs, canonical forms, compile-fail type separation, time boundary/overflow/property behavior, error-code stability/redaction, facade/dependency-direction conformance, diagnostic leakage |
 | `0.3.0` | Shared budgets and fixed-capacity primitives | Allocation/work exhaustion, integer overflow, budget reset, partial mutation |
 | `0.4.0` | Canonical bounded dynamic value model | Deep nesting, invalid types, duplicate fields, oversized values, deterministic ordering |
 | `0.5.0` | Schema definitions, evolution classes, and field constraints | Constraint bypass, contradictions, recursion bombs, version confusion |

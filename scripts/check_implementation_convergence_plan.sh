@@ -49,6 +49,12 @@ require_text "$plan" \
     'ExecutableTestEvidenceV1' \
     'executable test evidence'
 require_text "$plan" \
+    'WorkPackageClosureV1' \
+    'work-package milestone closure'
+require_text "$plan" \
+    '`crates/vitheim-time`' \
+    '0.2.0 time ownership'
+require_text "$plan" \
     'Independently Operable Delivery Checkpoints' \
     'separate service and security asset feedback slices'
 require_text "$plan" \

@@ -32,6 +32,16 @@ Its architecture conclusions reproduce, but add no missing control. Reopened
 425-stop catalog, `0.2.0` execution frontier, and `0.38.0`/`0.398.0` decision
 boundaries remain unchanged.
 
+The current `0.2.0` execution-handoff review matched
+`82197d60a123aa7cde29a3175add658c4566910d` and analysis digest
+`sha256:0695b6cd16ea354b8999b183129cd7b4b133a6acd9c6cae4b3495e8b6fd6e8b6`.
+Both findings reproduced. They strengthen existing `0.2.0`: package generation
+2 admits the complete three-primitive-crate, thin-facade and
+transition/evidence boundary, while
+`WorkPackageClosureV1` and mutation fixtures reject missing paths or milestone
+owners. No release, production selection, Hosted decision, or evidence state
+changes.
+
 | ID | Finding | Integrated disposition |
 | --- | --- | --- |
 | G01 | A production Hosted profile is infeasible until its foundational capabilities have safe implementations. | Retain the owner-mandated repository-wide no-third-party-Cargo rule. `0.38.0` runs small fixed-budget feasibility questions and decides every required capability as an audited project-owned implementation or `Unsupported`; it is not authorization for open-ended protocol replacement. A mandatory failure stops affected Hosted work, and `0.398.0` blocks Hosted `1.0.0` rather than granting an exception. |
@@ -63,6 +73,8 @@ boundaries remain unchanged.
 | G27 | Acyclic dependency graphs could still point from an earlier release to the same or a future release. | Restore numeric order as an additional invariant: every capability prerequisite is strictly earlier than its dependent stop. Later integration belongs in `integration_retest_owners` or a successor minor, never a future edge. Negative policy fixtures prove rejection. |
 | G28 | Test registrations checked syntax but did not resolve or execute their owner/runner. | At reopened `0.1.0`, require each test owner in `ExecutableSymbolInventoryV1`, a safe executable project-owned runner supporting exact ID list/run operations, actual execution in the implementation gate, and `ExecutableTestEvidenceV1` bindings for source/runner/toolchain/candidate/result/evidence digests at Implemented. |
 | G29 | The 2026-07-31 analysis again reported `scripts/implementation_companion_versions.txt`. | Verify the path is absent. No file is deleted or recreated; one contiguous-minor manifest remains the sole version authority. |
+| G30 | The planned `0.2.0` changed-path allowlist excluded the Phase A status, owner/test/evidence inventories, runner, evidence artifact, and other paths required by its handoff. | Advance the existing package to generation 2 and admit exact source, workspace version/lock/toolchain/SBOM, status, manifest, inventory, test/release runner, evidence/pentest, threat/security, README, release-note and changelog paths. Add `WorkPackageClosureV1` plus mutations that independently remove the status, symbol/test/evidence registries, runner, and evidence path and must fail before implementation entry. |
+| G31 | `0.2.0` promised IDs, time and errors but admitted only `vitheim-id` and ID tests. | Retain one coherent `0.2.0` primitive boundary; add `vitheim-time`, `vitheim-error`, the thin `vitheim` facade, thirteen exact ID/time/error/facade test intentions, matching verification owners, and a bounded foundation owner. A second mutation fixture removes the time crate and must fail. |
 
 | Gap | Disposition and version context |
 | --- | --- |

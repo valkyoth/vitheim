@@ -38,6 +38,14 @@ Required keys are:
 - `changed_path_allowlist` and `admission_base_commit`; and
 - stable `test_ids`.
 
+`docs/implementation/work_package_closure_v1.txt` is the
+`WorkPackageClosureV1` pre-entry differential. Each registered stop binds a
+minimum package generation, required crate/file owners, every path needed for
+status/registration/runner/evidence transitions, exact planned test IDs,
+verification tokens, and its bounded authority owner. The closure is
+independent of the package it checks: package prose cannot erase a milestone
+deliverable or omit the machinery needed to prove it.
+
 Authority, primary boundary, schema/migration, and external-boundary fields are
 single-valued. `none` is a value, not omission. A package with two
 independently shippable units fails admission and must become two minor
@@ -72,18 +80,29 @@ questions; the checker does not pretend text proves them.
 For the current `0.2.0` handoff, the state transitions are deliberately
 separate:
 
-1. `planned` preserves the three `planned:VIT-TST-ID-*` intentions and the
-   unset admission-base sentinel; it authorizes no code claim.
+1. Generation 2 at `planned` owns the single coherent foundation-primitives
+   boundary across `vitheim-id`, `vitheim-time`, and `vitheim-error`, exposed
+   only through the thin `vitheim` facade. It preserves thirteen exact
+   ID/time/error/facade positive, negative, boundary, compile-fail,
+   property/fuzz, redaction and dependency-direction intentions plus the unset
+   admission-base sentinel; it authorizes no code claim.
 2. Entry to `implementing` freezes an existing base commit, keeps the package's
-   one-unit/path/prerequisite boundary, registers exact source owners and
-   project-owned test runners, and changes the Phase A and package statuses
-   together.
+   one-unit/path/prerequisite boundary, registers exact source owners and the
+   exact `scripts/run_0_2_0_tests.sh` runner, and changes the Phase A and
+   package statuses together.
 3. Entry to `implemented` requires the admitted source plus passing positive,
-   negative, and fuzz/property coverage, with immutable test-evidence rows for
-   the exact candidate.
+   negative, boundary, compile-fail, fuzz/property, and redaction coverage,
+   with immutable test-evidence rows and artifacts below
+   `security/test-evidence/0.2.0/` for the exact candidate.
 4. `awaiting pentest` and `ready to tag` remain unavailable until the exact
    implementation commit has its scoped security assessment and every finding
    is resolved or explicitly blocking.
+
+The closure also admits only the exact workspace version/lock/toolchain,
+README, SBOM, `scripts/release_0_2_gate.sh`, release-note and
+`security/pentest/v0.2.0.md` paths needed to turn that implementation into a
+truthful exact-version candidate. These release artifacts cannot be smuggled
+through a broad repository glob.
 
 The next stop does not receive an implementation package merely because
 `0.2.0` is compiling. It waits for this sequence to close, which keeps the
@@ -116,10 +135,11 @@ binding file. Removing a stop or marking a critical transition noncritical
 requires an explicit security review and successor record; it cannot be done
 merely to satisfy the checker.
 
-`scripts/check_implementation_work_packages.sh` and
+`scripts/check_work_package_closure.sh`,
+`scripts/check_implementation_work_packages.sh`, and
 `scripts/check_executable_test_inventory.sh` validate the package, model,
-symbol, test-registration, and test-evidence schemas, required package
-coverage, reviewed critical-model coverage, exact stop
+closure, symbol, test-registration, and test-evidence schemas, required
+package/milestone coverage, reviewed critical-model coverage, exact stop
 existence, uniqueness, control-ID existence, transition/test-ID uniqueness,
 planned-owner honesty, package criticality, exact dependency agreement, path
 roots/allowlists, stable identifier shapes, source-file/symbol registration,

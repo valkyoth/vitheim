@@ -67,6 +67,8 @@ and which planning-only or optional profiles may remain unimplemented.
 | G-21 acyclic dependencies could point to future implementation stops | Retain graph-wide cycle detection and also reject every same-version or numerically later prerequisite. Later integration is a retest owner or successor stop, never time-travel in an earlier work package. |
 | G-22 registered tests were syntactic rather than executable | Resolve every test through the symbol inventory and an executable project-owned list/run script. `ExecutableTestEvidenceV1` binds implemented source, runner, toolchain, candidate commit, result and evidence digests, and the implementation gate runs the registered test. |
 | G-23 repeated stale companion-file report | The reported path is absent in the reviewed workspace. Preserve that absence and the one canonical contiguous-minor authority; no deletion or new version is needed. |
+| G-24 `0.2.0` could not change the files required by its own handoff | Advance its planned package to generation 2 and admit exact ID/time/error sources, workspace version/lock/toolchain/SBOM truth, Phase A/package status, selected manifest, symbol/test/evidence registries, exact test/release runners, bounded evidence and pentest artifacts, threat/security records, README, release notes and changelog. `WorkPackageClosureV1` rejects an omitted transition path before entry. |
+| G-25 `0.2.0` package ownership covered only IDs while the milestone promised time and errors | Keep one coherent existing `0.2.0` foundation-primitives release, but require all three primitive `no_std` crates, their thin `vitheim` facade and thirteen exact ID/time/error/facade test intentions. Replace the unrelated future `VIT-INV-001` reference with the bounded `phase-a-foundation-primitives` owner. The closure checker rejects a missing crate, test family, verification owner, or authority owner. |
 
 ## Current Execution Handoff
 
@@ -76,13 +78,18 @@ next admitted product package is `0.2.0`. It remains `planned` until one entry
 commit freezes its admission base, exact path boundary, PackageExact
 prerequisites, source-symbol owners, and registered executable test IDs.
 
-The `0.2.0` implementation then stays inside `crates/vitheim-id` and its
-admitted documentation/evidence paths. Before the package becomes
-`implemented`, every registered test must execute through its exact-ID runner
-and carry candidate-, source-, runner-, toolchain-, result-, and
-artifact-digest evidence. The exact implementation commit then receives the
-version-specific pentest; only after its findings close may the next selected
-stop receive a work package.
+The `0.2.0` implementation then stays inside the single coherent
+foundation-primitives boundary formed by `crates/vitheim-id`,
+`crates/vitheim-time`, and `crates/vitheim-error`, exposed by the thin
+`crates/vitheim` facade, plus its exact admitted
+version, status, registry, runner, evidence, pentest, security and release-note
+paths.
+`WorkPackageClosureV1` generation 1 binds that minimum independently from the
+package. Before the package becomes `implemented`, all thirteen registered test
+IDs must execute through `scripts/run_0_2_0_tests.sh` and carry candidate-,
+source-, runner-, toolchain-, result-, and artifact-digest evidence. The exact
+implementation commit then receives the version-specific pentest; only after
+its findings close may the next selected stop receive a work package.
 
 This handoff adds no version. `0.38.0` still owns the first bounded Hosted
 feasibility/no-go decision, while `0.398.0` still owns final selected Hosted

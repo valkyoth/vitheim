@@ -40,6 +40,12 @@ All notable Vitheim changes are documented here. The format follows
   revision and file inventory against the actual workspace, classify stale or
   mixed snapshots, and require reproduction before a review can change roadmap
   or support authority.
+- Corrected the planned `0.2.0` package to generation 2 so typed IDs, checked
+  time/durations and stable errors share one explicit three-primitive-crate
+  boundary with a thin facade, complete transition/evidence allowlist, bounded
+  foundation owner and thirteen planned test IDs. Added
+  `WorkPackageClosureV1` plus negative missing-path and missing-crate fixtures
+  to block an internally impossible handoff.
 - Made the zero-third-party-dependency Hosted feasibility decision at
   `0.38.0` a fixed-budget go/no-go gate: unavailable safe primitives make the
   affected production profile Unsupported instead of starting open-ended

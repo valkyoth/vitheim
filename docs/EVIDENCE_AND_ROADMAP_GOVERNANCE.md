@@ -130,6 +130,14 @@ resolves through that same inventory, an executable project-owned list/run
 protocol, and—at Implemented—immutable source/runner/toolchain/commit/result
 evidence.
 
+`WorkPackageClosureV1` independently binds the minimum package generation,
+code owners, transition/evidence paths, test IDs, verification families and
+bounded authority owner required by an exact milestone. Package editing cannot
+weaken that comparison source. The first closure row keeps existing `0.2.0` as
+one ID/time/error foundation package while refusing implementation entry if
+any promised crate, status/registry/runner/evidence path or test family is
+missing.
+
 Owner policy requires a pentest whenever an exact stop is implemented/tagged.
 The audit recommendation to weaken that per-stop requirement is not adopted.
 Scope and depth remain proportional to the change, but no implemented stop may

@@ -74,6 +74,14 @@ test intentions with source-owned executable registrations. Then freeze
 identifier domains, canonical text/byte forms, forbidden values, timestamp
 units, arithmetic rules, and non-sensitive error taxonomy.
 
+Package generation 2 owns one foundation-primitives unit spanning exactly
+`vitheim-id`, `vitheim-time`, and `vitheim-error`, plus their thin `vitheim`
+facade integration surface. Its independent
+`WorkPackageClosureV1` row binds every status, registry, runner, evidence,
+security and release-note path needed to complete this handoff. This is an
+in-place `0.2.0` correction, not a new release or a claim that the three
+crates are already complete.
+
 Goal: prevent identifier confusion and remove ambient time/error details from
 deterministic decisions.
 
@@ -87,12 +95,18 @@ Deliverables:
 - Exact-ID runner registrations while implementing, followed by
   candidate/source/runner/toolchain/result/artifact digest bindings before the
   package is marked implemented.
+- Exact planned test families: ID positive/negative/compile-fail/parser-fuzz;
+  time positive/negative/boundary/property; and error
+  positive/negative/redaction, plus facade exposure and dependency-direction
+  conformance. `scripts/run_0_2_0_tests.sh` becomes their sole project-owned
+  runner at implementation entry.
 
 Verification: round-trip, malformed/canonical form, compile-fail domain mix-up,
 zero/min/max/overflow, crate-layer negative fixtures, redaction, property, and
 parser fuzz tests pass. The work-package checker must reject changed paths
 outside the admitted boundary, unresolved owners/runners, planned IDs after
-entry, or implemented status without immutable passing evidence.
+entry, missing ID/time/error ownership or test families, omitted transition
+artifacts, or implemented status without immutable passing evidence.
 
 Exit criteria: no core API creates IDs randomly, reads time, or leaks host
 errors. The exact implementation commit—not the planning baseline—enters the

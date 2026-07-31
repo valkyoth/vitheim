@@ -19,6 +19,7 @@ fail() {
     failed=1
 }
 
+scripts/check_work_package_closure.sh
 scripts/check_executable_test_inventory.sh
 awk -F '|' 'NR > 3 { print $1 "|" $4 }' \
     "$test_inventory" > "$registered_tests"
