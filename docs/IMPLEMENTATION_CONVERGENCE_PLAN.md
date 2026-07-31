@@ -99,6 +99,15 @@ feasibility/no-go decision, while `0.398.0` still owns final selected Hosted
 profile revalidation. Neither decision may be pulled into `0.2.0`, assumed by
 earlier code, or bypassed because planning checks pass.
 
+The final closure confirmation against `8adf4ed` found no remaining planning
+gap. Its version disposition is explicit: reopened `0.1.0` continues to own
+the admission controls, `0.2.0` remains one unsplit foundation-primitives
+version in `planned`, and no later package opens. The next change in product
+state is the existing `0.2.0` entry transaction: freeze its real base commit,
+register the exact source owners and executable tests, and change the package
+and Phase A statuses together. This confirmation is not implementation,
+pentest, release, or Supported evidence.
+
 ## Selected Production-v1 Capability Contract
 
 Vitheim v1 is a service-operations platform with event-sourced domain

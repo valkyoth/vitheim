@@ -78,6 +78,12 @@ Its generation-2 work-package closure gate requires exact normalized package
 generation, crate, path, test, verification and authority agreement and a
 one-to-one package/closure-row relation. This prevents both silent scope
 omission and silent scope expansion without inventing a new product version.
+The final planning-closure confirmation at `8adf4ed` found no residual gap:
+`0.1.0` keeps governance ownership, `0.2.0` stays the sole planned
+implementation frontier, and `0.3.0` remains closed. Confirmation does not
+advance evidence state; the next authorized transition is the already-defined
+atomic `0.2.0` admission handoff, followed by implementation evidence and its
+own exact-commit pentest.
 
 ## Scope Sizing And Focused Minor Releases
 

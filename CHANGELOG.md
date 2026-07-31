@@ -50,6 +50,10 @@ All notable Vitheim changes are documented here. The format follows
   plus package generation must match; negative fixtures reject omissions,
   undeclared additions, substitutions, generation drift, and package-only or
   closure-only orphans.
+- Recorded the final planning-closure confirmation against `8adf4ed`. It
+  reproduced every closure control, found no new implementation or version
+  gap, and leaves `0.2.0` as the sole planned frontier without advancing its
+  implementation, pentest, release, or support evidence.
 - Made the zero-third-party-dependency Hosted feasibility decision at
   `0.38.0` a fixed-budget go/no-go gate: unavailable safe primitives make the
   affected production profile Unsupported instead of starting open-ended
