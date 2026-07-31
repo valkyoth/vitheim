@@ -71,6 +71,9 @@ digest-bound passing evidence, followed by an exact-commit pentest before a
 later stop is admitted. Confirmation reviews do not add versions: a new minor
 requires implementation evidence of a genuinely separate shippable authority,
 prerequisite, migration, rollback/refusal, or security-assessment boundary.
+Reopened `0.1.0` also requires each plan review to bind the actual current
+commit and workspace inventory; findings asserted against a stale snapshot
+must reproduce before they can change any release handoff or support claim.
 
 ## Scope Sizing And Focused Minor Releases
 

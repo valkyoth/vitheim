@@ -36,6 +36,10 @@ All notable Vitheim changes are documented here. The format follows
   its planned-to-implementing-to-evidenced-to-pentest handoff, and permits a
   future split only when implementation proves an independent delivery or
   security boundary.
+- Added reopened-`0.1.0` review-input provenance: reconcile the report's stated
+  revision and file inventory against the actual workspace, classify stale or
+  mixed snapshots, and require reproduction before a review can change roadmap
+  or support authority.
 - Made the zero-third-party-dependency Hosted feasibility decision at
   `0.38.0` a fixed-budget go/no-go gate: unavailable safe primitives make the
   affected production profile Unsupported instead of starting open-ended

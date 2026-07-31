@@ -35,6 +35,10 @@ and which planning-only or optional profiles may remain unimplemented.
    recovery, or pentest evidence is the source for corrective scope. A split is
    justified only when that evidence proves a separately shippable owner,
    prerequisite, migration, rollback/refusal, or pentest boundary.
+8. Every review is reconciled against the actual current commit and workspace,
+   not the revision or file inventory asserted by the review. Findings from a
+   stale snapshot must reproduce on the current tree before they can alter a
+   version, dependency, evidence state, or support boundary.
 
 ## Consolidated Finding Dispositions
 

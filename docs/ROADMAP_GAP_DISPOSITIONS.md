@@ -23,6 +23,15 @@ future splits require concrete implementation evidence of an independent
 boundary. The review's repeated local companion-file observation was verified
 against this workspace and is stale; the path remains absent.
 
+The subsequent state-verification report again stated `16098a0` and an
+untracked archive/companion inventory. Reconciliation occurred at
+`f8896625bb5141f8c5ceeea85ffa65f7fc2516c7`; every reported archive and
+companion path was absent, and the only untracked input was the new analysis.
+Its architecture conclusions reproduce, but add no missing control. Reopened
+`0.1.0` therefore gains review-input provenance requirements, while the
+425-stop catalog, `0.2.0` execution frontier, and `0.38.0`/`0.398.0` decision
+boundaries remain unchanged.
+
 | ID | Finding | Integrated disposition |
 | --- | --- | --- |
 | G01 | A production Hosted profile is infeasible until its foundational capabilities have safe implementations. | Retain the owner-mandated repository-wide no-third-party-Cargo rule. `0.38.0` runs small fixed-budget feasibility questions and decides every required capability as an audited project-owned implementation or `Unsupported`; it is not authorization for open-ended protocol replacement. A mandatory failure stops affected Hosted work, and `0.398.0` blocks Hosted `1.0.0` rather than granting an exception. |

@@ -18,6 +18,25 @@ only that a requirement is specified. README, API, UI, release notes, support
 matrices and operator output must not describe a specified or conditional
 capability as available.
 
+## Review-Input Provenance
+
+Reopened `0.1.0` owns plan-review provenance, and every later review inherits
+the rule. Before incorporating an analysis, record the full current `HEAD`,
+whether its stated reviewed revision matches, and the exact tracked/untracked
+workspace paths present at reconciliation time. The review's repository-state
+claims are untrusted input: resolve them locally rather than deleting, adding,
+or changing authority based on the report.
+
+Classify the input as current, stale, or mixed. A stale finding changes a plan
+only if it reproduces against the current tree and still identifies a missing
+or weaker control. A stale revision, absent-file claim, repeated conclusion, or
+successful check from another snapshot cannot add a version, remove a
+dependency, advance evidence state, or broaden support. The durable
+disposition records the review's stated base, the actual reconciliation base,
+which findings were reproduced, and why accepted changes belong to existing
+versions or require an independently justified successor. The transient
+analysis is then removed.
+
 ## Evidence Vocabulary
 
 Every version and externally visible capability uses one of these evidence

@@ -27,6 +27,10 @@
   project-owned runner that lists and executes the exact stable ID.
   Implemented status additionally binds passing evidence to source, runner,
   Rust toolchain, candidate commit and evidence-artifact digests.
+- Plan-review inputs are treated as untrusted snapshots. Reopened `0.1.0`
+  records the actual commit and workspace inventory, classifies revision
+  mismatch, and requires every stale finding to reproduce before it can change
+  roadmap, dependency, evidence, or support authority.
 - The roadmap is a planning superset. `1.0.0` consumes only the complete
   transitive closure of the selected mandatory core and explicitly selected
   optional profiles; every unselected stop remains visibly non-shipping and

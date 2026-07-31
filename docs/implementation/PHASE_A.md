@@ -37,6 +37,9 @@ Deliverables:
   `ImplementationWorkPackageV1` admission records, the reviewed critical-model
   stop set, `ExecutableModelBindingV1`, dependency-supersession records, and
   executable symbol/test/evidence inventories.
+- Plan-review provenance that records the review's stated revision, actual
+  reconciliation commit and workspace inventory, current/stale/mixed
+  classification, reproduced findings, and version disposition.
 
 Verification: run all gates and core target checks; prove Cargo metadata has
 only workspace paths and both publication and incomplete readiness are denied.
@@ -52,7 +55,9 @@ without approved security supersession, unpromoted optional dependencies,
 incomplete claim closures, stale production storage order, unpackaged
 implementation status, unresolved package paths, owners, runners or tests,
 unbound test evidence, incomplete critical-model bindings, and
-planned Rust owners attached to implemented stops.
+planned Rust owners attached to implemented stops. Reject a review-driven plan
+change when its stated commit or file inventory is stale and the finding is not
+reproduced against the actual reconciliation tree.
 
 Exit criteria: baseline claims match evidence, the formula
 `424 + 1 = 425` is machine-derived, and no release gate is bypassed.
