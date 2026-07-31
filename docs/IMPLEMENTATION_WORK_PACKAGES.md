@@ -69,6 +69,26 @@ implementation gate.
 Conceptual cohesion and excluded-neighbor absence remain explicit review
 questions; the checker does not pretend text proves them.
 
+For the current `0.2.0` handoff, the state transitions are deliberately
+separate:
+
+1. `planned` preserves the three `planned:VIT-TST-ID-*` intentions and the
+   unset admission-base sentinel; it authorizes no code claim.
+2. Entry to `implementing` freezes an existing base commit, keeps the package's
+   one-unit/path/prerequisite boundary, registers exact source owners and
+   project-owned test runners, and changes the Phase A and package statuses
+   together.
+3. Entry to `implemented` requires the admitted source plus passing positive,
+   negative, and fuzz/property coverage, with immutable test-evidence rows for
+   the exact candidate.
+4. `awaiting pentest` and `ready to tag` remain unavailable until the exact
+   implementation commit has its scoped security assessment and every finding
+   is resolved or explicitly blocking.
+
+The next stop does not receive an implementation package merely because
+`0.2.0` is compiling. It waits for this sequence to close, which keeps the
+small-pass and exact-commit security boundaries real.
+
 ## ExecutableModelBindingV1
 
 `docs/implementation/critical_model_stops_v1.txt` is the reviewed minimum set

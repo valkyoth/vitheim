@@ -15,6 +15,14 @@ the normative execution response. The following dispositions preserve its
 finding-level traceability and are deliberately about convergence, not roadmap
 expansion:
 
+The final confirmation review of revision `16098a0` found G26–G28 resolved by
+executable controls and found no missing product capability. Its implementation
+guidance is incorporated without a new finding or release: `0.2.0` is the next
+admitted package, `0.38.0` and `0.398.0` retain their Hosted decision roles, and
+future splits require concrete implementation evidence of an independent
+boundary. The review's repeated local companion-file observation was verified
+against this workspace and is stale; the path remains absent.
+
 | ID | Finding | Integrated disposition |
 | --- | --- | --- |
 | G01 | A production Hosted profile is infeasible until its foundational capabilities have safe implementations. | Retain the owner-mandated repository-wide no-third-party-Cargo rule. `0.38.0` runs small fixed-budget feasibility questions and decides every required capability as an audited project-owned implementation or `Unsupported`; it is not authorization for open-ended protocol replacement. A mandatory failure stops affected Hosted work, and `0.398.0` blocks Hosted `1.0.0` rather than granting an exception. |

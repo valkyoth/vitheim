@@ -30,6 +30,11 @@ and which planning-only or optional profiles may remain unimplemented.
 6. No further gap-analysis finding creates a release number unless it proves a
    genuinely independent missing authority owner or production-critical
    implementation boundary. Acceptance details go into the existing owner.
+7. Confirmation-only reviews close without roadmap expansion. Once an admitted
+   package exists, concrete implementation, model, adapter, failure-injection,
+   recovery, or pentest evidence is the source for corrective scope. A split is
+   justified only when that evidence proves a separately shippable owner,
+   prerequisite, migration, rollback/refusal, or pentest boundary.
 
 ## Consolidated Finding Dispositions
 
@@ -58,6 +63,27 @@ and which planning-only or optional profiles may remain unimplemented.
 | G-21 acyclic dependencies could point to future implementation stops | Retain graph-wide cycle detection and also reject every same-version or numerically later prerequisite. Later integration is a retest owner or successor stop, never time-travel in an earlier work package. |
 | G-22 registered tests were syntactic rather than executable | Resolve every test through the symbol inventory and an executable project-owned list/run script. `ExecutableTestEvidenceV1` binds implemented source, runner, toolchain, candidate commit, result and evidence digests, and the implementation gate runs the registered test. |
 | G-23 repeated stale companion-file report | The reported path is absent in the reviewed workspace. Preserve that absence and the one canonical contiguous-minor authority; no deletion or new version is needed. |
+
+## Current Execution Handoff
+
+The planning-control baseline remains owned by reopened `0.1.0`; passing those
+checks proves roadmap integrity, not future product implementation. The sole
+next admitted product package is `0.2.0`. It remains `planned` until one entry
+commit freezes its admission base, exact path boundary, PackageExact
+prerequisites, source-symbol owners, and registered executable test IDs.
+
+The `0.2.0` implementation then stays inside `crates/vitheim-id` and its
+admitted documentation/evidence paths. Before the package becomes
+`implemented`, every registered test must execute through its exact-ID runner
+and carry candidate-, source-, runner-, toolchain-, result-, and
+artifact-digest evidence. The exact implementation commit then receives the
+version-specific pentest; only after its findings close may the next selected
+stop receive a work package.
+
+This handoff adds no version. `0.38.0` still owns the first bounded Hosted
+feasibility/no-go decision, while `0.398.0` still owns final selected Hosted
+profile revalidation. Neither decision may be pulled into `0.2.0`, assumed by
+earlier code, or bypassed because planning checks pass.
 
 ## Selected Production-v1 Capability Contract
 

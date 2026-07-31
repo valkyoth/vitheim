@@ -31,6 +31,11 @@ All notable Vitheim changes are documented here. The format follows
   tests now resolve through the symbol inventory and a project-owned exact-ID
   list/run protocol; implemented tests bind and verify source, runner,
   toolchain, candidate commit, result, and evidence digests.
+- Closed the final confirmation review without expanding the 425-stop
+  roadmap. The plan now makes `0.2.0` the explicit execution frontier, defines
+  its planned-to-implementing-to-evidenced-to-pentest handoff, and permits a
+  future split only when implementation proves an independent delivery or
+  security boundary.
 - Made the zero-third-party-dependency Hosted feasibility decision at
   `0.38.0` a fixed-budget go/no-go gate: unavailable safe primitives make the
   affected production profile Unsupported instead of starting open-ended

@@ -62,8 +62,12 @@ Exit criteria: baseline claims match evidence, the formula
 
 Status: planned.
 
-Setup: freeze identifier domains, canonical text/byte forms, forbidden values,
-timestamp units, arithmetic rules, and non-sensitive error taxonomy.
+Setup: use the admitted `0.2.0` work package as the only next product boundary.
+Before changing status to implementing, freeze its existing admission-base
+commit, exact PackageExact prerequisites and path allowlist; replace planned
+test intentions with source-owned executable registrations. Then freeze
+identifier domains, canonical text/byte forms, forbidden values, timestamp
+units, arithmetic rules, and non-sensitive error taxonomy.
 
 Goal: prevent identifier confusion and remove ambient time/error details from
 deterministic decisions.
@@ -75,13 +79,20 @@ Deliverables:
   crate metadata and checked dependency DAG forbidding allocator use in N0,
   inward violations, build scripts, proc macros, FFI, and thick facades unless
   a versioned exception is reviewed.
+- Exact-ID runner registrations while implementing, followed by
+  candidate/source/runner/toolchain/result/artifact digest bindings before the
+  package is marked implemented.
 
 Verification: round-trip, malformed/canonical form, compile-fail domain mix-up,
 zero/min/max/overflow, crate-layer negative fixtures, redaction, property, and
-parser fuzz tests pass.
+parser fuzz tests pass. The work-package checker must reject changed paths
+outside the admitted boundary, unresolved owners/runners, planned IDs after
+entry, or implemented status without immutable passing evidence.
 
 Exit criteria: no core API creates IDs randomly, reads time, or leaks host
-errors. `v0.2.0 implementation stop reached. Run pentest for this exact commit.`
+errors. The exact implementation commit—not the planning baseline—enters the
+scoped pentest, and the next package remains unopened until findings close.
+`v0.2.0 implementation stop reached. Run pentest for this exact commit.`
 
 ## `0.3.0` — Budgets And Fixed-Capacity Values
 

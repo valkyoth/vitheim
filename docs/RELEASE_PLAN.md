@@ -62,6 +62,16 @@ than creating an allowlist or improvised implementation. `0.398.0` blocks a
 Hosted `1.0.0` production claim unless every mandatory baseline capability has
 exact Supported evidence.
 
+The current execution frontier is `0.2.0`. Reopened `0.1.0` owns the completed
+planning and admission controls; it does not imply that later capabilities are
+implemented. `0.2.0` moves from planned to implementing only after its admitted
+package freezes the base commit, exact paths and prerequisites, source owners,
+and executable test registrations. Implemented status additionally requires
+digest-bound passing evidence, followed by an exact-commit pentest before a
+later stop is admitted. Confirmation reviews do not add versions: a new minor
+requires implementation evidence of a genuinely separate shippable authority,
+prerequisite, migration, rollback/refusal, or security-assessment boundary.
+
 ## Scope Sizing And Focused Minor Releases
 
 The [Implementation Scope Audit](IMPLEMENTATION_SCOPE_AUDIT.md) limits each
